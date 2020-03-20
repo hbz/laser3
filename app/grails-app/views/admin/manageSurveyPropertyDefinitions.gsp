@@ -1,4 +1,4 @@
-<%@ page import="de.laser.domain.I10nTranslation; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.SurveyProperty" %>
+<%@ page import="de.laser.domain.I10nTranslation; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinition" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!doctype html>
 <html>
@@ -51,7 +51,6 @@
             <th>EN ${message(code: 'surveyProperty.introduction.label')}</th>
             <th>DE ${message(code: 'surveyProperty.expl.label')}</th>
             <th>EN ${message(code: 'surveyProperty.expl.label')}</th>
-            <th>${message(code: 'surveyProperty.comment.label')}</th>
             <th>${message(code: 'default.type.label')}</th>
         </tr>
         </thead>
@@ -158,12 +157,12 @@
                         <span data-position="top right" class="la-popup-tooltip la-delay"
                               data-content="${refdataValues.join('/')}">
                             <small>
-                                ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(property?.type)}
+                                ${com.k_int.properties.PropertyDefinition.getLocalizedValue(property?.type)}
                             </small>
                         </span>
                     </g:if>
                     <g:else>
-                        <small>${com.k_int.kbplus.SurveyProperty.getLocalizedValue(property?.type)}</small>
+                        <small>${com.k_int.properties.PropertyDefinition.getLocalizedValue(property?.type)}</small>
                     </g:else>
 
                 </td>
@@ -211,11 +210,6 @@
                     <div class="field six wide">
                         <label class="property-label">${message(code: 'surveyProperty.introduction.label')}</label>
                         <textarea name="introduction" class="ui textarea"></textarea>
-                    </div>
-
-                    <div class="field six wide">
-                        <label class="property-label">${message(code: 'surveyProperty.comment.label')}</label>
-                        <textarea name="comment" class="ui textarea"></textarea>
                     </div>
 
                 </div>

@@ -1,10 +1,12 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
+
 class SurveyConfigProperties {
 
 
     SurveyConfig surveyConfig
-    SurveyProperty surveyProperty
+    PropertyDefinition surveyProperty
 
     Date dateCreated
     Date lastUpdated

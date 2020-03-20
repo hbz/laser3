@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-
+import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
@@ -28,7 +28,7 @@ class SurveyConfig {
     Integer configOrder
 
     Subscription subscription
-    SurveyProperty surveyProperty
+    PropertyDefinition surveyProperty
 
     SurveyInfo surveyInfo
 

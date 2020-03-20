@@ -1,7 +1,7 @@
 package de.laser.helper
 
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.SurveyProperty
+import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //@CompileStatic
@@ -181,7 +181,7 @@ class RDStore {
 
     //Properties
 
-    static final SURVEY_PARTICIPATION_PROPERTY = getSurveyProperty('Participation')
+    static final SURVEY_PROPERTY_PARTICIPATION = getSurveyProperty('Participation')
 
     static RefdataValue getRefdataValue(String value, String category) {
         RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
@@ -192,7 +192,7 @@ class RDStore {
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( result)
     }
 
-    static SurveyProperty getSurveyProperty(String name) {
-        (SurveyProperty) GrailsHibernateUtil.unwrapIfProxy( SurveyProperty.getByName(name))
+    static PropertyDefinition getSurveyProperty(String name) {
+        (PropertyDefinition) GrailsHibernateUtil.unwrapIfProxy( PropertyDefinition.getByNameAndDescrAndTenant(name, PropertyDefinition.SUR_PROP, null))
     }
 }

@@ -1106,7 +1106,7 @@ join sub.orgRelations or_sub where
                     row.add([field: surveyCostItem?.costDescription ?: '', style: null])
 
                     row.add([field: result.type?.getI10n('name') ?: '', style: null])
-                    row.add([field: result.type?.getLocalizedType() ?: '', style: null])
+                    row.add([field: PropertyDefinition.getLocalizedValue(result.type.type) ?: '', style: null])
 
                     def value = ""
 
@@ -4102,7 +4102,6 @@ AND EXISTS (
             propDefs[it] = itResult
         }
 
-        propDefs << ["Survey Property": SurveyProperty.findAllByOwner(result.institution, [sort: 'name'])]
 
         result.propertyDefinitions = propDefs
 
@@ -4127,8 +4126,6 @@ AND EXISTS (
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
             propDefs[it] = itResult
         }
-
-        propDefs << ["Survey Property": SurveyProperty.findAllByOwner(null, [sort: 'name'])]
 
         propDefs << ["${PropertyDefinition.PLA_PROP}": PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.PLA_PROP, null, [sort: 'name'])]
 

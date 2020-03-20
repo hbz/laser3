@@ -1516,7 +1516,7 @@ class AdminController extends AbstractDebugController {
 
 
     def propDefs = []
-    SurveyProperty.findAllByOwnerIsNull().each { it ->
+      PropertyDefinition.getAllByDescr(PropertyDefinition.SUR_PROP).each { it ->
       propDefs << it
 
     }
@@ -1538,10 +1538,11 @@ class AdminController extends AbstractDebugController {
     def addSurveyProperty() {
 
 
-        SurveyProperty surveyProperty = SurveyProperty.findWhere(
+        PropertyDefinition surveyProperty = PropertyDefinition.findWhere(
                 name: params.name,
                 type: params.type,
-                owner: result.institution,
+                tenant: result.institution,
+                descr: PropertyDefinition.SUR_PROP
         )
 
         if ((!surveyProperty) && params.name && params.type) {
@@ -1549,17 +1550,22 @@ class AdminController extends AbstractDebugController {
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
             }
-            surveyProperty = SurveyProperty.loc(
-                    params.name,
-                    params.type,
-                    rdc,
-                    params.expl,
-                    params.comment,
-                    params.introduction,
-                    result.institution
-            )
 
-            if (surveyProperty.save(flush: true)) {
+            Map<String, Object> map = [
+                    token       : params.name,
+                    category    : PropertyDefinition.SUR_PROP,
+                    type        : params.type,
+                    rdc         : rdc,
+                    tenant      : result.institution,
+                    i10n        : [
+                            name_de: params.name,
+                            name_en: params.name,
+                            expl_de: params.expl,
+                            expl_en: params.expl
+                    ]
+            ]
+
+            if (PropertyDefinition.construct(map)) {
                 flash.message = message(code: 'surveyProperty.create.successfully', args: [surveyProperty.name])
             } else {
                 flash.error = message(code: 'surveyProperty.create.fail')

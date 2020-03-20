@@ -478,7 +478,7 @@ class SurveyController {
             //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
             if (subSurveyUseForTransfer) {
                 SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                        surveyProperty: SurveyProperty.findByName('Participation'),
+                        surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SUR_PROP),
                         surveyConfig: surveyConfig)
 
                 if (configProperty.save(flush: true)) {
@@ -1318,28 +1318,6 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def evaluationConfigResult() {
-        def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : true
-
-        result.surveyProperty = SurveyProperty.get(params.prop)
-
-        result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfigAndType(result.institution, result.surveyConfig, result.surveyProperty).sort {
-            it.participant?.sortname
-        }
-
-        result
-
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
-    })
     def allSurveyProperties() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
@@ -1419,7 +1397,7 @@ class SurveyController {
                 params.list('selectedProperty').each { propertyID ->
 
                     if (propertyID) {
-                        SurveyProperty property = SurveyProperty.get(Long.parseLong(propertyID))
+                        PropertyDefinition property = PropertyDefinition.get(Long.parseLong(propertyID))
                         //Config is Sub
                         if (surveyConfig) {
 
@@ -1453,7 +1431,7 @@ class SurveyController {
         if (result.surveyInfo && result.editable) {
 
             if (params.selectedProperty) {
-                SurveyProperty property = SurveyProperty.get(Long.parseLong(params.selectedProperty))
+                PropertyDefinition property = PropertyDefinition.get(Long.parseLong(params.selectedProperty))
                 //Config is Sub
                 if (params.surveyConfigID) {
                     SurveyConfig surveyConfig = SurveyConfig.get(Long.parseLong(params.surveyConfigID))
@@ -1569,10 +1547,11 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        def surveyProperty = SurveyProperty.findWhere(
+        PropertyDefinition surveyProperty = PropertyDefinition.findWhere(
                 name: params.name,
                 type: params.type,
-                owner: result.institution,
+                tenant: result.institution,
+                descr: PropertyDefinition.SUR_PROP
         )
 
         if ((!surveyProperty) && params.name && params.type) {
@@ -1580,17 +1559,22 @@ class SurveyController {
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
             }
-            surveyProperty = SurveyProperty.loc(
-                    params.name,
-                    params.type,
-                    rdc,
-                    params.expl,
-                    params.comment,
-                    params.introduction,
-                    result.institution
-            )
 
-            if (surveyProperty.save(flush: true)) {
+            Map<String, Object> map = [
+                    token       : params.name,
+                    category    : PropertyDefinition.SUR_PROP,
+                    type        : params.type,
+                    rdc         : rdc,
+                    tenant      : result.institution,
+                    i10n        : [
+                            name_de: params.name,
+                            name_en: params.name,
+                            expl_de: params.expl,
+                            expl_en: params.expl
+                    ]
+            ]
+
+            if (PropertyDefinition.construct(map)) {
                 flash.message = message(code: 'surveyProperty.create.successfully', args: [surveyProperty.name])
             } else {
                 flash.error = message(code: 'surveyProperty.create.fail')
@@ -1621,7 +1605,7 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        def surveyProperty = SurveyProperty.findByIdAndOwner(params.deleteId, result.institution)
+        def surveyProperty = PropertyDefinition.findByIdAndTenant(params.deleteId, result.institution)
 
         if (surveyProperty.countUsages()==0 && surveyProperty?.owner?.id == result.institution?.id && surveyProperty.delete())
         {
@@ -2137,7 +2121,7 @@ class SurveyController {
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+        result.participationProperty = PropertyDefinition.getByNameAndDescr("Participation", PropertyDefinition.SUR_PROP)
 
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty?.sort {
@@ -2148,12 +2132,12 @@ class SurveyController {
         result.multiYearTermThreeSurvey = null
         result.multiYearTermTwoSurvey = null
 
-        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")?.id in result.properties.id) {
-            result.multiYearTermThreeSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")
+        if (PropertyDefinition.getByNameAndDescr("Multi-year term 3 years", PropertyDefinition.SUB_PROP)?.id in result.properties.id) {
+            result.multiYearTermThreeSurvey = PropertyDefinition.getByNameAndDescr("Multi-year term 3 years", PropertyDefinition.SUB_PROP)
             result.properties.remove(result.multiYearTermThreeSurvey)
         }
-        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")?.id in result.properties.id) {
-            result.multiYearTermTwoSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")
+        if (PropertyDefinition.getByNameAndDescr("Multi-year term 2 years", PropertyDefinition.SUB_PROP)?.id in result.properties.id) {
+            result.multiYearTermTwoSurvey = PropertyDefinition.getByNameAndDescr("Multi-year term 2 years", PropertyDefinition.SUB_PROP)
             result.properties.remove(result.multiYearTermTwoSurvey)
 
         }
@@ -3289,7 +3273,7 @@ class SurveyController {
         result.participantsList = result.participantsList.sort{it.sortname}
 
 
-        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+        result.participationProperty = PropertyDefinition.getByNameAndDescr("Participation", PropertyDefinition.SUR_PROP)
 
         result
 
@@ -3398,9 +3382,9 @@ class SurveyController {
         result.properties
         if(params.tab == 'surveyProperties') {
             result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty.findAll{it.owner == null}
-            result.properties -= SurveyProperty.findByNameAndOwnerIsNull("Participation")
-            result.properties -= SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")
-            result.properties -= SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")
+            result.properties -= PropertyDefinition.getByNameAndDescr("Participation", PropertyDefinition.SUR_PROP)
+            result.properties -= PropertyDefinition.getByNameAndDescr("Multi-year term 2 years", PropertyDefinition.SUR_PROP)
+            result.properties -= PropertyDefinition.getByNameAndDescr("Multi-year term 3 years", PropertyDefinition.SUR_PROP)
         }
 
         if(params.tab == 'customProperties') {
@@ -3427,7 +3411,7 @@ class SurveyController {
 
 
                 if (params.tab == 'surveyProperties') {
-                    def surProp = SurveyProperty.get(result.selectedProperty)
+                    def surProp = PropertyDefinition.get(result.selectedProperty)
                     newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
                     def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, PropertyDefinition.SUB_PROP) : null
 
@@ -3484,7 +3468,7 @@ class SurveyController {
             if (params.tab == 'surveyProperties') {
                 result.selectedProperty = params.selectedProperty ?: null
 
-                surveyProperty = params.copyProperty ? SurveyProperty.get(Long.parseLong(params.copyProperty)) : null
+                surveyProperty = params.copyProperty ? PropertyDefinition.get(Long.parseLong(params.copyProperty)) : null
 
                 propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, PropertyDefinition.SUB_PROP) : null
                 if (!propDef && surveyProperty) {
@@ -3610,7 +3594,7 @@ class SurveyController {
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+        result.participationProperty = PropertyDefinition.getByNameAndDescr("Participation", PropertyDefinition.SUR_PROP)
 
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty)
@@ -3618,12 +3602,12 @@ class SurveyController {
         result.multiYearTermThreeSurvey = null
         result.multiYearTermTwoSurvey = null
 
-        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")?.id in result.properties.id) {
-            result.multiYearTermThreeSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")
+        if (PropertyDefinition.getByNameAndDescr("Multi-year term 3 years", PropertyDefinition.SUR_PROP)?.id in result.properties.id) {
+            result.multiYearTermThreeSurvey = PropertyDefinition.getByNameAndDescr("Multi-year term 3 years", PropertyDefinition.SUR_PROP)
             result.properties.remove(result.multiYearTermThreeSurvey)
         }
-        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")?.id in result.properties.id) {
-            result.multiYearTermTwoSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")
+        if (PropertyDefinition.getByNameAndDescr("Multi-year term 2 years", PropertyDefinition.SUR_PROP)?.id in result.properties.id) {
+            result.multiYearTermTwoSurvey = PropertyDefinition.getByNameAndDescr("Multi-year term 2 years", PropertyDefinition.SUR_PROP)
             result.properties.remove(result.multiYearTermTwoSurvey)
 
         }
@@ -3933,13 +3917,13 @@ class SurveyController {
         def props = []
 
         //private Property
-        SurveyProperty.findAllByOwnerAndOwnerIsNotNull(contextOrg).each { it ->
+        PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SUR_PROP, contextOrg).each { it ->
             props << it
 
         }
 
         //global Property
-        SurveyProperty.findAllByOwnerIsNull().each { it ->
+        PropertyDefinition.getAllByDescr(PropertyDefinition.SUR_PROP).each { it ->
             props << it
 
         }
@@ -4087,7 +4071,7 @@ class SurveyController {
                     row.add([field: surveyCostItem?.costDescription ?: '', style: null])
 
                     row.add([field: result.type?.getI10n('name') ?: '', style: null])
-                    row.add([field: result.type?.getLocalizedType() ?: '', style: null])
+                    row.add([field: PropertyDefinition.getLocalizedValue(result.type.type) ?: '', style: null])
 
                     def value = ""
 
@@ -4432,7 +4416,7 @@ class SurveyController {
         results.groupBy {
             it?.type.id
         }.sort { it?.value[0]?.type?.name }.each { property ->
-            titles << SurveyProperty.get(property.key)?.getI10n('name')
+            titles << PropertyDefinition.get(property.key)?.getI10n('name')
             titles << g.message(code: 'surveyResult.participantComment')
         }
 
@@ -4524,7 +4508,7 @@ class SurveyController {
 
             row.add([field: surveyConfig?.getConfigName() ?: '', style: null])
 
-            row.add([field: surveyConfig?.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type) + '(' + surveyConfig?.surveyProperty?.getLocalizedType() + ')', style: null])
+            row.add([field: surveyConfig?.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig?.surveyProperty?.type) + ')', style: null])
 
             row.add([field: surveyConfig?.comment ?: '', style: null])
 
@@ -4744,7 +4728,7 @@ class SurveyController {
         parsed_date
     }
 
-    boolean addSurPropToSurvey(SurveyConfig surveyConfig, SurveyProperty surveyProperty) {
+    boolean addSurPropToSurvey(SurveyConfig surveyConfig, PropertyDefinition surveyProperty) {
 
         if (!SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(surveyProperty, surveyConfig) && surveyProperty && surveyConfig) {
             SurveyConfigProperties propertytoSub = new SurveyConfigProperties(surveyConfig: surveyConfig, surveyProperty: surveyProperty)

@@ -46,6 +46,8 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     final static String PLA_PROP    = 'Platform Property'
     @Transient
     final static String SUB_PROP    = 'Subscription Property'
+    @Transient
+    final static String SUR_PROP    = 'Survey Property'
 
     @Transient
     final static String ORG_CONF    = 'Organisation Config'
@@ -58,14 +60,16 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
             ORG_CONF,
             SUB_PROP,
             //SYS_CONF,
-            ORG_PROP
+            ORG_PROP,
+            SUR_PROP
     ]
     @Transient
     final static String[] AVAILABLE_PRIVATE_DESCR = [
             LIC_PROP,
             SUB_PROP,
             ORG_PROP,
-            PRS_PROP
+            PRS_PROP,
+            SUR_PROP
     ]
 
     @Transient
