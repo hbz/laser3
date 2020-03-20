@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.exceptions.CreationException
@@ -159,7 +160,7 @@ class PendingChange {
         def target = genericOIDService.resolveOID(oid)
         switch(msgToken) {
             //pendingChange.message_TP01 (newTitle)
-            case 'pendingChange.message_TP01':
+            case PendingChangeConfiguration.NEW_TITLE:
                 if(target instanceof TitleInstancePackagePlatform) {
                     IssueEntitlement newTitle = IssueEntitlement.construct([subscription:subscription,tipp:(TitleInstancePackagePlatform) target])
                     if(newTitle.save()) {
@@ -170,7 +171,7 @@ class PendingChange {
                 else throw new ChangeAcceptException("no instance of TitleInstancePackagePlatform stored: ${oid}! Pending change is void!")
                 break
             //pendingChange.message_TP02 (titleUpdated)
-            case 'pendingChange.message_TP02':
+            case PendingChangeConfiguration.TITLE_UPDATED:
                 if(target instanceof IssueEntitlement) {
                     IssueEntitlement targetTitle = (IssueEntitlement) target
                     targetTitle[targetProperty] = newValue
@@ -182,7 +183,7 @@ class PendingChange {
                 else throw new ChangeAcceptException("no instance of IssueEntitlement stored: ${oid}! Pending change is void!")
                 break
             //pendingChange.message_TP03 (titleDeleted)
-            case 'pendingChange.message_TP03':
+            case PendingChangeConfiguration.TITLE_DELETED:
                 if(target instanceof IssueEntitlement) {
                     IssueEntitlement targetTitle = (IssueEntitlement) target
                     targetTitle.status = RDStore.TIPP_STATUS_DELETED
@@ -194,7 +195,7 @@ class PendingChange {
                 else throw new ChangeAcceptException("no instance of IssueEntitlement stored: ${oid}! Pending change is void!")
                 break
             //pendingChange.message_TC01 (coverageUpdated)
-            case 'pendingChange.message_TC01':
+            case PendingChangeConfiguration.COVERAGE_UPDATED:
                 if(target instanceof IssueEntitlementCoverage) {
                     IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
                     targetCov[targetProperty] = newValue
@@ -205,7 +206,7 @@ class PendingChange {
                 else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${oid}! Pending change is void!")
                 break
             //pendingChange.message_TC02 (newCoverage)
-            case 'pendingChange.message_TC02':
+            case PendingChangeConfiguration.NEW_COVERAGE:
                 if(target instanceof TIPPCoverage) {
                     TIPPCoverage tippCoverage = (TIPPCoverage) target
                     IssueEntitlement owner = IssueEntitlement.findBySubscriptionAndTipp(subscription,tippCoverage.tipp)
@@ -217,7 +218,7 @@ class PendingChange {
                 else throw new ChangeAcceptException("no instance of TIPPCoverage stored: ${oid}! Pending change is void!")
                 break
             //pendingChange.message_TC03 (coverageDeleted)
-            case 'pendingChange.message_TC03':
+            case PendingChangeConfiguration.COVERAGE_DELETED:
                 if(target instanceof IssueEntitlementCoverage) {
                     IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
                     if(targetCov.delete())

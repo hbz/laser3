@@ -337,32 +337,50 @@ class ChangeNotificationService extends AbstractLockableService {
                 if so: case three - auto reject (because it is matter of survey)
                 if not: case four - treat as prompt
          */
-        Org contextOrg = contextService.getOrg()
+        Org contextOrg
+        //consider collective later!
+        if(subscriptionPackage.subscription.instanceOf)
+            contextOrg = subscriptionPackage.subscription.getConsortia()
+        else contextOrg = subscriptionPackage.subscription.getSubscriber()
         PendingChangeConfiguration.settingKeys.each { String settingKey ->
             RefdataValue settingValue
             PendingChangeConfiguration directConf = subscriptionPackage.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == settingKey}
-            if(directConf) {
-                //case one
-                settingValue = directConf.settingValue
+            if(settingKey == PendingChangeConfiguration.PACKAGE_PROP) {
+                if(directConf) {
+                    if(directConf.withNotification)
+                        PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
+                }
+                else {
+                    SubscriptionPackage parentSP = SubscriptionPackage.findBySubscriptionAndPkg(subscriptionPackage.subscription.instanceOf, subscriptionPackage.pkg)
+                    if(parentSP.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == settingKey }.withNotification)
+                        PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
+                }
             }
-            else if(AuditConfig.getConfig(subscriptionPackage.subscription.instanceOf,settingKey)) {
-                //case two
-                SubscriptionPackage parentSP = SubscriptionPackage.findBySubscriptionAndPkg(subscriptionPackage.subscription.instanceOf, subscriptionPackage.pkg)
-                settingValue = parentSP.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == settingKey }.settingValue
+            else {
+                if(directConf) {
+                    //case one
+                    settingValue = directConf.settingValue
+                }
+                else if(AuditConfig.getConfig(subscriptionPackage.subscription.instanceOf,settingKey)) {
+                    //case two
+                    SubscriptionPackage parentSP = SubscriptionPackage.findBySubscriptionAndPkg(subscriptionPackage.subscription.instanceOf, subscriptionPackage.pkg)
+                    settingValue = parentSP.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == settingKey }.settingValue
+                }
+                if((settingValue == null && !subscriptionPackage.subscription.instanceOf) || settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT) {
+                    //case four, then fallback or explicitly set as such
+                    PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
+                }
+                else if(settingValue == RDStore.PENDING_CHANGE_CONFIG_ACCEPT) {
+                    //set up announcement and do accept! Pending because if some error occurs, the notification should still take place
+                    PendingChange pc = PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
+                    pc.accept()
+                }
+                /*
+                    else we have case three - a child subscription with no inherited settings ->
+                    according to Micha as of March 16th, 2020, this means de facto that the holding manipulation should take place in a survey and
+                    with that, the behavior can only be auto reject because the members need their current holding data as measurement for survey evaluation
+                */
             }
-            if((settingValue == null && !subscriptionPackage.subscription.instanceOf) || settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT) {
-                //case four, then fallback or explicitly set as such
-                PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
-            }
-            else if(settingValue == RDStore.PENDING_CHANGE_CONFIG_ACCEPT) {
-                //set up announcement
-                PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
-            }
-            /*
-                else we have case three - a child subscription with no inherited settings ->
-                according to Micha as of March 16th, 2020, this means de facto that the holding manipulation should take place in a survey and
-                with that, the behavior can only be auto reject because the members need their current holding data as measurement for survey evaluation
-            */
         }
     }
 

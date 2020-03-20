@@ -5,18 +5,22 @@ import com.k_int.kbplus.SubscriptionPackage
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
+import org.springframework.context.MessageSource
 
 import javax.persistence.Transient
 
 class PendingChangeConfiguration {
 
-    static final String NEW_TITLE = "newTitle"
-    static final String TITLE_UPDATED = "titleUpdated"
-    static final String TITLE_DELETED = "titleDeleted"
-    static final String NEW_COVERAGE = "newCoverage"
-    static final String COVERAGE_UPDATED = "coverageUpdated"
-    static final String COVERAGE_DELETED = "coverageDeleted"
-    static final String PACKAGE_PROP = "packageProp"
+    @Transient
+    MessageSource messageSource
+
+    static final String NEW_TITLE = "pendingChange.message_TP01"
+    static final String TITLE_UPDATED = "pendingChange.message_TP02"
+    static final String TITLE_DELETED = "pendingChange.message_TP03"
+    static final String COVERAGE_UPDATED = "pendingChange.message_TC01"
+    static final String NEW_COVERAGE = "pendingChange.message_TC02"
+    static final String COVERAGE_DELETED = "pendingChange.message_TC03"
+    static final String PACKAGE_PROP = "pendingChange.message_PK01"
     static final Set<String> settingKeys = [NEW_TITLE,TITLE_UPDATED,TITLE_DELETED,NEW_COVERAGE,COVERAGE_UPDATED,COVERAGE_DELETED,PACKAGE_PROP]
 
     String settingKey

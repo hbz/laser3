@@ -138,13 +138,13 @@
             </div>
             <div class="ui internally celled grid">
                 <div class="row">
-                    <div class="one wide column">
+                    <div class="two wide column">
                         <g:message code="profile.dashboard.changes.eventtype"/>
                     </div><!-- .column -->
-                    <div class="one wide column">
+                    <div class="two wide column">
                         <g:message code="profile.dashboard.changes.objecttype"/>
                     </div><!-- .column -->
-                    <div class="eleven wide column">
+                    <div class="nine wide column">
                         <g:message code="profile.dashboard.changes.event"/>
                     </div><!-- .column -->
                     <div class="three wide column">
@@ -155,13 +155,13 @@
                     <g:set var="row" value="${pendingChangeService.printRow(change)}" />
                     <g:set var="event" value="${row.eventData}"/>
                     <div class="row">
-                        <div class="one wide column">
+                        <div class="two wide column">
                             ${raw(row.eventIcon)}
                         </div><!-- .column -->
-                        <div class="one wide column">
+                        <div class="two wide column">
                             ${raw(row.instanceIcon)}
                         </div><!-- .column -->
-                        <div class="eleven wide column">
+                        <div class="nine wide column">
                             ${raw(row.eventString)}
                         </div><!-- .column -->
                         <div class="three wide column">
@@ -182,13 +182,13 @@
             </div>
             <div class="ui internally celled grid">
                 <div class="row">
-                    <div class="one wide column">
+                    <div class="two wide column">
                         <g:message code="profile.dashboard.changes.eventtype"/>
                     </div><!-- .column -->
-                    <div class="one wide column">
+                    <div class="two wide column">
                         <g:message code="profile.dashboard.changes.objecttype"/>
                     </div><!-- .column -->
-                    <div class="fourteen wide column">
+                    <div class="twelve wide column">
                         <g:message code="profile.dashboard.changes.event"/>
                     </div><!-- .column -->
                 </div>
@@ -196,13 +196,13 @@
                     <g:set var="row" value="${pendingChangeService.printRow(change)}" />
                     <g:set var="event" value="${row.eventData}"/>
                     <div class="row">
-                        <div class="one wide column">
+                        <div class="two wide column">
                             ${raw(row.eventIcon)}
                         </div><!-- .column -->
-                        <div class="one wide column">
+                        <div class="two wide column">
                             ${raw(row.instanceIcon)}
                         </div><!-- .column -->
-                        <div class="fourteen wide column">
+                        <div class="twelve wide column">
                             ${raw(row.eventString)}
                         </div><!-- .column -->
                     </div><!-- .row -->

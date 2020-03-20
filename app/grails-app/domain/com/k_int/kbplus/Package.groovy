@@ -447,26 +447,31 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
     private def removePackagePendingChanges(List subIds, confirmed) {
 
-        def tipp_class = TitleInstancePackagePlatform.class.getName()
-        def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
-        def change_doc_query = "from PendingChange pc where pc.subscription.id in (:subIds) "
-        def tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [this.id])
-        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [subIds: subIds])
+        String tipp_class = TitleInstancePackagePlatform.class.getName()
+        String tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
+        String change_doc_query = "from PendingChange pc where pc.subscription.id in (:subIds) "
+        List<Long> tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [this.id])
+        List pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [subIds: subIds])
 
-        def pc_to_delete = []
+        List pc_to_delete = []
         pendingChanges.each { pc ->
-            def payload = JSON.parse(pc[1])
-            if (payload.tippID) {
-                pc_to_delete += pc[0]
-            }else if (payload.tippId) {
-                pc_to_delete += pc[0]
-            } else if (payload.changeDoc) {
-                def (oid_class, ident) = payload.changeDoc.OID.split(":")
-                if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
-                    pc_to_delete += pc[0]
+            if(pc[1]){
+                def payload = JSON.parse(pc[1])
+                if (payload.tippID) {
+                    pc_to_delete << pc[0]
+                }else if (payload.tippId) {
+                    pc_to_delete << pc[0]
+                } else if (payload.changeDoc) {
+                    def (oid_class, ident) = payload.changeDoc.OID.split(":")
+                    if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
+                        pc_to_delete << pc[0]
+                    }
+                } else {
+                    log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
                 }
-            } else {
-                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
+            }
+            else {
+                pc_to_delete << pc[0]
             }
         }
         if (confirmed && pc_to_delete) {

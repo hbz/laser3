@@ -3415,43 +3415,24 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(403)
             return
         }
-        //log.debug("Received params: ${params}")
-        /*
-        [subscriptionPackage:com.k_int.kbplus.SubscriptionPackage : 10,
-        newTitle_setting:1207,
-        newTitle_auditable:on,
-        titleUpdated_setting:1205,
-        titleUpdated_auditable:on,
-        titleDeleted_setting:1206,
-        titleDeleted_auditable:on,
-        newCoverage_setting:1205,
-        newCoverage_auditable:on,
-        coverageUpdated_setting:1205,
-        coverageUpdated_auditable:on,
-        coverageDeleted_setting:1205,
-        coverageDeleted_auditable:on,
-        packageProp_notification:on,
-        packageProp_auditable:on,
-        id:11]
-         */
+        log.debug("Received params: ${params}")
         SubscriptionPackage subscriptionPackage = SubscriptionPackage.get(params.subscriptionPackage)
         PendingChangeConfiguration.settingKeys.each { String settingKey ->
             Map<String,Object> configMap = [subscriptionPackage:subscriptionPackage,settingKey:settingKey]
             boolean auditable = false
-            String key = params.keySet().find { k -> k.contains(settingKey) }
-            List<String> settingData = key.split('_')
-            RefdataValue settingValue
-            boolean withNotification = false
-            switch(settingData[1]) {
-                case 'setting': settingValue = RefdataValue.get(params[key])
-                    break
-                case 'notification': withNotification = params[key] != null
-                    break
-                case 'auditable': auditable = params[key] != null
-                    break
+            //Set because we have up to three keys in params with the settingKey
+            Set<String> keySettings = params.keySet().findAll { k -> k.contains(settingKey) }
+            keySettings.each { key ->
+                List<String> settingData = key.split('!§!')
+                switch(settingData[1]) {
+                    case 'setting': configMap.settingValue = RefdataValue.get(params[key])
+                        break
+                    case 'notification': configMap.withNotification = params[key] != null
+                        break
+                    case 'auditable': auditable = params[key] != null
+                        break
+                }
             }
-            configMap.settingValue = settingValue
-            configMap.withNotification = withNotification
             try {
                 PendingChangeConfiguration pcc = PendingChangeConfiguration.construct(configMap)
                 boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription,settingKey) != null

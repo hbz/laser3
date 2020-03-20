@@ -343,27 +343,29 @@
                                               </tr>
                                           </thead>
                                           <tbody>
-                                            <g:set var="excludes" value="${['packageProp']}"/>
+                                            <g:set var="excludes" value="${[de.laser.domain.PendingChangeConfiguration.PACKAGE_PROP]}"/>
                                              <g:each in="${de.laser.domain.PendingChangeConfiguration.settingKeys}" var="settingKey">
                                                 <tr>
                                                     <td>
-                                                        <g:message code="subscription.packages.${settingKey}.label"/>
+                                                        <g:message code="subscription.packages.${settingKey}"/>
                                                     </td>
                                                     <td>
                                                         <g:if test="${!(settingKey in excludes)}">
                                                             <laser:select class="ui dropdown"
-                                                                          name="${settingKey}_setting" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
+                                                                          name="${settingKey}!§!setting" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
                                                                           optionKey="id" optionValue="value"
                                                                           value="${subscriptionPackage.getPendingChangeConfig(settingKey) ? subscriptionPackage.getPendingChangeConfig(settingKey).settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
                                                             />
                                                         </g:if>
                                                     </td>
                                                     <td>
-                                                        <g:checkBox class="ui checkbox" name="${settingKey}_notification" checked="${subscriptionPackage.getPendingChangeConfig(settingKey)?.withNotification}"/>
+                                                        <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${subscriptionPackage.getPendingChangeConfig(settingKey)?.withNotification}"/>
                                                     </td>
                                                     <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
                                                         <td>
-                                                            <g:checkBox name="${settingKey}_auditable" checked="${subscriptionPackage.getPendingChangeConfig(settingKey) ? auditService.getAuditConfig(subscriptionInstance,settingKey) : false}"/>
+                                                            <g:if test="${!(settingKey in excludes)}">
+                                                                <g:checkBox name="${settingKey}!§!auditable" checked="${subscriptionPackage.getPendingChangeConfig(settingKey) ? auditService.getAuditConfig(subscriptionInstance,settingKey) : false}"/>
+                                                            </g:if>
                                                         </td>
                                                     </g:if>
                                                 </tr>

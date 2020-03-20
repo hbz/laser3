@@ -197,10 +197,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue breakable = RefdataValue.getByValueAndCategory(packageData.breakable.text(),RDConstants.PACKAGE_BREAKABLE) //needed?
         RefdataValue consistent = RefdataValue.getByValueAndCategory(packageData.consistent.text(),RDConstants.PACKAGE_CONSISTENT) //needed?
         RefdataValue fixed = RefdataValue.getByValueAndCategory(packageData.fixed.text(),RDConstants.PACKAGE_LIST_STATUS) //needed?
-        RefdataValue contentType = RefdataValue.getByValueAndCategory(packageData.conentType.text(),RDConstants.PACKAGE_CONTENT_TYPE)
+        RefdataValue contentType = RefdataValue.getByValueAndCategory(packageData.contentType.text(),RDConstants.PACKAGE_CONTENT_TYPE)
         Date listVerifiedDate = packageData.listVerifiedDate.text() ? DateUtil.parseDateGeneric(packageData.listVerifiedDate.text()) : null
         //result.global = packageData.global.text() needed? not used in packageReconcile
-        //result.paymentType = packageData.paymentType.text() needed? not used in packageReconcile
         String providerUUID
         String platformUUID
         if(packageData.nominalProvider) {
@@ -223,6 +222,21 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(result) {
                     //local package exists -> update closure, build up GokbDiffEngine and the horrendous closures
                     log.info("package successfully found, processing LAS:eR id #${result.id}, with GOKb id ${result.gokbId}")
+                    Map<String,Object> newPackageProps = [
+                            uuid: packageUUID,
+                            name: packageName,
+                            packageStatus: packageStatus,
+                            listVerifiedDate: listVerifiedDate,
+                            packageScope: packageScope,
+                            packageListStatus: packageListStatus,
+                            breakable: breakable,
+                            consistent: consistent,
+                            fixed: fixed
+                    ]
+                    if(platformUUID) {
+                        newPackageProps.nominalPlatform = Platform.findByGokbId(platformUUID)
+                    }
+                    Set<Map<String,Object>> pkgPropDiffs = getPkgPropDiff(result,newPackageProps)
                     result.name = packageName
                     result.packageStatus = packageStatus
                     result.listVerifiedDate = listVerifiedDate
@@ -231,10 +245,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     result.breakable = breakable //needed?
                     result.consistent = consistent //needed?
                     result.fixed = fixed //needed?
+                    if(platformUUID)
+                        result.nominalPlatform = Platform.findByGokbId(platformUUID)
                     if(result.save()) {
-                        if(platformUUID) {
-                            result.nominalPlatform = Platform.findByGokbId(platformUUID)
-                        }
+                        if(pkgPropDiffs)
+                            tippsToNotify << [event:"pkgPropUpdate",diffs:pkgPropDiffs,target:result]
                         tipps.each { Map<String, Object> tippB ->
                             TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform a -> a.gokbId == tippB.uuid } //we have to consider here TIPPs, too, which were deleted but have been reactivated
                             if(tippA) {
@@ -742,6 +757,30 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
+     * Compares two packages on domain property level against each other, retrieving the differences between both.
+     * @param pkgA - the old package (as {@link Package} which is already persisted)
+     * @param pkgB - the new package (as unprocessed {@link Map}
+     * @return a {@link Set} of {@link Map}s with the differences
+     */
+    Set<Map<String,Object>> getPkgPropDiff(Package pkgA, Map<String,Object> pkgB) {
+        log.info("processing package prop diffs; the respective GOKb UUIDs are: ${pkgA.gokbId} (LAS:eR) vs. ${pkgB.uuid} (remote)")
+        Set<Map<String,Object>> result = []
+        Set<String> controlledProperties = ['name','packageStatus','listVerifiedDate','packageScope','packageListStatus','breakable','consistent','fixed']
+
+        controlledProperties.each { prop ->
+            if(pkgA[prop] != pkgB[prop]) {
+                result.add([prop: prop, newValue: pkgB[prop], oldValue: pkgA[prop]])
+            }
+        }
+
+        if(pkgA.nominalPlatform != pkgB.nominalPlatform) {
+            result.add([prop: 'nominalPlatform', newValue: pkgB.nominalPlatform?.name, oldValue: pkgA.nominalPlatform?.name])
+        }
+
+        result
+    }
+
+    /**
      * Compares two package entries against each other, retrieving the differences between both.
      * @param tippa - the old TIPP (as {@link TitleInstancePackagePlatform} which is already persisted)
      * @param tippb - the new TIPP (as unprocessed {@link Map})
@@ -840,60 +879,69 @@ class GlobalSourceSyncService extends AbstractLockableService {
         tippsToNotify.each { entry ->
             entry.each { notify ->
                 log.debug(notify)
-                TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) notify.target
-                if(notify.event == 'add') {
-                    Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target.pkg])
+                if(notify.event == 'pkgPropUpdate') {
+                    Package target = (Package) notify.target
+                    Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target])
                     ieConcerned.each { ie ->
-                        changeNotificationService.determinePendingChangeBehavior([target:ie.subscription,oid:"${target.class.name}:${target.id}"],'pendingChange.message_TP01',SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                        changeNotificationService.determinePendingChangeBehavior([target:ie.subscription],PendingChangeConfiguration.PACKAGE_PROP,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target))
                     }
                 }
                 else {
-                    Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp = :tipp',[tipp:target])
-                    ieConcerned.each { ie ->
-                        String changeDesc = ""
-                        Map<String,Object> changeMap = [target:ie.subscription]
-                        switch(notify.event) {
-                            case 'update': notify.diffs.each { diff ->
-                                if(diff.prop == 'coverage') {
-                                    diff.covDiffs.each { covDiff ->
-                                        TIPPCoverage tippCov = (TIPPCoverage) covDiff.target
-                                        switch(covDiff.event) {
-                                            case 'update':
-                                                IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                changeDesc = 'pendingChange.message_TC01'
-                                                changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
-                                                changeMap.prop = covDiff.prop
-                                                changeMap.oldValue = ieCov[covDiff.prop]
-                                                changeMap.newValue = covDiff.newValue
-                                                break
-                                            case 'added':
-                                                changeDesc = 'pendingChange.message_TC02'
-                                                changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
-                                                break
-                                            case 'delete':
-                                                IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                changeDesc = 'pendingChange.message_TC03'
-                                                changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
-                                                break
+                    TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) notify.target
+                    if(notify.event == 'add') {
+                        Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target.pkg])
+                        ieConcerned.each { ie ->
+                            changeNotificationService.determinePendingChangeBehavior([target:ie.subscription,oid:"${target.class.name}:${target.id}"],PendingChangeConfiguration.NEW_TITLE,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                        }
+                    }
+                    else {
+                        Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp = :tipp',[tipp:target])
+                        ieConcerned.each { ie ->
+                            String changeDesc = ""
+                            Map<String,Object> changeMap = [target:ie.subscription]
+                            switch(notify.event) {
+                                case 'update': notify.diffs.each { diff ->
+                                    if(diff.prop == 'coverage') {
+                                        diff.covDiffs.each { covDiff ->
+                                            TIPPCoverage tippCov = (TIPPCoverage) covDiff.target
+                                            switch(covDiff.event) {
+                                                case 'update':
+                                                    IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                                    changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
+                                                    changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                    changeMap.prop = covDiff.prop
+                                                    changeMap.oldValue = ieCov[covDiff.prop]
+                                                    changeMap.newValue = covDiff.newValue
+                                                    break
+                                                case 'added':
+                                                    changeDesc = PendingChangeConfiguration.NEW_COVERAGE
+                                                    changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
+                                                    break
+                                                case 'delete':
+                                                    IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                                    changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
+                                                    changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                    break
+                                            }
                                         }
                                     }
+                                    else {
+                                        changeDesc = PendingChangeConfiguration.TITLE_UPDATED
+                                        changeMap.oid = "${ie.class.name}:${ie.id}"
+                                        changeMap.prop = diff.prop
+                                        changeMap.oldValue = ie[diff.prop]
+                                        changeMap.newValue = diff.newValue
+                                    }
                                 }
-                                else {
-                                    changeDesc = 'pendingChange.message_TP02'
-                                    changeMap.oid = "${ie.class.name}:${ie.id}"
-                                    changeMap.prop = diff.prop
-                                    changeMap.oldValue = ie[diff.prop]
-                                    changeMap.newValue = diff.newValue
-                                }
+                                    break
+                                case 'delete':
+                                    changeDesc = PendingChangeConfiguration.TITLE_DELETED
+                                    changeMap.oid = "${target.class.name}:${target.id}"
+                                    break
                             }
-                                break
-                            case 'delete':
-                                changeDesc = 'pendingChange.message_TP03'
-                                changeMap.oid = "${target.class.name}:${target.id}"
-                                break
+                            changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                            //changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
                         }
-                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
-                        //changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
                     }
                 }
             }
