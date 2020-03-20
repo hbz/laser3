@@ -20,11 +20,9 @@ class Links {
     Long destination
     String objectType
     RefdataValue linkType
-    Org owner
-    Date dateCreated
-    Date lastUpdated
-    User createdBy
-    User lastUpdatedBy
+    Org     owner
+    Date    dateCreated
+    Date    lastUpdated
 
     static mapping = {
         id          column: 'l_id'
@@ -44,31 +42,10 @@ class Links {
         objectType    (nullable: false, blank: false)
         linkType      (nullable: false, blank: false)
         owner         (nullable: false, blank: false)
-        lastUpdatedBy (nullable: true)
-        createdBy     (nullable: true)
 
         // Nullable is true, because values are already in the database
         dateCreated (nullable: true, blank: false)
 
-    }
-
-    def beforeInsert() {
-
-        User user = springSecurityService.getCurrentUser()
-        if (user) {
-            createdBy     = user
-            lastUpdatedBy = user
-        } else
-            return false
-    }
-
-    def beforeUpdate() {
-
-        User user = springSecurityService.getCurrentUser()
-        if (user)
-            lastUpdatedBy = user
-        else
-            return false
     }
 
     Subscription getOther(key) {
@@ -81,11 +58,11 @@ class Links {
             log.error("No context key!")
             return null
         }
+
         if(context.id == source)
             return Subscription.get(destination)
         else if(context.id == destination)
             return Subscription.get(source)
         else return null
     }
-
 }
