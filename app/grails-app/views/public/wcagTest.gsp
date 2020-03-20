@@ -68,8 +68,6 @@
         <h2 class="ui dividing header">10. X-Editable</h2>
         <g:render template="templatesWCAGTest/xeditable" />
 
-%{--        <h2 class="ui dividing header">11. Registernavigation</h2>
-        <g:render template="templatesWCAGTest/tabnavigation" />--}%
 
         <h2 class="ui dividing header">12. Unternavigation - Alternativ zur Registernavigation</h2>
         <g:render template="templatesWCAGTest/submenue" />
