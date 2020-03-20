@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.OrgSubjectGroup; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.Person; com.k_int.kbplus.OrgSubjectGroup; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
 <%@ page import="com.k_int.kbplus.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
@@ -416,7 +416,7 @@
                                 <%
                                     List<PersonRole> allPRs = PersonRole.executeQuery("select distinct(pr) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic = true", [org: orgInstance])
                                     Map<RefdataValue, List<PersonRole>> allPRMap = [:]
-                                    Set<RefdataValue> usedRDV = []
+                                    List<RefdataValue> usedRDV = []
                                     allPRs.each{
                                         if (it.functionType) {
                                             List l = allPRMap.get(it.functionType)?: []
@@ -437,6 +437,11 @@
                                             usedRDV.add(it.responsibilityType)
                                         }
                                     }
+                                    usedRDV?.unique().sort(it?.getI10n('value'))
+                                    int genConPrsNdx = usedRDV.indexOf(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
+                                    RefdataValue genConPrs = usedRDV.get(genConPrsNdx)
+                                    usedRDV.remove(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
+                                    usedRDV.add(0, genConPrs)
                                 %>
                                 <g:each in="${usedRDV}" var="rdv">
                                     <h3>${rdv.getI10n('value')}</h3>
