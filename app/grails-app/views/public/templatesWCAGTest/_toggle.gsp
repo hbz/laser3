@@ -1,10 +1,12 @@
-<button aria-expanded="true" class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix">    Filter    <i aria-hidden="true" class="filter icon"></i>   <span class="ui circular label la-js-filter-total hidden">0</span></button>
+<button aria-expanded="true" class="ui button la-inline-labeled la-js-filterButton la-clearfix">    Filter    <i aria-hidden="true" class="filter icon"></i>   <span class="ui circular label la-js-filter-total hidden">0</span></button>
 
 
 
 
-<div class="ui la-filter segment la-clear-before" style="">
-    <form class="ui form" autocomplete="off">
+<div class="ui la-filter segment la-clear-before" >
+    <p>Ich bin eine Fläche, die ein- und ausgeblendet wird.</p>
+
+%{--    <form class="ui form" autocomplete="off">
         <div class="four fields">
             <div class="field">
                 <label>Titel</label>
@@ -31,5 +33,5 @@
             <a href="/laser/myInstitution/tasks" class="ui reset primary button">Filter zurücksetzen</a>
             <input type="submit" class="ui secondary button" value="Filtern">
         </div>
-    </form>
+    </form>--}%
 </div>
