@@ -18,30 +18,30 @@ class ControlledListService {
     def accessService
 
     /**
-     * Retrieves a list of providers
+     * Retrieves a list of providers and agencies
      * @param params - eventual request params
      * @return a map containing a sorted list of providers, an empty one if no providers match the filter
      */
-    Map getProviders(Map params) {
+    Map getProvidersAgencies(Map params) {
         LinkedHashMap result = [results:[]]
         Org org = contextService.getOrg()
         if(params.forFinanceView) {
             //PLEASE! Do not assign providers or agencies to administrative subscriptions! That will screw up this query ...
             List subscriptions = Subscription.executeQuery('select s from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE,RDStore.OR_SUBSCRIBER_COLLECTIVE]])
-            Map filter = [provider: RDStore.OR_PROVIDER,subscriptions:subscriptions]
+            Map filter = [providerAgency: [RDStore.OR_PROVIDER,RDStore.OR_AGENCY],subscriptions:subscriptions]
             String filterString = " "
             if(params.query && params.query.length() > 0) {
                 filter.put("query",params.query)
                 filterString += " and genfunc_filter_matcher(oo.org.name,:query) = true "
             }
-            List providers = Org.executeQuery('select distinct oo.org, oo.org.name from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType = :provider'+filterString+'order by oo.org.name asc',filter)
+            List providers = Org.executeQuery('select distinct oo.org, oo.org.name from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType in (:providerAgency)'+filterString+'order by oo.org.name asc',filter)
             providers.each { p ->
                 result.results.add([name:p[1],value:p[0].class.name + ":" + p[0].id])
             }
         }
         else {
-            String queryString = 'select o from Org o where o.type = :provider '
-            LinkedHashMap filter = [provider:RDStore.OT_PROVIDER]
+            String queryString = 'select o from Org o where o.type in (:provider) '
+            LinkedHashMap filter = [provider:[RDStore.OT_PROVIDER,RDStore.OT_AGENCY]]
             if(params.query && params.query.length() > 0) {
                 filter.put("query",params.query)
                 queryString += " and genfunc_filter_matcher(o.name,:query) = true "
