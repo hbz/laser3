@@ -702,7 +702,7 @@ class SemanticUiTagLib {
         String msgCancel = "Abbrechen"
 
 
-        out << '<div class="ui tiny modal">'
+        out << '<div class="ui tiny modal" role="alertdialog" aria-modal="true" tabindex="-1 aria-label="Bestätigungs-Modal">'
         out << '<div class="header">'
         out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
         out << '</div>'
