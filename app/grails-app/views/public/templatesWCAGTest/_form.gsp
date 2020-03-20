@@ -115,7 +115,8 @@
     <a href="#" class="ui button modalCreateTask" onclick="$('#modalCreateTask').modal('hide')">Schließen</a>
     <input type="submit" class="ui button green" name="save" value="Anlegen" onclick="event.preventDefault(); $('#modalCreateTask').find('form').submit()">
 </g:form>
-</div>
+
+
 
 <r:script>
         $('.dropdown').dropdown();
