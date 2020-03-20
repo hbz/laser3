@@ -85,7 +85,7 @@ class ApiReader {
 
         if (hasAccess) {
             //result.id       = opl.id
-            result.lastmod  = opl.lastmod
+            result.lastmod  = ApiToolkit.formatInternalDate(opl.lastmod)
             result.title    = opl.title
 
             // References
