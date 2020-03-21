@@ -34,12 +34,11 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID        = lic.globalUID
-        //result.impId            = lic.impId
         result.reference        = lic.reference
         result.normReference    = lic.sortableReference
         result.calculatedType   = lic.getCalculatedType()
-        result.startDate        = lic.startDate
-        result.endDate          = lic.endDate
+        result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
+        result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
@@ -77,7 +76,6 @@ class ApiUnsecuredMapReader {
 
         result.globalUID    = pkg.globalUID
         result.name         = pkg.name
-        //result.impId        = pkg.impId
         result.gokbId       = pkg.gokbId
 
         // References
@@ -96,7 +94,6 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID    = pform.globalUID
-        //result.impId        = pform.impId
         result.gokbId       = pform.gokbId
         result.name         = pform.name
         result.normname     = pform.normname
@@ -116,10 +113,9 @@ class ApiUnsecuredMapReader {
 
         result.globalUID        = sub.globalUID
         result.name             = sub.name
-        //result.impId            = sub.impId
         result.calculatedType   = sub.getCalculatedType()
-        result.startDate        = sub.startDate
-        result.endDate          = sub.endDate
+        result.startDate        = ApiToolkit.formatInternalDate(sub.startDate)
+        result.endDate          = ApiToolkit.formatInternalDate(sub.endDate)
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
@@ -137,7 +133,6 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID    = title.globalUID
-        //result.impId        = title.impId
         result.gokbId       = title.gokbId
         result.title        = title.title
         result.normTitle    = title.normTitle
@@ -158,13 +153,13 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.id                  = invoice.id
-        result.dateOfPayment       = invoice.dateOfPayment
-        result.dateOfInvoice       = invoice.dateOfInvoice
-        result.datePassedToFinance = invoice.datePassedToFinance
-        result.endDate             = invoice.endDate
+        result.dateOfPayment       = ApiToolkit.formatInternalDate(invoice.dateOfPayment)
+        result.dateOfInvoice       = ApiToolkit.formatInternalDate(invoice.dateOfInvoice)
+        result.datePassedToFinance = ApiToolkit.formatInternalDate(invoice.datePassedToFinance)
+        result.endDate             = ApiToolkit.formatInternalDate(invoice.endDate)
         result.invoiceNumber       = invoice.invoiceNumber
-        result.startDate           = invoice.startDate
-        result.lastUpdated         = invoice.lastUpdated
+        result.startDate           = ApiToolkit.formatInternalDate(invoice.startDate)
+        result.lastUpdated         = ApiToolkit.formatInternalDate(invoice.lastUpdated)
 
         // References
         result.owner               = getOrganisationStubMap(invoice.owner) // com.k_int.kbplus.Org
@@ -180,7 +175,7 @@ class ApiUnsecuredMapReader {
 
         result.id           = order.id
         result.orderNumber  = order.orderNumber
-        result.lastUpdated  = order.lastUpdated
+        result.lastUpdated  = ApiToolkit.formatInternalDate(order.lastUpdated)
 
         // References
         result.owner        = getOrganisationStubMap(order.owner) // com.k_int.kbplus.Org
@@ -195,14 +190,13 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID        = pform.globalUID
-        //result.impId            = pform.impId
         result.gokbId           = pform.gokbId
         result.name             = pform.name
         result.normName         = pform.normname
         result.primaryUrl       = pform.primaryUrl
         result.provenance       = pform.provenance
-        result.dateCreated      = pform.dateCreated
-        result.lastUpdated      = pform.lastUpdated
+        result.dateCreated      = ApiToolkit.formatInternalDate(pform.dateCreated)
+        result.lastUpdated      = ApiToolkit.formatInternalDate(pform.lastUpdated)
 
         // RefdataValues
         result.type                 = pform.type?.value

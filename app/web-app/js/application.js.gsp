@@ -615,6 +615,7 @@ r2d2 = {
                 $('.tiny.modal')
                     .modal({
                         closable  : false,
+                        //lastFocus: document.activeElement,
                         onApprove : function() {
                             // open confirmation modal from inside a form
                             if (dataAttr){
@@ -631,6 +632,11 @@ r2d2 = {
                         },
                         onDeny : function() {
                             $('#js-confirmation-content-term').html('')
+                        },
+                        onShow : function() {
+                            //console.log(lastFocus);
+                            //$(this).focusin();
+                           // $(this).find('.ui.deny.button').attr('tabIndex','-1');
                         }
                     })
                     .modal('show')

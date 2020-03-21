@@ -73,13 +73,13 @@ class ApiIssueEntitlement {
             return null
         }
 
-        result.globalUID        = ie?.globalUID
-        result.accessStartDate  = ie?.accessStartDate
-        result.accessEndDate    = ie?.accessEndDate
-        result.ieReason         = ie?.ieReason
-        result.coreStatusStart  = ie?.coreStatusStart
-        result.coreStatusEnd    = ie?.coreStatusEnd
-        result.lastUpdated      = ie?.lastUpdated
+        result.globalUID        = ie.globalUID
+        result.accessStartDate  = ApiToolkit.formatInternalDate(ie.accessStartDate)
+        result.accessEndDate    = ApiToolkit.formatInternalDate(ie.accessEndDate)
+        result.ieReason         = ie.ieReason
+        result.coreStatusStart  = ApiToolkit.formatInternalDate(ie.coreStatusStart)
+        result.coreStatusEnd    = ApiToolkit.formatInternalDate(ie.coreStatusEnd)
+        result.lastUpdated      = ApiToolkit.formatInternalDate(ie.lastUpdated)
 
         // RefdataValues
         result.coreStatus       = ie.coreStatus?.value
@@ -117,16 +117,16 @@ class ApiIssueEntitlement {
             return null
         }
 
-        result.startDate        = coverage?.startDate
-        result.startVolume      = coverage?.startVolume
-        result.startIssue       = coverage?.startIssue
-        result.endDate          = coverage?.endDate
-        result.endVolume        = coverage?.endVolume
-        result.endIssue         = coverage?.endIssue
-        result.embargo          = coverage?.embargo
-        result.coverageDepth    = coverage?.coverageDepth
-        result.coverageNote     = coverage?.coverageNote
-        result.lastUpdated      = coverage?.lastUpdated
+        result.startDate        = ApiToolkit.formatInternalDate(coverage.startDate)
+        result.startVolume      = coverage.startVolume
+        result.startIssue       = coverage.startIssue
+        result.endDate          = ApiToolkit.formatInternalDate(coverage.endDate)
+        result.endVolume        = coverage.endVolume
+        result.endIssue         = coverage.endIssue
+        result.embargo          = coverage.embargo
+        result.coverageDepth    = coverage.coverageDepth
+        result.coverageNote     = coverage.coverageNote
+        result.lastUpdated      = ApiToolkit.formatInternalDate(coverage.lastUpdated)
 
         ApiToolkit.cleanUp(result, true, true)
     }

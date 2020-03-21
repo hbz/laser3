@@ -94,9 +94,9 @@ class ApiStatistic {
         if (hasAccess) {
 
             result.globalUID        = pkg.globalUID
-            result.startDate        = pkg.startDate
-            result.endDate          = pkg.endDate
-            result.lastUpdated      = pkg.lastUpdated
+            result.startDate        = ApiToolkit.formatInternalDate(pkg.startDate)
+            result.endDate          = ApiToolkit.formatInternalDate(pkg.endDate)
+            result.lastUpdated      = ApiToolkit.formatInternalDate(pkg.lastUpdated)
             result.packageType      = pkg.contentType?.value
             result.packageStatus    = pkg.packageStatus?.value
             result.name             = pkg.name

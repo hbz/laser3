@@ -65,10 +65,10 @@ class ApiKbartConverter {
                 row[ KBART2_HEADER.indexOf("print_identifier") ]         = normValue( ie.tipp?.title?.identifiers?.find{ it.namespace == "issn" }?.value )
                 row[ KBART2_HEADER.indexOf("online_identifier") ]        = normValue( ie.tipp?.title?.identifiers?.find{ it.namespace == "eissn" }?.value )
 
-                row[ KBART2_HEADER.indexOf("date_first_issue_online") ]  = normValue( covStmt.startDate )
+                row[ KBART2_HEADER.indexOf("date_first_issue_online") ]  = normValue( ApiToolkit.formatInternalDate(covStmt.startDate) )
                 row[ KBART2_HEADER.indexOf("num_first_vol_online") ]     = normValue( covStmt.startVolume )
                 row[ KBART2_HEADER.indexOf("num_first_issue_online") ]   = normValue( covStmt.startIssue )
-                row[ KBART2_HEADER.indexOf("date_last_issue_online") ]   = normValue( covStmt.endDate )
+                row[ KBART2_HEADER.indexOf("date_last_issue_online") ]   = normValue( ApiToolkit.formatInternalDate(covStmt.endDate) )
                 row[ KBART2_HEADER.indexOf("num_last_vol_online") ]      = normValue( covStmt.endVolume )
                 row[ KBART2_HEADER.indexOf("num_last_issue_online") ]    = normValue( covStmt.endIssue )
 
@@ -97,8 +97,8 @@ class ApiKbartConverter {
                 row[ KBART2_HEADER.indexOf("ISBNs") ]    = normValue( ie.tipp?.title?.identifiers?.findAll{ it.namespace == "isbn" }?.value.join(", ") )
                 row[ KBART2_HEADER.indexOf("eISBNs") ]   = normValue( ie.tipp?.title?.identifiers?.findAll{ it.namespace == "eisbn" }?.value.join(", ") )
 
-                row[ KBART2_HEADER.indexOf("access_start_date") ]        = normValue( ie.accessStartDate )
-                row[ KBART2_HEADER.indexOf("access_end_date") ]          = normValue( ie.accessEndDate )
+                row[ KBART2_HEADER.indexOf("access_start_date") ]        = normValue( ApiToolkit.formatInternalDate(ie.accessStartDate) )
+                row[ KBART2_HEADER.indexOf("access_end_date") ]          = normValue( ApiToolkit.formatInternalDate(ie.accessEndDate) )
                 row[ KBART2_HEADER.indexOf("access_status") ]            = normValue( ie.status ) // ?
 
                 kbart.add(row.join("\t"))
