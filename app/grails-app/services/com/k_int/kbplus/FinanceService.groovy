@@ -13,6 +13,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.ParseException
@@ -1036,7 +1037,7 @@ class FinanceService {
         }
         allCurrencies.addAll(RefdataCategory.getAllRefdataValues(CURRENCY))
 
-        List<Map<String,Object>> result = [[id:0,text:messageSource.getMessage('financials.currency.none',null,Locale.getDefault())]] //is only provisorical, TODO [ticket=2107]
+        List<Map<String,Object>> result = [[id:0,text:messageSource.getMessage('financials.currency.none',null, LocaleContextHolder.getLocale())]] //is only provisorical, TODO [ticket=2107]
         result.addAll(allCurrencies.collect { rdv ->
             [id: rdv.id, text: rdv.getI10n('value')]
         })
@@ -1129,7 +1130,7 @@ class FinanceService {
                             result.editConf.showVisibilitySettings = true
                             result.showConsortiaFunctions = true
                             result.sortConfig.consSort = 'ci.costTitle'
-                            result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,Locale.getDefault())
+                            result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
                             result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                             result.editConf.showVisibilitySettings = true
                         }
@@ -1139,7 +1140,7 @@ class FinanceService {
                         dataToDisplay.addAll(['own','cons'])
                         result.showView = 'cons'
                         result.showConsortiaFunctions = true
-                        result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,Locale.getDefault())
+                        result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
                         result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                         result.editConf.showVisibilitySettings = true
                     }
@@ -1178,7 +1179,7 @@ class FinanceService {
                             dataToDisplay.addAll(['own','subscr','coll'])
                             result.showView = 'subscr'
                             result.showCollectiveFunctions = true
-                            result.subMemberLabel = messageSource.getMessage('collective.member',null,Locale.getDefault())
+                            result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
                             result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                             result.editConf.showVisibilitySettings = true
                         }
@@ -1188,7 +1189,7 @@ class FinanceService {
                         dataToDisplay.addAll(['own','coll'])
                         result.showView = 'coll'
                         result.showCollectiveFunctions = true
-                        result.subMemberLabel = messageSource.getMessage('collective.member',null,Locale.getDefault())
+                        result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
                         result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                         result.editConf.showVisibilitySettings = true
                     }
@@ -1245,8 +1246,8 @@ class FinanceService {
             orgConfigurations.put(oc.costItemElement.id,oc.elementSign.id)
         }
         result.orgConfigurations = orgConfigurations as JSON
-        if(configMap.showView in ["cons","coll"]) {
-            result.validSubChilds = [[id: 'forParent', label: messageSource.getMessage('financials.newCosts.forParentSubscription', null, Locale.getDefault())], [id: 'forAllSubscribers', label: configMap.licenseeTargetLabel]]
+        if(configMap.showView in ["cons","coll"] && configMap.subMembers) {
+            result.validSubChilds = [[id: 'forParent', label: messageSource.getMessage('financials.newCosts.forParentSubscription', null, LocaleContextHolder.getLocale())], [id: 'forAllSubscribers', label: configMap.licenseeTargetLabel]]
             result.validSubChilds.addAll(configMap.subMembers)
         }
         result

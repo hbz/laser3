@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2229    23.03.2020  hbz-dev     Andreas Bug         Auswahlliste des Lizenztyps bei Konsortien aufgehoben und auf LAS:eR Backoffice beschränkt
+
+2224    23.03.2020  hbz-dev     Andreas Bug         Umgang mit leerer Liste von Kindlizenzen korrigiert 
+
+1805    23.03.2020  hbz-dev     Andreas Bug         Falsche Erkennung des Locales im FinanceService behoben
+
 2276    20.03.2020  hbz-dev     Andreas Feature     Verwaltungslizenzen dürfen nur vom LAS:eR Backoffice erstellt werden (provisorische Lösung)
 
 2271    19.03.2020  hbz-dev     David   Feature     API: Datumsangaben konvertieren
