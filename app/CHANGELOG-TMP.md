@@ -2,11 +2,15 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2278    23.03.2020  hbz-dev     Andreas Bug         Fehler beim massenweisen Entknüpfen von Teilnehmerverträgen behoben 
+
 2229    23.03.2020  hbz-dev     Andreas Bug         Auswahlliste des Lizenztyps bei Konsortien aufgehoben und auf LAS:eR Backoffice beschränkt
 
 2224    23.03.2020  hbz-dev     Andreas Bug         Umgang mit leerer Liste von Kindlizenzen korrigiert 
 
 1805    23.03.2020  hbz-dev     Andreas Bug         Falsche Erkennung des Locales im FinanceService behoben
+
+1488    23.03.2020  hbz-dev     Andreas Bug         Zugriffsstart und -ende wurden bei KBART-Vorbelegung nicht berücksichtigt
 
 2276    20.03.2020  hbz-dev     Andreas Feature     Verwaltungslizenzen dürfen nur vom LAS:eR Backoffice erstellt werden (provisorische Lösung)
 
