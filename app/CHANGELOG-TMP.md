@@ -12,6 +12,11 @@
 
 1488    23.03.2020  hbz-dev     Andreas Bug         Zugriffsstart und -ende wurden bei KBART-Vorbelegung nicht berücksichtigt
 
+2252    23.03.2020  hbz-dev     Christian   Feature Einbindung von OpenAthens in die Zugangskonfigurationen
+
+2245    23.03.2020  hbz-dev     Christian   Feature Kleinere Verbesserungen für Shibboleth Zugangskonfiguration
+
+
 2276    20.03.2020  hbz-dev     Andreas Feature     Verwaltungslizenzen dürfen nur vom LAS:eR Backoffice erstellt werden (provisorische Lösung)
 
 2271    19.03.2020  hbz-dev     David   Feature     API: Datumsangaben konvertieren
