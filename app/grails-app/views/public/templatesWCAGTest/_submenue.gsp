@@ -2,7 +2,7 @@
 
     <nav class="ui secondary pointing  stackable  menu la-clear-before" aria-label="Untermenü">
         <g:link controller="public" action="wcagTest" class="item active"> Übersicht</g:link>
-        <g:link controller="public" action="iwcagTest" class="item">Zeiter Menüpunkt (läd andere Seite, gleiches Untermenü erscheint wieder)</g:link>
+        <g:link controller="public" action="wcagTest" class="item">Zweiter Menüpunkt (läd andere Seite, gleiches Untermenü erscheint wieder)</g:link>
     </nav>
     <section aria-label="Übersicht" role="Tabpanel">
 

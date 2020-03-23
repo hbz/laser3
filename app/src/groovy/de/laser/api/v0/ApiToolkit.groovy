@@ -4,8 +4,11 @@ package de.laser.api.v0
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgSettings
 import de.laser.helper.Constants
+import de.laser.helper.DateUtil
 import groovy.util.logging.Log4j
 import org.apache.commons.lang.RandomStringUtils
+
+import java.text.SimpleDateFormat
 
 @Log4j
 class ApiToolkit {
@@ -103,6 +106,15 @@ class ApiToolkit {
         }
 
         result
+    }
+
+    static String formatInternalDate(Date date) {
+        if (! date) {
+            return null
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss") // DateUtil.getSDF_NoZ()
+        sdf.format(date)
     }
 
     static Object parseTimeLimitedQuery(String query, String value) {
