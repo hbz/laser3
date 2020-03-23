@@ -53,7 +53,7 @@
         <g:link class="ui button negative js-open-confirm-modal"
                 data-confirm-tokenMsg="${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm', args: args.memberType)}"
                 data-confirm-term-how="ok" action="processUnLinkLicenseMembers" id="${params.id}"
-                params="[filterPropDef: filterPropDef]">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</g:link>
+                params="[unlinkAll:true]">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</g:link>
 
     </div>
 
