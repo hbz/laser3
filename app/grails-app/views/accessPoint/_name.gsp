@@ -1,5 +1,5 @@
-<div required="" class="field required">
-    <label>${message(code: 'accessPoint.name')}</label>
+<div class="field required">
+    <label>${message(code: 'accessPoint.' + accessMethod.value + '.name.label')}</label>
     <div class="ui form">
         <div class="grouped fields">
             <g:each status="i" in="${nameOptions}" var="nameOption" >
