@@ -212,7 +212,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
                     descr:              category,
                     type:               type,
                     refdataCategory:    rdc,
-                    multipleOccurrence: multiple,
+                    multipleOccurrence: (category == PropertyDefinition.SUR_PROP) ? false : multiple,
                     mandatory:          mandatory,
                     isUsedForLogic:     logic,
                     tenant:             tenant

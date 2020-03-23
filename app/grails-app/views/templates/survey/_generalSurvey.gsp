@@ -1,5 +1,91 @@
 <%@ page import="de.laser.helper.RDStore" %>
 <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+    <div class="ui stackable grid">
+        <div class="twelve wide column">
+
+            <div class="ui horizontal segments">
+                <div class="ui segment left aligned">
+                    <b>${message(code: 'surveyConfig.orgs.label')}:</b>
+                    <g:link controller="survey" action="surveyParticipants"
+                            id="${surveyConfig.surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig?.id]">
+                        <div class="ui circular label">${surveyConfig?.orgs?.size()}</div>
+                    </g:link>
+                </div>
+            </div>
+
+
+            <div class="ui card ">
+                <div class="content">
+                    <dl>
+                        <dt class="control-label">
+                            <div class="ui icon la-popup-tooltip la-delay"
+                                 data-content="${message(code: "surveyConfig.internalComment.comment")}">
+                                ${message(code: 'surveyConfig.internalComment.label')}
+                                <i class="question small circular inverted icon"></i>
+                            </div>
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
+
+                    </dl>
+
+                    <br>
+
+                    <div class="ui form">
+                        <g:form action="setSurveyConfigComment" controller="survey" method="post"
+                                params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]">
+                            <div class="field">
+                                <label><div class="ui icon la-popup-tooltip la-delay"
+                                            data-content="${message(code: "surveyConfig.comment.comment")}">
+                                    ${message(code: 'surveyConfig.comment.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div></label>
+                                <textarea name="comment" rows="15">${surveyConfig?.comment}</textarea>
+                            </div>
+
+                            <div class="left aligned">
+                                <button type="submit"
+                                        class="ui button">${message(code: 'default.button.save_changes')}</button>
+                            </div>
+                        </g:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <aside class="four wide column la-sidekick">
+            <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+
+                <g:render template="/templates/tasks/card"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+
+
+                <div id="container-notes">
+                    <g:render template="/templates/notes/card"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')]}"/>
+                </div>
+
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+
+                    <g:render template="/templates/tasks/modal_create"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+
+                </g:if>
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                    <g:render template="/templates/notes/modal_create"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+                </g:if>
+            </g:if>
+
+            <div id="container-documents">
+                <g:render template="/survey/cardDocuments"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+            </div>
+        </aside><!-- .four -->
+
+    </div><!-- .grid -->
+
     <g:set var="surveyProperties" value="${surveyConfig.surveyProperties}"/>
 
     <semui:form>
@@ -133,7 +219,7 @@
                 </th>
             </tr>
             </thead>
-            <g:each in="${surveyResults.sort{it.type.getI10n('name')}}" var="surveyResult" status="i">
+            <g:each in="${surveyResults.sort { it.type.getI10n('name') }}" var="surveyResult" status="i">
 
                 <tr>
                     <td class="center aligned">

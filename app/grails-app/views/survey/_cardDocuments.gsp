@@ -5,7 +5,7 @@
     List<DocContext> baseItems = []
     List<DocContext> sharedItems = []
 
-    ownobj.documents.sort{it.owner?.title}.each{ it ->
+    ownobj.documents?.sort{it.owner?.title}.each{ it ->
         if (it.sharedFrom) {
             sharedItems << it
         }
@@ -15,8 +15,11 @@
     }
     boolean editable2 = accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY", "INST_EDITOR")
 
-    baseItems = baseItems + ownobj?.subscription?.documents?.findAll {it.doctype == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Usage Statistics", de.laser.helper.RDConstants.DOCUMENT_TYPE)}.sort{it.owner?.title}
 
+    if(ownobj.subscription) {
+        baseItems = baseItems + ownobj?.subscription?.documents?.findAll { it.doctype == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Usage Statistics", de.laser.helper.RDConstants.DOCUMENT_TYPE) }.sort { it.owner?.title }
+
+    }
 %>
 
 <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER,ORG_CONSORTIUM")}">

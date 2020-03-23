@@ -59,20 +59,7 @@ databaseChangeLog = {
 		dropForeignKeyConstraint(baseTableName: "survey_result", baseTableSchemaName: "public", constraintName: "fk92ea04a27e23dd3a")
 	}
 
-
-	changeSet(author: "djebeniani (generated)", id: "1584706679823-8") {
-		addForeignKeyConstraint(baseColumnNames: "surconf_surprop_fk", baseTableName: "survey_config", baseTableSchemaName: "public", constraintName: "FK79DBBFC7619859BF", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "pd_id", referencedTableName: "property_definition", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
-	}
-
-	changeSet(author: "djebeniani (generated)", id: "1584706679823-9") {
-		addForeignKeyConstraint(baseColumnNames: "surconpro_survey_property_fk", baseTableName: "survey_config_properties", baseTableSchemaName: "public", constraintName: "FKEE6A50AB53565BD1", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "pd_id", referencedTableName: "property_definition", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
-	}
-
-	changeSet(author: "djebeniani (generated)", id: "1584706679823-10") {
-		addForeignKeyConstraint(baseColumnNames: "surre_type_fk", baseTableName: "survey_result", baseTableSchemaName: "public", constraintName: "FK92EA04A22EB24F71", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "pd_id", referencedTableName: "property_definition", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
-	}
-
-	changeSet(author: "djebeniani (modified)", id: "1584706679823-11") {
+	changeSet(author: "djebeniani (modified)", id: "1584706679823-8") {
 		grailsChange {
 			change {
 				sql.execute("""INSERT INTO property_definition (pd_description, pd_name, pd_name_de, pd_name_en, pd_rdc, pd_tenant_fk, pd_type, pd_explanation_de, pd_explanation_en, version, pd_hard_data, pd_mandatory, pd_multiple_occurrence, pd_used_for_logic)
@@ -100,7 +87,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "djebeniani (modified)", id: "1584706679823-12") {
+	changeSet(author: "djebeniani (modified)", id: "1584706679823-9") {
 		grailsChange {
 			change {
 				sql.execute("""UPDATE survey_config_properties SET surconpro_survey_property_fk = property_definition.pd_id FROM property_definition WHERE pd_name = (SELECT surpro_name FROM survey_property WHERE surpro_id = surconpro_survey_property_fk);""")
@@ -110,7 +97,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "djebeniani (modified)", id: "1584706679823-13") {
+	changeSet(author: "djebeniani (modified)", id: "1584706679823-10") {
 		grailsChange {
 			change {
 				sql.execute("""UPDATE survey_config SET surconf_surprop_fk = property_definition.pd_id FROM property_definition WHERE pd_name = (SELECT surpro_name FROM survey_property WHERE surpro_id = surconf_surprop_fk);""")
@@ -120,7 +107,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "djebeniani (modified)", id: "1584706679823-14") {
+	changeSet(author: "djebeniani (modified)", id: "1584706679823-11") {
 		grailsChange {
 			change {
 				sql.execute("""UPDATE survey_result SET surre_type_fk = property_definition.pd_id FROM property_definition WHERE pd_name = (SELECT surpro_name FROM survey_property WHERE surpro_id = surre_type_fk);""")
@@ -128,6 +115,18 @@ databaseChangeLog = {
 			rollback {
 			}
 		}
+	}
+
+	changeSet(author: "djebeniani (generated)", id: "1584706679823-12") {
+		addForeignKeyConstraint(baseColumnNames: "surconf_surprop_fk", baseTableName: "survey_config", baseTableSchemaName: "public", constraintName: "FK79DBBFC7619859BF", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "pd_id", referencedTableName: "property_definition", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
+	}
+
+	changeSet(author: "djebeniani (generated)", id: "1584706679823-13") {
+		addForeignKeyConstraint(baseColumnNames: "surconpro_survey_property_fk", baseTableName: "survey_config_properties", baseTableSchemaName: "public", constraintName: "FKEE6A50AB53565BD1", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "pd_id", referencedTableName: "property_definition", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
+	}
+
+	changeSet(author: "djebeniani (generated)", id: "1584706679823-14") {
+		addForeignKeyConstraint(baseColumnNames: "surre_type_fk", baseTableName: "survey_result", baseTableSchemaName: "public", constraintName: "FK92EA04A22EB24F71", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "pd_id", referencedTableName: "property_definition", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
 
 

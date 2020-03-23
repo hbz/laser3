@@ -1511,29 +1511,6 @@ class AdminController extends AbstractDebugController {
             ]
     }
 
-  @Secured(['ROLE_ADMIN'])
-  def manageSurveyPropertyDefinitions() {
-
-
-    def propDefs = []
-      PropertyDefinition.getAllByDescr(PropertyDefinition.SUR_PROP).each { it ->
-      propDefs << it
-
-    }
-
-  def subscriptionPropDefs = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.SUB_PROP, null, [sort: 'name']) // NO private properties!
-
-    subscriptionPropDefs.sort { a, b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name') }
-
-    propDefs.sort { a, b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name') }
-
-    render view: 'manageSurveyPropertyDefinitions', model: [
-            editable    : true,
-            surveyPropertyDefinitions: propDefs,
-            subscriptionPropDefs: subscriptionPropDefs
-    ]
-  }
-
     @Secured(['ROLE_ADMIN'])
     def addSurveyProperty() {
 
