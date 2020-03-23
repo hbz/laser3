@@ -439,9 +439,11 @@
                                     }
                                     usedRDV?.unique().sort(it?.getI10n('value'))
                                     int genConPrsNdx = usedRDV.indexOf(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
-                                    RefdataValue genConPrs = usedRDV.get(genConPrsNdx)
-                                    usedRDV.remove(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
-                                    usedRDV.add(0, genConPrs)
+                                    if (genConPrsNdx != -1){
+                                        RefdataValue genConPrs = usedRDV.get(genConPrsNdx)
+                                        usedRDV.remove(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
+                                        usedRDV.add(0, genConPrs)
+                                    }
                                 %>
                                 <g:each in="${usedRDV}" var="rdv">
                                     <h3>${rdv.getI10n('value')}</h3>
