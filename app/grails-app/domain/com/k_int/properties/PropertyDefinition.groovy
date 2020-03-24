@@ -490,14 +490,14 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     }
 
     static List<PropertyDefinition> findAllPublicAndPrivateOrgProp(Org contextOrg){
-        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant)", [
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
                         defList: [PropertyDefinition.ORG_PROP],
                         tenant: contextOrg
                     ])
     }
 
     static List<PropertyDefinition> findAllPublicAndPrivateProp(List propertyDefinitionList, Org contextOrg){
-        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant)", [
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
                         defList: propertyDefinitionList,
                         tenant: contextOrg
                     ])

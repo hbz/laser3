@@ -34,9 +34,10 @@ class DocWidgetController extends AbstractDebugController {
 
 
                 log.debug("Setting new context type to ${params.ownertp}..");
-                Doc doc_context = new DocContext("${params.ownertp}": instance,
+                DocContext doc_context = new DocContext("${params.ownertp}": instance,
                         owner: doc_content,
-                        doctype: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE)).save(flush: true)
+                        doctype: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE))
+                doc_context.save()
             } else {
                 log.debug("no instance");
             }
