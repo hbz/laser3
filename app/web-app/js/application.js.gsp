@@ -562,7 +562,9 @@ r2d2 = {
         // confirmation modal
         var buildConfirmationModal =
             function(that){
-
+                var $body = $('body');
+                var $modal = $('#js-modal');
+                var focusableElementsString = "a[href], area[href], input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]";
                 var ajaxUrl = that.getAttribute("data-confirm-messageUrl")
                 if (ajaxUrl) {
                     $.ajax({
@@ -612,7 +614,6 @@ r2d2 = {
                 $('.tiny.modal')
                     .modal({
                         closable  : false,
-                        //lastFocus: document.activeElement,
                         onApprove : function() {
                             // open confirmation modal from inside a form
                             if (dataAttr){
@@ -625,15 +626,52 @@ r2d2 = {
                             if (remoteLink) {
                                 bb8.ajax(that)
                             }
-                            $('#js-confirmation-content-term').html('')
+                            $('#js-confirmation-content-term').html('');
                         },
                         onDeny : function() {
                             $('#js-confirmation-content-term').html('')
                         },
                         onShow : function() {
-                            //console.log(lastFocus);
-                            //$(this).focusin();
-                           // $(this).find('.ui.deny.button').attr('tabIndex','-1');
+                            $modal.removeAttr('aria-hidden');
+                            // is needed to hide the rest of the page from Screenreaders in case of open the modal
+                            if ($('#js-modal-page').length === 0) { // just to avoid missing #js-modal-page
+                                $body.wrapInner('<div id="js-modal-page"></div>');
+                            }
+                            $page = $('#js-modal-page');
+                            $page.attr('aria-hidden', 'true');
+                            $body.on("keydown", "#js-modal", function(event) {
+                                var $this = $(this);
+                                if (event.keyCode == 9) { // tab or Strg tab
+
+                                    // get list of all children elements in given object
+                                    var children = $this.find('*');
+
+                                    // get list of focusable items
+                                    var focusableItems = children.filter(focusableElementsString).filter(':visible');
+
+                                    // get currently focused item
+                                    var focusedItem = $(document.activeElement);
+
+                                    // get the number of focusable items
+                                    var numberOfFocusableItems = focusableItems.length;
+
+                                    var focusedItemIndex = focusableItems.index(focusedItem);
+
+                                    if (!event.shiftKey && (focusedItemIndex == numberOfFocusableItems - 1)) {
+                                        focusableItems.get(0).focus();
+                                        event.preventDefault();
+                                    }
+                                    if (event.shiftKey && focusedItemIndex == 0) {
+                                        focusableItems.get(numberOfFocusableItems - 1).focus();
+                                        event.preventDefault();
+                                    }
+                                }
+
+                            })
+                        },
+                        onHidden : function() {
+                            $page.removeAttr('aria-hidden');
+                            $modal.attr('aria-hidden', 'true');
                         }
                     })
                     .modal('show')
