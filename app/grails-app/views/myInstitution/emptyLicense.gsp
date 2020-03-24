@@ -58,7 +58,7 @@
                               value="${['':'']}"/>
             </div>
 
-            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+            <%-- <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <div class="field">
                     <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
@@ -69,7 +69,7 @@
                     </select>
 
                 </div>
-            </g:if>
+            </g:if> --%>
 
 
             <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>

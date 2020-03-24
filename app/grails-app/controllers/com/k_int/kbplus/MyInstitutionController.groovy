@@ -1476,7 +1476,12 @@ join sub.orgRelations or_sub where
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.getOrg()
 
-        params.asOrgType = params.asOrgType ? [params.asOrgType] : [RDStore.OT_INSTITUTION.id.toString()]
+        Set<RefdataValue> defaultOrgRoleType = []
+        if(accessService.checkPerm("ORG_CONSORTIUM"))
+            defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
+        else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
+
+        params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
 
 
         if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
