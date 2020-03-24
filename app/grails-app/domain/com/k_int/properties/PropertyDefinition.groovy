@@ -46,6 +46,8 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     final static String PLA_PROP    = 'Platform Property'
     @Transient
     final static String SUB_PROP    = 'Subscription Property'
+    @Transient
+    final static String SUR_PROP    = 'Survey Property'
 
     @Transient
     final static String ORG_CONF    = 'Organisation Config'
@@ -58,14 +60,16 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
             ORG_CONF,
             SUB_PROP,
             //SYS_CONF,
-            ORG_PROP
+            ORG_PROP,
+            SUR_PROP
     ]
     @Transient
     final static String[] AVAILABLE_PRIVATE_DESCR = [
             LIC_PROP,
             SUB_PROP,
             ORG_PROP,
-            PRS_PROP
+            PRS_PROP,
+            SUR_PROP
     ]
 
     @Transient
@@ -203,12 +207,14 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         if (! pd) {
             static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}) @ ${tenant}")
 
+            boolean multipleOccurrence = (category == PropertyDefinition.SUR_PROP) ? false : multiple
+
             pd = new PropertyDefinition(
                     name:               token,
                     descr:              category,
                     type:               type,
                     refdataCategory:    rdc,
-                    multipleOccurrence: multiple,
+                    multipleOccurrence: multipleOccurrence,
                     mandatory:          mandatory,
                     isUsedForLogic:     logic,
                     tenant:             tenant

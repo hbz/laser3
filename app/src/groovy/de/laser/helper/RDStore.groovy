@@ -1,7 +1,7 @@
 package de.laser.helper
 
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.SurveyProperty
+import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //@CompileStatic
@@ -64,6 +64,7 @@ class RDStore {
 
     static final COST_ITEM_ACTUAL           = getRefdataValue('Actual', RDConstants.COST_ITEM_STATUS)
     static final COST_ITEM_DELETED          = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
+    static final COST_ITEM_ELEMENT_CONSORTIAL_PRICE          = getRefdataValue('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
 
     static final CURRENCY_EUR               = getRefdataValue('EUR', RDConstants.CURRENCY)
 
@@ -187,7 +188,10 @@ class RDStore {
 
     //Properties
 
-    static final SURVEY_PARTICIPATION_PROPERTY = getSurveyProperty('Participation')
+    static final SURVEY_PROPERTY_PARTICIPATION = getSurveyProperty('Participation')
+    static final SURVEY_PROPERTY_MULTI_YEAR_3 = getSurveyProperty('Multi-year term 3 years')
+    static final SURVEY_PROPERTY_MULTI_YEAR_2 = getSurveyProperty('Multi-year term 2 years')
+
 
     static RefdataValue getRefdataValue(String value, String category) {
         RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
@@ -198,7 +202,14 @@ class RDStore {
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( result)
     }
 
-    static SurveyProperty getSurveyProperty(String name) {
-        (SurveyProperty) GrailsHibernateUtil.unwrapIfProxy( SurveyProperty.getByName(name))
+    static PropertyDefinition getSurveyProperty(String name) {
+        PropertyDefinition result = PropertyDefinition.getByNameAndDescrAndTenant(name, PropertyDefinition.SUR_PROP, null)
+
+
+        if (! result) {
+            println "WARNING: No PropertyDefinition found by RDStore for name:'${name}', descr:'${PropertyDefinition.SUR_PROP}'"
+        }
+
+        (PropertyDefinition) GrailsHibernateUtil.unwrapIfProxy(result)
     }
 }

@@ -104,30 +104,32 @@
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config="${RDConstants.SUBSCRIPTION_STATUS}" constraint="removeValue_deleted" /></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
                             </dl>
-                            <dl>
-                                <dt class="control-label">${message(code: 'subscription.type.label')}</dt>
-                                <dd>
-                                    %{--
-                                    <%
-                                        //does not work for some reason, proceed to IDs
-                                        Set<Long> subscriberIDs = []
-                                        subscriptionInstance.getAllSubscribers().each { subscriber ->
-                                            subscriberIDs << subscriber.id
-                                        }
-                                    %>
-                                    <g:if test="${subscriptionInstance.administrative || subscriberIDs.contains(contextOrg?.id)}">
+                            <sec:ifAnyGranted roles="ROLE_YODA">
+                                <dl>
+                                    <dt class="control-label">${message(code: 'subscription.type.label')}</dt>
+                                    <dd>
+                                        %{--
+                                        <%
+                                            //does not work for some reason, proceed to IDs
+                                            Set<Long> subscriberIDs = []
+                                            subscriptionInstance.getAllSubscribers().each { subscriber ->
+                                                subscriberIDs << subscriber.id
+                                            }
+                                        %>
+                                        <g:if test="${subscriptionInstance.administrative || subscriberIDs.contains(contextOrg?.id)}">
+                                            ${subscriptionInstance.type?.getI10n('value')}
+                                        </g:if>
+                                        <g:else>
+                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="type"
+                                                                    config="${RDConstants.SUBSCRIPTION_TYPE}"
+                                                                    constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
+                                            />
+                                        </g:else>--}%
                                         ${subscriptionInstance.type?.getI10n('value')}
-                                    </g:if>
-                                    <g:else>
-                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="type"
-                                                                config="${RDConstants.SUBSCRIPTION_TYPE}"
-                                                                constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
-                                        />
-                                    </g:else>--}%
-                                    ${subscriptionInstance.type?.getI10n('value')}
-                                </dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
-                            </dl>
+                                    </dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
+                                </dl>
+                            </sec:ifAnyGranted>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="kind" config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>

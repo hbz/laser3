@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -65,10 +65,8 @@
                     <th class="left aligned"></th>
                 </g:if>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                <th>${message(code: 'surveyProperty.name')}
-                </th>
+                <th>${message(code: 'surveyProperty.name')}</th>
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
-                <th>${message(code: 'surveyProperty.comment.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
@@ -91,14 +89,14 @@
                     </td>
                     <td>
                         ${property?.getI10n('name')}
-                        <g:if test="${property?.owner?.id == institution?.id}">
+                        <g:if test="${property?.tenant.id == institution.id}">
                             <i class='shield alternate icon'></i>
                         </g:if>
                     </td>
 
                     <td>
 
-                        <g:if test="${property?.owner == institution}">
+                        <g:if test="${property?.tenant.id == institution.id}">
                             <semui:xEditable owner="${property}" field="expl" type="textarea"/>
                         </g:if>
                         <g:else>
@@ -107,19 +105,10 @@
 
                     </td>
                     <td>
-                        <g:if test="${property?.owner == institution}">
-                            <semui:xEditable owner="${property}" field="comment" type="textarea"/>
-                        </g:if>
-                        <g:else>
-                            ${property?.comment}
-                        </g:else>
-                    </td>
-                    <td>
-                        ${property?.getLocalizedType()}
-
+                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(property.type)}
                     </td>
                     <td class="x">
-                        <g:if test="${property.countUsages()==0 && property?.owner?.id == institution?.id }">
+                        <g:if test="${property.countUsages()==0 && property?.tenant?.id == institution?.id }">
                             <g:link action="deleteSurveyProperty" id="${params.id}" params="[deleteId: property?.id]" class="ui icon negative button">
                                 <i class="trash alternate icon"></i>
                             </g:link>
@@ -176,11 +165,6 @@
                 <div class="field six wide">
                     <label class="property-label">${message(code: 'surveyProperty.introduction.label')}</label>
                     <textarea name="introduction" class="ui textarea"></textarea>
-                </div>
-
-                <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.comment.label')}</label>
-                    <textarea name="comment" class="ui textarea"></textarea>
                 </div>
 
             </div>
