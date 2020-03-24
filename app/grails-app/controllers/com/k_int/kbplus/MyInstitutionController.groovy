@@ -2739,6 +2739,7 @@ AND EXISTS (
     def surveyInfos() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
+        result.contextOrg = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
@@ -2749,6 +2750,7 @@ AND EXISTS (
         }
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
+        result.surveyConfig = result.surveyInfo.surveyConfigs[0]
 
         def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
@@ -2935,15 +2937,24 @@ AND EXISTS (
             }
         }
         else{
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, surveyInfo.surveyConfigs)
 
             boolean allResultHaveValue = true
             //Verbindlich??|
-            if(SurveyInfo.get(params.id).isMandatory) {
-                surveyResults.each { surre ->
-                    SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
-                    if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
-                        allResultHaveValue = false
+            if(surveyInfo.isMandatory) {
+
+                boolean noParticipation = false
+                if(surveyInfo.surveyConfigs.size() == 1 && surveyInfo.surveyConfigs[0].subSurveyUseForTransfer){
+                    noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyInfo.surveyConfig[0], RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+                }
+
+                if(!noParticipation) {
+                    surveyResults.each { surre ->
+                        SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
+
+                        if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
+                            allResultHaveValue = false
+                    }
                 }
             }
             if (allResultHaveValue) {

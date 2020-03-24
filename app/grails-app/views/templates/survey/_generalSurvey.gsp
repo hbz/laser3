@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.RDStore" %>
-<g:if test="${controllerName == 'survey' && actionName == 'show'}">
-    <div class="ui stackable grid">
-        <div class="twelve wide column">
+<div class="ui stackable grid">
+    <div class="twelve wide column">
+        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
 
             <div class="ui horizontal segments">
                 <div class="ui segment left aligned">
@@ -13,10 +13,11 @@
                     </g:link>
                 </div>
             </div>
+        </g:if>
 
-
-            <div class="ui card ">
-                <div class="content">
+        <div class="ui card ">
+            <div class="content">
+                <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id}">
                     <dl>
                         <dt class="control-label">
                             <div class="ui icon la-popup-tooltip la-delay"
@@ -26,6 +27,19 @@
                             </div>
                         </dt>
                         <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
+
+                    </dl>
+
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.url.label')}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"/>
+                        <g:if test="${surveyConfig.url}">
+                            <semui:linkIcon href="${surveyConfig.url}"/>
+                        </g:if>
+                            <br/>&nbsp<br/>&nbsp<br/>
+                        </dd>
 
                     </dl>
 
@@ -49,43 +63,74 @@
                             </div>
                         </g:form>
                     </div>
-                </div>
+
+                </g:if>
+                <g:else>
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.url.label')}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"
+                                             overwriteEditable="${false}"/>
+                        <g:if test="${surveyConfig.url}">
+                            <semui:linkIcon href="${surveyConfig.url}"/>
+                        </g:if>
+                            <br/>&nbsp<br/>&nbsp<br/>
+                        </dd>
+
+                    </dl>
+
+                    <div class="ui form">
+                        <div class="field">
+                            <label>
+                                <g:message code="surveyConfigsInfo.comment"/>
+                            </label>
+                            <g:if test="${surveyConfig?.comment}">
+                                <textarea readonly="readonly" rows="15">${surveyConfig?.comment}</textarea>
+                            </g:if>
+                            <g:else>
+                                <g:message code="surveyConfigsInfo.comment.noComment"/>
+                            </g:else>
+                        </div>
+                    </div>
+                </g:else>
             </div>
         </div>
+    </div>
+
+    <aside class="four wide column la-sidekick">
+        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+
+            <g:render template="/templates/tasks/card"
+                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
 
 
-        <aside class="four wide column la-sidekick">
-            <g:if test="${controllerName == 'survey' && actionName == 'show'}">
-
-                <g:render template="/templates/tasks/card"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
-
-
-                <div id="container-notes">
-                    <g:render template="/templates/notes/card"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')]}"/>
-                </div>
-
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
-
-                    <g:render template="/templates/tasks/modal_create"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-
-                </g:if>
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
-                    <g:render template="/templates/notes/modal_create"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-                </g:if>
-            </g:if>
-
-            <div id="container-documents">
-                <g:render template="/survey/cardDocuments"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+            <div id="container-notes">
+                <g:render template="/templates/notes/card"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')]}"/>
             </div>
-        </aside><!-- .four -->
 
-    </div><!-- .grid -->
+            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
 
+                <g:render template="/templates/tasks/modal_create"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+
+            </g:if>
+            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                <g:render template="/templates/notes/modal_create"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+            </g:if>
+        </g:if>
+
+        <div id="container-documents">
+            <g:render template="/survey/cardDocuments"
+                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+        </div>
+    </aside><!-- .four -->
+
+</div><!-- .grid -->
+
+<g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id}">
     <g:set var="surveyProperties" value="${surveyConfig.surveyProperties}"/>
 
     <semui:form>
@@ -237,7 +282,7 @@
 
                     </td>
                     <td>
-                        ${PropertyDefinition.getLocalizedValue(surveyResult?.type.type)}
+                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyResult?.type.type)}
                         <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult?.type.refdataCategory)}"

@@ -30,8 +30,7 @@
 
 <g:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
-    <g:form action="currentSurveysConsortia" controller="survey" method="post" class="ui small form"
-            params="[tab: params.tab]">
+    <g:form action="currentSurveysConsortia" controller="survey" method="post" class="ui small form">
         <div class="three fields">
             <div class="field">
                 <label for="name">${message(code: 'surveyInfo.name.label')}

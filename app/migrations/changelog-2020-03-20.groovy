@@ -129,5 +129,11 @@ databaseChangeLog = {
 		addForeignKeyConstraint(baseColumnNames: "surre_type_fk", baseTableName: "survey_result", baseTableSchemaName: "public", constraintName: "FK92EA04A22EB24F71", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "pd_id", referencedTableName: "property_definition", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
 
+	changeSet(author: "djebeniani (generated)", id: "1584706679823-15") {
+		addColumn(schemaName: "public", tableName: "survey_config") {
+			column(name: "surconf_url", type: "varchar(512)")
+		}
+	}
+
 
 }

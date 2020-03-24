@@ -39,6 +39,7 @@ class SurveyConfig {
     String header
     String comment
     String internalComment
+    String url
 
     Date dateCreated
     Date lastUpdated
@@ -72,10 +73,12 @@ class SurveyConfig {
         scheduledStartDate (nullable: true, blank: false)
         scheduledEndDate (nullable: true, blank: false)
         internalComment(nullable: true, blank: false)
+        url(nullable: true, blank: false, maxSize:512)
         evaluationFinish (nullable: true, blank: false)
         subSurveyUseForTransfer (nullable: true, blank: false)
         surResults(nullable: true, blank: false)
         transferWorkflow (nullable: true, blank: false)
+
     }
 
     static mapping = {
@@ -86,6 +89,7 @@ class SurveyConfig {
         header column: 'surconf_header'
         comment column: 'surconf_comment', type: 'text'
         internalComment column: 'surconf_internal_comment', type: 'text'
+        url column: 'surconf_url'
         pickAndChoose column: 'surconf_pickandchoose'
         configFinish column: 'surconf_config_finish'
         costItemsFinish column: 'surconf_costitems_finish'
@@ -138,7 +142,7 @@ class SurveyConfig {
         if (type == 'Subscription') {
             return subscription?.name
         } else {
-            return surveyProperty?.getI10n('name')
+            return surveyInfo?.name
         }
     }
 
@@ -163,7 +167,7 @@ class SurveyConfig {
                     (subscription?.startDate ? ')' : '')
 
         } else {
-            return surveyProperty?.getI10n('name')
+            return surveyInfo?.name
         }
     }
 

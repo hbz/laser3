@@ -45,20 +45,10 @@ class SurveyOrg {
         Subscription sub = surveyConfig.subscription
         if (sub) {
             def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
-            PropertyDefinition property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
 
             if (subChild?.isCurrentMultiYearSubscriptionNew()) {
                 existsMultiYearTerm = true
                 return existsMultiYearTerm
-            }
-
-            if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
-                if (subChild?.customProperties?.find {
-                    it?.type?.id == property?.id
-                }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
-                    existsMultiYearTerm = true
-                    return existsMultiYearTerm
-                }
             }
         }
         return existsMultiYearTerm
