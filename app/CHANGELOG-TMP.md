@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2286    24.03.2020  hbz-dev     Andreas Bug         Summenwerte auf BigDecimal umgestellt, sodass nur zwei Nachkommastellen ausgegeben werden
+
 2284    24.03.2020  hbz-dev     Andreas Feature     Checkbox-Angebot bei Lizenzfilter gemäß Ticket angepasst
 
 2261    24.03.2020  hbz-dev     Andreas Feature     Mouseover-Text bei Identifikatoren gemäß Ticket angepasst

@@ -27,6 +27,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.awt.*
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -188,8 +189,8 @@ class FinanceController extends AbstractDebugController {
                                         String cellValueA = ""
                                         String cellValueB = ""
                                         orgRoles.each { or ->
-                                            cellValueA += or.sortname.replace(',',':')
-                                            cellValueB += or.name.replace(',','')
+                                            cellValueA += or.sortname
+                                            cellValueB += or.name
                                         }
                                         cellnum++
                                         row.add(cellValueA)
@@ -201,7 +202,7 @@ class FinanceController extends AbstractDebugController {
                                 }
                                 //cost title
                                 cellnum++
-                                row.add(ci.costTitle ? ci.costTitle.replaceAll(',','') : '')
+                                row.add(ci.costTitle ?: '')
                                 if(viewMode == "cons") {
                                     //provider
                                     cellnum++
@@ -209,7 +210,7 @@ class FinanceController extends AbstractDebugController {
                                         Set<Org> orgRoles = providers.get(ci.sub)
                                         String cellValue = ""
                                         orgRoles.each { or ->
-                                            cellValue += or.name.replace(',','')
+                                            cellValue += or.name
                                         }
                                         row.add(cellValue)
                                     }
@@ -217,7 +218,7 @@ class FinanceController extends AbstractDebugController {
                                 }
                                 //subscription
                                 cellnum++
-                                row.add(ci.sub ? ci.sub.name.replaceAll(',','') : "")
+                                row.add(ci.sub ? ci.sub.name : "")
                                 //dates from-to
                                 if(ci.sub) {
                                     cellnum++
@@ -335,12 +336,14 @@ class FinanceController extends AbstractDebugController {
                                 for(h;h < sumcell;h++) {
                                     sumRow.add(" ")
                                 }
-                                sumRow.add(financialData[viewMode].sums.localSums.localSum)
+                                BigDecimal localSum = BigDecimal.valueOf(financialData[viewMode].sums.localSums.localSum)
+                                sumRow.add(localSum.setScale(2,RoundingMode.HALF_UP))
                             }
                             for(h;h < sumcellAfterTax;h++) {
                                 sumRow.add(" ")
                             }
-                            sumRow.add(financialData[viewMode].sums.localSums.localSumAfterTax)
+                            BigDecimal localSumAfterTax = BigDecimal.valueOf(financialData[viewMode].sums.localSums.localSumAfterTax)
+                            sumRow.add(localSumAfterTax.setScale(2,RoundingMode.HALF_UP))
                             rowData.add(sumRow)
                             rowData.add([])
                             financialData[viewMode].sums.billingSums.each { entry ->
@@ -354,15 +357,17 @@ class FinanceController extends AbstractDebugController {
                                     for(i;i < sumCurrencyCell;i++) {
                                         sumRow.add(" ")
                                     }
-                                    sumRow.add(entry.billingSum)
+                                    BigDecimal billingSum = BigDecimal.valueOf(entry.billingSum)
+                                    sumRow.add(billingSum.setScale(2,RoundingMode.HALF_UP))
                                 }
                                 for(i;i < sumCurrencyAfterTaxCell;i++) {
                                     sumRow.add(" ")
                                 }
-                                sumRow.add(entry.billingSumAfterTax)
+                                BigDecimal billingSumAfterTax = BigDecimal.valueOf(entry.billingSumAfterTax)
+                                sumRow.add(billingSumAfterTax.setScale(2,RoundingMode.HALF_UP))
                                 rowData.add(sumRow)
                             }
-                            writer.write(exportService.generateSeparatorTableString(titles,rowData,','))
+                            writer.write(exportService.generateSeparatorTableString(titles,rowData,';'))
                         }
                         else {
                             writer.write(message(code:'finance.export.empty'))
@@ -659,10 +664,12 @@ class FinanceController extends AbstractDebugController {
                 cell.setCellValue(message(code:'financials.export.sums'))
                 if(sumcell > 0) {
                     cell = sumRow.createCell(sumcell)
-                    cell.setCellValue(cit.getValue().sums.localSums.localSum)
+                    BigDecimal localSum = BigDecimal.valueOf(cit.getValue().sums.localSums.localSum)
+                    cell.setCellValue(localSum.setScale(2, RoundingMode.HALF_UP))
                 }
                 cell = sumRow.createCell(sumcellAfterTax)
-                cell.setCellValue(cit.getValue().sums.localSums.localSumAfterTax)
+                BigDecimal localSumAfterTax = BigDecimal.valueOf(cit.getValue().sums.localSums.localSumAfterTax)
+                cell.setCellValue(localSumAfterTax.setScale(2, RoundingMode.HALF_UP))
                 rownum++
                 cit.getValue().sums.billingSums.each { entry ->
                     sumRow = sheet.createRow(rownum)
@@ -670,10 +677,12 @@ class FinanceController extends AbstractDebugController {
                     cell.setCellValue(entry.currency)
                     if(sumCurrencyCell > 0) {
                         cell = sumRow.createCell(sumCurrencyCell)
-                        cell.setCellValue(entry.billingSum)
+                        BigDecimal billingSum = BigDecimal.valueOf(entry.billingSum)
+                        cell.setCellValue(billingSum.setScale(2, RoundingMode.HALF_UP))
                     }
                     cell = sumRow.createCell(sumCurrencyAfterTaxCell)
-                    cell.setCellValue(entry.billingSumAfterTax)
+                    BigDecimal billingSumAfterTax = BigDecimal.valueOf(entry.billingSumAfterTax)
+                    cell.setCellValue(billingSumAfterTax.setScale(2, RoundingMode.HALF_UP))
                     rownum++
                 }
             }
