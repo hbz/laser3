@@ -1448,9 +1448,10 @@ class AdminController extends AbstractDebugController {
                 break
         }
         render view: 'manageNamespaces', model: [
-            editable: true, // TODO check role and editable !!!
-            identifierNamespaceInstance: identifierNamespaceInstance,
-            identifierNamespaces: IdentifierNamespace.where{}.sort('ns')
+                editable: true, // TODO check role and editable !!!
+                identifierNamespaceInstance: identifierNamespaceInstance,
+                identifierNamespaces: IdentifierNamespace.where{}.sort('ns'),
+                currentLang: I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
         ]
     }
 

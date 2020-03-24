@@ -58,7 +58,7 @@
     <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
 
     <g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_DEV}">
-        <div class="ui green label big la-server-label">
+        <div class="ui green label big la-server-label" aria-label="Sie befinden sich im Developer-System">
             <span>DEV</span>
         </div>
     </g:if>
@@ -531,7 +531,7 @@
                 </sec:ifAnyGranted>
 
                 <div class="right menu la-right-menuPart">
-                    <div id="mainSearch" class="ui category search spotlight">
+                    <div role="search" id="mainSearch" class="ui category search spotlight">
                         <div class="ui icon input">
                             <input  aria-label="${message(code:'spotlight.search.placeholder')}" type="search" id="spotlightSearch" class="prompt" placeholder="${message(code:'spotlight.search.placeholder')}">
                             <i id="btn-search"  class="search icon"></i>

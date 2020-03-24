@@ -3,7 +3,9 @@
     <td>${id?.ns?.ns}</td>
     <td>
         ${id.value}
-        %{--<a href="<g:createLink url="" />" target="_blank"><i class="external alternate icon"></i></a>--}%
+        <g:if test="${id.getURL()}">
+            <a href="${id.getURL()}" target="_blank"><i class="external alternate icon"></i></a>
+        </g:if>
     </td>
     <td>${id.note}</td>
     <td>

@@ -148,17 +148,17 @@ class FinanceController extends AbstractDebugController {
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
             SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
             LinkedHashMap<Subscription,List<Org>> subscribers = [:]
-            LinkedHashMap<Subscription,List<Org>> providers = [:]
+            LinkedHashMap<Subscription,Set<Org>> providers = [:]
             LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
-            OrgRole.findAllByRoleType(RDStore.OR_SUBSCRIBER_CONS).each { it ->
+            OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
                 List<Org> orgs = subscribers.get(it.sub)
                 if(orgs == null)
                     orgs = [it.org]
                 else orgs.add(it.org)
                 subscribers.put(it.sub,orgs)
             }
-            OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).each { it ->
-                List<Org> orgs = providers.get(it.sub)
+            OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
+                Set<Org> orgs = providers.get(it.sub)
                 if(orgs == null)
                     orgs = [it.org]
                 else orgs.add(it.org)
@@ -206,7 +206,7 @@ class FinanceController extends AbstractDebugController {
                                     //provider
                                     cellnum++
                                     if(ci.sub) {
-                                        List<Org> orgRoles = providers.get(ci.sub)
+                                        Set<Org> orgRoles = providers.get(ci.sub)
                                         String cellValue = ""
                                         orgRoles.each { or ->
                                             cellValue += or.name.replace(',','')
@@ -386,17 +386,17 @@ class FinanceController extends AbstractDebugController {
         POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
         coreProps.setCreator(message(code:'laser'))
         LinkedHashMap<Subscription,List<Org>> subscribers = [:]
-        LinkedHashMap<Subscription,List<Org>> providers = [:]
+        LinkedHashMap<Subscription,Set<Org>> providers = [:]
         LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
-        OrgRole.findAllByRoleType(RDStore.OR_SUBSCRIBER_CONS).each { it ->
+        OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
             List<Org> orgs = subscribers.get(it.sub)
             if(orgs == null)
                 orgs = [it.org]
             else orgs.add(it.org)
             subscribers.put(it.sub,orgs)
         }
-        OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).each { it ->
-            List<Org> orgs = providers.get(it.sub)
+        OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
+            Set<Org> orgs = providers.get(it.sub)
             if(orgs == null)
                 orgs = [it.org]
             else orgs.add(it.org)
@@ -496,7 +496,7 @@ class FinanceController extends AbstractDebugController {
                         //provider
                         cell = row.createCell(cellnum++)
                         if(ci.sub) {
-                            List<Org> orgRoles = providers.get(ci.sub)
+                            Set<Org> orgRoles = providers.get(ci.sub)
                             String cellValue = ""
                             orgRoles.each { or ->
                                 cellValue += or.name

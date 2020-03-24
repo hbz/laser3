@@ -2,7 +2,33 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2278    23.03.2020  hbz-dev     Andreas Bug         Fehler beim massenweisen Entknüpfen von Teilnehmerverträgen behoben 
+
+2229    23.03.2020  hbz-dev     Andreas Bug         Auswahlliste des Lizenztyps bei Konsortien aufgehoben und auf LAS:eR Backoffice beschränkt
+
+2224    23.03.2020  hbz-dev     Andreas Bug         Umgang mit leerer Liste von Kindlizenzen korrigiert 
+
+1805    23.03.2020  hbz-dev     Andreas Bug         Falsche Erkennung des Locales im FinanceService behoben
+
+1488    23.03.2020  hbz-dev     Andreas Bug         Zugriffsstart und -ende wurden bei KBART-Vorbelegung nicht berücksichtigt
+
+2252    23.03.2020  hbz-dev     Christian   Feature Einbindung von OpenAthens in die Zugangskonfigurationen
+
+2245    23.03.2020  hbz-dev     Christian   Feature Kleinere Verbesserungen für Shibboleth Zugangskonfiguration
+
 --      20.03.2020  hbz-dev     Moe     Feature     Umbau von SurveyProperty zu PropertyDefinition
+
+2276    20.03.2020  hbz-dev     Andreas Feature     Verwaltungslizenzen dürfen nur vom LAS:eR Backoffice erstellt werden (provisorische Lösung)
+
+2271    19.03.2020  hbz-dev     David   Feature     API: Datumsangaben konvertieren
+
+2257    19.03.2020  hbz-dev     Andreas Feature     zweite Sortierung der Finanzdaten nach Anbietername eingefügt, Lieferanten werden im Filter und im Export ausgegeben
+
+2228    19.03.2020  hbz-dev     Andreas Bug         Bugfixes vom Kommentar desselben Tages
+
+2262    18.03.2020  hbz-dev     David   Feature     Erweiterungen der Klasse Namespace
+
+2161    18.03.2020  hbz-dev     David   Feature     Legacy "UserFolder"-Konstrukt entfernen
 
 2218    17.03.2020  hbz-dev     Andreas Bug         Abfrage von Teilnehmer korrigiert, Bezeichnungen angepasst, obsoletes Menü entfernt
 

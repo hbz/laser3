@@ -30,7 +30,7 @@
                     </div>
                 </g:if>
                 <div class="field">
-                    <label>${message(code:'default.myProvider.label')}</label>
+                    <label>${message(code:'default.myProviderAgency.label')}</label>
                     <div class="ui multiple search selection dropdown newFilter" id="filterSubProviders">
                         <input type="hidden" name="filterSubProviders" value="${filterPresets?.filterSubProviders}">
                         <i class="dropdown icon"></i>
@@ -276,7 +276,7 @@
             fixedSubscriptionString = "&ctx=${fixedSubscription.class.name}:${fixedSubscription.id}"
         </g:if>
         var links = {
-            "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProviders"])}?query={query}&forFinanceView=true",
+            "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProvidersAgencies"])}?query={query}&forFinanceView=true",
             "filterCISub": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
             "filterCISPkg": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
             "filterCIBudgetCode": "${createLink([controller:"ajax",action:"lookupBudgetCodes"])}?query={query}",

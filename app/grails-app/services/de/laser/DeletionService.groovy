@@ -632,7 +632,7 @@ class DeletionService {
 
         List userOrgs       = new ArrayList(user.affiliations)
         List userRoles      = new ArrayList(user.roles)
-        List userFolder     = UserFolder.findAllWhere(user: user)
+        //List userFolder     = UserFolder.findAllWhere(user: user)
         List userSettings   = UserSettings.findAllWhere(user: user)
 
         List ciecs = CostItemElementConfiguration.executeQuery(
@@ -660,7 +660,7 @@ class DeletionService {
 
         result.info << ['Zugehörigkeiten', userOrgs]
         result.info << ['Rollen', userRoles]
-        result.info << ['Folder', userFolder]
+        //result.info << ['Folder', userFolder]
         result.info << ['Einstellungen', userSettings]
 
         result.info << ['Kostenkonfigurationen', ciecs, FLAG_SUBSTITUTE]
@@ -703,7 +703,7 @@ class DeletionService {
                     userRoles.each { tmp -> tmp.delete() }
 
                     // user folder
-                    userFolder.each { tmp -> tmp.delete() }
+                    //userFolder.each { tmp -> tmp.delete() }
 
                     // user settings
                     userSettings.each { tmp -> tmp.delete() }

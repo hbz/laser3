@@ -838,8 +838,8 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def lookupProviders() {
-        render controlledListService.getProviders(params) as JSON
+    def lookupProvidersAgencies() {
+        render controlledListService.getProvidersAgencies(params) as JSON
     }
 
   @Secured(['ROLE_USER'])
@@ -1678,7 +1678,9 @@ class AjaxController {
 
                     if (! params.keep) {
                         members.each { m ->
-                            m.setProperty(prop, null)
+                            if(m[prop] instanceof Boolean)
+                                m.setProperty(prop, false)
+                            else m.setProperty(prop, null)
                             m.save(flush: true)
                         }
                     }

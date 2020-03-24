@@ -1,4 +1,4 @@
-<div class="ui main container">
+
     <nav id="mainMenueTest" class="ui inverted stackable menu" role="menubar" aria-label="${message(code:'aria-label.mainNavigation')}">
         <div class="ui container" aria-hidden="true">
             <a href="https://www.w3.org" aria-label="Start" class="header item la-logo-item">
@@ -120,9 +120,8 @@
             </div>
 
 
-
             <div class="right menu la-right-menuPart">
-                <div id="mainSearch" class="ui category search spotlight">
+                <div role="search" id="mainSearch" class="ui category search spotlight">
                     <div class="ui icon input">
                         <input aria-label="Suche nach ..." type="search" id="spotlightSearch" class="prompt"
                                placeholder="Suche nach ...">
@@ -179,4 +178,3 @@
 
     </nav><!-- main menu -->
 
-</div>

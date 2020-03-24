@@ -910,9 +910,9 @@ class SubscriptionController extends AbstractDebugController {
                 issn:IdentifierNamespace.findByNs('issn'),pisbn:IdentifierNamespace.findByNs('pisbn')]
                 rows.eachWithIndex { row, int i ->
                     log.debug("now processing entitlement ${i}")
-                    Map ieCandidate = [:]
+                    Map<String,Object> ieCandidate = [:]
                     ArrayList<String> cols = row.split('\t')
-                    Map idCandidate
+                    Map<String,Object> idCandidate
                     String ieCandIdentifier
                     if(colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
                         identifiers.zdbIds.add(cols[colMap.zdbCol])
@@ -987,9 +987,9 @@ class SubscriptionController extends AbstractDebugController {
                                         break
                                     case "endIssueCol": covStmt.endIssue = cellEntry
                                         break
-                                    case "accessStartDateCol": covStmt.accessStartDate = cellEntry
+                                    case "accessStartDateCol": ieCandidate.accessStartDate = cellEntry
                                         break
-                                    case "accessEndDateCol": covStmt.accessEndDate = cellEntry
+                                    case "accessEndDateCol": ieCandidate.accessEndDate = cellEntry
                                         break
                                     case "embargoCol": covStmt.embargo = cellEntry
                                         break
@@ -1558,46 +1558,33 @@ class SubscriptionController extends AbstractDebugController {
         List selectedMembers = params.list("selectedMembers")
 
         List<GString> changeAccepted = []
-        if (params.license_All) {
-            License lic = License.get(params.license_All)
-            validSubChilds.each { subChild ->
-                subChild.owner = lic
-
-                if (subChild.save()) {
-                    OrgRole licenseeRole = new OrgRole(org:subChild.getSubscriber(),lic:lic,roleType:licenseeRoleType)
-                    if(licenseeRole.save())
-                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
-                }
-            }
-            if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
-            }
-
-            if (!changeAccepted) {
-                flash.error = message(code: 'subscription.linkLicenseMembers.noChanges')
-            }
-
-
-        } else {
-            validSubChilds.each { subChild ->
-                if (params."license_${subChild.id}") {
-                    License newLicense = License.get(params."license_${subChild.id}")
+        validSubChilds.each { subChild ->
+            if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
+                if(params.processOption == 'linkLicense') {
+                    License newLicense = License.get(params.license_All)
                     if (subChild.owner != newLicense) {
                         subChild.owner = newLicense
                         if (subChild.save()) {
-                            OrgRole licenseeRole = new OrgRole(org:subChild.getSubscriber(),lic:newLicense,roleType:licenseeRoleType)
-                            if(licenseeRole.save())
-                                changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                            OrgRole licenseeRole = new OrgRole(org: subChild.getSubscriber(), lic: newLicense, roleType: licenseeRoleType)
+                            if (licenseeRole.save())
+                                changeAccepted << "${subChild.name} (${message(code: 'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                         }
                     }
                 }
-            }
-            if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
+                else if(params.processOption == 'unlinkLicense') {
+                    OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
+                    subChild.owner.orgLinks.remove(toDelete)
+                    subChild.owner = null
+                    if (subChild.save()) {
+                        toDelete.delete()
+                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                    }
+                }
             }
         }
-
-
+        if (changeAccepted) {
+            flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
+        }
         redirect(action: 'linkLicenseMembers', id: params.id)
     }
 
@@ -1620,18 +1607,23 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentLicense = result.parentSub.owner
 
+        List selectedMembers = params.list("selectedMembers")
+
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         def removeLic = []
         validSubChilds.each { subChild ->
-            def sub = Subscription.get(subChild.id)
-            //keep it, I need to ask Daniel for that
-            //OrgRole toDelete = OrgRole.findByOrgAndLic(sub.getSubscriber(),sub.owner)
-            sub.owner = null
-            if (sub.save()) {
-                //toDelete.delete()
-                removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().org.sortname})"
+            if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
+                //keep it, I need to ask Daniel for that
+                OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
+                subChild.owner.orgLinks.remove(toDelete)
+                subChild.owner = null
+                if (subChild.save()) {
+                    toDelete.delete()
+                    removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                }
             }
+
         }
         if (removeLic) {
             flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
@@ -3130,23 +3122,24 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def launchRenewalsProcess() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
 
-        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
-
-        log.debug("Clear basket....");
-        shopping_basket.items?.clear();
-        shopping_basket.save(flush: true)
-
-        def oid = "com.k_int.kbplus.Subscription:${params.id}"
-        shopping_basket.addIfNotPresent(oid)
-        Subscription.get(params.id).packages.each {
-            oid = "com.k_int.kbplus.Package:${it.pkg.id}"
-            shopping_basket.addIfNotPresent(oid)
-        }
+//        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
+//
+//        log.debug("Clear basket....");
+//        shopping_basket.items?.clear();
+//        shopping_basket.save(flush: true)
+//
+//        def oid = "com.k_int.kbplus.Subscription:${params.id}"
+//        shopping_basket.addIfNotPresent(oid)
+//        Subscription.get(params.id).packages.each {
+//            oid = "com.k_int.kbplus.Package:${it.pkg.id}"
+//            shopping_basket.addIfNotPresent(oid)
+//        }
 
         redirect controller: 'myInstitution', action: 'renewalsSearch'
     }

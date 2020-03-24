@@ -702,7 +702,7 @@ class SemanticUiTagLib {
         String msgCancel = "Abbrechen"
 
 
-        out << '<div class="ui tiny modal">'
+        out << '<div id="js-modal" class="ui tiny modal" role="alertdialog" aria-modal="true" tabindex="-1 aria-label="Bestätigungs-Modal" aria-hidden="true">'
         out << '<div class="header">'
         out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
         out << '</div>'
@@ -711,7 +711,7 @@ class SemanticUiTagLib {
         out << '</div>'
 
         out << '<div class="actions">'
-        out << '<div class="ui deny button">' + msgCancel + '</div>'
+        out << '<button class="ui deny button">' + msgCancel + '</button>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
         out << '    <i aria-hidden="true" class="trash alternate icon"></i>'
         out << '</button>'
