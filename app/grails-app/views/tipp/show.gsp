@@ -41,7 +41,7 @@
                data-content="${message(code: 'tipp.show.accessStart')}"></i>
 
             <div class="content">
-                ${tipp.accessStartDate}
+                <g:formatDate date="${tipp.accessStartDate}" format="${message(code:'default.date.format.notime')}"/>
             </div>
         </div>
 
@@ -50,7 +50,7 @@
                data-content="${message(code: 'tipp.show.accessEnd')}"></i>
 
             <div class="content">
-                ${tipp.accessEndDate}
+                <g:formatDate date="${tipp.accessEndDate}" format="${message(code:'default.date.format.notime')}"/>
             </div>
         </div>
 

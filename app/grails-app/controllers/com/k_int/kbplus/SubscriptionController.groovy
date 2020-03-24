@@ -3410,7 +3410,7 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("Received params: ${params}")
         SubscriptionPackage subscriptionPackage = SubscriptionPackage.get(params.subscriptionPackage)
         PendingChangeConfiguration.settingKeys.each { String settingKey ->
-            Map<String,Object> configMap = [subscriptionPackage:subscriptionPackage,settingKey:settingKey]
+            Map<String,Object> configMap = [subscriptionPackage:subscriptionPackage,settingKey:settingKey,withNotification:false]
             boolean auditable = false
             //Set because we have up to three keys in params with the settingKey
             Set<String> keySettings = params.keySet().findAll { k -> k.contains(settingKey) }

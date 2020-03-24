@@ -209,10 +209,10 @@
             </td>
             <td>
                 <!-- von -->
-                ${tipp.accessStartDate}
+                <g:formatDate date="${tipp.accessStartDate}" format="${message(code:'default.date.format.notime')}"/>
                 <semui:dateDevider/>
                 <!-- bis -->
-                ${tipp.accessEndDate}
+                <g:formatDate date="${tipp.accessEndDate}" format="${message(code:'default.date.format.notime')}"/>
             </td>
         </tr>
 

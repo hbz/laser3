@@ -31,8 +31,8 @@ abstract class AbstractCoverage {
             'coverageNote',
     ]
 
-    Map<String,Object> compareWith(Map<String,Object> covB) {
-        Map<String,Object> diffs = [:]
+    Set<Map<String,Object>> compareWith(Map<String,Object> covB) {
+        Set<Map<String,Object>> diffs = []
         controlledProperties.each { cp ->
             if(cp in ['startDate','endDate']) {
                 Calendar calA = Calendar.getInstance(), calB = Calendar.getInstance()
@@ -40,11 +40,7 @@ abstract class AbstractCoverage {
                     calA.setTime((Date) this[cp])
                     calB.setTime((Date) covB[cp])
                     if(!(calA.get(Calendar.YEAR) == calB.get(Calendar.YEAR) && calA.get(Calendar.DAY_OF_YEAR) == calB.get(Calendar.DAY_OF_YEAR))) {
-                        diffs.prop = cp
-                        diffs.event = 'update'
-                        diffs.target = this
-                        diffs.oldValue = this[cp]
-                        diffs.newValue = covB[cp]
+                        diffs << [prop: cp, oldValue: this[cp], newValue: covB[cp]]
                     }
                 }
                 else {
@@ -55,29 +51,17 @@ abstract class AbstractCoverage {
                      */
                     if(this[cp] != null && covB[cp] == null) {
                         calA.setTime((Date) this[cp])
-                        diffs.prop = cp
-                        diffs.event = 'update'
-                        diffs.target = this
-                        diffs.oldValue = this[cp]
-                        diffs.newValue = null
+                        diffs << [prop:cp, oldValue:this[cp],newValue:null]
                     }
                     else if(this[cp] == null && covB[cp] != null) {
                         calB.setTime((Date) covB[cp])
-                        diffs.prop = cp
-                        diffs.event = 'update'
-                        diffs.target = this
-                        diffs.oldValue = null
-                        diffs.newValue = covB[cp]
+                        diffs << [prop:cp, oldValue:null, newValue: covB[cp]]
                     }
                 }
             }
             else {
-                if(this[cp] != covB[cp]) {
-                    diffs.prop = cp
-                    diffs.event = 'update'
-                    diffs.target = this
-                    diffs.oldValue = this[cp]
-                    diffs.newValue = covB[cp]
+                if(this[cp] != covB[cp] && !((this[cp] == '' && covB[cp] == null) || (this[cp] == null && covB[cp] == ''))) {
+                    diffs << [prop:cp, oldValue: this[cp], newValue: covB[cp]]
                 }
             }
         }

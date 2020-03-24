@@ -352,8 +352,10 @@ class ChangeNotificationService extends AbstractLockableService {
                 }
                 else {
                     SubscriptionPackage parentSP = SubscriptionPackage.findBySubscriptionAndPkg(subscriptionPackage.subscription.instanceOf, subscriptionPackage.pkg)
-                    if(parentSP.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == settingKey }.withNotification)
-                        PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
+                    if(parentSP) {
+                        if(parentSP.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == settingKey }.withNotification)
+                            PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
+                    }
                 }
             }
             else {

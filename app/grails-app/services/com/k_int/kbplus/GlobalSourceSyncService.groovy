@@ -267,17 +267,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         //process actual diffs
                                         diffs.each { diff ->
                                             if(diff.prop == 'coverage') {
-                                                diff.covDiffs.each { covDiff ->
-                                                    switch(covDiff.event) {
-                                                        case 'added':
-                                                            if(!covDiff.target.save())
-                                                                throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${covDiff.target.errors}")
+                                                diff.covDiffs.each { entry ->
+                                                    switch(entry.event) {
+                                                        case 'add':
+                                                            if(!entry.target.save())
+                                                                throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
                                                             break
-                                                        case 'deleted': tippA.coverages.remove(covDiff.target)
+                                                        case 'delete': tippA.coverages.remove(entry.target)
                                                             break
-                                                        case 'updated': covDiff.target[covDiff.prop] = covDiff.newValue
-                                                            if(!covDiff.target.save())
-                                                                throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${covDiff.target.errors}")
+                                                        case 'update': entry.diffs.each { covDiff ->
+                                                                entry.target[covDiff.prop] = covDiff.newValue
+                                                            }
+                                                            if(!entry.target.save())
+                                                                throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
                                                             break
                                                     }
                                                 }
@@ -533,8 +535,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                     if(titleRecord.identifiers) {
-                        //I hate this solution ...
-                        Identifier.executeUpdate("delete from Identifier i where i.ti = :titleToUpdate",[titleToUpdate:titleInstance])
+                        //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
+                        titleInstance.ids.clear()
+                        titleInstance.save()
                         titleRecord.identifiers.identifier.each { idData ->
                             if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
                                 Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:titleInstance])
@@ -830,17 +833,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //coverage statements may have changed or not, no deletions or insertions
             //sorting has been done by mapping (listA) resp. when converting XML data (listB)
             covListB.eachWithIndex { covB, int i ->
-                Map<String,Object> covDiff = covListA[i].compareWith(covB)
-                if(covDiff)
-                    covDiffs << covDiff
+                Set<Map<String,Object>> currDiffs = covListA[i].compareWith(covB)
+                if(currDiffs)
+                    covDiffs << [event: 'update', target: covListA[i], diffs: currDiffs]
             }
         }
         else if(covListA.size() > covListB.size()) {
             //coverage statements have been deleted
             covListB.eachWithIndex { covB, int i ->
-                Map<String,Object> covDiff = covListA[i].compareWith(covB)
-                if(covDiff)
-                    covDiffs << covDiff
+                Set<Map<String,Object>> currDiffs = covListA[i].compareWith(covB)
+                if(currDiffs)
+                    covDiffs << [event: 'update', target: covListA[i], diffs: currDiffs]
             }
             for(int i = covListB.size();i < covListA.size();i++) {
                 covDiffs << [event: 'delete', target: covListA[i]]
@@ -850,9 +853,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //coverage statements have been added
             covListB.eachWithIndex { covB, int i ->
                 if(covListA[i]) {
-                    Map<String,Object> covDiff = covListA[i].compareWith(covB)
-                    if(covDiff)
-                        covDiffs << covDiff
+                    Set<Map<String,Object>> currDiffs = covListA[i].compareWith(covB)
+                    if(currDiffs)
+                        covDiffs << [event: 'update', target: covListA[i], diffs: currDiffs]
                 }
                 else {
                     TIPPCoverage newStatement = new TIPPCoverage(
@@ -902,26 +905,30 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             switch(notify.event) {
                                 case 'update': notify.diffs.each { diff ->
                                     if(diff.prop == 'coverage') {
-                                        diff.covDiffs.each { covDiff ->
-                                            TIPPCoverage tippCov = (TIPPCoverage) covDiff.target
-                                            switch(covDiff.event) {
-                                                case 'update':
-                                                    IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                    changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
-                                                    changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
-                                                    changeMap.prop = covDiff.prop
-                                                    changeMap.oldValue = ieCov[covDiff.prop]
-                                                    changeMap.newValue = covDiff.newValue
-                                                    break
-                                                case 'added':
-                                                    changeDesc = PendingChangeConfiguration.NEW_COVERAGE
-                                                    changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
-                                                    break
-                                                case 'delete':
-                                                    IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                    changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
-                                                    changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
-                                                    break
+                                        //the city Coventry is beautiful, isn't it ... but here is the COVerageENTRY meant.
+                                        diff.covDiffs.each { covEntry ->
+                                            TIPPCoverage tippCov = (TIPPCoverage) covEntry.target
+                                            covEntry.diffs.each { covDiff ->
+                                                switch(covDiff.event) {
+                                                    case 'update':
+                                                        IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                                        changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
+                                                        changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                        changeMap.prop = covDiff.prop
+                                                        changeMap.oldValue = ieCov[covDiff.prop]
+                                                        changeMap.newValue = covDiff.newValue
+                                                        break
+                                                    case 'added':
+                                                        changeDesc = PendingChangeConfiguration.NEW_COVERAGE
+                                                        changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
+                                                        break
+                                                    case 'delete':
+                                                        IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                                        changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
+                                                        changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                        break
+                                                }
+                                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                             }
                                         }
                                     }
@@ -931,15 +938,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         changeMap.prop = diff.prop
                                         changeMap.oldValue = ie[diff.prop]
                                         changeMap.newValue = diff.newValue
+                                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                     }
                                 }
                                     break
                                 case 'delete':
                                     changeDesc = PendingChangeConfiguration.TITLE_DELETED
                                     changeMap.oid = "${target.class.name}:${target.id}"
+                                    changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                     break
                             }
-                            changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                             //changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
                         }
                     }
