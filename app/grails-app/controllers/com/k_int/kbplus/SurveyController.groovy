@@ -2114,7 +2114,7 @@ class SurveyController {
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.participationProperty = PropertyDefinition.getByNameAndDescr("Participation", PropertyDefinition.SUR_PROP)
+        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
 
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty?.sort {
@@ -3266,7 +3266,7 @@ class SurveyController {
         result.participantsList = result.participantsList.sort{it.sortname}
 
 
-        result.participationProperty = PropertyDefinition.getByNameAndDescr("Participation", PropertyDefinition.SUR_PROP)
+        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
 
         result
 
@@ -3375,9 +3375,9 @@ class SurveyController {
         result.properties
         if(params.tab == 'surveyProperties') {
             result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty.findAll{it.owner == null}
-            result.properties -= PropertyDefinition.getByNameAndDescr("Participation", PropertyDefinition.SUR_PROP)
-            result.properties -= PropertyDefinition.getByNameAndDescr("Multi-year term 2 years", PropertyDefinition.SUR_PROP)
-            result.properties -= PropertyDefinition.getByNameAndDescr("Multi-year term 3 years", PropertyDefinition.SUR_PROP)
+            result.properties -= RDStore.SURVEY_PROPERTY_PARTICIPATION
+            result.properties -= RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
+            result.properties -= RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
         }
 
         if(params.tab == 'customProperties') {
@@ -3587,7 +3587,7 @@ class SurveyController {
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.participationProperty = PropertyDefinition.getByNameAndDescr("Participation", PropertyDefinition.SUR_PROP)
+        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
 
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty)
@@ -3595,12 +3595,12 @@ class SurveyController {
         result.multiYearTermThreeSurvey = null
         result.multiYearTermTwoSurvey = null
 
-        if (PropertyDefinition.getByNameAndDescr("Multi-year term 3 years", PropertyDefinition.SUR_PROP)?.id in result.properties.id) {
-            result.multiYearTermThreeSurvey = PropertyDefinition.getByNameAndDescr("Multi-year term 3 years", PropertyDefinition.SUR_PROP)
+        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_3?.id in result.properties.id) {
+            result.multiYearTermThreeSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
             result.properties.remove(result.multiYearTermThreeSurvey)
         }
-        if (PropertyDefinition.getByNameAndDescr("Multi-year term 2 years", PropertyDefinition.SUR_PROP)?.id in result.properties.id) {
-            result.multiYearTermTwoSurvey = PropertyDefinition.getByNameAndDescr("Multi-year term 2 years", PropertyDefinition.SUR_PROP)
+        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_2?.id in result.properties.id) {
+            result.multiYearTermTwoSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
             result.properties.remove(result.multiYearTermTwoSurvey)
 
         }

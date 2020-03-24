@@ -89,14 +89,14 @@
                     </td>
                     <td>
                         ${property?.getI10n('name')}
-                        <g:if test="${property?.tenant?.id == institution?.id}">
+                        <g:if test="${property?.tenant.id == institution.id}">
                             <i class='shield alternate icon'></i>
                         </g:if>
                     </td>
 
                     <td>
 
-                        <g:if test="${property?.tenant == institution}">
+                        <g:if test="${property?.tenant.id == institution.id}">
                             <semui:xEditable owner="${property}" field="expl" type="textarea"/>
                         </g:if>
                         <g:else>

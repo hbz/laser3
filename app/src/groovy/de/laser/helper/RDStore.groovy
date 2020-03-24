@@ -182,6 +182,9 @@ class RDStore {
     //Properties
 
     static final SURVEY_PROPERTY_PARTICIPATION = getSurveyProperty('Participation')
+    static final SURVEY_PROPERTY_MULTI_YEAR_3 = getSurveyProperty('Multi-year term 3 years')
+    static final SURVEY_PROPERTY_MULTI_YEAR_2 = getSurveyProperty('Multi-year term 2 years')
+
 
     static RefdataValue getRefdataValue(String value, String category) {
         RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
@@ -193,6 +196,13 @@ class RDStore {
     }
 
     static PropertyDefinition getSurveyProperty(String name) {
-        (PropertyDefinition) GrailsHibernateUtil.unwrapIfProxy( PropertyDefinition.getByNameAndDescrAndTenant(name, PropertyDefinition.SUR_PROP, null))
+        PropertyDefinition result = PropertyDefinition.getByNameAndDescrAndTenant(name, PropertyDefinition.SUR_PROP, null)
+
+
+        if (! result) {
+            println "WARNING: No PropertyDefinition found by RDStore for name:'${name}', descr:'${PropertyDefinition.SUR_PROP}'"
+        }
+
+        (PropertyDefinition) GrailsHibernateUtil.unwrapIfProxy(result)
     }
 }

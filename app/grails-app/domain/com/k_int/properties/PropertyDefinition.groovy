@@ -207,12 +207,14 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         if (! pd) {
             static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}) @ ${tenant}")
 
+            boolean multipleOccurrence = (category == PropertyDefinition.SUR_PROP) ? false : multiple
+
             pd = new PropertyDefinition(
                     name:               token,
                     descr:              category,
                     type:               type,
                     refdataCategory:    rdc,
-                    multipleOccurrence: (category == PropertyDefinition.SUR_PROP) ? false : multiple,
+                    multipleOccurrence: multipleOccurrence,
                     mandatory:          mandatory,
                     isUsedForLogic:     logic,
                     tenant:             tenant
