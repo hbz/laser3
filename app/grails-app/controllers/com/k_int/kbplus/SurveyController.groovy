@@ -2125,12 +2125,12 @@ class SurveyController {
         result.multiYearTermThreeSurvey = null
         result.multiYearTermTwoSurvey = null
 
-        if (PropertyDefinition.getByNameAndDescr("Multi-year term 3 years", PropertyDefinition.SUB_PROP)?.id in result.properties.id) {
-            result.multiYearTermThreeSurvey = PropertyDefinition.getByNameAndDescr("Multi-year term 3 years", PropertyDefinition.SUB_PROP)
+        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_3?.id in result.properties.id) {
+            result.multiYearTermThreeSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
             result.properties.remove(result.multiYearTermThreeSurvey)
         }
-        if (PropertyDefinition.getByNameAndDescr("Multi-year term 2 years", PropertyDefinition.SUB_PROP)?.id in result.properties.id) {
-            result.multiYearTermTwoSurvey = PropertyDefinition.getByNameAndDescr("Multi-year term 2 years", PropertyDefinition.SUB_PROP)
+        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_2?.id in result.properties.id) {
+            result.multiYearTermTwoSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
             result.properties.remove(result.multiYearTermTwoSurvey)
 
         }
