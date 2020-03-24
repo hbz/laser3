@@ -1129,7 +1129,7 @@ class SemanticUiTagLib {
 
 
                 /*if (surveyResults?.find {
-                    it.type?.id == RDStore.SURVEY_PARTICIPATION_PROPERTY?.id
+                    it.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION?.id
                 }?.getResult() == RDStore.YN_NO.getI10n('value')) {
                     out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
                     out << " data-content='${message(code: 'surveyResult.particiption.terminated')}'>"

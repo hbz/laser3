@@ -1512,60 +1512,51 @@ class AdminController extends AbstractDebugController {
             ]
     }
 
-  @Secured(['ROLE_ADMIN'])
-  def manageSurveyPropertyDefinitions() {
+    @Secured(['ROLE_ADMIN'])
+    def addSurveyProperty() {
 
-    if (params.cmd == 'deletePropertyDefinition') {
-      def pd = genericOIDService.resolveOID(params.pd)
 
-      if (pd) {
-        if (! pd.isHardData) {
-          try {
-            pd.delete(flush:true)
-            flash.message = "${params.pd} wurde gelöscht."
-          }
-          catch(Exception e) {
-            flash.error = "${params.pd} konnte nicht gelöscht werden."
-          }
+        PropertyDefinition surveyProperty = PropertyDefinition.findWhere(
+                name: params.name,
+                type: params.type,
+                tenant: result.institution,
+                descr: PropertyDefinition.SUR_PROP
+        )
+
+        if ((!surveyProperty) && params.name && params.type) {
+            def rdc
+            if (params.refdatacategory) {
+                rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
+            }
+
+            Map<String, Object> map = [
+                    token       : params.name,
+                    category    : PropertyDefinition.SUR_PROP,
+                    type        : params.type,
+                    rdc         : rdc,
+                    tenant      : result.institution,
+                    i10n        : [
+                            name_de: params.name,
+                            name_en: params.name,
+                            expl_de: params.expl,
+                            expl_en: params.expl
+                    ]
+            ]
+
+            if (PropertyDefinition.construct(map)) {
+                flash.message = message(code: 'surveyProperty.create.successfully', args: [surveyProperty.name])
+            } else {
+                flash.error = message(code: 'surveyProperty.create.fail')
+            }
+        } else if (surveyProperty) {
+            flash.error = message(code: 'surveyProperty.create.exist')
+        } else {
+            flash.error = message(code: 'surveyProperty.create.fail')
         }
-      }
-    }
-    else if (params.cmd == 'replacePropertyDefinition') {
-      if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
-        def pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
-        def pdTo = genericOIDService.resolveOID(params.xcgPdTo)
 
-        if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
-
-          try {
-            def count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
-
-            flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
-          }
-          catch (Exception e) {
-            log.error(e)
-            flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
-          }
-
-        }
-      } else {
-        flash.error = "Keine ausreichenden Rechte!"
-      }
-    }
-
-    def propDefs = []
-    SurveyProperty.findAllByOwnerIsNull().each { it ->
-      propDefs << it
+        redirect(url: request.getHeader('referer'))
 
     }
-
-    propDefs.sort { a, b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name') }
-
-    render view: 'manageSurveyPropertyDefinitions', model: [
-            editable    : true,
-            surveyPropertyDefinitions: propDefs
-    ]
-  }
 
     @Secured(['ROLE_ADMIN'])
     def managePropertyGroups() {

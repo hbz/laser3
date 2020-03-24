@@ -16,6 +16,7 @@
 
 2245    23.03.2020  hbz-dev     Christian   Feature Kleinere Verbesserungen für Shibboleth Zugangskonfiguration
 
+--      20.03.2020  hbz-dev     Moe     Feature     Umbau von SurveyProperty zu PropertyDefinition
 
 2276    20.03.2020  hbz-dev     Andreas Feature     Verwaltungslizenzen dürfen nur vom LAS:eR Backoffice erstellt werden (provisorische Lösung)
 

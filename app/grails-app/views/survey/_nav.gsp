@@ -3,7 +3,7 @@
 <semui:subNav actionName="${actionName}">
 
     <g:set var="evalutionsViews"
-           value="['evaluationConfigResult', 'evaluationParticipant', 'surveyEvaluation']"/>
+           value="['evaluationParticipant', 'surveyEvaluation']"/>
     <g:set var="surveyConfigsViews" value="['surveyConfigsInfo']"/>
 
 
