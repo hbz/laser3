@@ -375,6 +375,7 @@ class ChangeNotificationService extends AbstractLockableService {
                 else if(settingValue == RDStore.PENDING_CHANGE_CONFIG_ACCEPT) {
                     //set up announcement and do accept! Pending because if some error occurs, the notification should still take place
                     PendingChange pc = PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
+                    pc.save()
                     pc.accept()
                 }
                 /*

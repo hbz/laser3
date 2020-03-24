@@ -6,6 +6,7 @@ import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.exceptions.CreationException
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -14,11 +15,17 @@ import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.context.MessageSource
 
 import javax.persistence.Transient
+import java.text.SimpleDateFormat
 
 class PendingChange {
 
     @Transient
     def genericOIDService
+
+    @Transient
+    final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
+    @Transient
+    static SimpleDateFormat sdf = DateUtil.getSimpleDateFormatByToken('default.date.format.notime')
 
     final static PROP_LICENSE       = 'license'
     final static PROP_PKG           = 'pkg'
@@ -111,9 +118,9 @@ class PendingChange {
         payloadChangeType       (nullable:true, blank:true)
         payloadChangeTargetOid  (nullable:true, blank:false)
         payloadChangeDocOid     (nullable:true, blank:false)
-        targetProperty(nullable:true, blank:true) //nullable due to backwards compatibility
-        oldValue(nullable:true, blank:true) //nullable due to backwards compatibility
-        newValue(nullable:true, blank:true) //nullable due to backwards compatibility
+        targetProperty(nullable:true, blank:true)
+        oldValue(nullable:true, blank:true)
+        newValue(nullable:true, blank:true)
         desc(nullable:true, blank:false)
         status(nullable:true, blank:false)
         actionDate(nullable:true, blank:false)
@@ -131,8 +138,9 @@ class PendingChange {
      * @throws CreationException
      */
     static PendingChange construct(Map<String,Object> configMap) throws CreationException {
-        if((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem) && configMap.prop) {
-            executeUpdate('update PendingChange pc set status = :superseded where :target in (subscription,license,costItem) and targetProperty = :prop',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,prop:configMap.prop])
+        if((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem)) {
+            if(configMap.prop)
+                executeUpdate('update PendingChange pc set status = :superseded where :target in (subscription,license,costItem) and targetProperty = :prop',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,prop:configMap.prop])
             PendingChange pc = new PendingChange(targetProperty: configMap.prop)
             if(configMap.target instanceof Subscription)
                 pc.subscription = (Subscription) configMap.target
@@ -152,7 +160,7 @@ class PendingChange {
                 pc
             else throw new CreationException("Error on hooking up pending change: ${pc.errors}")
         }
-        else throw new CreationException("Pending changes need a target and a targeted property! Check if configMap.target and configMap.prop are correctly set!")
+        else throw new CreationException("Pending changes need a target! Check if configMap.target is correctly set!")
     }
 
     boolean accept() throws ChangeAcceptException {
@@ -243,6 +251,23 @@ class PendingChange {
             throw new ChangeAcceptException("problems when submitting new pending change status: ${errors}")
         }
         true
+    }
+
+    String getOldValue() {
+        outputField(oldValue)
+    }
+
+    String getNewValue() {
+        outputField(newValue)
+    }
+
+    String outputField(String value) {
+        if(targetProperty in DATE_FIELDS) {
+            GregorianCalendar date = new GregorianCalendar()
+
+            sdf.format(date)
+        }
+        else value
     }
 
     def workaroundForDatamigrate() {

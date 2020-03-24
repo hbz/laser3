@@ -24,6 +24,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
+import javax.persistence.Transient
 import java.text.SimpleDateFormat
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
@@ -36,10 +37,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
     SessionFactory sessionFactory
     ExecutorService executorService
     ChangeNotificationService changeNotificationService
-    LinkGenerator grailsLinkGenerator
-    MessageSource messageSource
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     GlobalRecordSource source
+
+    final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
 
     SimpleDateFormat xmlTimestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
@@ -537,7 +538,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(titleRecord.identifiers) {
                         //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
                         titleInstance.ids.clear()
-                        titleInstance.save()
+                        titleInstance.save(flush:true) //damn those wrestlers ...
                         titleRecord.identifiers.identifier.each { idData ->
                             if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
                                 Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:titleInstance])
@@ -915,8 +916,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                         changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
                                                         changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
                                                         changeMap.prop = covDiff.prop
-                                                        changeMap.oldValue = ieCov[covDiff.prop]
-                                                        changeMap.newValue = covDiff.newValue
+                                                        if(covDiff.prop in DATE_FIELDS) {
+                                                            Date date = DateUtil.parseDateGeneric(value)
+                                                            sdf.format(date)
+                                                        }
+                                                        else {
+                                                            changeMap.oldValue = ieCov[covDiff.prop]
+                                                            changeMap.newValue = covDiff.newValue
+                                                        }
                                                         break
                                                     case 'added':
                                                         changeDesc = PendingChangeConfiguration.NEW_COVERAGE

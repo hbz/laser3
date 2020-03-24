@@ -483,7 +483,7 @@ class PendingChangeService extends AbstractLockableService {
     //called from: dashboard.gsp, pendingChanges.gsp, accepetdChanges.gsp
     Map<String,Object> printRow(PendingChange change) {
         String eventIcon, instanceIcon, eventString, pkgLink, pkgName, titleLink, titleName, platformName, platformLink, holdingLink, subscriptionName, coverageString
-        Object[] eventData
+        List<Object> eventData
         Locale locale = Locale.getDefault()
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
         if(change.oid) {
@@ -555,8 +555,9 @@ class PendingChangeService extends AbstractLockableService {
                 case PendingChangeConfiguration.COVERAGE_UPDATED:
                     eventIcon = '<i class="yellow circle outline icon"></i>'
                     instanceIcon = '<i class="file alternate icon"></i>'
-                    if(holdingLink && subscriptionName && coverageString && titleName)
+                    if(holdingLink && subscriptionName && coverageString && titleName) {
                         eventData = [holdingLink,subscriptionName,titleName,coverageString,change.targetProperty,change.oldValue,change.newValue]
+                    }
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break
             //pendingChange.message_TC02 (newCoverage)
@@ -579,7 +580,7 @@ class PendingChangeService extends AbstractLockableService {
         }
 
         if(eventString == null)
-            eventString = messageSource.getMessage(change.msgToken,eventData,locale)
+            eventString = messageSource.getMessage(change.msgToken,eventData.toArray(),locale)
         [instanceIcon:instanceIcon,eventIcon:eventIcon,eventString:eventString]
     }
 
