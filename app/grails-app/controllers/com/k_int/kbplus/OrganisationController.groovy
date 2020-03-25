@@ -1463,20 +1463,28 @@ class OrganisationController extends AbstractDebugController {
             return
         }
         RefdataValue newSubjectGroup = RefdataValue.get(params.subjectGroup)
-        if ( ! newSubjectGroup ){
+        if (!newSubjectGroup) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.subjectGroup.label'), params.subjectGroup])
             redirect(url: request.getHeader('referer'))
             return
         }
-        if (orgInstance.getSubjectGroup().find{it.subjectGroupId == newSubjectGroup.id}){
+        if (orgInstance.getSubjectGroup().find { it.subjectGroupId == newSubjectGroup.id }) {
             flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.subjectGroup.label')])
             redirect(url: request.getHeader('referer'))
             return
         }
-        orgInstance.addToSubjectGroup(subjectGroup:  RefdataValue.get(params.subjectGroup))
-        orgInstance.save(flush: true)
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
-        redirect action: 'show', id: orgInstance.id
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
+            result.editable = true
+        } else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+        }
+
+        if (result.editable){
+            orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
+            orgInstance.save(flush: true)
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+            redirect action: 'show', id: orgInstance.id
+        }
     }
 
     def deleteSubjectGroup() {
