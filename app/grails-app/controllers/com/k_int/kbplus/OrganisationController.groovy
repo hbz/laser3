@@ -1497,12 +1497,20 @@ class OrganisationController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        def osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
-        orgInstance.removeFromSubjectGroup(osg)
-        orgInstance.save()
-        osg.delete()
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
-        redirect(url: request.getHeader('referer'))
+        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
+            result.editable = true
+        } else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+        }
+
+        if(result.editable)
+            def osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
+            orgInstance.removeFromSubjectGroup(osg)
+            orgInstance.save()
+            osg.delete()
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+            redirect(url: request.getHeader('referer'))
+        {
     }
 
     private Map setResultGenericsAndCheckAccess(params) {
