@@ -100,8 +100,19 @@
                                                    tooltip="${message(code: "survey.copyEmailaddresses.NoParticipants.info")}"/>
             </g:else>
 
-        </g:else>
+            <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id] && editable}">
+                <div class="ui divider"></div>
 
+                <g:link class="item js-open-confirm-modal"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.survey", args: [surveyConfig?.getSurveyName()])}"
+                        data-confirm-term-how="delete"
+                        controller="survey" action="deleteSurveyInfo"
+                        id="${surveyInfo?.id}">
+                    <i class="trash alternate icon"></i> ${message(code:'deletion.survey')}
+                </g:link>
+
+            </g:if>
+        </g:else>
     </g:if>
 </semui:actionsDropdown>
 

@@ -449,7 +449,7 @@ class SurveyController {
                 name: params.name,
                 startDate: startDate,
                 endDate: endDate,
-                type: subSurveyUseForTransfer ? RDStore.SURVEY_TYPE_RENEWAL : RDStore.SURVEY_TYPE_INTEREST,
+                type: subSurveyUseForTransfer ? RDStore.SURVEY_TYPE_RENEWAL : RDStore.SURVEY_TYPE_SUBSCRIPTION,
                 owner: contextService.getOrg(),
                 status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
@@ -530,7 +530,7 @@ class SurveyController {
                 name: params.name,
                 startDate: startDate,
                 endDate: endDate,
-                type: RefdataValue.getByValueAndCategory('selection', RDConstants.SURVEY_TYPE),
+                type: RDStore.SURVEY_TYPE_TITLE_SELECTION,
                 owner: contextService.getOrg(),
                 status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
@@ -1744,7 +1744,7 @@ class SurveyController {
             flash.message = g.message(code: "endSurvey.successfully")
         }
 
-        redirect action: 'renewalWithSurvey', params:[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]
+        redirect action: 'renewalWithSurvey', params:[surveyConfigID: result.surveyConfig?.id, id: surveyInfo?.id]
 
     }
 
@@ -1858,7 +1858,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo?.status == RDStore.SURVEY_IN_PROCESSING)
+        result.editable = (result.surveyInfo?.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])
 
         if (result.editable) {
 
@@ -1882,24 +1882,35 @@ class SurveyController {
                         surveyOrg.delete(flush: true)
                     }
 
-                    //config.delete(flush: true)
+                    SurveyResult.findAllBySurveyConfig(config){
+                        it.delete(flush: true)
+                    }
+
+                    Task.findAllBySurveyConfig(config){
+                        it.delete(flush: true)
+                    }
+
+                    config.surveyInfo = null
+                    config.delete(flush: true)
                 }
+
 
                 SurveyInfo surveyInfo = SurveyInfo.get(result.surveyInfo.id)
 
-                SurveyConfig.findAllBySurveyInfo(surveyInfo).each { surConf ->
-                    surveyInfo.removeFromSurveyConfigs(surConf)
-                }
                 surveyInfo.delete(flush: true)
 
-                //flash.message = message(code: 'surveyInfo.delete.successfully')
+                flash.message = message(code: 'surveyInfo.delete.successfully')
+
+                redirect action: 'currentSurveysConsortia'
             }
             catch (DataIntegrityViolationException e) {
                 flash.error = message(code: 'surveyInfo.delete.fail')
+
+                redirect(uri: request.getHeader('referer'))
             }
         }
 
-        redirect action: 'currentSurveysConsortia'
+
     }
 
 

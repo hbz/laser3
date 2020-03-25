@@ -3,12 +3,13 @@
     <div class="twelve wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
 
+            <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
             <div class="ui horizontal segments">
                 <div class="ui segment center aligned">
                     <b>${message(code: 'surveyConfig.subOrgs.label')}:</b>
                     <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
                         <div class="ui circular label">
-                            ${com.k_int.kbplus.Subscription.findAllByInstanceOf(subscriptionInstance)?.size()}
+                            ${countParticipants.subMembers}
                         </div>
                     </g:link>
                 </div>
@@ -18,11 +19,11 @@
                     <g:link controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig?.id]">
-                        <div class="ui circular label">${surveyConfig?.orgs?.size()}</div>
+                        <div class="ui circular label">${countParticipants.surveyMembers}</div>
                     </g:link>
 
-                    <g:if test="${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(subscriptionInstance, true)?.size() > 0}">
-                        ( ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(subscriptionInstance, true)?.size()}
+                    <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
+                        ( ${countParticipants.subMembersWithMultiYear}
                         ${message(code: 'surveyConfig.subOrgsWithMultiYear.label')} )
                     </g:if>
                 </div>
