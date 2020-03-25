@@ -1470,4 +1470,82 @@ class FinanceController extends AbstractDebugController {
         render result as JSON
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processCostItemsBulk() {
+        Map<String,Object> result = financeService.setResultGenerics(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.putAll(financeService.setEditVars(result.institution))
+        List selectedCostItems = params.list("selectedCostItems")
+
+        if(selectedCostItems) {
+
+            def billing_currency = null
+            if (params.long('newCostCurrency2')) //GBP,etc
+            {
+                billing_currency = RefdataValue.get(params.newCostCurrency2)
+            }
+
+
+            NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+            def cost_billing_currency = params.newCostInBillingCurrency2 ? format.parse(params.newCostInBillingCurrency2).doubleValue() : null //0.00
+            def cost_currency_rate = params.newCostCurrencyRate2 ? params.double('newCostCurrencyRate2', 1.00) : null //1.00
+            def cost_local_currency = params.newCostInLocalCurrency2 ? format.parse(params.newCostInLocalCurrency2).doubleValue() : null //0.00
+
+            def tax_key = null
+            if (!params.newTaxRate2.contains("null")) {
+                String[] newTaxRate = params.newTaxRate2.split("§")
+                RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+                int taxRate = Integer.parseInt(newTaxRate[1])
+                switch (taxType.id) {
+                    case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
+                        switch (taxRate) {
+                            case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
+                                break
+                            case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
+                                break
+                        }
+                        break
+                    case RefdataValue.getByValueAndCategory("taxable tax-exempt", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
+                        break
+                    case RefdataValue.getByValueAndCategory("not taxable", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                        break
+                    case RefdataValue.getByValueAndCategory("not applicable", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                        break
+                    case RefdataValue.getByValueAndCategory("reverse charge", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
+                        break
+                }
+            }
+
+            selectedCostItems.each { id ->
+                CostItem costItem = CostItem.get(Long.parseLong(id))
+                if(costItem && costItem.costItemStatus != RDStore.COST_ITEM_DELETED){
+
+                    costItem.costInBillingCurrency = cost_billing_currency ?: costItem.costInBillingCurrency
+
+                    costItem.billingCurrency = billing_currency ?: costItem.billingCurrency
+                    //Not specified default to GDP
+                    costItem.costInLocalCurrency = cost_local_currency ?: costItem.costInLocalCurrency
+
+                    costItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
+
+                    costItem.currencyRate = cost_currency_rate ?: costItem.currencyRate
+                    costItem.taxKey = tax_key ?: costItem.taxKey
+
+                    costItem.save()
+                }
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
 }

@@ -304,6 +304,29 @@ class SurveyConfig {
         transferWorkflow ? grails.converters.JSON.parse(transferWorkflow) : grails.converters.JSON.parse('{}')
     }
 
+    Map countParticipants(){
+        Map result = [:]
+
+        result.surveyMembers = orgs.size()
+
+        if(surveyInfo.isSubscriptionSurvey){
+            List subChilds = subscription.getNonDeletedDerivedSubscriptions()
+
+            result.subMembers = subChilds.size()
+
+            Integer subMembersWithMultiYear = 0
+            subChilds.each {
+                if(it.isCurrentMultiYearSubscriptionNew())
+                {
+                    subMembersWithMultiYear++
+                }
+            }
+
+            result.subMembersWithMultiYear = subMembersWithMultiYear
+        }
+        result
+    }
+
 
 
 }
