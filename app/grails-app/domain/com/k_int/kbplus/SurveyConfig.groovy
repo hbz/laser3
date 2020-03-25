@@ -310,7 +310,7 @@ class SurveyConfig {
         result.surveyMembers = orgs.size()
 
         if(surveyInfo.isSubscriptionSurvey){
-            List subChilds = Subscription.findAllByInstanceOf(subscription)
+            List subChilds = subscription.getNonDeletedDerivedSubscriptions()
 
             result.subMembers = subChilds.size()
 
