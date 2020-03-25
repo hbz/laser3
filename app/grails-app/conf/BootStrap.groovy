@@ -115,9 +115,6 @@ class BootStrap {
         //log.debug("createOrgConfig ..")
         //createOrgConfig()
 
-        log.debug("createSurveyProperties ..")
-        createSurveyProperties()
-
         //log.debug("createPrivateProperties ..")
         //createPrivateProperties()
 
@@ -537,44 +534,6 @@ class BootStrap {
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
 
-    def createSurveyProperties() {
-
-        def requiredProps = [
-                [
-                        name: [en: "Participation", de: "Teilnahme"],
-                        expl: [en: "Do you still want to license the license?", de: "Wollen Sie weiterhin an der Lizenz teilnehmen?"],
-                        type: OT.Rdv, cat: RDConstants.Y_N
-                ],
-                [
-                        name: [en: "Access choice remote", de: "Zugangswahl Remote"],
-                        expl: [en: "Please indicate here whether you want 2FA, access for scientists or no remote access?", de: "Bitte geben Sie hier an, ob Sie 2FA, Zugang für Wissenschaftler oder kein remote Zugang wünschen?"],
-                        type: OT.Rdv, cat:'Access choice remote'
-                ],
-                [
-                        name: [en: "Beck Price Category A-F", de: "Beck Preiskategorie A-F"],
-                        expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
-                        type: OT.Rdv, cat:'Category A-F'
-                ],
-                [
-                        name: [en: "Multi-year term 2 years", de: "Mehrjahreslaufzeit 2 Jahre"],
-                        expl: [en: "Please indicate here, if you wish a licensing directly for two years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für zwei Jahre wünschen."],
-                        type: OT.Rdv, cat: RDConstants.Y_N
-                ],
-                [
-                        name: [en: "Multi-year term 3 years", de: "Mehrjahreslaufzeit 3 Jahre"],
-                        expl: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
-                        type: OT.Rdv, cat: RDConstants.Y_N
-                ],
-                [
-                        name: [en: "Sim-User Number", de: "Sim-User-Zahl"],
-                        expl: [en: "How many users may access the subscription at the same time?", de: "Wie viele gleichzeitige Nutzerzugriffe umfasst die Lizenz?"],
-                        type: OT.Rdv, cat: RDConstants.SIM_USER_NUMBER
-                ],
-
-        ]
-        createSurveyPropertiesWithI10nTranslations(requiredProps)
-    }
-
     @Deprecated
     def createPrivateProperties() {
 
@@ -627,55 +586,6 @@ class BootStrap {
         }
     }
 
-    def createSurveyPropertiesWithI10nTranslations(requiredProps) {
-
-        requiredProps.each { default_prop ->
-            def surveyProperty   = null
-            def owner = null
-
-            if (default_prop.owner) {
-                owner = Org.findByShortname(default_prop.owner)
-
-                if (owner) {
-                    surveyProperty = SurveyProperty.findByNameAndOwner(default_prop.name['en'], owner)
-                } else {
-                    log.debug("unable to locate owner: ${default_prop.owner} .. skipped")
-                    return
-                }
-            } else {
-                surveyProperty = SurveyProperty.findWhere(name: default_prop.name['en'], owner: null)
-            }
-
-            if (! surveyProperty) {
-                if (owner) {
-                    log.debug("unable to locate private survey property definition for ${default_prop.name['en']} for owner: ${owner} .. creating")
-                    surveyProperty = new SurveyProperty(name: default_prop.name['en'], owner: owner)
-                } else {
-                    log.debug("unable to locate survey property definition for ${default_prop.name['en']} .. creating")
-                    surveyProperty = new SurveyProperty(name: default_prop.name['en'])
-                }
-            }
-
-            if (default_prop.cat != null) {
-                surveyProperty.setRefdataCategory(default_prop.cat)
-            }
-
-            surveyProperty.type  = default_prop.type
-            //prop.softData = false
-            surveyProperty.isHardData = BOOTSTRAP
-            surveyProperty.save(failOnError: true)
-
-            I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
-
-            if (default_prop.expl) {
-                I10nTranslation.createOrUpdateI10n(surveyProperty, 'expl', default_prop.expl)
-            }
-
-            if (default_prop.introduction) {
-                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.introduction)
-            }
-        }
-    }
 
     @Deprecated
     def addDefaultJasperReports() {

@@ -62,7 +62,7 @@
         <h2 class="ui dividing header">10. Datepicker</h2>
         <g:render template="templatesWCAGTest/datepicker" />
 
-%{--        <h2 class="ui dividing header">8. Modals</h2>
+        <h2 class="ui dividing header">8. Modals</h2>
         <h3 class="ui dividing header">8.1. Confimation Modal</h3>
         <p class="la-clear-before">
             <g:link controller="public"
@@ -75,7 +75,7 @@
                     role="button">
                 <i aria-hidden="true" class="trash alternate icon"></i>
             </g:link>
-        </p>--}%
+        </p>
 
 
     </div>

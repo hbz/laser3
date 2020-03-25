@@ -42,93 +42,96 @@ trait AuditableTrait {
 
         log?.debug("onChange(id:${this.id}): ${oldMap} => ${newMap}")
 
-        List<String> gwp = auditService.getWatchedProperties(this)
+        if(this instanceof Subscription && !this.instanceOf) {
+            List<String> gwp = auditService.getWatchedProperties(this)
 
-        log?.debug("found watched properties: ${gwp}")
+            log?.debug("found watched properties: ${gwp}")
 
-        gwp.each { cp ->
-            if (oldMap[cp] != newMap[cp]) {
+            gwp.each { cp ->
+                if (oldMap[cp] != newMap[cp]) {
 
-                Map<String, Object> event = [:]
-                String clazz = this."${cp}".getClass().getName()
+                    Map<String, Object> event = [:]
+                    String clazz = this."${cp}".getClass().getName()
 
-                log?.debug("notifyChangeEvent() " + this + " : " + clazz)
+                    log?.debug("notifyChangeEvent() " + this + " : " + clazz)
 
-                if (this instanceof CustomProperty) {
+                    if (this instanceof CustomProperty) {
 
-                    if (auditService.getAuditConfig(this)) {
+                        if (auditService.getAuditConfig(this)) {
 
-                        String old_oid
-                        String new_oid
-                        if (oldMap[cp] instanceof RefdataValue ) {
-                            old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
-                            new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
-                        }
-
-                        event = [
-                                OID        : "${this.class.name}:${this.id}",
-                                //OID        : "${this.owner.class.name}:${this.owner.id}",
-                                event      : "${this.class.simpleName}.updated",
-                                prop       : cp,
-                                name       : type.name,
-                                type       : this."${cp}".getClass().toString(),
-                                old        : old_oid ?: oldMap[cp], // Backward Compatibility
-                                oldLabel   : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
-                                new        : new_oid ?: newMap[cp], // Backward Compatibility
-                                newLabel   : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
-                                //propertyOID: "${this.class.name}:${this.id}"
-                        ]
-                    }
-                    else {
-                        log?.debug("ignored because no audit config")
-                    }
-                } // CustomProperty
-                else {
-
-                    boolean isSubOrLic = (this instanceof Subscription || this instanceof License)
-
-                    if ( ! isSubOrLic || (isSubOrLic && auditService.getAuditConfig(this, cp)) ) {
-
-                        if (clazz.equals("com.k_int.kbplus.RefdataValue")) {
-
-                            String old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
-                            String new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
+                            String old_oid
+                            String new_oid
+                            if (oldMap[cp] instanceof RefdataValue ) {
+                                old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
+                                new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
+                            }
 
                             event = [
-                                    OID     : "${this.class.name}:${this.id}",
-                                    event   : "${this.class.simpleName}.updated",
-                                    prop    : cp,
-                                    old     : old_oid,
-                                    oldLabel: oldMap[cp]?.toString(),
-                                    new     : new_oid,
-                                    newLabel: newMap[cp]?.toString()
+                                    OID        : "${this.class.name}:${this.id}",
+                                    //OID        : "${this.owner.class.name}:${this.owner.id}",
+                                    event      : "${this.class.simpleName}.updated",
+                                    prop       : cp,
+                                    name       : type.name,
+                                    type       : this."${cp}".getClass().toString(),
+                                    old        : old_oid ?: oldMap[cp], // Backward Compatibility
+                                    oldLabel   : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
+                                    new        : new_oid ?: newMap[cp], // Backward Compatibility
+                                    newLabel   : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
+                                    //propertyOID: "${this.class.name}:${this.id}"
                             ]
+                        }
+                        else {
+                            log?.debug("ignored because no audit config")
+                        }
+                    } // CustomProperty
+                    else {
+
+                        boolean isSubOrLic = (this instanceof Subscription || this instanceof License)
+
+                        if ( ! isSubOrLic || (isSubOrLic && auditService.getAuditConfig(this, cp)) ) {
+
+                            if (clazz.equals("com.k_int.kbplus.RefdataValue")) {
+
+                                String old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
+                                String new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
+
+                                event = [
+                                        OID     : "${this.class.name}:${this.id}",
+                                        event   : "${this.class.simpleName}.updated",
+                                        prop    : cp,
+                                        old     : old_oid,
+                                        oldLabel: oldMap[cp]?.toString(),
+                                        new     : new_oid,
+                                        newLabel: newMap[cp]?.toString()
+                                ]
+                            } else {
+
+                                event = [
+                                        OID  : "${this.class.name}:${this.id}",
+                                        event: "${this.class.simpleName}.updated",
+                                        prop : cp,
+                                        old  : oldMap[cp],
+                                        new  : newMap[cp]
+                                ]
+                            }
+                        } // Subscription or License
+                        else {
+                            log?.debug("ignored because no audit config")
+                        }
+                    }
+
+                    log?.debug(event)
+
+                    if (event) {
+                        if (! changeNotificationService) {
+                            log?.error("changeNotificationService not implemented @ ${it}")
                         } else {
-
-                            event = [
-                                    OID  : "${this.class.name}:${this.id}",
-                                    event: "${this.class.simpleName}.updated",
-                                    prop : cp,
-                                    old  : oldMap[cp],
-                                    new  : newMap[cp]
-                            ]
+                            changeNotificationService.fireEvent(event)
                         }
-                    } // Subscription or License
-                    else {
-                        log?.debug("ignored because no audit config")
-                    }
-                }
-
-                log?.debug(event)
-
-                if (event) {
-                    if (! changeNotificationService) {
-                        log?.error("changeNotificationService not implemented @ ${it}")
-                    } else {
-                        changeNotificationService.fireEvent(event)
                     }
                 }
             }
         }
+
     }
 }

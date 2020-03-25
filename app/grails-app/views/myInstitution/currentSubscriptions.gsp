@@ -190,9 +190,10 @@
                                 if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
                                     subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                                     //TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch
-                                    if(institution.globalUID != com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID)
-                                        subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
                                 }
+
+                                if(institution.globalUID != com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID)
+                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
                             %>
                             <g:each in="${subTypes}" var="subType">
                                 <div class="inline field">

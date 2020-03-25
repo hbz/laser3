@@ -702,7 +702,7 @@ class SemanticUiTagLib {
         String msgCancel = "Abbrechen"
 
 
-        out << '<div class="ui tiny modal" role="alertdialog" aria-modal="true" tabindex="-1 aria-label="Bestätigungs-Modal">'
+        out << '<div id="js-modal" class="ui tiny modal" role="alertdialog" aria-modal="true" tabindex="-1 aria-label="Bestätigungs-Modal" aria-hidden="true">'
         out << '<div class="header">'
         out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
         out << '</div>'
@@ -711,7 +711,7 @@ class SemanticUiTagLib {
         out << '</div>'
 
         out << '<div class="actions">'
-        out << '<div class="ui deny button">' + msgCancel + '</div>'
+        out << '<button class="ui deny button">' + msgCancel + '</button>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
         out << '    <i aria-hidden="true" class="trash alternate icon"></i>'
         out << '</button>'
@@ -1129,7 +1129,7 @@ class SemanticUiTagLib {
 
 
                 /*if (surveyResults?.find {
-                    it.type?.id == RDStore.SURVEY_PARTICIPATION_PROPERTY?.id
+                    it.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION?.id
                 }?.getResult() == RDStore.YN_NO.getI10n('value')) {
                     out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
                     out << " data-content='${message(code: 'surveyResult.particiption.terminated')}'>"

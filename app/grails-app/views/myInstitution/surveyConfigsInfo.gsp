@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -503,7 +503,8 @@ ${message(code: 'survey.label')} -
 
                 </td>
                 <td>
-                    ${surveyResult?.type?.getLocalizedType()}
+
+                    ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyResult?.type.type)}
 
                 </td>
                 <g:set var="surveyOrg"

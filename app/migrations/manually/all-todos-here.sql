@@ -22,14 +22,15 @@
 
 -- 2020-02-27
 -- ERMS-2107
-
-update cost_item set ci_status_rv_fk = (select rdv_id from refdata_value where rdv_value = 'generic.null.value') where ci_status_rv_fk is null;
-ALTER TABLE public.cost_item ALTER COLUMN ci_status_rv_fk SET NOT NULL;
+-- changesets in changelog-2020-03-20.groovy
+--update cost_item set ci_status_rv_fk = (select rdv_id from refdata_value where rdv_value = 'generic.null.value') where ci_status_rv_fk is null;
+--ALTER TABLE public.cost_item ALTER COLUMN ci_status_rv_fk SET NOT NULL;
 
 -- 2020-03-02
 -- missing statement
 -- changesets in changelog-2020-03-02.groovy
--- alter table cost_item drop column ci_include_in_subscr;
+
+alter table cost_item drop column ci_include_in_subscr;
 
 -- 2020-03-09
 -- ERMS-2145

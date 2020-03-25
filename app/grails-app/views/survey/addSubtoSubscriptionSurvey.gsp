@@ -36,14 +36,23 @@
                               value="${params.endDate}" />
         </div>
 
-        <g:if test="${!(com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true))}">
+        <g:if test="${!(com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) && !subscription.getCalculatedSuccessor()}">
             <div class="field">
                 <label>${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info')}</label>
                 <div>
                     <input type="checkbox" id="subSurveyUseForTransfer" name="subSurveyUseForTransfer"  ${params.subSurveyUseForTransfer? 'checked':''}>
                 </div>
             </div>
-        </g:if>
+        </g:if><g:else>
+        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info3')}">
+        <div class="field disabled">
+            <label>${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info')} <i class="question circle icon"></i></label>
+            <div>
+                <input type="checkbox" name="subSurveyUseForTransfer" readonly="">
+            </div>
+        </div>
+        </span>
+    </g:else>
 
         <div class="field">
             <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
