@@ -147,7 +147,10 @@
                         <div class="two wide column">
                             <g:message code="profile.dashboard.changes.objecttype"/>
                         </div><!-- .column -->
-                        <div class="nine wide column">
+                        <div class="two wide column">
+                            <g:message code="profile.dashboard.changes.object"/>
+                        </div><!-- .column -->
+                        <div class="seven wide column">
                             <g:message code="profile.dashboard.changes.event"/>
                         </div><!-- .column -->
                         <div class="three wide column">
@@ -164,7 +167,15 @@
                             <div class="two wide column">
                                 ${raw(row.instanceIcon)}
                             </div><!-- .column -->
-                            <div class="nine wide column">
+                            <div class="two wide column">
+                                <g:if test="${change.subscription}">
+                                    <g:link controller="subscription" action="index" id="${change.subscription.id}">${change.subscription.dropdownNamingConvention()}</g:link>
+                                </g:if>
+                                <g:elseif test="${change.costItem}">
+
+                                </g:elseif>
+                            </div><!-- .column -->
+                            <div class="seven wide column">
                                 ${raw(row.eventString)}
                             </div><!-- .column -->
                             <div class="three wide column">
@@ -192,7 +203,10 @@
                     <div class="two wide column">
                         <g:message code="profile.dashboard.changes.objecttype"/>
                     </div><!-- .column -->
-                    <div class="twelve wide column">
+                    <div class="two wide column">
+                        <g:message code="profile.dashboard.changes.object"/>
+                    </div><!-- .column -->
+                    <div class="ten wide column">
                         <g:message code="profile.dashboard.changes.event"/>
                     </div><!-- .column -->
                 </div>
@@ -206,7 +220,15 @@
                         <div class="two wide column">
                             ${raw(row.instanceIcon)}
                         </div><!-- .column -->
-                        <div class="twelve wide column">
+                        <div class="two wide column">
+                            <g:if test="${change.subscription}">
+                                <g:link controller="subscription" action="index" id="${change.subscription.id}">${change.subscription.dropdownNamingConvention()}</g:link>
+                            </g:if>
+                            <g:elseif test="${change.costItem}">
+
+                            </g:elseif>
+                        </div><!-- .column -->
+                        <div class="ten wide column">
                             ${raw(row.eventString)}
                         </div><!-- .column -->
                     </div><!-- .row -->

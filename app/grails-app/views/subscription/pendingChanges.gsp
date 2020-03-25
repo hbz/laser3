@@ -6,7 +6,7 @@
 <html>
 <head>
   <meta name="layout" content="semanticUI"/>
-  <title>${message(code:'laser')} : TN-Änderungen</title>
+  <title>${message(code:'laser')} : ${message(code:'pendingChange.plural')}</title>
 </head>
 <body>
 

@@ -318,8 +318,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                             else {
                                 //ex newTippClosure
-                                addNewTIPP(result,tippB)
-                                tippsToNotify << [event:'add',target:tippB]
+                                TitleInstancePackagePlatform target = addNewTIPP(result,tippB)
+                                tippsToNotify << [event:'add',target:target]
                             }
                         }
                     }
@@ -419,8 +419,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * Creates a new {@link TitleInstance} with its respective {@link TIPPCoverage} statements
      * @param pkg
      * @param tippData
+     * @return the new {@link TitleInstancePackagePlatform} object
      */
-    void addNewTIPP(Package pkg, Map<String,Object> tippData) throws SyncException {
+    TitleInstancePackagePlatform addNewTIPP(Package pkg, Map<String,Object> tippData) throws SyncException {
         TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
                 gokbId: tippData.uuid,
                 status: RefdataValue.getByValueAndCategory(tippData.status, RDConstants.TIPP_STATUS),
@@ -451,6 +452,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if (!covStmt.save())
                         throw new SyncException("Error on saving coverage data: ${covStmt.errors}")
                 }
+                newTIPP
             }
             else
                 throw new SyncException("Error on saving TIPP data: ${newTIPP.errors}")
@@ -537,8 +539,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     if(titleRecord.identifiers) {
                         //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
-                        titleInstance.ids.clear()
-                        titleInstance.save(flush:true) //damn those wrestlers ...
+                        if(titleInstance.ids){
+                            titleInstance.ids.clear()
+                            titleInstance.save(flush:true) //damn those wrestlers ...
+                        }
                         titleRecord.identifiers.identifier.each { idData ->
                             if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
                                 Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:titleInstance])

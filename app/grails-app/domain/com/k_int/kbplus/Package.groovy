@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -419,6 +420,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                             }
                             costItem.save(flush: true)
                         }
+                        PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
                     }
 
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [this, subscription])
@@ -435,6 +437,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         }
                         costItem.save(flush: true)
                     }
+                    PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
                 }
 
                 SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [this, subscription])

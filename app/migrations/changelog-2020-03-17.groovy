@@ -44,10 +44,6 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "pcc_setting_value_rv_fk", type: "int8") {
-                constraints(nullable: "false")
-            }
-
             column(name: "pcc_sp_fk", type: "int8") {
                 constraints(nullable: "false")
             }

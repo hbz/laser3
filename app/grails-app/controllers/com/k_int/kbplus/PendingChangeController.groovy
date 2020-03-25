@@ -23,7 +23,7 @@ class PendingChangeController extends AbstractDebugController {
         PendingChange pc = PendingChange.get(params.long('id'))
         if(pc.msgParams)
             pendingChangeService.performAccept(pc, User.get(springSecurityService.principal.id))
-        else if(pc.targetProperty)
+        else if(!pc.payload)
             pc.accept()
         redirect(url: request.getHeader('referer'))
     }
@@ -36,7 +36,7 @@ class PendingChangeController extends AbstractDebugController {
         PendingChange pc = PendingChange.get(Long.parseLong(params.id))
         if(pc.msgParams)
             pendingChangeService.performReject(pc, User.get(springSecurityService.principal.id))
-        else if(pc.targetProperty)
+        else if(!pc.payload)
             pc.reject()
         redirect(url: request.getHeader('referer'))
     }

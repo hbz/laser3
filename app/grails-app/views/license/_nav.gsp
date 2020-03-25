@@ -8,7 +8,7 @@
     <g:if test="${showConsortiaFunctions}">
         <semui:subNavItem controller="license" action="members" params="${[id:params.id]}" text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}"/>
         <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <semui:subNavItem controller="license" action="pendingChanges" params="${[id:params.id]}" text="TN-Änderungen" />
+            <semui:subNavItem controller="license" action="pendingChanges" params="${[id:params.id]}" message="pendingChange.plural" />
         </sec:ifAnyGranted>
     </g:if>
 

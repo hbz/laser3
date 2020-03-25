@@ -482,7 +482,7 @@ class PendingChangeService extends AbstractLockableService {
 
     //called from: dashboard.gsp, pendingChanges.gsp, accepetdChanges.gsp
     Map<String,Object> printRow(PendingChange change) {
-        String eventIcon, instanceIcon, eventString, pkgLink, pkgName, titleLink, titleName, platformName, platformLink, holdingLink, subscriptionName, coverageString
+        String eventIcon, instanceIcon, eventString, pkgLink, pkgName, titleLink, titleName, platformName, platformLink, holdingLink, coverageString
         List<Object> eventData
         Locale locale = Locale.getDefault()
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
@@ -491,7 +491,6 @@ class PendingChangeService extends AbstractLockableService {
                 IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(change.oid)
                 holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg.id])
                 pkgName = target.tipp.pkg.name
-                subscriptionName = target.subscription.dropdownNamingConvention()
                 titleName = target.tipp.title.title
             }
             else if(change.oid.contains(TitleInstancePackagePlatform.class.name)) {
@@ -510,7 +509,7 @@ class PendingChangeService extends AbstractLockableService {
                 String issue = messageSource.getMessage('tipp.issue',null,locale)
                 holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: ie.subscription.id, params: [filter: ie.tipp.title.title,pkgfilter: ie.tipp.pkg.id])
                 titleName = ie.tipp.title.title
-                subscriptionName = ie.subscription.dropdownNamingConvention()
+                pkgName = ie.tipp.pkg.name
                 String startDate = target.startDate ? sdf.format(target.startDate) : ""
                 String endDate = target.endDate ? sdf.format(target.endDate) : ""
                 coverageString = "${startDate} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${endDate} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
@@ -539,8 +538,8 @@ class PendingChangeService extends AbstractLockableService {
                 case PendingChangeConfiguration.TITLE_UPDATED:
                     eventIcon = '<i class="yellow circle outline icon"></i>'
                     instanceIcon = '<i class="book icon"></i>'
-                    if(holdingLink && subscriptionName && pkgName) {
-                        eventData = [holdingLink,subscriptionName,pkgName,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),change.oldValue]
+                    if(holdingLink && titleName && pkgName) {
+                        eventData = [holdingLink,titleName,pkgName,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),change.oldValue]
                         if(change.targetProperty in ['hostPlatformURL'])
                             eventData << "<a href='${change.newValue}'>${change.newValue}</a>"
                         else eventData << change.newValue
@@ -559,8 +558,8 @@ class PendingChangeService extends AbstractLockableService {
                 case PendingChangeConfiguration.COVERAGE_UPDATED:
                     eventIcon = '<i class="yellow circle outline icon"></i>'
                     instanceIcon = '<i class="file alternate icon"></i>'
-                    if(holdingLink && subscriptionName && coverageString && titleName) {
-                        eventData = [holdingLink,subscriptionName,titleName,coverageString,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),change.oldValue,change.newValue]
+                    if(holdingLink && pkgName && coverageString && titleName) {
+                        eventData = [holdingLink,pkgName,titleName,coverageString,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),change.oldValue,change.newValue]
                     }
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break

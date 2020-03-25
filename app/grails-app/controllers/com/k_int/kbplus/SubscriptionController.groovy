@@ -184,7 +184,7 @@ class SubscriptionController extends AbstractDebugController {
         if (core_status_filter) params.remove('sort')
 
         if (params.filter) {
-            base_qry = " from IssueEntitlement as ie join ie.coverages ic where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie left join ie.coverages ic where ie.subscription = :subscription "
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
@@ -197,7 +197,7 @@ class SubscriptionController extends AbstractDebugController {
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
         } else {
-            base_qry = " from IssueEntitlement as ie join ie.coverages ic where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie left join ie.coverages ic where ie.subscription = :subscription "
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
@@ -217,7 +217,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         base_qry += " and ie.acceptStatus = :ieAcceptStatus "
-        qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+        qry_params.ieAcceptStatus = IE_ACCEPT_STATUS_FIXED
 
         if (params.pkgfilter && (params.pkgfilter != '')) {
             base_qry += " and ie.tipp.pkg.id = :pkgId "
