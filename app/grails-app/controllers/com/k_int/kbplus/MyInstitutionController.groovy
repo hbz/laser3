@@ -898,7 +898,7 @@ join sub.orgRelations or_sub where
     }
 
 
-    private def exportcurrentSubscription(List<Subscription> subscriptions, String format,contextOrg) {
+    private def exportcurrentSubscription(List<Subscription> subscriptions, String format,Org contextOrg) {
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = ['Name',
                        g.message(code: 'license.label'),
@@ -922,7 +922,8 @@ join sub.orgRelations or_sub where
             asCons = true
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
-        titles.addAll(exportService.loadPropListHeaders(PropertyDefinition.SUB_PROP,contextOrg))
+        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
+        titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         Map<Subscription,Set> providers = [:]
         Map<Subscription,Set> agencies = [:]
         Map<Subscription,Set> identifiers = [:]
@@ -1000,7 +1001,7 @@ join sub.orgRelations or_sub where
                         row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
                         row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
                     }
-                    row.addAll(exportService.processPropertyListValues(PropertyDefinition.SUB_PROP,contextOrg,format,sub))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub))
                     subscriptionData.add(row)
                     break
                 case "csv":
@@ -1030,7 +1031,7 @@ join sub.orgRelations or_sub where
                         row.add(subscriptionMembers.get(sub.id) ?: 0)
                         row.add(costItemCounts.get(sub.id) ?: 0)
                     }
-                    row.addAll(exportService.processPropertyListValues(PropertyDefinition.SUB_PROP,contextOrg,format,sub))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub))
                     subscriptionData.add(row)
                     break
             }

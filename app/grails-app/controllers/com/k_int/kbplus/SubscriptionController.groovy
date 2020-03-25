@@ -5237,7 +5237,7 @@ class SubscriptionController extends AbstractDebugController {
                         InvokerHelper.setProperties(newTask, task.properties)
                         newTask.systemCreateDate = new Date()
                         newTask.subscription = newSubscriptionInstance
-                        newTask.save(flush: true)
+                        newTask.save()
                     }
 
                 }
@@ -5247,7 +5247,7 @@ class SubscriptionController extends AbstractDebugController {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSubscriptionInstance
-                        newOrgRole.save(flush: true)
+                        newOrgRole.save()
 
                     }
 
@@ -5270,7 +5270,7 @@ class SubscriptionController extends AbstractDebugController {
                                 OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                 InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                 newOrgAccessPointLink.subPkg = newSubscriptionPackage
-                                newOrgAccessPointLink.save(flush: true)
+                                newOrgAccessPointLink.save()
                             }
                         }
                     }
@@ -5278,12 +5278,12 @@ class SubscriptionController extends AbstractDebugController {
                 //Copy License
                 if (params.subscription.copyLicense) {
                     newSubscriptionInstance.owner = baseSubscription.owner ?: null
-                    newSubscriptionInstance.save(flush: true)
                 }
                 //Copy InstanceOf
                 if (params.subscription.copylinktoSubscription) {
                     newSubscriptionInstance.instanceOf = baseSubscription?.instanceOf ?: null
                 }
+                newSubscriptionInstance.save()
 
                 if (params.subscription.copyEntitlements) {
 
@@ -5298,14 +5298,14 @@ class SubscriptionController extends AbstractDebugController {
                             newIssueEntitlement.subscription = newSubscriptionInstance
                             newIssueEntitlement.coverages = null
 
-                            if(newIssueEntitlement.save(flush: true)){
+                            if(newIssueEntitlement.save()){
                                 ie.properties.coverages.each{ coverage ->
 
                                     def coverageProperties = coverage.properties
                                     IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
                                     InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                                     newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
-                                    newIssueEntitlementCoverage.save(flush: true)
+                                    newIssueEntitlementCoverage.save()
                                 }
                             }
                         }
@@ -5319,7 +5319,7 @@ class SubscriptionController extends AbstractDebugController {
                         def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscriptionInstance)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.instanceOf = null
-                        copiedProp.save(flush: true)
+                        copiedProp.save()
                         //newSubscriptionInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                     }
                 }
@@ -5331,7 +5331,7 @@ class SubscriptionController extends AbstractDebugController {
                         if (prop.type?.tenant?.id == contextOrg?.id) {
                             def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscriptionInstance)
                             copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.save(flush: true)
+                            copiedProp.save()
                             //newSubscriptionInstance.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                         }
                     }

@@ -86,7 +86,8 @@ class OrganisationService {
         RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION)
         RefdataValue billingContact = RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
         titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value'),responsibleAdmin.getI10n('value'),billingContact.getI10n('value')])
-        titles.addAll(exportService.loadPropListHeaders(PropertyDefinition.ORG_PROP,contextService.getOrg()))
+        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+        titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         List orgData = []
         Map<Org,Map<String,String>> identifiers = [:]
         List identifierList = Identifier.executeQuery("select ident, ident.org from Identifier ident where ident.org in (:orgs) and ident.ns.ns in (:namespaces)",[orgs:orgs,namespaces:['wibid','ezb','ISIL']])
@@ -155,7 +156,7 @@ class OrganisationService {
                     row.add([field: furtherData.responsibleAdmin ?: '', style: null])
                     //Billing contact
                     row.add([field: furtherData.billingContact ?: '', style: null])
-                    row.addAll(exportService.processPropertyListValues(PropertyDefinition.ORG_PROP,contextService.org,format,org))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,org))
                     orgData.add(row)
                 }
                 Map sheetData = [:]
@@ -198,7 +199,7 @@ class OrganisationService {
                     row.add(furtherData.responsibleAdmin ?: '')
                     //Billing contact
                     row.add(furtherData.billingContact ?: '')
-                    row.addAll(exportService.processPropertyListValues(PropertyDefinition.ORG_PROP,contextService.org,format,org))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,org))
                     orgData.add(row)
                 }
                 return exportService.generateSeparatorTableString(titles,orgData,',')
