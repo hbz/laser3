@@ -46,11 +46,9 @@
             <g:link class="item" action="_delete" id="${params.id}"><i class="trash alternate icon"></i> ${message(code:'deletion.org')}</g:link>
         </sec:ifAnyGranted>
     </g:if>
-    <g:if test="${actionName == 'ids'}">
-        <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_ADMIN">
-            <a class="item" onclick="IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
-            <a class="item" onclick="IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
-        </sec:ifAnyGranted>
+    <g:if test="${actionName in ['ids'] && editable}">
+        <a class="item" onclick="IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
+        <a class="item" onclick="IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
     </g:if>
 </semui:actionsDropdown>
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">

@@ -39,7 +39,7 @@ class GenericOIDService {
     GrailsHibernateUtil.unwrapIfProxy(result)
   }
 
-  String getOID(def object) {
+  static String getOID(def object) {
     if (object) {
       return "${object.class.name}:${object.id}"
     }

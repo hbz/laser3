@@ -1452,33 +1452,67 @@ class OrganisationController extends AbstractDebugController {
             redirect action: 'show', id: orgInstance.id
         }
     }
-    def addSubjectGroup()
-    {
+    def addSubjectGroup() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-            redirect action: 'list'
+            redirect(url: request.getHeader('referer'))
             return
         }
-
-        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
-            result.editable = true
+        RefdataValue newSubjectGroup = RefdataValue.get(params.subjectGroup)
+        if (!newSubjectGroup) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.subjectGroup.label'), params.subjectGroup])
+            redirect(url: request.getHeader('referer'))
+            return
         }
-        else {
+        if (orgInstance.getSubjectGroup().find { it.subjectGroupId == newSubjectGroup.id }) {
+            flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.subjectGroup.label')])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
+            result.editable = true
+        } else {
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
         }
 
-        if(result.editable)
-        {
-            orgInstance.addToSubjectGroup(subjectGroup:  RefdataValue.get(params.subjectGroup))
+        if (result.editable){
+            orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
             orgInstance.save(flush: true)
             flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }
+
+    def deleteSubjectGroup() {
+        Map<String, Object> result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        Org orgInstance = Org.get(params.org)
+
+        if (!orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
+            result.editable = true
+        } else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+        }
+
+        if(result.editable) {
+            def osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
+            orgInstance.removeFromSubjectGroup(osg)
+            orgInstance.save()
+            osg.delete()
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+            redirect(url: request.getHeader('referer'))
+        }
+    }
+
     private Map setResultGenericsAndCheckAccess(params) {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org

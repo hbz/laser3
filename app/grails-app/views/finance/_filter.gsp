@@ -29,6 +29,17 @@
                         />
                     </div>
                 </g:if>
+                <g:if test="${consMembers}">
+                    <div class="field">
+                        <label for="filterSubMembers">
+                            <g:message code="${subMemberLabel}"/>
+                        </label>
+                        <g:select id="filterConsMembers" name="filterConsMembers" multiple="" value="${filterPresets?.filterConsMembers}"
+                                  class="ui fluid search dropdown" from="${consMembers}" optionKey="id" optionValue="${{it.dropdownNamingConvention(institution)}}"
+                                  noSelection="${['':message(code:'default.select.all.label')]}"
+                        />
+                    </div>
+                </g:if>
                 <div class="field">
                     <label>${message(code:'default.myProviderAgency.label')}</label>
                     <div class="ui multiple search selection dropdown newFilter" id="filterSubProviders">
