@@ -27,6 +27,9 @@
                     </g:if>
                 </g:each>
             </div>
+
+
+
             <g:each in="${dataToDisplay}" var="view">
                 <g:if test="${view == 'own'}">
                     <div data-tab="own" class="ui bottom attached tab">
@@ -35,7 +38,31 @@
                 </g:if>
                 <g:if test="${view in ['cons','consAtSubscr']}">
                     <div data-tab="cons" class="ui bottom attached tab">
-                        <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
+
+                        <br>
+                        <div class="field" style="text-align: right;">
+                            <button id="bulkCostItems-toggle"
+                                    class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
+                            <script>
+                                $('#bulkCostItems-toggle').on('click', function () {
+                                    $('#bulkCostItems').toggleClass('hidden')
+                                    if ($('#bulkCostItems').hasClass('hidden')) {
+                                        $(this).text("${g.message(code: 'financials.bulkCostItems.show')}")
+                                    } else {
+                                        $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
+                                    }
+                                })
+                            </script>
+                        </div>
+
+                            <g:form action="processCostItemsBulk" name="costItemsBulk" method="post" class="ui form">
+                            <div id="bulkCostItems" class="hidden">
+                                <g:render template="bulkCostItems"/>
+                            </div>
+
+                            <g:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
+
+                            </g:form>
                     </div>
                 </g:if>
                 <g:if test="${view in ['coll','collAtSubscr']}">

@@ -230,7 +230,7 @@
                     </td>
 
                     <td class="center aligned">
-                        ${surveyInfo.type.getI10n('value')} (${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')})
+                        ${surveyInfo.type.getI10n('value')}
                     </td>
                     <td>
                         <g:formatDate formatName="default.date.format.notime"
@@ -346,15 +346,6 @@
                         <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui button icon">
                             <i class="pencil icon"></i>
                         </g:link>
-                        %{--<g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING]}">
-                            <g:link class="ui icon negative button js-open-confirm-modal"
-                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.survey", args: [surveyConfig?.getSurveyName()])}"
-                                    data-confirm-term-how="delete"
-                                    controller="survey" action="deleteSurveyInfo"
-                                    id="${surveyInfo?.id}">
-                                <i class="trash alternate icon"></i>
-                            </g:link>
-                        </g:if>--}%
                     </td>
 
 

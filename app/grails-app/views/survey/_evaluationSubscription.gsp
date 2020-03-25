@@ -3,37 +3,31 @@
 
 <g:if test="${surveyConfig}">
 
+    <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
     <div class="ui horizontal segments">
+        <div class="ui segment center aligned">
+            <b>${message(code: 'surveyConfig.subOrgs.label')}:</b>
+            <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
+                <div class="ui circular label">
+                    ${countParticipants.subMembers}
+                </div>
+            </g:link>
+        </div>
+
         <div class="ui segment center aligned">
             <b>${message(code: 'surveyConfig.orgs.label')}:</b>
             <g:link controller="survey" action="surveyParticipants"
                     id="${surveyConfig.surveyInfo.id}"
                     params="[surveyConfigID: surveyConfig?.id]">
-                <div class="ui circular label">${surveyConfig?.orgs?.size()}</div>
+                <div class="ui circular label">${countParticipants.surveyMembers}</div>
             </g:link>
-        </div>
 
-        <div class="ui segment center aligned">
-            <b>${message(code: 'surveyConfig.subOrgsWithoutMultiYear.label')}:</b>
-            <g:link controller="subscription" action="members" id="${surveyConfig.subscription.id}"
-                    params="[subRunTime: true, filterSet: true]">
-                <div class="ui circular label">
-                    ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(surveyConfig.subscription, false)?.size()}
-                </div>
-            </g:link>
-        </div>
-
-        <div class="ui segment center aligned">
-            <b>${message(code: 'surveyConfig.subOrgsWithMultiYear.label')}:</b>
-            <g:link controller="subscription" action="members" id="${surveyConfig.subscription.id}"
-                    params="[subRunTimeMultiYear: true, filterSet: true]">
-                <div class="ui circular label">
-                    ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(surveyConfig.subscription, true)?.size()}
-                </div>
-            </g:link>
+            <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
+                ( ${countParticipants.subMembersWithMultiYear}
+                ${message(code: 'surveyConfig.subOrgsWithMultiYear.label')} )
+            </g:if>
         </div>
     </div>
-
 </g:if>
 
 <semui:form>
@@ -68,7 +62,7 @@
                 it?.type.id
             }.sort { it?.value[0]?.type?.name }}" var="property">
                 <th>
-                    <g:set var="surveyProperty" value="${SurveyProperty.get(property.key)}"/>
+                    <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
                     ${surveyProperty?.getI10n('name')}
 
                     <g:if test="${surveyProperty?.getI10n('expl')}">
@@ -179,7 +173,7 @@
                                 </span>
                             </g:if>
 
-                            <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PARTICIPATION_PROPERTY?.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
+                            <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION?.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
                                       data-variation="tiny"
                                       data-content="${message(code: 'surveyResult.particiption.terminated')}">
@@ -239,7 +233,7 @@
                 it?.type.id
             }.sort { it?.value[0]?.type?.name }}" var="property">
                 <th>
-                    <g:set var="surveyProperty" value="${SurveyProperty.get(property.key)}"/>
+                    <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
                     ${surveyProperty?.getI10n('name')}
 
                     <g:if test="${surveyProperty?.getI10n('expl')}">
@@ -313,7 +307,7 @@
                                 </span>
                             </g:if>
 
-                            <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PARTICIPATION_PROPERTY?.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
+                            <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION?.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
                                       data-variation="tiny"
                                       data-content="${message(code: 'surveyResult.particiption.terminated')}">

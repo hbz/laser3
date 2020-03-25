@@ -76,7 +76,7 @@ ${message(code: 'survey.label')} -
 
             <p>
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                <g:message code="surveyResult.finish.info" />.
+                <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finis.info'}"/>.
             </p>
         </div>
     </div>
