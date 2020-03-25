@@ -143,34 +143,29 @@
         </div>
 
         <div class="three fields">
-
-            <div class="field">
-                <fieldset id="subscritionType">
-                    <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
-                    <div class="inline fields la-filter-inline">
-                        <%
-                            List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
-
-                            if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
+            <g:if test="${institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID}">
+                <div class="field">
+                    <fieldset id="subscritionType">
+                        <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
+                        <div class="inline fields la-filter-inline">
+                            <%
+                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
-                            }
-                            if(!accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
-                            }
-                        %>
-                        <g:each in="${subTypes}" var="subType">
-                            <div class="inline field">
-                                <div class="ui checkbox">
-                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                    <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                        <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
-                                           tabindex="0">
+                            %>
+                            <g:each in="${subTypes}" var="subType">
+                                <div class="inline field">
+                                    <div class="ui checkbox">
+                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
+                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                               tabindex="0">
+                                    </div>
                                 </div>
-                            </div>
-                        </g:each>
-                    </div>
-                </fieldset>
-            </div>
+                            </g:each>
+                        </div>
+                    </fieldset>
+                </div>
+            </g:if>
             <div class="field">
                 <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">

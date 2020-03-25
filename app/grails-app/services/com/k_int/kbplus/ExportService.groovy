@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.DateUtil
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -157,17 +158,10 @@ class ExportService {
 	 * @param contextOrg - the context {@link Org}
 	 * @return a {@link List} of headers
 	 */
-	List<String> loadPropListHeaders(String propDefConst, Org contextOrg) {
-		List<PropertyDefinition> propList = []
+	List<String> loadPropListHeaders(Set<PropertyDefinition> propSet) {
 		List<String> titles = []
-		if(propDefConst == PropertyDefinition.ORG_PROP)
-			propList.addAll(PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg))
-		else {
-			propList.addAll(PropertyDefinition.findAllPublicAndPrivateProp([propDefConst],contextOrg))
-		}
-		propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
-		propList.each {
-			titles.add(it.name)
+		propSet.each {
+			titles.add(it.name_de)
 		}
 		titles
 	}
@@ -179,9 +173,10 @@ class ExportService {
 	 * @param format
 	 * @return a {@link List} or a {@link List} of {@link Map}s for the export sheet containing the value
 	 */
-	List processPropertyListValues(String propDefConst,Org contextOrg, String format, def target) {
+	List processPropertyListValues(Set<PropertyDefinition> propertyDefinitions, String format, def target) {
 		List cells = []
-		PropertyDefinition.findAllPublicAndPrivateProp([propDefConst],contextOrg).each { pd ->
+		SimpleDateFormat sdf = DateUtil.getSimpleDateFormatByToken('default.date.format.notime')
+		propertyDefinitions.each { pd ->
 			def value = ''
 			target.customProperties.each{ CustomProperty prop ->
 				if(prop.type.descr == pd.descr && prop.type == pd && prop.value) {
@@ -195,7 +190,7 @@ class ExportService {
 						value = prop.decValue.toString()
 					}
 					else if (prop.type.type == Date.toString()){
-						value = prop.dateValue.toString()
+						value = sdf.format(prop.dateValue)
 					}
 					else if (prop.type.type == RefdataValue.toString()) {
 						value = prop.refValue?.getI10n('value') ?: ''
@@ -214,7 +209,7 @@ class ExportService {
 						value = prop.decValue.toString()
 					}
 					else if (prop.type.type == Date.toString()){
-						value = prop.dateValue.toString()
+						value = sdf.format(prop.dateValue)
 					}
 					else if (prop.type.type == RefdataValue.toString()) {
 						value = prop.refValue?.getI10n('value') ?: ''
