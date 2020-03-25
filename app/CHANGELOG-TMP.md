@@ -4,6 +4,8 @@
 
 2283    25.03.2020  hbz-dev     Moe     Feature     Ausschüttungsfunktion CostItems
 
+--      25.03.2020  hbz-dev     Andreas Feature     Auswahlliste der Teilnehmer in Finanzübersicht wieder eingeblendet
+
 2286    24.03.2020  hbz-dev     Andreas Bug         Summenwerte auf BigDecimal umgestellt, sodass nur zwei Nachkommastellen ausgegeben werden
 
 2284    24.03.2020  hbz-dev     Andreas Feature     Checkbox-Angebot bei Lizenzfilter gemäß Ticket angepasst

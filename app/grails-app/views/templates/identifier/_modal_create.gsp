@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IdentifierNamespace" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.IdentifierNamespace" %>
 <semui:modal id="modalCreateIdentifier"
              text="${identifier? message(code:'default.identifier.edit') : message(code:'default.identifier.create')}"
              isEditModal="true"
@@ -13,12 +13,21 @@
 
         <div class="field fieldcontain">
             <label for="namespace">${message(code: 'identifier.namespace.label')}:</label>
-
+            <%
+                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name || nsType == null)}
+                        .list(sort: 'ns')
+                        .sort { a, b ->
+                    String aVal = a.getI10n('name') ?: a.ns
+                    String bVal = b.getI10n('name') ?: b.ns
+                    aVal.compareToIgnoreCase bVal
+                }
+                .collect{ it }
+            %>
             <g:select id="namespace" name="ns.id"
-                      from="${com.k_int.kbplus.IdentifierNamespace.list(sort: 'ns')}"
+                      from="${nsList}"
                       optionKey="id"
                       required=""
-                      optionValue="ns"
+                      optionValue="${{ it.getI10n('name') ?: it.ns }}"
                       value="${identifier?.ns?.id}"
                       class="ui search dropdown"/>
         </div>
