@@ -909,33 +909,28 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         //the city Coventry is beautiful, isn't it ... but here is the COVerageENTRY meant.
                                         diff.covDiffs.each { covEntry ->
                                             TIPPCoverage tippCov = (TIPPCoverage) covEntry.target
-                                            covEntry.diffs.each { covDiff ->
-                                                switch(covDiff.event) {
-                                                    case 'update':
-                                                        IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                            switch(covEntry.event) {
+                                                case 'update': IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                                    covEntry.diffs.each { covDiff ->
                                                         changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
                                                         changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
                                                         changeMap.prop = covDiff.prop
-                                                        if(covDiff.prop in DATE_FIELDS) {
-                                                            Date date = DateUtil.parseDateGeneric(value)
-                                                            sdf.format(date)
-                                                        }
-                                                        else {
-                                                            changeMap.oldValue = ieCov[covDiff.prop]
-                                                            changeMap.newValue = covDiff.newValue
-                                                        }
-                                                        break
-                                                    case 'added':
-                                                        changeDesc = PendingChangeConfiguration.NEW_COVERAGE
-                                                        changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
-                                                        break
-                                                    case 'delete':
-                                                        IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                        changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
-                                                        changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
-                                                        break
-                                                }
-                                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                                        changeMap.oldValue = ieCov[covDiff.prop]
+                                                        changeMap.newValue = covDiff.newValue
+                                                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                                    }
+                                                    break
+                                                case 'added':
+                                                    changeDesc = PendingChangeConfiguration.NEW_COVERAGE
+                                                    changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
+                                                    changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                                    break
+                                                case 'delete':
+                                                    IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                                    changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
+                                                    changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                    changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                                    break
                                             }
                                         }
                                     }

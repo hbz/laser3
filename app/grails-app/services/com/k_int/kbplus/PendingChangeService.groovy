@@ -489,9 +489,9 @@ class PendingChangeService extends AbstractLockableService {
         if(change.oid) {
             if(change.oid.contains(IssueEntitlement.class.name)){
                 IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(change.oid)
-                holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg])
+                holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg.id])
                 pkgName = target.tipp.pkg.name
-                subscriptionName = target.subscription.name
+                subscriptionName = target.subscription.dropdownNamingConvention()
                 titleName = target.tipp.title.title
             }
             else if(change.oid.contains(TitleInstancePackagePlatform.class.name)) {
@@ -510,8 +510,10 @@ class PendingChangeService extends AbstractLockableService {
                 String issue = messageSource.getMessage('tipp.issue',null,locale)
                 holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: ie.subscription.id, params: [filter: ie.tipp.title.title,pkgfilter: ie.tipp.pkg.id])
                 titleName = ie.tipp.title.title
-                subscriptionName = ie.subscription.name
-                coverageString = "${sdf.format(target.startDate)} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${sdf.format(target.endDate)} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
+                subscriptionName = ie.subscription.dropdownNamingConvention()
+                String startDate = target.startDate ? sdf.format(target.startDate) : ""
+                String endDate = target.endDate ? sdf.format(target.endDate) : ""
+                coverageString = "${startDate} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${endDate} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
             }
             else if(change.oid.contains(TIPPCoverage.class.name)) {
                 TIPPCoverage target = (TIPPCoverage) genericOIDService.resolveOID(change.oid)
@@ -520,7 +522,9 @@ class PendingChangeService extends AbstractLockableService {
                 platformName = target.tipp.platform.name
                 String volume = messageSource.getMessage('tipp.volume',null,locale)
                 String issue = messageSource.getMessage('tipp.issue',null,locale)
-                coverageString = "${sdf.format(target.startDate)} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${sdf.format(target.endDate)} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
+                String startDate = target.startDate ? sdf.format(target.startDate) : ""
+                String endDate = target.endDate ? sdf.format(target.endDate) : ""
+                coverageString = "${startDate} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${endDate} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
             }
             switch(change.msgToken) {
             //pendingChange.message_TP01 (newTitle)
@@ -536,7 +540,7 @@ class PendingChangeService extends AbstractLockableService {
                     eventIcon = '<i class="yellow circle outline icon"></i>'
                     instanceIcon = '<i class="book icon"></i>'
                     if(holdingLink && subscriptionName && pkgName) {
-                        eventData = [holdingLink,subscriptionName,pkgName,change.targetProperty,change.oldValue]
+                        eventData = [holdingLink,subscriptionName,pkgName,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),change.oldValue]
                         if(change.targetProperty in ['hostPlatformURL'])
                             eventData << "<a href='${change.newValue}'>${change.newValue}</a>"
                         else eventData << change.newValue
@@ -556,7 +560,7 @@ class PendingChangeService extends AbstractLockableService {
                     eventIcon = '<i class="yellow circle outline icon"></i>'
                     instanceIcon = '<i class="file alternate icon"></i>'
                     if(holdingLink && subscriptionName && coverageString && titleName) {
-                        eventData = [holdingLink,subscriptionName,titleName,coverageString,change.targetProperty,change.oldValue,change.newValue]
+                        eventData = [holdingLink,subscriptionName,titleName,coverageString,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),change.oldValue,change.newValue]
                     }
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break

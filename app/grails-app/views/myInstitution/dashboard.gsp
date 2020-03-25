@@ -60,7 +60,7 @@
         <semui:messages data="${flash}" />
 
         <br />
-
+    </div>
     <%-- should be made overridable by pagination setting --%>
     <%
         def US_DASHBOARD_TAB
@@ -78,11 +78,13 @@
             ${message(code:'myinst.dash.due_dates.label')}
         </a>
 
-        <a class="${US_DASHBOARD_TAB.getValue().value == 'PendingChanges' || US_DASHBOARD_TAB.getValue() == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
-            <i class="history icon large"></i>
-            ${pendingCount}
-            ${message(code:'myinst.pendingChanges.label')}
-        </a>
+        <g:if test="${editable}">
+            <a class="${US_DASHBOARD_TAB.getValue().value == 'PendingChanges' || US_DASHBOARD_TAB.getValue() == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
+                <i class="history icon large"></i>
+                ${pendingCount}
+                ${message(code:'myinst.pendingChanges.label')}
+            </a>
+        </g:if>
         <a class="${US_DASHBOARD_TAB.getValue().value == 'AcceptedChanges' || US_DASHBOARD_TAB.getValue() == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
             <i class="bullhorn icon large"></i>
             ${notificationsCount}
@@ -132,49 +134,51 @@
             </div>
         </div>
 
-        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'PendingChanges' || US_DASHBOARD_TAB.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
-            <div class="la-float-right">
-                <g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>
-            </div>
-            <div class="ui internally celled grid">
-                <div class="row">
-                    <div class="two wide column">
-                        <g:message code="profile.dashboard.changes.eventtype"/>
-                    </div><!-- .column -->
-                    <div class="two wide column">
-                        <g:message code="profile.dashboard.changes.objecttype"/>
-                    </div><!-- .column -->
-                    <div class="nine wide column">
-                        <g:message code="profile.dashboard.changes.event"/>
-                    </div><!-- .column -->
-                    <div class="three wide column">
-                        <g:message code="profile.dashboard.changes.action"/>
-                    </div><!-- .column -->
+        <g:if test="${editable}">
+            <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'PendingChanges' || US_DASHBOARD_TAB.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
+                <div class="la-float-right">
+                    <g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>
                 </div>
-                <g:each in="${pending}" var="change">
-                    <g:set var="row" value="${pendingChangeService.printRow(change)}" />
-                    <g:set var="event" value="${row.eventData}"/>
+                <div class="ui internally celled grid">
                     <div class="row">
                         <div class="two wide column">
-                            ${raw(row.eventIcon)}
+                            <g:message code="profile.dashboard.changes.eventtype"/>
                         </div><!-- .column -->
                         <div class="two wide column">
-                            ${raw(row.instanceIcon)}
+                            <g:message code="profile.dashboard.changes.objecttype"/>
                         </div><!-- .column -->
                         <div class="nine wide column">
-                            ${raw(row.eventString)}
+                            <g:message code="profile.dashboard.changes.event"/>
                         </div><!-- .column -->
                         <div class="three wide column">
-                            <div class="ui buttons">
-                                <g:link class="ui positive button" controller="pendingChange" action="accept" id="${change.id}"><g:message code="default.button.accept.label"/></g:link>
-                                <div class="or"><g:message code="default.or"/></div>
-                                <g:link class="ui negative button" controller="pendingChange" action="reject" id="${change.id}"><g:message code="default.button.reject.label"/></g:link>
-                            </div>
+                            <g:message code="profile.dashboard.changes.action"/>
                         </div><!-- .column -->
-                    </div><!-- .row -->
-                </g:each>
-            </div><!-- .grid -->
-        </div>
+                    </div>
+                    <g:each in="${pending}" var="change">
+                        <g:set var="row" value="${pendingChangeService.printRow(change)}" />
+                        <g:set var="event" value="${row.eventData}"/>
+                        <div class="row">
+                            <div class="two wide column">
+                                ${raw(row.eventIcon)}
+                            </div><!-- .column -->
+                            <div class="two wide column">
+                                ${raw(row.instanceIcon)}
+                            </div><!-- .column -->
+                            <div class="nine wide column">
+                                ${raw(row.eventString)}
+                            </div><!-- .column -->
+                            <div class="three wide column">
+                                <div class="ui buttons">
+                                    <g:link class="ui positive button" controller="pendingChange" action="accept" id="${change.id}"><g:message code="default.button.accept.label"/></g:link>
+                                    <div class="or"><g:message code="default.or"/></div>
+                                    <g:link class="ui negative button" controller="pendingChange" action="reject" id="${change.id}"><g:message code="default.button.reject.label"/></g:link>
+                                </div>
+                            </div><!-- .column -->
+                        </div><!-- .row -->
+                    </g:each>
+                </div><!-- .grid -->
+            </div>
+        </g:if>
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'AcceptedChanges'}" data-tab="acceptedchanges">
             <div class="la-float-right">

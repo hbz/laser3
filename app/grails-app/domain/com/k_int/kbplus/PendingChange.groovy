@@ -24,8 +24,6 @@ class PendingChange {
 
     @Transient
     final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
-    @Transient
-    static SimpleDateFormat sdf = DateUtil.getSimpleDateFormatByToken('default.date.format.notime')
 
     final static PROP_LICENSE       = 'license'
     final static PROP_PKG           = 'pkg'
@@ -139,9 +137,11 @@ class PendingChange {
      */
     static PendingChange construct(Map<String,Object> configMap) throws CreationException {
         if((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem)) {
-            if(configMap.prop)
+            PendingChange pc = new PendingChange()
+            if(configMap.prop) {
                 executeUpdate('update PendingChange pc set status = :superseded where :target in (subscription,license,costItem) and targetProperty = :prop',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,prop:configMap.prop])
-            PendingChange pc = new PendingChange(targetProperty: configMap.prop)
+                pc.targetProperty = configMap.prop
+            }
             if(configMap.target instanceof Subscription)
                 pc.subscription = (Subscription) configMap.target
             else if(configMap.target instanceof License)
@@ -150,8 +150,15 @@ class PendingChange {
                 pc.costItem = (CostItem) configMap.target
             pc.msgToken = configMap.msgToken
             pc.targetProperty = configMap.prop
-            pc.newValue = configMap.newValue
-            pc.oldValue = configMap.oldValue //must be imperatively the IssueEntitlement's current value if it is a titleUpdated event!
+            if(pc.targetProperty in PendingChange.DATE_FIELDS) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                pc.newValue = configMap.newValue ? sdf.format(configMap.newValue) : null
+                pc.oldValue = configMap.oldValue ? sdf.format(configMap.oldValue) : null
+            }
+            else {
+                pc.newValue = configMap.newValue
+                pc.oldValue = configMap.oldValue //must be imperatively the IssueEntitlement's current value if it is a titleUpdated event!
+            }
             pc.oid = configMap.oid
             pc.status = configMap.status
             pc.ts = new Date()
@@ -182,7 +189,7 @@ class PendingChange {
             case PendingChangeConfiguration.TITLE_UPDATED:
                 if(target instanceof IssueEntitlement) {
                     IssueEntitlement targetTitle = (IssueEntitlement) target
-                    targetTitle[targetProperty] = newValue
+                    targetTitle[targetProperty] = getNewValue()
                     if(targetTitle.save()) {
                         done = true
                     }
@@ -206,7 +213,7 @@ class PendingChange {
             case PendingChangeConfiguration.COVERAGE_UPDATED:
                 if(target instanceof IssueEntitlementCoverage) {
                     IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
-                    targetCov[targetProperty] = newValue
+                    targetCov[targetProperty] = getNewValue()
                     if(targetCov.save())
                         done = true
                     else throw new ChangeAcceptException("problems when updating coverage statement - pending change not accepted: ${targetCov.errors}")
@@ -253,21 +260,30 @@ class PendingChange {
         true
     }
 
-    String getOldValue() {
-        outputField(oldValue)
+    def getOldValue() {
+        if(oldValue)
+            return outputField(oldValue)
+        else return null
     }
 
-    String getNewValue() {
-        outputField(newValue)
+    def getNewValue() {
+        if(newValue)
+            return outputField(newValue)
+        else return null
     }
 
-    String outputField(String value) {
+    /**
+     * Converts the given value according to the field type
+     * @param value - the string value
+     * @return the value as {@link Date} or {@link String}
+     */
+    def outputField(String value) {
+        def ret
         if(targetProperty in DATE_FIELDS) {
-            GregorianCalendar date = new GregorianCalendar()
-
-            sdf.format(date)
+            ret = DateUtil.parseDateGeneric(value)
         }
-        else value
+        else ret = value
+        ret
     }
 
     def workaroundForDatamigrate() {
