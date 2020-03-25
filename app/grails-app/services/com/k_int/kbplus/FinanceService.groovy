@@ -175,10 +175,15 @@ class FinanceService {
                         instanceFilter = " and sub.instanceOf = null "
                     }
                     String subJoin = filterQuery.subFilter || instanceFilter ? "join ci.sub sub " : ""
+                    String subFilter = filterQuery.subFilter+instanceFilter
+                    subFilter = subFilter.replace(" and orgRoles.org in (:filterConsMembers) ","")
+                    Map<String,Object> ownFilter = [:]
+                    ownFilter.putAll(filterQuery.filterData)
+                    ownFilter.remove('filterConsMembers')
                     String queryStringBase = "select ci from CostItem ci ${subJoin}" +
-                        "where ci.owner = :org ${genericExcludes+filterQuery.subFilter+instanceFilter+filterQuery.ciFilter} "+
+                        "where ci.owner = :org ${genericExcludes+subFilter+filterQuery.ciFilter} "+
                         "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder
-                    List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+filterQuery.filterData)
+                    List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
                     result.own = [count:ownSubscriptionCostItems.size()]
                     if(ownSubscriptionCostItems) {
                         result.own.costItems = ownSubscriptionCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
@@ -193,10 +198,10 @@ class FinanceService {
                         'join subC.orgRelations roleC ' +
                         'join sub.orgRelations roleMC ' +
                         'join sub.orgRelations orgRoles ' +
-                        'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType)'+
+                        'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType in (:subscrType)'+
                         genericExcludes+filterQuery.subFilter+filterQuery.ciFilter+
                         ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
-                        [org:org,consortialType:[OR_SUBSCRIPTION_CONSORTIA],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,consortialType:OR_SUBSCRIPTION_CONSORTIA,subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
                         List<CostItem> consortialCostItems = consortialCostRows.collect { row -> row[0] }
@@ -218,10 +223,10 @@ class FinanceService {
                         'join subC.orgRelations roleC ' +
                         'join sub.orgRelations roleMC ' +
                         'join sub.orgRelations orgRoles ' +
-                        'where orgC = :org and orgC = roleC.org and roleMC.roleType in :collectiveType and orgRoles.roleType in (:subscrType)'+
+                        'where orgC = :org and orgC = roleC.org and roleMC.roleType = :collectiveType and orgRoles.roleType in (:subscrType)'+
                         genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
                         ' order by '+configMap.sortConfig.collSort+' '+configMap.sortConfig.collOrder,
-                        [org:org,collectiveType:[OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,collectiveType:OR_SUBSCRIPTION_COLLECTIVE,subscrType:[OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
                     result.coll = [count:0]
                     if(collectiveCostRows) {
                         Set<CostItem> collectiveCostItems = collectiveCostRows.collect { row -> row[0] }
@@ -266,7 +271,7 @@ class FinanceService {
         LinkedHashMap queryParams = [:]
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         //subscription filter settings
-        //subscription members
+        //subscription members A (from /subFinance)
         if(params.filterSubMembers) {
             subFilterQuery += " and sub in (:filterSubMembers) "
             List<Subscription> filterSubMembers = []
@@ -276,6 +281,17 @@ class FinanceService {
             }
             queryParams.filterSubMembers = filterSubMembers
             log.info(queryParams.filterSubMembers)
+        }
+        //subscription members B (from /finance)
+        if(params.filterConsMembers) {
+            subFilterQuery += " and orgRoles.org in (:filterConsMembers) "
+            List<Org> filterConsMembers = []
+            String[] consMembers = params.list("filterConsMembers")
+            consMembers.each { consMember ->
+                filterConsMembers.add(Org.get(Long.parseLong(consMember)))
+            }
+            queryParams.filterConsMembers = filterConsMembers
+            log.info(queryParams.filterConsMembers)
         }
         //providers
         if(params.filterSubProviders) {
@@ -1151,6 +1167,16 @@ class FinanceService {
                     result.showView = 'cons'
                     result.showConsortiaFunctions = true
                     result.editConf.showVisibilitySettings = true
+                    result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
+                    Set<Org> consMembers = Subscription.executeQuery(
+                            'select oo.org, oo.org.sortname as sortname from Subscription s ' +
+                                    'join s.instanceOf subC ' +
+                                    'join subC.orgRelations roleC ' +
+                                    'join s.orgRelations roleMC ' +
+                                    'join s.orgRelations oo ' +
+                                    'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,consortialType:OR_SUBSCRIPTION_CONSORTIA,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
+                    result.consMembers = consMembers
+                    result.editConf.showVisibilitySettings = true
                 }
                 break
         //cases four to nine
@@ -1200,6 +1226,8 @@ class FinanceService {
                     result.showView = 'subscr'
                     result.showCollectiveFunctions = true
                     result.editConf.showVisibilitySettings = true
+                    result.subMembersLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
+                    result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo join s.instanceOf.orgRelations parent where oo.roleType in :subscrRoles and parent.org = :contextOrg order by sortname asc',[contextOrg:result.institution,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                 }
                 break
         //cases ten and eleven

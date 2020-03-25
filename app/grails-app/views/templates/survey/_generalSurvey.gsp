@@ -2,14 +2,15 @@
 <div class="ui stackable grid">
     <div class="twelve wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
-
+            <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
             <div class="ui horizontal segments">
+
                 <div class="ui segment left aligned">
                     <b>${message(code: 'surveyConfig.orgs.label')}:</b>
                     <g:link controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig?.id]">
-                        <div class="ui circular label">${surveyConfig?.orgs?.size()}</div>
+                        <div class="ui circular label">${countParticipants.surveyMembers}</div>
                     </g:link>
                 </div>
             </div>

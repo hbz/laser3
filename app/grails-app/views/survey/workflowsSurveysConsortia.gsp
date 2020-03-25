@@ -249,7 +249,7 @@
                         </td>
 
                         <td class="center aligned">
-                            ${surveyInfo.type.getI10n('value')} (${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')})
+                            ${surveyInfo.type.getI10n('value')}
                         </td>
                         <td>
                             <g:formatDate formatName="default.date.format.notime"

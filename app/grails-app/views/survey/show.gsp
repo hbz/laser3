@@ -71,7 +71,7 @@
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.type.label')}</dt>
                             <dd>
-                                ${surveyInfo.type.getI10n('value')} (${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')})
+                                ${surveyInfo.type.getI10n('value')}
                             </dd>
 
                         </dl>

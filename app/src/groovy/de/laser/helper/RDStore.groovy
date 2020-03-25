@@ -137,6 +137,7 @@ class RDStore {
     static final SURVEY_TYPE_RENEWAL                = getRefdataValue('renewal', RDConstants.SURVEY_TYPE)
     static final SURVEY_TYPE_INTEREST               = getRefdataValue('interest', RDConstants.SURVEY_TYPE)
     static final SURVEY_TYPE_TITLE_SELECTION        = getRefdataValue('selection', RDConstants.SURVEY_TYPE)
+    static final SURVEY_TYPE_SUBSCRIPTION        = getRefdataValue('subscription survey', RDConstants.SURVEY_TYPE)
 
     static final SUBSCRIPTION_TYPE_LOCAL            = getRefdataValue('Local Licence', RDConstants.SUBSCRIPTION_TYPE)
     static final SUBSCRIPTION_TYPE_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_TYPE)

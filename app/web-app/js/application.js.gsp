@@ -562,9 +562,9 @@ r2d2 = {
         // confirmation modal
         var buildConfirmationModal =
             function(that){
-                var $body = $('body');
-                var $modal = $('#js-modal');
-                var focusableElementsString = "a[href], area[href], input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]";
+                //var $body = $('body');
+                //var $modal = $('#js-modal');
+                //var focusableElementsString = "a[href], area[href], input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]";
                 var ajaxUrl = that.getAttribute("data-confirm-messageUrl")
                 if (ajaxUrl) {
                     $.ajax({
@@ -634,7 +634,7 @@ r2d2 = {
                         onDeny : function() {
                             $('#js-confirmation-content-term').html('')
                         },
-                        onShow : function() {
+/*                        onShow : function() {
                             $modal.removeAttr('aria-hidden');
                             // is needed to hide the rest of the page from Screenreaders in case of open the modal
                             if ($('#js-modal-page').length === 0) { // just to avoid missing #js-modal-page
@@ -675,7 +675,7 @@ r2d2 = {
                         onHidden : function() {
                             $page.removeAttr('aria-hidden');
                             $modal.attr('aria-hidden', 'true');
-                        }
+                        }*/
                     })
                     .modal('show')
                 ;

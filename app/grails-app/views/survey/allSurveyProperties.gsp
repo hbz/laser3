@@ -89,14 +89,14 @@
                     </td>
                     <td>
                         ${property?.getI10n('name')}
-                        <g:if test="${property?.tenant.id == institution.id}">
+                        <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
                             <i class='shield alternate icon'></i>
                         </g:if>
                     </td>
 
                     <td>
 
-                        <g:if test="${property?.tenant.id == institution.id}">
+                        <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
                             <semui:xEditable owner="${property}" field="expl" type="textarea"/>
                         </g:if>
                         <g:else>
@@ -142,8 +142,8 @@
                 <div class="field five wide">
                     <label class="property-label"><g:message code="default.type.label"/></label>
                     <g:select class="ui dropdown"
-                              from="${SurveyProperty.validTypes.entrySet()}"
-                              optionKey="key" optionValue="${{ SurveyProperty.getLocalizedValue(it.key) }}"
+                              from="${PropertyDefinition.validTypes.entrySet()}"
+                              optionKey="key" optionValue="${{ PropertyDefinition.getLocalizedValue(it.key) }}"
                               name="type"
                               id="cust_prop_modal_select"
                               noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
