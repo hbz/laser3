@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2283    25.03.2020  hbz-dev     Moe     Feature     Ausschüttungsfunktion CostItems
+
 2278    23.03.2020  hbz-dev     Andreas Bug         Fehler beim massenweisen Entknüpfen von Teilnehmerverträgen behoben 
 
 2229    23.03.2020  hbz-dev     Andreas Bug         Auswahlliste des Lizenztyps bei Konsortien aufgehoben und auf LAS:eR Backoffice beschränkt
