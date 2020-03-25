@@ -31,8 +31,6 @@
 </g:if>
 
 <semui:form>
-    <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyParticipants.label')} <semui:totalNumber
-            total="${surveyResult?.groupBy { it?.participant.id }?.size()}"/></h4>
 
     <h4><g:message code="surveyParticipants.hasAccess"/></h4>
 

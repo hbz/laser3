@@ -1005,6 +1005,8 @@ class SurveyController {
 
         result.participants = result.surveyConfig?.orgs.org.sort { it.sortname }
 
+        result.subscriptionInstance =  result.surveyConfig?.subscription ?: null
+
         result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
         result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
 
