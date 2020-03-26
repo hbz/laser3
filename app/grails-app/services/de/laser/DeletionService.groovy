@@ -635,22 +635,14 @@ class DeletionService {
 
         List userOrgs       = new ArrayList(user.affiliations)
         List userRoles      = new ArrayList(user.roles)
-        //List userFolder     = UserFolder.findAllWhere(user: user)
         List userSettings   = UserSettings.findAllWhere(user: user)
-
-        List ciecs = CostItemElementConfiguration.executeQuery(
-                'select x from CostItemElementConfiguration x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
         List docs = Doc.executeQuery(
                 'select x from Doc x where x.creator = :user or x.user = :user', [user: user])
-        List links = Links.executeQuery(
-                'select x from Links x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
 
         List pendingChanges = PendingChange.findAllByUser(user)
-
-        List surveyResults = SurveyResult.findAllByUser(user)
 
         List systemTickets = SystemTicket.findAllByAuthor(user)
 
@@ -663,15 +655,11 @@ class DeletionService {
 
         result.info << ['Zugehörigkeiten', userOrgs]
         result.info << ['Rollen', userRoles]
-        //result.info << ['Folder', userFolder]
         result.info << ['Einstellungen', userSettings]
 
-        result.info << ['Kostenkonfigurationen', ciecs, FLAG_SUBSTITUTE]
         result.info << ['DashboardDueDate', ddds]
         result.info << ['Dokumente', docs, FLAG_SUBSTITUTE]
-        result.info << ['Links', links, FLAG_SUBSTITUTE]
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_SUBSTITUTE]
-        result.info << ['Umfrageergebnisse', surveyResults, FLAG_SUBSTITUTE]
         result.info << ['Tickets', systemTickets, FLAG_SUBSTITUTE]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
 
@@ -705,18 +693,8 @@ class DeletionService {
                     user.roles.clear()
                     userRoles.each { tmp -> tmp.delete() }
 
-                    // user folder
-                    //userFolder.each { tmp -> tmp.delete() }
-
                     // user settings
                     userSettings.each { tmp -> tmp.delete() }
-
-                    // cost item element configurations
-                    ciecs.each { tmp ->
-                        tmp.lastUpdatedBy = replacement
-                        tmp.createdBy = replacement
-                        tmp.save()
-                    }
 
                     ddds.each { tmp -> tmp.delete() }
 
@@ -731,18 +709,7 @@ class DeletionService {
                         tmp.save()
                     }
 
-                    links.each { tmp ->
-                        tmp.lastUpdatedBy = replacement
-                        tmp.createdBy = replacement
-                        tmp.save()
-                    }
-
                     pendingChanges.each { tmp ->
-                        tmp.user = replacement
-                        tmp.save()
-                    }
-
-                    surveyResults.each { tmp ->
                         tmp.user = replacement
                         tmp.save()
                     }

@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2291    26.04.2020  hbz-dev     Daniel  Feature     Überarbeitung und Hinzufügung von Properties und Referenzwerten
+
 2283    25.03.2020  hbz-dev     Moe     Feature     Ausschüttungsfunktion CostItems
 
 --      25.03.2020  hbz-dev     Andreas Feature     Auswahlliste der Teilnehmer in Finanzübersicht wieder eingeblendet
@@ -34,7 +36,9 @@
 
 2276    20.03.2020  hbz-dev     Andreas Feature     Verwaltungslizenzen dürfen nur vom LAS:eR Backoffice erstellt werden (provisorische Lösung)
 
-2271    19.03.2020  hbz-dev     David   Feature     API: Datumsangaben konvertieren
+1981    20.03.2020  hbz-dev     David   Feature     User sollen Ihren Zugang bzw. Profil löschen
+
+2271    19.03.2020  hbz-dev     David   Feature     API(0.84): Datumsangaben konvertieren
 
 2257    19.03.2020  hbz-dev     Andreas Feature     zweite Sortierung der Finanzdaten nach Anbietername eingefügt, Lieferanten werden im Filter und im Export ausgegeben
 
