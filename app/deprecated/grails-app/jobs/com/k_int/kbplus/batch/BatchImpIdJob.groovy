@@ -7,6 +7,7 @@ import org.hibernate.ScrollMode
 /*
 * This job is only run once on system startup, and is responsible for generating sort names on Package
 */
+@Deprecated
 class BatchImpIdJob extends AbstractJob {
 
     /* DISABLED

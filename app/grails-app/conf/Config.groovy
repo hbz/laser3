@@ -17,7 +17,7 @@ featureSurvey = false
 //notificationsJobActive = true
 //activateTestJob = true
 
-globalDataSync = [
+/*globalDataSync = [
   "replaceLocalImpIds": [
     "Org": true,
     "TitleInstance": true,
@@ -25,7 +25,7 @@ globalDataSync = [
     "Package": true,
     "TIPP": true
   ]
-]
+]*/
 
 //showDebugInfo = false
 

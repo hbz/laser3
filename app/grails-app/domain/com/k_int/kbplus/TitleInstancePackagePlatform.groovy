@@ -1,8 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
 import de.laser.domain.AbstractBaseDomain
-import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -31,7 +29,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   static Log static_logger = LogFactory.getLog(TitleInstancePackagePlatform)
 
     // AuditableTrait
-    static auditable = true
+    //static auditable = true
     static controlledProperties = ['status', 'platform','accessStartDate','accessEndDate','coverages']
 
     /*
@@ -50,7 +48,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     Date coreStatusStart
     Date coreStatusEnd
     String rectype="so"
-    String impId
     String gokbId
     //URL originEditUrl
 
@@ -80,17 +77,16 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   //TitleInstancePackagePlatform derivedFrom
   //TitleInstancePackagePlatform masterTipp
 
-  static mappedBy = [ids: 'tipp', additionalPlatforms: 'tipp']
+  static mappedBy = [ids: 'tipp'/*, additionalPlatforms: 'tipp'*/]
   static hasMany = [ids: Identifier,
-                    additionalPlatforms: PlatformTIPP,
+                    //additionalPlatforms: PlatformTIPP,
                     coverages: TIPPCoverage]
 
 
   static belongsTo = [
     pkg:Package,
     platform:Platform,
-    title:TitleInstance,
-    sub:Subscription
+    title:TitleInstance
   ]
 
   static mapping = {
@@ -101,8 +97,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
                pkg column:'tipp_pkg_fk',    index: 'tipp_idx'
           platform column:'tipp_plat_fk',   index: 'tipp_idx'
              title column:'tipp_ti_fk',     index: 'tipp_idx'
-             impId column:'tipp_imp_id',        index: 'tipp_imp_id_idx'
-            gokbId column:'tipp_gokb_id',       type:'text'
+            gokbId column:'tipp_gokb_id'
      //originEditUrl column:'tipp_origin_edit_url'
             status column:'tipp_status_rv_fk'
          delayedOA column:'tipp_delayedoa_rv_fk'
@@ -111,7 +106,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
            payment column:'tipp_payment_rv_fk'
             option column:'tipp_option_rv_fk'
    hostPlatformURL column:'tipp_host_platform_url', type: 'text'
-               sub column:'tipp_sub_fk'
        //derivedFrom column:'tipp_derived_from'
       accessStartDate column:'tipp_access_start_date'
       accessEndDate column:'tipp_access_end_date'
@@ -128,7 +122,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
       coverageNote column:'tipp_coverage_note', type: 'text'*/
 
       ids                   batchSize: 10
-      additionalPlatforms   batchSize: 10
+    //additionalPlatforms   batchSize: 10
       coverages             batchSize: 10, sort: 'startDate', order: 'asc'
 
       dateCreated column: 'tipp_date_created'
@@ -137,8 +131,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        impId(nullable:true, blank:true)
-        gokbId (nullable:true, blank:false)
+        gokbId (nullable:false, blank:false, unique: true, maxSize:511)
         //originEditUrl(nullable:true, blank:false)
         status(nullable:true, blank:false)
         delayedOA(nullable:true, blank:false)
@@ -146,7 +139,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
         statusReason(nullable:true, blank:false)
         payment(nullable:true, blank:false)
         option(nullable:true, blank:false)
-        sub(nullable:true, blank:false)
         hostPlatformURL(nullable:true, blank:true, maxSize:2048)
         //derivedFrom(nullable:true, blank:true)
         accessStartDate(nullable:true, blank:true)
@@ -193,8 +185,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
   }
 
+    /*
   String getHostPlatform() {
-      String result
+    String result = null;
     additionalPlatforms.each { p ->
       if ( p.rel == 'host' ) {
         result = p.titleUrl
@@ -202,6 +195,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
     result
   }
+    */
 
   String getIdentifierValue(idtype) {
       String result
@@ -213,6 +207,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   }
 
   @Transient
+  /*
   def onChange = { oldMap,newMap ->
 
     log.debug("onChange Tipp")
@@ -227,7 +222,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
     log.debug("onChange completed")
   }
+    */
 
+  /*
   void raisePendingChange(oldMap,newMap,cp) {
       def domain_class = grailsApplication.getArtefact('Domain','com.k_int.kbplus.TitleInstancePackagePlatform')
       def prop_info = domain_class.getPersistentProperty(cp)
@@ -252,6 +249,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
               newLabel:newLabel
       ])
   }
+    */
 
     private String stringify(obj) {
       String result
@@ -267,10 +265,12 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
         result
     }
 
+    /*
   @Transient
   def onSave = {
 
     log.debug("onSave")
+
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
     changeNotificationService.fireEvent([
@@ -281,6 +281,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
                                                  linkedPackage:pkg.name,
                                                  linkedPlatform:platform.name
                                                 ])
+
   }
 
   @Transient
@@ -298,7 +299,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
                                                  linkedPlatform:platform.name
                                                 ])
   }
+    */
 
+    /*
   @Transient
   def notifyDependencies_trait(changeDocument) {
     log.debug("notifyDependencies_trait(${changeDocument})")
@@ -440,6 +443,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
     //If the change is in a controller property, store it up and note it against subs
   }
+    */
 
   Date getDerivedAccessStartDate() {
     accessStartDate ? accessStartDate : pkg?.startDate
@@ -525,6 +529,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
       return 1;
   }  
 
+    @Deprecated
   static def expunge(tipp_id) {
     try {
       static_logger.debug("  -> TIPPs");

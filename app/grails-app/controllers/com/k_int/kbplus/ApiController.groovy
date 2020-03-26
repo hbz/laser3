@@ -77,6 +77,7 @@ class ApiController {
     }
 
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Deprecated
     def uploadBibJson() {
         Map<String, Object> result = [:]
         log.debug("uploadBibJson");
@@ -128,9 +129,11 @@ class ApiController {
         render result as JSON
     }
 
+    /*
     // Assert a core status against a title/institution. Creates TitleInstitutionProvider objects
     // For all known combinations.
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Deprecated
     def assertCore() {
         // Params:     inst - [namespace:]code  Of an org [mandatory]
         //            title - [namespace:]code  Of a title [mandatory]
@@ -180,12 +183,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         }
         render result as JSON
     }
+     */
 
+    /*
     // Accept a single mandatorty parameter which is the namespace:code for an institution
     // If found, return a JSON report of each title for that institution
     // Also accept an optional parameter esn [element set name] with values full of brief[the default]
     // Example:  http://localhost:8080/laser/api/institutionTitles?orgid=jusplogin:shu
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Deprecated
     def institutionTitles() {
 
         Map<String, Object> result = [:]
@@ -220,6 +226,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         render result as JSON
     }
+     */
 
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def importInstitutions() {

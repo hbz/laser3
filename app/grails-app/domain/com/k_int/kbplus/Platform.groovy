@@ -26,7 +26,6 @@ class Platform extends AbstractBaseDomain {
 
   static Log static_logger = LogFactory.getLog(Platform)
 
-  String impId
   String gokbId
   String name
   String normname
@@ -63,7 +62,6 @@ class Platform extends AbstractBaseDomain {
                 id column:'plat_id'
          globalUID column:'plat_guid'
            version column:'plat_version'
-             impId column:'plat_imp_id', index:'plat_imp_id_idx'
             gokbId column:'plat_gokb_id', type:'text'
               name column:'plat_name'
           normname column:'plat_normalised_name'
@@ -82,7 +80,6 @@ class Platform extends AbstractBaseDomain {
 
   static constraints = {
     globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-    impId(nullable:true, blank:false)
     primaryUrl(nullable:true, blank:false)
   //originEditUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
@@ -90,7 +87,7 @@ class Platform extends AbstractBaseDomain {
     status(nullable:true, blank:false)
     serviceProvider(nullable:true, blank:false)
     softwareProvider(nullable:true, blank:false)
-    gokbId (nullable:true, blank:false)
+    gokbId (nullable:false, blank:false, unique: true, maxSize:511)
     org (nullable:true, blank:false)
   }
 
@@ -98,6 +95,7 @@ class Platform extends AbstractBaseDomain {
     deletionService.deleteDocumentFromIndex(this.globalUID)
   }
 
+  @Deprecated
   static Platform lookupOrCreatePlatform(Map params=[:]) {
 
     Platform platform
@@ -110,9 +108,6 @@ class Platform extends AbstractBaseDomain {
     if ( params.gokbId && params.gokbId.trim().length() > 0) {
       platform = Platform.findByGokbId(params.gokbId)
 
-      if(!platform){
-        platform = Platform.findByImpId(params.gokbId)
-      }
     }
 
     if ( !platform && params.name && (params.name.trim().length() > 0)  ) {
@@ -137,8 +132,7 @@ class Platform extends AbstractBaseDomain {
       }
 
       if ( !platform && !platform_candidates) {
-        platform = new Platform(impId:params.impId?.length() > 0 ? params.impId : null,
-                                gokbId: params.gokbId?.length() > 0 ? params.gokbId : null,
+        platform = new Platform(gokbId: params.gokbId?.length() > 0 ? params.gokbId : null,
                                 name: params.name,
                                 normname: norm_name,
                                 provenance: (params.provenance ?: null),
@@ -148,9 +142,8 @@ class Platform extends AbstractBaseDomain {
       }
     }
 
-    if (platform && Holders.config.globalDataSync.replaceLocalImpIds.Platform && params.gokbId  && platform.gokbId != params.gokbId) {
+    if (platform && params.gokbId  && platform.gokbId != params.gokbId) {
       platform.gokbId = params.gokbId
-      platform.impId = (platform.impId == params.gokbId) ? platform.impId : params.gokbId
       platform.save(flush:true)
     }
 

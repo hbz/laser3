@@ -83,8 +83,8 @@
 										<td>
 											<ul>
 												<li><g:message code="org.globalUID.label" />: <g:fieldValue bean="${organisationInstance}" field="globalUID"/></li>
-												<g:if test="${organisationInstance.impId}">
-													<li><g:message code="org.impId.label" />: <g:fieldValue bean="${organisationInstance}" field="impId"/></li>
+												<g:if test="${organisationInstance.gokbId}">
+													<li><g:message code="org.gokbId.label" />: <g:fieldValue bean="${organisationInstance}" field="gokbId"/></li>
 												</g:if>
 												<g:each in="${organisationInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 											</ul>

@@ -7,6 +7,7 @@ import org.gokb.GOKbTextUtils
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 
+@Deprecated
 class EnrichmentService implements ApplicationContextAware {
 
   ApplicationContext applicationContext
@@ -18,11 +19,11 @@ class EnrichmentService implements ApplicationContextAware {
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
   def initiateHousekeeping() {
-    log.debug("initiateHousekeeping");
+    com.k_int.kbplus.EnrichmentService.log.debug("initiateHousekeeping");
     def future = executorService.submit({
       doHousekeeping()
     } as java.util.concurrent.Callable)
-    log.debug("initiateHousekeeping returning");
+    com.k_int.kbplus.EnrichmentService.log.debug("initiateHousekeeping returning");
   }
 
   def doHousekeeping() {
@@ -35,12 +36,12 @@ class EnrichmentService implements ApplicationContextAware {
       sendEmail(result)
     }
     catch ( Exception e ) {
-      log.error("Problem in housekeeping",e);
+      com.k_int.kbplus.EnrichmentService.log.error("Problem in housekeeping",e);
     }
   }
 
   def doDuplicateTitleDetection(result) {
-    log.debug("Duplicate Title Detection");
+    com.k_int.kbplus.EnrichmentService.log.debug("Duplicate Title Detection");
     def initial_title_list = TitleInstance.executeQuery("select title.id, title.normTitle from TitleInstance as title order by title.id asc");
     initial_title_list.each { title ->
       // Compare this title against every other title
@@ -48,7 +49,7 @@ class EnrichmentService implements ApplicationContextAware {
       inner_title_list.each { inner_title ->
         def similarity = GOKbTextUtils.cosineSimilarity(title[1], inner_title[1])
         if ( similarity > ( ( grailsApplication.config.cosine?.good_threshold ) ?: 0.925 ) ) {
-          log.debug("Possible Duplicate:  ${title[1]} and ${inner_title[1]} : ${similarity}");
+          com.k_int.kbplus.EnrichmentService.log.debug("Possible Duplicate:  ${title[1]} and ${inner_title[1]} : ${similarity}");
           result.possibleDuplicates.add([title[0], title[1], inner_title[0], inner_title[1],similarity]);
         }
       }
@@ -65,7 +66,7 @@ class EnrichmentService implements ApplicationContextAware {
 
   def sendEmail(result) {
 
-    log.debug("sendEmail....");
+    com.k_int.kbplus.EnrichmentService.log.debug("sendEmail....");
     def emailTemplateFile = applicationContext.getResource("WEB-INF/mail-templates/housekeeping.gsp").file
     def engine = new SimpleTemplateEngine()
     def tmpl = engine.createTemplate(emailTemplateFile).make(result)
@@ -82,21 +83,21 @@ class EnrichmentService implements ApplicationContextAware {
         html content
       }
     }else{
-      log.debug("No system Email defined.")
+      com.k_int.kbplus.EnrichmentService.log.debug("No system Email defined.")
     }
   }
 
   def initiateCoreMigration() {
-    log.debug("initiateCoreMigration");
+    com.k_int.kbplus.EnrichmentService.log.debug("initiateCoreMigration");
     def future = executorService.submit({
-      log.debug("Submit job....");
+      com.k_int.kbplus.EnrichmentService.log.debug("Submit job....");
       doCoreMigration()
     } as java.util.concurrent.Callable)
-    log.debug("initiateCoreMigration returning");
+    com.k_int.kbplus.EnrichmentService.log.debug("initiateCoreMigration returning");
   }
 
   def doCoreMigration() {
-    log.debug("Running core migration....");
+    com.k_int.kbplus.EnrichmentService.log.debug("Running core migration....");
     try {
       def ie_ids_count = IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement as ie')[0];
       def ie_ids = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement as ie');
@@ -107,7 +108,7 @@ class EnrichmentService implements ApplicationContextAware {
 
         IssueEntitlement.withNewTransaction {
 
-          log.debug("Get ie ${ieid}");
+          com.k_int.kbplus.EnrichmentService.log.debug("Get ie ${ieid}");
 
           IssueEntitlement ie = IssueEntitlement.get(ieid);
 
@@ -115,7 +116,7 @@ class EnrichmentService implements ApplicationContextAware {
 
             def elapsed = System.currentTimeMillis() - start_time
             def avg = counter > 0 ? ( elapsed / counter ) : 0
-            log.debug("Processing ie_id ${ieid} ${counter++}/${ie_ids_count} - ${elapsed}ms elapsed avg=${avg}");
+            com.k_int.kbplus.EnrichmentService.log.debug("Processing ie_id ${ieid} ${counter++}/${ie_ids_count} - ${elapsed}ms elapsed avg=${avg}");
             def inst = ie.subscription.getSubscriber()
             def title = ie.tipp.title
             def provider = ie.tipp.pkg.getContentProvider()
@@ -123,41 +124,41 @@ class EnrichmentService implements ApplicationContextAware {
             if ( inst && title && provider ) {
               def tiinp = TitleInstitutionProvider.findByTitleAndInstitutionAndprovider(title, inst, provider)
               if ( tiinp == null ) {
-                log.debug("Creating new TitleInstitutionProvider");
+                com.k_int.kbplus.EnrichmentService.log.debug("Creating new TitleInstitutionProvider");
                 tiinp = new TitleInstitutionProvider(title:title, institution:inst, provider:provider).save(flush:true, failOnError:true)
               }
-        
-              log.debug("Got tiinp:: ${tiinp}");
+
+              com.k_int.kbplus.EnrichmentService.log.debug("Got tiinp:: ${tiinp}");
               if ( ie.coreStatusStart != null ) {
                 tiinp.extendCoreExtent(ie.coreStatusStart, ie.coreStatusEnd );
               }
               else {
-                log.debug("No core start date - skip");
+                com.k_int.kbplus.EnrichmentService.log.debug("No core start date - skip");
               }
             }
             else {
-              log.error("Missing title(${title}), provider(${provider}) or institution(${inst})");
+              com.k_int.kbplus.EnrichmentService.log.error("Missing title(${title}), provider(${provider}) or institution(${inst})");
             }
           }
           else {
-            log.error("IE ${ieid} is null, has no subscription or tipp.");
+            com.k_int.kbplus.EnrichmentService.log.error("IE ${ieid} is null, has no subscription or tipp.");
           }
         }
 
         if ( counter % 5000 == 0 ) {
-          log.debug("Clean up gorm");
+          com.k_int.kbplus.EnrichmentService.log.debug("Clean up gorm");
           cleanUpGorm();
         }
 
       }
     }
     catch ( Exception e ) {
-      log.error("Problem",e);
+      com.k_int.kbplus.EnrichmentService.log.error("Problem",e);
     }
   }
 
   def cleanUpGorm() {
-    log.debug("Clean up GORM");
+    com.k_int.kbplus.EnrichmentService.log.debug("Clean up GORM");
     def session = sessionFactory.currentSession
     session.flush()
     session.clear()

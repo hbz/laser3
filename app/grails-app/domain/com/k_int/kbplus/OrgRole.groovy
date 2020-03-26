@@ -158,6 +158,7 @@ class OrgRole implements ShareableTrait {
     }
   }
 
+  @Deprecated
   static def assertOrgPackageLink(porg, ppkg, prole) {
 
     if ( porg && ppkg && prole ) {

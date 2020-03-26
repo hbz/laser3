@@ -29,7 +29,6 @@
             <th>Principal</th>
             <th>Credentials</th>
             <th>RecType</th>
-            <th>${message(code:'sidewide.number')} Local Copies</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -50,7 +49,6 @@
               <td>${source.principal}</td>
               <td>${source.credentials}</td>
               <td>${source.rectype==0?'Package':'Title'}</td>
-              <td>${source.getNumberLocalPackages()}</td>
               <td>
                 <g:link class="ui button"
                         controller="yoda"

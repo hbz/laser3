@@ -94,7 +94,7 @@ class FactService {
       return null
     }
     // temp solution
-    if (type.value == 'EBook'){
+    if (type.value == 'Book'){
       log.debug('CostPerUse not supported for EBooks')
       return null
     }

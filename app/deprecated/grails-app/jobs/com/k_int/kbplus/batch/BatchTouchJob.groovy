@@ -10,6 +10,7 @@ import org.hibernate.ScrollMode
 * This job is only run once on system startup, and is responsible for initializing various fields
 * First run on unpopulated data takes up to 45min, then only few seconds if run again
 */
+@Deprecated
 class BatchTouchJob extends AbstractJob {
 
 
@@ -38,7 +39,7 @@ class BatchTouchJob extends AbstractJob {
             log.debug("BatchTouchJob::execute");
             //The following will only make changes to objects when required. If fields are populated they will skip
             //Make sure all classes have impIDs, as they are the key used for ES
-            impIdJob();
+            //impIdJob();
             //Make sure all packages have sort name, again used by ES
             pkgBatchUpdate()
             //Generate norm,sort,and key title for TitleInstances,used by ES and app sorting.

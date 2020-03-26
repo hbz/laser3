@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.domain.PendingChangeConfiguration
+
 import javax.persistence.Transient
 
 class SubscriptionPackage {
@@ -22,9 +24,9 @@ class SubscriptionPackage {
     lastUpdated column: 'sp_last_updated'
   }
 
-
   static hasMany = [
-    oapls: OrgAccessPointLink
+    oapls: OrgAccessPointLink,
+    pendingChangeConfig: PendingChangeConfiguration
   ]
 
   static belongsTo = [
@@ -33,7 +35,8 @@ class SubscriptionPackage {
   ]
 
   static mappedBy = [
-    oapls: 'subPkg'
+    oapls: 'subPkg',
+    pendingChangeConfig: 'subscriptionPackage'
   ]
 
   static constraints = {
@@ -118,6 +121,11 @@ class SubscriptionPackage {
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oapl.subPkg=:subPkg and oap.org=:org and oapl.active=true"
         return OrgAccessPointLink.executeQuery(hql, [subPkg:this, org:org])
     }
+  }
+
+  //used by /subscription/show.gsp
+  PendingChangeConfiguration getPendingChangeConfig(String config) {
+    PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(this,config)
   }
 
 }

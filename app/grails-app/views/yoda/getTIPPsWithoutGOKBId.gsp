@@ -7,7 +7,6 @@
 <laser:serviceInjection/>
 <%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.TitleInstancePackagePlatform; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
 <g:set var="contextOrg" value="${contextService.getOrg()}"/>
-<g:set var="toDelete" value="${[:]}"/>
 <html>
     <head>
         <meta name="layout" content="semanticUI">
@@ -27,22 +26,14 @@
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${tipps}" var="tipp">
-                    <%
-                        boolean hasAltTIPP = false
-                        TitleInstancePackagePlatform altTIPP = TitleInstancePackagePlatform.executeQuery("select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.title = :title and tipp.status = :current and tipp.gokbId != null",[pkg:tipp.pkg,title:tipp.title,current:RDStore.TIPP_STATUS_CURRENT])[0]
-                        if(altTIPP) {
-                            hasAltTIPP = true
-                            toDelete[tipp.id] = altTIPP.id
-                        }
-                    %>
+                <g:each in="${tipps}" var="entry">
                     <tr>
-                        <td>${tipp.id}</td>
-                        <td>${tipp.title.id}</td>
-                        <td>${tipp.title.title}</td>
+                        <td>${entry.tipp.id}</td>
+                        <td>${entry.tipp.title.id}</td>
+                        <td>${entry.tipp.title.title}</td>
                         <td>
-                            <g:if test="${hasAltTIPP}">
-                                alternatives TIPP im gleichen Paket: ${altTIPP.id}, verfügt über GOKb ID ${altTIPP.gokbId}
+                            <g:if test="${entry.tipp.altTIPP}">
+                                alternatives TIPP im gleichen Paket: ${entry.altTIPP.id}, verfügt über GOKb ID ${entry.altTIPP.gokbId}
                             </g:if>
                             <g:else>
                                 kein alternatives TIPP vorhanden!
@@ -50,7 +41,7 @@
                         </td>
                         <td>
                             <ul>
-                                <g:each in="${issueEntitlements.get(tipp)}" var="ie">
+                                <g:each in="${issueEntitlements.get(entry.tipp)}" var="ie">
                                     <li>${ie.id} -> ${ie.subscription.dropdownNamingConvention(contextOrg)}</li>
                                 </g:each>
                             </ul>
@@ -61,11 +52,11 @@
             <tfoot>
                 <tr>
                     <td>
-                        <g:link action="purgeTIPPsWithoutGOKBId" params="${[doIt: true, toDelete: toDelete as JSON]}" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
+                        <g:link action="purgeTIPPsWithoutGOKBId" params="${[doIt: true, toDelete: toDelete as JSON, toUUIDfy: toUUIDfy as JSON]}" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                     </td>
                     <td>
-                        <g:link action="purgeTIPPsWithoutGOKBId" params="${[doIt: false, toDelete: toDelete as JSON]}" class="ui button">Testlauf (gefahrlos)</g:link>
+                        <g:link action="purgeTIPPsWithoutGOKBId" params="${[doIt: false, toDelete: toDelete as JSON, toUUIDfy: toUUIDfy as JSON]}" class="ui button">Testlauf (gefahrlos)</g:link>
                     </td>
                 </tr>
             </tfoot>

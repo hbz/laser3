@@ -97,7 +97,7 @@ class ApiStatistic {
             result.startDate        = ApiToolkit.formatInternalDate(pkg.startDate)
             result.endDate          = ApiToolkit.formatInternalDate(pkg.endDate)
             result.lastUpdated      = ApiToolkit.formatInternalDate(pkg.lastUpdated)
-            result.packageType      = pkg.packageType?.value
+            result.packageType      = pkg.contentType?.value
             result.packageStatus    = pkg.packageStatus?.value
             result.name             = pkg.name
             result.variantNames     = ['TODO-TODO-TODO'] // todo

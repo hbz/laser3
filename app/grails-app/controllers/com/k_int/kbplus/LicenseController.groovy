@@ -73,7 +73,7 @@ class LicenseController extends AbstractDebugController {
             result.processingpc = true
         } else {
 
-            def pending_change_pending_status = RDStore.PENDING_CHANGE_STATUS
+            def pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
             List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
             log.debug("pc result is ${result.pendingChanges}");
@@ -594,7 +594,7 @@ from Subscription as s where
                 result.processingpc = true
             }
             else {
-                def pending_change_pending_status = RDStore.PENDING_CHANGE_STATUS
+                def pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
                 List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
                 result.pendingChanges << ["${member.id}": pendingChanges]

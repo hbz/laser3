@@ -129,7 +129,7 @@
 </div>--}%
 
 
-    <g:form action="processLinkPackagesConsortia" method="post" class="ui form">
+    <g:form action="processLinkPackagesMembers" method="post" class="ui form">
         <g:hiddenField name="id" value="${params.id}"/>
         <div class="ui segment">
 

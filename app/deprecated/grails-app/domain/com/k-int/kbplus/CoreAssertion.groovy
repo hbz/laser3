@@ -1,7 +1,8 @@
-package com.k_int.kbplus
+//package com.k_int.kbplus
 
 import java.text.SimpleDateFormat
 
+@Deprecated
 class CoreAssertion {
 
   Date startDate

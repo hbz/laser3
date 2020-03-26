@@ -535,7 +535,13 @@
                         minCharacters: 0
                     });
                 });
-                $("#newIE").dropdown('set text',"${costItem?.issueEntitlement ? "${costItem.issueEntitlement.tipp.title.title} (${costItem.issueEntitlement.tipp.title.type.getI10n('value')}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})" : ''}");
+                <%
+                    if(costItem?.issueEntitlement) {
+                        String ieTitleName = costItem.issueEntitlement.tipp.title.title
+                        String ieTitleTypeString = costItem.issueEntitlement.tipp.title.printTitleType()
+                        %>
+                    $("#newIE").dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
+                <%  }  %>
             }
 
             function setupCalendar() {

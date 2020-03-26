@@ -72,7 +72,7 @@
                             <strong><g:link controller="title" action="show" id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></strong>
                           </td>
                           <td>
-                            ${hit.getSourceAsMap().typTitle ? com.k_int.kbplus.RefdataValue.getByValueAndCategory(hit.getSourceAsMap().typTitle, de.laser.helper.RDConstants.TITLE_TYPE).getI10n('value') : ''}
+                            ${hit.getSourceAsMap().typTitle ? com.k_int.kbplus.RefdataValue.getByValueAndCategory(hit.getSourceAsMap().typTitle, de.laser.helper.RDConstants.TITLE_MEDIUM).getI10n('value') : ''}
                           </td>
                           <td>
                             ${hit.getSourceAsMap().publisher?:''}

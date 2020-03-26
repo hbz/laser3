@@ -54,6 +54,7 @@ class ApiService {
      * @param xml
      * @return
      */
+    @Deprecated
     GPathResult makeshiftOrgImport(GPathResult xml){
 
         def count = xml.institution.size()
@@ -405,7 +406,7 @@ class ApiService {
     }
 
     /*
-        hic codex data pro organisationibus atque utilisatoribus ex fons datium leget et in repositorium datium scribit. Fons datium omnia data vel partem datium continere potet; in ultimo caso data incrementum est
+        hic codex data pro organisationibus atque utilisatoribus ex fontem datium leget et in repositorium datium scribit. Fons datium omnia data vel partem datium continere potet; in ultimo caso data incrementum est
         We should not think in Latin - this code reads off data from an existing dump and writes them into the database. This may be the entire datasource or a part of it; in latter case, this is an increment
     */
     void setupBasicData(File baseFile) {
@@ -442,10 +443,6 @@ class ApiService {
                     if (orgData.importSource.text()) {
                         //log.debug("importSource: ${orgData.importSource.text()}")
                         org.importSource = orgData.importSource.text()
-                    }
-                    if (orgData.impId.text()) {
-                        //log.debug("impId: ${orgData.impId.text()}")
-                        org.impId = orgData.impId.text()
                     }
                     if (orgData.gokbId.text()) {
                         //log.debug("gokbId: ${orgData.gokbId.text()}")
@@ -563,10 +560,6 @@ class ApiService {
                     if (org.importSource != orgData.importSource.text()) {
                         //log.debug("importSource: ${orgData.importSource.text()}")
                         org.importSource = orgData.importSource.text()
-                    }
-                    if (org.impId != orgData.impId.text()) {
-                        //log.debug("impId: ${orgData.impId.text()}")
-                        org.impId = orgData.impId.text()
                     }
                     if (org.gokbId != orgData.gokbId.text()) {
                         //log.debug("gokbId: ${orgData.gokbId.text()}")

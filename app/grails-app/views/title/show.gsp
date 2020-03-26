@@ -14,7 +14,7 @@
       </semui:breadcrumbs>
   <br>
   <h1 class="ui icon header la-clear-before la-noMargin-top">
-            <semui:headerTitleIcon type="${ti.type.('value')}"/>
+            <semui:headerTitleIcon type="${ti.printTitleType()}"/>
 
             <% /*
             <g:if test="${editable}"><span id="titleEdit"
@@ -44,9 +44,9 @@
                 <semui:form>
                 <div class="la-icon-list">
                     <div class="item">
-                        <semui:listIcon type="${ti?.type?.value}"/>
+                        <semui:listIcon type="${ti.printTitleType()}"/>
                         <div class="content">
-                            ${ti.type.getI10n('value')}
+                            ${ti.printTitleType()}
                         </div>
                     </div>
                     <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && (ti?.firstAuthor || ti?.firstEditor)}">

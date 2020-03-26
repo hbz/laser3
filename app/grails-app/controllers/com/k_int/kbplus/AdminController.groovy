@@ -14,9 +14,10 @@ import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.I10nTranslation
+import de.laser.exceptions.CleanupException
 import de.laser.helper.DebugAnnotation
-import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.SessionCacheWrapper
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -25,20 +26,21 @@ import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {
 
-  def springSecurityService
-  def dataloadService
-  def statsSyncService
-  SubscriptionUpdateService subscriptionUpdateService
-  def messageService
-  def changeNotificationService
-  def enrichmentService
-  def sessionFactory
+    def springSecurityService
+    def dataloadService
+    def statsSyncService
+    SubscriptionUpdateService subscriptionUpdateService
+    def messageService
+    def changeNotificationService
+    def yodaService
+    def sessionFactory
     def genericOIDService
     def deletionService
     def filterService
@@ -48,11 +50,12 @@ class AdminController extends AbstractDebugController {
     def propertyService
     def dataConsistencyService
     def organisationService
+    GlobalSourceSyncService globalSourceSyncService
+    def GOKbService
+    def docstoreService
+    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
-  def docstoreService
-  def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-
-  def apiService
+    def apiService
 
     @Secured(['ROLE_ADMIN'])
     def index() { }
@@ -144,18 +147,18 @@ class AdminController extends AbstractDebugController {
         result.stats = [:]
 
         List<String> jobList = [
-              'DocContext',
-              ['GlobalRecordInfo', 'globalRecordInfoStatus'],
-              'IssueEntitlement',
-              'License',
-              'Org',
-              ['Package', 'packageStatus'],
-              'Platform',
-              'Subscription',
-              'TitleInstance',
-              'TitleInstancePackagePlatform',
-              'Combo',
-              'Doc'
+                'DocContext',
+                ['GlobalRecordInfo', 'globalRecordInfoStatus'],
+                'IssueEntitlement',
+                'License',
+                'Org',
+                ['Package', 'packageStatus'],
+                'Platform',
+                'Subscription',
+                'TitleInstance',
+                'TitleInstancePackagePlatform',
+                'Combo',
+                'Doc'
         ]
         result.jobList = jobList
 
@@ -165,7 +168,7 @@ class AdminController extends AbstractDebugController {
                 result.stats."${job}" = Org.executeQuery("select count(obj) from ${job} obj join obj.status s where lower(s.value) like 'deleted'")
             }
             else {
-              log.info('processing: ' + job[0])
+                log.info('processing: ' + job[0])
                 result.stats."${job[0]}" = Org.executeQuery("select count(obj) from ${job[0]} obj join obj.${job[1]} s where lower(s.value) like 'deleted'")
             }
         }
@@ -175,7 +178,7 @@ class AdminController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
         ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
-            ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
     })
     def manageAffiliationRequests() {
         Map<String, Object> result = [:]
@@ -207,18 +210,18 @@ class AdminController extends AbstractDebugController {
     }
     log.debug("Starting PendingChange Update. Found:${changes.size()}")
 
-    changes.each{
-        def parsed_change_info = JSON.parse(it.payload)
-        parsed_change_info.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
-      //parsed_change_info.changeType = "PropertyChange"
-        //parsed_change_info.changeDoc.propertyOID = parsed_change_info.changeDoc.OID
-        it.payload = parsed_change_info
-        it.save(failOnError:true)
-    }
-    log.debug("Pending Change Update Complete.")
-    redirect(controller:'home')
+        changes.each{
+            def parsed_change_info = JSON.parse(it.payload)
+            parsed_change_info.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
+            //parsed_change_info.changeType = "PropertyChange"
+            //parsed_change_info.changeDoc.propertyOID = parsed_change_info.changeDoc.OID
+            it.payload = parsed_change_info
+            it.save(failOnError:true)
+        }
+        log.debug("Pending Change Update Complete.")
+        redirect(controller:'home')
 
-  }
+    }
 
   @Secured(['ROLE_ADMIN'])
   def actionAffiliationRequest() {
@@ -248,17 +251,17 @@ class AdminController extends AbstractDebugController {
     redirect(action: "manageAffiliationRequests")
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def hardDeletePkgs(){
-      Map<String, Object> result = [:]
-    //If we make a search while paginating return to start
-    if(params.search == "yes"){
-        params.offset = 0
-        params.search = null
-    }
-    result.user = User.get(springSecurityService.principal.id)
-    result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-    result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+    @Secured(['ROLE_ADMIN'])
+    def hardDeletePkgs(){
+        Map<String, Object> result = [:]
+        //If we make a search while paginating return to start
+        if(params.search == "yes"){
+            params.offset = 0
+            params.search = null
+        }
+        result.user = User.get(springSecurityService.principal.id)
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
     if(params.id){
         Package pkg = Package.get(params.id)
@@ -301,20 +304,20 @@ class AdminController extends AbstractDebugController {
       result.conflicts_list = conflicts_list
       result.pkg = pkg
 
-      render(template: "hardDeleteDetails",model:result)
-    }else{
+            render(template: "hardDeleteDetails",model:result)
+        }else{
 
-      def criteria = Package.createCriteria()
-      result.pkgs = criteria.list(max: result.max, offset:result.offset){
-          if(params.pkg_name){
-            ilike("name","${params.pkg_name}%")
-          }
-          order("name", params.order?:'asc')
-      }
+            def criteria = Package.createCriteria()
+            result.pkgs = criteria.list(max: result.max, offset:result.offset){
+                if(params.pkg_name){
+                    ilike("name","${params.pkg_name}%")
+                }
+                order("name", params.order?:'asc')
+            }
+        }
+
+        result
     }
-
-    result
-  }
 
   @Secured(['ROLE_ADMIN'])
   def performPackageDelete(){
@@ -333,73 +336,73 @@ class AdminController extends AbstractDebugController {
           it.delete()
         }
 
-        pkg.subscriptions.each{
-          it.delete()
+                pkg.subscriptions.each{
+                    it.delete()
+                }
+                pkg.tipps.each{
+                    it.delete()
+                }
+                pkg.delete()
+            }
+            log.info("Delete Complete.")
         }
-        pkg.tipps.each{
-          it.delete()
-        }
-        pkg.delete()
-      }
-      log.info("Delete Complete.")
-   }
-   redirect controller: 'admin', action:'hardDeletePkgs'
+        redirect controller: 'admin', action:'hardDeletePkgs'
 
-  }
+    }
 
-  @Secured(['ROLE_ADMIN'])
-  def userMerge(){
-     log.debug("AdminController :: userMerge :: ${params}");
-     def usrMrgId = params.userToMerge == "null"?null:params.userToMerge
-     def usrKeepId = params.userToKeep == "null"?null:params.userToKeep
-     Map<String, Object> result = [:]
-     try {
-       log.debug("Determine user merge operation : ${request.method}");
-       switch (request.method) {
-         case 'GET':
-           if(usrMrgId && usrKeepId ){
-               User usrMrg = User.get(usrMrgId)
-               User usrKeep =  User.get(usrKeepId)
-             log.debug("Selected users : ${usrMrg}, ${usrKeep}");
-             result.userRoles = usrMrg.getAuthorities()
-             result.userAffiliations =  usrMrg.getAuthorizedAffiliations()
-             result.userMerge = usrMrg
-             result.userKeep = usrKeep
-           }else{
-            log.error("Missing keep/merge userid ${params}");
-            flash.error = "Please select'user to keep' and 'user to merge' from the dropdown."
-           }
-           log.debug("Get processing completed");
-           break;
-         case 'POST':
-           log.debug("Post...");
-           if(usrMrgId && usrKeepId){
-             User usrMrg = User.get(usrMrgId)
-             User usrKeep =  User.get(usrKeepId)
-             boolean success = false
-             try{
-               log.debug("Copying user roles... from ${usrMrg} to ${usrKeep}");
-               success = copyUserRoles(usrMrg, usrKeep)
-               log.debug("Result of copyUserRoles : ${success}");
-             }catch(Exception e){
-              log.error("Exception while copying user roles.",e)
-             }
-             if(success){
-               log.debug("Success");
-               usrMrg.enabled = false
-               log.debug("Save disable and save merged user");
-               usrMrg.save(flush:true,failOnError:true)
-               flash.message = "Rights copying successful. User '${usrMrg.displayName}' is now disabled."
-             }else{
-               flash.error = "An error occured before rights transfer was complete."
-             }
-           }else{
-               flash.error = "Please select 'user to keep' and 'user to merge' from the dropdown."
-           }
-           break
-         default:
-           break;
-       }
+    @Secured(['ROLE_ADMIN'])
+    def userMerge(){
+        log.debug("AdminController :: userMerge :: ${params}");
+        def usrMrgId = params.userToMerge == "null"?null:params.userToMerge
+        def usrKeepId = params.userToKeep == "null"?null:params.userToKeep
+        Map<String, Object> result = [:]
+        try {
+            log.debug("Determine user merge operation : ${request.method}");
+            switch (request.method) {
+                case 'GET':
+                    if(usrMrgId && usrKeepId ){
+                        User usrMrg = User.get(usrMrgId)
+                        User usrKeep =  User.get(usrKeepId)
+                        log.debug("Selected users : ${usrMrg}, ${usrKeep}");
+                        result.userRoles = usrMrg.getAuthorities()
+                        result.userAffiliations =  usrMrg.getAuthorizedAffiliations()
+                        result.userMerge = usrMrg
+                        result.userKeep = usrKeep
+                    }else{
+                        log.error("Missing keep/merge userid ${params}");
+                        flash.error = "Please select'user to keep' and 'user to merge' from the dropdown."
+                    }
+                    log.debug("Get processing completed");
+                    break;
+                case 'POST':
+                    log.debug("Post...");
+                    if(usrMrgId && usrKeepId){
+                        User usrMrg = User.get(usrMrgId)
+                        User usrKeep =  User.get(usrKeepId)
+                        boolean success = false
+                        try{
+                            log.debug("Copying user roles... from ${usrMrg} to ${usrKeep}");
+                            success = copyUserRoles(usrMrg, usrKeep)
+                            log.debug("Result of copyUserRoles : ${success}");
+                        }catch(Exception e){
+                            log.error("Exception while copying user roles.",e)
+                        }
+                        if(success){
+                            log.debug("Success");
+                            usrMrg.enabled = false
+                            log.debug("Save disable and save merged user");
+                            usrMrg.save(flush:true,failOnError:true)
+                            flash.message = "Rights copying successful. User '${usrMrg.displayName}' is now disabled."
+                        }else{
+                            flash.error = "An error occured before rights transfer was complete."
+                        }
+                    }else{
+                        flash.error = "Please select 'user to keep' and 'user to merge' from the dropdown."
+                    }
+                    break
+                default:
+                    break;
+            }
 
        log.debug("Get all users");
        result.usersAll = User.list(sort:"display", order:"asc")
@@ -411,28 +414,28 @@ class AdminController extends AbstractDebugController {
       log.error("Problem in user merge",e);
     }
 
-    log.debug("Returning ${result}");
-    result
-  }
+        log.debug("Returning ${result}");
+        result
+    }
 
     @Secured(['ROLE_ADMIN'])
-  def copyUserRoles(usrMrg, usrKeep){
-    def mergeRoles = usrMrg.getAuthorities()
-    def mergeAffil = usrMrg.getAuthorizedAffiliations()
-    def currentRoles = usrKeep.getAuthorities()
-    def currentAffil = usrKeep.getAuthorizedAffiliations()
+    def copyUserRoles(usrMrg, usrKeep){
+        def mergeRoles = usrMrg.getAuthorities()
+        def mergeAffil = usrMrg.getAuthorizedAffiliations()
+        def currentRoles = usrKeep.getAuthorities()
+        def currentAffil = usrKeep.getAuthorizedAffiliations()
 
-    mergeRoles.each{ role ->
+        mergeRoles.each{ role ->
 
-        if (!currentRoles.contains(role) && role.authority != "ROLE_YODA") {
-        UserRole.create(usrKeep,role)
-      }
-    }
-    mergeAffil.each{affil ->
-      if(!currentAffil.contains(affil)){
+            if (!currentRoles.contains(role) && role.authority != "ROLE_YODA") {
+                UserRole.create(usrKeep,role)
+            }
+        }
+        mergeAffil.each{affil ->
+            if(!currentAffil.contains(affil)){
 
-        // We should check that the new role does not already exist
-        def existing_affil_check = UserOrg.findByOrgAndUserAndFormalRole(affil.org,usrKeep,affil.formalRole);
+                // We should check that the new role does not already exist
+                def existing_affil_check = UserOrg.findByOrgAndUserAndFormalRole(affil.org,usrKeep,affil.formalRole);
 
         if ( existing_affil_check == null ) {
             log.debug("No existing affiliation");
@@ -458,38 +461,38 @@ class AdminController extends AbstractDebugController {
     return true
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def showAffiliations() {
-    Map<String, Object> result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.users = User.list()
+    @Secured(['ROLE_ADMIN'])
+    def showAffiliations() {
+        Map<String, Object> result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.users = User.list()
 
-    withFormat {
-      html {
-        render(view:'showAffiliations',model:result)
-      }
-      json {
-        def r2 = []
-        result.users.each { u ->
-          def row = [:]
-          row.username = u.username
-          row.display = u.display
-          row.email = u.email
-          row.shibbScope = u.shibbScope
-          row.enabled = u.enabled
-          row.accountExpired = u.accountExpired
-          row.accountLocked = u.accountLocked
-          row.passwordExpired = u.passwordExpired
-          row.affiliations = []
-          u.affiliations.each { ua ->
-            row.affiliations.add( [org: ua.org.shortcode, status: ua.status, formalRole:formalRole?.authority] )
-          }
-          r2.add(row)
+        withFormat {
+            html {
+                render(view:'showAffiliations',model:result)
+            }
+            json {
+                def r2 = []
+                result.users.each { u ->
+                    def row = [:]
+                    row.username = u.username
+                    row.display = u.display
+                    row.email = u.email
+                    row.shibbScope = u.shibbScope
+                    row.enabled = u.enabled
+                    row.accountExpired = u.accountExpired
+                    row.accountLocked = u.accountLocked
+                    row.passwordExpired = u.passwordExpired
+                    row.affiliations = []
+                    u.affiliations.each { ua ->
+                        row.affiliations.add( [org: ua.org.shortcode, status: ua.status, formalRole:formalRole?.authority] )
+                    }
+                    r2.add(row)
+                }
+                render r2 as JSON
+            }
         }
-        render r2 as JSON
-      }
     }
-  }
 
     @Secured(['ROLE_ADMIN'])
     def systemEvents() {
@@ -504,41 +507,41 @@ class AdminController extends AbstractDebugController {
         result
     }
 
-  @Secured(['ROLE_YODA'])
-  def dataCleanse() {
-    // Sets nominal platform
-    dataloadService.dataCleanse()
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def updateQASubscriptionDates() {
-    if (grailsApplication.config.getCurrentServer() in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) {
-      def updateReport = subscriptionUpdateService.updateQASubscriptionDates()
-      if(updateReport instanceof Boolean)
-        flash.message = message(code:'subscription.qaTestDateUpdate.success')
-      else {
-        flash.error = message(code:'subscription.qaTestDateUpdate.updateError',updateReport)
-      }
+    @Secured(['ROLE_YODA'])
+    def dataCleanse() {
+        // Sets nominal platform
+        dataloadService.dataCleanse()
     }
-    else flash.error = message(code:'subscription.qaTestDateUpdate.wrongServer')
-    redirect(url: request.getHeader('referer'))
-  }
 
-  @Secured(['ROLE_ADMIN'])
-  def statsSync() {
-    log.debug("statsSync()")
-    statsSyncService.doSync()
-    redirect(controller:'home')
-  }
+    @Secured(['ROLE_ADMIN'])
+    def updateQASubscriptionDates() {
+        if (grailsApplication.config.getCurrentServer() in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) {
+            def updateReport = subscriptionUpdateService.updateQASubscriptionDates()
+            if(updateReport instanceof Boolean)
+                flash.message = message(code:'subscription.qaTestDateUpdate.success')
+            else {
+                flash.error = message(code:'subscription.qaTestDateUpdate.updateError',updateReport)
+            }
+        }
+        else flash.error = message(code:'subscription.qaTestDateUpdate.wrongServer')
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def statsSync() {
+        log.debug("statsSync()")
+        statsSyncService.doSync()
+        redirect(controller:'home')
+    }
 
   @Secured(['ROLE_ADMIN'])
   def manageContentItems() {
     Map<String, Object> result = [:]
 
-    result.items = ContentItem.list()
+        result.items = ContentItem.list()
 
-    result
-  }
+        result
+    }
 
     @Secured(['ROLE_ADMIN'])
     def databaseStatistics() {
@@ -556,23 +559,23 @@ class AdminController extends AbstractDebugController {
         Map<String, Object> result = [:]
 
         if (params.task) {
-			List objIds = params.list('objId')
+            List objIds = params.list('objId')
 
-          	if (params.task == 'merge' && params.objType == 'Org') {
-            	log.debug('dataConsistency( merge, ' + params.objType + ', ' + objIds + ' )')
+            if (params.task == 'merge' && params.objType == 'Org') {
+                log.debug('dataConsistency( merge, ' + params.objType + ', ' + objIds + ' )')
 
                 Org replacement = Org.get(objIds.first())
                 for (def i = 1; i < objIds.size(); i++) {
                     deletionService.deleteOrganisation( Org.get(objIds[i]), replacement, false )
                 }
-          	}
-          	if (params.task == 'delete' && params.objType == 'Org') {
-            	log.debug('dataConsistency( delete, ' + params.objType + ', ' + objIds + ' )')
+            }
+            if (params.task == 'delete' && params.objType == 'Org') {
+                log.debug('dataConsistency( delete, ' + params.objType + ', ' + objIds + ' )')
 
                 for (def i = 0; i < objIds.size(); i++) {
                     deletionService.deleteOrganisation( Org.get(objIds[i]), null, false )
                 }
-          	}
+            }
             params.remove('task')
             params.remove('objType')
             params.remove('objId')
@@ -591,20 +594,20 @@ class AdminController extends AbstractDebugController {
     Map<String, Object> result = [:]
     if ( ( params.key != null ) && ( params.content != null ) && ( params.key.length() > 0 ) && ( params.content.length() > 0 ) ) {
 
-      String locale = ( ( params.locale != null ) && ( params.locale.length() > 0 ) ) ? params.locale : ''
+            String locale = ( ( params.locale != null ) && ( params.locale.length() > 0 ) ) ? params.locale : ''
 
-      if ( ContentItem.findByKeyAndLocale(params.key,locale) != null ) {
-        flash.message = 'Content item already exists'
-      }
-      else {
-        ContentItem.lookupOrCreate(params.key, locale, params.content)
-      }
+            if ( ContentItem.findByKeyAndLocale(params.key,locale) != null ) {
+                flash.message = 'Content item already exists'
+            }
+            else {
+                ContentItem.lookupOrCreate(params.key, locale, params.content)
+            }
+        }
+
+        redirect(action:'manageContentItems')
+
+        result
     }
-
-    redirect(action:'manageContentItems')
-
-    result
-  }
 
   @Secured(['ROLE_ADMIN'])
   def editContentItem() {
@@ -614,40 +617,40 @@ class AdminController extends AbstractDebugController {
       def key = idparts[0]
       String locale = idparts.length > 1 ? idparts[1] : ''
 
-      ContentItem contentItem = ContentItem.findByKeyAndLocale(key,locale)
-      if ( contentItem != null ) {
-        result.contentItem = contentItem
-      }
-      else {
-        flash.message="Unable to locate content item for key ${idparts}"
-        redirect(action:'manageContentItems');
-      }
-      if ( request.method.equalsIgnoreCase("post")) {
-        contentItem.content = params.content
-        contentItem.save(flush:true)
-        messageService.update(key,locale)
-        redirect(action:'manageContentItems');
-      }
+            ContentItem contentItem = ContentItem.findByKeyAndLocale(key,locale)
+            if ( contentItem != null ) {
+                result.contentItem = contentItem
+            }
+            else {
+                flash.message="Unable to locate content item for key ${idparts}"
+                redirect(action:'manageContentItems');
+            }
+            if ( request.method.equalsIgnoreCase("post")) {
+                contentItem.content = params.content
+                contentItem.save(flush:true)
+                messageService.update(key,locale)
+                redirect(action:'manageContentItems');
+            }
+        }
+        else {
+            flash.message="Unable to parse content item id ${params.id} - ${idparts}"
+            redirect(action:'manageContentItems');
+        }
+
+        result
     }
-    else {
-      flash.message="Unable to parse content item id ${params.id} - ${idparts}"
-      redirect(action:'manageContentItems');
+
+    @Secured(['ROLE_ADMIN'])
+    def forceSendNotifications() {
+        changeNotificationService.aggregateAndNotifyChanges()
+        redirect(controller:'home')
     }
 
-    result
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def forceSendNotifications() {
-    changeNotificationService.aggregateAndNotifyChanges()
-    redirect(controller:'home')
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def tippTransfer(){
-    log.debug("tippTransfer :: ${params}")
-    Map<String, Object> result = [:]
-    result.error = []
+    @Secured(['ROLE_ADMIN'])
+    def tippTransfer(){
+        log.debug("tippTransfer :: ${params}")
+        Map<String, Object> result = [:]
+        result.error = []
 
     if(params.sourceTIPP && params.targetTI){
         TitleInstance ti = TitleInstance.get(params.long("targetTI"))
@@ -667,534 +670,540 @@ class AdminController extends AbstractDebugController {
       }
     }
 
-    result
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def ieTransfer(){
-    log.debug(params)
-    Map<String, Object> result = [:]
-    if(params.sourceTIPP && params.targetTIPP){
-      result.sourceTIPPObj = TitleInstancePackagePlatform.get(params.sourceTIPP)
-      result.targetTIPPObj = TitleInstancePackagePlatform.get(params.targetTIPP)
+        result
     }
 
-    if(params.transfer == "Go" && result.sourceTIPPObj && result.targetTIPPObj){
-      log.debug("Tranfering ${IssueEntitlement.countByTipp(result.sourceTIPPObj)} IEs from ${result.sourceTIPPObj} to ${result.targetTIPPObj}")
-      def sourceIEs = IssueEntitlement.findAllByTipp(result.sourceTIPPObj)
-      sourceIEs.each{
-        it.setTipp(result.targetTIPPObj)
-        it.save()
-      }
+    @Secured(['ROLE_ADMIN'])
+    def ieTransfer(){
+        log.debug(params)
+        Map<String, Object> result = [:]
+        if(params.sourceTIPP && params.targetTIPP){
+            result.sourceTIPPObj = TitleInstancePackagePlatform.get(params.sourceTIPP)
+            result.targetTIPPObj = TitleInstancePackagePlatform.get(params.targetTIPP)
+        }
+
+        if(params.transfer == "Go" && result.sourceTIPPObj && result.targetTIPPObj){
+            log.debug("Tranfering ${IssueEntitlement.countByTipp(result.sourceTIPPObj)} IEs from ${result.sourceTIPPObj} to ${result.targetTIPPObj}")
+            def sourceIEs = IssueEntitlement.findAllByTipp(result.sourceTIPPObj)
+            sourceIEs.each{
+                it.setTipp(result.targetTIPPObj)
+                it.save()
+            }
+        }
+
+        result
     }
 
-    result
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def titleMerge() {
-
-    log.debug(params)
-
-    Map<String, Object> result = [:]
-
-    if ( ( params.titleIdToDeprecate != null ) &&
-         ( params.titleIdToDeprecate.length() > 0 ) &&
-         ( params.correctTitleId != null ) &&
-         ( params.correctTitleId.length() > 0 ) ) {
-      result.title_to_deprecate = TitleInstance.get(params.titleIdToDeprecate)
-      result.correct_title = TitleInstance.get(params.correctTitleId)
-
-      if ( params.MergeButton=='Go' ) {
-        log.debug("Execute title merge....");
-        result.title_to_deprecate.tipps.each { tipp ->
-          log.debug("Update tipp... ${tipp.id}");
-          tipp.title = result.correct_title
-          tipp.save()
+    @Secured(['ROLE_YODA'])
+    Map<String,Object> listDuplicateTitles() {
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+        Map<String,Object> result = sessionCache.get("AdminController/titleRemap/result")
+        if(!result) {
+            result = yodaService.listDuplicateTitles()
+            sessionCache.put("AdminController/titleRemap/result",result)
         }
-        redirect(action:'titleMerge',params:[titleIdToDeprecate:params.titleIdToDeprecate, correctTitleId:params.correctTitleId])
-      }
-
-      result.title_to_deprecate.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
-      result.title_to_deprecate.save(flush:true);
+        result
     }
-    result
-  }
 
-  @Secured(['ROLE_ADMIN'])
-  def orgsExport() {
-    Date now = new Date()
-    File basicDataDir = new File(grailsApplication.config.basicDataPath)
-    if(basicDataDir) {
-      GPathResult oldBase
-      XmlSlurper slurper = new XmlSlurper()
-      Date lastDumpDate
-      List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
-        @Override
-        boolean accept(File dir, String name) {
-          return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
-        }
-      })
-      if(dumpFiles.size() > 0) {
-        dumpFiles.toSorted { f1, f2 ->
-          f1.lastModified() <=> f2.lastModified()
-        }
-        File lastDump = dumpFiles.last()
-        lastDumpDate = new Date(lastDump.lastModified())
-        oldBase = slurper.parse(lastDump)
-      }
-      else {
-        File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
-        lastDumpDate = new Date(f.lastModified())
-        if(f.exists()) {
-          //complicated way - determine most recent org and user creation dates
-          oldBase = slurper.parse(f)
-        }
-      }
-      if(oldBase) {
-        SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss.S')
-        Set<Org> newOrgData = []
-        Set<User> newUserData = []
-        Org.getAll().each { Org dbOrg ->
-          def correspOrg = oldBase.organisations.org.find { orgNode ->
-            orgNode.globalUID == dbOrg.globalUID
-          }
-          if(correspOrg) {
-            if(dbOrg.lastUpdated > lastDumpDate) {
-              newOrgData << dbOrg
+    @Secured(['ROLE_YODA'])
+    def executeTiCleanup() {
+        log.debug("WARNING: bulk deletion of title entries triggered! Start nuking!")
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+        Map<String,Object> result = (Map<String,Object>) sessionCache.get("AdminController/titleRemap/result")
+        if(result) {
+            try {
+                yodaService.executeTiCleanup(result)
+                sessionCache.remove("AdminController/titleRemap/result")
+                redirect(controller:'title',action: 'index')
             }
-          }
-          else if(dbOrg.lastUpdated > lastDumpDate) {
-            newOrgData << dbOrg
-          }
-        }
-        User.getAll().each { User dbUser ->
-          def correspUser = oldBase.users.user.find { userNode ->
-            userNode.username == dbUser.username
-          }
-          if(correspUser) {
-            if(dbUser.lastUpdated > lastDumpDate) {
-              newUserData << dbUser
+            catch (CleanupException e) {
+                log.error("failure on merging titles ... rollback!")
+                e.printStackTrace()
+                redirect(controller:'admin',action: 'listDuplicateTitles')
             }
-          }
-          else if(dbUser.lastUpdated > lastDumpDate) {
-            newUserData << dbUser
-          }
-        }
-        //data collected: prepare export!
-        if(newOrgData || newUserData) {
-          //List<Person> newPersonData = Person.executeQuery('select pr.prs from PersonRole pr where pr.org in :org',[org:newOrgData])
-          File newDump = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.orgDumpFileNamePattern}${now.format("yyyy-MM-dd")}${grailsApplication.config.orgDumpFileExtension}")
-          StringBuilder exportReport = new StringBuilder()
-          exportReport.append("<p>Folgende Organisationen wurden erfolgreich exportiert: <ul><li>")
-          newDump.withWriter { writer ->
-            MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
-            orgDataBuilder.data {
-              organisations {
-                newOrgData.each { Org o ->
-                  org {
-                    globalUID(o.globalUID)
-                    name(o.name)
-                    shortname(o.shortname)
-                    shortcode(o.shortcode)
-                    sortname(o.sortname)
-                    url(o.url)
-                    urlGov(o.urlGov)
-                    importSource(o.importSource)
-                    lastImportDate(o.lastImportDate)
-                    impId(o.impId)
-                    gokbId(o.gokbId)
-                    comment(o.comment)
-                    ipRange(o.ipRange)
-                    scope(o.scope)
-                    dateCreated(o.dateCreated)
-                    lastUpdated(o.lastUpdated)
-                    categoryId(o.categoryId)
-                    sector {
-                      if(o.sector) {
-                        rdc(o.sector.owner.desc)
-                        rdv(o.sector.value)
-                      }
-                    }
-                    status {
-                      if(o.status) {
-                        rdc(o.status.owner.desc)
-                        rdv(o.status.value)
-                      }
-                    }
-                    membership {
-                      if(o.membership) {
-                        rdc(o.membership.owner.desc)
-                        rdv(o.membership.value)
-                      }
-                    }
-                    countryElem {
-                      if(o.country) {
-                        rdc(o.country.owner.desc)
-                        rdv(o.country.value)
-                      }
-                    }
-                    federalState {
-                      if(o.federalState) {
-                        rdc(o.federalState.owner.desc)
-                        rdv(o.federalState.value)
-                      }
-                    }
-                    libraryNetwork {
-                      if(o.libraryNetwork) {
-                        rdc(o.libraryNetwork.owner.desc)
-                        rdv(o.libraryNetwork.value)
-                      }
-                    }
-                    funderType {
-                      if(o.funderType) {
-                        rdc(o.funderType.owner.desc)
-                        rdv(o.funderType.value)
-                      }
-                    }
-                    libraryType {
-                      if(o.libraryType) {
-                        rdc(o.libraryType.owner.desc)
-                        rdv(o.libraryType.value)
-                      }
-                    }
-                    costConfigurations {
-                      CostItemElementConfiguration.findAllByForOrganisation(o).each { ciecObj ->
-                        CostItemElementConfiguration ciec = (CostItemElementConfiguration) ciecObj
-                        costConfiguration {
-                          rdc(ciec.costItemElement.owner.desc)
-                          rdv(ciec.costItemElement.value)
-                          elementSign {
-                            rdc(ciec.elementSign.owner.desc)
-                            rdv(ciec.elementSign.value)
-                          }
-                        }
-                      }
-                    }
-                    ids {
-                      o.ids.each { idObj ->
-                        // TODO [ticket=1789]
-                        //IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
-                        id (namespace: idObj.ns.ns, value: idObj.value)
-                      }
-                    }
-                    //outgoing/ingoingCombos: assembled in branch combos
-                    //prsLinks, affiliations, contacts and addresses done on own branches respectively
-                    orgTypes {
-                      o.orgType.each { ot ->
-                        orgType {
-                          rdc(ot.owner.desc)
-                          rdv(ot.value)
-                        }
-                      }
-                    }
-                    settings {
-                      List<OrgSettings> os = OrgSettings.findAllByOrg(o)
-                      os.each { st ->
-                        switch(st.key.type) {
-                          case RefdataValue:
-                            if(st.rdValue) {
-                              setting {
-                                name(st.key)
-                                rdValue {
-                                  rdc(st.rdValue.owner.desc)
-                                  rdv(st.rdValue.value)
-                                }
-                              }
-                            }
-                            break
-                          case Role:
-                            if(st.roleValue) {
-                              setting {
-                                name(st.key)
-                                roleValue(st.roleValue.authority)
-                              }
-                            }
-                            break
-                          default: setting{
-                            name(st.key)
-                            value(st.getValue())
-                            }
-                            break
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-              affiliations {
-                UserOrg.findAllByUserInList(newUserData.toList()).each { userOrg ->
-                  affiliation {
-                    user(userOrg.user.username)
-                    org(userOrg.org.globalUID)
-                    status(userOrg.status)
-                    if(userOrg.formalRole) {
-                      formalRole(userOrg.formalRole.authority)
-                    }
-                    if(userOrg.dateActioned) {
-                      dateActioned(userOrg.dateActioned)
-                    }
-                    if(userOrg.dateRequested) {
-                      dateRequested(userOrg.dateRequested)
-                    }
-                  }
-                }
-              }
-              combos {
-                Combo.executeQuery('select c from Combo c where c.fromOrg in :fromOrg or c.toOrg in :toOrg',[fromOrg: newOrgData.toList(),toOrg: newOrgData.toList()]).each { c ->
-                  if(c.type) {
-                    combo {
-                      status {
-                        if (c.status) {
-                          rdc(c.status.owner.desc)
-                          rdv(c.status.value)
-                        }
-                      }
-                      type{
-                        rdc(c.type.owner.desc)
-                        rdv(c.type.value)
-                      }
-                      fromOrg(c.fromOrg.globalUID)
-                      toOrg(c.toOrg.globalUID)
-                    }
-                  }
-                }
-              }
-              /*persons {
-                newPersonData.each { Person p ->
-                  person {
-                    log.debug("now processing ${p.id}")
-                    globalUID(p.globalUID)
-                    title(p.title)
-                    firstName(p.first_name)
-                    middleName(p.middle_name)
-                    lastName(p.last_name)
-                    if(p.tenant)
-                      tenant(p.tenant.globalUID)
-                    if(p.gender) {
-                      gender {
-                        rdc(p.gender.owner.desc)
-                        rdv(p.gender.value)
-                      }
-                    }
-                    if(p.isPublic) {
-                      isPublic {
-                        'Yes'
-                      }
-                    }
-                    if(p.contactType) {
-                      contactType {
-                        rdc(p.contactType.owner.desc)
-                        rdv(p.contactType.value)
-                      }
-                    }
-                    if(p.roleType) {
-                      roleType {
-                        rdc(p.roleType.owner.desc)
-                        rdv(p.roleType.value)
-                      }
-                    }
-                  }
-                }
-              }
-              personRoles {
-                PersonRole.findAllByOrgInList(newOrgData.toList()).each { link ->
-                  personRole {
-                    org(link.org.globalUID)
-                    prs(link.prs.globalUID)
-                    if(link.positionType) {
-                      positionType {
-                        rdc(link.positionType.owner.desc)
-                        rdv(link.positionType.value)
-                      }
-                    }
-                    if(link.functionType) {
-                      functionType {
-                        rdc(link.functionType.owner.desc)
-                        rdv(link.functionType.value)
-                      }
-                    }
-                    if(link.responsibilityType) {
-                      responsibilityType {
-                        rdc(link.responsibilityType.owner.desc)
-                        rdv(link.responsibilityType.value)
-                      }
-                    }
-                  }
-                }
-              }*/
-              users {
-                newUserData.each { User u ->
-                  user {
-                    username(u.username)
-                    display(u.display)
-                    password(u.password)
-                    email(u.email)
-                    shibbScope(u.shibbScope)
-                    enabled(u.enabled)
-                    accountExpired(u.accountExpired)
-                    accountLocked(u.accountLocked)
-                    passwordExpired(u.passwordExpired)
-                    dateCreated(u.dateCreated)
-                    lastUpdated(u.lastUpdated)
-                    //affiliations done already on organisations
-                    roles {
-                      u.roles.each { rObj ->
-                        UserRole r = (UserRole) rObj
-                        role(r.role.authority)
-                      }
-                    }
-                    settings {
-                      List<UserSettings> us = UserSettings.findAllByUser(u)
-                      us.each { st ->
-                        switch(st.key.type) {
-                          case Org: setting{
-                            name(st.key)
-                            org(st.orgValue ? st.orgValue.globalUID : ' ')
-                          }
-                            break
-                          case RefdataValue:
-                            if(st.rdValue) {
-                              setting {
-                                name(st.key)
-                                rdValue {
-                                  rdc(st.rdValue.owner.desc)
-                                  rdv(st.rdValue.value)
-                                }
-                              }
-                            }
-                            break
-                          default: setting{
-                            name(st.key)
-                            value(st.getValue())
-                            }
-                            break
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-              /*addresses {
-                Address.executeQuery('select a from Address a where a.prs in :prsList or a.org in :orgList',[prsList:newPersonData,orgList:newOrgData]).each { a ->
-                  address {
-                    if(a.org) org(a.org.globalUID)
-                    if(a.prs) prs(a.prs.globalUID)
-                    street1(a.street_1)
-                    street2(a.street_2)
-                    zipcode(a.zipcode)
-                    city(a.city)
-                    pob(a.pob)
-                    pobZipcode(a.pobZipcode)
-                    pobCity(a.pobCity)
-                    if(a.state) {
-                      state {
-                        rdc(a.state.owner.desc)
-                        rdv(a.state.value)
-                      }
-                    }
-                    if(a.country) {
-                      countryElem {
-                        rdc(a.country.owner.desc)
-                        rdv(a.country.value)
-                      }
-                    }
-                    type {
-                      rdc(a.type.owner.desc)
-                      rdv(a.type.value)
-                    }
-                    if(a.name) name(a.name)
-                    if(a.additionFirst) additionFirst(a.additionFirst)
-                    if(a.additionSecond) additionSecond(a.additionSecond)
-                  }
-                }
-              }
-              contacts {
-                Contact.executeQuery('select c from Contact c where c.prs in :prsList or c.org in :orgList',[prsList:newPersonData,orgList:newOrgData]).each { c ->
-                  contact {
-                    if(c.org) org(c.org.globalUID)
-                    if(c.prs) prs(c.prs.globalUID)
-                    content(c.content)
-                    contentType {
-                      rdc(c.contentType.owner.desc)
-                      rdv(c.contentType.value)
-                    }
-                    type {
-                      rdc(c.type.owner.desc)
-                      rdv(c.type.value)
-                    }
-                  }
-                }
-              }*/
-            }
-          }
-          exportReport.append(newOrgData.join("</li><li>")+"</ul></p>")
-          exportReport.append("<p>Folgende Nutzer wurden erfolgreich exportiert: <ul><li>"+newUserData.join("</li><li>")+"</ul></p>")
-          flash.message = exportReport.toString()
         }
         else {
-          flash.error = "Es liegen keine Daten zum Export vor!"
+            log.error("data missing, rebuilding data")
+            redirect(controller:'admin',action: 'listDuplicateTitles')
         }
-      }
     }
-    else {
-      log.error("Basic data dump directory missing - PANIC!")
-      flash.error = "Das Verzeichnis der Exportdaten fehlt! Bitte anlegen und Datenbestand kontrollieren, ggf. neuen Basisdatensatz anlegen"
+
+    @Secured(['ROLE_ADMIN'])
+    def orgsExport() {
+        Date now = new Date()
+        File basicDataDir = new File(grailsApplication.config.basicDataPath)
+        if(basicDataDir) {
+            GPathResult oldBase
+            XmlSlurper slurper = new XmlSlurper()
+            Date lastDumpDate
+            List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
+                @Override
+                boolean accept(File dir, String name) {
+                    return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
+                }
+            })
+            if(dumpFiles.size() > 0) {
+                dumpFiles.toSorted { f1, f2 ->
+                    f1.lastModified() <=> f2.lastModified()
+                }
+                File lastDump = dumpFiles.last()
+                lastDumpDate = new Date(lastDump.lastModified())
+                oldBase = slurper.parse(lastDump)
+            }
+            else {
+                File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
+                lastDumpDate = new Date(f.lastModified())
+                if(f.exists()) {
+                    //complicated way - determine most recent org and user creation dates
+                    oldBase = slurper.parse(f)
+                }
+            }
+            if(oldBase) {
+                SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss.S')
+                Set<Org> newOrgData = []
+                Set<User> newUserData = []
+                Org.getAll().each { Org dbOrg ->
+                    def correspOrg = oldBase.organisations.org.find { orgNode ->
+                        orgNode.globalUID == dbOrg.globalUID
+                    }
+                    if(correspOrg) {
+                        if(dbOrg.lastUpdated > lastDumpDate) {
+                            newOrgData << dbOrg
+                        }
+                    }
+                    else if(dbOrg.lastUpdated > lastDumpDate) {
+                        newOrgData << dbOrg
+                    }
+                }
+                User.getAll().each { User dbUser ->
+                    def correspUser = oldBase.users.user.find { userNode ->
+                        userNode.username == dbUser.username
+                    }
+                    if(correspUser) {
+                        if(dbUser.lastUpdated > lastDumpDate) {
+                            newUserData << dbUser
+                        }
+                    }
+                    else if(dbUser.lastUpdated > lastDumpDate) {
+                        newUserData << dbUser
+                    }
+                }
+                //data collected: prepare export!
+                if(newOrgData || newUserData) {
+                    //List<Person> newPersonData = Person.executeQuery('select pr.prs from PersonRole pr where pr.org in :org',[org:newOrgData])
+                    File newDump = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.orgDumpFileNamePattern}${now.format("yyyy-MM-dd")}${grailsApplication.config.orgDumpFileExtension}")
+                    StringBuilder exportReport = new StringBuilder()
+                    exportReport.append("<p>Folgende Organisationen wurden erfolgreich exportiert: <ul><li>")
+                    newDump.withWriter { writer ->
+                        MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
+                        orgDataBuilder.data {
+                            organisations {
+                                newOrgData.each { Org o ->
+                                    org {
+                                        globalUID(o.globalUID)
+                                        name(o.name)
+                                        shortname(o.shortname)
+                                        shortcode(o.shortcode)
+                                        sortname(o.sortname)
+                                        url(o.url)
+                                        urlGov(o.urlGov)
+                                        importSource(o.importSource)
+                                        lastImportDate(o.lastImportDate)
+                                        gokbId(o.gokbId)
+                                        comment(o.comment)
+                                        ipRange(o.ipRange)
+                                        scope(o.scope)
+                                        dateCreated(o.dateCreated)
+                                        lastUpdated(o.lastUpdated)
+                                        categoryId(o.categoryId)
+                                        sector {
+                                            if(o.sector) {
+                                                rdc(o.sector.owner.desc)
+                                                rdv(o.sector.value)
+                                            }
+                                        }
+                                        status {
+                                            if(o.status) {
+                                                rdc(o.status.owner.desc)
+                                                rdv(o.status.value)
+                                            }
+                                        }
+                                        membership {
+                                            if(o.membership) {
+                                                rdc(o.membership.owner.desc)
+                                                rdv(o.membership.value)
+                                            }
+                                        }
+                                        countryElem {
+                                            if(o.country) {
+                                                rdc(o.country.owner.desc)
+                                                rdv(o.country.value)
+                                            }
+                                        }
+                                        federalState {
+                                            if(o.federalState) {
+                                                rdc(o.federalState.owner.desc)
+                                                rdv(o.federalState.value)
+                                            }
+                                        }
+                                        libraryNetwork {
+                                            if(o.libraryNetwork) {
+                                                rdc(o.libraryNetwork.owner.desc)
+                                                rdv(o.libraryNetwork.value)
+                                            }
+                                        }
+                                        funderType {
+                                            if(o.funderType) {
+                                                rdc(o.funderType.owner.desc)
+                                                rdv(o.funderType.value)
+                                            }
+                                        }
+                                        libraryType {
+                                            if(o.libraryType) {
+                                                rdc(o.libraryType.owner.desc)
+                                                rdv(o.libraryType.value)
+                                            }
+                                        }
+                                        costConfigurations {
+                                            CostItemElementConfiguration.findAllByForOrganisation(o).each { ciecObj ->
+                                                CostItemElementConfiguration ciec = (CostItemElementConfiguration) ciecObj
+                                                costConfiguration {
+                                                    rdc(ciec.costItemElement.owner.desc)
+                                                    rdv(ciec.costItemElement.value)
+                                                    elementSign {
+                                                        rdc(ciec.elementSign.owner.desc)
+                                                        rdv(ciec.elementSign.value)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        ids {
+                                            o.ids.each { idObj ->
+                                                // TODO [ticket=1789]
+                                                //IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
+                                                id (namespace: idObj.ns.ns, value: idObj.value)
+                                            }
+                                        }
+                                        //outgoing/ingoingCombos: assembled in branch combos
+                                        //prsLinks, affiliations, contacts and addresses done on own branches respectively
+                                        orgTypes {
+                                            o.orgType.each { ot ->
+                                                orgType {
+                                                    rdc(ot.owner.desc)
+                                                    rdv(ot.value)
+                                                }
+                                            }
+                                        }
+                                        settings {
+                                            List<OrgSettings> os = OrgSettings.findAllByOrg(o)
+                                            os.each { st ->
+                                                switch(st.key.type) {
+                                                    case RefdataValue:
+                                                        if(st.rdValue) {
+                                                            setting {
+                                                                name(st.key)
+                                                                rdValue {
+                                                                    rdc(st.rdValue.owner.desc)
+                                                                    rdv(st.rdValue.value)
+                                                                }
+                                                            }
+                                                        }
+                                                        break
+                                                    case Role:
+                                                        if(st.roleValue) {
+                                                            setting {
+                                                                name(st.key)
+                                                                roleValue(st.roleValue.authority)
+                                                            }
+                                                        }
+                                                        break
+                                                    default: setting{
+                                                        name(st.key)
+                                                        value(st.getValue())
+                                                    }
+                                                        break
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            affiliations {
+                                UserOrg.findAllByUserInList(newUserData.toList()).each { userOrg ->
+                                    affiliation {
+                                        user(userOrg.user.username)
+                                        org(userOrg.org.globalUID)
+                                        status(userOrg.status)
+                                        if(userOrg.formalRole) {
+                                            formalRole(userOrg.formalRole.authority)
+                                        }
+                                        if(userOrg.dateActioned) {
+                                            dateActioned(userOrg.dateActioned)
+                                        }
+                                        if(userOrg.dateRequested) {
+                                            dateRequested(userOrg.dateRequested)
+                                        }
+                                    }
+                                }
+                            }
+                            combos {
+                                Combo.executeQuery('select c from Combo c where c.fromOrg in :fromOrg or c.toOrg in :toOrg',[fromOrg: newOrgData.toList(),toOrg: newOrgData.toList()]).each { c ->
+                                    if(c.type) {
+                                        combo {
+                                            status {
+                                                if (c.status) {
+                                                    rdc(c.status.owner.desc)
+                                                    rdv(c.status.value)
+                                                }
+                                            }
+                                            type{
+                                                rdc(c.type.owner.desc)
+                                                rdv(c.type.value)
+                                            }
+                                            fromOrg(c.fromOrg.globalUID)
+                                            toOrg(c.toOrg.globalUID)
+                                        }
+                                    }
+                                }
+                            }
+                            /*persons {
+                              newPersonData.each { Person p ->
+                                person {
+                                  log.debug("now processing ${p.id}")
+                                  globalUID(p.globalUID)
+                                  title(p.title)
+                                  firstName(p.first_name)
+                                  middleName(p.middle_name)
+                                  lastName(p.last_name)
+                                  if(p.tenant)
+                                    tenant(p.tenant.globalUID)
+                                  if(p.gender) {
+                                    gender {
+                                      rdc(p.gender.owner.desc)
+                                      rdv(p.gender.value)
+                                    }
+                                  }
+                                  if(p.isPublic) {
+                                    isPublic {
+                                      'Yes'
+                                    }
+                                  }
+                                  if(p.contactType) {
+                                    contactType {
+                                      rdc(p.contactType.owner.desc)
+                                      rdv(p.contactType.value)
+                                    }
+                                  }
+                                  if(p.roleType) {
+                                    roleType {
+                                      rdc(p.roleType.owner.desc)
+                                      rdv(p.roleType.value)
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                            personRoles {
+                              PersonRole.findAllByOrgInList(newOrgData.toList()).each { link ->
+                                personRole {
+                                  org(link.org.globalUID)
+                                  prs(link.prs.globalUID)
+                                  if(link.positionType) {
+                                    positionType {
+                                      rdc(link.positionType.owner.desc)
+                                      rdv(link.positionType.value)
+                                    }
+                                  }
+                                  if(link.functionType) {
+                                    functionType {
+                                      rdc(link.functionType.owner.desc)
+                                      rdv(link.functionType.value)
+                                    }
+                                  }
+                                  if(link.responsibilityType) {
+                                    responsibilityType {
+                                      rdc(link.responsibilityType.owner.desc)
+                                      rdv(link.responsibilityType.value)
+                                    }
+                                  }
+                                }
+                              }
+                            }*/
+                            users {
+                                newUserData.each { User u ->
+                                    user {
+                                        username(u.username)
+                                        display(u.display)
+                                        password(u.password)
+                                        email(u.email)
+                                        shibbScope(u.shibbScope)
+                                        enabled(u.enabled)
+                                        accountExpired(u.accountExpired)
+                                        accountLocked(u.accountLocked)
+                                        passwordExpired(u.passwordExpired)
+                                        dateCreated(u.dateCreated)
+                                        lastUpdated(u.lastUpdated)
+                                        //affiliations done already on organisations
+                                        roles {
+                                            u.roles.each { rObj ->
+                                                UserRole r = (UserRole) rObj
+                                                role(r.role.authority)
+                                            }
+                                        }
+                                        settings {
+                                            List<UserSettings> us = UserSettings.findAllByUser(u)
+                                            us.each { st ->
+                                                switch(st.key.type) {
+                                                    case Org: setting{
+                                                        name(st.key)
+                                                        org(st.orgValue ? st.orgValue.globalUID : ' ')
+                                                    }
+                                                        break
+                                                    case RefdataValue:
+                                                        if(st.rdValue) {
+                                                            setting {
+                                                                name(st.key)
+                                                                rdValue {
+                                                                    rdc(st.rdValue.owner.desc)
+                                                                    rdv(st.rdValue.value)
+                                                                }
+                                                            }
+                                                        }
+                                                        break
+                                                    default: setting{
+                                                        name(st.key)
+                                                        value(st.getValue())
+                                                    }
+                                                        break
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            /*addresses {
+                              Address.executeQuery('select a from Address a where a.prs in :prsList or a.org in :orgList',[prsList:newPersonData,orgList:newOrgData]).each { a ->
+                                address {
+                                  if(a.org) org(a.org.globalUID)
+                                  if(a.prs) prs(a.prs.globalUID)
+                                  street1(a.street_1)
+                                  street2(a.street_2)
+                                  zipcode(a.zipcode)
+                                  city(a.city)
+                                  pob(a.pob)
+                                  pobZipcode(a.pobZipcode)
+                                  pobCity(a.pobCity)
+                                  if(a.state) {
+                                    state {
+                                      rdc(a.state.owner.desc)
+                                      rdv(a.state.value)
+                                    }
+                                  }
+                                  if(a.country) {
+                                    countryElem {
+                                      rdc(a.country.owner.desc)
+                                      rdv(a.country.value)
+                                    }
+                                  }
+                                  type {
+                                    rdc(a.type.owner.desc)
+                                    rdv(a.type.value)
+                                  }
+                                  if(a.name) name(a.name)
+                                  if(a.additionFirst) additionFirst(a.additionFirst)
+                                  if(a.additionSecond) additionSecond(a.additionSecond)
+                                }
+                              }
+                            }
+                            contacts {
+                              Contact.executeQuery('select c from Contact c where c.prs in :prsList or c.org in :orgList',[prsList:newPersonData,orgList:newOrgData]).each { c ->
+                                contact {
+                                  if(c.org) org(c.org.globalUID)
+                                  if(c.prs) prs(c.prs.globalUID)
+                                  content(c.content)
+                                  contentType {
+                                    rdc(c.contentType.owner.desc)
+                                    rdv(c.contentType.value)
+                                  }
+                                  type {
+                                    rdc(c.type.owner.desc)
+                                    rdv(c.type.value)
+                                  }
+                                }
+                              }
+                            }*/
+                        }
+                    }
+                    exportReport.append(newOrgData.join("</li><li>")+"</ul></p>")
+                    exportReport.append("<p>Folgende Nutzer wurden erfolgreich exportiert: <ul><li>"+newUserData.join("</li><li>")+"</ul></p>")
+                    flash.message = exportReport.toString()
+                }
+                else {
+                    flash.error = "Es liegen keine Daten zum Export vor!"
+                }
+            }
+        }
+        else {
+            log.error("Basic data dump directory missing - PANIC!")
+            flash.error = "Das Verzeichnis der Exportdaten fehlt! Bitte anlegen und Datenbestand kontrollieren, ggf. neuen Basisdatensatz anlegen"
+        }
+        redirect controller: 'myInstitution', action: 'dashboard'
     }
-    redirect controller: 'myInstitution', action: 'dashboard'
-  }
 
-  @Secured(['ROLE_ADMIN'])
-  def orgsImport() {
-    File basicDataDir = new File("${grailsApplication.config.documentStorageLocation}/basic_data_dumps/")
-    List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
-      @Override
-      boolean accept(File dir, String name) {
-        return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
-      }
-    })
-    if(dumpFiles.size() > 0) {
-      dumpFiles.toSorted { f1, f2 ->
-        f1.lastModified() <=> f2.lastModified()
-      }
-      File lastDump = dumpFiles.last()
-      apiService.setupBasicData(lastDump)
-      flash.message = "Daten wurden erfolgreich aufgesetzt!"
+    @Secured(['ROLE_ADMIN'])
+    def orgsImport() {
+        File basicDataDir = new File("${grailsApplication.config.documentStorageLocation}/basic_data_dumps/")
+        List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
+            @Override
+            boolean accept(File dir, String name) {
+                return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
+            }
+        })
+        if(dumpFiles.size() > 0) {
+            dumpFiles.toSorted { f1, f2 ->
+                f1.lastModified() <=> f2.lastModified()
+            }
+            File lastDump = dumpFiles.last()
+            apiService.setupBasicData(lastDump)
+            flash.message = "Daten wurden erfolgreich aufgesetzt!"
+        }
+        else {
+            flash.error = "Es liegt kein inkrementeller Dump vor ... haben Sie vorher die Daten ausgeschrieben?"
+        }
+        redirect controller: 'myInstitution', action: 'dashboard'
     }
-    else {
-      flash.error = "Es liegt kein inkrementeller Dump vor ... haben Sie vorher die Daten ausgeschrieben?"
+
+    @Secured(['ROLE_ADMIN'])
+    @Deprecated
+    def docstoreMigrate() {
+        docstoreService.migrateToDb()
+        redirect(controller:'home')
     }
-    redirect controller: 'myInstitution', action: 'dashboard'
-  }
 
-  @Secured(['ROLE_ADMIN'])
-  @Deprecated
-  def docstoreMigrate() {
-    docstoreService.migrateToDb()
-    redirect(controller:'home')
-  }
+    /*
+    @Secured(['ROLE_YODA'])
+    def triggerHousekeeping() {
+        log.debug("trigggerHousekeeping()")
+        enrichmentService.initiateHousekeeping()
+        redirect(controller:'home')
+    }
 
-  @Secured(['ROLE_YODA'])
-  def triggerHousekeeping() {
-    log.debug("trigggerHousekeeping()")
-    enrichmentService.initiateHousekeeping()
-    redirect(controller:'home')
-  }
+    @Secured(['ROLE_YODA'])
+    def initiateCoreMigration() {
+        log.debug("initiateCoreMigration...");
+        enrichmentService.initiateCoreMigration()
+        redirect(controller:'home')
+    }
+     */
 
-  @Secured(['ROLE_YODA'])
-  def initiateCoreMigration() {
-    log.debug("initiateCoreMigration...");
-    enrichmentService.initiateCoreMigration()
-    redirect(controller:'home')
-  }
+    @Deprecated
+    @Secured(['ROLE_ADMIN'])
+    def titlesImport() {
 
-  @Secured(['ROLE_ADMIN'])
-  def titlesImport() {
-
-    if ( request.method=="POST" ) {
-      def upload_mime_type = request.getFile("titles_file")?.contentType
-      def upload_filename = request.getFile("titles_file")?.getOriginalFilename()
-      def input_stream = request.getFile("titles_file")?.inputStream
+        if ( request.method=="POST" ) {
+            def upload_mime_type = request.getFile("titles_file")?.contentType
+            def upload_filename = request.getFile("titles_file")?.getOriginalFilename()
+            def input_stream = request.getFile("titles_file")?.inputStream
 
       CSVReader r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ) )
       String[] nl;
@@ -1240,58 +1249,58 @@ class AdminController extends AbstractDebugController {
             i++;
           }
 
-          log.debug("\n\n");
-          log.debug(q);
-          log.debug(joinclause);
-          log.debug(whereclause);
-          log.debug(bindvars);
+                    log.debug("\n\n");
+                    log.debug(q);
+                    log.debug(joinclause);
+                    log.debug(whereclause);
+                    log.debug(bindvars);
 
-          def title_search = TitleInstance.executeQuery(q+joinclause+whereclause,bindvars);
-          log.debug("Search returned ${title_search.size()} titles");
+                    def title_search = TitleInstance.executeQuery(q+joinclause+whereclause,bindvars);
+                    log.debug("Search returned ${title_search.size()} titles");
 
-          if ( title_search.size() == 0 ) {
-            if ( title != null ) {
-              log.debug("New title - create identifiers and title ${title}");
+                    if ( title_search.size() == 0 ) {
+                        if ( title != null ) {
+                            log.debug("New title - create identifiers and title ${title}");
+                        }
+                        else {
+                            log.debug("NO match - no title - skip row");
+                        }
+                    }
+                    else if ( title_search.size() == 1 ) {
+                        log.debug("Matched one - see if any of the supplied identifiers are missing");
+                        def title_obj = title_search[0]
+                        def c = 0;
+                        cols.each { cn ->
+                            if ( cn.startsWith('title.id.' ) ) {
+                                def ns = cn.substring(9)
+                                def val = nl[c]
+                                log.debug("validate ${title_obj.title} has identifier with ${ns} ${val}");
+                                title_obj.checkAndAddMissingIdentifier(ns,val);
+                            }
+                            c++
+                        }
+                    }
+                    else {
+                        log.debug("Unable to continue - matched multiple titles");
+                    }
+                }
             }
-            else {
-              log.debug("NO match - no title - skip row");
-            }
-          }
-          else if ( title_search.size() == 1 ) {
-            log.debug("Matched one - see if any of the supplied identifiers are missing");
-            def title_obj = title_search[0]
-            def c = 0;
-            cols.each { cn ->
-              if ( cn.startsWith('title.id.' ) ) {
-                def ns = cn.substring(9)
-                def val = nl[c]
-                log.debug("validate ${title_obj.title} has identifier with ${ns} ${val}");
-                title_obj.checkAndAddMissingIdentifier(ns,val);
-              }
-              c++
-            }
-          }
-          else {
-            log.debug("Unable to continue - matched multiple titles");
-          }
         }
-      }
     }
-  }
 
-  def cleanUpGorm() {
-    log.debug("Clean up GORM");
-    def session = sessionFactory.currentSession
-    session.flush()
-    session.clear()
-    propertyInstanceMap.get().clear()
-  }
+    def cleanUpGorm() {
+        log.debug("Clean up GORM");
+        def session = sessionFactory.currentSession
+        session.flush()
+        session.clear()
+        propertyInstanceMap.get().clear()
+    }
 
     @Secured(['ROLE_ADMIN'])
     def manageOrganisations() {
         Map<String, Object> result = [:]
 
-      if (params.cmd == 'changeApiLevel') {
+        if (params.cmd == 'changeApiLevel') {
             Org target = genericOIDService.resolveOID(params.target)
 
             if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
@@ -1327,13 +1336,13 @@ class AdminController extends AbstractDebugController {
                     // orgRole = subscriber
                     List<OrgRole> subscriberRoles = OrgRole.executeQuery(
                             'select ro from OrgRole ro ' +
-                            'where ro.org = :org and ro.sub is not null and ro.roleType.value like \'Subscriber\'',
+                                    'where ro.org = :org and ro.sub is not null and ro.roleType.value like \'Subscriber\'',
                             [ org: target ]
                     )
 
                     List<OrgRole> conSubscriberRoles = OrgRole.executeQuery(
                             'select ro from OrgRole ro ' +
-                            'where ro.org = :org and ro.sub is not null and ro.roleType.value in (:roleTypes)',
+                                    'where ro.org = :org and ro.sub is not null and ro.roleType.value in (:roleTypes)',
                             [ org: target, roleTypes: ['Subscriber_Consortial', 'Subscriber_Consortial_Hidden'] ]
                     )
 
@@ -1352,18 +1361,18 @@ class AdminController extends AbstractDebugController {
 
                     }*/
                     conSubscriberRoles.each { role ->
-                      if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
-                        OrgRole newRole = new OrgRole(
-                                org: role.org,
-                                sub: role.sub,
-                                roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
-                        )
-                        newRole.save()
+                        if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                            OrgRole newRole = new OrgRole(
+                                    org: role.org,
+                                    sub: role.sub,
+                                    roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                            )
+                            newRole.save()
 
-                        // keep consortia type
-                        //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
-                        //role.sub.save()
-                      }
+                            // keep consortia type
+                            //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
+                            //role.sub.save()
+                        }
                     }
                 }
                 oss.roleValue = customerType
@@ -1377,38 +1386,38 @@ class AdminController extends AbstractDebugController {
             target.save(flush:true)
         }
         else if (params.cmd == 'changeGascoEntry') {
-          Org target = genericOIDService.resolveOID(params.target)
-          RefdataValue option = genericOIDService.resolveOID(params.gascoEntry)
+            Org target = genericOIDService.resolveOID(params.target)
+            RefdataValue option = genericOIDService.resolveOID(params.gascoEntry)
 
-          if (target && option) {
-            def oss = OrgSettings.get(target, OrgSettings.KEYS.GASCO_ENTRY)
+            if (target && option) {
+                def oss = OrgSettings.get(target, OrgSettings.KEYS.GASCO_ENTRY)
 
-            if (oss != OrgSettings.SETTING_NOT_FOUND) {
-              oss.rdValue = option
-              oss.save(flush: true)
-            } else {
-              OrgSettings.add(target, OrgSettings.KEYS.GASCO_ENTRY, option)
+                if (oss != OrgSettings.SETTING_NOT_FOUND) {
+                    oss.rdValue = option
+                    oss.save(flush: true)
+                } else {
+                    OrgSettings.add(target, OrgSettings.KEYS.GASCO_ENTRY, option)
+                }
             }
-          }
-          target.lastUpdated = new Date()
-          target.save(flush:true)
+            target.lastUpdated = new Date()
+            target.save(flush:true)
         }
-		else if (params.cmd == 'changeLegalInformation') {
-		  Org target = genericOIDService.resolveOID(params.target)
+        else if (params.cmd == 'changeLegalInformation') {
+            Org target = genericOIDService.resolveOID(params.target)
 
-		  if (target) {
-			  target.createdBy = Org.get(params.createdBy)
-			  target.legallyObligedBy = Org.get(params.legallyObligedBy)
-		  }
-		  target.lastUpdated = new Date()
-		  target.save(flush:true)
-	    }
+            if (target) {
+                target.createdBy = Org.get(params.createdBy)
+                target.legallyObligedBy = Org.get(params.legallyObligedBy)
+            }
+            target.lastUpdated = new Date()
+            target.save(flush:true)
+        }
 
         def fsq = filterService.getOrgQuery(params)
         result.orgList = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.orgListTotal = result.orgList.size()
 
-		result.allConsortia = Org.executeQuery(
+        result.allConsortia = Org.executeQuery(
                 "select o from OrgSettings os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority in ('ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY') order by o.sortname, o.name"
         )
         result
@@ -1505,11 +1514,11 @@ class AdminController extends AbstractDebugController {
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
 
         render view: 'managePropertyDefinitions', model: [
-              editable    : true,
-              propertyDefinitions: propDefs,
-              attrMap     : attrMap,
-              usedPdList  : usedPdList
-            ]
+                editable    : true,
+                propertyDefinitions: propDefs,
+                attrMap     : attrMap,
+                usedPdList  : usedPdList
+        ]
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -1558,11 +1567,11 @@ class AdminController extends AbstractDebugController {
             else {
                 if (params.name && ownerType) {
                     propDefGroup = new PropertyDefinitionGroup(
-                        name: params.name,
-                        description: params.description,
-                        tenant: null,
-                        ownerType: ownerType,
-                        isVisible: true
+                            name: params.name,
+                            description: params.description,
+                            tenant: null,
+                            ownerType: ownerType,
+                            isVisible: true
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true
@@ -1572,15 +1581,15 @@ class AdminController extends AbstractDebugController {
 
             if (valid) {
                 PropertyDefinitionGroupItem.executeUpdate(
-                    "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
-                    [pdg: propDefGroup]
+                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                        [pdg: propDefGroup]
                 )
 
                 params.list('propertyDefinition')?.each { pd ->
 
                     new PropertyDefinitionGroupItem(
-                          propDef: pd,
-                          propDefGroup: propDefGroup
+                            propDef: pd,
+                            propDefGroup: propDefGroup
                     ).save(flush: true)
                 }
             }
@@ -1666,7 +1675,7 @@ class AdminController extends AbstractDebugController {
                 usedRdvList : usedRdvList,
                 integrityCheckResult : integrityCheckResult
         ]
-  }
+    }
 
 
 

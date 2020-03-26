@@ -90,7 +90,14 @@ class RDStore {
     static final PACKAGE_STATUS_DELETED         = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     static final PLATFORM_STATUS_DELETED        = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
 
-    static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
+    static final PENDING_CHANGE_PENDING = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
+    static final PENDING_CHANGE_ACCEPTED = getRefdataValue('Accepted', RDConstants.PENDING_CHANGE_STATUS)
+    static final PENDING_CHANGE_SUPERSEDED = getRefdataValue('Superseded', RDConstants.PENDING_CHANGE_STATUS)
+    static final PENDING_CHANGE_REJECTED = getRefdataValue('Rejected', RDConstants.PENDING_CHANGE_STATUS)
+
+    static final PENDING_CHANGE_CONFIG_ACCEPT = getRefdataValue('Accept', RDConstants.PENDING_CHANGE_CONFIG_SETTING)
+    static final PENDING_CHANGE_CONFIG_PROMPT = getRefdataValue('Prompt', RDConstants.PENDING_CHANGE_CONFIG_SETTING)
+    static final PENDING_CHANGE_CONFIG_REJECT = getRefdataValue('Reject', RDConstants.PENDING_CHANGE_CONFIG_SETTING)
 
     static final PERM_PERM_EXPL             = getRefdataValue('Permitted (explicit)', RDConstants.PERMISSIONS)
     static final PERM_PERM_INTERP           = getRefdataValue('Permitted (interpreted)',RDConstants.PERMISSIONS)
@@ -147,9 +154,9 @@ class RDStore {
 
     static final TAX_REVERSE_CHARGE         = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
 
-    static final TITLE_TYPE_EBOOK           = getRefdataValue('EBook', RDConstants.TITLE_TYPE)
-    static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal', RDConstants.TITLE_TYPE)
-    static final TITLE_TYPE_DATABASE        = getRefdataValue('Database', RDConstants.TITLE_TYPE)
+    static final TITLE_TYPE_EBOOK           = getRefdataValue('Book', RDConstants.TITLE_MEDIUM)
+    static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal', RDConstants.TITLE_MEDIUM)
+    static final TITLE_TYPE_DATABASE        = getRefdataValue('Database', RDConstants.TITLE_MEDIUM)
 
     static final TITLE_STATUS_CURRENT       = getRefdataValue('Current', RDConstants.TITLE_STATUS)
     static final TITLE_STATUS_RETIRED       = getRefdataValue('Retired', RDConstants.TITLE_STATUS)

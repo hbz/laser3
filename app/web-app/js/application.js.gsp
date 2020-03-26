@@ -604,6 +604,9 @@ r2d2 = {
                     case "concludeBinding":
                         $('#js-confirmation-button').html(dict.get('confirm.dialog.concludeBinding',currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
                         break;
+                    case "clearUp":
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.clearUp',currLanguage) + '<i aria-hidden="true" class="bath icon"></i>');
+                        break;
                     default:
                         $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');
                 }

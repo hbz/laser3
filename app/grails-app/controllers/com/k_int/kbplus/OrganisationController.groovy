@@ -470,7 +470,7 @@ class OrganisationController extends AbstractDebugController {
                 Org orgInstance = new Org(params)
                 orgInstance.status = O_STATUS_CURRENT
 
-                if (params.name) {
+                //if (params.name) {
                     if (orgInstance.save(flush: true)) {
                         orgInstance.setDefaultCustomerType()
 
@@ -478,7 +478,7 @@ class OrganisationController extends AbstractDebugController {
                         redirect action: 'show', id: orgInstance.id
                         return
                     }
-                }
+                //}
 
                 render view: 'create', model: [orgInstance: orgInstance]
                 break

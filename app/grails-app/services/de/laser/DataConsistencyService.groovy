@@ -15,8 +15,10 @@ class DataConsistencyService {
     def deletionService
     def g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
+    @Deprecated
+    //no need as field impId is going to be removed as of version 1.3, ticket ERMS-1929
     Map<String, Object> checkImportIds() {
-        Map result = [
+        /*Map result = [
                 Org: [],
                 Package: [],
                 Platform: [],
@@ -44,7 +46,7 @@ class DataConsistencyService {
                 'SELECT tipp.impId as impId, count(tipp.impId) as cnt FROM TitleInstancePackagePlatform tipp GROUP BY tipp.impId ORDER BY tipp.impId'
         ).findAll{ it -> it[1] > 1}
 
-        result
+        result*/
     }
 
     Map<String, Object> checkTitles() {

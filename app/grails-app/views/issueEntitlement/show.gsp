@@ -8,17 +8,17 @@
 </head>
 <body>
     <semui:breadcrumbs>
-        <g:if test="${issueEntitlementInstance?.subscription.subscriber}">
-            <semui:crumb controller="myInstitution" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance?.subscription.subscriber.shortcode]}" text="${issueEntitlementInstance?.subscription.subscriber.name} - ${message(code:'subscription.plural')}"/>
+        <g:if test="${issueEntitlementInstance.subscription.subscriber}">
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance.subscription.subscriber.shortcode]}" text="${issueEntitlementInstance.subscription.subscriber.name} - ${message(code:'subscription.plural')}"/>
         </g:if>
-        <semui:crumb controller="subscription" action="index" id="${issueEntitlementInstance?.subscription.id}"  text="${issueEntitlementInstance?.subscription.name}" />
-        <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance?.tipp.title.title}" />
+        <semui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"  text="${issueEntitlementInstance.subscription.name}" />
+        <semui:crumb class="active" id="${issueEntitlementInstance.id}" text="${issueEntitlementInstance.tipp.title.title}" />
     </semui:breadcrumbs>
     <br>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title?.type?.value}"/>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="${issueEntitlementInstance.tipp.title.printTitleType()}"/>
 
-        <g:message code="issueEntitlement.for_title.label"/> ${issueEntitlementInstance?.tipp.title.title}
+        <g:message code="issueEntitlement.for_title.label"/> ${issueEntitlementInstance.tipp.title.title}
     </h1>
 
     <semui:messages data="${flash}" />
@@ -26,39 +26,39 @@
         <div class="inline-lists">
 
             <dl>
-                <g:if test="${issueEntitlementInstance?.subscription}">
+                <g:if test="${issueEntitlementInstance.subscription}">
                     <dt><g:message code="default.subscription.label"/></dt>
 
-                    <dd><g:link controller="subscription" action="index" id="${issueEntitlementInstance?.subscription?.id}">${issueEntitlementInstance?.subscription?.name}</g:link></dd>
+                    <dd><g:link controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}">${issueEntitlementInstance.subscription.name}</g:link></dd>
 
                 </g:if>
-            <g:if test="${issueEntitlementInstance?.subscription.owner}">
+            <g:if test="${issueEntitlementInstance.subscription.owner}">
                 <dt><g:message code="license.label"/></dt>
 
-                <dd><g:link controller="license" action="show" id="${issueEntitlementInstance?.subscription?.owner.id}">${issueEntitlementInstance?.subscription?.owner.reference}</g:link></dd>
+                <dd><g:link controller="license" action="show" id="${issueEntitlementInstance.subscription.owner.id}">${issueEntitlementInstance.subscription.owner.reference}</g:link></dd>
 
             </g:if>
-            <g:if test="${issueEntitlementInstance?.subscription?.owner?.onixplLicense}">
+            <g:if test="${issueEntitlementInstance.subscription.owner?.onixplLicense}">
                 <dt><g:message code="onixplLicense.license.label"/></dt>
 
                 <dd><g:link controller="onixplLicense" action="index" id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title}</g:link></dd>
             </g:if>
 
-            <g:if test="${issueEntitlementInstance?.tipp}">
+            <g:if test="${issueEntitlementInstance.tipp}">
                     <dt><g:message code="title.label" default="Title" /></dt>
-                    <dd><g:link controller="title" action="show" id="${issueEntitlementInstance?.tipp?.title.id}">${issueEntitlementInstance?.tipp?.title.title}</g:link> (<g:message code="title.type.label"/>: ${issueEntitlementInstance?.tipp?.title.type.getI10n('value')})</dd>
+                    <dd><g:link controller="title" action="show" id="${issueEntitlementInstance.tipp.title.id}">${issueEntitlementInstance.tipp.title.title}</g:link> (<g:message code="title.type.label"/>: ${issueEntitlementInstance.tipp.title.printTitleType()})</dd>
                     <dt><g:message code="tipp.delayedOA" default="TIPP Delayed OA" /></dt>
-                    <dd>${issueEntitlementInstance?.tipp.delayedOA?.value}</dd>
+                    <dd>${issueEntitlementInstance.tipp.delayedOA?.value}</dd>
                     <dt><g:message code="tipp.hybridOA" default="TIPP Hybrid OA" /></dt>
-                    <dd>${issueEntitlementInstance?.tipp.hybridOA?.value}</dd>
+                    <dd>${issueEntitlementInstance.tipp.hybridOA?.value}</dd>
                     <dt><g:message code="tipp.show.accessStart" default="Date Title Joined Package" /></dt>
                     <dd><g:formatDate format="${message(code:'default.date.format.notime')}" date="${issueEntitlementInstance.tipp.accessStartDate}"/></dd>
             </g:if>
 
-                <g:if test="${issueEntitlementInstance?.tipp.title?.ids}">
+                <g:if test="${issueEntitlementInstance.tipp.title.ids}">
                     <dt><g:message code="title.identifiers.label" /></dt>
                     <dd><ul>
-                      <g:each in="${issueEntitlementInstance?.tipp.title?.ids?.sort{it?.ns?.ns}}" var="i">
+                      <g:each in="${issueEntitlementInstance.tipp.title.ids?.sort{it.ns.ns}}" var="i">
                           <li>
                               ${i.ns.ns}:${i.value}
                               <!--<g:if test="${i.ns.ns.equalsIgnoreCase('issn')}">
@@ -80,19 +80,20 @@
                 </dd>
 
 
-                <g:if test="${issueEntitlementInstance?.coreStatus}">
+                <g:if test="${issueEntitlementInstance.coreStatus}">
                     <dt><g:message code="subscription.details.core_medium"/></dt>
+                    <%-- fully qualified reference because we do not make imports for one occurrence --%>
                     <dd><semui:xEditableRefData owner="${issueEntitlementInstance}" field="coreStatus" config='${de.laser.helper.RDConstants.CORE_STATUS}'/> </dd>
                 </g:if>
-              <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>
-<%--<dt>${message(code:'subscription.details.core_status', default:'Core Status')}</dt>
-<dd>
-  <g:render template="/templates/coreStatus" model="${['issueEntitlement': issueEntitlementInstance]}"/>
-</dd> --%>
+            <%--              <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>
+        <%--<dt>${message(code:'subscription.details.core_status', default:'Core Status')}</dt>
+            <dd>
+              <g:render template="/templates/coreStatus" model="${['issueEntitlement': issueEntitlementInstance]}"/>
+            </dd> --%>
 
-  <g:if test="${issueEntitlementInstance?.tipp.hostPlatformURL}">
+  <g:if test="${issueEntitlementInstance.tipp.hostPlatformURL}">
       <dt><g:message code="tipp.hostPlatformURL"/></dt>
-      <dd> <a href="${issueEntitlementInstance.tipp?.hostPlatformURL.contains('http') ?:'http://'+issueEntitlementInstance.tipp?.hostPlatformURL}" target="_blank" TITLE="${issueEntitlementInstance.tipp?.hostPlatformURL}">${issueEntitlementInstance.tipp.platform.name}</a></dd>
+      <dd> <a href="${issueEntitlementInstance.tipp.hostPlatformURL.contains('http') ?:'http://'+issueEntitlementInstance.tipp.hostPlatformURL}" target="_blank" TITLE="${issueEntitlementInstance.tipp.hostPlatformURL}">${issueEntitlementInstance.tipp.platform.name}</a></dd>
   </g:if>
 </dl>
 
@@ -317,7 +318,8 @@
 </g:if>
 </div>
 
-
+<%--
+Deprecated as of February 11th, '20
 <div id="magicArea">
 
     <g:set var="yodaService" bean="yodaService" />
@@ -340,5 +342,6 @@ $("[name='coreAssertionEdit']").modal('show');
 $('.xEditableValue').editable();
 }
 </r:script>
+--%>
 </body>
 </html>

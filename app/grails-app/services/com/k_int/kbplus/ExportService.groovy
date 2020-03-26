@@ -363,37 +363,6 @@ class ExportService {
 			}
 		}
 	}
-
-    /*
-    legacy, code is already now unreachable
-	def StreamOutSubsCSV(out, sub, entitlements, header){
-		def jc_id = sub.getSubscriber()?.getIdentifierByType('JC')?.value
-		out.withWriter { writer ->
-			def tsdate = formatDate(sub.startDate)?:' '
-			def tedate = formatDate(sub.endDate)?:' '
-			if ( header ) {
-				writer.write("FileType,SpecVersion,JC_ID,TermStartDate,TermEndDate,SubURI,SystemIdentifier\n")
-				writer.write("${sub.type?.value?:''},\"2.0\",${jc_id?:''},${tsdate},${tedate},\"uri://kbplus/sub/${sub.identifier}\",${sub.impId}\n")
-			}
-	 
-			// Output the body text
-			// writer.write("publication_title,print_identifier,online_identifier,date_first_issue_subscribed,num_first_vol_subscribed,num_first_issue_subscribed,date_last_issue_subscribed,num_last_vol_subscribed,num_last_issue_subscribed,embargo_info,title_url,first_author,title_id,coverage_note,coverage_depth,publisher_name\n");
-			writer.write("publication_title,print_identifier,online_identifier,date_first_issue_online,num_first_vol_online,num_first_issue_online,date_last_issue_online,num_last_vol_online,num_last_issue_online,title_url,first_author,title_id,embargo_info,coverage_depth,coverage_notes,publisher_name\n");
-	 
-			entitlements.each { e ->
-	 
-				def start_date = e.startDate ? formatter.format(e.startDate) : '';
-				def end_date = e.endDate ? formatter.format(e.endDate) : '';
-				def title_doi = (e.tipp?.title?.getIdentifierValue('DOI'))?:''
-				def publisher = e.tipp?.title?.publisher
-	 
-				writer.write("\"${e.tipp.title.title}\",\"${e.tipp?.title?.getIdentifierValue('ISSN')?:''}\",\"${e.tipp?.title?.getIdentifierValue('eISSN')?:''}\",${start_date},${e.startVolume?:''},${e.startIssue?:''},${end_date},${e.endVolume?:''},${e.endIssue?:''},\"${e.tipp?.hostPlatformURL?:''}\",,\"${title_doi}\",\"${e.embargo?:''}\",\"${e.tipp?.coverageDepth?:''}\",\"${e.tipp?.coverageNote?:''}\",\"${publisher?.name?:''}\"\n");
-			}
-			writer.flush()
-			writer.close()
-		}
-	}
-    */
 	
 	/**
 	 * This function will stream out the list of titles in a CSV format.

@@ -18,6 +18,8 @@ import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.web.util.WebUtils
+import org.hibernate.AssertionFailure
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
@@ -51,7 +53,6 @@ class Org
     String importSource         // "nationallizenzen.de", "edb des hbz"
     Date lastImportDate
 
-    String impId
     String gokbId
     String comment
     String ipRange
@@ -138,7 +139,6 @@ class Org
                 id          column:'org_id'
            version          column:'org_version'
          globalUID          column:'org_guid'
-             impId          column:'org_imp_id',    index:'org_imp_id_idx'
               name          column:'org_name',      index:'org_name_idx'
          shortname          column:'org_shortname', index:'org_shortname_idx'
           sortname          column:'org_sortname',  index:'org_sortname_idx'
@@ -193,7 +193,7 @@ class Org
 
     static constraints = {
            globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-                name(nullable:true, blank:false, maxSize:255)
+                name(nullable:false, blank:false, maxSize:255)
            shortname(nullable:true, blank:true, maxSize:255)
             sortname(nullable:true, blank:true, maxSize:255)
      legalPatronName(nullable:true, blank:true, maxSize:255)
@@ -201,7 +201,6 @@ class Org
               urlGov(nullable:true, blank:true, maxSize:512)
         subjectGroup(nullable:true, blank: true)
      //originEditUrl(nullable:true, blank:false)
-               impId(nullable:true, blank:true, maxSize:255)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
               sector(nullable:true, blank:true)
@@ -259,10 +258,6 @@ class Org
     def beforeInsert() {
         if ( !shortcode ) {
             shortcode = generateShortcode(name);
-        }
-        
-        if (impId == null) {
-            impId = java.util.UUID.randomUUID().toString();
         }
 
         //ugliest HOTFIX ever #2
@@ -452,6 +447,7 @@ class Org
     return new Org(name:value)
   }
 
+    /*
   static def lookup(name, identifiers, def uuid = null) {
 
       def result = []
@@ -506,11 +502,14 @@ class Org
 
       result.isEmpty() ? null : result.get(0)
     }
+     */
 
+    /*
     static def lookupOrCreate(name, sector, consortium, identifiers, iprange, def imp_uuid = null) {
         lookupOrCreate2(name, sector, consortium, identifiers, iprange, null, imp_uuid)
-    }
+    }*/
 
+    /*
     static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgRoleTyp, def imp_uuid = null) {
 
         if(imp_uuid?.size() == 0) {
@@ -584,7 +583,7 @@ class Org
         }
         println "org lookup end"
         result
-    }
+    }*/
 
   @Transient
   static def oaiConfig = [

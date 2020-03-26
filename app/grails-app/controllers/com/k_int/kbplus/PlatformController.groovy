@@ -64,6 +64,7 @@ class PlatformController extends AbstractDebugController {
       result
     }
 
+    /*
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     @Secured(['ROLE_ADMIN'])
@@ -84,6 +85,7 @@ class PlatformController extends AbstractDebugController {
       break
     }
     }
+     */
 
     @Secured(['ROLE_USER'])
     def show() {
@@ -192,6 +194,8 @@ class PlatformController extends AbstractDebugController {
         ]
 
     }
+
+    /*
     @Secured(['ROLE_USER'])
     def platformTipps() {
         def editable
@@ -220,7 +224,9 @@ class PlatformController extends AbstractDebugController {
 
         result
     }
+     */
 
+    /*
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     @Secured(['ROLE_ADMIN'])
@@ -267,6 +273,7 @@ class PlatformController extends AbstractDebugController {
       break
     }
     }
+     */
 
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })

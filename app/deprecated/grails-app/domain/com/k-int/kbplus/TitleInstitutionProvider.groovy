@@ -1,6 +1,7 @@
-package com.k_int.kbplus
+//package com.k_int.kbplus
 import javax.persistence.Transient
 
+@Deprecated
 class TitleInstitutionProvider {
 
   Date dateCreated
@@ -88,22 +89,22 @@ class TitleInstitutionProvider {
   }
 
   def extendCoreExtent(Date givenStartDate, Date givenEndDate) {
-    log.debug("TIP:${this.id} :: extendCoreExtent(${givenStartDate}, ${givenEndDate})");
+    com.k_int.kbplus.TitleInstitutionProvider.log.debug("TIP:${this.id} :: extendCoreExtent(${givenStartDate}, ${givenEndDate})");
     // See if we can extend and existing CoreAssertion or create a new one to represent this
     // We soften then edges for extending by a day.
     Date startDate = new Date(givenStartDate.getTime())
     Date endDate = givenEndDate ? new Date(givenEndDate.getTime()) : null;
 
-    log.debug("For matching purposes, using ${startDate} and ${endDate}");
+    com.k_int.kbplus.TitleInstitutionProvider.log.debug("For matching purposes, using ${startDate} and ${endDate}");
     
     boolean cont = true
 
     if ( endDate != null ) {
-      log.debug("Working with a set endDate")
+      com.k_int.kbplus.TitleInstitutionProvider.log.debug("Working with a set endDate")
       // Test 1 : Does the given range fall entirely within an existing assertion?
       coreDates.each {
         if ( compareDates(it.startDate,startDate) <=0 && compareDates(it.endDate,givenEndDate) >=0 ) {
-          log.debug("date range is subsumed (${it.startDate} <= ${givenStartDate}) && (${it.endDate} >= ${givenEndDate})  ");
+          com.k_int.kbplus.TitleInstitutionProvider.log.debug("date range is subsumed (${it.startDate} <= ${givenStartDate}) && (${it.endDate} >= ${givenEndDate})  ");
           cont = false;
           return;
         }
@@ -116,7 +117,7 @@ class TitleInstitutionProvider {
           if ( compareDates(it.startDate,startDate) <= 0  && compareDates(it.endDate,startDate) >=0 ) {
             // the start date given falls between the start and end dates of an existing core statement
             // because test 1 did not catch this, the end date must be after the end of this assertion, so we simply extend
-            log.debug("Extending end date");
+            com.k_int.kbplus.TitleInstitutionProvider.log.debug("Extending end date");
             it.endDate = givenEndDate;
             it.save(flush:true)
             cont=false
@@ -125,7 +126,7 @@ class TitleInstitutionProvider {
     
           // Given range overlaps start date of existing statement
           if ( compareDates(it.startDate,endDate) <= 0 && compareDates(it.endDate,endDate) >= 0 ) {
-            log.debug("Extending start date");
+            com.k_int.kbplus.TitleInstitutionProvider.log.debug("Extending start date");
             it.startDate = givenStartDate;
             it.save(flush:true)
             cont=false
@@ -135,33 +136,33 @@ class TitleInstitutionProvider {
       }
     }
     else {
-      log.debug("Working with an open endDate")
+      com.k_int.kbplus.TitleInstitutionProvider.log.debug("Working with an open endDate")
 
       coreDates.each {
         if ( it.endDate == null ) {
-          log.debug("Testing ${it} ")
+          com.k_int.kbplus.TitleInstitutionProvider.log.debug("Testing ${it} ")
 
           if ( compareDates(startDate,it.startDate) == -1 ) {
-            log.debug("Open ended core status, with an earlier start date than we had previously")
+            com.k_int.kbplus.TitleInstitutionProvider.log.debug("Open ended core status, with an earlier start date than we had previously")
             it.startDate = startDate
             it.endDate = null
             it.save(flush:true)
           }else{
-            log.debug("Open ended core status, with an later start date than we had previously. New date ignored.")
+            com.k_int.kbplus.TitleInstitutionProvider.log.debug("Open ended core status, with an later start date than we had previously. New date ignored.")
           }
           cont=false
 
         }
         else {
           if ( compareDates(startDate,it.startDate) == -1 ) {
-            log.debug("New coverage start date pushes back a previous one, AND extends the end date to open")
+            com.k_int.kbplus.TitleInstitutionProvider.log.debug("New coverage start date pushes back a previous one, AND extends the end date to open")
             it.startDate = startDate
             it.endDate = null
             it.save(flush:true)
             cont=false
           }   
           else if(compareDates(startDate,it.endDate) == -1){
-            log.debug("New statement opens up end date, but existing start date should stand")
+            com.k_int.kbplus.TitleInstitutionProvider.log.debug("New statement opens up end date, but existing start date should stand")
             it.endDate = null
             it.save(flush:true)
             cont=false
@@ -171,7 +172,7 @@ class TitleInstitutionProvider {
     }
 
     if ( cont ) {
-      log.debug("No obvious overlaps -Create new core assertion ${givenStartDate} - ${givenEndDate}");
+      com.k_int.kbplus.TitleInstitutionProvider.log.debug("No obvious overlaps -Create new core assertion ${givenStartDate} - ${givenEndDate}");
       CoreAssertion new_core_statement = new CoreAssertion()
       this.addToCoreDates(startDate:givenStartDate, endDate:givenEndDate)
       this.save()
@@ -179,7 +180,7 @@ class TitleInstitutionProvider {
       coreDates.each {
         if(it.id != new_core_statement?.id){
           if ( it.startDate >= givenStartDate && it.endDate <= givenEndDate ) {
-            log.debug("Encloses current assertion: ${it}. Remove it")
+            com.k_int.kbplus.TitleInstitutionProvider.log.debug("Encloses current assertion: ${it}. Remove it")
             it.delete();
           }
         }

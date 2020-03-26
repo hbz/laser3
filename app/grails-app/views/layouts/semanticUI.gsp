@@ -272,7 +272,7 @@
 
                                 <g:link class="item" role="menuitem" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
                                 <g:link class="item" role="menuitem" controller="license" action="create">${message(code:'license.template.new')}</g:link>
-                                <g:link class="item" role="menuitem" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
+                                <%--<g:link class="item" role="menuitem" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>--%>
 
                                 <g:link class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                                 <g:link class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
@@ -369,24 +369,6 @@
                             <% /* g:link class="item" role="menuitem" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" role="menuitem" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</g:link>
 
-                            <div class="item" role="menuitem" aria-haspopup="true">
-                                ${message(code:'menu.admin.dataManagement')}
-                                <i aria-hidden="true" class="dropdown icon"></i>
-
-                                <div class="menu">
-                                    <g:link class="item" role="menuitem" controller="dataManager" action="expungeDeletedTitles" onclick="return confirm('${message(code:'confirm.expunge.deleted.titles')}')">Expunge Deleted Titles</g:link>
-                                    <g:link class="item" role="menuitem" controller="dataManager" onclick="return confirm('${message(code:'confirm.expunge.deleted.tipps')}')" action="expungeDeletedTIPPS">Expunge Deleted TIPPS</g:link>
-                                    <g:link class="item" role="menuitem" controller="admin" action="titleMerge">${message(code:'menu.admin.titleMerge')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="admin" action="tippTransfer">${message(code:'menu.admin.tippTransfer')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</g:link>
-                                    <g:link class="item" role="menuitem" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</g:link>
-                                    <g:link class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
-                                </div>
-                            </div>
-
                             <div class="divider"></div>
 
                             <div class="item" role="menuitem" aria-haspopup="true">
@@ -446,8 +428,6 @@
                                     <g:link class="item" role="menuitem" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="systemProfiler">${message(code:'menu.yoda.systemProfiler')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="activityProfiler">${message(code:'menu.yoda.activityProfiler')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="appSecurity">${message(code:'menu.yoda.security')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
@@ -471,15 +451,35 @@
                             <div class="divider"></div>
 
                             <div class="item" role="menuitem" aria-haspopup="true">
+                                ${message(code:'menu.admin.dataManagement')}
+                                <i aria-hidden="true" class="dropdown icon"></i>
+
+                                <div class="menu">
+                                    <g:link class="item" role="menuitem" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</g:link>
+                                    <g:link class="item" role="menuitem" controller="package" action="getDuplicatePackages">List Package Duplicates</g:link>
+                                    <g:link class="item" role="menuitem" controller="dataManager" action="listDeletedTIPPS">List TIPP Duplicates and deleted TIPPs</g:link>
+                                    <g:link class="item" role="menuitem" controller="admin" action="listDuplicateTitles">Check Title GOKb IDs</g:link>
+                                    <%--<g:link class="item" role="menuitem" controller="admin" action="tippTransfer">${message(code:'menu.admin.tippTransfer')}</g:link>--%>
+                                    <%--<g:link class="item" role="menuitem" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>--%>
+                                    <%--<g:link class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>--%>
+                                    <%--<g:link class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>--%>
+                                    <g:link class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</g:link>
+                                    <g:link class="item" role="menuitem" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</g:link>
+                                    <g:link class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
+                                </div>
+                            </div>
+
+                            <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.syncManagement')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
                                 <div class="menu">
                                     <g:link class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="package" action="getDuplicatePackages">${message(code:'menu.yoda.purgeDuplicatePackages')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="pendingChanges">${message(code:'menu.yoda.pendingChanges')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="retriggerPendingChanges">${message(code:'menu.yoda.retriggerPendingChanges')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</g:link>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="getTIsWithoutGOKBId">${message(code:'menu.yoda.purgeTIsWithoutGOKBID')}</g:link>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="titlesUpdate">${message(code:'menu.admin.bulkOps.titlesImport')}</g:link>
                                 </div>
                             </div>
 
