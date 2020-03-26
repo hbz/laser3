@@ -65,11 +65,16 @@ class FinanceService {
             configMap.dataToDisplay.each { String dataToDisplay ->
                 switch(dataToDisplay) {
                     case "own":
+                        String subFilter = filterQuery.subFilter
+                        subFilter = subFilter.replace(" and orgRoles.org in (:filterConsMembers) ","")
+                        Map<String,Object> ownFilter = [:]
+                        ownFilter.putAll(filterQuery.filterData)
+                        ownFilter.remove('filterConsMembers')
                         Set<CostItem> ownCostItems = CostItem.executeQuery(
                                 'select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
-                                        genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
+                                        genericExcludes + subFilter + filterQuery.ciFilter +
                                         ' order by '+configMap.sortConfig.ownSort+' '+configMap.sortConfig.ownOrder,
-                                [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
+                                [owner:org,sub:sub]+genericExcludeParams+ownFilter)
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
                             result.own.costItems = ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
