@@ -4,9 +4,6 @@
 
     <g:set var="evalutionsViews"
            value="['evaluationParticipant', 'surveyEvaluation']"/>
-    <g:set var="surveyConfigsViews" value="['surveyConfigsInfo']"/>
-
-
 
     <g:set var="subNavDisable" value="${surveyConfig ? null : true}"/>
 
