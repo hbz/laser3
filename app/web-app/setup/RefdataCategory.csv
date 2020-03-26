@@ -27,6 +27,7 @@ customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 document.context.status,Document Context Status,Document Context Status
 document.type,Dokumenttyp,Document Type
 existence,Vorliegen,Existence
+external.internal,Extern und intern,External and internal
 fact.metric,FactMetric,FactMetric
 fact.type,FactType,FactType
 federal.state,Bundesland,Federal State
@@ -70,6 +71,7 @@ license.statistics.frequency,Statistik Auslieferungsfrequenz,Statistics Frequenc
 license.statistics.standards,Statistikstandard,Statistics Standards
 license.statistics.user.creds,Statistik Nutzeridentifikation,Statistics User Credentials
 license.status,Lizenzstatus,License Status
+license.structure,Vertragskonstruktion,License Structure
 license.type,Lizenztyp,License Type
 link.type,Link Type,Link Type
 mail.template.language,MailTemplate Sprache,MailTemplate Language
