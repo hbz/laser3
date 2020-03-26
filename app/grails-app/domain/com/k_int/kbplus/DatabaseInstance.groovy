@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 
 class DatabaseInstance extends TitleInstance{
@@ -11,9 +12,11 @@ class DatabaseInstance extends TitleInstance{
     static constraints = {
     }
 
-    static DatabaseInstance construct(Map<String,Object> params) {
+    static DatabaseInstance construct(Map<String,Object> params) throws CreationException {
         DatabaseInstance dbi = new DatabaseInstance(params)
         dbi.setGlobalUID()
+        if(!dbi.save())
+            throw new CreationException(dbi.errors)
         dbi
     }
 

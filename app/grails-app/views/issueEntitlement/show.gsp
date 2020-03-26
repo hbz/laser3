@@ -9,10 +9,10 @@
 <body>
     <semui:breadcrumbs>
         <g:if test="${issueEntitlementInstance.subscription.subscriber}">
-            <semui:crumb controller="myInstitution" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance?.subscription.subscriber.shortcode]}" text="${issueEntitlementInstance.subscription.subscriber.name} - ${message(code:'subscription.plural')}"/>
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance.subscription.subscriber.shortcode]}" text="${issueEntitlementInstance.subscription.subscriber.name} - ${message(code:'subscription.plural')}"/>
         </g:if>
         <semui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"  text="${issueEntitlementInstance.subscription.name}" />
-        <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance.tipp.title.title}" />
+        <semui:crumb class="active" id="${issueEntitlementInstance.id}" text="${issueEntitlementInstance.tipp.title.title}" />
     </semui:breadcrumbs>
     <br>
 
@@ -38,7 +38,7 @@
                 <dd><g:link controller="license" action="show" id="${issueEntitlementInstance.subscription.owner.id}">${issueEntitlementInstance.subscription.owner.reference}</g:link></dd>
 
             </g:if>
-            <g:if test="${issueEntitlementInstance?.subscription?.owner?.onixplLicense}">
+            <g:if test="${issueEntitlementInstance.subscription.owner?.onixplLicense}">
                 <dt><g:message code="onixplLicense.license.label"/></dt>
 
                 <dd><g:link controller="onixplLicense" action="index" id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title}</g:link></dd>

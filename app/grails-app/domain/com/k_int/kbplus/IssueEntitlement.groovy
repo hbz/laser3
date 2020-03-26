@@ -132,6 +132,8 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
       if(!ie) {
         ie = new IssueEntitlement(subscription: configMap.subscription,tipp: configMap.tipp)
       }
+      if(!ie.save())
+        throw new EntitlementCreationException(ie.errors)
       ie
     }
     else throw new EntitlementCreationException("Issue entitlement creation attempt without valid subscription and TIPP references! This is not allowed!")

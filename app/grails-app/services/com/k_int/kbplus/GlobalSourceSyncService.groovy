@@ -125,16 +125,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     source.haveUpTo = new Date(maxTimestamp)
                     source.save()
                     log.info("all OAI info fetched, local records updated, notifying dependent entitlements ...")
-                    notifyDependencies(tippsToNotify)
                 }
                 else {
                     log.info("all OAI info fetched, no records to update. Leaving timestamp as is ...")
                 }
+                notifyDependencies(tippsToNotify)
                 log.info("sync job finished")
                 SystemEvent.createEvent('GSSS_OAI_COMPLETE',['jobId',source.id])
             }
             catch (Exception e) {
-                SystemEvent.createEvent('GSSS_OAI_ERROR',['jobId':source.id]).save()
+                SystemEvent.createEvent('GSSS_OAI_ERROR',['jobId':source.id])
                 log.error("sync job has failed, please consult stacktrace as follows: ")
                 e.printStackTrace()
             }
@@ -286,16 +286,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 }
                                             }
                                             else {
-                                                switch(diff.fieldType) {
-                                                    case RefdataValue.class.name:
-                                                        if(diff.refdataCategory)
-                                                            tippA[diff.prop] = RefdataValue.getByValueAndCategory(tippB[diff.prop],diff.refdataCategory)
-                                                        else {
-                                                            throw new SyncException("RefdataCategory missing!")
-                                                        }
-                                                        break
-                                                    default: tippA[diff.prop] = tippB[diff.prop]
-                                                        break
+                                                if (diff.prop in PendingChange.REFDATA_FIELDS) {
+                                                    tippA[diff.prop] = RefdataValue.get(diff.newValue)
+                                                }
+                                                else {
+                                                    tippA[diff.prop] = diff.newValue
                                                 }
                                             }
                                         }
@@ -541,7 +536,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
                         if(titleInstance.ids){
                             titleInstance.ids.clear()
-                            titleInstance.save(flush:true) //damn those wrestlers ...
+                            titleInstance.save() //damn those wrestlers ...
                         }
                         titleRecord.identifiers.identifier.each { idData ->
                             if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
@@ -620,28 +615,33 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     TitleInstance createOrUpdateHistoryParticipant(particData, String titleType) throws SyncException {
         TitleInstance participant = TitleInstance.findByGokbId(particData.uuid.text())
-        switch(titleType) {
-            case BookInstance.class.name: participant = participant ? (BookInstance) participant : BookInstance.construct([gokbId:particData.uuid.text()])
-                break
-            case DatabaseInstance.class.name: participant = participant ? (DatabaseInstance) participant : DatabaseInstance.construct([gokbId:particData.uuid.text()])
-                break
-            case JournalInstance.class.name: participant = participant ? (JournalInstance) participant : JournalInstance.construct([gokbId:particData.uuid.text()])
-                break
-        }
-        participant.status = RefdataValue.getByValueAndCategory(particData.status.text(),RDConstants.TITLE_STATUS)
-        participant.title = particData.title.text()
-        if(participant.save()) {
-            if(particData.identifiers) {
-                particData.identifiers.identifier.each { idData ->
-                    if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
-                        Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:participant])
-                }
+        try {
+            switch(titleType) {
+                case BookInstance.class.name: participant = participant ? (BookInstance) participant : BookInstance.construct([gokbId:particData.uuid.text()])
+                    break
+                case DatabaseInstance.class.name: participant = participant ? (DatabaseInstance) participant : DatabaseInstance.construct([gokbId:particData.uuid.text()])
+                    break
+                case JournalInstance.class.name: participant = participant ? (JournalInstance) participant : JournalInstance.construct([gokbId:particData.uuid.text()])
+                    break
             }
-            Identifier.construct([namespace:'uri',value:particData.internalId.text(),reference:participant])
-            participant
+            participant.status = RefdataValue.getByValueAndCategory(particData.status.text(),RDConstants.TITLE_STATUS)
+            participant.title = particData.title.text()
+            if(participant.save()) {
+                if(particData.identifiers) {
+                    particData.identifiers.identifier.each { idData ->
+                        if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
+                            Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:participant])
+                    }
+                }
+                Identifier.construct([namespace:'uri',value:particData.internalId.text(),reference:participant])
+                participant
+            }
+            else {
+                throw new SyncException(participant.errors)
+            }
         }
-        else {
-            throw new SyncException(participant.errors)
+        catch (GroovyCastException e) {
+            throw new SyncException("Title type mismatch! This should not be possible! Inform GOKb team! -> ${participant.gokbId} is corrupt!")
         }
     }
 
@@ -819,7 +819,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         if(tippa.status != RefdataValue.getByValueAndCategory(tippb.status,RDConstants.TIPP_STATUS)) {
-            result.add([prop: 'status', fieldType: RefdataValue.class.name, refdataCategory: RDConstants.TIPP_STATUS, newValue: tippb.status, oldValue: tippa.status])
+            result.add([prop: 'status', newValue: RefdataValue.getByValueAndCategory(tippb.status,RDConstants.TIPP_STATUS).id, oldValue: tippa.status.id])
         }
 
         result
@@ -891,7 +891,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     Package target = (Package) notify.target
                     Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target])
                     ieConcerned.each { ie ->
-                        changeNotificationService.determinePendingChangeBehavior([target:ie.subscription],PendingChangeConfiguration.PACKAGE_PROP,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target))
+                        changeNotificationService.determinePendingChangeBehavior([target:ie.subscription,oid:"${target.class.name}:${target.id}"],PendingChangeConfiguration.PACKAGE_PROP,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target))
                     }
                 }
                 else {
@@ -942,7 +942,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         changeDesc = PendingChangeConfiguration.TITLE_UPDATED
                                         changeMap.oid = "${ie.class.name}:${ie.id}"
                                         changeMap.prop = diff.prop
-                                        changeMap.oldValue = ie[diff.prop]
+                                        if(diff.prop in PendingChange.REFDATA_FIELDS)
+                                            changeMap.oldValue = ie[diff.prop].id
+                                        else
+                                            changeMap.oldValue = ie[diff.prop]
                                         changeMap.newValue = diff.newValue
                                         changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                     }

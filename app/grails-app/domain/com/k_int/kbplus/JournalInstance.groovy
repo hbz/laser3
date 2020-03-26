@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 
 class JournalInstance extends TitleInstance {
@@ -11,9 +12,11 @@ class JournalInstance extends TitleInstance {
     static constraints = {
     }
 
-    static JournalInstance construct(Map<String,Object> params) {
+    static JournalInstance construct(Map<String,Object> params) throws CreationException {
         JournalInstance ji = new JournalInstance(params)
         ji.setGlobalUID()
+        if(!ji.save())
+            throw new CreationException(ji.errors)
         ji
     }
 

@@ -7,7 +7,7 @@
         <meta name="layout" content="semanticUI"/>
         <title>${message(code:'laser')} : ${message(code:'menu.institutions.dash')}</title>
     </head>
-    <div>
+    <body>
 
         <laser:serviceInjection />
 
@@ -60,7 +60,6 @@
         <semui:messages data="${flash}" />
 
         <br />
-    </div>
     <%-- should be made overridable by pagination setting --%>
     <%
         def US_DASHBOARD_TAB
@@ -157,8 +156,11 @@
                             <g:message code="profile.dashboard.changes.action"/>
                         </div><!-- .column -->
                     </div>
-                    <g:each in="${pending}" var="change">
-                        <g:set var="row" value="${pendingChangeService.printRow(change)}" />
+                    <g:each in="${pending}" var="entry">
+                        <%--<div class="row">
+                            ${entry}
+                        </div>--%>
+                        <g:set var="row" value="${pendingChangeService.printRow(entry.change)}" />
                         <g:set var="event" value="${row.eventData}"/>
                         <div class="row">
                             <div class="two wide column">
@@ -168,10 +170,10 @@
                                 ${raw(row.instanceIcon)}
                             </div><!-- .column -->
                             <div class="two wide column">
-                                <g:if test="${change.subscription}">
-                                    <g:link controller="subscription" action="index" id="${change.subscription.id}">${change.subscription.dropdownNamingConvention()}</g:link>
+                                <g:if test="${entry.change.subscription}">
+                                    <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
                                 </g:if>
-                                <g:elseif test="${change.costItem}">
+                                <g:elseif test="${entry.change.costItem}">
 
                                 </g:elseif>
                             </div><!-- .column -->
@@ -180,12 +182,13 @@
                             </div><!-- .column -->
                             <div class="three wide column">
                                 <div class="ui buttons">
-                                    <g:link class="ui positive button" controller="pendingChange" action="accept" id="${change.id}"><g:message code="default.button.accept.label"/></g:link>
-                                    <div class="or"><g:message code="default.or"/></div>
-                                    <g:link class="ui negative button" controller="pendingChange" action="reject" id="${change.id}"><g:message code="default.button.reject.label"/></g:link>
+                                    <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.change.id}"><g:message code="default.button.accept.label"/></g:link>
+                                    <div class="or" data-text="${message(code:'default.or')}"></div>
+                                    <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.change.id}"><g:message code="default.button.reject.label"/></g:link>
                                 </div>
                             </div><!-- .column -->
                         </div><!-- .row -->
+
                     </g:each>
                 </div><!-- .grid -->
             </div>
@@ -210,8 +213,11 @@
                         <g:message code="profile.dashboard.changes.event"/>
                     </div><!-- .column -->
                 </div>
-                <g:each in="${notifications}" var="change">
-                    <g:set var="row" value="${pendingChangeService.printRow(change)}" />
+                <g:each in="${notifications}" var="entry">
+                    <div class="row">
+                        ${entry}
+                    </div>
+                    <g:set var="row" value="${pendingChangeService.printRow(entry.change)}" />
                     <g:set var="event" value="${row.eventData}"/>
                     <div class="row">
                         <div class="two wide column">
@@ -219,6 +225,9 @@
                         </div><!-- .column -->
                         <div class="two wide column">
                             ${raw(row.instanceIcon)}
+                            <g:if test="${entry.memberSubscriptions}">
+                                (${entry.memberSubscriptions.size()})
+                            </g:if>
                         </div><!-- .column -->
                         <div class="two wide column">
                             <g:if test="${change.subscription}">

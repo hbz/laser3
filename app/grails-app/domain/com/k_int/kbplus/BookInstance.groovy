@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
@@ -48,9 +49,11 @@ class BookInstance extends TitleInstance {
 
     }
 
-    static BookInstance construct(Map<String,Object> params) {
+    static BookInstance construct(Map<String,Object> params) throws CreationException {
         BookInstance bi = new BookInstance(params)
         bi.setGlobalUID()
+        if(!bi.save())
+            throw new CreationException(bi.errors)
         bi
     }
 

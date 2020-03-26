@@ -24,6 +24,8 @@ class PendingChange {
 
     @Transient
     final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
+    @Transient
+    final static Set<String> REFDATA_FIELDS = ['status']
 
     final static PROP_LICENSE       = 'license'
     final static PROP_PKG           = 'pkg'
@@ -178,7 +180,7 @@ class PendingChange {
             case PendingChangeConfiguration.NEW_TITLE:
                 if(target instanceof TitleInstancePackagePlatform) {
                     IssueEntitlement newTitle = IssueEntitlement.construct([subscription:subscription,tipp:(TitleInstancePackagePlatform) target])
-                    if(newTitle.save()) {
+                    if(newTitle) {
                         done = true
                     }
                     else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${newTitle.errors}")
@@ -225,7 +227,7 @@ class PendingChange {
                 if(target instanceof TIPPCoverage) {
                     TIPPCoverage tippCoverage = (TIPPCoverage) target
                     IssueEntitlement owner = IssueEntitlement.findBySubscriptionAndTipp(subscription,tippCoverage.tipp)
-                    IssueEntitlementCoverage ieCov = IssueEntitlementCoverage.construct([issueEntitlement:owner])
+                    IssueEntitlementCoverage ieCov = new IssueEntitlementCoverage([issueEntitlement:owner])
                     if(ieCov.save())
                         done = true
                     else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${ieCov.errors}")
@@ -281,6 +283,9 @@ class PendingChange {
         def ret
         if(targetProperty in DATE_FIELDS) {
             ret = DateUtil.parseDateGeneric(value)
+        }
+        else if(targetProperty in REFDATA_FIELDS) {
+            ret = RefdataValue.get(value)
         }
         else ret = value
         ret

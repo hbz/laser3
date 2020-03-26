@@ -393,7 +393,11 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
 
+
+
                 }
+
+                return redirect(action:'show', id: params.subscription)
 
             } else {
 

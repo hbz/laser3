@@ -421,8 +421,7 @@ class PendingChangeService extends AbstractLockableService {
     }
 
     Map<String,Object> getChanges(LinkedHashMap<String, Object> configMap) {
-        Set<PendingChange> pendingChanges = [], acceptedChanges = []
-        int pendingCount = 0, notificationsCount = 0
+        Set<Map<String,Object>> pendingChanges = [], acceptedChanges = []
         String queryString = "select pc from PendingChange pc where pc.owner = :contextOrg and "
         List query = []
         Map<String,Object> queryParams = [contextOrg:configMap.contextOrg]
@@ -438,14 +437,39 @@ class PendingChangeService extends AbstractLockableService {
             List<PendingChange> result = PendingChange.executeQuery(pendingQuery,queryParams+pendingFilterParams)
             if(configMap.offset && configMap.max)
                 result = result.drop(configMap.offset).take(configMap.max)
-            pendingCount = result.size()
-            pendingChanges.addAll(result)
+            result.each { chObj ->
+                if(chObj instanceof PendingChange) {
+                    PendingChange change = chObj
+                    if(change.subscription) {
+                        if(change.subscription.instanceOf) {
+                            Map<String,Object> entryOfParent = pendingChanges.find {it.target == change.subscription.instanceOf}
+                            if(entryOfParent){
+                                if(!entryOfParent.memberSubscriptions)
+                                    entryOfParent.memberSubscriptions = [change]
+                                else entryOfParent.memberSubscriptions << change
+
+                            }
+                            else pendingChanges << [target:change.subscription.instanceOf,memberSubscriptions:[change]]
+                        }
+                        else {
+                            if(pendingChanges.find {it.target == change.subscription})
+                                pendingChanges.find {it.target == change.subscription}.change = change
+                            else pendingChanges << [target:change.subscription,change:change]
+                        }
+                    }
+                    else if(change.license) {
+                        pendingChanges << [target:change.license,change:change]
+                    }
+                    else if(change.costItem) {
+                        pendingChanges << [target:change.costItem]
+                    }
+                }
+            }
         }
         if(configMap.notifications) {
             List<PendingChange> result = PendingChange.executeQuery(acceptedQuery,queryParams+acceptedFilterParams)
             if(configMap.offset && configMap.max)
                 result = result.drop(configMap.offset).take(configMap.max)
-            notificationsCount = result.size()
             result.each { resObj ->
                 PendingChange change = (PendingChange) resObj
                 //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
@@ -461,6 +485,9 @@ class PendingChangeService extends AbstractLockableService {
                     else if(target instanceof IssueEntitlementCoverage) {
                         targetPkg = target.issueEntitlement.tipp.pkg
                     }
+                    else if(target instanceof Package) {
+                        targetPkg = target
+                    }
                     if(targetPkg){
                         SubscriptionPackage targetSp = SubscriptionPackage.findBySubscriptionAndPkg(change.subscription,targetPkg)
                         PendingChangeConfiguration pcc = PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(targetSp,change.msgToken)
@@ -469,15 +496,27 @@ class PendingChangeService extends AbstractLockableService {
                             pcc = PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(targetSp,change.msgToken)
                         }
                         if(pcc && pcc.withNotification || !pcc) {
-                            acceptedChanges.add(change)
+                            if(change.subscription.instanceOf) {
+                                Map<String,Object> entryOfParent = acceptedChanges.find {it.target == change.subscription.instanceOf}
+                                if(!entryOfParent.memberSubscriptions)
+                                    entryOfParent.memberSubscriptions = [change]
+                                else entryOfParent.memberSubscriptions << change
+                            }
+                            else {
+                                acceptedChanges << [target:change.subscription,change:change]
+                            }
                         }
                     }
                 }
-                else
-                    acceptedChanges.add(change)
+                else if(change.license) {
+                    acceptedChanges << [target:change.license,change:change]
+                }
+                else if(change.costItem) {
+                    acceptedChanges << [target:change.costItem,change:change]
+                }
             }
         }
-        [pending:pendingChanges,pendingCount:pendingCount,notifications:acceptedChanges,notificationsCount:notificationsCount]
+        [pending:pendingChanges,pendingCount:pendingChanges.size(),notifications:acceptedChanges,notificationsCount:acceptedChanges.size()]
     }
 
     //called from: dashboard.gsp, pendingChanges.gsp, accepetdChanges.gsp
