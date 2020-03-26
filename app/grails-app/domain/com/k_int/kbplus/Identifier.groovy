@@ -88,7 +88,11 @@ class Identifier {
 			ns = namespace
 		}
         else {
-			ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
+            if (nsType){
+                ns = IdentifierNamespace.findByNsIlikeAndNsType(namespace?.trim(), nsType)
+            } else {
+			    ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
+            }
 
 			if(! ns) {
                 if (nsType){
