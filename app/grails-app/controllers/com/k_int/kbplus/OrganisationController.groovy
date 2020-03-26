@@ -333,14 +333,19 @@ class OrganisationController extends AbstractDebugController {
     def processCreateIdentifier(){
         log.debug("OrganisationController::processCreateIdentifier ${params}")
         Org org   = params.orgid ? Org.get(params.orgid) : null
-        if ( ! (org && params.ns.id && params.value)){
-            flash.message = message(code: 'menu.admin.error')
+        if ( ! (org && params.ns.id)){
+            flash.error = message(code: 'menu.admin.error')
             redirect(url: request.getHeader('referer'))
             return
         }
         IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
         if (!namespace){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if ( ! params.value){
+            flash.error = message(code: 'identifier.create.err.missingvalue', args: [namespace.getI10n('name') ?: namespace.ns])
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -356,13 +361,13 @@ class OrganisationController extends AbstractDebugController {
         log.debug("OrganisationController::processCreateCustomerIdentifier ${params}")
         Org org   = params.orgid ? Org.get(params.orgid) : null
         if ( ! (org && params.addCIPlatform && params.value)){
-            flash.message = message(code: 'menu.admin.error')
+            flash.error = message(code: 'menu.admin.error')
             redirect(url: request.getHeader('referer'))
             return
         }
         Platform plt = Platform.get(params.addCIPlatform)
         if (!plt){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.provider.platform.label'), params.addCIPlatform])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.provider.platform.label'), params.addCIPlatform])
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -387,13 +392,13 @@ class OrganisationController extends AbstractDebugController {
         Org org   = params.orgid ? Org.get(params.orgid) : null
         Identifier identifier   = Identifier.get(params.identifierId)
         if ( ! (org && identifier)){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId])
             redirect(url: request.getHeader('referer'))
             return
         }
         IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
         if (!namespace){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
             redirect(url: request.getHeader('referer'))
             return
         }
