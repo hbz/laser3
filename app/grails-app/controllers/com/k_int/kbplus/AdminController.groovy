@@ -1513,52 +1513,6 @@ class AdminController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def addSurveyProperty() {
-
-
-        PropertyDefinition surveyProperty = PropertyDefinition.findWhere(
-                name: params.name,
-                type: params.type,
-                tenant: result.institution,
-                descr: PropertyDefinition.SUR_PROP
-        )
-
-        if ((!surveyProperty) && params.name && params.type) {
-            def rdc
-            if (params.refdatacategory) {
-                rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
-            }
-
-            Map<String, Object> map = [
-                    token       : params.name,
-                    category    : PropertyDefinition.SUR_PROP,
-                    type        : params.type,
-                    rdc         : rdc,
-                    tenant      : result.institution,
-                    i10n        : [
-                            name_de: params.name,
-                            name_en: params.name,
-                            expl_de: params.expl,
-                            expl_en: params.expl
-                    ]
-            ]
-
-            if (PropertyDefinition.construct(map)) {
-                flash.message = message(code: 'surveyProperty.create.successfully', args: [surveyProperty.name])
-            } else {
-                flash.error = message(code: 'surveyProperty.create.fail')
-            }
-        } else if (surveyProperty) {
-            flash.error = message(code: 'surveyProperty.create.exist')
-        } else {
-            flash.error = message(code: 'surveyProperty.create.fail')
-        }
-
-        redirect(url: request.getHeader('referer'))
-
-    }
-
-    @Secured(['ROLE_ADMIN'])
     def managePropertyGroups() {
         //def result = setResultGenerics()
         Map<String, Object> result = [:]

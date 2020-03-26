@@ -62,15 +62,31 @@
                                            params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]"
                                            message="surveyInfo.transferOverView"/>
                 <div class="ui divider"></div>
+
+                <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_COMPLETED?.id}">
+                    <semui:actionsDropdownItem controller="survey" action="setInEvaluation" params="[id: params.id]"
+                                               message="evaluateSurvey.button" tooltip=""/>
+                    <div class="ui divider"></div>
+                </g:if>
+
+                <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id}">
+                    <semui:actionsDropdownItem controller="survey" action="setCompleteSurvey" params="[id: params.id]"
+                                               message="completeSurvey.button" tooltip=""/>
+                    <div class="ui divider"></div>
+
+                </g:if>
             </g:if>
 
-            <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_COMPLETED?.id}">
-                <semui:actionsDropdownItem controller="survey" action="setInEvaluation" params="[id: params.id]"
-                                           message="evaluateSurvey.button" tooltip=""/>
+            <g:if test="${surveyInfo && surveyInfo.status?.id in [de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id, de.laser.helper.RDStore.SURVEY_SURVEY_COMPLETED?.id,de.laser.helper.RDStore.SURVEY_COMPLETED?.id]}">
+
+                <semui:actionsDropdownItem data-semui="modal"
+                                           href="#openSurveyAgain"
+                                           message="openSurveyAgain.button"/>
                 <div class="ui divider"></div>
+
             </g:if>
 
-            <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id}">
+            <g:if test="${(!surveyInfo.isSubscriptionSurvey) && surveyInfo && surveyInfo.status?.id in [de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id, de.laser.helper.RDStore.SURVEY_SURVEY_COMPLETED?.id]}">
                 <semui:actionsDropdownItem controller="survey" action="setCompleteSurvey" params="[id: params.id]"
                                            message="completeSurvey.button" tooltip=""/>
                 <div class="ui divider"></div>
@@ -115,6 +131,19 @@
         </g:else>
     </g:if>
 </semui:actionsDropdown>
+
+<g:if test="${surveyInfo && surveyInfo.status?.id in [de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id, de.laser.helper.RDStore.SURVEY_SURVEY_COMPLETED?.id,de.laser.helper.RDStore.SURVEY_COMPLETED?.id]}">
+    <semui:modal id="openSurveyAgain" text="${message(code:'openSurveyAgain.button')}" msgSave="${message(code:'openSurveyAgain.button')}">
+
+        <g:form class="ui form"
+                url="[controller: 'survey', action: 'openSurveyAgain', params: [id: params.id, surveyConfigID: surveyConfig?.id], method: 'post']">
+            <div class="field">
+                <semui:datepicker label="surveyInfo.endDate.new" id="newEndDate" name="newEndDate" placeholder="surveyInfo.endDate.new" />
+            </div>
+        </g:form>
+
+    </semui:modal>
+</g:if>
 
 <g:javascript>
 

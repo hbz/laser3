@@ -105,13 +105,11 @@
                     <g:if test="${surveyConfig}">
 
                         <g:if test="${surveyConfig.type == "Subscription"}">
-
                             <g:render template="evaluationSubscription" />
                         </g:if>
 
                         <g:if test="${surveyConfig.type == "GeneralSurvey"}">
-
-                            <g:render template="/templates/survey/generalSurvey" />
+                            <g:render template="evaluationGeneralSurvey" />
                         </g:if>
 
                     </g:if>

@@ -12,7 +12,9 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb message="${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')}" class="active"/>
+    <semui:crumb
+            message="${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')}"
+            class="active"/>
 </semui:breadcrumbs>
 
 
@@ -20,7 +22,7 @@
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="surveyInfos"
-                    params="${params + [exportXLS: true]}">${message(code: 'survey.exportSurvey')}</g:link>
+                    params="${params + [exportXLS: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
 </semui:controlButtons>
@@ -81,7 +83,8 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
 
             <p>
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finis.info'}"/>.
+                <g:message
+                        code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finis.info'}"/>.
             </p>
         </div>
     </div>
@@ -121,145 +124,25 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
 
 <br>
 
+<div class="la-inline-lists">
+    <g:if test="${surveyInfo && surveyInfo.surveyConfigs[0].type == "Subscription"}">
 
-<g:if test="${surveyInfo && surveyInfo.surveyConfigs[0].type == "Subscription"}">
+        <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                                                                          subscriptionInstance: subscriptionInstance,
+                                                                          visibleOrgRelations : visibleOrgRelations,
+                                                                          surveyResults       : surveyResults]"/>
 
-    %{--<g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
-                                                                        subscriptionInstance: subscriptionInstance,
-                                                                        visibleOrgRelations: visibleOrgRelations,
-                                                                        surveyResults: surveyResults]"/>
+    </g:if>
 
+    <g:if test="${surveyInfo && surveyInfo.surveyConfigs[0].type == "GeneralSurvey"}">
 
-    <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyConfig.label')} <semui:totalNumber
-            total="${surveyResults?.size()}"/></h2>
-    <br>
+        <g:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
+                                                                     surveyResults: surveyResults]"/>
+    </g:if>
 
-    <semui:form>
+</div>
 
-        <h3 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'subscription.plural')} <semui:totalNumber
-                total="${com.k_int.kbplus.SurveyConfig.findAllByIdInListAndType(surveyResults.collect {
-                    it.key
-                }, 'Subscription').size()}"/></h3>
-
-        <table class="ui celled sortable table la-table">
-            <thead>
-            <tr>
-                <th class="center aligned">
-                    ${message(code: 'sidewide.number')}
-                </th>
-                <th>${message(code: 'surveyProperty.subName')}</th>
-                <th>${message(code: 'surveyProperty.subProviderAgency')}</th>
-                <th>${message(code: 'surveyProperty.plural.label')}</th>
-                <th>${message(code: 'surveyResult.finish')}</th>
-                <th></th>
-
-            </tr>
-
-            </thead>
-
-            <g:each in="${surveyResults}" var="config" status="i">
-
-                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.get(config.key)}"/>
-
-                <g:if test="${surveyConfig?.type == 'Subscription'}">
-
-                    <g:set var="participantSubscription"
-                           value="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)}"/>
-                    <tr>
-                        <td class="center aligned">
-                            ${i + 1}
-                        </td>
-                        <td>
-                            <g:if test="${participantSubscription}">
-                                <i class="icon clipboard outline la-list-icon"></i>
-                                <g:link action="surveyConfigsInfo" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]">
-                                    ${participantSubscription?.name}
-                                </g:link>
-                            </g:if>
-                            <g:else>
-                                <i class="icon clipboard outline la-list-icon"></i>
-                                <g:link controller="public" action="gasco" params="[q: surveyConfig?.subscription?.name]">
-                                    ${surveyConfig?.subscription?.name}
-                                </g:link>
-                            </g:else>
-                        </td>
-                        <td>
-                            <g:if test="${participantSubscription}">
-                                <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.providers}"
-                                        var="org">
-                                    <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br/>
-                                </g:each>
-                                <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.agencies}"
-                                        var="org">
-                                    <g:link controller="organisation" action="show"
-                                            id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br/>
-                                </g:each>
-                            </g:if>
-                            <g:else>
-                                <g:each in="${surveyConfig?.subscription?.providers}"
-                                        var="org">
-                                    <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br/>
-                                </g:each>
-                                <g:each in="${surveyConfig?.subscription?.agencies}"
-                                        var="org">
-                                    <g:link controller="organisation" action="show"
-                                            id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br/>
-                                </g:each>
-                            </g:else>
-
-                        </td>
-                        <td class="center aligned">
-                            <g:if test="${surveyConfig?.type == 'Subscription'}">
-                                <g:link action="surveyConfigsInfo" id="${surveyInfo.id}"
-                                        params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                    <div class="ui circular label">${surveyConfig?.surveyProperties?.size()}</div>
-                                </g:link>
-                            </g:if>
-                        </td>
-
-                        <td class="center aligned">
-                            <g:set var="finish" value="${surveyConfig.checkResultsEditByOrg(institution)}"/>
-                            <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'surveyConfig.allResultsFinishByOrg')}">
-                                    <i class="circle green icon"></i>
-                                </span>
-                            </g:if>
-                            <g:elseif test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_HALF_PROCESSED_BY_ORG}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'surveyConfig.allResultsHalfFinishByOrg')}">
-                                    <i class="circle yellow icon"></i>
-                                </span>
-                            </g:elseif>
-                            <g:else>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'surveyConfig.allResultsNotFinishByOrg')}">
-                                    <i class="circle red icon"></i>
-                                </span>
-                            </g:else>
-                        </td>
-
-                        <td>
-                            <span  class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfig.editResult')}">
-                                <g:link action="surveyConfigsInfo" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui icon button">
-                                    <i class="pencil icon"></i>
-                                </g:link>
-                            </span>
-                        </td>
-                    </tr>
-                </g:if>
-            </g:each>
-        </table>
-    </semui:form>--}%
-
-</g:if>
-
-<g:if test="${surveyInfo && surveyInfo.surveyConfigs[0].type == "GeneralSurvey"}">
-
-    <g:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
-                                                                 surveyResults: surveyResults]"/>
-</g:if>
-
+<br>
 
 <g:if test="${editable}">
     <g:link class="ui button green js-open-confirm-modal"
@@ -268,7 +151,8 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
             controller="myInstitution"
             action="surveyInfoFinish"
             id="${surveyInfo.id}">
-        <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finis.info2'}"/>
+        <g:message
+                code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finis.info2'}"/>
     </g:link>
 </g:if>
 <br>
