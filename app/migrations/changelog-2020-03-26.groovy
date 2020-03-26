@@ -481,8 +481,4 @@ databaseChangeLog = {
     changeSet(author: "galffy (generated)", id: "1585205594968-73") {
         addForeignKeyConstraint(baseColumnNames: "pcc_sp_fk", baseTableName: "pending_change_configuration", baseTableSchemaName: "public", constraintName: "FK30076C4F3315F684", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "sp_id", referencedTableName: "subscription_package", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
     }
-
-    changeSet(author: "galffy (generated)", id: "1585205594968-74") {
-        dropTable(tableName: "delete_me")
-    }
 }
