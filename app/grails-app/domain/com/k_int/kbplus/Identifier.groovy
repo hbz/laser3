@@ -81,72 +81,65 @@ class Identifier {
         String value        = map.get('value')
         Object reference    = map.get('reference')
         def namespace       = map.get('namespace')
+        String nsType       = map.get('nsType')
 
         IdentifierNamespace ns
-        boolean namespaceExists = true
 		if (namespace instanceof IdentifierNamespace) {
 			ns = namespace
 		}
         else {
-			ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
+            if (nsType){
+                ns = IdentifierNamespace.findByNsIlikeAndNsType(namespace?.trim(), nsType)
+            } else {
+			    ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
+            }
 
 			if(! ns) {
-                namespaceExists = false
-				ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
-				ns.save()
+                if (nsType){
+                    ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false, nsType: nsType)
+                } else {
+                    ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
+                }
+				ns.save(flush:true)
 			}
 		}
 
-        def ident
-        if(!namespaceExists) {
-            static_logger.debug("INFO: no identifier nor namespace found; creating new identifier including namespace for ( ${value}, ${ns}, ${reference.class} )")
-            ident = new Identifier(ns: ns, value: value)
-            ident.setReference(reference)
-            boolean success = ident.save()
-            if (success){
-                factoryResult.status += FactoryResult.STATUS_OK
-            } else {
-                factoryResult.status += FactoryResult.STATUS_ERR
-            }
+        String attr = Identifier.getAttributeName(reference)
+
+        def ident = Identifier.executeQuery(
+                'select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref order by ident.id',
+                [val: value, ns: ns, ref: reference]
+
+        )
+        if (ident){
+            factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_REFERENCE_OBJ
         }
-        else {
-            String attr = Identifier.getAttributeName(reference)
-
-            ident = Identifier.executeQuery(
-                    'select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref order by ident.id',
-                    [val: value, ns: ns, ref: reference]
-
-            )
-            if (ident){
-                factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_REFERENCE_OBJ
+        if (! ident.isEmpty()) {
+            if (ident.size() > 1) {
+                factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
+                static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
             }
-            if (! ident.isEmpty()) {
-                if (ident.size() > 1) {
-                    factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
-                    static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
-                }
-                ident = ident.first()
-            }
+            ident = ident.first()
+        }
 
-            if (! ident) {
-                Identifier identifierInDB = Identifier.findByNsAndValue(ns, value)
-                if (ns.isUnique && identifierInDB) {
-                    static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
-                    factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
-                    //factoryResult.result = identifierInDB
-                    ident = identifierInDB
+        if (! ident) {
+            Identifier identifierInDB = Identifier.findByNsAndValue(ns, value)
+			if (ns.isUnique && identifierInDB) {
+                static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
+                factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
+//                factoryResult.result = identifierInDB
+                ident = identifierInDB
+			} else {
+                static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
+				ident = new Identifier(ns: ns, value: value)
+				ident.setReference(reference)
+				boolean success = ident.save()
+                if (success){
+                    factoryResult.status += FactoryResult.STATUS_OK
                 } else {
-                    static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
-                    ident = new Identifier(ns: ns, value: value)
-                    ident.setReference(reference)
-                    boolean success = ident.save()
-                    if (success){
-                        factoryResult.status += FactoryResult.STATUS_OK
-                    } else {
-                        factoryResult.status += FactoryResult.STATUS_ERR
-                    }
+                    factoryResult.status += FactoryResult.STATUS_ERR
                 }
-            }
+			}
         }
 
         factoryResult.result = ident
