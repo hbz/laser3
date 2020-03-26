@@ -15,6 +15,10 @@
         <g:if test="${actionName == 'show'}">
             <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
         </g:if>
+        <g:if test="${actionName == 'ids'}">
+            <a class="item" onclick="IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
+            <a class="item" onclick="IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
+        </g:if>
         <g:if test="${actionName == 'users'}">
             <semui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: orgInstance.id]" />
         </g:if>
@@ -45,10 +49,6 @@
             <div class="divider"></div>
             <g:link class="item" action="_delete" id="${params.id}"><i class="trash alternate icon"></i> ${message(code:'deletion.org')}</g:link>
         </sec:ifAnyGranted>
-    </g:if>
-    <g:if test="${actionName in ['ids'] && editable}">
-        <a class="item" onclick="IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
-        <a class="item" onclick="IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
     </g:if>
 </semui:actionsDropdown>
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
