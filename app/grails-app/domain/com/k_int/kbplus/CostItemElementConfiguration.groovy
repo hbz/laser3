@@ -1,7 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.auth.User
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
@@ -16,15 +14,11 @@ class CostItemElementConfiguration extends AbstractBaseDomain {
     @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION)
     RefdataValue elementSign
 
-    Org forOrganisation
-
+    Org  forOrganisation
     Date dateCreated
-    User createdBy
     Date lastUpdated
-    User lastUpdatedBy
 
     def contextService
-    def messageSource
 
     @Transient
     def springSecurityService
@@ -43,29 +37,13 @@ class CostItemElementConfiguration extends AbstractBaseDomain {
         costItemElement     (nullable: false, blank: false)
         elementSign         (nullable: false, blank: false)
         forOrganisation     (nullable: false, blank: false)
-        lastUpdatedBy       (nullable: true)
-        createdBy           (nullable: true)
     }
 
     def beforeInsert() {
         super.beforeInsert()
-
-        User user = springSecurityService.getCurrentUser()
-        if (user) {
-            createdBy     = user
-            lastUpdatedBy = user
-        } else
-            return false
     }
 
     def beforeUpdate() {
         super.beforeUpdate()
-
-        User user = springSecurityService.getCurrentUser()
-        if (user)
-            lastUpdatedBy = user
-        else
-            return false
     }
-
 }

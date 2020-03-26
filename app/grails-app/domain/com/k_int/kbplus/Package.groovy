@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -31,10 +32,9 @@ class Package
   @Transient
   def deletionService
 
-  String identifier
+  //String identifier
   String name
   String sortName
-  String impId
   String gokbId
    //URL originEditUrl
   String vendorURL
@@ -42,8 +42,8 @@ class Package
 
   Date listVerifiedDate
 
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_TYPE)
-    RefdataValue packageType
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_CONTENT_TYPE)
+    RefdataValue contentType
 
     @RefdataAnnotation(cat = RDConstants.PACKAGE_STATUS)
     RefdataValue packageStatus
@@ -98,13 +98,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                       id column:'pkg_id'
                  version column:'pkg_version'
                globalUID column:'pkg_guid'
-              identifier column:'pkg_identifier'
+            //identifier column:'pkg_identifier'
                     name column:'pkg_name'
                 sortName column:'pkg_sort_name'
-                   impId column:'pkg_imp_id', index:'pkg_imp_id_idx'
-                  gokbId column:'pkg_gokb_id', type:'text'
+                  gokbId column:'pkg_gokb_id'
          //originEditUrl column:'pkg_origin_edit_url'
-             packageType column:'pkg_type_rv_fk'
+             contentType column:'pkg_content_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
        packageListStatus column:'pkg_list_status_rv_fk'
                breakable column:'pkg_breakable_rv_fk'
@@ -133,7 +132,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   static constraints = {
                  globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-               packageType(nullable:true, blank:false)
+               contentType(nullable:true, blank:false)
              packageStatus(nullable:true, blank:false)
            nominalPlatform(nullable:true, blank:false)
          packageListStatus(nullable:true, blank:false)
@@ -146,8 +145,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                   isPublic(nullable:false, blank:false)
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
-                     impId(nullable:true, blank:false)
-                    gokbId(nullable:true, blank:false)
+                    gokbId(nullable:false, blank:false, unique: true, maxSize: 511)
            //originEditUrl(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
@@ -156,7 +154,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
     def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.globalUID)
+        //deletionService.deleteDocumentFromIndex(this.globalUID) ES not connected, reactivate as soon as ES works again
     }
 
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
@@ -175,6 +173,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         false // NO SHARES
     }
 
+  @Deprecated
   Org getConsortia() {
     Org result
     orgs.each { or ->
@@ -188,6 +187,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
    * Materialise this package into a subscription of the given type (taken or offered)
    * @param subtype One of 'Subscription Offered' or 'Subscription Taken'
    */
+  @Deprecated
   @Transient
   def createSubscription(subtype,
                          subname,
@@ -197,6 +197,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                          consortium_org) {
     createSubscription(subtype,subname,subidentifier,startdate,enddate,consortium_org,true)
   }
+ @Deprecated
  @Transient
   def createSubscription(subtype,
                          subname,
@@ -208,6 +209,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     createSubscription(subtype, subname,subidentifier,startdate,
                   enddate,consortium_org,add_entitlements,false)
   }
+  @Deprecated
   @Transient
   def createSubscription(subtype,
                          subname,
@@ -219,7 +221,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     createSubscription(subtype, subname,subidentifier,startdate,
                   enddate,consortium_org,"Package Consortia",add_entitlements,false)
   }
-
+  @Deprecated
   @Transient
   def createSubscription(subtype,
                          subname,
@@ -233,7 +235,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       Subscription result = new Subscription( name:subname,
                                    status:RefdataValue.getByValueAndCategory('Current', RDConstants.SUBSCRIPTION_STATUS),
                                    identifier:subidentifier,
-                                   impId:java.util.UUID.randomUUID().toString(),
                                    startDate:startdate,
                                    endDate:enddate,
                                    type: RefdataValue.getByValue(subtype),
@@ -268,6 +269,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
+  @Deprecated
   @Transient
   void updateNominalPlatform() {
       Map<String, Object> platforms = [:]
@@ -418,6 +420,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                             }
                             costItem.save(flush: true)
                         }
+                        PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
                     }
 
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [this, subscription])
@@ -434,6 +437,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         }
                         costItem.save(flush: true)
                     }
+                    PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
                 }
 
                 SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [this, subscription])
@@ -446,26 +450,31 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
     private def removePackagePendingChanges(List subIds, confirmed) {
 
-        def tipp_class = TitleInstancePackagePlatform.class.getName()
-        def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
-        def change_doc_query = "from PendingChange pc where pc.subscription.id in (:subIds) "
-        def tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [this.id])
-        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [subIds: subIds])
+        String tipp_class = TitleInstancePackagePlatform.class.getName()
+        String tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
+        String change_doc_query = "from PendingChange pc where pc.subscription.id in (:subIds) "
+        List<Long> tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [this.id])
+        List pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [subIds: subIds])
 
-        def pc_to_delete = []
+        List pc_to_delete = []
         pendingChanges.each { pc ->
-            def payload = JSON.parse(pc[1])
-            if (payload.tippID) {
-                pc_to_delete += pc[0]
-            }else if (payload.tippId) {
-                pc_to_delete += pc[0]
-            } else if (payload.changeDoc) {
-                def (oid_class, ident) = payload.changeDoc.OID.split(":")
-                if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
-                    pc_to_delete += pc[0]
+            if(pc[1]){
+                def payload = JSON.parse(pc[1])
+                if (payload.tippID) {
+                    pc_to_delete << pc[0]
+                }else if (payload.tippId) {
+                    pc_to_delete << pc[0]
+                } else if (payload.changeDoc) {
+                    def (oid_class, ident) = payload.changeDoc.OID.split(":")
+                    if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
+                        pc_to_delete << pc[0]
+                    }
+                } else {
+                    log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
                 }
-            } else {
-                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
+            }
+            else {
+                pc_to_delete << pc[0]
             }
         }
         if (confirmed && pc_to_delete) {
@@ -493,14 +502,15 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     name ? "${name}" : "Package ${id}"
   }
 
-  @Transient
-  String getURL() {
+  /*@Transient
+   String getURL() {
     "${grailsApplication.config.grails.serverURL}/package/show/${id}".toString();
-  }
+  }*/
 
+    /*
     def onChange = { oldMap, newMap ->
         log.debug("OVERWRITE onChange")
-    }
+    }*/
 
   // @Transient
   // def onChange = { oldMap,newMap ->
@@ -520,20 +530,23 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   //   }
   // }
 
-    @Transient
-    def onSave = {
-        log.debug("onSave")
-        def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
+    /*
+ @Transient
+  def onSave = {
+    log.debug("onSave")
+    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
-        changeNotificationService.fireEvent([
-            OID:"com.k_int.kbplus.Package:${id}",
-            event:'Package.created'
-        ])
-    }
+    changeNotificationService.fireEvent([
+                                                 OID:"com.k_int.kbplus.Package:${id}",
+                                                 event:'Package.created'
+                                                ])
 
+  }
+    */
   /**
   * OPTIONS: startDate, endDate, hideIdent, inclPkgStartDate, hideDeleted
-  **/
+  */
+    /*
   @Transient
   def notifyDependencies_trait(changeDocument) {
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
@@ -541,6 +554,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       changeNotificationService.broadcastEvent("com.k_int.kbplus.SystemObject:1", changeDocument);
     }
   }
+     */
 
   @Transient
   static def refdataFind(params) {
@@ -583,7 +597,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
-
+  @Deprecated
   @Transient
   def toComparablePackage() {
     Map<String, Object> result = [:]
@@ -592,7 +606,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     println "processing metadata"
     result.packageName = this.name
     result.packageId = this.identifier
-    result.impId = this.impId
     result.gokbId = this.gokbId
 
     result.tipps = []
@@ -612,7 +625,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       def newtip = [
                      title: [
                        name:tip.title.title,
-                       impId:tip.title.impId,
                        identifiers:[],
                        titleType: tip.title.class.name ?: null
                      ],
@@ -667,10 +679,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     def beforeInsert() {
         if ( name != null ) {
             sortName = generateSortName(name)
-        }
-
-        if (impId == null) {
-          impId = java.util.UUID.randomUUID().toString();
         }
 
         super.beforeInsert()

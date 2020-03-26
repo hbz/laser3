@@ -31,8 +31,6 @@
     <g:else>${platformInstance.name}</g:else>
 </h1>
 
-<g:render template="nav"/>
-
 <semui:messages data="${flash}"/>
 <div id="collapseableSubDetails" class="ui stackable grid">
     <div class="sixteen wide column">

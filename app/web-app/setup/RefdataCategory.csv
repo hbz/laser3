@@ -27,6 +27,7 @@ customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 document.context.status,Document Context Status,Document Context Status
 document.type,Dokumenttyp,Document Type
 existence,Vorliegen,Existence
+external.internal,Extern und intern,External and internal
 fact.metric,FactMetric,FactMetric
 fact.type,FactType,FactType
 federal.state,Bundesland,Federal State
@@ -70,6 +71,7 @@ license.statistics.frequency,Statistik Auslieferungsfrequenz,Statistics Frequenc
 license.statistics.standards,Statistikstandard,Statistics Standards
 license.statistics.user.creds,Statistik Nutzeridentifikation,Statistics User Credentials
 license.status,Lizenzstatus,License Status
+license.structure,Vertragskonstruktion,License Structure
 license.type,Lizenztyp,License Type
 link.type,Link Type,Link Type
 mail.template.language,MailTemplate Sprache,MailTemplate Language
@@ -86,7 +88,9 @@ package.list.status,Package.ListStatus,Package.ListStatus
 package.scope,Package.Scope,Package.Scope
 package.status,Paketstatus,Package Status
 package.type,Package.Type,Package.Type
+package.content.type,Package Content Type,Package Content Type
 pending.change.status,PendingChangeStatus,PendingChangeStatus
+pending.change.configuration.setting,Änderungseinstellung,Pending Change Configuration Setting
 permissions,Berechtigungen,Permissions
 person.contact.type,Kontaktart,Person: Contact Type
 person.function,Funktion,Person Function

@@ -26,7 +26,7 @@
         <tr>
             <td>${counter++}</td>
             <td>
-                <semui:listIcon type="${tipp.title?.type?.value}"/>
+                <semui:listIcon type="${tipp.title?.medium?.value}"/>
                 <strong><g:link controller="title" action="show"
                                 id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
@@ -209,10 +209,10 @@
             </td>
             <td>
                 <!-- von -->
-                ${tipp.accessStartDate}
+                <g:formatDate date="${tipp.accessStartDate}" format="${message(code:'default.date.format.notime')}"/>
                 <semui:dateDevider/>
                 <!-- bis -->
-                ${tipp.accessEndDate}
+                <g:formatDate date="${tipp.accessEndDate}" format="${message(code:'default.date.format.notime')}"/>
             </td>
         </tr>
 

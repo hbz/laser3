@@ -18,7 +18,7 @@
                 <div class="header">
                     <i class="icon chart pie la-list-icon"></i>
                     <g:if test="${!surveyConfig?.pickAndChoose}">
-                    <g:link controller="myInstitution" action="surveyInfos"
+                    <g:link controller="myInstitution" action="surveyInfos" params="[surveyConfigID: surveyConfig.id]"
                                           id="${surveyInfo.id}">${surveyConfig?.getSurveyName()}</g:link>
                     </g:if>
                     <g:if test="${surveyConfig?.pickAndChoose}">

@@ -21,6 +21,7 @@
         'confirm.dialog.inherit',
         'confirm.dialog.ok',
         'confirm.dialog.concludeBinding',
+        'confirm.dialog.clearUp',
         'loc.January', 'loc.February', 'loc.March', 'loc.April', 'loc.May', 'loc.June', 'loc.July', 'loc.August', 'loc.September', 'loc.October', 'loc.November', 'loc.December',
         'loc.weekday.short.Sunday','loc.weekday.short.Monday','loc.weekday.short.Tuesday','loc.weekday.short.Wednesday','loc.weekday.short.Thursday','loc.weekday.short.Friday','loc.weekday.short.Saturday'
     ]

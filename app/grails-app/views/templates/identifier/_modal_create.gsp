@@ -14,7 +14,8 @@
         <div class="field fieldcontain">
             <label for="namespace">${message(code: 'identifier.namespace.label')}:</label>
             <%
-                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name || nsType == null)}
+//                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name || nsType == null)}
+                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name)}
                         .list(sort: 'ns')
                         .sort { a, b ->
                     String aVal = a.getI10n('name') ?: a.ns

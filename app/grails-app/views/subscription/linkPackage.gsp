@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;" %>
 <!doctype html>
 
 <html>
@@ -94,74 +94,45 @@
                         </thead>
                         <tbody>
                         <g:each in="${hits}" var="hit">
-                            <g:if test="${!params.gokbApi}">
-                                <tr>
-                                    <td><g:link controller="package" action="show"
-                                                id="${hit.getSource().dbId}">${hit.getSource().name}</g:link>
-                                        <br><b>(${hit.getSource().titleCountCurrent ?: '0'} ${message(code: 'title.plural')})</b>
-                                    </td>
-                                    <td><g:if test="${com.k_int.kbplus.Org.get(hit.getSource().providerId)}"><g:link
-                                            controller="organisation" action="show"
-                                            id="${hit.getSource().providerId}">${hit.getSource().providerName}</g:link></g:if>
-                                    <g:else>${hit.getSource().providerName}</g:else>
-                                    </td>
-                                    <td><g:if test="${com.k_int.kbplus.Platform.get(hit.getSource().nominalPlatformId)}"><g:link
-                                            controller="platform" action="show"
-                                            id="${hit.getSource().nominalPlatformId}">${hit.getSource().nominalPlatformName}</g:link></g:if>
-                                        <g:else>${hit.getSource().nominalPlatformName}</g:else></td>
-                                    <td>
-                                        <g:if test="${editable && (!pkgs || !pkgs.contains(hit.getSource().getSource().dbId.toLong()))}">
-                                            <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"
-                                                    id="${params.id}"
-                                                    params="${[addId: hit.getSource().dbId, addType: 'Without']}"
-                                                    style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents')}</g:link>
-                                            <br/><br/>
-                                            <g:link action="linkPackage" class="ui mini button packageLink"
-                                                    id="${params.id}"
-                                                    params="${[addId: hit.getSource().dbId, addType: 'With']}"
-                                                    style="white-space:nowrap;">${message(code: 'subscription.details.link.with_ents')}</g:link>
-                                        </g:if>
-                                        <g:else>
-                                            <span></span>
-                                        </g:else>
-                                    </td>
-                                </tr>
-                            </g:if>
-                            <g:else>
-                                <tr>
-                                    <td>
-                                        <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
-                                            <g:link controller="package" target="_blank" action="show"
-                                                    id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${hit.name}</g:link>
-                                        </g:if>
-                                        <g:else>
-                                            ${hit.name} <a target="_blank"
-                                                           href="${hit.url ? hit.url + '/gokb/public/packageContent/' + hit.id : '#'}"><i
-                                                    title="GOKB Link" class="external alternate icon"></i></a>
-                                        </g:else>
+                            <tr>
+                                <td>
+                                    <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
+                                        <g:link controller="package" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${hit.name}</g:link>
+                                    </g:if>
+                                    <g:else>
+                                        ${hit.name}
+                                        <a target="_blank" href="${hit.url ? hit.url + '/gokb/public/packageContent/' + hit.id : '#'}">
+                                            <i title="GOKB Link" class="external alternate icon"></i>
+                                        </a>
+                                    </g:else>
                                         <br><b>(${hit.titleCount ?: '0'} ${message(code: 'title.plural')})</b>
                                     </td>
-
-                                    <td><g:if test="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid)}"><g:link
-                                            controller="organisation" action="show"
-                                            id="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid).id}">${hit.providerName}</g:link></g:if>
-                                    <g:else>${hit.providerName}</g:else>
+                                    <td>
+                                        <g:if test="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid)}">
+                                            <g:link controller="organisation" action="show" id="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid).id}">${hit.providerName}</g:link>
+                                        </g:if>
+                                        <g:else>
+                                            ${hit.providerName}
+                                        </g:else>
                                     </td>
-                                    <td><g:if test="${com.k_int.kbplus.Platform.findByGokbId(hit.platformUuid)}"><g:link
-                                            controller="platform" action="show"
-                                            id="${com.k_int.kbplus.Platform.findByGokbId(hit.platformUuid).id}">${hit.platformName}</g:link></g:if>
-                                        <g:else>${hit.platformName}</g:else></td>
-
+                                    <td>
+                                        <g:if test="${com.k_int.kbplus.Platform.findByGokbId(hit.platformUuid)}">
+                                            <g:link controller="platform" action="show" id="${com.k_int.kbplus.Platform.findByGokbId(hit.platformUuid).id}">${hit.platformName}</g:link>
+                                        </g:if>
+                                        <g:else>
+                                            ${hit.platformName}
+                                        </g:else>
+                                    </td>
                                     <td class="right aligned">
                                         <g:if test="${editable && (!pkgs || !(hit.uuid in pkgs))}">
                                             <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"
                                                     id="${params.id}"
-                                                    params="${[impId: hit.uuid, source: hit.url, addType: 'Without']}"
+                                                    params="${[addUUID: hit.uuid, source: hit.url, addType: 'Without']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents')}</g:link>
                                             <br/><br/>
                                             <g:link action="linkPackage" class="ui mini button packageLink"
                                                     id="${params.id}"
-                                                    params="${[impId: hit.uuid, source: hit.url, addType: 'With']}"
+                                                    params="${[addUUID: hit.uuid, source: hit.url, addType: 'With']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.with_ents')}</g:link>
                                         </g:if>
                                         <g:else>
@@ -188,7 +159,6 @@
                                         </g:else>
                                     </td>
                                 </tr>
-                            </g:else>
                         </g:each>
                         </tbody>
                     </table>

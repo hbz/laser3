@@ -32,5 +32,6 @@ class LaserInjectionTagLib {
         g.set( var:'orgDocumentService', bean:'orgDocumentService' )
         g.set( var:'taskService', bean:'taskService' )
         g.set( var:'navigationGenerationService', bean:'navigationGenerationService' )
+        g.set( var:'pendingChangeService', bean:'pendingChangeService')
     }
 }

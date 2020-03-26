@@ -24,6 +24,7 @@
     </semui:breadcrumbs>
 
     <semui:controlButtons>
+        <%-- TODO [ticket=1142,1996]
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
@@ -32,6 +33,7 @@
                 <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
+        --%>
         <g:render template="actions" />
     </semui:controlButtons>
 
@@ -48,10 +50,6 @@
     <g:render template="nav" />
 
     <semui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}" />
-
-    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
-        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
-    </sec:ifAnyGranted>
 
     <g:render template="/templates/meta/identifier" model="${[object: packageInstance, editable: editable]}" />
 
@@ -70,19 +68,19 @@
                             <dl>
                                 <dt>${message(code: 'package.show.start_date')}</dt>
                                 <dd>
-                                    <semui:xEditable owner="${packageInstance}" field="startDate" type="date"/>
+                                    ${packageInstance.startDate}
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.show.end_date')}</dt>
                                 <dd>
-                                    <semui:xEditable owner="${packageInstance}" field="endDate" type="date"/>
+                                    ${packageInstance.endDate}
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.listVerifiedDate.label')}</dt>
                                 <dd>
-                                    <semui:xEditable owner="${packageInstance}" field="listVerifiedDate" type="date"/>
+                                    ${packageInstance.listVerifiedDate}
                                 </dd>
                             </dl>
                         </div>
@@ -96,13 +94,13 @@
                             <dl>
                                 <dt>${message(code: 'package.list_status')}</dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${packageInstance}" field="packageListStatus" config="${RDConstants.PACKAGE_LIST_STATUS}"/>
+                                    ${packageInstance.packageListStatus}
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.scope')}</dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RDConstants.PACKAGE_SCOPE}"/>
+                                    ${packageInstance.packageScope}
                                 </dd>
                             </dl>
                         </div>
@@ -111,8 +109,12 @@
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            <dt>${message(code: 'package.show.pkg_name')}</dt>
-                            <dd> <semui:xEditable owner="${packageInstance}" field="name"/></dd>
+                            <dt>${message(code: 'package.nominalPlatform')}</dt>
+                            <dd>
+                                <g:if test="${packageInstance.nominalPlatform}">
+                                    <g:link controller="platform" action="show" id="${packageInstance.nominalPlatform.id}">${packageInstance.nominalPlatform.name}</g:link>
+                                </g:if>
+                            </dd>
 
                             <% /*
                             <dt>${message(code: 'license.is_public')}</dt>
@@ -125,13 +127,13 @@
                             <dd>
                                 <semui:xEditableRefData owner="${packageInstance}" field="license" config="Licenses"/>
                             </dd>
-                            */ %>
                         </dl>
                         <dl>
                             <dt>${message(code: 'package.show.vendor_url')}</dt>
                             <dd>
                                 <semui:xEditable owner="${packageInstance}" field="vendorURL" />
                             </dd>
+                            */ %>
                         </dl>
 
                     </div>
@@ -169,25 +171,25 @@
                         <dl>
                             <dt>${message(code: 'package.breakable')}</dt>
                             <dd>
-                                <semui:xEditableRefData owner="${packageInstance}" field="breakable" config="${RDConstants.PACKAGE_BREAKABLE}"/>
+                                ${packageInstance.breakable}
                             </dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'package.consistent')}</dt>
                             <dd>
-                                <semui:xEditableRefData owner="${packageInstance}" field="consistent" config="${RDConstants.PACKAGE_CONSISTENT}"/>
+                                ${packageInstance.consistent}
                             </dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'package.fixed')}</dt>
                             <dd>
-                                <semui:xEditableRefData owner="${packageInstance}" field="fixed" config="${RDConstants.PACKAGE_FIXED}"/>
+                                ${packageInstance.fixed}
                             </dd>
                         </dl>
 
                         <g:if test="${statsWibid && packageIdentifier}">
                             <dl>
-                               <dt>Paketnutzung</dt>
+                               <dt><g:message code="package.show.usage"/></dt>
                                <dd>
                                     <laser:statsLink class="ui basic negative"
                                                      base="${grailsApplication.config.statsApiUrl}"
@@ -199,7 +201,7 @@
                                                               packages:packageInstance.getIdentifierByType('isil').value,
                                                               institutions:statsWibid
                                                      ]"
-                                                     title="Springe zu Statistik im Nationalen Statistikserver">
+                                                     title="${message(code:'default.jumpToNatStat')}">
                                         <i class="chart bar outline icon"></i>
                                     </laser:statsLink>
                                 </dd>
@@ -252,7 +254,7 @@
 
 
     <% /* TODO: DO NOT REMOVE
-
+    @klober why?
     <div>
       <br/>
       <p>

@@ -729,7 +729,7 @@ class SurveyController {
         result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status.id != RDStore.SURVEY_IN_PROCESSING.id) ? false : result.editable
 
         result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
 
@@ -1004,8 +1004,6 @@ class SurveyController {
         params.tab = params.tab ?: 'surveyConfigsView'
 
         result.participants = result.surveyConfig?.orgs.org.sort { it.sortname }
-
-        result.subscriptionInstance =  result.surveyConfig?.subscription ?: null
 
         result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
         result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
@@ -1331,6 +1329,8 @@ class SurveyController {
 
         result.addSurveyConfigs = params.addSurveyConfigs ?: false
 
+        result.language = LocaleContextHolder.getLocale().toString()
+
         result
 
     }
@@ -1538,7 +1538,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def addSurveyProperty() {
+    def createSurveyProperty() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
@@ -1551,29 +1551,29 @@ class SurveyController {
         }
 
         PropertyDefinition surveyProperty = PropertyDefinition.findWhere(
-                name: params.name,
-                type: params.type,
+                name: params.pd_name,
+                type: params.pd_type,
                 tenant: result.institution,
                 descr: PropertyDefinition.SUR_PROP
         )
 
-        if ((!surveyProperty) && params.name && params.type) {
+        if ((!surveyProperty) && params.pd_name && params.pd_type) {
             def rdc
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
             }
 
             Map<String, Object> map = [
-                    token       : params.name,
+                    token       : params.pd_name,
                     category    : PropertyDefinition.SUR_PROP,
-                    type        : params.type,
-                    rdc         : rdc,
-                    tenant      : result.institution,
+                    type        : params.pd_type,
+                    rdc         : rdc?.getDesc(),
+                    tenant      : result.institution.shortname,
                     i10n        : [
-                            name_de: params.name,
-                            name_en: params.name,
-                            expl_de: params.expl,
-                            expl_en: params.expl
+                            name_de: params.pd_name,
+                            name_en: params.pd_name,
+                            expl_de: params.pd_expl,
+                            expl_en: params.pd_expl
                     ]
             ]
 
@@ -1746,7 +1746,7 @@ class SurveyController {
             flash.message = g.message(code: "endSurvey.successfully")
         }
 
-        redirect action: 'renewalWithSurvey', params:[surveyConfigID: result.surveyConfig?.id, id: surveyInfo?.id]
+        redirect action: 'renewalWithSurvey', params:[surveyConfigID: result.surveyConfig?.id, id: result.surveyInfo?.id]
 
     }
 
@@ -1811,6 +1811,38 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
+    def openSurveyAgain() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        if(result.surveyInfo && result.surveyInfo?.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id, RDStore.SURVEY_SURVEY_COMPLETED.id ]){
+
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            Date endDate = params.newEndDate ? sdf.parse(params.newEndDate) : null
+
+            if(result.surveyInfo.startDate != null && endDate != null) {
+                if(result.surveyInfo.startDate > endDate) {
+                    flash.error = g.message(code: "openSurveyAgain.fail.startDateAndEndDate")
+                    redirect(uri: request.getHeader('referer'))
+                    return
+                }
+            }
+
+            result.surveyInfo.status = RDStore.SURVEY_SURVEY_STARTED
+            result.surveyInfo.endDate = endDate
+            result.surveyInfo.save(flush: true)
+        }
+
+        redirect action: 'show', id: params.id
+
+    }
+
+        @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def deleteSurveyParticipants() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
@@ -1828,7 +1860,7 @@ class SurveyController {
             }
         }
 
-        redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID]
+        redirect(uri: request.getHeader('referer'))
 
     }
 
@@ -1866,40 +1898,45 @@ class SurveyController {
 
             try {
 
-                SurveyConfig.findAllBySurveyInfo(result.surveyInfo).each { config ->
+                SurveyInfo surveyInfo = SurveyInfo.get(result.surveyInfo.id)
+                SurveyInfo.withTransaction {
 
-                    DocContext.findAllBySurveyConfig(config).each {
-                        it.delete(flush: true)
-                    }
+                    SurveyConfig.findAllBySurveyInfo(surveyInfo).each { config ->
 
-                    SurveyConfigProperties.findAllBySurveyConfig(config).each {
-                        it.delete(flush: true)
-                    }
-
-                    SurveyOrg.findAllBySurveyConfig(config).each { surveyOrg ->
-                        CostItem.findAllBySurveyOrg(surveyOrg).each {
-                            it.delete(flush: true)
+                        config.surveyInfo = null
+                        DocContext.findAllBySurveyConfig(config).each {
+                            it.delete()
                         }
 
-                        surveyOrg.delete(flush: true)
+                        SurveyConfigProperties.findAllBySurveyConfig(config).each {
+                            it.delete()
+                        }
+
+                        SurveyOrg.findAllBySurveyConfig(config).each { surveyOrg ->
+                            CostItem.findAllBySurveyOrg(surveyOrg).each {
+                                it.delete()
+                            }
+
+                            surveyOrg.delete()
+                        }
+
+                        SurveyResult.findAllBySurveyConfig(config) {
+                            it.delete()
+                        }
+
+                        Task.findAllBySurveyConfig(config) {
+                            it.delete()
+                        }
+                        config.save()
+
                     }
 
-                    SurveyResult.findAllBySurveyConfig(config){
-                        it.delete(flush: true)
-                    }
+                    surveyInfo.surveyConfigs.clear()
 
-                    Task.findAllBySurveyConfig(config){
-                        it.delete(flush: true)
-                    }
+                    SurveyConfig.findAllBySurveyInfo(surveyInfo).each {it.delete()}
 
-                    config.surveyInfo = null
-                    config.delete(flush: true)
+                    surveyInfo.delete()
                 }
-
-
-                SurveyInfo surveyInfo = SurveyInfo.get(result.surveyInfo.id)
-
-                surveyInfo.delete(flush: true)
 
                 flash.message = message(code: 'surveyInfo.delete.successfully')
 
@@ -2036,7 +2073,7 @@ class SurveyController {
             flash.error = g.message(code: 'survey.change.fail')
         }
 
-        redirect action: 'renewalWithSurvey', params:[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]
+        redirect action: 'renewalWithSurvey', params:[surveyConfigID: result.surveyConfig?.id, id: result.surveyInfo?.id]
 
     }
 
@@ -3842,7 +3879,6 @@ class SurveyController {
                             identifier: UUID.randomUUID().toString(),
                             instanceOf: newParentSub,
                             isSlaved: true,
-                            impId: UUID.randomUUID().toString(),
                             owner: licenseCopy,
                             resource: newParentSub.resource ?: null,
                             form: newParentSub.form ?: null,
@@ -4577,6 +4613,8 @@ class SurveyController {
         {
             result.transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : null
         }
+
+        result.subscriptionInstance =  result.surveyConfig?.subscription ?: null
 
 
 

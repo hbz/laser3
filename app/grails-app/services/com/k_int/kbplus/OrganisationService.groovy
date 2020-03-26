@@ -566,7 +566,6 @@ class OrganisationService {
                              status: RefdataValue.getByValueAndCategory('Test Access', RDConstants.SUBSCRIPTION_STATUS),
                              identifier: testDatenAChildIdentifier,
                              isPublic: false,
-                             impId: UUID.randomUUID().toString(),
                              instanceOf: underConsiderationDatenAParent,
                              form: generalData.subscriptionForms.get('test')],
                 addParams: [:]
@@ -579,7 +578,6 @@ class OrganisationService {
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: currentDatenAChildIdentifier,
                              isPublic: false,
-                             impId: UUID.randomUUID().toString(),
                              instanceOf: currentDatenAParent,
                              form: generalData.subscriptionForms.get('license'),
                              resource: generalData.subscriptionResources.get('mixed')],
@@ -607,7 +605,6 @@ class OrganisationService {
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: eBookPickChildIdentifier,
                              isPublic: false,
-                             impId: UUID.randomUUID().toString(),
                              instanceOf: eBookPickParent,
                              form: generalData.subscriptionForms.get('singlePurchase'),
                              resource: generalData.subscriptionResources.get('ebookSingle')],
@@ -659,7 +656,6 @@ class OrganisationService {
                              status: RDStore.SUBSCRIPTION_EXPIRED,
                              identifier: expiredJournalPaketIdentifier,
                              isPublic: false,
-                             impId: UUID.randomUUID().toString(),
                              form: RefdataValue.getByValueAndCategory('purchaseOngoing',RDConstants.SUBSCRIPTION_FORM),
                              resource: RefdataValue.getByValueAndCategory('ejournalPackage', RDConstants.SUBSCRIPTION_RESOURCE)],
                 addParams: [packages:[[pkg: Package.findByGlobalUID('package:b108178b-f27c-455d-9061-c8837905dc65')]], //check
@@ -675,7 +671,6 @@ class OrganisationService {
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: currentJournalPaketIdentifier,
                              isPublic: false,
-                             impId: UUID.randomUUID().toString(),
                              form: RefdataValue.getByValueAndCategory('purchaseOngoing', RDConstants.SUBSCRIPTION_FORM),
                              resource: RefdataValue.getByValueAndCategory('ejournalPackage',RDConstants.SUBSCRIPTION_RESOURCE)],
                 addParams: [packages:[[pkg: generalData.examplePackages.get('American Chemical Society: American Chemical Society Journals')]],
@@ -689,7 +684,6 @@ class OrganisationService {
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: journalPaketExtremChildIdentifier,
                              isPublic: false,
-                             impId: UUID.randomUUID().toString(),
                              form: RefdataValue.getByValueAndCategory('purchaseOngoing', RDConstants.SUBSCRIPTION_FORM),
                              resource: RefdataValue.getByValueAndCategory('ejournalPackage', RDConstants.SUBSCRIPTION_RESOURCE),
                              instanceOf: journalPaketExtremParent],
@@ -704,7 +698,6 @@ class OrganisationService {
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: musterdatenbankIdentifier,
                              isPublic: false,
-                             impId: UUID.randomUUID().toString(),
                              form: generalData.subscriptionForms.get('license'),
                              resource: generalData.subscriptionResources.get('database')],
                 addParams: [packages:[[pkg:generalData.examplePackages.get('EBSCO: SportDiscus')]],
@@ -1452,7 +1445,6 @@ class OrganisationService {
                              status: RefdataValue.getByValueAndCategory('Test Access', RDConstants.SUBSCRIPTION_STATUS),
                              identifier: testDatenAIdentifier,
                              isPublic: false,
-                             impId: UUID.randomUUID().toString(),
                              form: generalData.subscriptionForms.get('test')],
                 addParams: [subscriptionMembers:[[subMember:modelMember,
                                                   subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -2038,11 +2030,6 @@ class OrganisationService {
                                         throw new CreationException("Package data missing!")
                                     else {
                                         Package pkg = (Package) entry.pkg
-                                        GlobalRecordInfo gri = GlobalRecordInfo.findByUuid(pkg.gokbId)
-                                        GlobalRecordTracker grt = GlobalRecordTracker.findByOwner(gri)
-                                        //let's kill the server a bit ... that should keep some packages always up-to-date!! - to be activated as soon as ERMS-1177 is terminated
-                                        //globalSourceSyncService.initialiseTracker(grt)
-                                        //dataloadService.updateFTIndexes()
                                         if(entry.issueEntitlementISBNs) {
                                             pkg.addToSubscription(obj,false)
                                             List<TitleInstancePackagePlatform> tippSubset = TitleInstancePackagePlatform.executeQuery("select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.id in (select ident.ti from Identifier ident where ident.ns.ns = 'isbn' and ident.value in (:idSet))", [pkg:pkg,idSet:entry.issueEntitlementISBNs])
@@ -2177,7 +2164,6 @@ class OrganisationService {
                                     consSub.owner = entry.subOwner
                                     consSub.instanceOf = obj
                                     consSub.identifier = entry.subIdentifier
-                                    consSub.impId = UUID.randomUUID()
                                     consSub.globalUID = null
                                     if(!consSub.save())
                                         throw new CreationException(consSub.errors)

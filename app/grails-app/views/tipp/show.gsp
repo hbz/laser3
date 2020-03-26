@@ -41,7 +41,7 @@
                data-content="${message(code: 'tipp.show.accessStart')}"></i>
 
             <div class="content">
-                ${tipp.accessStartDate}
+                <g:formatDate date="${tipp.accessStartDate}" format="${message(code:'default.date.format.notime')}"/>
             </div>
         </div>
 
@@ -50,7 +50,7 @@
                data-content="${message(code: 'tipp.show.accessEnd')}"></i>
 
             <div class="content">
-                ${tipp.accessEndDate}
+                <g:formatDate date="${tipp.accessEndDate}" format="${message(code:'default.date.format.notime')}"/>
             </div>
         </div>
 
@@ -169,6 +169,7 @@
                target="_blank"><i class="cloud icon"></i></a>
         </g:if>
 
+        <%--
         <br>
         <dl>
             <dt style="margin-top:10px"><g:message code="tipp.additionalPlatforms"/></dt>
@@ -191,7 +192,7 @@
                     </tbody>
                 </table>
             </dd>
-        </dl>
+        </dl>--%>
     </div>
 </semui:form>
 

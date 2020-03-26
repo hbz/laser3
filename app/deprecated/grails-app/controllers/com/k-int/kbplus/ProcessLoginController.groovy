@@ -1,9 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import com.k_int.kbplus.auth.UserRole
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -19,12 +17,12 @@ class ProcessLoginController {
   def index() {
     return
 
-    log.debug("ProcessLoginController::index() - session = ${request.session.id}");
+      com.k_int.kbplus.ProcessLoginController.log.debug("ProcessLoginController::index() - session = ${request.session.id}");
 
     def ctx = grailsApplication.mainContext
 
     // Check that request comes from 127.0.0.1
-    log.debug("Auth request from ${request.getRemoteAddr()}");
+    com.k_int.kbplus.ProcessLoginController.log.debug("Auth request from ${request.getRemoteAddr()}");
 
     if ( request.getRemoteAddr() == '127.0.0.1' ) {
     }
@@ -41,9 +39,8 @@ class ProcessLoginController {
     }
 
 
-
-    log.debug("remote institution appears to be : ${params.ea_edinaOrgId}");
-    log.debug("remote user appears to be : ${params.ea_edinaUserId}");
+      com.k_int.kbplus.ProcessLoginController.log.debug("remote institution appears to be : ${params.ea_edinaOrgId}");
+      com.k_int.kbplus.ProcessLoginController.log.debug("remote user appears to be : ${params.ea_edinaUserId}");
 
     def response_str = 'NO EA_EXTRA FOUND';
 
@@ -52,17 +49,17 @@ class ProcessLoginController {
         kv.split('=').toList(); map[key] = value != null ? URLDecoder.decode(value) : null; map 
       }
 
-      log.debug("Auth inst = ${map.authInstitutionName}");
-      log.debug("UserId = ${map.eduPersonTargetedID}");
-      log.debug("email = ${map.mail}");
-      log.debug("Inst Addr = ${map.authInstitutionAddress}");
+        com.k_int.kbplus.ProcessLoginController.log.debug("Auth inst = ${map.authInstitutionName}");
+        com.k_int.kbplus.ProcessLoginController.log.debug("UserId = ${map.eduPersonTargetedID}");
+        com.k_int.kbplus.ProcessLoginController.log.debug("email = ${map.mail}");
+        com.k_int.kbplus.ProcessLoginController.log.debug("Inst Addr = ${map.authInstitutionAddress}");
 
       if ( ( map.eduPersonTargetedID != null ) && ( map.eduPersonTargetedID.length() > 0 ) ) {
   
-        User user = User.findByUsername(map.eduPersonTargetedID)
+        def user = com.k_int.kbplus.auth.User.findByUsername(map.eduPersonTargetedID)
         if ( !user ) {
-          log.debug("Creating user");
-          user = new User(username:map.eduPersonTargetedID,
+          com.k_int.kbplus.ProcessLoginController.log.debug("Creating user");
+          user = new com.k_int.kbplus.auth.User(username:map.eduPersonTargetedID,
                                                 password:'**',
                                                 enabled:true,
                                                 accountExpired:false,
@@ -72,38 +69,38 @@ class ProcessLoginController {
                                                 email:map.mail)
   
           if ( user.save(flush:true) ) {
-            log.debug("Created user, allocating user role");
-            Role userRole = Role.findByAuthority('ROLE_USER')
+            com.k_int.kbplus.ProcessLoginController.log.debug("Created user, allocating user role");
+            def userRole = com.k_int.kbplus.auth.Role.findByAuthority('ROLE_USER')
   
             if ( userRole ) {
-              log.debug("looked up user role: ${userRole}");
-              UserRole new_role_allocation = new UserRole(user:user,role:userRole);
+              com.k_int.kbplus.ProcessLoginController.log.debug("looked up user role: ${userRole}");
+              def new_role_allocation = new com.k_int.kbplus.auth.UserRole(user:user,role:userRole);
     
               if ( new_role_allocation.save(flush:true) ) {
-                log.debug("New role created...");
+                com.k_int.kbplus.ProcessLoginController.log.debug("New role created...");
               }
               else {
                 new_role_allocation.errors.each { e ->
-                  log.error(e);
+                    com.k_int.kbplus.ProcessLoginController.log.error(e);
                 }
               }
             }
             else {
-              log.error("Unable to look up ROLE_USER");
+              com.k_int.kbplus.ProcessLoginController.log.error("Unable to look up ROLE_USER");
             }
 
             // See if we can find the org this user is attached to
             if ( grailsApplication.config.autoAffiliate ) {
               createUserOrgLink(user, map.authInstitutionName, map.shibbScope);
             }
-    
-            log.debug("Done creating user");
+
+              com.k_int.kbplus.ProcessLoginController.log.debug("Done creating user");
           }
         }
         else {
-          log.error("Problem creating user......");
+          com.k_int.kbplus.ProcessLoginController.log.error("Problem creating user......");
           user.errors.each { err ->
-            log.error(err);
+              com.k_int.kbplus.ProcessLoginController.log.error(err);
           }
         }
       
@@ -112,11 +109,11 @@ class ProcessLoginController {
         // log.debug("Auth set, isAuthenticated = ${securityContext.authentication.isAuthenticated()}, name=${securityContext.authentication.getName()}");
         // log.debug("ea_context=${map.ea_context}");
   
-        String tok = java.util.UUID.randomUUID().toString()
+        def tok = java.util.UUID.randomUUID().toString()
         ediAuthTokenMap[tok] = map.eduPersonTargetedID
-  
-        log.debug("Setting entry in ediAuthTokenMap to ${tok} = ${map.eduPersonTargetedID}");
-        log.debug(ediAuthTokenMap)
+
+          com.k_int.kbplus.ProcessLoginController.log.debug("Setting entry in ediAuthTokenMap to ${tok} = ${map.eduPersonTargetedID}");
+          com.k_int.kbplus.ProcessLoginController.log.debug(ediAuthTokenMap)
   
         if ( ( params.ea_context ) && ( params.ea_context.trim().length() > 0 ) ) {
           if ( params.ea_context.indexOf('?') > 0 ) {
@@ -136,7 +133,7 @@ class ProcessLoginController {
       }
     }
 
-    log.debug("Rendering processLoginController response, URL will be ${response_str}");
+      com.k_int.kbplus.ProcessLoginController.log.debug("Rendering processLoginController response, URL will be ${response_str}");
 
     // redirect(controller:'home');
     render "${response_str}"
@@ -148,7 +145,7 @@ class ProcessLoginController {
     return
 
     if ( ( authInstitutionName ) && ( authInstitutionName.length() > 0 ) ) {
-      String candidate = authInstitutionName.trim().replaceAll(" ","_")
+      def candidate = authInstitutionName.trim().replaceAll(" ","_")
       Org org = com.k_int.kbplus.Org.findByScope(shibbScope)
 
       // If we didn't match by scope, try matching by normalised name
@@ -171,14 +168,14 @@ class ProcessLoginController {
                                                               dateRequested:System.currentTimeMillis(), 
                                                               dateActioned:System.currentTimeMillis())
         if ( !user_org_link.save(flush:true) ) {
-          log.error("Problem saving user org link");
+          com.k_int.kbplus.ProcessLoginController.log.error("Problem saving user org link");
           user_org_link.errors.each { e ->
-            log.error(e);
+              com.k_int.kbplus.ProcessLoginController.log.error(e);
           }
 
         }
         else {
-          log.debug("Linked user with org ${org.id} based on name ${authInstitutionName}");
+          com.k_int.kbplus.ProcessLoginController.log.debug("Linked user with org ${org.id} based on name ${authInstitutionName}");
         }
       }
     }

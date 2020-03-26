@@ -1,1728 +1,1015 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.User
+import de.laser.EscapeService
 import de.laser.SystemEvent
+import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.TIPPCoverage
+import de.laser.exceptions.SyncException
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
-import de.laser.oai.OaiClient
-import de.laser.oai.OaiClientLaser
+import groovy.util.slurpersupport.GPathResult
+import groovy.util.slurpersupport.NodeChild
+import groovy.util.slurpersupport.NodeChildren
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.HttpResponseException
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import org.codehaus.groovy.runtime.typehandling.GroovyCastException
+import org.hibernate.SessionFactory
+import org.hibernate.classic.Session
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.dao.DuplicateKeyException
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.TransactionStatus
 
+import javax.persistence.Transient
 import java.text.SimpleDateFormat
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutorService
 
-/*
- *  Implementing new rectypes..
- *  the reconciler closure is responsible for reconciling the previous version of a record and the latest version
- *  the converter is responsible for creating the map structure passed to the reconciler. It needs to return a [:] sorted appropriate
- *  to the work the reconciler will need to do (Often this includes sorting lists)
+/**
+ * Implements the synchronisation workflow according to https://dienst-wiki.hbz-nrw.de/display/GDI/GOKB+Sync+mit+LASER
  */
-
 class GlobalSourceSyncService extends AbstractLockableService {
 
-
-    //def cacheService
-    def genericOIDService
-    def executorService
-    def sessionFactory
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-    def grailsApplication
-    def changeNotificationService
-    boolean parallel_jobs = false
-    def messageSource
-
-    def titleReconcile = { grt, oldtitle, newtitle ->
-        log.debug("Reconcile grt: ${grt} oldtitle:${oldtitle} newtitle:${newtitle}");
-
-        // DOes the remote title have a publisher (And is ours blank)
-        def title_instance = genericOIDService.resolveOID(grt.localOid)
-
-        if (title_instance == null) {
-            log.debug("Failed to resolve ${grt.localOid} - Exiting");
-            return
-        }
-
-        if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance && newtitle.gokbID) {
-            title_instance.impId = newtitle.impId
-            title_instance.gokbId = newtitle.gokbID
-        }
-
-        title_instance.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
-
-        if (newtitle.status == 'Current') {
-            title_instance.status = RefdataValue.getByValueAndCategory('Current', RDConstants.TITLE_STATUS)
-        } else if (newtitle.status == 'Retired') {
-            title_instance.status = RefdataValue.getByValueAndCategory('Retired', RDConstants.TITLE_STATUS)
-        }
-
-        newtitle.identifiers.each {
-            log.debug("Checking title has ${it.namespace}:${it.value}");
-            title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
-        }
-        title_instance.save();
-
-        if (newtitle.publishers != null) {
-            newtitle.publishers.each { pub ->
-//         def publisher_identifiers = pub.identifiers
-                def publisher_identifiers = []
-                RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', RDConstants.ORG_SECTOR)
-                Org publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
-                RefdataValue pub_role = RefdataValue.getByValueAndCategory('Publisher', RDConstants.ORGANISATIONAL_ROLE)
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                def start_date
-                def end_date
-
-                if (pub.startDate) {
-                    start_date = sdf.parse(pub.startDate);
-                }
-                if (pub.endDate) {
-                    end_date = sdf.parse(pub.endDate);
-                }
-
-                log.debug("Asserting ${publisher} ${title_instance} ${pub_role}");
-                OrgRole.assertOrgTitleLink(publisher, title_instance, pub_role, (pub.startDate ? start_date : null), (pub.endDate ? end_date : null))
-            }
-        }
-
-        // Title history!!
-        newtitle.history.each { historyEvent ->
-            log.debug("Processing title history event");
-            // See if we already have a reference
-            def fromset = []
-            def toset = []
-
-            historyEvent.from.each { he ->
-                TitleInstance participant = TitleInstance.lookupOrCreate(he.ids, he.title, newtitle.titleType, he.uuid)
-                fromset.add(participant)
-            }
-
-            historyEvent.to.each { he ->
-                TitleInstance participant = TitleInstance.lookupOrCreate(he.ids, he.title, newtitle.titleType, he.uuid)
-                toset.add(participant)
-            }
-
-            // Now - See if we can find a title history event for data and these particiapnts.
-            // Title History Events are IMMUTABLE - so we delete them rather than updating them.
-            String base_query = "select the from TitleHistoryEvent as the where"
-            // Need to parse date...
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-            def query_params = []
-
-            if (historyEvent.date && historyEvent.date.trim().length() > 0) {
-                query_params.add(sdf.parse(historyEvent.date))
-                base_query += " the.eventDate = ? "
-            }
-
-            fromset.each {
-                if (query_params.size() > 0) {
-                    base_query += "and"
-                }
-
-                base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'from' ) "
-                query_params.add(it)
-            }
-            toset.each {
-                if (query_params.size() > 0) {
-                    base_query += "and"
-                }
-
-                base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'to' ) "
-                query_params.add(it)
-            }
-
-            def existing_title_history_event = TitleHistoryEvent.executeQuery(base_query, query_params);
-            log.debug("Result of title history event lookup : ${existing_title_history_event}");
-
-            if (existing_title_history_event.size() == 0) {
-                log.debug("Create new history event");
-                TitleHistoryEvent he = new TitleHistoryEvent(eventDate: query_params[0]).save()
-                fromset.each {
-                    new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save()
-                }
-                toset.each {
-                    new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'to').save()
-                }
-            }
-        }
-    }
-
-    def titleConv = { md, synctask ->
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-
-        log.debug("titleConv.... ${md}");
-        Map<String, Object> result = [:]
-        result.parsed_rec = [:]
-        result.parsed_rec.identifiers = []
-        result.parsed_rec.history = []
-        result.parsed_rec.publishers = []
-        result.parsed_rec.status = md.gokb.title.status.text()
-        result.parsed_rec.medium = md.gokb.title.medium.text()
-        result.parsed_rec.titleType = md.gokb.title.type?.text() ?: null
-
-        //Ebooks Fields
-        result.parsed_rec.editionNumber = md.gokb.title.editionNumber?.text() ?: null
-        result.parsed_rec.editionDifferentiator = md.gokb.title.editionDifferentiator?.text() ?: null
-        result.parsed_rec.editionStatement = md.gokb.title.editionStatement?.text() ?: null
-        result.parsed_rec.volumeNumber = md.gokb.title.volumeNumber?.text() ?: null
-        result.parsed_rec.dateFirstInPrint = md.gokb.title.dateFirstInPrint?.text() ? sdf.parse(md.gokb.title.dateFirstInPrint?.text()).format('yyyy-MM-dd HH:mm:ss.S') : null
-        result.parsed_rec.dateFirstOnline = md.gokb.title.dateFirstOnline?.text() ? sdf.parse(md.gokb.title.dateFirstOnline?.text()).format('yyyy-MM-dd HH:mm:ss.S') : null
-
-        //Ebooks Fields
-        result.parsed_rec.firstAuthor = md.gokb.title.firstAuthor?.text() ?: null
-        result.parsed_rec.firstEditor = md.gokb.title.firstEditor?.text() ?: null
-
-
-        result.title = md.gokb.title.name.text()
-        result.parsed_rec.title = md.gokb.title.name.text()
-
-        if (md.gokb.title.'@uuid'?.text()) {
-            result.parsed_rec.impId = md.gokb.title.'@uuid'.text()
-        }
-
-        if (md.gokb.title.'@uuid'?.text()) {
-            result.parsed_rec.gokbID = md.gokb.title.'@uuid'.text()
-        }
-
-        md.gokb.title.publishers?.publisher.each { pub ->
-            def publisher = [:]
-            publisher.name = pub.name.text()
-            publisher.status = pub.status.text()
-            publisher.uuid = pub.'@uuid'?.text()?.length() > 0 ? pub.'@uuid'?.text() : null
-//       if ( pub.identifiers)
-//         publisher.identifiers = []
-//
-//         pub.identifiers.identifier.each { pub_id ->
-//           publisher.identifiers.add(id.'@namespace'.text():id.'@value'.text())
-//         }
-
-            if (pub.startDate) {
-                publisher.startDate = pub.startDate.text()
-            }
-
-            if (pub.endDate) {
-                publisher.endDate = pub.endDate.text()
-            }
-
-            result.parsed_rec.publishers.add(publisher)
-        }
-        md.gokb.title.identifiers.identifier.each { id ->
-            result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
-        }
-        result.parsed_rec.identifiers.add([namespace: 'uri', value: md.gokb.title.'@id'.text()]);
-
-        md.gokb.title.history?.historyEvent.each { he ->
-            def history_statement = [:]
-            history_statement.internalId = he.'@id'.text()
-            history_statement.date = he.date.text()
-            history_statement.from = []
-            history_statement.to = []
-
-            he.from.each { hef ->
-                def new_history_statement = [:]
-                new_history_statement.title = hef.title.text()
-                new_history_statement.status = hef.status.text() ?: null
-                new_history_statement.ids = []
-                new_history_statement.uuid = hef.'@uuid'?.text() ?: null
-                hef.identifiers.identifier.each { i ->
-                    new_history_statement.ids.add([namespace: i.'@namespace'.text(), value: i.'@value'.text()])
-                }
-                new_history_statement.ids.add([namespace: 'uri', value: hef.internalId.text()]);
-                history_statement.from.add(new_history_statement);
-            }
-
-            he.to.each { het ->
-                def new_history_statement = [:]
-                new_history_statement.title = het.title.text()
-                new_history_statement.status = het.status.text() ?: null
-                new_history_statement.ids = []
-                new_history_statement.uuid = het.'@uuid'?.text() ?: null
-                het.identifiers.identifier.each { i ->
-                    new_history_statement.ids.add([namespace: i.'@namespace'.text(), value: i.'@value'.text()])
-                }
-                new_history_statement.ids.add([namespace: 'uri', value: het.internalId.text()]);
-                history_statement.to.add(new_history_statement);
-            }
-
-            result.parsed_rec.history.add(history_statement)
-        }
-
-        log.debug(result);
-        result
-    }
-    //tracker, old_rec_info, new_record_info)
-    def packageReconcile = { grt, oldpkg, newpkg ->
-        Package pkg = null;
-        boolean auto_accept_flag = true
-
-        println "Reconciling new Package!"
-
-        RefdataValue scope =        RefdataValue.getByValueAndCategory( ((newpkg?.scope) ?: 'Unknown'), RDConstants.PACKAGE_SCOPE)
-        RefdataValue listStatus =   RefdataValue.getByValueAndCategory( ((newpkg?.listStatus) ?: 'Unknown'), RDConstants.PACKAGE_LIST_STATUS)
-        RefdataValue breakable =    RefdataValue.getByValueAndCategory( ((newpkg?.breakable) ?: 'Unknown'), RDConstants.PACKAGE_BREAKABLE)
-        RefdataValue consistent =   RefdataValue.getByValueAndCategory( ((newpkg?.consistent) ?: 'Unknown'), RDConstants.PACKAGE_CONSISTENT)
-        RefdataValue fixed =        RefdataValue.getByValueAndCategory( ((newpkg?.fixed) ?: 'Unknown'), RDConstants.PACKAGE_FIXED)
-        //RefdataValue paymentType =  RefdataValue.getByValueAndCategory( ((newpkg?.paymentType) ?: 'Unknown'), RefdataCategory.PKG_PAYMENTTYPE)
-        //RefdataValue global =       RefdataValue.getByValueAndCategory( ((newpkg?.global) ?: 'Unknown'), RefdataCategory.PKG_GLOBAL)
-        RefdataValue ref_pprovider = RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
-
-        //we should now first setup the provider and then proceed to package
-        Org provider
-        RefdataValue orgSector =    RefdataValue.getByValueAndCategory('Publisher', RDConstants.ORG_SECTOR)
-        RefdataValue orgType =      RefdataValue.getByValueAndCategory('Provider',  RDConstants.ORG_TYPE)
-        RefdataValue orgRole =      RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
-        if(newpkg.packageProvider) {
-            println "checking package provider ${newpkg.packageProvider}"
-            provider = (Org) Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)
-            setOrUpdateProviderPlattform(grt, newpkg.packageProviderUuid ?: null)
-        }
-
-        // Firstly, make sure that there is a package for this record
-        if (grt.localOid != null) {
-            println "getting local package ..."
-            pkg = (Package) genericOIDService.resolveOID(grt.localOid)
-            log.debug("Package successfully found, processing LAS:eR id #${pkg.id}, with GOKb id ${pkg.gokbId}")
-            if (pkg && newpkg.status != 'Current') {
-                def pkg_del_status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
-                if (newpkg.status == 'Retired') {
-                    pkg_del_status = RefdataValue.getByValueAndCategory('Retired', RDConstants.PACKAGE_STATUS)
-                }
-
-                pkg.packageStatus = pkg_del_status
-            }
-
-            if (pkg) {
-                if (newpkg.gokbId && newpkg.gokbId != pkg.gokbId) {
-                    if (pkg.impId.startsWith('org.gokb.cred')) {
-                        pkg.impId = newpkg.impId
-                        pkg.gokbId = newpkg.gokbId
-                    } else {
-                        log.warn("Record tracker ${grt.id} for ${newpkg.name} pointed to a record with another import uuid: ${grt.localOid}!")
-
-                        if (grailsApplication.config.globalDataSync.replaceLocalImpIds.Package) {
-                            pkg.impId = newpkg.impId
-                            pkg.gokbId = newpkg.gokbId
-                        }
-                    }
-                } else {
-                    if (grailsApplication.config.globalDataSync.replaceLocalImpIds.Package) {
-                        pkg.impId = newpkg.impId
-                        pkg.gokbId = newpkg.gokbId
-                    }
-                }
-                println "before processing identifiers"
-                newpkg.identifiers.each {
-                    println "Checking package has ${it.namespace}:${it.value}"
-                    pkg.checkAndAddMissingIdentifier(it.namespace, it.value)
-                }
-                println "after processing identifiers"
-            }
-            //oldpkg is the pkg in Laser
-            oldpkg = pkg ? pkg.toComparablePackage() : oldpkg;
-            if(!pkg.save(flush:true)) //TODO rework conception so that we do not have to rely any more on existing package entry
-                log.error(pkg.errors)
-        } else {
-            // create a new package
-            log.debug("Creating new Package..")
-
-            def packageStatus = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
-
-            if (newpkg.status == 'Current') {
-                packageStatus = RefdataValue.getByValueAndCategory('Current', RDConstants.PACKAGE_STATUS)
-            } else if (newpkg.status == 'Retired') {
-                packageStatus = RefdataValue.getByValueAndCategory('Retired', RDConstants.PACKAGE_STATUS)
-            }
-
-            // Auto accept everything whilst we load the package initially
-            auto_accept_flag = true;
-
-            pkg = new Package(
-                    identifier: grt.identifier,
-                    name: grt.name,
-                    gokbId: grt.owner.uuid ?: grt.owner.identifier,
-                    autoAccept: false,
-                    packageType: null,
-                    packageStatus: packageStatus,
-                    packageListStatus: listStatus,
-                    breakable: breakable,
-                    consistent: consistent,
-                    fixed: fixed,
-                    isPublic: true,
-                    packageScope: scope
-            )
-
-
-            if (pkg.save()) {
-                log.debug("Saved Package as com.k_int.kbplus.Package:${pkg.id}!")
-
-                newpkg.identifiers.each {
-                    log.debug("Checking package has ${it.namespace}:${it.value}");
-                    pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
-                }
-
-                if (newpkg.packageProvider) {
-
-                    OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
-
-                }
-
-                grt.localOid = "com.k_int.kbplus.Package:${pkg.id}"
-                grt.save()
-
-
-            }
-        }
-
-        def onNewTipp = { ctx, tipp, auto_accept ->
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-            log.debug("new tipp: ${tipp}");
-            log.debug("identifiers: ${tipp.title.identifiers}");
-
-            def title_instance = TitleInstance.findByGokbId(tipp.title?.gokbId)
-
-            if (!title_instance) {
-                title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId, tipp.title.status)
-            }
-            println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${title_instance}");
-
-            /*if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance &&
-                    title_instance &&  tipp.title.gokbId &&
-                    (title_instance.gokbId !=  tipp.title.gokbId || !title_instance.gokbId)) {
-              title_instance.impId = tipp.title.gokbId
-              title_instance.gokbId = tipp.title.gokbId
-              title_instance.save()
-            }*/
-
-            println "before tipp title identifiers, GSSC line 392"
-            def origin_uri = null
-            tipp.title.identifiers.each { i ->
-                println "processing identifier ${i}"
-                if (i.namespace.toLowerCase() == 'uri') {
-                    origin_uri = i.value
-                }
-            }
-            println "before updatedTitleafterPackageReconcile"
-            updatedTitleafterPackageReconcile(grt, origin_uri, title_instance.id, tipp?.title?.gokbId)
-
-            def plat_instance = Platform.lookupOrCreatePlatform([name: tipp.platform, gokbId: tipp.platformUuid]);
-            def tipp_status_str = tipp.status ? tipp.status.capitalize() : 'Current'
-            RefdataValue tipp_status = RefdataValue.getByValueAndCategory(tipp_status_str, RDConstants.TIPP_STATUS)
-
-            if (auto_accept) {
-                TitleInstancePackagePlatform new_tipp = new TitleInstancePackagePlatform()
-                new_tipp.pkg = ctx
-                new_tipp.platform = plat_instance
-                new_tipp.title = title_instance
-                new_tipp.status = tipp_status
-                new_tipp.impId = tipp.tippUuid ?: tipp.tippId
-                new_tipp.gokbId = tipp.tippUuid ?: null
-                new_tipp.accessStartDate = tipp.accessStart ?: null
-                new_tipp.accessEndDate = tipp.accessEnd ?: null
-                new_tipp.coverages = []
-                // We rely upon there only being 1 coverage statement for now, it seems likely this will need
-                // to change in the future.
-                // YAY, Mr. Ibbotson! Your inheritants have to do so!!!!!!!!! See ERMS-1581!!!!!
-                tipp.coverage.each { cov ->
-                //def cov = tipp.coverage[0]
-                    TIPPCoverage newTippCoverage = new TIPPCoverage()
-                    newTippCoverage.startDate = cov.startDate ?: null
-                    newTippCoverage.startVolume = cov.startVolume
-                    newTippCoverage.startIssue = cov.startIssue
-                    newTippCoverage.endDate = cov.endDate ?: null
-                    newTippCoverage.endVolume = cov.endVolume
-                    newTippCoverage.endIssue = cov.endIssue
-                    newTippCoverage.embargo = cov.embargo
-                    newTippCoverage.coverageDepth = cov.coverageDepth
-                    newTippCoverage.coverageNote = cov.coverageNote
-                    newTippCoverage.tipp = new_tipp
-                    new_tipp.coverages.add(newTippCoverage)
-                }
-                new_tipp.hostPlatformURL = tipp.url
-
-                new_tipp.save(failOnError: true)
-
-                if (tipp.tippId) {
-                    // TODO [ticket=1789]
-
-                    //def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
-                    //if (tipp_id) {
-                    //    def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: new_tipp).save()
-                    //} else {
-                    //    log.error("Error creating identifier instance for new TIPP!")
-                    //}
-                    Identifier tipp_id = Identifier.construct([value: tipp.tippId, reference: new_tipp, namespace: 'uri'])
-                }
-
-                def tipps = TitleInstancePackagePlatform.findAllByGokbId(tipp?.tippUuid)
-
-                tipps?.each { oldtipp ->
-                    if(oldtipp.id != new_tipp.id){
-                        def ies = IssueEntitlement.findAllByTipp(oldtipp)
-                        ies?.each { ie ->
-                            ie.tipp = new_tipp
-                            ie.save()
-                        }
-                        oldtipp.status = RDStore.TIPP_STATUS_DELETED
-                        oldtipp.save()
-                    }
-                }
-
-
-            } else {
-                log.debug("Register new tipp event for user to accept or reject");
-
-                Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-                def sdf2 = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime', null, 'yyyy-MM-dd', locale));
-                def datetoday = sdf2.format(new Date(System.currentTimeMillis()))
-
-                def cov = tipp.coverage[0]
-                def change_doc = [
-                        pkg            : [id: ctx.id],
-                        platform       : [id: plat_instance?.id],
-                        title          : [id: title_instance?.id],
-                        impId          : tipp.tippUuid ?: tipp.tippId,
-                        gokbId         : tipp.tippUuid ?: null,
-                        status         : [id: tipp_status.id],
-                        startDate      : cov.startDate,
-                        startVolume    : cov.startVolume,
-                        startIssue     : cov.startIssue,
-                        endDate        : cov.endDate,
-                        endVolume      : cov.endVolume,
-                        endIssue       : cov.endIssue,
-                        embargo        : cov.embargo,
-                        coverageDepth  : cov.coverageDepth,
-                        coverageNote   : cov.coverageNote,
-                        accessStartDate: tipp.accessStart,
-                        accessEndDate  : tipp.accessEnd,
-                        hostPlatformURL: tipp.url
-                ]
-
-                changeNotificationService.registerPendingChange(
-                        PendingChange.PROP_PKG,
-                        ctx,
-                        // pendingChange.message_GS01
-                        "Eine neue Verknüpfung (TIPP) für den Titel ${title_instance.title} mit der Plattform ${plat_instance.name} (${datetoday})",
-                        null,
-                        [
-                                newObjectClass: "com.k_int.kbplus.TitleInstancePackagePlatform",
-                                changeType    : PendingChangeService.EVENT_OBJECT_NEW,
-                                changeDoc     : change_doc
-                        ])
-
-            }
-            cleanUpGorm()
-        }
-
-        def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept, db_tipp ->
-            log.debug("updated tipp, ctx = ${ctx.toString()}");
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
-            // Find title with ID tipp... in package ctx
-
-            def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.gokbId)
-
-            if (!title_of_tipp_to_update) {
-                title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId, tipp.title.status)
-            }
-
-            /*if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance &&
-                    title_of_tipp_to_update &&  tipp.title.gokbId &&
-                    (title_of_tipp_to_update?.gokbId !=  tipp.title.gokbId || !title_of_tipp_to_update?.gokbId))
-            {
-              title_of_tipp_to_update.impId = tipp.title.gokbId
-              title_of_tipp_to_update.gokbId = tipp.title.gokbId
-              title_of_tipp_to_update.save()
-            }*/
-
-
-            def origin_uri = null
-            tipp.title.identifiers.each { i ->
-                if (i.namespace.toLowerCase() == 'uri') {
-                    origin_uri = i.value
-                }
-            }
-            updatedTitleafterPackageReconcile(grt, origin_uri, title_of_tipp_to_update.id, tipp?.title?.gokbId)
-
-            /*db_tipp = null
-
-            if (tipp.tippUuid) {
-                db_tipp = ctx.tipps.find { it.gokbId == tipp.tippUuid }
-            }
-
-            if (!db_tipp) {
-                db_tipp = ctx.tipps.find { it.impId == tipp.tippUuid }
-
-            }
-
-            if (!db_tipp) {
-                db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
-            }*/
-
-            if (db_tipp != null) {
-
-                def tippStatus = RDStore.TIPP_STATUS_DELETED
-
-                if (tipp.status == 'Current') {
-                    tippStatus = RDStore.TIPP_STATUS_CURRENT
-                } else if (tipp.status == 'Retired') {
-                    tippStatus = RDStore.TIPP_STATUS_RETIRED
-                }
-                if(!auto_accept) {
-                    def changetext
-                    def change_doc = [:]
-
-                    def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
-                    Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-                    def announcement_content_changeTitle = "<p>${messageSource.getMessage('announcement.title.ChangeTitle', null, "Change Title in Package ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${contextObject.name}</a>" : "${contextObject.name}"} ${new Date().toString()}</p><p><ul>"
-                    boolean changeTitle = false
-
-                    changes.each { chg ->
-
-                        if ("${chg.field}" == "accessStart") {
-                            changetext = changetext ? changetext + ", accessStartDate: (vorher: ${oldtipp?.accessStart}, nachher: ${tipp?.accessStart})" : "accessStartDate: (vorher: ${oldtipp?.accessStart}, nachher: ${tipp?.accessStart})"
-                            change_doc.put("accessStartDate", tipp.accessStart)
-                        }
-                        if ("${chg.field}" == "accessEnd") {
-                            changetext = changetext ? changetext + ", accessEndDate: (vorher: ${oldtipp?.accessEnd}, nachher: ${tipp?.accessEnd})" : "accessEndDate: (vorher: ${oldtipp?.accessEnd}, nachher: ${tipp?.accessEnd})"
-                            change_doc.put("accessEndDate", tipp.accessEnd)
-
-                        }
-                        if ("${chg.field}" == "coverage") {
-                            changetext = changetext ?
-                                    changetext + ", Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} " +
-                                            ", End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})" :
-                                    "Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})"
-                            change_doc.put("startDate", tipp.coverage[0].startDate)
-                            change_doc.put("startVolume", tipp.coverage[0].startVolume)
-                            change_doc.put("startIssue", tipp.coverage[0].startIssue)
-                            change_doc.put("endDate", tipp.coverage[0].endDate)
-                            change_doc.put("endVolume", tipp.coverage[0].endVolume)
-                            change_doc.put("endIssue", tipp.coverage[0].endIssue)
-                            change_doc.put("embargo", tipp.coverage[0].embargo)
-                            change_doc.put("coverageDepth", tipp.coverage[0].coverageDepth)
-                            change_doc.put("coverageNote", tipp.coverage[0].coverageNote)
-                        }
-                        if ("${chg.field}" == "hostPlatformURL") {
-                            changetext = changetext ? changetext + ", URL: (vorher: ${oldtipp.url}, nachher: ${tipp.url})" : "URL: (vorher: ${oldtipp.url}, nachher: ${tipp.url})"
-                            change_doc.put("hostPlatformURL", tipp.url)
-
-                        }
-                        if ("${chg.field}" == "titleName") {
-                            changeTitle = true
-                            announcement_content_changeTitle += "<li>${messageSource.getMessage("announcement.title.TitleChange", [chg.oldValue, chg.newValue] as Object[], "Title was change from {0} to {1}.", locale)}</li>"
-                            title_of_tipp_to_update.title = tipp?.title?.name
-                            title_of_tipp_to_update.save()
-                        }
-
-                    }
-
-                    if (changeTitle) {
-                        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
-                        def newAnnouncement = new Doc(title: 'Automated Announcement',
-                                type: announcement_type,
-                                content: announcement_content_changeTitle + "</ul></p>",
-                                dateCreated: new Date(),
-                                user: User.findByUsername('admin')).save();
-                    }
-
-                    if (change_doc) {
-                        changeNotificationService.registerPendingChange(
-                                PendingChange.PROP_PKG,
-                                ctx,
-                                // pendingChange.message_GS02
-                                "Eine TIPP/Coverage Änderung für den Titel \"${title_of_tipp_to_update?.title}\", ${changetext}, Status: ${tippStatus}",
-                                null,
-                                [
-                                        changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
-                                        changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
-                                        changeDoc   : change_doc
-                                ])
-                    } else if (!change_doc && !changeTitle) {
-                        throw new RuntimeException("changes could not be recorded but there are some??? ctx:${ctx}, tipp:${tipp}");
-                    }
-                }
-                else {
-                    //currently, we should generate Pending Changes only on Issue Entitlement level ... so go one level deeper!
-                    TitleInstancePackagePlatform currTIPP = (TitleInstancePackagePlatform) db_tipp
-                    currTIPP.pkg = ctx
-                    TitleInstance titleInstance = (TitleInstance) title_of_tipp_to_update
-                    println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${titleInstance}");
-                    currTIPP.title = titleInstance
-                    currTIPP.status = tipp.status ? RefdataValue.getByValueAndCategory(tipp.status.capitalize(), RDConstants.TIPP_STATUS) : RDStore.TIPP_STATUS_CURRENT
-                    currTIPP.impId = tipp.tippUuid ?: tipp.tippId
-                    currTIPP.gokbId = tipp.tippUuid ?: null
-                    currTIPP.platform = tipp.platformUuid != null ? Platform.findByGokbId(tipp.platformUuid) : currTIPP.platform
-                    currTIPP.accessStartDate = tipp.accessStart ?: null
-                    currTIPP.accessEndDate = tipp.accessEnd ?: null
-                    // We rely upon there only being 1 coverage statement for now, it seems likely this will need to change in the future.
-                    // Whereas ... this did not change for five years (this line was initially inserted by Mr. Ibbotson on February 13th, 2014. But now, we need to change it.
-                    if(tipp.coverage.size() < currTIPP.coverages.size()) {
-                        currTIPP.coverages.eachWithIndex { cov, int i ->
-                            if(tipp.coverage[i] && tipp.coverage[i] instanceof Map) {
-                                println "processing statement ${i}"
-                                Map gokbCoverage = (Map) tipp.coverage[i]
-                                Set<Map> coverageDiffs = TIPPCoverage.checkCoverageChanges(cov,gokbCoverage)
-                                coverageDiffs.each { diff ->
-                                    changeNotificationService.fireEvent([
-                                            OID: "${currTIPP.class.name}:${currTIPP.id}",
-                                            event: 'TitleInstancePackagePlatform.coverage.updated',
-                                            affectedCoverage: cov,
-                                            prop: diff.prop,
-                                            old: diff.old,
-                                            propLabel: messageSource.getMessage("tipp.${diff.prop}",null, LocaleContextHolder.locale),
-                                            new: diff.new
-                                    ])
-                                }
-                                cov.startDate = gokbCoverage.startDate ?: null
-                                cov.startVolume = gokbCoverage.startVolume
-                                cov.startIssue = gokbCoverage.startIssue
-                                cov.endDate = gokbCoverage.endDate ?: null
-                                cov.endVolume = gokbCoverage.endVolume
-                                cov.endIssue = gokbCoverage.endIssue
-                                cov.embargo = gokbCoverage.embargo
-                                cov.coverageDepth = gokbCoverage.coverageDepth
-                                cov.coverageNote = gokbCoverage.coverageNote
-                                if(!cov.tipp)
-                                    cov.tipp = currTIPP
-                                if(!cov.save())
-                                    println("Error on saving coverage data: ${cov.getErrors()}")
-                            }
-                            else {
-                                currTIPP.coverages.remove(cov)
-                                changeNotificationService.fireEvent([
-                                        OID:"${currTIPP.class.name}:${currTIPP.id}",
-                                        event:'TitleInstancePackagePlatform.coverage.deleted',
-                                        affectedCoverage: cov
-                                ])
-                            }
-                        }
-                    }
-                    else {
-                        tipp.coverage.eachWithIndex { cov, int i ->
-                            TIPPCoverage dbCoverage
-                            if(currTIPP.coverages[i]) {
-                                println "processing coverage statement ${i}"
-                                dbCoverage = currTIPP.coverages[i]
-                                TIPPCoverage oldCoverage = currTIPP.coverages[i]
-                                Set<Map> coverageDiffs = TIPPCoverage.checkCoverageChanges(oldCoverage,cov)
-                                coverageDiffs.each { diff ->
-                                    changeNotificationService.fireEvent([
-                                            OID: "${currTIPP.class.name}:${currTIPP.id}",
-                                            event: 'TitleInstancePackagePlatform.coverage.updated',
-                                            affectedCoverage: dbCoverage,
-                                            prop: diff.prop,
-                                            old: diff.old,
-                                            propLabel: messageSource.getMessage("tipp.${diff.prop}",null, LocaleContextHolder.locale),
-                                            new: diff.new
-                                    ])
-                                }
-                            }
-                            else {
-                                dbCoverage = new TIPPCoverage()
-                                changeNotificationService.fireEvent([
-                                        OID: "${currTIPP.class.name}:${currTIPP.id}",
-                                        event: 'TitleInstancePackagePlatform.coverage.added',
-                                        coverageData: cov
-                                ])
-                            }
-                            dbCoverage.startDate = cov.startDate ?: null
-                            dbCoverage.startVolume = cov.startVolume
-                            dbCoverage.startIssue = cov.startIssue
-                            dbCoverage.endDate = cov.endDate ?: null
-                            dbCoverage.endVolume = cov.endVolume
-                            dbCoverage.endIssue = cov.endIssue
-                            dbCoverage.embargo = cov.embargo
-                            dbCoverage.coverageDepth = cov.coverageDepth
-                            dbCoverage.coverageNote = cov.coverageNote
-                            if(!dbCoverage.tipp)
-                                dbCoverage.tipp = currTIPP
-                            if(!dbCoverage.save()){
-                                println("Error on saving coverage data: ${dbCoverage.getErrors()}")
-                            }
-                        }
-                    }
-
-                    currTIPP.hostPlatformURL = tipp.url
-
-                    try {
-                        currTIPP.save()
-                    }
-                    catch (DuplicateKeyException e) {
-                        log.warn("duplicate object occurred, merging objects ...")
-                        TitleInstancePackagePlatform merged = currTIPP.merge()
-                        log.info("retry persisting ...")
-                        merged.save()
-                    }
-
-                    if (tipp.tippId) {
-                        // TODO [ticket=1789]
-                        //def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
-
-                        //if (tipp_id) {
-                        //    def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: currTIPP).save()
-                        //} else {
-                         //   log.error("Error creating identifier instance for new TIPP!")
-                        //}
-                        def tipp_id = Identifier.construct([value: tipp.tippId, reference: currTIPP, namespace: 'uri'])
-                    }
-                }
-            } else {
-                throw new RuntimeException("Unable to locate TIPP for update. ctx:${ctx}, tipp:${tipp}");
-            }
-
-        }
-
-        def onDeletedTipp = { ctx, tipp, auto_accept, db_tipp ->
-
-            // Find title with ID tipp... in package ctx
-
-            def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.gokbId)
-
-            if (!title_of_tipp_to_update) {
-                title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId, tipp.title.status)
-            }
-
-            /*if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance &&
-                    title_of_tipp_to_update &&  tipp.title.gokbId &&
-                    (title_of_tipp_to_update?.gokbId !=  tipp.title.gokbId || !title_of_tipp_to_update?.gokbId)) {
-              title_of_tipp_to_update.impId = tipp.title.gokbId
-              title_of_tipp_to_update.gokbId = tipp.title.gokbId
-              title_of_tipp_to_update.save()
-            }*/
-
-            def tippStatus = RefdataValue.getByValueAndCategory('Deleted', RDConstants.TIPP_STATUS)
-
-            if (tipp.status == 'Retired') {
-                tippStatus = RefdataValue.getByValueAndCategory('Retired', RDConstants.TIPP_STATUS)
-            }
-
-            /*def db_tipp = null
-
-            if (tipp.tippUuid) {
-                db_tipp = ctx.tipps.find { it.gokbId == tipp.tippUuid }
-            }
-            if (!db_tipp) {
-                db_tipp = ctx.tipps.find { it.impId == tipp.tippUuid }
-
-            }
-            if (!db_tipp) {
-                db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
-            }*/
-
-            if (db_tipp != null && !(db_tipp.status.equals(tippStatus))) {
-                if(!auto_accept) {
-
-                    def change_doc = [status: tippStatus]
-
-                    changeNotificationService.registerPendingChange(
-                            PendingChange.PROP_PKG,
-                            ctx,
-                            // pendingChange.message_GS03
-                            "Eine Statusänderung für den TIPP mit dem Titel \"${title_of_tipp_to_update.title}\", Status: ${tippStatus}",
-                            null,
-                            [
-                                    changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
-                                    changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
-                                    changeDoc   : change_doc
-                            ])
-                    log.debug("deleted tipp with pending change");
-                }
-                else {
-                    db_tipp.status = tippStatus
-                    try{
-                        db_tipp.save()
-                    }
-                    catch (DuplicateKeyException e) {
-                        log.warn("Duplicate object occurred, force merging ...")
-                        TitleInstancePackagePlatform merged = db_tipp.merge()
-                        log.info("persisting merged object ...")
-                        merged.save()
-                    }
-                    log.debug("deleted tipp w/o pending change")
-                }
-            }
-
-        }
-
-        def onPkgPropChange = { ctx, propname, value, auto_accept ->
-            def oldvalue
-            def announcement_content
-            switch (propname) {
-                case 'title':
-                    def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
-                    oldvalue = ctx.name
-                    ctx.name = value
-                    Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-                    announcement_content = "<p>${messageSource.getMessage('announcement.package.ChangeTitle', null, "Change Package Title on ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${ctx.name}</a>" : "${ctx.name}"} ${new Date().toString()}</p>"
-                    announcement_content += "<p><ul><li>${messageSource.getMessage("announcement.package.TitleChange", [oldvalue, value] as Object[], "Package Title was change from {0} to {1}.", locale)}</li></ul></p>"
-                    log.debug("updated pkg prop");
-                    break;
-                default:
-                    log.debug("Not updated pkg prop");
-                    break;
-            }
-
-            if (auto_accept) {
-                ctx.save()
-
-                def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
-                def newAnnouncement = new Doc(title: 'Automated Announcement',
-                        type: announcement_type,
-                        content: announcement_content,
-                        dateCreated: new Date(),
-                        user: User.findByUsername('admin')).save()
-            }
-
-        }
-
-        def onTippUnchanged = { ctx, tippa ->
-        }
-
-        com.k_int.kbplus.GokbDiffEngine.diff(pkg, oldpkg, newpkg, onNewTipp, onUpdatedTipp, onDeletedTipp, onPkgPropChange, onTippUnchanged, auto_accept_flag)
-        /* TODO [ticket=1807] further tests needed; should be done along larger refactoring
-        EhcacheWrapper cacheWrapper = cacheService.getTTL1800Cache("/pendingChanges/")
-        if(cacheWrapper) {
-            Cache cache = cacheWrapper.getCache()
-            cache?.getKeys()?.each { changeDocumentOID ->
-                log.debug("ex inside executor task submission - process pending changes for ... ${changeDocumentOID}")
-                def contextObject = genericOIDService.resolveOID(changeDocumentOID)
-                contextObject?.notifyDependencies_trait(cache.get(changeDocumentOID))
-            }
-        }*/
-    }
-
-    def testTitleCompliance = { json_record ->
-        log.debug("testTitleCompliance:: ${json_record}");
-
-        def result = RDStore.YNO_NO
-
-        if (json_record.identifiers?.size() > 0) {
-            result = RDStore.YNO_YES
-        }
-
-        result
-    }
-
-    // def testKBPlusCompliance = { json_record ->
-    def testPackageCompliance = { json_record ->
-        // Iterate through all titles..
-        boolean error = false
-        def result = null
-        def problem_titles = []
-
-        log.debug(json_record.packageName);
-        log.debug(json_record.packageId);
-
-        // GOkb records containing titles with no identifiers are not valid in KB+ land
-        json_record?.tipps.each { tipp ->
-            log.debug(tipp.title.name);
-            // tipp.title.identifiers
-            if (tipp.title?.identifiers?.size() > 0) {
-                // No problem
-            } else {
-                problem_titles.add(tipp.title.titleId)
-                error = true
-            }
-
-            // tipp.titleid
-            // tipp.platform
-            // tipp.platformId
-            // tipp.coverage
-            // tipp.url
-            // tipp.identifiers
-        }
-
-        if (error) {
-            result = RDStore.YNO_NO
-        } else {
-            result = RDStore.YNO_YES
-        }
-
-        result
-    }
-    def packageConv = { md, synctask ->
-        log.debug("Package conv...");
-        // Convert XML to internal structure and return
-        Map<String, Object> result = [:]
-        // result.parsed_rec = xml.text().getBytes();
-        result.title = md.gokb.package.name.text()
-
-        result.parsed_rec = [:]
-        result.parsed_rec.packageName = md.gokb.package.name.text()
-        result.parsed_rec.packageId = md.gokb.package.'@id'.text()
-        result.parsed_rec.impId = md.gokb.package.'@uuid'?.text() ?: null
-        result.parsed_rec.gokbId = md.gokb.package.'@uuid'?.text() ?: null
-        result.parsed_rec.packageProvider = md.gokb.package.nominalProvider.name.text()
-        result.parsed_rec.packageProviderUuid = md.gokb.package.nominalProvider.'@uuid'?.text() ?: null
-        result.parsed_rec.tipps = []
-        result.parsed_rec.identifiers = []
-        result.parsed_rec.status = md.gokb.package.status.text()
-        result.parsed_rec.scope = md.gokb.package.scope.text()
-        result.parsed_rec.listStatus = md.gokb.package.listStatus.text()
-        result.parsed_rec.breakable = md.gokb.package.breakable.text()
-        result.parsed_rec.consistent = md.gokb.package.consistent.text()
-        result.parsed_rec.fixed = md.gokb.package.fixed.text()
-        result.parsed_rec.global = md.gokb.package.global.text()
-        result.parsed_rec.paymentType = md.gokb.package.paymentType.text()
-        result.parsed_rec.nominalPlatform = md.gokb.package.nominalPlatform.name.text()
-        result.parsed_rec.nominalPlatformUuid = md.gokb.package.nominalPlatform.'@uuid'?.text() ?: null
-        result.parsed_rec.nominalPlatformPrimaryUrl = md.gokb.package.nominalPlatform.primaryUrl.text() ?: null
-
-        md.gokb.package.identifiers.identifier.each { id ->
-            result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        int ctr = 0
-        md.gokb.package.TIPPs.TIPP.each { tip ->
-            log.debug("Processing tipp ${ctr++} from package ${result.parsed_rec.packageId} - ${result.title} (source:${synctask.uri})");
-            def title_simplename = tip.title.mediumByTypClass?.text() ?: (tip.title.type?.text() ?: null)
-
-            def newtip = [
-                    title       : [
-                            name       : tip.title.name.text(),
-                            identifiers: [],
-                            status     : tip.title.status.text() ?: null,
-                            impId      : tip.title.'@uuid'?.text() ?: null,
-                            gokbId     : tip.title.'@uuid'?.text() ?: null,
-                            titleType  : title_simplename ?: null
-                    ],
-                    status      : tip.status?.text() ?: 'Current',
-                    titleId     : tip.title.'@id'.text(),
-                    titleUuid   : tip.title.'@uuid'?.text() ?: null,
-                    platform    : tip.platform.name.text(),
-                    platformId  : tip.platform.'@id'.text(),
-                    platformUuid: tip.platform.'@uuid'?.text() ?: null,
-                    platformPrimaryUrl: tip.platform.primaryUrl.text(),
-                    coverage    : [],
-                    url         : tip.url.text() ?: '',
-                    identifiers : [],
-                    tippId      : tip.'@id'.text(),
-                    tippUuid    : tip.'@uuid'?.text() ?: '',
-                    accessStart : tip.access.'@start'.text() ? sdf.parse(tip.access.'@start'.text()) : null,
-                    accessEnd   : tip.access.'@end'.text() ? sdf.parse(tip.access.'@end'.text()) : null,
-                    medium      : tip.medium.text()
-            ];
-
-            tip.coverage.each { cov ->
-                newtip.coverage.add([
-                        startDate    : cov.'@startDate'.text() ? sdf.parse(cov.'@startDate'.text()) : null,
-                        endDate      : cov.'@endDate'.text() ? sdf.parse(cov.'@endDate'.text()) : null,
-                        startVolume  : cov.'@startVolume'.text() ?: '',
-                        endVolume    : cov.'@endVolume'.text() ?: '',
-                        startIssue   : cov.'@startIssue'.text() ?: '',
-                        endIssue     : cov.'@endIssue'.text() ?: '',
-                        coverageDepth: cov.'@coverageDepth'.text() ?: '',
-                        coverageNote : cov.'@coverageNote'.text() ?: '',
-                        embargo      : cov.'@embargo'.text() ?: ''
-                ])
-            }
-            newtip.coverage = newtip.coverage.toSorted { a, b -> a.startDate <=> b.startDate }
-
-            tip.title.identifiers.identifier.each { id ->
-                newtip.title.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
-            }
-            newtip.title.identifiers.add([namespace: 'uri', value: newtip.titleId]);
-
-            newtip.identifiers.add([namespace: 'uri', value: newtip.tippId]);
-
-            //log.debug("Harmonise identifiers");
-            //harmoniseTitleIdentifiers(newtip);
-
-            result.parsed_rec.tipps.add(newtip)
-        }
-
-        result.parsed_rec.tipps.sort { it.tippId }
-        log.debug("Rec conversion for package returns object with title ${result.parsed_rec.title} and ${result.parsed_rec.tipps?.size()} tipps");
-        return result
-    }
-
-    // We always match a remote title against a local one, or create a local one to mirror the remote
-    // definition. Having created the remote title, we synchronize the other details (Title History for example)
-    // using the standard reconciler with the new info and null as the old info - essentially a full update the first time.
-    def onNewTitle = { global_record_info, newtitle ->
-
-        log.debug("onNewTitle.... ${global_record_info} ${newtitle} ");
-
-        // We need to create a new global record tracker. If there is already a local title for this remote title, link to it,
-        // otherwise create a new title and link to it. See if we can locate a title.
-        def title_type = null
-
-        if (newtitle.titleType) {
-            title_type = newtitle.titleType
-        } else {
-            title_type = newtitle.medium + "Instance"
-        }
-
-
-        def title_instance = TitleInstance.lookupOrCreate(newtitle.identifiers, newtitle.title, title_type, newtitle.impId)
-
-        if (title_instance != null) {
-
-            title_instance.refresh()
-
-            // moved to TitleInstance.lookupOrCreate()
-            // merge in any new identifiers we have
-            //newtitle.identifiers.each {
-            //    log.debug("Checking title has ${it.namespace}:${it.value}")
-            //    title_instance.checkAndAddMissingIdentifier(it.namespace, it.value)
-            //}
-            //title_instance.save()
-
-
-            log.debug("Creating new global record tracker... for title ${title_instance}");
-
-
-            def grt = new GlobalRecordTracker(
-                    owner: global_record_info,
-                    localOid: title_instance.class.name + ':' + title_instance.id,
-                    identifier: java.util.UUID.randomUUID().toString(),
-                    name: newtitle.title
-            ).save()
-
-            log.debug("call title reconcile");
-            titleReconcile(grt, null, newtitle)
-        } else {
-            log.error("Unable to lookup or create title... ids:${newtitle.identifiers}, title:${newtitle.title}");
-        }
-    }
-
-    // Main configuration map
-    def rectypes = [
-            [name: 'Package', converter: packageConv, reconciler: packageReconcile, newRemoteRecordHandler: null, complianceCheck: testPackageCompliance],
-            [name: 'Title', converter: titleConv, reconciler: titleReconcile, newRemoteRecordHandler: onNewTitle, complianceCheck: testTitleCompliance],
-    ]
-
-    boolean runAllActiveSyncTasks() {
-
-        if (! running) {
-            def future = executorService.submit({ internalRunAllActiveSyncTasks() } as java.util.concurrent.Callable)
+    SessionFactory sessionFactory
+    ExecutorService executorService
+    ChangeNotificationService changeNotificationService
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    GlobalRecordSource source
+
+    final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
+
+    SimpleDateFormat xmlTimestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+    boolean running = false
+
+    /**
+     * This is the entry point for triggering the sync workflow. To ensure locking, a flag will be set when a process is already running
+     * @return a flag whether a process is already running
+     */
+    boolean startSync() {
+        if(!running) {
+            def future = executorService.submit({ doSync() } as Callable)
             return true
-        } else {
-            log.warn("Not starting duplicate OAI thread");
+        }
+        else {
+            log.warn("Sync already running, not starting again")
             return false
         }
     }
 
-    def internalRunAllActiveSyncTasks() {
-
+    /**
+     * The sync process wrapper. It takes every {@link GlobalRecordSource}, fetches the information since a given timestamp
+     * and updates the local records
+     */
+    void doSync() {
         running = true
-
-        def jobs = GlobalRecordSource.findAll()
-
-        jobs.each { sync_job ->
-            log.debug(sync_job)
-            // String identifier
-            // String name
-            // String type
-            // Date haveUpTo
-            // String uri
-            // String listPrefix
-            // String fullPrefix
-            // String principal
-            // String credentials
-            switch (sync_job.type) {
-                case 'OAI':
-                    log.debug("start internal sync")
-                    try {
-                        this.doOAISync(sync_job)
-                        log.debug("this.doOAISync has returned...")
+        //we need to consider that there may be several sources per instance
+        List<GlobalRecordSource> jobs = GlobalRecordSource.findAll()
+        jobs.each { source ->
+            this.source = source
+            try {
+                SystemEvent.createEvent('GSSS_OAI_START',['jobId':source.id])
+                Thread.currentThread().setName("GlobalDataSync")
+                Date oldDate = source.haveUpTo
+                Long maxTimestamp = 0
+                log.info("getting records from job #${source.id} with uri ${source.uri} since ${oldDate} using ${source.fullPrefix}")
+                //merging from OaiClient
+                log.info("getting latest changes ...")
+                List<List<Map<String,Object>>> tippsToNotify = []
+                boolean more = true
+                log.info("attempt get ...")
+                String resumption = null
+                // perform GET request, expection XML response data
+                while(more) {
+                    Map<String,String> queryParams = [verb:'ListRecords',metadataPrefix:'gokb']
+                    if(resumption) {
+                        queryParams.resumptionToken = resumption
+                        log.info("in loop, making request with link ${source.uri}?verb=ListRecords&metadataPrefix=gokb&resumptionToken=${resumption} ...")
                     }
-                    catch (Exception e) {
-                        log.error("this.doOAISync has failed, please consult stacktrace as follows: ")
-                        e.printStackTrace()
-                        running = false
+                    else {
+                        String fromParam = oldDate ? xmlTimestampFormat.format(oldDate) : ''
+                        log.info("in loop, making first request, timestamp: ${fromParam} ...")
+                        queryParams.metadataPrefix = source.fullPrefix
+                        queryParams.from = fromParam
                     }
-                    break
-                default:
-                    log.error("Unhandled sync job type: ${sync_job.type}")
-                    break
+                    GPathResult listOAI = fetchRecord(source.uri,'packages',queryParams)
+                    if(listOAI) {
+                        updateNonPackageData(listOAI)
+                        listOAI.record.each { NodeChild r ->
+                            //continue processing here, original code jumps back to GlobalSourceSyncService
+                            log.info("got OAI record ${r.header.identifier} datestamp: ${r.header.datestamp} job: ${source.id} url: ${source.uri}")
+                            //String recUUID = r.header.uuid.text() ?: '0'
+                            //String recIdentifier = r.header.identifier.text()
+                            Date recordTimestamp = DateUtil.parseDateGeneric(r.header.datestamp.text())
+                            //leave out GlobalRecordInfo update, no need to reflect it twice since we keep the package structure internally
+                            //jump to packageReconcile which includes packageConv - check if there is a package, otherwise, update package data
+                            tippsToNotify << createOrUpdatePackage(r.metadata.gokb.package)
+                            if(recordTimestamp.getTime() > maxTimestamp)
+                                maxTimestamp = recordTimestamp.getTime()
+                        }
+                        if(listOAI.resumptionToken.size() > 0) {
+                            resumption = listOAI.resumptionToken
+                            log.info("Continue with next iteration, token: ${resumption}")
+                            cleanUpGorm()
+                        }
+                        else
+                            more = false
+                    }
+                    log.info("Endloop")
+                }
+                if(maxTimestamp > oldDate.time) {
+                    source.haveUpTo = new Date(maxTimestamp)
+                    source.save()
+                    log.info("all OAI info fetched, local records updated, notifying dependent entitlements ...")
+                }
+                else {
+                    log.info("all OAI info fetched, no records to update. Leaving timestamp as is ...")
+                }
+                notifyDependencies(tippsToNotify)
+                log.info("sync job finished")
+                SystemEvent.createEvent('GSSS_OAI_COMPLETE',['jobId',source.id])
+            }
+            catch (Exception e) {
+                SystemEvent.createEvent('GSSS_OAI_ERROR',['jobId':source.id])
+                log.error("sync job has failed, please consult stacktrace as follows: ")
+                e.printStackTrace()
             }
         }
         running = false
     }
 
-    def private doOAISync(sync_job) {
-        log.debug("doOAISync")
-
-        if (parallel_jobs) {
-            def future = executorService.submit({ intOAI(sync_job.id) } as java.util.concurrent.Callable)
-        } else {
-            intOAI(sync_job.id)
+    void updateNonPackageData(GPathResult oaiBranch) throws SyncException {
+        List titleNodes = oaiBranch.'**'.findAll { node ->
+            node.name() == "title"
         }
-        log.debug("doneOAISync")
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    def intOAI(sync_job_id) {
-        log.debug("internalOAI processing ${sync_job_id}")
-
-        SystemEvent.createEvent('GSSS_OAI_START', ['jobId': sync_job_id])
-
-        def sync_job = GlobalRecordSource.get(sync_job_id)
-        int rectype = sync_job.rectype.longValue()
-        def cfg = rectypes[rectype]
-        def olddate = sync_job.haveUpTo
-
-        Thread.currentThread().setName("GlobalDataSync")
-        def max_timestamp = 0
-
-        try {
-            log.debug("Rectype: ${rectype} == config ${cfg}");
-
-            log.debug("internalOAISync records from [job ${sync_job_id}] ${sync_job.uri} since ${sync_job.haveUpTo} using ${sync_job.fullPrefix}");
-
-            if (cfg == null) {
-                throw new RuntimeException("Unable to resolve config for ID ${sync_job.rectype}");
-            }
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-            def date = sync_job.haveUpTo
-
-            log.debug("upto: ${date} uri:${sync_job.uri} prefix:${sync_job.fullPrefix}");
-
-            def oai_client = new OaiClient(host: sync_job.uri)
-            def ctr = 0
-
-            log.debug("Collect ${cfg.name} changes since ${date}");
-
-            oai_client.getChangesSince(date, sync_job) { rec, syncObj ->
-
-                //def syncObj = GlobalRecordSource.get(sync_job_id)
-                log.debug("Got OAI Record ${rec.header.identifier} datestamp: ${rec.header.datestamp} job:${syncObj.id} url:${syncObj.uri} cfg:${cfg.name}")
-                def rec_uuid = rec.header.uuid?.text() ?: null
-                def rec_identifier = rec.header.identifier.text()
-                def qryparams = [syncObj.id, rec_identifier, rec_uuid ?: "0"]
-                def record_timestamp = sdf.parse(rec.header.datestamp.text())
-                def existing_record_info = null
-
-                def found_record_info = GlobalRecordInfo.executeQuery('select r from GlobalRecordInfo as r where (r.source.id = ? and r.identifier = ?) OR (r.uuid IS NOT NULL AND r.uuid = ?)', qryparams);
-
-                if (found_record_info.size() == 1) {
-                    existing_record_info = found_record_info[0]
-                } else if (found_record_info.size() > 1) {
-
-                    found_record_info.each { fri ->
-                        if (rec_uuid) {
-                            if (fri.uuid && fri.uuid == rec_uuid) {
-                                existing_record_info = fri
-                            }
-                        } else {
-                            if (!existing_record_info) {
-                                existing_record_info = found_record_info[0]
-                            } else {
-                                log.warn("Found multiple record infos with identifier ${rec_identifier}!")
-                            }
-                        }
-                    }
-                }
-
-                if (existing_record_info) {
-                    log.debug("convert xml into json - config is ${cfg} ");
-                    def parsed_rec = cfg.converter.call(rec.metadata, syncObj)
-
-                    // Deserialize
-                    def bais = new ByteArrayInputStream((byte[]) (existing_record_info.record))
-                    def ins = new ObjectInputStream(bais);
-                    def old_rec_info = ins.readObject()
-                    ins.close()
-                    def new_record_info = parsed_rec.parsed_rec
-
-                    if (!existing_record_info.uuid && rec_uuid) {
-                        existing_record_info.uuid = rec_uuid
-                    }
-
-                    // For each tracker we need to update the local object which reflects that remote record
-                    existing_record_info.trackers.each { tracker ->
-                        cfg.reconciler.call(tracker, old_rec_info, new_record_info)
-                    }
-
-                    log.debug("Calling compliance check, cfg name is ${cfg.name}");
-                    existing_record_info.kbplusCompliant = cfg.complianceCheck.call(parsed_rec.parsed_rec)
-                    log.debug("Result of compliance check: ${existing_record_info.kbplusCompliant}");
-
-                    // Finally, update our local copy of the remote object
-                    def baos = new ByteArrayOutputStream()
-                    def out = new ObjectOutputStream(baos)
-                    out.writeObject(new_record_info)
-                    out.close()
-                    existing_record_info.record = baos.toByteArray();
-                    existing_record_info.name = parsed_rec.title
-                    existing_record_info.desc = "Package ${parsed_rec.title} consisting of ${parsed_rec.parsed_rec.tipps?.size()} titles"
-
-
-                    def status = RefdataValue.getByValueAndCategory('Deleted',"${cfg.name} Status")
-
-                    if (parsed_rec.parsed_rec.status == 'Current') {
-                        status = RefdataValue.getByValueAndCategory('Current',"${cfg.name} Status")
-                    } else if (parsed_rec.parsed_rec.status == 'Retired') {
-                        status = RefdataValue.getByValueAndCategory('Retired',"${cfg.name} Status")
-                    }
-
-                    existing_record_info.globalRecordInfoStatus = status
-                    try {
-                        existing_record_info.save()
-                    }
-                    catch (DuplicateKeyException e) {
-                        log.warn("Duplicate key exception occurred, objects get merged ...")
-                        GlobalRecordInfo merged = existing_record_info.merge()
-                        log.debug("Retry persisting ...")
-                        merged.save()
-                    }
-                } else {
-                    log.debug("First time we have seen this record - converting ${cfg.name}");
-                    def parsed_rec = cfg.converter.call(rec.metadata, syncObj)
-                    log.debug("Converter thinks this rec has title :: ${parsed_rec.title}");
-
-                    // Evaluate the incoming record to see if it meets KB+ stringent data quality standards
-                    log.debug("Calling compliance check, cfg name is ${cfg.name}");
-                    def kbplus_compliant = cfg.complianceCheck.call(parsed_rec.parsed_rec)
-                    // RefdataCategory.lookupOrCreate(RDConstants.Y_N_O,"No")
-                    log.debug("Result of compliance [new] check: ${kbplus_compliant}");
-
-                    def baos = new ByteArrayOutputStream()
-                    def out = new ObjectOutputStream(baos)
-                    log.debug("write object ${parsed_rec.parsed_rec}");
-                    out.writeObject(parsed_rec.parsed_rec)
-
-                    log.debug("written, closed...");
-
-                    out.close()
-
-                    log.debug("Create new GlobalRecordInfo");
-                    log.debug("status @ ${cfg.name}")
-
-                    def status = RefdataValue.getByValueAndCategory('Deleted',"${cfg.name} Status")
-                    if (parsed_rec.parsed_rec.status == 'Current') {
-                        status = RefdataValue.getByValueAndCategory('Current',"${cfg.name} Status")
-                    } else if (parsed_rec.parsed_rec.status == 'Retired') {
-                        status = RefdataValue.getByValueAndCategory('Retired', "${cfg.name} Status")
-                    }
-
-                    // Because we don't know about this record, we can't possibly be already tracking it. Just create a local tracking record.
-                    existing_record_info = new GlobalRecordInfo(
-                            ts: record_timestamp,
-                            name: parsed_rec.title,
-                            identifier: rec.header.identifier.text(),
-                            uuid: rec_uuid,
-                            desc: "${parsed_rec.title}",
-                            source: syncObj,
-                            rectype: syncObj.rectype,
-                            record: baos.toByteArray(),
-                            kbplusCompliant: kbplus_compliant,
-                            globalRecordInfoStatus: status)
-
-                    if (existing_record_info.save()) {
-                        log.debug("existing_record_info created ok");
-                    } else {
-                        log.error("Problem saving record info: ${existing_record_info.errors}");
-                    }
-
-                    if (kbplus_compliant?.value == 'Yes') {
-                        if (cfg.newRemoteRecordHandler != null) {
-                            log.debug("Calling new remote record handler...");
-                            cfg.newRemoteRecordHandler.call(existing_record_info, parsed_rec.parsed_rec)
-                            log.debug("Call completed");
-                        } else {
-                            log.debug("No new record handler");
-                        }
-                    } else {
-                        log.debug("Skip record - not KBPlus compliant");
-                    }
-                }
-
-                if (record_timestamp?.getTime() > max_timestamp) {
-                    max_timestamp = record_timestamp?.getTime()
-                    log.debug("Max timestamp is now ${record_timestamp}");
-                }
-
-                cleanUpGorm()
-            }
-            if(max_timestamp > olddate.time) {
-                log.debug("Updating sync job max timestamp")
-                sync_job.haveUpTo = new Date(max_timestamp)
-                if(!sync_job.save())
-                    log.error("Error on updating timestamp: ${sync_job.errors}")
-            }
+        Set<String> titlesToUpdate = []
+        titleNodes.each { title ->
+            titlesToUpdate << title.'@uuid'.text()
         }
-        catch (Exception e) {
-            log.error("Problem", e);
-            log.error("Problem running job ${sync_job_id}, conf=${cfg}", e);
-
-            SystemEvent.createEvent('GSSS_OAI_ERROR', ['jobId': sync_job_id])?.save()
-
-            log.debug("Reset sync job haveUpTo");
-            sync_job.haveUpTo = olddate
-            try {
-                sync_job.save()
-            }
-            catch (DuplicateKeyException dke) {
-                GlobalRecordSource merged = sync_job.merge()
-                merged.save()
-            }
+        List platformNodes = oaiBranch.'**'.findAll { node ->
+            node.name() in ["nominalPlatform","platform"]
         }
-        finally {
-            log.debug("internalOAISync completed for job ${sync_job_id}")
-            SystemEvent.createEvent('GSSS_OAI_COMPLETE', ['jobId': sync_job_id])
+        Set<Map<String,String>> platformsToUpdate = []
+        platformNodes.each { platform ->
+            if (!platformsToUpdate.find { plat -> plat.platformUUID == platform.'@uuid'.text() })
+                platformsToUpdate << [gokbId: platform.'@uuid'.text(), name: platform.name.text(), primaryUrl: platform.primaryUrl.text()]
         }
-    }
-
-    def parseDate(datestr, possible_formats) {
-        def parsed_date = null;
-        if (datestr && (datestr.toString().trim().length() > 0)) {
-            for (Iterator i = possible_formats.iterator(); (i.hasNext() && (parsed_date == null));) {
-                try {
-                    parsed_date = i.next().parse(datestr.toString());
-                }
-                catch (Exception e) {
-                }
-            }
+        List providerNodes = oaiBranch.'**'.findAll { node ->
+            node.name() == "nominalProvider"
         }
-        parsed_date
-    }
-
-    def dumpPkgRec(pr) {
-        log.debug(pr);
-    }
-
-    def initialiseTracker(grt) {
-
-        def newrecord = reloadAndSaveRecordofPackage(grt)
-
-        int rectype = grt.owner.rectype.longValue()
-        def cfg = rectypes[rectype]
-
-        def oldrec = [:]
-        oldrec.tipps = []
-        def bais = new ByteArrayInputStream((byte[]) (grt.owner.record))
-        log.info("reading out byte array stream")
-        def ins = new ObjectInputStream(bais);
-        def newrec = ins.readObject()
-        ins.close()
-        log.info("Successfully read out byte array stream. Moving to package reconciler ...")
-
-        def record = newrecord.parsed_rec ?: newrec
-
-        cfg.reconciler.call(grt, oldrec, record)
-    }
-
-    def initialiseTracker(grt, localPkgOID) {
-        int rectype = grt.owner.rectype.longValue()
-        def cfg = rectypes[rectype]
-        def localPkg = genericOIDService.resolveOID(localPkgOID)
-
-        def oldrec = localPkg.toComparablePackage()
-
-        def bais = new ByteArrayInputStream((byte[]) (grt.owner.record))
-        def ins = new ObjectInputStream(bais);
-        def newrec = ins.readObject()
-        ins.close()
-
-        cfg.reconciler.call(grt, oldrec, newrec)
+        Set<String> providersToUpdate = []
+        providerNodes.each { provider ->
+            providersToUpdate << provider.'@uuid'.text()
+        }
+        titlesToUpdate.each { titleUUID ->
+            createOrUpdateTitle(titleUUID)
+        }
+        platformsToUpdate.each { Map<String,String> platformParams ->
+            createOrUpdatePlatform(platformParams)
+        }
+        providersToUpdate.each { providerUUID ->
+            createOrUpdateProvider(providerUUID)
+        }
     }
 
     /**
-     *  When this system sees a title from a remote source, we need to try and find a common canonical identifier. We will use the
-     *  GoKB TitleID for this. Each time a title is seen we make sure that we locally know what the GoKB Title ID is for that remote
-     *  record.
+     * Looks up for a given OAI-PMH extract if a local record exists or not. If no {@link Package} record exists, it will be
+     * created with the given remote record data, otherwise, the local record is going to be updated. The {@link TitleInstancePackagePlatform records}
+     * in the {@link Package} will be checked for differences and if there are such, the according fields updated. Same counts for the {@link TIPPCoverage} records
+     * in the {@link TitleInstancePackagePlatform}s. If {@link Subscription}s are linked to the {@link Package}, the {@link IssueEntitlement}s (just as their
+     * {@link de.laser.domain.IssueEntitlementCoverage}s) are going to be notified; it is up to the respective subscription tenants to accept the changes or not.
+     * Replaces the method GokbDiffEngine.diff and the onNewTipp, onUpdatedTipp and onUnchangedTipp closures
+     *
+     * @param packageData - A {@link NodeChildren} list containing a OAI-PMH record extract for a given package
+     * @return
      */
-    def harmoniseTitleIdentifiers(titleinfo) {
-        // println("harmoniseTitleIdentifiers");
-        // println("Remote Title ID: ${titleinfo.titleId}");
-        // println("Identifiers: ${titleinfo.title.identifiers}");
-        //def title_instance = TitleInstance.lookupOrCreate(titleinfo.title.identifiers,titleinfo.title.name, true)
-    }
-
-    def diff(localPackage, globalRecordInfo) {
-
-        def result = []
-
-        def oldpkg = localPackage ? localPackage.toComparablePackage() : [tipps: []];
-
-        def bais = new ByteArrayInputStream((byte[]) (globalRecordInfo.record))
-        def ins = new ObjectInputStream(bais);
-        def newpkg = ins.readObject()
-        ins.close()
-
-        def onNewTipp = { ctx, tipp, auto_accept -> ctx.add([tipp: tipp, action: 'i']); }
-        def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept -> ctx.add([tipp: tipp, action: 'u', changes: changes, oldtipp: oldtipp]); }
-        def onDeletedTipp = { ctx, tipp, auto_accept -> ctx.add([oldtipp: tipp, action: 'd']); }
-        def onPkgPropChange = { ctx, propname, value, auto_accept -> null; }
-        def onTippUnchanged = { ctx, tipp -> ctx.add([tipp: tipp, action: '-']); }
-
-        com.k_int.kbplus.GokbDiffEngine.diff(result, oldpkg, newpkg, onNewTipp, onUpdatedTipp, onDeletedTipp, onPkgPropChange, onTippUnchanged, false)
-
-        return result
-    }
-
-    def updatedTitleafterPackageReconcile = { grt, title_id, local_id, title_uuid ->
-        //rectype = 2 = Title
-        def cfg = rectypes[2]
-
-        def uri = GlobalRecordSource.get(GlobalRecordInfo.get(grt.owner.id).source.id).uri
-        def record_uuid = grt.owner.uuid
-
-        uri = uri.replaceAll("packages", "")
-
-        if (title_uuid == null) {
-            return
+    List<Map<String,Object>> createOrUpdatePackage(NodeChildren packageData) {
+        log.info('converting XML record into map and reconciling new package!')
+        List<Map<String,Object>> tippsToNotify = [] //this is the actual return object; a pool within which we will contain all the TIPPs whose IssueEntitlements needs to be notified
+        String packageUUID = packageData.'@uuid'.text()
+        String packageName = packageData.name.text()
+        RefdataValue packageStatus = RefdataValue.getByValueAndCategory(packageData.status.text(), RDConstants.PACKAGE_STATUS)
+        RefdataValue packageScope = RefdataValue.getByValueAndCategory(packageData.scope.text(),RDConstants.PACKAGE_SCOPE) //needed?
+        RefdataValue packageListStatus = RefdataValue.getByValueAndCategory(packageData.listStatus.text(),RDConstants.PACKAGE_LIST_STATUS) //needed?
+        RefdataValue breakable = RefdataValue.getByValueAndCategory(packageData.breakable.text(),RDConstants.PACKAGE_BREAKABLE) //needed?
+        RefdataValue consistent = RefdataValue.getByValueAndCategory(packageData.consistent.text(),RDConstants.PACKAGE_CONSISTENT) //needed?
+        RefdataValue fixed = RefdataValue.getByValueAndCategory(packageData.fixed.text(),RDConstants.PACKAGE_LIST_STATUS) //needed?
+        RefdataValue contentType = RefdataValue.getByValueAndCategory(packageData.contentType.text(),RDConstants.PACKAGE_CONTENT_TYPE)
+        Date listVerifiedDate = packageData.listVerifiedDate.text() ? DateUtil.parseDateGeneric(packageData.listVerifiedDate.text()) : null
+        //result.global = packageData.global.text() needed? not used in packageReconcile
+        String providerUUID
+        String platformUUID
+        if(packageData.nominalProvider) {
+            providerUUID = (String) packageData.nominalProvider.'@uuid'.text()
+            //lookupOrCreateProvider(providerParams)
         }
+        if(packageData.nominalPlatform) {
+            platformUUID = (String) packageData.nominalPlatform.'@uuid'.text()
 
-        def oai = new OaiClientLaser()
-        def titlerecord = null
-
-        /*if(record_uuid) {
-          titlerecord = oai.getRecord(uri, 'titles', record_uuid)
-        }*/
-
-        if (!titlerecord && title_uuid) {
-            titlerecord = oai.getRecord(uri, 'titles', title_uuid)
         }
-
-        if (!titlerecord && title_id) {
-            titlerecord = oai.getRecord(uri, 'titles', 'org.gokb.cred.TitleInstance:' + title_id)
+        //ex packageConv, processing TIPPs - conversion necessary because package may be not existent in LAS:eR; then, no comparison is needed any more
+        List<Map<String,Object>> tipps = []
+        packageData.TIPPs.TIPP.eachWithIndex { tipp, int ctr ->
+            tipps << tippConv(tipp)
         }
-
-        if (titlerecord == null) {
-            return
-        }
-
-        println "before titleConv"
-        def titleinfo = titleConv(titlerecord.metadata, null)
-
-        log.debug("TitleRecord:" + titleinfo)
-
-        def kbplus_compliant = testTitleCompliance(titleinfo.parsed_rec)
-
-
-
-        if (kbplus_compliant?.value == 'No') {
-            log.debug("Skip record - not KBPlus compliant");
-        } else {
-            titleinfo = titleinfo?.parsed_rec ?: titleinfo
-            def title_instance = TitleInstance.get(local_id)
-
-            if (title_instance == null) {
-                log.debug("Failed to resolve ${local_id} - Exiting");
-                return
-            }
-
-            //so far, title updates seem to be considered nowhere. So, let's fix that! HOTFIX ERMS-1493
-            title_instance.title = titleinfo.title
-
-            if (title_instance instanceof BookInstance) {
-
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-                //Solange von GOKB kein Integer Feld kommt, weg lassen
-                //title_instance.editionNumber = titleinfo.editionNumber
-                title_instance.editionDifferentiator = titleinfo.editionDifferentiator
-                title_instance.editionStatement = titleinfo.editionStatement
-                title_instance.volume = titleinfo.volumeNumber
-                title_instance.dateFirstInPrint = ((titleinfo.dateFirstInPrint != null) && (titleinfo.dateFirstInPrint.length() > 0)) ? sdf.parse(titleinfo.dateFirstInPrint) : null
-                title_instance.dateFirstOnline = ((titleinfo.dateFirstOnline != null) && (titleinfo.dateFirstOnline.length() > 0)) ? sdf.parse(titleinfo.dateFirstOnline) : null
-
-                title_instance.firstAuthor = titleinfo.firstAuthor
-                title_instance.firstEditor = titleinfo.firstEditor
-            }
-
-            if (titleinfo.status == 'Current') {
-                title_instance.status = RDStore.TITLE_STATUS_CURRENT
-            } else if (titleinfo.status == 'Retired') {
-                title_instance.status = RDStore.TITLE_STATUS_RETIRED
-            } else if (titleinfo.status == 'Deleted') {
-                title_instance.status = RDStore.TITLE_STATUS_DELETED
-            }
-
-            titleinfo.identifiers.each {
-                log.debug("Checking title has ${it.namespace}:${it.value}")
-                title_instance.checkAndAddMissingIdentifier(it.namespace, it.value)
-            }
-            title_instance.save();
-
-            if (titleinfo.publishers != null) {
-                titleinfo.publishers.each { pub ->
-
-                    def publisher_identifiers = []
-                    def orgSector = RDStore.O_SECTOR_PUBLISHER
-                    def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
-                    def pub_role = RDStore.OR_PUBLISHER
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                    def start_date
-                    def end_date
-
-                    if (pub.startDate) {
-                        start_date = sdf.parse(pub.startDate);
+        log.info("Rec conversion for package returns object with name ${packageName} and ${tipps.size()} tipps")
+        Package result = Package.findByGokbId(packageUUID)
+        Package.withTransaction { TransactionStatus transactionStatus ->
+            try {
+                if(result) {
+                    //local package exists -> update closure, build up GokbDiffEngine and the horrendous closures
+                    log.info("package successfully found, processing LAS:eR id #${result.id}, with GOKb id ${result.gokbId}")
+                    Map<String,Object> newPackageProps = [
+                            uuid: packageUUID,
+                            name: packageName,
+                            packageStatus: packageStatus,
+                            listVerifiedDate: listVerifiedDate,
+                            packageScope: packageScope,
+                            packageListStatus: packageListStatus,
+                            breakable: breakable,
+                            consistent: consistent,
+                            fixed: fixed
+                    ]
+                    if(platformUUID) {
+                        newPackageProps.nominalPlatform = Platform.findByGokbId(platformUUID)
                     }
-                    if (pub.endDate) {
-                        end_date = sdf.parse(pub.endDate);
-                    }
-
-                    log.debug("Asserting ${publisher} ${title_instance} ${pub_role}");
-                    OrgRole.assertOrgTitleLink(publisher, title_instance, pub_role, (pub.startDate ? start_date : null), (pub.endDate ? end_date : null))
-                }
-            }
-
-            println "before title history"
-            // Title history!!
-            titleinfo.history.each { historyEvent ->
-                println "Processing title history event"
-                // See if we already have a reference
-                def fromset = []
-                def toset = []
-
-                historyEvent.from.each { he ->
-                    def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.titleType, he.uuid, he.status)
-                    fromset.add(participant)
-                }
-
-                historyEvent.to.each { he ->
-                    def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.titleType, he.uuid, he.status)
-                    toset.add(participant)
-                }
-
-                // Now - See if we can find a title history event for data and these particiapnts.
-                // Title History Events are IMMUTABLE - so we delete them rather than updating them.
-                // parse only history events WITH date - according to Moritz Horn and as of May 23rd, 2019, this field should be MANDATORY!
-                if (historyEvent.date && historyEvent.date.trim().length() > 0) {
-                    String base_query = "select the from TitleHistoryEvent as the where the.eventDate = :eventDate "
-                    // Need to parse date...
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                    def query_params = [eventDate: sdf.parse(historyEvent.date)]
-
-
-                    if (fromset) {
-                        base_query += " and exists ( select p from the.participants as p where p.participant in :from and p.participantRole = 'from' ) "
-                        query_params.from = fromset
-                    }
-
-
-                    if (toset) {
-                        base_query += " and exists ( select p from the.participants as p where p.participant in :to and p.participantRole = 'to' ) "
-                        query_params.to = toset
-                    }
-
-                    def existing_title_history_event = TitleHistoryEvent.executeQuery(base_query, query_params);
-                    println "Result of title history event lookup : ${existing_title_history_event}"
-                    println "at line 1459"
-
-                    if (existing_title_history_event.size() == 0) {
-                        log.debug("Create new history event");
-                        TitleHistoryEvent he = new TitleHistoryEvent(eventDate: query_params[0]).save()
-                        fromset.each {
-                            new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save()
-                        }
-                        toset.each {
-                            new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'to').save()
+                    Set<Map<String,Object>> pkgPropDiffs = getPkgPropDiff(result,newPackageProps)
+                    result.name = packageName
+                    result.packageStatus = packageStatus
+                    result.listVerifiedDate = listVerifiedDate
+                    result.packageScope = packageScope //needed?
+                    result.packageListStatus = packageListStatus //needed?
+                    result.breakable = breakable //needed?
+                    result.consistent = consistent //needed?
+                    result.fixed = fixed //needed?
+                    if(platformUUID)
+                        result.nominalPlatform = Platform.findByGokbId(platformUUID)
+                    if(result.save()) {
+                        if(pkgPropDiffs)
+                            tippsToNotify << [event:"pkgPropUpdate",diffs:pkgPropDiffs,target:result]
+                        tipps.each { Map<String, Object> tippB ->
+                            TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform a -> a.gokbId == tippB.uuid } //we have to consider here TIPPs, too, which were deleted but have been reactivated
+                            if(tippA) {
+                                //ex updatedTippClosure / tippUnchangedClosure
+                                RefdataValue status = RefdataValue.getByValueAndCategory(tippB.status,RDConstants.TIPP_STATUS)
+                                if(status == RDStore.TIPP_STATUS_DELETED) {
+                                    log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${result.gokbId}")
+                                    tippA.status = status
+                                    tippsToNotify << [event:"delete",target:tippA]
+                                }
+                                else {
+                                    Set<Map<String,Object>> diffs = getTippDiff(tippA,tippB) //includes also changes in coverage statement set
+                                    if(diffs) {
+                                        log.info("Got tipp diffs: ${diffs}")
+                                        //process actual diffs
+                                        diffs.each { diff ->
+                                            if(diff.prop == 'coverage') {
+                                                diff.covDiffs.each { entry ->
+                                                    switch(entry.event) {
+                                                        case 'add':
+                                                            if(!entry.target.save())
+                                                                throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                                            break
+                                                        case 'delete': tippA.coverages.remove(entry.target)
+                                                            break
+                                                        case 'update': entry.diffs.each { covDiff ->
+                                                                entry.target[covDiff.prop] = covDiff.newValue
+                                                            }
+                                                            if(!entry.target.save())
+                                                                throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                                            break
+                                                    }
+                                                }
+                                            }
+                                            else {
+                                                if (diff.prop in PendingChange.REFDATA_FIELDS) {
+                                                    tippA[diff.prop] = RefdataValue.get(diff.newValue)
+                                                }
+                                                else {
+                                                    tippA[diff.prop] = diff.newValue
+                                                }
+                                            }
+                                        }
+                                        tippsToNotify << [event:'update',target:tippA,diffs:diffs]
+                                    }
+                                    //ex updatedTitleAfterPackageReconcile
+                                    TitleInstance titleInstance = TitleInstance.findByGokbId(tippB.title.gokbId)
+                                    //TitleInstance titleInstance = createOrUpdateTitle((String) tippB.title.gokbId)
+                                    //createOrUpdatePlatform([name:tippB.platformName,gokbId:tippB.platformUUID,primaryUrl:tippB.primaryUrl],tippA.platform)
+                                    if(titleInstance) {
+                                        tippA.title = titleInstance
+                                        tippA.platform = Platform.findByGokbId(tippB.platformUUID)
+                                        if(!tippA.save())
+                                            throw new SyncException("Error on updating TIPP with UUID ${tippA.gokbId}: ${tippA.errors}")
+                                    }
+                                    else {
+                                        throw new SyncException("Title loading failed for ${tippB.title.gokbId}!")
+                                    }
+                                }
+                            }
+                            else {
+                                //ex newTippClosure
+                                TitleInstancePackagePlatform target = addNewTIPP(result,tippB)
+                                tippsToNotify << [event:'add',target:target]
+                            }
                         }
                     }
+                    else {
+                        throw new SyncException("Error on updating package ${result.id}: ${result.errors}")
+                    }
+                }
+                else {
+                    //local package does not exist -> insert new data
+                    log.info("creating new package ...")
+                    result = new Package(
+                            gokbId: packageData.'@uuid'.text(),
+                            name: packageName,
+                            listVerifiedDate: listVerifiedDate,
+                            packageStatus: packageStatus,
+                            packageScope: packageScope, //needed?
+                            packageListStatus: packageListStatus, //needed?
+                            breakable: breakable, //needed?
+                            consistent: consistent, //needed?
+                            fixed: fixed //needed?
+                    )
+                    if(result.save()) {
+                        if(providerUUID) {
+                            Org provider = Org.findByGokbId(providerUUID)
+                            createOrUpdatePackageProvider(provider,result)
+                        }
+                        if(platformUUID) {
+                            result.nominalPlatform = Platform.findByGokbId(platformUUID)
+                        }
+                        tipps.each { tipp ->
+                            addNewTIPP(result,tipp)
+                        }
+                    }
+                    else {
+                        throw new SyncException("Error on saving package: ${result.errors}")
+                    }
+                }
+                log.info("before processing identifiers - identifier count: ${packageData.identifiers.identifier.size()}")
+                packageData.identifiers.identifier.each { id ->
+                    if(id.'@namespace'.text().toLowerCase() != 'originediturl')
+                        Identifier.construct([namespace: id.'@namespace'.text(), value: id.'@value'.text(), reference: result])
+                }
+            }
+            catch (Exception e) {
+                log.error("Error on updating package ${result.id} ... rollback!")
+                e.printStackTrace()
+                transactionStatus.setRollbackOnly()
+            }
+            transactionStatus.flush()
+        }
+        tippsToNotify
+    }
+
+    /**
+     * Converts the TIPP data from OAI-XML elements into an object structure, reflected by a {@link Map}, representing the {@link TitleInstancePackagePlatform} and {@link TIPPCoverage} class structures
+     * @param TIPPData - the base branch ({@link NodeChildren}) containing the OAI extract for {@link TitleInstancePackagePlatform} data
+     * @return a {@link Map} containing the underlying TIPP data
+     */
+    Map<String,Object> tippConv(tipp) {
+        Map<String,Object> updatedTIPP = [
+                title: [
+                        gokbId: tipp.title.'@uuid'.text()
+                ],
+                status: tipp.status.text(),
+                platformUUID: tipp.platform.'@uuid'.text(),
+                coverages: [],
+                hostPlatformURL: tipp.url.text(),
+                identifiers: [],
+                id: tipp.'@id'.text(),
+                uuid: tipp.'@uuid'.text(),
+                accessStartDate : tipp.access.'@start'.text() ? DateUtil.parseDateGeneric(tipp.access.'@start'.text()) : null,
+                accessEndDate   : tipp.access.'@end'.text() ? DateUtil.parseDateGeneric(tipp.access.'@end'.text()) : null,
+                medium      : tipp.medium.text()
+        ]
+        updatedTIPP.identifiers.add([namespace: 'uri', value: tipp.'@id'.tippId])
+        if(tipp.title.type.text() == 'JournalInstance') {
+            tipp.coverage.each { cov ->
+                updatedTIPP.coverages << [
+                        startDate: cov.'@startDate'.text() ? DateUtil.parseDateGeneric(cov.'@startDate'.text()) : null,
+                        endDate: cov.'@endDate'.text() ? DateUtil.parseDateGeneric(cov.'@endDate'.text()) : null,
+                        startVolume: cov.'@startVolume'.text() ?: null,
+                        endVolume: cov.'@endVolume'.text() ?: null,
+                        startIssue: cov.'@startIssue'.text() ?: null,
+                        endIssue: cov.'@endIssue'.text() ?: null,
+                        coverageDepth: cov.'@coverageDepth'.text() ?: null,
+                        coverageNote: cov.'@coverageNote'.text() ?: null,
+                        embargo: cov.'@embargo'.text() ?: null
+                ]
+            }
+            updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
+        }
+        updatedTIPP
+    }
+
+    /**
+     * Replaces the onNewTipp closure.
+     * Creates a new {@link TitleInstance} with its respective {@link TIPPCoverage} statements
+     * @param pkg
+     * @param tippData
+     * @return the new {@link TitleInstancePackagePlatform} object
+     */
+    TitleInstancePackagePlatform addNewTIPP(Package pkg, Map<String,Object> tippData) throws SyncException {
+        TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
+                gokbId: tippData.uuid,
+                status: RefdataValue.getByValueAndCategory(tippData.status, RDConstants.TIPP_STATUS),
+                hostPlatformURL: tippData.hostPlatformURL,
+                accessStartDate: (Date) tippData.accessStartDate,
+                accessEndDate: (Date) tippData.accessEndDate,
+                pkg: pkg
+        )
+        //ex updatedTitleAfterPackageReconcile
+        TitleInstance titleInstance = TitleInstance.findByGokbId(tippData.title.gokbId)
+        newTIPP.platform = Platform.findByGokbId(tippData.platformUUID)
+        if(titleInstance) {
+            newTIPP.title = titleInstance
+            if(newTIPP.save()) {
+                tippData.coverages.each { covB ->
+                    TIPPCoverage covStmt = new TIPPCoverage(
+                            startDate: (Date) covB.startDate ?: null,
+                            startVolume: covB.startVolume,
+                            startIssue: covB.startIssue,
+                            endDate: (Date) covB.endDate ?: null,
+                            endVolume: covB.endVolume,
+                            endIssue: covB.endIssue,
+                            embargo: covB.embargo,
+                            coverageDepth: covB.coverageDepth,
+                            coverageNote: covB.coverageNote,
+                            tipp: newTIPP
+                    )
+                    if (!covStmt.save())
+                        throw new SyncException("Error on saving coverage data: ${covStmt.errors}")
+                }
+                newTIPP
+            }
+            else
+                throw new SyncException("Error on saving TIPP data: ${newTIPP.errors}")
+        }
+        else {
+            throw new SyncException("Title loading error for UUID ${tippData.title.gokbId}!")
+        }
+    }
+
+    /**
+     * Checks for a given UUID if a {@link TitleInstance} is existing in the database, if it does not exist, it will be created.
+     * Replaces the former updatedTitleAfterPackageReconcile, titleConv and titleReconcile closure
+     *
+     * @param titleUUID - the GOKb UUID of the {@link TitleInstance} to create or update
+     * @return the new or updated {@link TitleInstance}
+     */
+    TitleInstance createOrUpdateTitle(String titleUUID) throws SyncException {
+        GPathResult titleOAI = fetchRecord(source.uri,'titles',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:titleUUID])
+        if(titleOAI) {
+            GPathResult titleRecord = titleOAI.record.metadata.gokb.title
+            log.info("title record loaded, converting XML record and reconciling title record for UUID ${titleUUID} ...")
+            TitleInstance titleInstance = TitleInstance.findByGokbId(titleUUID)
+            if(titleRecord.type.text()) {
+                RefdataValue status = RefdataValue.getByValueAndCategory(titleRecord.status.text(),RDConstants.TITLE_STATUS)
+                //titleRecord.medium.text()
+                RefdataValue medium = RefdataValue.getByValueAndCategory(titleRecord.medium.text(),RDConstants.TITLE_MEDIUM) //misunderstandable mapping ...
+                try {
+                    switch(titleRecord.type.text()) {
+                        case 'BookInstance': titleInstance = titleInstance ? (BookInstance) titleInstance : BookInstance.construct([gokbId:titleUUID])
+                            titleInstance.editionNumber = titleRecord.editionNumber.text() ? Integer.parseInt(titleRecord.editionNumber.text()) : null
+                            titleInstance.editionDifferentiator = titleRecord.editionDifferentiator.text() ?: null
+                            titleInstance.editionStatement = titleRecord.editionStatement.text() ?: null
+                            titleInstance.volume = titleRecord.volumeNumber.text() ?: null
+                            titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? DateUtil.parseDateGeneric(titleRecord.dateFirstInPrint.text()) : null
+                            titleInstance.dateFirstOnline = titleRecord.dateFirstOnline ? DateUtil.parseDateGeneric(titleRecord.dateFirstOnline.text()) : null
+                            titleInstance.firstAuthor = titleRecord.firstAuthor.text() ?: null
+                            titleInstance.firstEditor = titleRecord.firstEditor.text() ?: null
+                            break
+                        case 'DatabaseInstance': titleInstance = titleInstance ? (DatabaseInstance) titleInstance : DatabaseInstance.construct([gokbId:titleUUID])
+                            break
+                        case 'JournalInstance': titleInstance = titleInstance ? (JournalInstance) titleInstance : JournalInstance.construct([gokbId:titleUUID])
+                            break
+                    }
+                }
+                catch (GroovyCastException e) {
+                    log.error("Title type mismatch! This should not be possible! Inform GOKb team! -> ${titleInstance.gokbId} is corrupt!")
+                    SystemEvent.createEvent('GSSS_OAI_ERROR',[titleInstance:titleInstance.gokbId])
+                }
+                titleInstance.title = titleRecord.name.text()
+                titleInstance.medium = medium
+                titleInstance.status = status
+                if(titleInstance.save()) {
+                    if(titleRecord.publishers) {
+                        titleRecord.publishers.publisher.each { pubData ->
+                            Map<String,Object> publisherParams = [
+                                    name: pubData.name.text(),
+                                    //status: RefdataValue.getByValueAndCategory(pubData.status.text(),RefdataCategory.ORG_STATUS), -> is for combo type
+                                    gokbId: pubData.'@uuid'.text()
+                            ]
+                            Set<Map<String,String>> identifiers = []
+                            pubData.identifiers.identifier.each { identifier ->
+                                //the filter is temporary, should be excluded ...
+                                if(identifier.'@namespace'.text().toLowerCase() != 'originediturl') {
+                                    identifiers << [namespace:(String) identifier.'@namespace'.text(),value:(String) identifier.'@value'.text()]
+                                }
+                            }
+                            publisherParams.identifiers = identifiers
+                            Org publisher = lookupOrCreateTitlePublisher(publisherParams)
+                            //ex OrgRole.assertOrgTitleLink
+                            OrgRole titleLink = OrgRole.findByTitleAndOrgAndRoleType(titleInstance,publisher,RDStore.OR_PUBLISHER)
+                            if(!titleLink) {
+                                titleLink = new OrgRole(title:titleInstance,org:publisher,roleType:RDStore.OR_PUBLISHER,isShared:false)
+                                /*
+                                its usage / relevance for LAS:eR is unclear for the moment, must be clarified
+                                if(pubData.startDate)
+                                    titleLink.startDate = DateUtil.parseDateGeneric(pubData.startDate.text())
+                                if(pubData.endDate)
+                                    titleLink.endDate = DateUtil.parseDateGeneric(pubData.endDate.text())
+                                */
+                                if(!titleLink.save())
+                                    throw new SyncException("Error on creating title link: ${titleLink.errors}")
+                            }
+                        }
+                    }
+                    if(titleRecord.identifiers) {
+                        //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
+                        if(titleInstance.ids){
+                            titleInstance.ids.clear()
+                            titleInstance.save() //damn those wrestlers ...
+                        }
+                        titleRecord.identifiers.identifier.each { idData ->
+                            if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
+                                Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:titleInstance])
+                        }
+                    }
+                    if(titleRecord.history) {
+                        titleRecord.history.historyEvent.each { eventData ->
+                            if(eventData.date.text()) {
+                                Set<TitleInstance> from = [], to = []
+                                eventData.from.each { fromEv ->
+                                    from << createOrUpdateHistoryParticipant(fromEv,titleInstance.class.name)
+                                }
+                                eventData.to.each { toEv ->
+                                    to << createOrUpdateHistoryParticipant(toEv,titleInstance.class.name)
+                                }
+                                //does not work for any reason whatsoever, continue here
+                                Date eventDate = DateUtil.parseDateGeneric(eventData.date.text())
+                                String baseQuery = "select the from TitleHistoryEvent the where the.eventDate = :eventDate"
+                                Map<String,Object> queryParams = [eventDate:eventDate]
+                                if(from) {
+                                    baseQuery += " and exists (select p from the.participants p where p.participant in :from and p.participantRole = 'from')"
+                                    queryParams.from = from
+                                }
+                                if(to) {
+                                    baseQuery += " and exists (select p from the.participants p where p.participant in :to and p.participantRole = 'to')"
+                                    queryParams.to = to
+                                }
+                                List<TitleHistoryEvent> events = TitleHistoryEvent.executeQuery(baseQuery,queryParams)
+                                if(!events) {
+                                    Map<String,Object> event = [:]
+                                    event.from = from
+                                    event.to = to
+                                    event.internalId = eventData.'@id'.text()
+                                    event.eventDate = eventDate
+                                    TitleHistoryEvent the = new TitleHistoryEvent(event)
+                                    if(the.save()) {
+                                        from.each { partData ->
+                                            TitleHistoryEventParticipant participant = new TitleHistoryEventParticipant(event:the,participant:partData,participantRole:'from')
+                                            if(!participant.save())
+                                                throw new SyncException("Error on creating from participant: ${participant.errors}")
+                                        }
+                                        to.each { partData ->
+                                            TitleHistoryEventParticipant participant = new TitleHistoryEventParticipant(event:the,participant:partData,participantRole:'to')
+                                            if(!participant.save())
+                                                throw new SyncException("Error on creating to participant: ${participant.errors}")
+                                        }
+                                    }
+                                    else throw new SyncException("Error on creating title history event: ${the.errors}")
+                                }
+                            }
+                            else {
+                                log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id} to GOKb!")
+                            }
+                        }
+                    }
+                    titleInstance
+                }
+                else {
+                    throw new SyncException("Error on creating title instance: ${titleInstance.errors}")
+                }
+            }
+            else {
+                throw new SyncException("ALARM! Title record ${titleUUID} without title type! Unable to process!")
+            }
+        }
+        else throw new SyncException("Title creation for ${titleUUID} called without record data! PANIC!")
+    }
+
+    /**
+     * Creates or updates a {@link TitleInstance} as history participant
+     * @param particData - the OAI extract of the history participant
+     * @param titleType - the class name of the title history participant
+     * @return the updated title history participant statement
+     * @throws SyncException
+     */
+    TitleInstance createOrUpdateHistoryParticipant(particData, String titleType) throws SyncException {
+        TitleInstance participant = TitleInstance.findByGokbId(particData.uuid.text())
+        try {
+            switch(titleType) {
+                case BookInstance.class.name: participant = participant ? (BookInstance) participant : BookInstance.construct([gokbId:particData.uuid.text()])
+                    break
+                case DatabaseInstance.class.name: participant = participant ? (DatabaseInstance) participant : DatabaseInstance.construct([gokbId:particData.uuid.text()])
+                    break
+                case JournalInstance.class.name: participant = participant ? (JournalInstance) participant : JournalInstance.construct([gokbId:particData.uuid.text()])
+                    break
+            }
+            participant.status = RefdataValue.getByValueAndCategory(particData.status.text(),RDConstants.TITLE_STATUS)
+            participant.title = particData.title.text()
+            if(participant.save()) {
+                if(particData.identifiers) {
+                    particData.identifiers.identifier.each { idData ->
+                        if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
+                            Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:participant])
+                    }
+                }
+                Identifier.construct([namespace:'uri',value:particData.internalId.text(),reference:participant])
+                participant
+            }
+            else {
+                throw new SyncException(participant.errors)
+            }
+        }
+        catch (GroovyCastException e) {
+            throw new SyncException("Title type mismatch! This should not be possible! Inform GOKb team! -> ${participant.gokbId} is corrupt!")
+        }
+    }
+
+    /**
+     * Was formerly in the {@link Org} domain class; deployed for better maintainability
+     * Checks for a given UUID if the provider exists, otherwise, it will be created. The
+     * default {@link Platform}s are set up or updated as well
+     *
+     * @param providerUUID - the GOKb UUID of the given provider {@link Org}
+     * @throws SyncException
+     */
+    void createOrUpdateProvider(String providerUUID) throws SyncException {
+        //Org.lookupOrCreate2 simplified
+        GPathResult providerOAI = fetchRecord(source.uri,'orgs',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:providerUUID])
+        //check provider entry: for some reason, name has not been filled properly, crashed at record b8760baa-cc1b-4f39-b07d-d19b5bd86ea5
+        if(providerOAI) {
+            GPathResult providerRecord = providerOAI.record.metadata.gokb.org
+            log.info("provider record loaded, converting XML record and reconciling title record for UUID ${providerUUID} ...")
+            Org provider = Org.findByGokbId(providerUUID)
+            if(provider) {
+                provider.name = providerRecord.name.text()
+                provider.status = RefdataValue.getByValueAndCategory(providerRecord.status.text(),RDConstants.ORG_STATUS)
+            }
+            else {
+                provider = new Org(
+                        name: providerRecord.name.text(),
+                        sector: RDStore.O_SECTOR_PUBLISHER,
+                        type: [RDStore.OT_PROVIDER],
+                        status: RefdataValue.getByValueAndCategory(providerRecord.status.text(),RDConstants.ORG_STATUS),
+                        gokbId: providerUUID
+                )
+            }
+            if(provider.save()) {
+                providerRecord.providedPlatforms.platform.each { plat ->
+                    //ex setOrUpdateProviderPlattform()
+                    log.info("checking provider with uuid ${providerUUID}")
+                    createOrUpdatePlatform([gokbId: plat.'@uuid'.text(), name: plat.name.text(), primaryUrl: plat.primaryUrl.text()])
+                    Platform platform = Platform.findByGokbId(plat.'@uuid'.text())
+                    if(platform.org != provider) {
+                        platform.org = provider
+                        platform.save()
+                    }
+                }
+            }
+            else throw new SyncException(provider.errors)
+        }
+        else throw new SyncException("Provider loading failed for UUID ${providerUUID}!")
+    }
+
+    /**
+     * Was complicatedly included in the Org domain class, has been deployed externally for better maintainability
+     * Retrieves an {@link Org} instance as title publisher, if the given {@link Org} instance does not exist, it will be created.
+     *
+     * @param publisherParams - a {@link Map} containing the OAI PMH extract of the title publisher
+     * @return the title publisher {@link Org}
+     * @throws SyncException
+     */
+    Org lookupOrCreateTitlePublisher(Map<String,Object> publisherParams) throws SyncException {
+        if(publisherParams.gokbId && publisherParams.gokbId instanceof String) {
+            //Org.lookupOrCreate simplified, leading to Org.lookupOrCreate2
+            Org publisher = Org.findByGokbId((String) publisherParams.gokbId)
+            if(!publisher) {
+                publisher = new Org(
+                        name: publisherParams.name,
+                        status: RDStore.O_STATUS_CURRENT,
+                        gokbId: publisherParams.gokbId,
+                        sector: publisherParams.status instanceof RefdataValue ? (RefdataValue) publisherParams.status : null
+                )
+                if(publisher.save()) {
+                    publisherParams.identifiers.each { Map<String,Object> pubId ->
+                        pubId.reference = publisher
+                        Identifier.construct(pubId)
+                    }
+                }
+                else {
+                    throw new SyncException(publisher.errors)
+                }
+            }
+            publisher
+        }
+        else {
+            throw new SyncException("Org submitted without UUID! No checking possible!")
+        }
+    }
+
+    /**
+     * Updates a {@link Platform} with the given parameters. If it does not exist, it will be created.
+     *
+     * @param platformParams - the platform parameters
+     * @throws SyncException
+     */
+    void createOrUpdatePlatform(Map<String,String> platformParams) throws SyncException {
+        Platform platform = Platform.findByGokbId(platformParams.gokbId)
+        if(platform) {
+            platform.name = platformParams.name
+        }
+        else {
+            platform = new Platform(name: platformParams.name, gokbId: platformParams.gokbId)
+        }
+        platform.normname = platformParams.name.trim().toLowerCase()
+        if(platformParams.primaryUrl)
+            platform.primaryUrl = new URL(platformParams.primaryUrl)
+        if(!platform.save()) {
+            throw new SyncException("Error on saving platform: ${platform.errors}")
+        }
+    }
+
+    /**
+     * Checks for a given provider uuid if there is a link with the package for the given uuid
+     * @param providerUUID - the provider UUID
+     * @param pkg - the package to check against
+     */
+    void createOrUpdatePackageProvider(Org provider, Package pkg) throws SyncException {
+        List<OrgRole> providerRoleCheck = OrgRole.executeQuery("select oo from OrgRole oo where oo.org = :provider and oo.pkg = :pkg",[provider:provider,pkg:pkg])
+        if(!providerRoleCheck) {
+            OrgRole providerRole = new OrgRole(org:provider,pkg:pkg,roleType: RDStore.OT_PROVIDER, isShared: false)
+            if(!providerRole.save()) {
+                throw new SyncException("Error on saving org role: ${providerRole.errors}")
+            }
+        }
+    }
+
+    /**
+     * Compares two packages on domain property level against each other, retrieving the differences between both.
+     * @param pkgA - the old package (as {@link Package} which is already persisted)
+     * @param pkgB - the new package (as unprocessed {@link Map}
+     * @return a {@link Set} of {@link Map}s with the differences
+     */
+    Set<Map<String,Object>> getPkgPropDiff(Package pkgA, Map<String,Object> pkgB) {
+        log.info("processing package prop diffs; the respective GOKb UUIDs are: ${pkgA.gokbId} (LAS:eR) vs. ${pkgB.uuid} (remote)")
+        Set<Map<String,Object>> result = []
+        Set<String> controlledProperties = ['name','packageStatus','listVerifiedDate','packageScope','packageListStatus','breakable','consistent','fixed']
+
+        controlledProperties.each { prop ->
+            if(pkgA[prop] != pkgB[prop]) {
+                result.add([prop: prop, newValue: pkgB[prop], oldValue: pkgA[prop]])
+            }
+        }
+
+        if(pkgA.nominalPlatform != pkgB.nominalPlatform) {
+            result.add([prop: 'nominalPlatform', newValue: pkgB.nominalPlatform?.name, oldValue: pkgA.nominalPlatform?.name])
+        }
+
+        result
+    }
+
+    /**
+     * Compares two package entries against each other, retrieving the differences between both.
+     * @param tippa - the old TIPP (as {@link TitleInstancePackagePlatform} which is already persisted)
+     * @param tippb - the new TIPP (as unprocessed {@link Map})
+     * @return a {@link Set} of {@link Map}s with the differences
+     */
+    Set<Map<String,Object>> getTippDiff(TitleInstancePackagePlatform tippa, Map<String,Object> tippb) {
+        log.info("processing diffs; the respective GOKb UUIDs are: ${tippa.gokbId} (LAS:eR) vs. ${tippb.uuid} (remote)")
+        Set<Map<String, Object>> result = []
+
+        if (tippa.hostPlatformURL != tippb.hostPlatformURL) {
+            result.add([prop: 'hostPlatformURL', newValue: tippb.hostPlatformURL, oldValue: tippa.hostPlatformURL])
+        }
+
+        // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
+        // the question marks are necessary because only JournalInstance's TIPPs are supposed to have coverage statements
+        if(tippa.coverages?.size() > 0 && tippb.coverages?.size() > 0){
+            Set<Map<String, Object>> coverageDiffs = getCoverageDiffs(tippa,(List<Map<String,Object>>) tippb.coverages)
+            if(!coverageDiffs.isEmpty())
+                result.add([prop: 'coverage', covDiffs: coverageDiffs])
+        }
+
+        if (tippa.accessStartDate != tippb.accessStartDate) {
+            result.add([prop: 'accessStartDate', newValue: tippb.accessStartDate, oldValue: tippa.accessStartDate])
+        }
+
+        if (tippa.accessEndDate != tippb.accessEndDate) {
+            result.add([prop: 'accessEndDate', newValue: tippb.accessEndDate, oldValue: tippa.accessEndDate])
+        }
+
+        if(tippa.status != RefdataValue.getByValueAndCategory(tippb.status,RDConstants.TIPP_STATUS)) {
+            result.add([prop: 'status', newValue: RefdataValue.getByValueAndCategory(tippb.status,RDConstants.TIPP_STATUS).id, oldValue: tippa.status.id])
+        }
+
+        result
+    }
+
+    /**
+     * Compares two coverage entries against each other, retrieving the differences between both.
+     * @param tippA - the old {@link TitleInstancePackagePlatform} object, containing the current {@link Set} of {@link TIPPCoverage}s
+     * @param covListB - the new coverage statements (a {@link List} of not persisted remote records, kept in {@link Map}s)
+     * @return a {@link Set} of {@link Map}s reflecting the differences between the coverage statements
+     */
+    Set<Map<String,Object>> getCoverageDiffs(TitleInstancePackagePlatform tippA,List<Map<String,Object>> covListB) {
+        Set<Map<String, Object>> covDiffs = []
+        Set<TIPPCoverage> covListA = tippA.coverages
+        if(covListA.size() == covListB.size()) {
+            //coverage statements may have changed or not, no deletions or insertions
+            //sorting has been done by mapping (listA) resp. when converting XML data (listB)
+            covListB.eachWithIndex { covB, int i ->
+                Set<Map<String,Object>> currDiffs = covListA[i].compareWith(covB)
+                if(currDiffs)
+                    covDiffs << [event: 'update', target: covListA[i], diffs: currDiffs]
+            }
+        }
+        else if(covListA.size() > covListB.size()) {
+            //coverage statements have been deleted
+            covListB.eachWithIndex { covB, int i ->
+                Set<Map<String,Object>> currDiffs = covListA[i].compareWith(covB)
+                if(currDiffs)
+                    covDiffs << [event: 'update', target: covListA[i], diffs: currDiffs]
+            }
+            for(int i = covListB.size();i < covListA.size();i++) {
+                covDiffs << [event: 'delete', target: covListA[i]]
+            }
+        }
+        else if(covListA.size() < covListB.size()) {
+            //coverage statements have been added
+            covListB.eachWithIndex { covB, int i ->
+                if(covListA[i]) {
+                    Set<Map<String,Object>> currDiffs = covListA[i].compareWith(covB)
+                    if(currDiffs)
+                        covDiffs << [event: 'update', target: covListA[i], diffs: currDiffs]
+                }
+                else {
+                    TIPPCoverage newStatement = new TIPPCoverage(
+                            startDate: (Date) covB.startDate,
+                            startVolume: covB.startVolume,
+                            startIssue: covB.startIssue,
+                            endDate: (Date) covB.endDate,
+                            endVolume: covB.endVolume,
+                            endIssue: covB.endIssue,
+                            embargo: covB.embargo,
+                            coverageDepth: covB.coverageDepth,
+                            coverageNote: covB.coverageNote,
+                            tipp: tippA
+                    )
+                    covDiffs << [event: 'add', target: newStatement]
+                }
+            }
+        }
+        covDiffs
+    }
+
+    void notifyDependencies(List<List<Map<String,Object>>> tippsToNotify) {
+        //if everything went well, we should have here the list of tipps to notify ...
+        tippsToNotify.each { entry ->
+            entry.each { notify ->
+                log.debug(notify)
+                if(notify.event == 'pkgPropUpdate') {
+                    Package target = (Package) notify.target
+                    Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target])
+                    ieConcerned.each { ie ->
+                        changeNotificationService.determinePendingChangeBehavior([target:ie.subscription,oid:"${target.class.name}:${target.id}"],PendingChangeConfiguration.PACKAGE_PROP,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target))
+                    }
+                }
+                else {
+                    TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) notify.target
+                    if(notify.event == 'add') {
+                        Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target.pkg])
+                        ieConcerned.each { ie ->
+                            changeNotificationService.determinePendingChangeBehavior([target:ie.subscription,oid:"${target.class.name}:${target.id}"],PendingChangeConfiguration.NEW_TITLE,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                        }
+                    }
+                    else {
+                        Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp = :tipp',[tipp:target])
+                        ieConcerned.each { ie ->
+                            String changeDesc = ""
+                            Map<String,Object> changeMap = [target:ie.subscription]
+                            switch(notify.event) {
+                                case 'update': notify.diffs.each { diff ->
+                                    if(diff.prop == 'coverage') {
+                                        //the city Coventry is beautiful, isn't it ... but here is the COVerageENTRY meant.
+                                        diff.covDiffs.each { covEntry ->
+                                            TIPPCoverage tippCov = (TIPPCoverage) covEntry.target
+                                            switch(covEntry.event) {
+                                                case 'update': IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                                    covEntry.diffs.each { covDiff ->
+                                                        changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
+                                                        changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                        changeMap.prop = covDiff.prop
+                                                        changeMap.oldValue = ieCov[covDiff.prop]
+                                                        changeMap.newValue = covDiff.newValue
+                                                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                                    }
+                                                    break
+                                                case 'added':
+                                                    changeDesc = PendingChangeConfiguration.NEW_COVERAGE
+                                                    changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
+                                                    changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                                    break
+                                                case 'delete':
+                                                    IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                                    changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
+                                                    changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                    changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                                    break
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        changeDesc = PendingChangeConfiguration.TITLE_UPDATED
+                                        changeMap.oid = "${ie.class.name}:${ie.id}"
+                                        changeMap.prop = diff.prop
+                                        if(diff.prop in PendingChange.REFDATA_FIELDS)
+                                            changeMap.oldValue = ie[diff.prop].id
+                                        else
+                                            changeMap.oldValue = ie[diff.prop]
+                                        changeMap.newValue = diff.newValue
+                                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                    }
+                                }
+                                    break
+                                case 'delete':
+                                    changeDesc = PendingChangeConfiguration.TITLE_DELETED
+                                    changeMap.oid = "${target.class.name}:${target.id}"
+                                    changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                    break
+                            }
+                            //changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
+                        }
+                    }
                 }
             }
         }
     }
 
-    def reloadAndSaveRecordofPackage(grt) {
-        def gli = GlobalRecordInfo.get(grt.owner.id)
-        def grs = GlobalRecordSource.get(gli.source.id)
-        def uri = grs.uri.replaceAll("packages", "")
-        def oai = new OaiClientLaser()
-        def record = null
-
-        if (grt.owner.uuid) {
-            record = oai.getRecord(uri, 'packages', grt.owner.uuid)
+    /**
+     * Retrieves remote data with the given query parameters. Used to query a GOKb instance for changes since a given timestamp or to fetch remote package/provider data
+     * Was formerly the OaiClient and OaiClientLaser classes
+     *
+     * @param url - the URL to query against
+     * @param object - the object(s) about which records should be obtained. May be: {@link Package}, {@link TitleInstance} or {@link Org}
+     * @param queryParams - parameters to pass along with the query
+     * @return a {@link GPathResult} containing the OAI-PMH conform XML extract of the given record
+     */
+    GPathResult fetchRecord(String url, String object, Map<String,String> queryParams) {
+        try {
+            HTTPBuilder http = new HTTPBuilder(url)
+            GPathResult record = (GPathResult) http.get(path:object,query:queryParams,contentType:'xml') { resp, xml ->
+                GPathResult response = new XmlSlurper().parseText(xml.text)
+                if(response.error && response.error.@code == 'idDoesNotExist') {
+                    log.error(response.error)
+                    null
+                }
+                else if(response[queryParams.verb] && response[queryParams.verb] instanceof GPathResult) {
+                    response[queryParams.verb]
+                }
+                else {
+                    log.error('Request succeeded but result data invalid. Please do checks')
+                    null
+                }
+            }
+            http.shutdown()
+            record
         }
-        if (!record) {
-            record = oai.getRecord(uri, 'packages', grt.owner.identifier)
+        catch(HttpResponseException e) {
+            e.printStackTrace()
+            null
         }
-
-        def newrecord = record ? packageConv(record.metadata, grs) : null
-
-        if (newrecord) {
-            def baos = new ByteArrayOutputStream()
-            def out = new ObjectOutputStream(baos)
-            log.debug("write object ${newrecord?.parsed_rec}");
-            out.writeObject(newrecord?.parsed_rec)
-            out.close()
-
-            gli.record = baos.toByteArray()
-            gli.uuid = gli.uuid ?: newrecord?.parsed_rec.gokbId
-            gli.save()
-        }
-
-        return newrecord
-
     }
 
-/*  def initialiseTrackerNew(grt) {
-
-    def newrecord = reloadAndSaveRecordofPackage(grt)
-
-    int rectype = grt.owner.rectype.longValue()
-    def cfg = rectypes[rectype]
-
-    def oldrec = [:]
-    oldrec.tipps=[]
-    def bais = new ByteArrayInputStream((byte[])(grt.owner.record))
-    def ins = new ObjectInputStream(bais);
-    def newrec = ins.readObject()
-    ins.close()
-
-    def record = newrecord.parsed_rec ?: newrec
-
-    cfg.reconciler.call(grt,oldrec,record)
-  }*/
-
-    def cleanUpGorm() {
+    /**
+     * Flushes the session data to free up memory. Essential for bulk data operations like record syncing
+     */
+    void cleanUpGorm() {
         log.debug("Clean up GORM")
 
-        def session = sessionFactory.currentSession
+        Session session = sessionFactory.currentSession
         session.flush()
         session.clear()
         propertyInstanceMap.get().clear()
-    }
-
-    def setOrUpdateProviderPlattform(grt, providerUuid) {
-        println "set or update provider plattform, start ..."
-        if (providerUuid == null) {
-            return
-        }
-
-        def oai = new OaiClientLaser()
-        //we need to proceed that way because otherwise, we have a LazyInitialisationException
-        def uri = GlobalRecordSource.get(GlobalRecordInfo.get(grt.owner.id).source.id).uri
-
-        uri = uri.replaceAll("packages", "")
-        println "getting oai record"
-        def record = oai.getRecord(uri, 'orgs', providerUuid)
-
-        if (record == null) {
-            return
-        }
-
-        if (record?.metadata) {
-            record?.metadata.gokb?.org?.providedPlatforms?.platform.each { plat ->
-                println "checking provider ${providerUuid}"
-                def provider = Org.findByGokbId(providerUuid)
-
-                if (provider) {
-
-                    def platformUUID = plat.'@uuid'?.text() ?: null
-                    def platformName = plat.name?.text() ?: null
-
-                    def plat_instance = Platform.lookupOrCreatePlatform([name: platformName, gokbId: platformUUID]);
-
-                    if (plat_instance && plat_instance.org != provider) {
-                        plat_instance.org = provider
-                        plat_instance.save()
-                    }
-                }
-
-            }
-
-        }
-        println "set or update provider plattform, end ..."
     }
 
 }

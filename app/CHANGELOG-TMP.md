@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2291    26.03.2020  hbz-dev     Daniel  Feature     Überarbeitung und Hinzufügung von Properties und Referenzwerten
+
 2284    26.03.2020  hbz-dev     Andreas Bug         Bezeichnung "Lokale Lizenz" korrigiert
 
 2283    25.03.2020  hbz-dev     Moe     Feature     Ausschüttungsfunktion CostItems
@@ -36,7 +38,9 @@
 
 2276    20.03.2020  hbz-dev     Andreas Feature     Verwaltungslizenzen dürfen nur vom LAS:eR Backoffice erstellt werden (provisorische Lösung)
 
-2271    19.03.2020  hbz-dev     David   Feature     API: Datumsangaben konvertieren
+1981    20.03.2020  hbz-dev     David   Feature     User sollen Ihren Zugang bzw. Profil löschen
+
+2271    19.03.2020  hbz-dev     David   Feature     API(0.84): Datumsangaben konvertieren
 
 2257    19.03.2020  hbz-dev     Andreas Feature     zweite Sortierung der Finanzdaten nach Anbietername eingefügt, Lieferanten werden im Filter und im Export ausgegeben
 
@@ -136,11 +140,17 @@
 
 2142    19.02.2020  hbz-dev     Ingrid   Feature    WCAG-conforme Icons 
 
+2120    18.02.2020  hbz-dev     Andreas Feature     Bereinigung der Titelinstanzdaten
+
+1957    18.02.2020  hbz-dev     Andreas Feature     Bereinigung der Plattformdaten
+
+1948    18.02.2020  hbz-dev     Andreas Feature     Bereinigung der TIPP-Daten
+
+1929    18.02.2020  hbz-dev     Andreas Feature     Entfernen des Legacy-Attributes impId
+
+1901    18.02.2020  hbz-dev     Andreas Feature     Synchronisationsprozess GOKb <-> LAS:eR entsprechend aktuellen Anforderungen umgebaut
+
 2196    18.02.2020  hbz-dev     David   Feature     Persistente Bool-Attribute von Domainklassen überarbeiten
-
-2123    11.02.2020  hbz-dev     Moe     Feature     Pakete auch in Kindlizenzen entknüpfen
-
-2146    11.02.2020  hbz-dev     Moe     Feature     Bulk Prozesse bei Teilnehmerverwaltung ermöglichen
 
 2082    17.02.2020  hbz-dev     Anja    Feature     Sicherheitsabfrage ändern (Verknüpfungen aufheben)
 
@@ -163,6 +173,10 @@
 2174    12.02.2020  rc1.2       Moe     Bug         title/list Cannot invoke method getI10n() on null object
 
 2173    12.02.2020  rc1.2       Moe     Bug         Unparseable date bei spotlightSearch
+
+2123    11.02.2020  hbz-dev     Moe     Feature     Pakete auch in Kindlizenzen entknüpfen
+
+2146    11.02.2020  hbz-dev     Moe     Feature     Bulk Prozesse bei Teilnehmerverwaltung ermöglichen
 
 2089    10.02.2020  hbz-dev     Ingrid  Bug         Filter bei Teilnehmer (Lizenz) lässt sich nicht einklappen
 

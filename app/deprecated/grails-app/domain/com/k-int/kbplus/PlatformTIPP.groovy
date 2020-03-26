@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+@Deprecated
 class PlatformTIPP {
 
     //TitleInstancePackagePlatform tipp

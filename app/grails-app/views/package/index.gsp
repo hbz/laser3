@@ -210,10 +210,10 @@
                                     ${message(code: 'package.index.result.titles.unknown')}
                                 </g:else>
                             </td>
-                            <td><g:if test="${com.k_int.kbplus.Org.findByGokbId(record?.providerUuid)}"><g:link
+                            <td><g:if test="${com.k_int.kbplus.Org.findByGokbId(record.providerUuid)}"><g:link
                                     controller="organisation" action="show"
-                                    id="${com.k_int.kbplus.Org.findByGokbId(record?.providerUuid).id}">${record?.providerName}</g:link></g:if>
-                            <g:else>${record?.providerName}</g:else>
+                                    id="${com.k_int.kbplus.Org.findByGokbId(record.providerUuid).id}">${record.providerName}</g:link></g:if>
+                            <g:else>${record.providerName}</g:else>
                             </td>
                             <td><g:if test="${com.k_int.kbplus.Platform.findByGokbId(record?.platformUuid)}"><g:link
                                     controller="platform" action="show"

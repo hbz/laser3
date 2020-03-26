@@ -24,7 +24,7 @@
         <semui:securedSubNavItem orgPerm="ORG_CONSORTIUM_SURVEY" controller="subscription" action="surveysConsortia" params="${[id:params.id]}" message="subscription.details.surveys.label" />
 
         <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <semui:subNavItem controller="subscription" action="pendingChanges" params="${[id:params.id]}" text="TN-Änderungen" />
+            <semui:subNavItem controller="subscription" action="pendingChanges" params="${[id:params.id]}" message="pendingChange.plural" />
         </sec:ifAnyGranted>
     </g:if>
 

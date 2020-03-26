@@ -67,11 +67,10 @@ class License
     String reference
     String sortableReference
 
-    String noticePeriod
-    String licenseUrl
-    String licenseType
-    //String licenseStatus
-    String impId
+  String noticePeriod
+  String licenseUrl
+  String licenseType
+  //String licenseStatus
 
     long lastmod
     Date startDate
@@ -146,7 +145,6 @@ class License
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         status(nullable:false, blank:false)
         type(nullable:true, blank:false)
-        impId(nullable:true, blank:false)
         reference(nullable:false, blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
         isPublicForApi (nullable:true, blank:true)
@@ -558,9 +556,6 @@ class License
          if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
         }
-        if (impId == null) {
-            impId = java.util.UUID.randomUUID().toString();
-        }
         super.beforeInsert()
     }
 
@@ -568,9 +563,6 @@ class License
     def beforeUpdate() {
         if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
-        }
-        if (impId == null) {
-            impId = java.util.UUID.randomUUID().toString();
         }
         super.beforeUpdate()
     }
@@ -804,7 +796,6 @@ AND lower(l.reference) LIKE (:ref)
                 licenseUrl: licenseUrl,
                 licenseType: licenseType,
                 licenseStatus: licenseStatus,
-                //impId: impId,
                 //lastmod: lastmod,
                 startDate: startDate,
                 endDate: endDate,

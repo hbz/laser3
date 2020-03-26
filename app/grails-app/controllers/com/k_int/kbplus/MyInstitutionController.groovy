@@ -47,7 +47,7 @@ class MyInstitutionController extends AbstractDebugController {
     def springSecurityService
     def userService
     def genericOIDService
-    def instAdmService
+    PendingChangeService pendingChangeService
     def exportService
     def escapeService
     def institutionsService
@@ -103,6 +103,7 @@ class MyInstitutionController extends AbstractDebugController {
         result
     }
 
+    /*
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tipview() {
@@ -162,6 +163,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.editable = accessService.checkMinUserOrgRole(result.user, current_inst, 'INST_EDITOR')
         result
     }
+     */
 
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
@@ -1324,8 +1326,7 @@ join sub.orgRelations or_sub where
                     endDate: endDate,
                     status: status,
                     administrative: administrative,
-                    identifier: params.newEmptySubId,
-                    impId: java.util.UUID.randomUUID().toString())
+                    identifier: params.newEmptySubId)
 
             if (new_sub.save()) {
                 OrgRole new_sub_link = new OrgRole(org: result.institution,
@@ -1367,8 +1368,7 @@ join sub.orgRelations or_sub where
                                           status: status,
                                           administrative: administrative,
                                           instanceOf: new_sub,
-                                          isSlaved: true,
-                                          impId: java.util.UUID.randomUUID().toString()).save()
+                                          isSlaved: true)
                         if(new_sub.administrative) {
                             new OrgRole(org: cm,
                                     sub: cons_sub,
@@ -1780,8 +1780,7 @@ join sub.orgRelations or_sub where
         RefdataValue role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
 
         RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_pkg_consortia = RDStore.OR_PACKAGE_CONSORTIA
-        def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
+        def roles = [role_sub.id,role_sub_consortia.id]
 
         log.debug("viable roles are: ${roles}")
         log.debug("Using params: ${params}")
@@ -1797,9 +1796,6 @@ join sub.orgRelations or_sub where
                 "INNER JOIN subscription sub on ie.ie_subscription_fk = sub.sub_id INNER JOIN org_role orole on sub.sub_id = orole.or_sub_fk, " +
                 "title_instance_package_platform tipp INNER JOIN title_instance ti on tipp.tipp_ti_fk = ti.ti_id cross join title_instance ti2 "
 
-        if (filterOtherPlat) {
-            sub_qry += "INNER JOIN platformtipp ap on ap.tipp_id = tipp.tipp_id "
-        }
         if (filterPvd) {
             sub_qry += "INNER JOIN org_role orgrole on orgrole.or_pkg_fk=tipp.tipp_pkg_fk "
         }
@@ -2113,23 +2109,14 @@ SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN 
 SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role 
 WHERE EXISTS ( FROM ${sub_qry} AND sp.subscription = s ) 
 AND role.roleType=:role_cp 
-ORDER BY role.org.name""", sub_params+[role_cp:cp]);
+ORDER BY role.org.name""", sub_params+[role_cp:cp])
 
         // Query the list of Host Platforms
         result.hostplatforms = IssueEntitlement.executeQuery("""
 SELECT distinct(ie.tipp.platform), ie.tipp.platform.name
 FROM IssueEntitlement AS ie, ${sub_qry}
 AND s = ie.subscription
-ORDER BY ie.tipp.platform.name""", sub_params);
-
-        // Query the list of Other Platforms
-        result.otherplatforms = IssueEntitlement.executeQuery("""
-SELECT distinct(p.platform), p.platform.name
-FROM IssueEntitlement AS ie
-  INNER JOIN ie.tipp.additionalPlatforms as p,
-  ${sub_qry}
-AND s = ie.subscription
-ORDER BY p.platform.name""", sub_params);
+ORDER BY ie.tipp.platform.name""", sub_params)
 
         return result
     }
@@ -2356,24 +2343,13 @@ AND EXISTS (
             break
         }
 
-        // changes
-
         def periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
-        getTodoForInst(result, periodInDays)
+        // changes
 
-        // announcements
+        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,periodInDays:periodInDays,max:result.max,offset:0,pending:true,notifications:true]
 
-//        def dcCheck = (new Date()).minus(periodInDays)
-//
-//        result.recentAnnouncements = Doc.executeQuery(
-//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-//                [type: 'system.announcement', dcCheck: dcCheck],
-//                [max: result.max, offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
-//        )
-//        result.recentAnnouncementsCount = Doc.executeQuery(
-//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-//                [type: 'system.announcement', dcCheck: dcCheck]).size()
+        result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
         // systemAnnouncements
 
@@ -2439,60 +2415,13 @@ AND EXISTS (
         render template: '/templates/tasks/modal_create', model: result
     }
 
-    private getTodoForInst(result, Integer periodInDays){
-
-        result.changes = []
-
-        def tsCheck = (new Date()).minus(periodInDays)
-
-        def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
-
-        String baseQuery1 = "select distinct sub, count(sub.id) from PendingChange as pc join pc.subscription as sub where pc.owner = :owner and pc.ts >= :tsCheck " +
-                " and pc.subscription is not NULL and pc.status.value in (:stats) group by sub.id"
-
-        def result1 = PendingChange.executeQuery(
-                baseQuery1,
-                baseParams,
-                [max: result.max, offset: result.offset]
-        )
-        result.changes.addAll(result1)
-
-        String baseQuery2 = "select distinct lic, count(lic.id) from PendingChange as pc join pc.license as lic where pc.owner = :owner and pc.ts >= :tsCheck" +
-                " and pc.license is not NULL and pc.status.value in (:stats) group by lic.id"
-
-        def result2 = PendingChange.executeQuery(
-                baseQuery2,
-                baseParams,
-                [max: result.max, offset: result.offset]
-        )
-
-
-        result.changes.addAll(result2)
-
-        List<PendingChange> result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
-
-        //println result.changes
-        result3.each { row ->
-            result.changes.add([row,1])
-        }
-    }
-
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
         def result = setResultGenerics()
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page"
-            response.sendError(401)
-            return;
-        }
-
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-        result.itemsTimeWindow = 365
-        getTodoForInst(result, result.itemsTimeWindow)
 
         result
     }
@@ -2756,16 +2685,26 @@ AND EXISTS (
         }
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
-        result.surveyConfig = result.surveyInfo.surveyConfigs[0]
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : null
 
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-        result.surveyResults = (result.surveyInfo.surveyConfigs[0].type == "GeneralSurvey") ? surveyResults : surveyResults.groupBy {it?.surveyConfig?.id}
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
 
-        def tmpList = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)
-        if (tmpList) {
-            result.ownerId = tmpList[0].owner?.id
+        result.ownerId = result.surveyResults[0]?.owner?.id
+
+        if(result.surveyConfig?.type == 'Subscription') {
+            result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance?.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it.org.sortname }
         }
 
         if ( params.exportXLS ) {
@@ -2790,53 +2729,6 @@ AND EXISTS (
             }
         }
 
-    }
-
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
-    })
-    def surveyConfigsInfo() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-
-        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
-
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
-
-        result.ownerId = result.surveyResults[0]?.owner?.id
-
-        //result.navigation = surveyService.getParticipantConfigNavigation(result.institution, result.surveyInfo, result.surveyConfig)
-
-        if(result.surveyConfig?.type == 'Subscription') {
-            result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = []
-            result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-        }
-
-        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-
-
-        result
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
@@ -3012,7 +2904,7 @@ AND EXISTS (
         redirect action: 'surveyResult', id: result.surveyInfo.id
     }
 
-
+    /*
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tip() {
@@ -3048,6 +2940,7 @@ AND EXISTS (
       }
       result
     }
+     */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })

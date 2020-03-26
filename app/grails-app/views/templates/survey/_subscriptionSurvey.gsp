@@ -32,7 +32,7 @@
 
         <div class="ui card ">
             <div class="content">
-                <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id}">
+                <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
                     <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                         <dl>
                             <dt class="control-label">
@@ -43,7 +43,7 @@
                                 </div>
                             </dt>
                             <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
-                                                 overwriteEditable="${contextOrg?.id == surveyConfig.surveyInfo.owner.id}"/>
+                                                 overwriteEditable="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -54,7 +54,8 @@
                                     <i class="question small circular inverted icon"></i>
                                 </div>
                             </dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"/></dd>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
+                                                 overwriteEditable="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}"/></dd>
 
                         </dl>
                     </g:if>
@@ -112,16 +113,18 @@
                         </dl>
                     </g:if>
 
-                    <div class="field">
-                        <label>
-                            <g:message code="surveyConfigsInfo.comment"/>
-                        </label>
-                        <g:if test="${surveyConfig?.comment}">
-                            <textarea readonly="readonly" rows="15">${surveyConfig?.comment}</textarea>
-                        </g:if>
-                        <g:else>
-                            <g:message code="surveyConfigsInfo.comment.noComment"/>
-                        </g:else>
+                    <div class="ui form">
+                        <div class="field">
+                            <label>
+                                <g:message code="surveyConfigsInfo.comment"/>
+                            </label>
+                            <g:if test="${surveyConfig?.comment}">
+                                <textarea readonly="readonly" rows="15">${surveyConfig?.comment}</textarea>
+                            </g:if>
+                            <g:else>
+                                <g:message code="surveyConfigsInfo.comment.noComment"/>
+                            </g:else>
+                        </div>
                     </div>
                 </g:else>
 
@@ -206,26 +209,6 @@
                                     <dd>${subscriptionInstance?.hasPerpetualAccess ? de.laser.helper.RDStore.YN_YES.getI10n('value') : de.laser.helper.RDStore.YN_NO.getI10n('value')}</dd>
                                     <dd><semui:auditInfo auditable="[subscriptionInstance, 'hasPerpetualAccess']"/></dd>
                                 </dl>
-
-
-                                <g:if test="${subscriptionInstance?.instanceOf && (contextOrg?.id == subscriptionInstance?.getConsortia()?.id)}">
-                                    <dl>
-                                        <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
-                                        <dd>
-                                            <g:link controller="subscription" action="show"
-                                                    id="${subscriptionInstance?.instanceOf.id}">${subscriptionInstance?.instanceOf}</g:link>
-                                        </dd>
-                                    </dl>
-
-                                    <dl>
-                                        <dt class="control-label">
-                                            ${message(code: 'license.details.linktoLicense.pendingChange')}
-                                        </dt>
-                                        <dd>
-                                            ${subscriptionInstance?.isSlaved ? de.laser.helper.RDStore.YN_YES.getI10n('value') : de.laser.helper.RDStore.YN_NO.getI10n('value')}
-                                        </dd>
-                                    </dl>
-                                </g:if>
                                 <dl>
                                     <dt class="control-label">
                                         <g:message code="default.identifiers.label"/>

@@ -8,7 +8,9 @@ import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
+import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
@@ -18,6 +20,7 @@ import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
+import groovy.util.slurpersupport.GPathResult
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
@@ -34,9 +37,10 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutorService
 
 import static de.laser.helper.RDStore.*
-import static de.laser.helper.RDStore.OR_LICENSEE_CONS
 
 // 2.0
 
@@ -55,17 +59,15 @@ class SubscriptionController extends AbstractDebugController {
     GrailsApplication grailsApplication
     def pendingChangeService
     def institutionsService
-    def ESSearchService
-    def executorWrapperService
+    ExecutorService executorService
+    ExecutorWrapperService executorWrapperService
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
     def accessService
     def filterService
     def propertyService
     def factService
     def docstoreService
-    def refdataService
-    def globalSourceSyncService
-    def dataloadService
+    GlobalSourceSyncService globalSourceSyncService
     def GOKbService
     def navigationGenerationService
     def financeService
@@ -122,8 +124,8 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
 
         threadArray.each {
             if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
@@ -134,15 +136,15 @@ class SubscriptionController extends AbstractDebugController {
         result.contextOrg = contextService.getOrg()
         def verystarttime = exportService.printStart("subscription")
 
-        log.debug("subscription id:${params.id} format=${response.format}");
+        log.debug("subscription id:${params.id} format=${response.format}")
 
-        result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.getDefaultPageSizeTMP());
-        result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0;
+        result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.getDefaultPageSizeTMP().toInteger())
+        result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0
 
-        log.debug("max = ${result.max}");
+        log.debug("max = ${result.max}")
 
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
-        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
+        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status])
 
         if (result.subscriptionInstance?.isSlaved && ! pendingChanges.isEmpty()) {
             log.debug("Slaved subscription, auto-accept pending changes")
@@ -172,22 +174,22 @@ class SubscriptionController extends AbstractDebugController {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             date_filter = sdf.parse(params.asAt)
             result.as_at_date = date_filter
-            result.editable = false;
+            result.editable = false
         } else {
             date_filter = new Date()
             result.as_at_date = date_filter
         }
         // We dont want this filter to reach SQL query as it will break it.
         def core_status_filter = params.sort == 'core_status'
-        if (core_status_filter) params.remove('sort');
+        if (core_status_filter) params.remove('sort')
 
         if (params.filter) {
-            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie left join ie.coverages ic where ie.subscription = :subscription "
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 // qry_params.add(deleted_ie);
-                base_qry += "and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                base_qry += "and (( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
@@ -195,11 +197,11 @@ class SubscriptionController extends AbstractDebugController {
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
         } else {
-            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie left join ie.coverages ic where ie.subscription = :subscription "
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
-                base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
+                base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
@@ -215,7 +217,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         base_qry += " and ie.acceptStatus = :ieAcceptStatus "
-        qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+        qry_params.ieAcceptStatus = IE_ACCEPT_STATUS_FIXED
 
         if (params.pkgfilter && (params.pkgfilter != '')) {
             base_qry += " and ie.tipp.pkg.id = :pkgId "
@@ -223,17 +225,22 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += "order by ie.${params.sort} ${params.order} "
+            if(params.sort == 'startDate')
+                base_qry += "order by ic.startDate ${params.order}, lower(ie.tipp.title.title) asc "
+            else if(params.sort == 'endDate')
+                base_qry += "order by ic.endDate ${params.order}, lower(ie.tipp.title.title) asc "
+            else
+                base_qry += "order by ie.${params.sort} ${params.order} "
         } else {
             base_qry += "order by lower(ie.tipp.title.title) asc"
         }
 
-        result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
+        Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
+
+        result.num_sub_rows = entitlements.size()
 
         if ((params.format == 'html' || params.format == null) && !params.exportKBart) {
-            result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset])
-        } else {
-            result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
+            result.entitlements = entitlements.drop(result.offset).take(result.max)
         }
 
         // Now we add back the sort so that the sortable column will recognize asc/desc
@@ -320,7 +327,7 @@ class SubscriptionController extends AbstractDebugController {
         if(base) {
             IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
             if(ieCoverage.save())
-                redirect action: 'index', id: base.subscription.id
+                redirect action: 'index', id: base.subscription.id, params: params
             else log.error("Error on creation new coverage statement: ${ieCoverage.getErrors()}")
         }
         else log.error("Issue entitlement with ID ${params.issueEntitlement} could not be found")
@@ -333,7 +340,7 @@ class SubscriptionController extends AbstractDebugController {
         Long subId = ieCoverage.issueEntitlement.subscription.id
         if(ieCoverage) {
             ieCoverage.delete()
-            redirect action: 'index', id: subId
+            redirect action: 'index', id: subId, params: params
         }
         else log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
     }
@@ -341,7 +348,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
 
         if (params.process  && result.editable) {
             result.delResult = deletionService.deleteSubscription(result.subscription, false)
@@ -353,18 +360,17 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkPackage() {
         log.debug("unlinkPackage :: ${params}")
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.subscription = Subscription.get(params.subscription.toLong())
-        result.package = Package.get(params.package.toLong())
+        result.subscription = Subscription.get(params.subscription)
+        result.package = Package.get(params.package)
         def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
         def queryParams = [sub: result.subscription, pkg_id: result.package.id]
 
-        if (result.subscription.isEditableBy(result.user)) {
             result.editable = true
             if (params.confirmed) {
                 if(result.package.unlinkFromSubscription(result.subscription, true)){
@@ -387,7 +393,11 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
 
+
+
                 }
+
+                return redirect(action:'show', id: params.subscription)
 
             } else {
 
@@ -492,12 +502,6 @@ class SubscriptionController extends AbstractDebugController {
 
                 return render(template: "unlinkPackageModal", model: [pkg: result.package, subscription: result.subscription, conflicts_list: conflicts_list])
             }
-        } else {
-            result.editable = false
-        }
-
-
-        redirect(url: request.getHeader('referer'))
 
     }
 
@@ -513,7 +517,7 @@ class SubscriptionController extends AbstractDebugController {
     })*/
     @Secured(['ROLE_ADMIN'])
     def compare() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
 
         result
         /*
@@ -686,7 +690,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -760,7 +764,7 @@ class SubscriptionController extends AbstractDebugController {
     def addEntitlements() {
         log.debug("addEntitlements .. params: ${params}")
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         result.preselectValues = params.preselectValues == 'on'
         result.preselectCoverageDates = params.preselectCoverageDates == 'on'
         result.uploadPriceInfo = params.uploadPriceInfo == 'on'
@@ -824,8 +828,8 @@ class SubscriptionController extends AbstractDebugController {
 
 
             if (params.pkgfilter && (params.pkgfilter != '')) {
-                basequery += " and tipp.pkg.id = ? "
-                qry_params.add(Long.parseLong(params.pkgfilter));
+                basequery += " and tipp.pkg.gokbId = ? "
+                qry_params.add(params.pkgfilter)
             }
 
 
@@ -1035,11 +1039,11 @@ class SubscriptionController extends AbstractDebugController {
                     String serial
                     String electronicSerial
                     String checked = ""
-                    if(tipp.title.type.equals(TITLE_TYPE_EBOOK)) {
+                    if(tipp.title instanceof BookInstance) {
                         serial = tipp.title.getIdentifierValue('pISBN')
                         electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
                     }
-                    else if(tipp.title.type.equals(TITLE_TYPE_JOURNAL)) {
+                    else if(tipp.title instanceof JournalInstance) {
                         serial = tipp?.title?.getIdentifierValue('ISSN')
                         electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
                     }
@@ -1102,7 +1106,7 @@ class SubscriptionController extends AbstractDebugController {
         params.offset = 0
         params.max = 2000
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
@@ -1294,7 +1298,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def members() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1424,7 +1428,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def surveys() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1448,7 +1452,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def surveysConsortia() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1470,7 +1474,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1534,7 +1538,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkLicenseMembers() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1593,7 +1597,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1638,7 +1642,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkPackagesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1694,8 +1698,8 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processLinkPackagesConsortia() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+    def processLinkPackagesMembers() {
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1798,7 +1802,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkPackagesConsortia() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1853,7 +1857,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def propertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1917,7 +1921,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def subscriptionPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1984,7 +1988,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2090,7 +2094,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processSubscriptionPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2221,7 +2225,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processDeletePropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2310,7 +2314,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private ArrayList<Long> getOrgIdsForFilter() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         ArrayList<Long> resultOrgIds
         def tmpParams = params.clone()
         tmpParams.remove("max")
@@ -2333,7 +2337,7 @@ class SubscriptionController extends AbstractDebugController {
     def addMembers() {
         log.debug("addMembers ..")
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2370,7 +2374,7 @@ class SubscriptionController extends AbstractDebugController {
     def processAddMembers() {
         log.debug(params)
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2438,12 +2442,10 @@ class SubscriptionController extends AbstractDebugController {
                             ]
 
                             if (params.generateSlavedLics == 'explicit') {
-                                licenseCopy = institutionsService.copyLicense(
-                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                                licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             }
                             else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                                licenseCopy = institutionsService.copyLicense(
-                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                                licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             }
                             else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
                                 licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
@@ -2478,7 +2480,6 @@ class SubscriptionController extends AbstractDebugController {
                                 identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
                                 isSlaved: true,
-                                impId: UUID.randomUUID().toString(),
                                 owner: licenseCopy,
                                 resource: result.subscriptionInstance.resource ?: null,
                                 form: result.subscriptionInstance.form ?: null,
@@ -2573,7 +2574,7 @@ class SubscriptionController extends AbstractDebugController {
 
         return
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2619,7 +2620,7 @@ class SubscriptionController extends AbstractDebugController {
     def pendingChanges() {
         log.debug("subscription id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2663,7 +2664,7 @@ class SubscriptionController extends AbstractDebugController {
     private def previousAndExpected(params, screen) {
         log.debug("previousAndExpected ${params}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2708,7 +2709,7 @@ class SubscriptionController extends AbstractDebugController {
     def processAddEntitlements() {
         log.debug("addEntitlements....");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2828,7 +2829,7 @@ class SubscriptionController extends AbstractDebugController {
     def processRemoveEntitlements() {
         log.debug("processRemoveEntitlements....");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2875,7 +2876,7 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("processRenewEntitlements ...")
         params.id = Long.parseLong(params.id)
         params.packageId = Long.parseLong(params.packageId)
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2990,7 +2991,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def notes() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3008,7 +3009,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def documents() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3040,7 +3041,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3085,7 +3086,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewals() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3111,7 +3112,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def permissionInfo() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3126,7 +3127,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def launchRenewalsProcess() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
 
 //        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
 //
@@ -3224,7 +3225,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def linkPackage() {
-        log.debug("Link package, params: ${params} ");
+        log.debug("Link package, params: ${params} ")
 
         //Wenn die Subsc schon ein Anbieter hat. Soll nur Pakete von diesem Anbieter angezeigt werden als erstes
         /*if(params.size() == 3) {
@@ -3236,13 +3237,13 @@ class SubscriptionController extends AbstractDebugController {
             }
         }*/
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
 
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
 
         threadArray.each {
             if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
@@ -3250,130 +3251,52 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
-        params.gokbApi = false
-
-        if (ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)) {
-            params.gokbApi = true
-        }
         params.sort = "name"
 
         //to be deployed in parallel thread - let's make a test!
-        if (params.addType && (params.addType != '')) {
-            if (params.gokbApi) {
-                def gri = params.impId ? GlobalRecordInfo.findByUuid(params.impId) : null
+        if (params.addUUID) {
+            String pkgUUID = params.addUUID
+            GlobalRecordSource source = GlobalRecordSource.findByUri("${params.source}/gokb/oai/packages")
+            log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
+            globalSourceSyncService.source = source
+            String addType = params.addType
+            GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:params.addUUID])
+            executorService.submit({
+                Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
+                try {
+                    globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
+                    List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
+                    globalSourceSyncService.notifyDependencies([tippsToNotify])
+                    globalSourceSyncService.cleanUpGorm()
+                    Package pkgToLink = Package.findByGokbId(pkgUUID)
+                    Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                    println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
+                    if (addType == 'With') {
+                        pkgToLink.addToSubscription(result.subscriptionInstance, true)
 
-                if (!gri) {
-                    gri = GlobalRecordInfo.findByIdentifier(params.addId)
-                }
-
-                if (!gri) {
-                    OaiClientLaser oaiClient = new OaiClientLaser()
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                    GlobalRecordSource grs = GlobalRecordSource.findByUri(params.source+'/gokb/oai/packages')
-                    def rec = oaiClient.getRecord(params.source+'/gokb/oai/','packages',params.impId) //alright, we rely on fixToken to remain as is!!!
-                    def parsedRec = globalSourceSyncService.packageConv(rec.metadata,grs)
-                    def kbplusCompliant = globalSourceSyncService.testPackageCompliance(parsedRec.parsed_rec)
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream()
-                    ObjectOutputStream out = new ObjectOutputStream(baos)
-                    out.writeObject(parsedRec.parsedRec)
-                    out.close()
-                    gri = new GlobalRecordInfo(
-                            ts: sdf.parse(rec.header.datestamp.text()),
-                            name: parsedRec.title,
-                            identifier: rec.header.identifier.text(),
-                            uuid: rec.header.uuid?.text() ?: null,
-                            desc: "${parsedRec.title}",
-                            source: grs,
-                            rectype: grs.rectype,
-                            record: baos.toByteArray(),
-                            kbplusCompliant: kbplusCompliant,
-                            globalRecordInfoStatus: RefdataValue.getByValueAndCategory(parsedRec.parsed_rec.status, RDConstants.PACKAGE_STATUS)
-                    )
-                    flash.message = message(code:'subscription.details.link.no_package_yet')
-                    gri.save(flush: true)
-                }
-                GlobalRecordTracker grt = GlobalRecordTracker.findByOwner(gri)
-                if (!grt) {
-                    String new_tracker_id = UUID.randomUUID().toString()
-
-                    grt = new GlobalRecordTracker(
-                            owner: gri,
-                            identifier: new_tracker_id,
-                            name: gri.name,
-                            autoAcceptTippAddition: params.autoAcceptTippAddition == 'on' ? true : false,
-                            autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
-                            autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
-                            autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
-                    if (!grt.save()) {
-                        log.error(grt.errors)
-                    }
-                }
-
-                log.debug("linkPackage. Global Record Source URL: " +gri.source.baseUrl)
-                //if(Package.findByGokbId(grt.owner.uuid)) {
-                String addType = params.addType
-                    executorWrapperService.processClosure({
-                        Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
-                        globalSourceSyncService.initialiseTracker(grt)
-                        //Update INDEX ES
-                        //dataloadService.updateFTIndexes()
-
-                        def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
-                        def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                        println "Add package ${addType} to subscription ${result.subscriptionInstance}"
-
-                        if (addType == 'With') {
-                            pkg_to_link.addToSubscription(result.subscriptionInstance, true)
-
-                            sub_instances.each {
-                                pkg_to_link.addToSubscription(it, true)
-                            }
-                        } else if (addType == 'Without') {
-                            pkg_to_link.addToSubscription(result.subscriptionInstance, false)
-
-                            sub_instances.each {
-                                pkg_to_link.addToSubscription(it, false)
-                            }
+                        subInstances.each {
+                            pkgToLink.addToSubscription(it, true)
                         }
-                    },gri)
-                /*}
-                else {
-                    //setup new
-                    globalSourceSyncService.initialiseTracker(grt)
-                    //Update INDEX ES
-                    dataloadService.updateFTIndexes()
-                }*/
-                switch(params.addType) {
-                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
-                        redirect action: 'index', id: params.id
-                        break
-                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
-                        redirect action: 'addEntitlements', id: params.id
-                        break
-                }
+                    } else if (addType == 'Without') {
+                        pkgToLink.addToSubscription(result.subscriptionInstance, false)
 
-            } else {
-                def pkg_to_link = Package.get(params.addId)
-                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                log.debug("Add package ${params.addType} to subscription ${params}");
-
-                if (params.addType == 'With') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, true)
+                        subInstances.each {
+                            pkgToLink.addToSubscription(it, false)
+                        }
                     }
-
-                    redirect action: 'index', id: params.id
-                } else if (params.addType == 'Without') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, false)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, false)
-                    }
-
-                    redirect action: 'addEntitlements', id: params.id
                 }
+                catch (Exception e) {
+                    log.error("sync job has failed, please consult stacktrace as follows: ")
+                    e.printStackTrace()
+                }
+            } as Callable)
+            switch(params.addType) {
+                case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                    redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
+                    break
+                case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                    redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: packageRecord.record.metadata.gokb.package.name] //TODO [ticket=1410,1807,1808,1819] impId -> gokbId
+                    break
             }
         }
 
@@ -3381,13 +3304,8 @@ class SubscriptionController extends AbstractDebugController {
             result.pkgs = []
             if (params.gokbApi) {
                 result.subscriptionInstance.packages.each { sp ->
-                    log.debug("Existing package ${sp.pkg.name} (Adding ImpID: ${sp.pkg.gokbId})")
+                    log.debug("Existing package ${sp.pkg.name} (Adding GOKb ID: ${sp.pkg.gokbId})")
                     result.pkgs.add(sp.pkg.gokbId)
-                }
-            } else {
-                result.subscriptionInstance.packages.each { sp ->
-                    log.debug("Existing package ${sp.pkg.name} (Adding ID: ${sp.pkg.id})")
-                    result.pkgs.add(sp.pkg.id)
                 }
             }
         } else {
@@ -3403,7 +3321,7 @@ class SubscriptionController extends AbstractDebugController {
         User user = springSecurityService.getCurrentUser()
         params.max = params.max ?: (user?.getDefaultPageSizeTMP() ?: 25)
 
-        if (params.gokbApi) {
+        //if (params.gokbApi) {
             def gokbRecords = []
 
             ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
@@ -3439,10 +3357,10 @@ class SubscriptionController extends AbstractDebugController {
 
             result.hits = result.records?.subList(start, end)
 
-        } else {
+        /*} else {
             params.rectype = "Package"
             result.putAll(ESSearchService.search(params))
-        }
+        }*/
 
         result
     }
@@ -3485,10 +3403,53 @@ class SubscriptionController extends AbstractDebugController {
         result;
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def setupPendingChangeConfiguration() {
+        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        if(!result) {
+            response.sendError(403)
+            return
+        }
+        log.debug("Received params: ${params}")
+        SubscriptionPackage subscriptionPackage = SubscriptionPackage.get(params.subscriptionPackage)
+        PendingChangeConfiguration.settingKeys.each { String settingKey ->
+            Map<String,Object> configMap = [subscriptionPackage:subscriptionPackage,settingKey:settingKey,withNotification:false]
+            boolean auditable = false
+            //Set because we have up to three keys in params with the settingKey
+            Set<String> keySettings = params.keySet().findAll { k -> k.contains(settingKey) }
+            keySettings.each { key ->
+                List<String> settingData = key.split('!§!')
+                switch(settingData[1]) {
+                    case 'setting': configMap.settingValue = RefdataValue.get(params[key])
+                        break
+                    case 'notification': configMap.withNotification = params[key] != null
+                        break
+                    case 'auditable': auditable = params[key] != null
+                        break
+                }
+            }
+            try {
+                PendingChangeConfiguration pcc = PendingChangeConfiguration.construct(configMap)
+                boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription,settingKey) != null
+                if(auditable && !hasConfig) {
+                    AuditConfig.addConfig(subscriptionPackage.subscription,settingKey)
+                }
+                else if(!auditable && hasConfig) {
+                    AuditConfig.removeConfig(subscriptionPackage.subscription,settingKey)
+                }
+            }
+            catch (CreationException e) {
+                flash.error = e.message
+            }
+        }
+        redirect(action:'show', params:[id:params.id])
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def history() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3510,7 +3471,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3544,7 +3505,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def costPerUse() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3607,7 +3568,7 @@ class SubscriptionController extends AbstractDebugController {
         DebugUtil du = new DebugUtil()
         du.setBenchmark('1')
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3676,7 +3637,8 @@ class SubscriptionController extends AbstractDebugController {
         } else {
 
             def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
+            //pc.msgParams null check is the legacy check; new pending changes should NOT be displayed here but on dashboard and only there!
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) and pc.msgParams is not null order by pc.ts desc", [result.subscription, pending_change_pending_status])
 
             log.debug("pc result is ${result.pendingChanges}")
 
@@ -3876,7 +3838,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewSubscription_Local() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
 
         if (!accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
@@ -3921,7 +3883,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processSimpleRenewal_Local() {
         log.debug("-> renewalsUpload params: ${params}");
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3941,7 +3903,6 @@ class SubscriptionController extends AbstractDebugController {
         def new_subscription = new Subscription(
                 identifier: java.util.UUID.randomUUID().toString(),
                 status: sub_status,
-                impId: java.util.UUID.randomUUID().toString(),
                 name: new_subname,
                 startDate: sub_startDate,
                 endDate: sub_endDate,
@@ -3982,7 +3943,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(['ROLE_YODA'])
     def renewSubscriptionConsortia() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
@@ -4026,11 +3987,10 @@ class SubscriptionController extends AbstractDebugController {
                                 endDate: newSubConsortia.endDate,
                                 manualRenewalDate: subMember.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
-                                identifier: java.util.UUID.randomUUID().toString(),
+                                identifier: UUID.randomUUID().toString(),
                                 instanceOf: newSubConsortia?.id,
                                 //previousSubscription: subMember?.id,
                                 isSlaved: subMember.isSlaved,
-                                impId: java.util.UUID.randomUUID().toString(),
                                 owner: newSubConsortia.owner?.id ? subMember.owner?.id : null,
                                 resource: newSubConsortia.resource ?: null,
                                 form: newSubConsortia.form ?: null
@@ -4436,7 +4396,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processSimpleRenewal_Consortia() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
@@ -4529,7 +4489,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewSubscription_Consortia() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         result.institution = contextService.org
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
@@ -4598,7 +4558,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoSubscription() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -4765,7 +4725,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_DatesOwnerRelations() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -4836,7 +4796,7 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
     private loadDataFor_DatesOwnerRelations(){
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -4862,7 +4822,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_DocsAnnouncementsTasks() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -4953,7 +4913,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private loadDataFor_DocsAnnouncementsTasks() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -4968,7 +4928,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_Subscriber() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -4986,7 +4946,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private loadDataFor_Subscriber() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         result.sourceSubscription = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         result.validSourceSubChilds = subscriptionService.getValidSubChilds(result.sourceSubscription)
         if (params.targetSubscriptionId) {
@@ -5052,7 +5012,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_PackagesEntitlements() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -5088,7 +5048,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private loadDataFor_PackagesEntitlements() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
@@ -5109,7 +5069,7 @@ class SubscriptionController extends AbstractDebugController {
 
     def copySubscription() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -5183,7 +5143,7 @@ class SubscriptionController extends AbstractDebugController {
     def processcopySubscription() {
 
         params.id = params.baseSubscription
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -5575,7 +5535,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.args = args
 
-        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
+        if (checkOption in [accessService.CHECK_VIEW, accessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.subscriptionInstance?.isVisibleBy(result.user)) {
                 log.debug("--- NOT VISIBLE ---")
                 return null
@@ -5599,7 +5559,7 @@ class SubscriptionController extends AbstractDebugController {
             result.editable = false
         }
 
-        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
+        if (checkOption in [accessService.CHECK_EDIT, accessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.editable) {
                 log.debug("--- NOT EDITABLE ---")
                 return null

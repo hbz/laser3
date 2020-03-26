@@ -317,6 +317,71 @@
                                 ]}" />
                   </div><!-- .content -->
                 </div>
+
+                  <g:if test="${editable}">
+                      <div class="ui card la-js-hideable hidden">
+                          <div class="ui segment accordion">
+                              <div class="ui title header">
+                                  <i class="dropdown icon la-dropdown-accordion"></i><g:message code="subscription.packages.config.header" />
+                              </div>
+                              <div class="content">
+                                  <g:each in="${subscriptionInstance.packages}" var="subscriptionPackage">
+                                      <h5 class="ui header">
+                                          <g:message code="subscription.packages.config.label" args="${[subscriptionPackage.pkg.name]}"/>
+                                      </h5>
+                                  <%-- TODO: move away from table to dl-dt-dd-dd, and place it into collapsable --%>
+                                      <g:form action="setupPendingChangeConfiguration" params="[id:subscriptionInstance.id,subscriptionPackage:subscriptionPackage.id]">
+                                          <dl>
+                                              <dt class="control-label"><g:message code="subscription.packages.changeType.label"/></dt>
+                                              <dt class="control-label">
+                                                  <g:message code="subscription.packages.setting.label"/>
+                                              </dt>
+                                              <dt class="control-label">
+                                                  <g:message code="subscription.packages.notification.label"/>
+                                              </dt>
+                                              <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
+                                                  <dt class="control-label">
+                                                      <g:message code="subscription.packages.auditable.label"/>
+                                                  </dt>
+                                              </g:if>
+                                          </dl>
+                                          <g:set var="excludes" value="${[de.laser.domain.PendingChangeConfiguration.PACKAGE_PROP]}"/>
+                                          <g:each in="${de.laser.domain.PendingChangeConfiguration.settingKeys}" var="settingKey">
+                                              <dl>
+                                                  <dt class="control-label">
+                                                      <g:message code="subscription.packages.${settingKey}"/>
+                                                  </dt>
+                                                  <dd>
+                                                      <g:if test="${!(settingKey in excludes)}">
+                                                          <laser:select class="ui dropdown"
+                                                                        name="${settingKey}!§!setting" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
+                                                                        optionKey="id" optionValue="value"
+                                                                        value="${subscriptionPackage.getPendingChangeConfig(settingKey) ? subscriptionPackage.getPendingChangeConfig(settingKey).settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
+                                                          />
+                                                      </g:if>
+                                                  </dd>
+                                                  <dd>
+                                                      <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${subscriptionPackage.getPendingChangeConfig(settingKey)?.withNotification}"/>
+                                                  </dd>
+                                                  <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
+                                                      <dd>
+                                                          <g:if test="${!(settingKey in excludes)}">
+                                                              <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable" checked="${subscriptionPackage.getPendingChangeConfig(settingKey) ? auditService.getAuditConfig(subscriptionInstance,settingKey) : false}"/>
+                                                          </g:if>
+                                                      </dd>
+                                                  </g:if>
+                                              </dl>
+                                          </g:each>
+                                          <dl>
+                                              <dt class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></dt>
+                                          </dl>
+                                      </g:form>
+                                  </g:each>
+
+                              </div><!-- .content -->
+                          </div>
+                      </div>
+                  </g:if>
               </g:if>
 
                 <div class="ui card la-js-hideable hidden">

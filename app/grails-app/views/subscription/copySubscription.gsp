@@ -114,7 +114,7 @@
                 }.size()}
 
                     %{--                        <g:each in="${subscription.issueEntitlements.sort{it.tipp.title}}" var="ie">
-                                                <g:if test="${ie.status != RDStore.TIPP_DELETED}">
+                                                <g:if test="${ie.status != RDStore.TIPP_STATUS_DELETED}">
                     ${ie.tipp.title.title}
                 </g:if>
                 </g:each>--}%

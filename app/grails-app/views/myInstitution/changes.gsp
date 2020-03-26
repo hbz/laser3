@@ -3,25 +3,24 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser')} : ${message(code:'myinst.todo.label')}</title>
+        <title>${message(code:'laser')} : ${message(code:'myinst.pendingChanges.label')}</title>
     </head>
 
     <body>
 
         <semui:breadcrumbs>
-            <%--<semui:crumb text="(${num_todos} ${message(code:'myinst.todo.items', default:'Items')})" message="myinst.todo.list" class="active" />--%>
-            <semui:crumb message="myinst.todo.label" class="active" />
+            <semui:crumb message="myinst.pendingChanges.label" class="active" />
         </semui:breadcrumbs>
         <br>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            ${message(code:'myinst.todo.label')}
+            ${message(code:'myinst.pendingChanges.label')}
             <%--${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}--%>
         </h1>
 
         <%--<g:if test="${changes != null}" >
           <semui:paginate  action="todo" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${num_todos}" />
-        </g:if>--%>
-        <semui:msg class="info" header="${message(code: 'message.information')}" message="profile.dashboardItemsTimeWindow" args="${itemsTimeWindow}"/>
+        </g:if>
+        <semui:msg class="info" header="${message(code: 'message.information')}" message="profile.dashboardItemsTimeWindow" args="${itemsTimeWindow}"/>--%>
 
             <table class="ui celled la-table table">
                 <thead>

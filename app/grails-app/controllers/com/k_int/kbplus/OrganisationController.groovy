@@ -470,7 +470,7 @@ class OrganisationController extends AbstractDebugController {
                 Org orgInstance = new Org(params)
                 orgInstance.status = O_STATUS_CURRENT
 
-                if (params.name) {
+                //if (params.name) {
                     if (orgInstance.save(flush: true)) {
                         orgInstance.setDefaultCustomerType()
 
@@ -478,7 +478,7 @@ class OrganisationController extends AbstractDebugController {
                         redirect action: 'show', id: orgInstance.id
                         return
                     }
-                }
+                //}
 
                 render view: 'create', model: [orgInstance: orgInstance]
                 break
@@ -658,55 +658,9 @@ class OrganisationController extends AbstractDebugController {
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
 
-        //def link_vals = RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)
-        //def sorted_links = [:]
-        //def offsets = [:]
-
         du.setBenchmark('orgRoles')
 
-        // TODO: experimental asynchronous task
-        /*def task_orgRoles = task {
-
-            if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
-                    (orgInstance.id == org.id && user.hasAffiliation('INST_ADM'))
-            ) {
-
-                link_vals.each { lv ->
-                    def param_offset = 0
-
-                    if (lv.id) {
-                        def cur_param = "rdvl_${String.valueOf(lv.id)}"
-
-                        if (params[cur_param]) {
-                            param_offset = params[cur_param]
-                            result[cur_param] = param_offset
-                        }
-
-                        def links = OrgRole.findAll {
-                            org == orgInstance && roleType == lv
-                        }
-                        links = links.findAll { it2 -> it2.ownerStatus?.value != 'Deleted' }
-
-                        def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
-
-                        if (link_type_results) {
-                            sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
-                        }
-                    } else {
-                        log.debug("Could not read Refdata: ${lv}")
-                    }
-                }
-            }
-        }*/
-
-        /*if (params.ajax) {
-            render template: '/templates/links/orgRoleContainer', model: [listOfLinks: sorted_links, orgInstance: orgInstance]
-            return
-        }*/
-
         du.setBenchmark('editable')
-
-        //result.sorted_links = sorted_links
 
         def orgSector = O_SECTOR_PUBLISHER
         def orgType = OT_PROVIDER
@@ -745,72 +699,59 @@ class OrganisationController extends AbstractDebugController {
 
         du.setBenchmark('properties')
 
-        // TODO: experimental asynchronous task
-        //def task_properties = task {
+        result.authorizedOrgs = result.user?.authorizedOrgs
 
-            // -- private properties
+        // create mandatory OrgPrivateProperties if not existing
 
-            result.authorizedOrgs = result.user?.authorizedOrgs
+        List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.ORG_PROP, true, result.institution)
 
-            // create mandatory OrgPrivateProperties if not existing
-
-            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.ORG_PROP, true, result.institution)
-
-            mandatories.each { pd ->
-                if (!OrgPrivateProperty.findWhere(owner: result.orgInstance, type: pd)) {
-                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.orgInstance, pd)
+        mandatories.each { pd ->
+            if (!OrgPrivateProperty.findWhere(owner: result.orgInstance, type: pd)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.orgInstance, pd)
 
 
-                    if (newProp.hasErrors()) {
-                        log.error(newProp.errors)
-                    } else {
-                        log.debug("New org private property created via mandatory: " + newProp.type.name)
-                    }
+                if (newProp.hasErrors()) {
+                    log.error(newProp.errors)
+                } else {
+                    log.debug("New org private property created via mandatory: " + newProp.type.name)
                 }
             }
-
-            // -- private properties
-       //}
-
-        //documents
-        //du.setBenchMark('documents')
-
-        List bm = du.stopBenchmark()
-        result.benchMark = bm
-
-        // TODO: experimental asynchronous task
-        //waitAll(task_orgRoles, task_properties)
-
-        if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
-
-            boolean foundIsil = false
-            boolean foundWibid = false
-            boolean foundEZB = false
-
-            result.orgInstance.ids.each {ident ->
-                if(ident.ns?.ns == 'ISIL') {
-                    foundIsil = true
-                }
-                if(ident.ns?.ns == 'wibid') {
-                    foundWibid = true
-                }
-                if(ident.ns?.ns == 'ezb') {
-                    foundEZB = true
-                }
-            }
-
-            if(!foundIsil) {
-                result.orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
-            }
-            if(!foundWibid) {
-                result.orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
-            }
-            if(!foundEZB) {
-                result.orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
-            }
-            if(!foundIsil || !foundWibid || !foundEZB)
-                result.orgInstance.refresh()
         }
+
+//        du.setBenchmark('identifier')
+//
+//        if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
+//
+//            boolean foundIsil = false
+//            boolean foundWibid = false
+//            boolean foundEZB = false
+//
+//            result.orgInstance.ids.each {ident ->
+//                if(ident.ns?.ns == 'ISIL') {
+//                    foundIsil = true
+//                }
+//                if(ident.ns?.ns == 'wibid') {
+//                    foundWibid = true
+//                }
+//                if(ident.ns?.ns == 'ezb') {
+//                    foundEZB = true
+//                }
+//            }
+//
+//            if(!foundIsil) {
+//                result.orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
+//            }
+//            if(!foundWibid) {
+//                result.orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
+//            }
+//            if(!foundEZB) {
+//                result.orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
+//            }
+//            if(!foundIsil || !foundWibid || !foundEZB)
+//                result.orgInstance.refresh()
+//        }
+
+        du.setBenchmark('createdBy and legallyObligedBy')
 
         if (result.orgInstance.createdBy) {
 			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
@@ -826,6 +767,8 @@ class OrganisationController extends AbstractDebugController {
 					[org: result.orgInstance.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
 			)
 		}
+        List bm = du.stopBenchmark()
+        result.benchMark = bm
 
         result
     }
@@ -898,6 +841,7 @@ class OrganisationController extends AbstractDebugController {
             boolean foundGRID = false
             boolean foundDBS = false
             boolean foundGND = false
+            boolean foundVAT = false
 
             result.orgInstance.ids.each {ident ->
                 if(ident.ns?.ns == 'ISIL') {
@@ -917,6 +861,9 @@ class OrganisationController extends AbstractDebugController {
                 }
                 if(ident.ns?.ns == 'gndnr') {
                     foundGND = true
+                }
+                if(ident.ns?.ns == 'VAT') {
+                    foundVAT = true
                 }
             }
 
@@ -938,7 +885,10 @@ class OrganisationController extends AbstractDebugController {
             if(!foundGND) {
                 result.orgInstance.addOnlySpecialIdentifiers('gndnr', 'Unknown')
             }
-            if(!foundIsil || !foundWibid || !foundEZB)
+            if(!foundVAT) {
+                result.orgInstance.addOnlySpecialIdentifiers('VAT', 'Unknown')
+            }
+            if(!foundIsil || !foundWibid || !foundEZB || !foundGRID || !foundDBS || !foundGND || !foundVAT)
                 result.orgInstance.refresh()
         }
 
@@ -1059,7 +1009,7 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def deleteCustomerIdentifier() {
-        log.debug("deleteIdentifier ${params}");
+        log.debug("OrganisationController::deleteIdentifier ${params}");
         CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
         if (ci && ci.owner == contextService.org) {
             ci.delete()
@@ -1070,7 +1020,7 @@ class OrganisationController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def deleteIdentifier() {
-        log.debug("AjaxController::deleteIdentifier ${params}")
+        log.debug("OrganisationController::deleteIdentifier ${params}")
         def owner = genericOIDService.resolveOID(params.owner)
         def target = genericOIDService.resolveOID(params.target)
 
@@ -1426,7 +1376,7 @@ class OrganisationController extends AbstractDebugController {
         {
             orgInstance.addToOrgType(RefdataValue.get(params.orgType))
             orgInstance.save(flush: true)
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }
@@ -1453,7 +1403,7 @@ class OrganisationController extends AbstractDebugController {
         {
             orgInstance.removeFromOrgType(RefdataValue.get(params.removeOrgType))
             orgInstance.save(flush: true)
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }
@@ -1487,7 +1437,7 @@ class OrganisationController extends AbstractDebugController {
         if (result.editable){
             orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
             orgInstance.save(flush: true)
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }
@@ -1513,7 +1463,7 @@ class OrganisationController extends AbstractDebugController {
             orgInstance.removeFromSubjectGroup(osg)
             orgInstance.save()
             osg.delete()
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect(url: request.getHeader('referer'))
         }
     }

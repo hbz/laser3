@@ -5,9 +5,12 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PriceItem
 import de.laser.domain.SystemProfiler
+import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import de.laser.helper.RDStore
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.client.RequestOptions
@@ -16,7 +19,7 @@ import org.elasticsearch.client.RestHighLevelClient
 //@CompileStatic
 class DeletionService {
 
-    GrailsApplication grailsApplication
+    SubscriptionService subscriptionService
     def ESWrapperService
 
     static boolean DRY_RUN                  = true
@@ -438,8 +441,8 @@ class DeletionService {
         List affiliations   = new ArrayList(org.affiliations)
         List docContexts    = new ArrayList(org.documents)
         List platforms      = new ArrayList(org.platforms)
-        List tips           = TitleInstitutionProvider.findAllByInstitution(org)
-        List tipsProviders  = TitleInstitutionProvider.findAllByProvider(org)
+        //List tips           = TitleInstitutionProvider.findAllByInstitution(org)
+        //List tipsProviders  = TitleInstitutionProvider.findAllByProvider(org)
 
         List customProperties       = new ArrayList(org.customProperties)
         List privateProperties      = new ArrayList(org.privateProperties)
@@ -493,8 +496,8 @@ class DeletionService {
         result.info << ['Nutzerzugehörigkeiten', affiliations, FLAG_BLOCKER]
         result.info << ['Dokumente', docContexts, FLAG_BLOCKER]   // delete ? docContext->doc
         result.info << ['Platformen', platforms, FLAG_BLOCKER]
-        result.info << ['TitleInstitutionProvider (inst)', tips, FLAG_BLOCKER]
-        result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_BLOCKER]
+        //result.info << ['TitleInstitutionProvider (inst)', tips, FLAG_BLOCKER]
+        //result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_BLOCKER]
         //result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_SUBSTITUTE]
 
         result.info << ['Allgemeine Merkmale', customProperties]
@@ -632,22 +635,14 @@ class DeletionService {
 
         List userOrgs       = new ArrayList(user.affiliations)
         List userRoles      = new ArrayList(user.roles)
-        //List userFolder     = UserFolder.findAllWhere(user: user)
         List userSettings   = UserSettings.findAllWhere(user: user)
-
-        List ciecs = CostItemElementConfiguration.executeQuery(
-                'select x from CostItemElementConfiguration x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
         List docs = Doc.executeQuery(
                 'select x from Doc x where x.creator = :user or x.user = :user', [user: user])
-        List links = Links.executeQuery(
-                'select x from Links x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
 
         List pendingChanges = PendingChange.findAllByUser(user)
-
-        List surveyResults = SurveyResult.findAllByUser(user)
 
         List systemTickets = SystemTicket.findAllByAuthor(user)
 
@@ -660,15 +655,11 @@ class DeletionService {
 
         result.info << ['Zugehörigkeiten', userOrgs]
         result.info << ['Rollen', userRoles]
-        //result.info << ['Folder', userFolder]
         result.info << ['Einstellungen', userSettings]
 
-        result.info << ['Kostenkonfigurationen', ciecs, FLAG_SUBSTITUTE]
         result.info << ['DashboardDueDate', ddds]
         result.info << ['Dokumente', docs, FLAG_SUBSTITUTE]
-        result.info << ['Links', links, FLAG_SUBSTITUTE]
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_SUBSTITUTE]
-        result.info << ['Umfrageergebnisse', surveyResults, FLAG_SUBSTITUTE]
         result.info << ['Tickets', systemTickets, FLAG_SUBSTITUTE]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
 
@@ -702,18 +693,8 @@ class DeletionService {
                     user.roles.clear()
                     userRoles.each { tmp -> tmp.delete() }
 
-                    // user folder
-                    //userFolder.each { tmp -> tmp.delete() }
-
                     // user settings
                     userSettings.each { tmp -> tmp.delete() }
-
-                    // cost item element configurations
-                    ciecs.each { tmp ->
-                        tmp.lastUpdatedBy = replacement
-                        tmp.createdBy = replacement
-                        tmp.save()
-                    }
 
                     ddds.each { tmp -> tmp.delete() }
 
@@ -728,18 +709,7 @@ class DeletionService {
                         tmp.save()
                     }
 
-                    links.each { tmp ->
-                        tmp.lastUpdatedBy = replacement
-                        tmp.createdBy = replacement
-                        tmp.save()
-                    }
-
                     pendingChanges.each { tmp ->
-                        tmp.user = replacement
-                        tmp.save()
-                    }
-
-                    surveyResults.each { tmp ->
                         tmp.user = replacement
                         tmp.save()
                     }
@@ -777,28 +747,94 @@ class DeletionService {
         Package.withTransaction { status ->
             try {
                 //to be absolutely sure ...
-                List<Subscription> subsConcerned = Subscription.executeQuery('select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg',[pkg:pkg])
+                List<Subscription> subsConcerned = Subscription.executeQuery("select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and tipp.pkg.name != '' and ie.status != :deleted",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
                 if(subsConcerned) {
-                    println 'issue entitlements detected on package to be deleted .. rollback'
+                    println "issue entitlements detected on package to be deleted: ${subsConcerned} .. rollback"
                     status.setRollbackOnly()
                     return false
                 }
-                //deleting tipps
-                TitleInstancePackagePlatform.findAllByPkg(pkg).each { tmp -> tmp.delete() }
-                //deleting pending changes
-                PendingChange.findAllByPkg(pkg).each { tmp -> tmp.delete() }
-                //deleting orgRoles
-                OrgRole.findAllByPkg(pkg).each { tmp -> tmp.delete() }
-                //deleting (empty) subscription packages
-                SubscriptionPackage.findAllByPkg(pkg).each { tmp -> tmp.delete() }
-                //deleting empty-running trackers
-                GlobalRecordTracker.findByLocalOid(pkg.class.name+':'+pkg.id).delete()
-                pkg.delete()
-                status.flush()
-                return true
+                else {
+                    //deleting IECoverages and IssueEntitlements marked deleted or where package data has disappeared
+                    List<Long> iesConcerned = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and (ie.status = :deleted or tipp.pkg.name = '')",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
+                    if(iesConcerned) {
+                        IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ic where ic.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
+                        PriceItem.executeUpdate("delete from PriceItem pc where pc.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
+                        CostItem.executeUpdate("delete from CostItem ci where ci.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
+                        IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in :toDelete",[toDelete:iesConcerned])
+                    }
+                    //deleting tipps
+                    List<Long> tippsConcerned = TitleInstancePackagePlatform.findAllByPkg(pkg).collect { tipp -> tipp.id }
+                    TIPPCoverage.executeUpdate("delete from TIPPCoverage tc where tc.tipp.id in :toDelete",[toDelete:tippsConcerned])
+                    Identifier.executeUpdate("delete from Identifier id where id.tipp.id in :toDelete",[toDelete:tippsConcerned])
+                    TitleInstancePackagePlatform.executeUpdate("delete from TitleInstancePackagePlatform tipp where tipp.id in :toDelete",[toDelete:tippsConcerned])
+                    //deleting pending changes
+                    PendingChange.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                    //deleting orgRoles
+                    OrgRole.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                    //deleting (empty) subscription packages
+                    SubscriptionPackage.findAllByPkg(pkg).each { tmp ->
+                        CostItem.executeUpdate("delete from CostItem ci where ci.subPkg = :sp",[sp:tmp])
+                        tmp.delete()
+                    }
+                    //deleting empty-running trackers
+                    //GlobalRecordTracker.findAllByLocalOid(pkg.class.name+':'+pkg.id).each { tmp -> tmp.delete() }
+                    pkg.delete()
+                    status.flush()
+                    return true
+                }
             }
             catch(Exception e) {
                 println 'error while deleting package ' + pkg.id + ' .. rollback'
+                e.printStackTrace()
+                status.setRollbackOnly()
+                return false
+            }
+        }
+    }
+
+    static boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
+        println "processing tipp #${tipp.id}"
+        //rebasing subscriptions
+        if(SubscriptionService.rebaseSubscriptions(tipp,replacement)) {
+            TitleInstancePackagePlatform.withTransaction { status ->
+                try {
+                    //deleting old TIPPs
+                    tipp.delete()
+                    status.flush()
+                    return true
+                }
+                catch(Exception e) {
+                    println 'error while deleting tipp ' + tipp.id + ' .. rollback'
+                    println e.printStackTrace()
+                    status.setRollbackOnly()
+                    return false
+                }
+            }
+        }
+        else {
+            println 'error while rebasing subscriptions for tipp '+tipp.id+' ... rollback'
+            return false
+        }
+    }
+
+    /**
+     * Use this method with VERY MUCH CARE!
+     * Deletes a {@link Collection} of {@link TitleInstancePackagePlatform} objects WITH their depending objects ({@link TIPPCoverage} and {@link Identifier})
+     * @param tipp - the {@link Collection} of {@link TitleInstancePackagePlatform} to delete
+     * @return the success flag
+     */
+    static boolean deleteTIPPsCascaded(Collection<TitleInstancePackagePlatform> tippsToDelete) {
+        println "processing tipps ${tippsToDelete}"
+        TitleInstancePackagePlatform.withTransaction { status ->
+            try {
+                Map<String,Collection<TitleInstancePackagePlatform>> toDelete = [toDelete:tippsToDelete]
+                TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.tipp in (:toDelete)',toDelete)
+                Identifier.executeUpdate('delete from Identifier i where i.tipp in (:toDelete)',toDelete)
+                TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp in (:toDelete)',toDelete)
+                return true
+            }
+            catch (Exception e) {
+                println 'error while deleting tipp collection ' + tippsToDelete + ' .. rollback'
                 println e.message
                 status.setRollbackOnly()
                 return false
@@ -806,19 +842,17 @@ class DeletionService {
         }
     }
 
-    boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
-        println "processing tipp #${tipp.id}"
-        TitleInstancePackagePlatform.withTransaction { status ->
+    static boolean deleteIssueEntitlement(IssueEntitlement ie) {
+        println "processing issue entitlement ${ie}"
+        IssueEntitlement.withTransaction { status ->
             try {
-                //rebasing subscriptions
-                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :replacement where ie.tipp = :old',[old:tipp,replacement:replacement])
-                //deleting old TIPPs
-                tipp.delete()
-                status.flush()
+                Map<String,IssueEntitlement> toDelete = [ie:ie]
+                PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement = :ie',toDelete)
+                IssueEntitlementCoverage.executeUpdate('delete from IssueEntitlementCoverage ic where ic.issueEntitlement = :ie',toDelete)
                 return true
             }
-            catch(Exception e) {
-                println 'error while deleting tipp ' + tipp.id + ' .. rollback'
+            catch (Exception e) {
+                println 'error while deleting issue entitlement ' + ie + ' .. rollback'
                 println e.message
                 status.setRollbackOnly()
                 return false
@@ -831,8 +865,12 @@ class DeletionService {
         def es_index = ESWrapperService.getESSettings().indexName
         RestHighLevelClient esclient = ESWrapperService.getClient()
 
-        DeleteRequest request = new DeleteRequest(es_index, id)
-        DeleteResponse deleteResponse = esclient.delete(request, RequestOptions.DEFAULT);
-        esclient.close()
+        try {
+            DeleteRequest request = new DeleteRequest(es_index, id)
+            DeleteResponse deleteResponse = esclient.delete(request, RequestOptions.DEFAULT);
+            esclient.close()
+        }catch(Exception e) {
+            log.error("deleteDocumentFromIndex with id=${id} failed because: " + e)
+        }
     }
 }

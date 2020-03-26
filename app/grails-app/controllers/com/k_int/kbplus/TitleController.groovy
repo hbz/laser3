@@ -86,12 +86,16 @@ class TitleController extends AbstractDebugController {
   }
 
   @Secured(['ROLE_ADMIN'])
+  @Deprecated
+  /**
+   * Is a GOKb functionality, no need to keep it in LAS:eR
+   */
   def createTitle() {
     log.debug("Create new title for ${params.title}");
     //def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString()
-    def ti_status = RefdataValue.getByValueAndCategory('Current', RDConstants.TITLE_STATUS)
-    def new_title =  ((params.typ=='Ebook') ? new BookInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('EBook', RDConstants.TITLE_TYPE)) :
-              (params.typ=='Database' ? new DatabaseInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('Database', RDConstants.TITLE_TYPE)) : new JournalInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('Journal', RDConstants.TITLE_TYPE))))
+    def ti_status = RefdataValue.getByValueAndCategory('Current', RefdataCategory.TITLE_STATUS)
+    def new_title =  ((params.typ=='Ebook') ? new BookInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('EBook', RefdataCategory.TI_MEDIUM)) :
+              (params.typ=='Database' ? new DatabaseInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('Database', RefdataCategory.TI_MEDIUM)) : new JournalInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('Journal', RefdataCategory.TI_MEDIUM))))
 
     if ( new_title.save(flush:true) ) {
         new_title.impId = new_title.globalUID
@@ -107,7 +111,7 @@ class TitleController extends AbstractDebugController {
   }
 
     @Secured(['ROLE_USER'])
-    def show() {
+    Map<String,Object> show() {
         Map<String, Object> result = [:]
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')

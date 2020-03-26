@@ -1941,6 +1941,8 @@ class AjaxController {
 
     }
 
+    /*
+  @Deprecated
   def coreExtend(){
     log.debug("ajax::coreExtend:: ${params}")
     def tipID = params.tipID
@@ -1961,6 +1963,7 @@ class AjaxController {
     redirect(action:'getTipCoreDates',controller:'ajax',params:params)
   }
 
+  @Deprecated
   def getTipCoreDates(){
     log.debug("ajax::getTipCoreDates:: ${params}")
     def tipID = params.tipID ?:params.id
@@ -1973,6 +1976,7 @@ class AjaxController {
       render(template:"/templates/coreAssertionsModal",model:[message:params.message,coreDates:dates,tipID:tip.id,tip:tip]);    
     }
   }
+     */
 
     def delete() {
       switch(params.cmd) {

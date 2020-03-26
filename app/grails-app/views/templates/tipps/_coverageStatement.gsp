@@ -1,5 +1,16 @@
 
 <g:set var="overwriteEditable" value="${(overwriteEditable == null) ? editable : overwriteEditable}" />
+<%
+    Map<String, Object> paramData = [ieCoverage: covStmt.id]
+    if(params.sort && params.order) {
+        paramData.sort = params.sort
+        paramData.order = params.order
+    }
+    if(params.max && params.offset) {
+        paramData.max = params.max
+        paramData.offset = params.offset
+    }
+%>
 <div class="content">
     <div class="la-card-column">
         <semui:xEditable owner="${covStmt}" type="date" field="startDate" overwriteEditable="${overwriteEditable}"/><br>
@@ -29,7 +40,7 @@
         <div class="la-card-row">
             <g:if test="${overwriteEditable}">
                 <span class="right floated" >
-                    <g:link controller="subscription" action="removeCoverage" params="${[ieCoverage: covStmt.id]}" class="ui compact icon button negative tiny removeCoverage"><i class="ui icon minus" data-content="Lizenzzeitraum entfernen"></i></g:link>
+                    <g:link controller="subscription" action="removeCoverage" params="${paramData}" class="ui compact icon button negative tiny removeCoverage"><i class="ui icon minus" data-content="Lizenzzeitraum entfernen"></i></g:link>
                 </span>
             </g:if>
         </div>

@@ -81,16 +81,25 @@ class Identifier {
         String value        = map.get('value')
         Object reference    = map.get('reference')
         def namespace       = map.get('namespace')
+        String nsType       = map.get('nsType')
 
         IdentifierNamespace ns
 		if (namespace instanceof IdentifierNamespace) {
 			ns = namespace
 		}
         else {
-			ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
+            if (nsType){
+                ns = IdentifierNamespace.findByNsIlikeAndNsType(namespace?.trim(), nsType)
+            } else {
+			    ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
+            }
 
 			if(! ns) {
-				ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
+                if (nsType){
+                    ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false, nsType: nsType)
+                } else {
+                    ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
+                }
 				ns.save(flush:true)
 			}
 		}

@@ -72,7 +72,7 @@
                     <g:if test="${editable}">
                         <td class="x">
                         <%--
-                        disabled open finance view, TODO: ask Daniel for eventual reactivation
+                        disabled open finance view, TODO [ticket=2214]
                         <g:if test="${CostItemGroup.findAllByBudgetCode(bcode)}">
                             <g:link controller="myInstitution" action="finance"  class="ui icon button"
                                     params="[filterCIBudgetCode: bcode.value]">

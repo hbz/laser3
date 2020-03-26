@@ -170,7 +170,8 @@ class ControlledListService {
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
-                issueEntitlements.results.add([name:"${res.tipp.title.title} (${res.tipp.title.type.getI10n('value')}) (${s.dropdownNamingConvention(org)})",value:res.class.name+":"+res.id])
+
+                issueEntitlements.results.add([name:"${res.tipp.title.title} (${res.tipp.title.printTitleType()}) (${s.dropdownNamingConvention(org)})",value:res.class.name+":"+res.id])
             }
         }
         issueEntitlements

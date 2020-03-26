@@ -4,15 +4,21 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.SubscriptionService
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PendingChangeConfiguration
+import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import org.codehaus.groovy.grails.web.json.JSONElement
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
+import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.Duration
 
 class PendingChangeService extends AbstractLockableService {
 
@@ -20,6 +26,8 @@ class PendingChangeService extends AbstractLockableService {
     def grailsApplication
     def springSecurityService
     SubscriptionService subscriptionService
+    LinkGenerator grailsLinkGenerator
+    MessageSource messageSource
 
     final static EVENT_OBJECT_NEW = 'New Object'
     final static EVENT_OBJECT_UPDATE = 'Update Object'
@@ -55,6 +63,7 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    @Deprecated
     boolean performAccept(PendingChange pendingChange, User user) {
 
         log.debug('performAccept(): ' + pendingChange + ', ' + user)
@@ -241,10 +250,10 @@ class PendingChangeService extends AbstractLockableService {
                         Map changeAttrs = payload.changeDoc
                         if(target) {
                             if(changeAttrs.prop in ['startDate','endDate']) {
-                                target[changeAttrs.prop] = sdf.parse(changeAttrs.new)
+                                target[changeAttrs.prop] = sdf.parse(changeAttrs.newValue)
                             }
                             else {
-                                target[changeAttrs.prop] = changeAttrs.new
+                                target[changeAttrs.prop] = changeAttrs.newValue
                             }
                             if(target.save()) {
                                 saveWithoutError = true
@@ -300,10 +309,9 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
-    void performReject(Long pcId, User user) {
+    @Deprecated
+    void performReject(PendingChange change, User user) {
         PendingChange.withNewTransaction { TransactionStatus status ->
-            PendingChange change = PendingChange.get(pcId)
-
             if (change) {
                 change.license?.pendingChanges?.remove(change)
                 change.license?.save()
@@ -410,6 +418,212 @@ class PendingChangeService extends AbstractLockableService {
                 }
             }
         }
+    }
+
+    Map<String,Object> getChanges(LinkedHashMap<String, Object> configMap) {
+        Set<Map<String,Object>> pendingChanges = [], acceptedChanges = []
+        String queryString = "select pc from PendingChange pc where pc.owner = :contextOrg and "
+        List query = []
+        Map<String,Object> queryParams = [contextOrg:configMap.contextOrg]
+        if(configMap.periodInDays) {
+            query << "pc.ts > :time"
+            queryParams.time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
+        }
+        if(query)
+            queryString += query.join(" and ")
+        String pendingQuery = "${queryString} and pc.status = :pending", acceptedQuery = "${queryString} and pc.status = :accepted"
+        Map<String,RefdataValue> pendingFilterParams = [pending:RDStore.PENDING_CHANGE_PENDING], acceptedFilterParams = [accepted:RDStore.PENDING_CHANGE_ACCEPTED]
+        if(configMap.pending) {
+            List<PendingChange> result = PendingChange.executeQuery(pendingQuery,queryParams+pendingFilterParams)
+            if(configMap.offset && configMap.max)
+                result = result.drop(configMap.offset).take(configMap.max)
+            result.each { chObj ->
+                if(chObj instanceof PendingChange) {
+                    PendingChange change = chObj
+                    if(change.subscription) {
+                        if(change.subscription.instanceOf) {
+                            Map<String,Object> entryOfParent = pendingChanges.find {it.target == change.subscription.instanceOf}
+                            if(entryOfParent){
+                                if(!entryOfParent.memberSubscriptions)
+                                    entryOfParent.memberSubscriptions = [change]
+                                else entryOfParent.memberSubscriptions << change
+
+                            }
+                            else pendingChanges << [target:change.subscription.instanceOf,memberSubscriptions:[change]]
+                        }
+                        else {
+                            if(pendingChanges.find {it.target == change.subscription})
+                                pendingChanges.find {it.target == change.subscription}.change = change
+                            else pendingChanges << [target:change.subscription,change:change]
+                        }
+                    }
+                    else if(change.license) {
+                        pendingChanges << [target:change.license,change:change]
+                    }
+                    else if(change.costItem) {
+                        pendingChanges << [target:change.costItem]
+                    }
+                }
+            }
+        }
+        if(configMap.notifications) {
+            List<PendingChange> result = PendingChange.executeQuery(acceptedQuery,queryParams+acceptedFilterParams)
+            if(configMap.offset && configMap.max)
+                result = result.drop(configMap.offset).take(configMap.max)
+            result.each { resObj ->
+                PendingChange change = (PendingChange) resObj
+                //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
+                if(change.subscription) {
+                    def target = genericOIDService.resolveOID(change.oid)
+                    Package targetPkg
+                    if(target instanceof TitleInstancePackagePlatform) {
+                        targetPkg = target.pkg
+                    }
+                    else if(target instanceof IssueEntitlement || target instanceof TIPPCoverage) {
+                        targetPkg = target.tipp.pkg
+                    }
+                    else if(target instanceof IssueEntitlementCoverage) {
+                        targetPkg = target.issueEntitlement.tipp.pkg
+                    }
+                    else if(target instanceof Package) {
+                        targetPkg = target
+                    }
+                    if(targetPkg){
+                        SubscriptionPackage targetSp = SubscriptionPackage.findBySubscriptionAndPkg(change.subscription,targetPkg)
+                        PendingChangeConfiguration pcc = PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(targetSp,change.msgToken)
+                        if(!pcc) {
+                            targetSp = SubscriptionPackage.findBySubscriptionAndPkg(change.subscription.instanceOf,targetPkg)
+                            pcc = PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(targetSp,change.msgToken)
+                        }
+                        if(pcc && pcc.withNotification || !pcc) {
+                            if(change.subscription.instanceOf) {
+                                Map<String,Object> entryOfParent = acceptedChanges.find {it.target == change.subscription.instanceOf}
+                                if(!entryOfParent.memberSubscriptions)
+                                    entryOfParent.memberSubscriptions = [change]
+                                else entryOfParent.memberSubscriptions << change
+                            }
+                            else {
+                                acceptedChanges << [target:change.subscription,change:change]
+                            }
+                        }
+                    }
+                }
+                else if(change.license) {
+                    acceptedChanges << [target:change.license,change:change]
+                }
+                else if(change.costItem) {
+                    acceptedChanges << [target:change.costItem,change:change]
+                }
+            }
+        }
+        [pending:pendingChanges,pendingCount:pendingChanges.size(),notifications:acceptedChanges,notificationsCount:acceptedChanges.size()]
+    }
+
+    //called from: dashboard.gsp, pendingChanges.gsp, accepetdChanges.gsp
+    Map<String,Object> printRow(PendingChange change) {
+        String eventIcon, instanceIcon, eventString, pkgLink, pkgName, titleLink, titleName, platformName, platformLink, holdingLink, coverageString
+        List<Object> eventData
+        Locale locale = Locale.getDefault()
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
+        if(change.oid) {
+            if(change.oid.contains(IssueEntitlement.class.name)){
+                IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(change.oid)
+                holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg.id])
+                pkgName = target.tipp.pkg.name
+                titleName = target.tipp.title.title
+            }
+            else if(change.oid.contains(TitleInstancePackagePlatform.class.name)) {
+                TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) genericOIDService.resolveOID(change.oid)
+                pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'current', id: target.pkg.id, params: [filter:target.title.title])
+                pkgName = target.pkg.name
+                titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: target.title.id)
+                titleName = target.title.title
+                platformLink = grailsLinkGenerator.link(controller: 'platform', action: 'show', id: target.platform.id)
+                platformName = target.platform.name
+            }
+            else if(change.oid.contains(IssueEntitlementCoverage.class.name)) {
+                IssueEntitlementCoverage target = (IssueEntitlementCoverage) genericOIDService.resolveOID(change.oid)
+                IssueEntitlement ie = target.issueEntitlement
+                String volume = messageSource.getMessage('tipp.volume',null,locale)
+                String issue = messageSource.getMessage('tipp.issue',null,locale)
+                holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: ie.subscription.id, params: [filter: ie.tipp.title.title,pkgfilter: ie.tipp.pkg.id])
+                titleName = ie.tipp.title.title
+                pkgName = ie.tipp.pkg.name
+                String startDate = target.startDate ? sdf.format(target.startDate) : ""
+                String endDate = target.endDate ? sdf.format(target.endDate) : ""
+                coverageString = "${startDate} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${endDate} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
+            }
+            else if(change.oid.contains(TIPPCoverage.class.name)) {
+                TIPPCoverage target = (TIPPCoverage) genericOIDService.resolveOID(change.oid)
+                pkgName = target.tipp.pkg.name
+                titleName = target.tipp.title.title
+                platformName = target.tipp.platform.name
+                String volume = messageSource.getMessage('tipp.volume',null,locale)
+                String issue = messageSource.getMessage('tipp.issue',null,locale)
+                String startDate = target.startDate ? sdf.format(target.startDate) : ""
+                String endDate = target.endDate ? sdf.format(target.endDate) : ""
+                coverageString = "${startDate} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${endDate} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
+            }
+            switch(change.msgToken) {
+            //pendingChange.message_TP01 (newTitle)
+                case PendingChangeConfiguration.NEW_TITLE:
+                    eventIcon = '<i class="green plus icon"></i>'
+                    instanceIcon = '<i class="book icon"></i>'
+                    if(pkgLink && pkgName && titleLink && titleName && platformLink && platformName)
+                        eventData = [pkgLink,pkgName,titleLink,titleName,platformLink,platformName]
+                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
+                    break
+            //pendingChange.message_TP02 (titleUpdated)
+                case PendingChangeConfiguration.TITLE_UPDATED:
+                    eventIcon = '<i class="yellow circle outline icon"></i>'
+                    instanceIcon = '<i class="book icon"></i>'
+                    if(holdingLink && titleName && pkgName) {
+                        eventData = [holdingLink,titleName,pkgName,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),change.oldValue]
+                        if(change.targetProperty in ['hostPlatformURL'])
+                            eventData << "<a href='${change.newValue}'>${change.newValue}</a>"
+                        else eventData << change.newValue
+                    }
+                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
+                    break
+            //pendingChange.message_TP03 (titleDeleted)
+                case PendingChangeConfiguration.TITLE_DELETED:
+                    eventIcon = '<i class="red minus icon"></i>'
+                    instanceIcon = '<i class="book icon"></i>'
+                    if(pkgName && titleName && holdingLink)
+                        eventData = [pkgName,titleName,holdingLink]
+                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
+                    break
+            //pendingChange.message_TC01 (coverageUpdated)
+                case PendingChangeConfiguration.COVERAGE_UPDATED:
+                    eventIcon = '<i class="yellow circle outline icon"></i>'
+                    instanceIcon = '<i class="file alternate icon"></i>'
+                    if(holdingLink && pkgName && coverageString && titleName) {
+                        eventData = [holdingLink,pkgName,titleName,coverageString,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),change.oldValue,change.newValue]
+                    }
+                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
+                    break
+            //pendingChange.message_TC02 (newCoverage)
+                case PendingChangeConfiguration.NEW_COVERAGE:
+                    eventIcon = '<i class="green plus icon"></i>'
+                    instanceIcon = '<i class="file alternate icon"></i>'
+                    if(holdingLink && coverageString)
+                        eventData = [coverageString,holdingLink]
+                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
+                    break
+            //pendingChange.message_TC03 (coverageDeleted)
+                case PendingChangeConfiguration.COVERAGE_DELETED:
+                    eventIcon = '<i class="red minus icon"></i>'
+                    instanceIcon = '<i class="file alternate icon"></i>'
+                    if(holdingLink && coverageString)
+                        eventData = [coverageString,holdingLink]
+                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
+                    break
+            }
+        }
+
+        if(eventString == null)
+            eventString = messageSource.getMessage(change.msgToken,eventData.toArray(),locale)
+        [instanceIcon:instanceIcon,eventIcon:eventIcon,eventString:eventString]
     }
 
 }
