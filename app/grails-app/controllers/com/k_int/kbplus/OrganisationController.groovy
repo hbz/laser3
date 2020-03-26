@@ -333,14 +333,19 @@ class OrganisationController extends AbstractDebugController {
     def processCreateIdentifier(){
         log.debug("OrganisationController::processCreateIdentifier ${params}")
         Org org   = params.orgid ? Org.get(params.orgid) : null
-        if ( ! (org && params.ns.id && params.value)){
-            flash.message = message(code: 'menu.admin.error')
+        if ( ! (org && params.ns.id)){
+            flash.error = message(code: 'menu.admin.error')
             redirect(url: request.getHeader('referer'))
             return
         }
         IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
         if (!namespace){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if ( ! params.value){
+            flash.error = message(code: 'identifier.create.err.missingvalue', args: [namespace.getI10n('name') ?: namespace.ns])
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -356,13 +361,13 @@ class OrganisationController extends AbstractDebugController {
         log.debug("OrganisationController::processCreateCustomerIdentifier ${params}")
         Org org   = params.orgid ? Org.get(params.orgid) : null
         if ( ! (org && params.addCIPlatform && params.value)){
-            flash.message = message(code: 'menu.admin.error')
+            flash.error = message(code: 'menu.admin.error')
             redirect(url: request.getHeader('referer'))
             return
         }
         Platform plt = Platform.get(params.addCIPlatform)
         if (!plt){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.provider.platform.label'), params.addCIPlatform])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.provider.platform.label'), params.addCIPlatform])
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -387,13 +392,13 @@ class OrganisationController extends AbstractDebugController {
         Org org   = params.orgid ? Org.get(params.orgid) : null
         Identifier identifier   = Identifier.get(params.identifierId)
         if ( ! (org && identifier)){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId])
             redirect(url: request.getHeader('referer'))
             return
         }
         IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
         if (!namespace){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -1452,33 +1457,67 @@ class OrganisationController extends AbstractDebugController {
             redirect action: 'show', id: orgInstance.id
         }
     }
-    def addSubjectGroup()
-    {
+    def addSubjectGroup() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-            redirect action: 'list'
+            redirect(url: request.getHeader('referer'))
             return
         }
-
-        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
-            result.editable = true
+        RefdataValue newSubjectGroup = RefdataValue.get(params.subjectGroup)
+        if (!newSubjectGroup) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.subjectGroup.label'), params.subjectGroup])
+            redirect(url: request.getHeader('referer'))
+            return
         }
-        else {
+        if (orgInstance.getSubjectGroup().find { it.subjectGroupId == newSubjectGroup.id }) {
+            flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.subjectGroup.label')])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
+            result.editable = true
+        } else {
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
         }
 
-        if(result.editable)
-        {
-            orgInstance.addToSubjectGroup(subjectGroup:  RefdataValue.get(params.subjectGroup))
+        if (result.editable){
+            orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
             orgInstance.save(flush: true)
             flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }
+
+    def deleteSubjectGroup() {
+        Map<String, Object> result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        Org orgInstance = Org.get(params.org)
+
+        if (!orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
+            result.editable = true
+        } else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+        }
+
+        if(result.editable) {
+            def osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
+            orgInstance.removeFromSubjectGroup(osg)
+            orgInstance.save()
+            osg.delete()
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+            redirect(url: request.getHeader('referer'))
+        }
+    }
+
     private Map setResultGenericsAndCheckAccess(params) {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org

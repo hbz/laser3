@@ -1,7 +1,6 @@
-
 <div class="field required">
     <label>${message(code: 'accessMethod.label')}</label>
-    <laser:select class="ui dropdown values" id="accessMethod" name="accessMethod"
+    <laser:select class="ui dropdown" id="accessMethod" name="accessMethod"
                   from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues(de.laser.helper.RDConstants.ACCESS_POINT_TYPE)}"
                   optionKey="value"
                   optionValue="value"
@@ -11,7 +10,6 @@
                           action: 'create',
                           params: "'template=' + this.value",
                           update: 'details',
-                          onSuccess: '$(\'.ui.checkbox\').checkbox();'
                   )}"
     />
 </div>

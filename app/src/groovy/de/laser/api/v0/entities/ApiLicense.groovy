@@ -117,19 +117,18 @@ class ApiLicense {
 
         result.globalUID        = lic.globalUID
         // removed - result.contact          = lic.contact
-        result.dateCreated      = lic.dateCreated
-        result.endDate          = lic.endDate
-        //result.impId            = lic.impId
+        result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
+        result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
         // result.lastmod          = lic.lastmod // legacy ?
-        result.lastUpdated      = lic.lastUpdated
+        result.lastUpdated      = ApiToolkit.formatInternalDate(lic.lastUpdated)
         // result.licenseUrl       = lic.licenseUrl
         // removed - result.licensorRef      = lic.licensorRef
         // removed - result.licenseeRef      = lic.licenseeRef
         result.licenseType      = lic.licenseType
         //result.noticePeriod     = lic.noticePeriod
         result.reference        = lic.reference
-        result.startDate        = lic.startDate
-        result.normReference= lic.sortableReference
+        result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
+        result.normReference    = lic.sortableReference
 
         // erms-888
         result.calculatedType   = lic.getCalculatedType()

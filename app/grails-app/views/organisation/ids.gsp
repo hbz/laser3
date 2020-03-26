@@ -37,9 +37,9 @@
 <g:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, departmentalView: departmentalView, institutionalView: institutionalView]}"/>
 
-<g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ORG_EDITOR,ROLE_ADMIN')}">
+<g:if test="${editable}">
     <semui:controlButtons>
-        <g:render template="actions" model="${[org: orgInstance, user: user]}"/>
+        <g:render template="actions" model="${[org: orgInstance, user: user, editable: editable]}"/>
     </semui:controlButtons>
 </g:if>
 

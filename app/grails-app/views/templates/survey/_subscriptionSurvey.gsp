@@ -3,34 +3,29 @@
     <div class="twelve wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
 
+            <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
             <div class="ui horizontal segments">
+                <div class="ui segment center aligned">
+                    <b>${message(code: 'surveyConfig.subOrgs.label')}:</b>
+                    <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
+                        <div class="ui circular label">
+                            ${countParticipants.subMembers}
+                        </div>
+                    </g:link>
+                </div>
+
                 <div class="ui segment center aligned">
                     <b>${message(code: 'surveyConfig.orgs.label')}:</b>
                     <g:link controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig?.id]">
-                        <div class="ui circular label">${surveyConfig?.orgs?.size()}</div>
+                        <div class="ui circular label">${countParticipants.surveyMembers}</div>
                     </g:link>
-                </div>
 
-                <div class="ui segment center aligned">
-                    <b>${message(code: 'surveyConfig.subOrgsWithoutMultiYear.label')}:</b>
-                    <g:link controller="subscription" action="members" id="${subscriptionInstance.id}"
-                            params="[subRunTime: true, filterSet: true]">
-                        <div class="ui circular label">
-                            ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(subscriptionInstance, false)?.size()}
-                        </div>
-                    </g:link>
-                </div>
-
-                <div class="ui segment center aligned">
-                    <b>${message(code: 'surveyConfig.subOrgsWithMultiYear.label')}:</b>
-                    <g:link controller="subscription" action="members" id="${subscriptionInstance.id}"
-                            params="[subRunTimeMultiYear: true, filterSet: true]">
-                        <div class="ui circular label">
-                            ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(subscriptionInstance, true)?.size()}
-                        </div>
-                    </g:link>
+                    <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
+                        ( ${countParticipants.subMembersWithMultiYear}
+                        ${message(code: 'surveyConfig.subOrgsWithMultiYear.label')} )
+                    </g:if>
                 </div>
             </div>
         </g:if>
@@ -515,7 +510,6 @@
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'surveyProperty.name')}</th>
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
-                <th>${message(code: 'surveyProperty.comment.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th></th>
             </tr>
@@ -530,7 +524,7 @@
                     <td>
                         ${surveyProperty?.surveyProperty?.getI10n('name')}
 
-                        <g:if test="${surveyProperty?.surveyProperty?.owner?.id == institution?.id}">
+                        <g:if test="${surveyProperty?.surveyProperty?.tenant?.id == institution?.id}">
                             <i class='shield alternate icon'></i>
                         </g:if>
 
@@ -549,19 +543,12 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${surveyProperty?.surveyProperty?.comment}">
-                            ${surveyProperty?.surveyProperty?.comment}
-                        </g:if>
-                    </td>
-                    <td>
-
-                        ${surveyProperty?.surveyProperty?.getLocalizedType()}
-
+                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyProperty?.surveyProperty.type)}
                     </td>
                     <td>
                         <g:if test="${editable && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING &&
                                 com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty?.surveyProperty)
-                                && (com.k_int.kbplus.SurveyProperty.findByName('Participation')?.id != surveyProperty?.surveyProperty?.id)}">
+                                && (de.laser.helper.RDStore.SURVEY_PROPERTY_PARTICIPATION?.id != surveyProperty?.surveyProperty?.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
                                     id="${surveyProperty?.id}">
@@ -650,8 +637,7 @@
 
                     </td>
                     <td>
-                        ${surveyResult?.type?.getLocalizedType()}
-
+                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyResult?.type.type)}
                     </td>
                     <g:set var="surveyOrg"
                            value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, institution)}"/>

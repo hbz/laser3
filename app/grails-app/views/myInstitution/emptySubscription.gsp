@@ -49,7 +49,7 @@
                                   class="ui select dropdown"/>
                 </div>
 
-                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                <g:if test="${(institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID)}">
                     <%
                         List subscriptionTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
                         subscriptionTypes-=RDStore.SUBSCRIPTION_TYPE_LOCAL
@@ -59,6 +59,9 @@
                         <laser:select id="asOrgType" name="type" from="${subscriptionTypes}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
                     </div>
                 </g:if>
+                <g:elseif test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                    <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" />
+                </g:elseif>
                 <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
                 </g:elseif>

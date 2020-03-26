@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
+import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -317,6 +318,20 @@ class FilterService {
         Map result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
+
+        def date_restriction
+        if ((params.validOn == null || params.validOn.trim() == '') && sdFormat) {
+            date_restriction = null
+        } else {
+            date_restriction = sdFormat.parse(params.validOn)
+        }
+
+        if (date_restriction) {
+            query += " surInfo.startDate <= :date_restr and (surInfo.endDate >= :date_restr or surInfo.endDate is null)"
+            queryParams.put('date_restr', date_restriction)
+            params.filterSet = true
+        }
+
         if(params.name) {
             query << "(genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
             queryParams << [name:"${params.name}"]
@@ -536,6 +551,20 @@ class FilterService {
         Map result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
+
+        def date_restriction
+        if ((params.validOn == null || params.validOn.trim() == '') && sdFormat) {
+            date_restriction = null
+        } else {
+            date_restriction = sdFormat.parse(params.validOn)
+        }
+
+        if (date_restriction) {
+            query += " surInfo.startDate <= :date_restr and (surInfo.endDate >= :date_restr or surInfo.endDate is null)"
+            queryParams.put('date_restr', date_restriction)
+            params.filterSet = true
+        }
+
         if(params.name) {
             query << "(genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
             queryParams << [name:"${params.name}"]

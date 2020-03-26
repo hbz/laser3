@@ -1,4 +1,137 @@
-<g:if test="${controllerName == 'survey' && actionName == 'show'}">
+<%@ page import="de.laser.helper.RDStore" %>
+<div class="ui stackable grid">
+    <div class="twelve wide column">
+        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+            <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
+            <div class="ui horizontal segments">
+
+                <div class="ui segment left aligned">
+                    <b>${message(code: 'surveyConfig.orgs.label')}:</b>
+                    <g:link controller="survey" action="surveyParticipants"
+                            id="${surveyConfig.surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig?.id]">
+                        <div class="ui circular label">${countParticipants.surveyMembers}</div>
+                    </g:link>
+                </div>
+            </div>
+        </g:if>
+
+        <div class="ui card ">
+            <div class="content">
+                <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id}">
+                    <dl>
+                        <dt class="control-label">
+                            <div class="ui icon la-popup-tooltip la-delay"
+                                 data-content="${message(code: "surveyConfig.internalComment.comment")}">
+                                ${message(code: 'surveyConfig.internalComment.label')}
+                                <i class="question small circular inverted icon"></i>
+                            </div>
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
+
+                    </dl>
+
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.url.label')}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"/>
+                        <g:if test="${surveyConfig.url}">
+                            <semui:linkIcon href="${surveyConfig.url}"/>
+                        </g:if>
+                            <br/>&nbsp<br/>&nbsp<br/>
+                        </dd>
+
+                    </dl>
+
+                    <br>
+
+                    <div class="ui form">
+                        <g:form action="setSurveyConfigComment" controller="survey" method="post"
+                                params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]">
+                            <div class="field">
+                                <label><div class="ui icon la-popup-tooltip la-delay"
+                                            data-content="${message(code: "surveyConfig.comment.comment")}">
+                                    ${message(code: 'surveyConfig.comment.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div></label>
+                                <textarea name="comment" rows="15">${surveyConfig?.comment}</textarea>
+                            </div>
+
+                            <div class="left aligned">
+                                <button type="submit"
+                                        class="ui button">${message(code: 'default.button.save_changes')}</button>
+                            </div>
+                        </g:form>
+                    </div>
+
+                </g:if>
+                <g:else>
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.url.label')}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"
+                                             overwriteEditable="${false}"/>
+                        <g:if test="${surveyConfig.url}">
+                            <semui:linkIcon href="${surveyConfig.url}"/>
+                        </g:if>
+                            <br/>&nbsp<br/>&nbsp<br/>
+                        </dd>
+
+                    </dl>
+
+                    <div class="ui form">
+                        <div class="field">
+                            <label>
+                                <g:message code="surveyConfigsInfo.comment"/>
+                            </label>
+                            <g:if test="${surveyConfig?.comment}">
+                                <textarea readonly="readonly" rows="15">${surveyConfig?.comment}</textarea>
+                            </g:if>
+                            <g:else>
+                                <g:message code="surveyConfigsInfo.comment.noComment"/>
+                            </g:else>
+                        </div>
+                    </div>
+                </g:else>
+            </div>
+        </div>
+    </div>
+
+    <aside class="four wide column la-sidekick">
+        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+
+            <g:render template="/templates/tasks/card"
+                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+
+
+            <div id="container-notes">
+                <g:render template="/templates/notes/card"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')]}"/>
+            </div>
+
+            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+
+                <g:render template="/templates/tasks/modal_create"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+
+            </g:if>
+            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                <g:render template="/templates/notes/modal_create"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+            </g:if>
+        </g:if>
+
+        <div id="container-documents">
+            <g:render template="/survey/cardDocuments"
+                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+        </div>
+    </aside><!-- .four -->
+
+</div><!-- .grid -->
+
+<g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id}">
     <g:set var="surveyProperties" value="${surveyConfig.surveyProperties}"/>
 
     <semui:form>
@@ -12,7 +145,6 @@
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'surveyProperty.name')}</th>
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
-                <th>${message(code: 'surveyProperty.comment.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th></th>
             </tr>
@@ -27,7 +159,7 @@
                     <td>
                         ${surveyProperty?.surveyProperty?.getI10n('name')}
 
-                        <g:if test="${surveyProperty?.surveyProperty?.owner?.id == institution?.id}">
+                        <g:if test="${surveyProperty?.surveyProperty?.tenant?.id == institution?.id}">
                             <i class='shield alternate icon'></i>
                         </g:if>
 
@@ -46,19 +178,24 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${surveyProperty?.surveyProperty?.comment}">
-                            ${surveyProperty?.surveyProperty?.comment}
-                        </g:if>
-                    </td>
-                    <td>
 
-                        ${surveyProperty?.surveyProperty?.getLocalizedType()}
+                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyProperty?.surveyProperty.type)}
+                        <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                            <g:set var="refdataValues" value="${[]}"/>
+                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyProperty?.surveyProperty.refdataCategory)}"
+                                    var="refdataValue">
+                                <g:set var="refdataValues"
+                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                            </g:each>
+                            <br>
+                            (${refdataValues.join('/')})
+                        </g:if>
 
                     </td>
                     <td>
                         <g:if test="${editable && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING &&
                                 com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty?.surveyProperty)
-                                && (com.k_int.kbplus.SurveyProperty.findByName('Participation')?.id != surveyProperty?.surveyProperty?.id)}">
+                                && (de.laser.helper.RDStore.SURVEY_PROPERTY_PARTICIPATION?.id != surveyProperty?.surveyProperty?.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
                                     id="${surveyProperty?.id}">
@@ -128,7 +265,7 @@
                 </th>
             </tr>
             </thead>
-            <g:each in="${surveyResults.sort{it.type.getI10n('name')}}" var="surveyResult" status="i">
+            <g:each in="${surveyResults.sort { it.type.getI10n('name') }}" var="surveyResult" status="i">
 
                 <tr>
                     <td class="center aligned">
@@ -146,7 +283,17 @@
 
                     </td>
                     <td>
-                        ${surveyResult?.type?.getLocalizedType()}
+                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyResult?.type.type)}
+                        <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                            <g:set var="refdataValues" value="${[]}"/>
+                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult?.type.refdataCategory)}"
+                                    var="refdataValue">
+                                <g:set var="refdataValues"
+                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                            </g:each>
+                            <br>
+                            (${refdataValues.join('/')})
+                        </g:if>
                     </td>
                     <td>
                         <g:if test="${surveyResult?.type?.type == Integer.toString()}">
@@ -171,7 +318,7 @@
                         </g:elseif>
                         <g:elseif test="${surveyResult?.type?.type == com.k_int.kbplus.RefdataValue.toString()}">
 
-                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.owner?.id != institution?.id}">
+                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.tenant?.id != institution?.id}">
                                 <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
                                                         id="participation"
                                                         config="${surveyResult.type?.refdataCategory}"/>

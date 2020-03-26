@@ -27,6 +27,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.awt.*
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -188,8 +189,8 @@ class FinanceController extends AbstractDebugController {
                                         String cellValueA = ""
                                         String cellValueB = ""
                                         orgRoles.each { or ->
-                                            cellValueA += or.sortname.replace(',',':')
-                                            cellValueB += or.name.replace(',','')
+                                            cellValueA += or.sortname
+                                            cellValueB += or.name
                                         }
                                         cellnum++
                                         row.add(cellValueA)
@@ -201,7 +202,7 @@ class FinanceController extends AbstractDebugController {
                                 }
                                 //cost title
                                 cellnum++
-                                row.add(ci.costTitle ? ci.costTitle.replaceAll(',','') : '')
+                                row.add(ci.costTitle ?: '')
                                 if(viewMode == "cons") {
                                     //provider
                                     cellnum++
@@ -209,7 +210,7 @@ class FinanceController extends AbstractDebugController {
                                         Set<Org> orgRoles = providers.get(ci.sub)
                                         String cellValue = ""
                                         orgRoles.each { or ->
-                                            cellValue += or.name.replace(',','')
+                                            cellValue += or.name
                                         }
                                         row.add(cellValue)
                                     }
@@ -217,7 +218,7 @@ class FinanceController extends AbstractDebugController {
                                 }
                                 //subscription
                                 cellnum++
-                                row.add(ci.sub ? ci.sub.name.replaceAll(',','') : "")
+                                row.add(ci.sub ? ci.sub.name : "")
                                 //dates from-to
                                 if(ci.sub) {
                                     cellnum++
@@ -335,12 +336,14 @@ class FinanceController extends AbstractDebugController {
                                 for(h;h < sumcell;h++) {
                                     sumRow.add(" ")
                                 }
-                                sumRow.add(financialData[viewMode].sums.localSums.localSum)
+                                BigDecimal localSum = BigDecimal.valueOf(financialData[viewMode].sums.localSums.localSum)
+                                sumRow.add(localSum.setScale(2,RoundingMode.HALF_UP))
                             }
                             for(h;h < sumcellAfterTax;h++) {
                                 sumRow.add(" ")
                             }
-                            sumRow.add(financialData[viewMode].sums.localSums.localSumAfterTax)
+                            BigDecimal localSumAfterTax = BigDecimal.valueOf(financialData[viewMode].sums.localSums.localSumAfterTax)
+                            sumRow.add(localSumAfterTax.setScale(2,RoundingMode.HALF_UP))
                             rowData.add(sumRow)
                             rowData.add([])
                             financialData[viewMode].sums.billingSums.each { entry ->
@@ -354,15 +357,17 @@ class FinanceController extends AbstractDebugController {
                                     for(i;i < sumCurrencyCell;i++) {
                                         sumRow.add(" ")
                                     }
-                                    sumRow.add(entry.billingSum)
+                                    BigDecimal billingSum = BigDecimal.valueOf(entry.billingSum)
+                                    sumRow.add(billingSum.setScale(2,RoundingMode.HALF_UP))
                                 }
                                 for(i;i < sumCurrencyAfterTaxCell;i++) {
                                     sumRow.add(" ")
                                 }
-                                sumRow.add(entry.billingSumAfterTax)
+                                BigDecimal billingSumAfterTax = BigDecimal.valueOf(entry.billingSumAfterTax)
+                                sumRow.add(billingSumAfterTax.setScale(2,RoundingMode.HALF_UP))
                                 rowData.add(sumRow)
                             }
-                            writer.write(exportService.generateSeparatorTableString(titles,rowData,','))
+                            writer.write(exportService.generateSeparatorTableString(titles,rowData,';'))
                         }
                         else {
                             writer.write(message(code:'finance.export.empty'))
@@ -659,10 +664,12 @@ class FinanceController extends AbstractDebugController {
                 cell.setCellValue(message(code:'financials.export.sums'))
                 if(sumcell > 0) {
                     cell = sumRow.createCell(sumcell)
-                    cell.setCellValue(cit.getValue().sums.localSums.localSum)
+                    BigDecimal localSum = BigDecimal.valueOf(cit.getValue().sums.localSums.localSum)
+                    cell.setCellValue(localSum.setScale(2, RoundingMode.HALF_UP))
                 }
                 cell = sumRow.createCell(sumcellAfterTax)
-                cell.setCellValue(cit.getValue().sums.localSums.localSumAfterTax)
+                BigDecimal localSumAfterTax = BigDecimal.valueOf(cit.getValue().sums.localSums.localSumAfterTax)
+                cell.setCellValue(localSumAfterTax.setScale(2, RoundingMode.HALF_UP))
                 rownum++
                 cit.getValue().sums.billingSums.each { entry ->
                     sumRow = sheet.createRow(rownum)
@@ -670,10 +677,12 @@ class FinanceController extends AbstractDebugController {
                     cell.setCellValue(entry.currency)
                     if(sumCurrencyCell > 0) {
                         cell = sumRow.createCell(sumCurrencyCell)
-                        cell.setCellValue(entry.billingSum)
+                        BigDecimal billingSum = BigDecimal.valueOf(entry.billingSum)
+                        cell.setCellValue(billingSum.setScale(2, RoundingMode.HALF_UP))
                     }
                     cell = sumRow.createCell(sumCurrencyAfterTaxCell)
-                    cell.setCellValue(entry.billingSumAfterTax)
+                    BigDecimal billingSumAfterTax = BigDecimal.valueOf(entry.billingSumAfterTax)
+                    cell.setCellValue(billingSumAfterTax.setScale(2, RoundingMode.HALF_UP))
                     rownum++
                 }
             }
@@ -1461,4 +1470,82 @@ class FinanceController extends AbstractDebugController {
         render result as JSON
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processCostItemsBulk() {
+        Map<String,Object> result = financeService.setResultGenerics(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.putAll(financeService.setEditVars(result.institution))
+        List selectedCostItems = params.list("selectedCostItems")
+
+        if(selectedCostItems) {
+
+            def billing_currency = null
+            if (params.long('newCostCurrency2')) //GBP,etc
+            {
+                billing_currency = RefdataValue.get(params.newCostCurrency2)
+            }
+
+
+            NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+            def cost_billing_currency = params.newCostInBillingCurrency2 ? format.parse(params.newCostInBillingCurrency2).doubleValue() : null //0.00
+            def cost_currency_rate = params.newCostCurrencyRate2 ? params.double('newCostCurrencyRate2', 1.00) : null //1.00
+            def cost_local_currency = params.newCostInLocalCurrency2 ? format.parse(params.newCostInLocalCurrency2).doubleValue() : null //0.00
+
+            def tax_key = null
+            if (!params.newTaxRate2.contains("null")) {
+                String[] newTaxRate = params.newTaxRate2.split("§")
+                RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+                int taxRate = Integer.parseInt(newTaxRate[1])
+                switch (taxType.id) {
+                    case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
+                        switch (taxRate) {
+                            case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
+                                break
+                            case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
+                                break
+                        }
+                        break
+                    case RefdataValue.getByValueAndCategory("taxable tax-exempt", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
+                        break
+                    case RefdataValue.getByValueAndCategory("not taxable", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                        break
+                    case RefdataValue.getByValueAndCategory("not applicable", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                        break
+                    case RefdataValue.getByValueAndCategory("reverse charge", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
+                        break
+                }
+            }
+
+            selectedCostItems.each { id ->
+                CostItem costItem = CostItem.get(Long.parseLong(id))
+                if(costItem && costItem.costItemStatus != RDStore.COST_ITEM_DELETED){
+
+                    costItem.costInBillingCurrency = cost_billing_currency ?: costItem.costInBillingCurrency
+
+                    costItem.billingCurrency = billing_currency ?: costItem.billingCurrency
+                    //Not specified default to GDP
+                    costItem.costInLocalCurrency = cost_local_currency ?: costItem.costInLocalCurrency
+
+                    costItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
+
+                    costItem.currencyRate = cost_currency_rate ?: costItem.currencyRate
+                    costItem.taxKey = tax_key ?: costItem.taxKey
+
+                    costItem.save()
+                }
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
 }

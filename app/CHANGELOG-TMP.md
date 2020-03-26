@@ -2,6 +2,37 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2283    25.03.2020  hbz-dev     Moe     Feature     Ausschüttungsfunktion CostItems
+
+--      25.03.2020  hbz-dev     Andreas Feature     Auswahlliste der Teilnehmer in Finanzübersicht wieder eingeblendet
+
+2286    24.03.2020  hbz-dev     Andreas Bug         Summenwerte auf BigDecimal umgestellt, sodass nur zwei Nachkommastellen ausgegeben werden
+
+2284    24.03.2020  hbz-dev     Andreas Feature     Checkbox-Angebot bei Lizenzfilter gemäß Ticket angepasst
+
+2261    24.03.2020  hbz-dev     Andreas Feature     Mouseover-Text bei Identifikatoren gemäß Ticket angepasst
+
+2260    24.03.2020  hbz-dev     Andreas Bug         Verarbeitungsfehler der Zuweisung von Verträgen bei Kopieren von Lizenzen überbrückt
+
+2248    24.03.2020  hbz-dev     Andreas Bug         Ausgabefehler bei Export von Merkmalen korrigiert
+
+2278    23.03.2020  hbz-dev     Andreas Bug         Fehler beim massenweisen Entknüpfen von Teilnehmerverträgen behoben 
+
+2229    23.03.2020  hbz-dev     Andreas Bug         Auswahlliste des Lizenztyps bei Konsortien aufgehoben und auf LAS:eR Backoffice beschränkt
+
+2224    23.03.2020  hbz-dev     Andreas Bug         Umgang mit leerer Liste von Kindlizenzen korrigiert 
+
+1805    23.03.2020  hbz-dev     Andreas Bug         Falsche Erkennung des Locales im FinanceService behoben
+
+1488    23.03.2020  hbz-dev     Andreas Bug         Zugriffsstart und -ende wurden bei KBART-Vorbelegung nicht berücksichtigt
+
+2252    23.03.2020  hbz-dev     Christian   Feature Einbindung von OpenAthens in die Zugangskonfigurationen
+
+2245    23.03.2020  hbz-dev     Christian   Feature Kleinere Verbesserungen für Shibboleth Zugangskonfiguration
+
+--      20.03.2020  hbz-dev     Moe     Feature     Umbau von SurveyProperty zu PropertyDefinition
+
+2276    20.03.2020  hbz-dev     Andreas Feature     Verwaltungslizenzen dürfen nur vom LAS:eR Backoffice erstellt werden (provisorische Lösung)
 
 1981    20.03.2020  hbz-dev     David   Feature     User sollen Ihren Zugang bzw. Profil löschen
 

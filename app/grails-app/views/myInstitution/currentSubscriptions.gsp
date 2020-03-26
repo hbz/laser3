@@ -180,19 +180,18 @@
 
         <div class="three fields">
 
-            <div class="field">
-                <fieldset id="subscritionType">
+            <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
+            <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID}">
+                <div class="field">
+                    <fieldset id="subscritionType">
                         <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
                         <div class="inline fields la-filter-inline">
                             <%
                                 List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
-
-                                if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
+                                if(institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID)
                                     subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
-                                }
-                                if(!accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
+                                else
                                     subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
-                                }
                             %>
                             <g:each in="${subTypes}" var="subType">
                                 <div class="inline field">
@@ -206,7 +205,8 @@
                             </g:each>
                         </div>
                     </fieldset>
-            </div>
+                </div>
+            </g:if>
             <div class="field">
                 <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">

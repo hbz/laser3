@@ -13,6 +13,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.ParseException
@@ -64,11 +65,16 @@ class FinanceService {
             configMap.dataToDisplay.each { String dataToDisplay ->
                 switch(dataToDisplay) {
                     case "own":
+                        String subFilter = filterQuery.subFilter
+                        subFilter = subFilter.replace(" and orgRoles.org in (:filterConsMembers) ","")
+                        Map<String,Object> ownFilter = [:]
+                        ownFilter.putAll(filterQuery.filterData)
+                        ownFilter.remove('filterConsMembers')
                         Set<CostItem> ownCostItems = CostItem.executeQuery(
                                 'select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
-                                        genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
+                                        genericExcludes + subFilter + filterQuery.ciFilter +
                                         ' order by '+configMap.sortConfig.ownSort+' '+configMap.sortConfig.ownOrder,
-                                [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
+                                [owner:org,sub:sub]+genericExcludeParams+ownFilter)
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
                             result.own.costItems = ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
@@ -174,10 +180,15 @@ class FinanceService {
                         instanceFilter = " and sub.instanceOf = null "
                     }
                     String subJoin = filterQuery.subFilter || instanceFilter ? "join ci.sub sub " : ""
+                    String subFilter = filterQuery.subFilter+instanceFilter
+                    subFilter = subFilter.replace(" and orgRoles.org in (:filterConsMembers) ","")
+                    Map<String,Object> ownFilter = [:]
+                    ownFilter.putAll(filterQuery.filterData)
+                    ownFilter.remove('filterConsMembers')
                     String queryStringBase = "select ci from CostItem ci ${subJoin}" +
-                        "where ci.owner = :org ${genericExcludes+filterQuery.subFilter+instanceFilter+filterQuery.ciFilter} "+
+                        "where ci.owner = :org ${genericExcludes+subFilter+filterQuery.ciFilter} "+
                         "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder
-                    List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+filterQuery.filterData)
+                    List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
                     result.own = [count:ownSubscriptionCostItems.size()]
                     if(ownSubscriptionCostItems) {
                         result.own.costItems = ownSubscriptionCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
@@ -192,10 +203,10 @@ class FinanceService {
                         'join subC.orgRelations roleC ' +
                         'join sub.orgRelations roleMC ' +
                         'join sub.orgRelations orgRoles ' +
-                        'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType)'+
+                        'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType in (:subscrType)'+
                         genericExcludes+filterQuery.subFilter+filterQuery.ciFilter+
                         ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
-                        [org:org,consortialType:[OR_SUBSCRIPTION_CONSORTIA],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,consortialType:OR_SUBSCRIPTION_CONSORTIA,subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
                         List<CostItem> consortialCostItems = consortialCostRows.collect { row -> row[0] }
@@ -217,10 +228,10 @@ class FinanceService {
                         'join subC.orgRelations roleC ' +
                         'join sub.orgRelations roleMC ' +
                         'join sub.orgRelations orgRoles ' +
-                        'where orgC = :org and orgC = roleC.org and roleMC.roleType in :collectiveType and orgRoles.roleType in (:subscrType)'+
+                        'where orgC = :org and orgC = roleC.org and roleMC.roleType = :collectiveType and orgRoles.roleType in (:subscrType)'+
                         genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
                         ' order by '+configMap.sortConfig.collSort+' '+configMap.sortConfig.collOrder,
-                        [org:org,collectiveType:[OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,collectiveType:OR_SUBSCRIPTION_COLLECTIVE,subscrType:[OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
                     result.coll = [count:0]
                     if(collectiveCostRows) {
                         Set<CostItem> collectiveCostItems = collectiveCostRows.collect { row -> row[0] }
@@ -265,7 +276,7 @@ class FinanceService {
         LinkedHashMap queryParams = [:]
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         //subscription filter settings
-        //subscription members
+        //subscription members A (from /subFinance)
         if(params.filterSubMembers) {
             subFilterQuery += " and sub in (:filterSubMembers) "
             List<Subscription> filterSubMembers = []
@@ -275,6 +286,17 @@ class FinanceService {
             }
             queryParams.filterSubMembers = filterSubMembers
             log.info(queryParams.filterSubMembers)
+        }
+        //subscription members B (from /finance)
+        if(params.filterConsMembers) {
+            subFilterQuery += " and orgRoles.org in (:filterConsMembers) "
+            List<Org> filterConsMembers = []
+            String[] consMembers = params.list("filterConsMembers")
+            consMembers.each { consMember ->
+                filterConsMembers.add(Org.get(Long.parseLong(consMember)))
+            }
+            queryParams.filterConsMembers = filterConsMembers
+            log.info(queryParams.filterConsMembers)
         }
         //providers
         if(params.filterSubProviders) {
@@ -466,17 +488,17 @@ class FinanceService {
      * }
      *
      */
-    Map calculateResults(Collection<CostItem> costItems) {
+    Map<String,Object> calculateResults(Collection<CostItem> costItems) {
         //List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxKey.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems])
-        List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19])
-        List<Map> billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19])
-        Map localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
-        Map localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
-        List<Map> billingSums = []
+        List<Map<BigDecimal,BigDecimal>> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        List<Map<BigDecimal,BigDecimal>> billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        Map<BigDecimal,BigDecimal> localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
+        Map<BigDecimal,BigDecimal> localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
+        List<Map<String,BigDecimal>> billingSums = []
         Set<String> positiveCurrencies = []
-        Map localSums = [:]
-        double billingSum = 0.0
-        double billingSumAfterTax = 0.0
+        Map<String,BigDecimal> localSums = [:]
+        BigDecimal billingSum = 0.0
+        BigDecimal billingSumAfterTax = 0.0
         if(billingSumsPositive.size() > 0) {
             billingSumsPositive.each { posEntry ->
                 if (billingSumsNegative.size() > 0) {
@@ -1036,7 +1058,7 @@ class FinanceService {
         }
         allCurrencies.addAll(RefdataCategory.getAllRefdataValues(CURRENCY))
 
-        List<Map<String,Object>> result = [[id:0,text:messageSource.getMessage('financials.currency.none',null,Locale.getDefault())]] //is only provisorical, TODO [ticket=2107]
+        List<Map<String,Object>> result = [[id:0,text:messageSource.getMessage('financials.currency.none',null, LocaleContextHolder.getLocale())]] //is only provisorical, TODO [ticket=2107]
         result.addAll(allCurrencies.collect { rdv ->
             [id: rdv.id, text: rdv.getI10n('value')]
         })
@@ -1129,7 +1151,7 @@ class FinanceService {
                             result.editConf.showVisibilitySettings = true
                             result.showConsortiaFunctions = true
                             result.sortConfig.consSort = 'ci.costTitle'
-                            result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,Locale.getDefault())
+                            result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
                             result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                             result.editConf.showVisibilitySettings = true
                         }
@@ -1139,7 +1161,7 @@ class FinanceService {
                         dataToDisplay.addAll(['own','cons'])
                         result.showView = 'cons'
                         result.showConsortiaFunctions = true
-                        result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,Locale.getDefault())
+                        result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
                         result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                         result.editConf.showVisibilitySettings = true
                     }
@@ -1149,6 +1171,16 @@ class FinanceService {
                     dataToDisplay.addAll(['own','cons'])
                     result.showView = 'cons'
                     result.showConsortiaFunctions = true
+                    result.editConf.showVisibilitySettings = true
+                    result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
+                    Set<Org> consMembers = Subscription.executeQuery(
+                            'select oo.org, oo.org.sortname as sortname from Subscription s ' +
+                                    'join s.instanceOf subC ' +
+                                    'join subC.orgRelations roleC ' +
+                                    'join s.orgRelations roleMC ' +
+                                    'join s.orgRelations oo ' +
+                                    'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,consortialType:OR_SUBSCRIPTION_CONSORTIA,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
+                    result.consMembers = consMembers
                     result.editConf.showVisibilitySettings = true
                 }
                 break
@@ -1178,7 +1210,7 @@ class FinanceService {
                             dataToDisplay.addAll(['own','subscr','coll'])
                             result.showView = 'subscr'
                             result.showCollectiveFunctions = true
-                            result.subMemberLabel = messageSource.getMessage('collective.member',null,Locale.getDefault())
+                            result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
                             result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                             result.editConf.showVisibilitySettings = true
                         }
@@ -1188,7 +1220,7 @@ class FinanceService {
                         dataToDisplay.addAll(['own','coll'])
                         result.showView = 'coll'
                         result.showCollectiveFunctions = true
-                        result.subMemberLabel = messageSource.getMessage('collective.member',null,Locale.getDefault())
+                        result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
                         result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                         result.editConf.showVisibilitySettings = true
                     }
@@ -1199,6 +1231,8 @@ class FinanceService {
                     result.showView = 'subscr'
                     result.showCollectiveFunctions = true
                     result.editConf.showVisibilitySettings = true
+                    result.subMembersLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
+                    result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo join s.instanceOf.orgRelations parent where oo.roleType in :subscrRoles and parent.org = :contextOrg order by sortname asc',[contextOrg:result.institution,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                 }
                 break
         //cases ten and eleven
@@ -1245,8 +1279,8 @@ class FinanceService {
             orgConfigurations.put(oc.costItemElement.id,oc.elementSign.id)
         }
         result.orgConfigurations = orgConfigurations as JSON
-        if(configMap.showView in ["cons","coll"]) {
-            result.validSubChilds = [[id: 'forParent', label: messageSource.getMessage('financials.newCosts.forParentSubscription', null, Locale.getDefault())], [id: 'forAllSubscribers', label: configMap.licenseeTargetLabel]]
+        if(configMap.showView in ["cons","coll"] && configMap.subMembers) {
+            result.validSubChilds = [[id: 'forParent', label: messageSource.getMessage('financials.newCosts.forParentSubscription', null, LocaleContextHolder.getLocale())], [id: 'forAllSubscribers', label: configMap.licenseeTargetLabel]]
             result.validSubChilds.addAll(configMap.subMembers)
         }
         result

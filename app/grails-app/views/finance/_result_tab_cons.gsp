@@ -36,6 +36,13 @@
 <table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
         <tr>
+            <g:if test="${tmplShowCheckbox}">
+                <th>
+                    <g:if test="${data.costItems}">
+                        <g:checkBox name="costItemListToggler" id="costItemListToggler" checked="false"/>
+                    </g:if>
+                </th>
+            </g:if>
             <g:if test="${!fixedSubscription}">
                 <th>${message(code:'sidewide.number')}</th>
                 <g:sortableColumn property="sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
@@ -121,6 +128,11 @@
                     }
                 %>
                 <tr id="bulkdelete-b${ci.id}">
+                    <g:if test="${tmplShowCheckbox}">
+                        <td>
+                                        <g:checkBox name="selectedCostItems" value="${ci.id}" checked="false"/>
+                        </td>
+                    </g:if>
                     <td>
                         <%
                             int offset = consOffset ? consOffset : 0
@@ -314,3 +326,15 @@
     </g:else>
 </g:if>
 <!-- _result_tab_cons.gsp -->
+
+<g:if test="${tmplShowCheckbox}">
+    <script language="JavaScript">
+        $('#costItemListToggler').click(function () {
+            if ($(this).prop('checked')) {
+                $("tr[class!=disabled] input[name=selectedCostItems]").prop('checked', true)
+            } else {
+                $("tr[class!=disabled] input[name=selectedCostItems]").prop('checked', false)
+            }
+        })
+    </script>
+</g:if>

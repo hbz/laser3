@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.SurveyConfig; com.k_int.kbplus.CostItem; com.k_int.kbplus.RefdataValue; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.SurveyConfig; com.k_int.kbplus.CostItem; com.k_int.kbplus.RefdataValue; org.springframework.context.i18n.LocaleContextHolder;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -63,205 +63,212 @@
 
 <g:if test="${surveyConfigs}">
     <div class="ui grid">
-%{--<div class="four wide column">
-    <div class="ui vertical fluid menu">
-<g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
+        %{--<div class="four wide column">
+            <div class="ui vertical fluid menu">
+        <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
-<g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-        style="${config?.costItemsFinish ? 'background-color: Lime' : ''}"
-        controller="survey" action="surveyCostItems"
-        id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
+        <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
+                style="${config?.costItemsFinish ? 'background-color: Lime' : ''}"
+                controller="survey" action="surveyCostItems"
+                id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
-    <h5 class="ui header">${config?.getConfigNameShort()}</h5>
-    ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
+            <h5 class="ui header">${config?.getConfigNameShort()}</h5>
+            ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
 
 
-    <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>
-</g:link>
-</g:each>
-</div>
-</div>--}%
-
-    <div class="sixteen wide stretched column">
-        <div class="ui top attached tabular menu">
-            <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
-                    controller="survey" action="surveyCostItems"
-                    id="${surveyConfig?.surveyInfo?.id}"
-                    params="[surveyConfigID: surveyConfig?.id, tab: 'selectedSubParticipants']">
-                ${message(code: 'surveyParticipants.selectedSubParticipants')}
-                <div class="ui floating circular label">${selectedSubParticipants?.size() ?: 0}</div>
-            </g:link>
-
-            <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                    controller="survey" action="surveyCostItems"
-                    id="${surveyConfig?.surveyInfo?.id}"
-                    params="[surveyConfigID: surveyConfig?.id, tab: 'selectedParticipants']">
-                ${message(code: 'surveyParticipants.selectedParticipants')}
-                <div class="ui floating circular label">${selectedParticipants?.size() ?: 0}</div>
-            </g:link>
-
+            <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>
+        </g:link>
+        </g:each>
         </div>
+        </div>--}%
 
-        <g:if test="${params.tab == 'selectedSubParticipants'}">
+        <div class="sixteen wide stretched column">
+            <div class="ui top attached tabular menu">
+                <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
+                        controller="survey" action="surveyCostItems"
+                        id="${surveyConfig?.surveyInfo?.id}"
+                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedSubParticipants']">
+                    ${message(code: 'surveyParticipants.selectedSubParticipants')}
+                    <div class="ui floating circular label">${selectedSubParticipants?.size() ?: 0}</div>
+                </g:link>
 
-            <div class="ui bottom attached tab segment active">
+                <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
+                        controller="survey" action="surveyCostItems"
+                        id="${surveyConfig?.surveyInfo?.id}"
+                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedParticipants']">
+                    ${message(code: 'surveyParticipants.selectedParticipants')}
+                    <div class="ui floating circular label">${selectedParticipants?.size() ?: 0}</div>
+                </g:link>
+
+            </div>
+
+        <div class="ui bottom attached tab segment active">
 
             <div class="four wide column">
 
-        %{--<button type="button" class="ui icon button right floated" data-semui="modal"
-                data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
-
-
-        <g:render template="/survey/costItemModal"
-                  model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
-
-            <g:link onclick="addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
-                    class="ui icon button right floated trigger-modal">
-                <i class="plus icon"></i>
-            </g:link>
+                <g:link onclick="addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
+                        class="ui icon button right floated trigger-modal">
+                    <g:message code="surveyCostItems.createInitialCostItem"/>
+                </g:link>
             </div>
 
             <br>
             <br>
 
             <semui:filter>
-                <g:form action="surveyCostItems" method="post" class="ui form"
-                        params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
-                    <g:render template="/templates/filter/orgFilter"
-                              model="[
-                                      tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
-                                      tmplConfigFormFilter: true,
-                                      useNewLayouter      : true
-                              ]"/>
-                </g:form>
+            <g:form action="surveyCostItems" method="post" class="ui form"
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
+            <g:render template="/templates/filter/orgFilter"
+            model="[
+                              tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
+                              tmplConfigFormFilter: true,
+                              useNewLayouter      : true
+                      ]"/>
+            </g:form>
             </semui:filter>
 
 
-            <g:form action="processSurveyCostItemsBulk" method="post" class="ui form"
+            <g:form action="processSurveyCostItemsBulk" name="surveyCostItemsBulk" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
 
-                <h3>${message(code: 'surveyCostItems.bulkOption')}:</h3>
+                <h3><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
+                    ${message(code: 'surveyCostItems.bulkOption.label')}
+                        <i class="question circle icon"></i>
+                    </span>:</h3>
 
-                <div class="fields">
-                    <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
-                        <label>${g.message(code: 'financials.newCosts.amount')}</label>
+                <div class="ui basic segment">
+                    <div class="fields">
+                        <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
+                            <label>${g.message(code: 'financials.newCosts.amount')}</label>
 
-                        <div class="two fields">
-                            <div class="field">
-                                <label>${message(code: 'financials.invoice_total')}</label>
-                                <input title="${g.message(code: 'financials.addNew.BillingCurrency')}" type="text"
-                                       class="calc"
-                                       style="width:50%"
-                                       name="newCostInBillingCurrency2" id="newCostInBillingCurrency2"
-                                       placeholder="${g.message(code: 'financials.invoice_total')}"
-                                       value="<g:formatNumber
-                                               number="${costItem?.costInBillingCurrency}"
-                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
+                            <div class="two fields">
+                                <div class="field">
+                                    <label>${message(code: 'financials.invoice_total')}</label>
+                                    <input title="${g.message(code: 'financials.addNew.BillingCurrency')}" type="text"
+                                           class="calc"
+                                           style="width:50%"
+                                           name="newCostInBillingCurrency2" id="newCostInBillingCurrency2"
+                                           placeholder="${g.message(code: 'financials.invoice_total')}"
+                                           value="<g:formatNumber
+                                                   number="${costItem?.costInBillingCurrency}"
+                                                   minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton32"
-                                     data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                                     data-position="top center" data-variation="tiny">
-                                    <i class="calculator icon"></i>
-                                </div>
+                                    <div class="ui icon button la-popup-tooltip la-delay" id="costButton32"
+                                         data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
+                                         data-position="top center" data-variation="tiny">
+                                        <i class="calculator icon"></i>
+                                    </div>
 
-                                <g:select class="ui dropdown dk-width-auto" name="newCostCurrency2"
-                                          title="${g.message(code: 'financials.addNew.currencyType')}"
-                                          from="${currency}"
-                                          optionKey="id"
-                                          optionValue="${{ it.text.contains('-') ? it.text.split('-').first() : it.text }}"
-                                          value="${costItem?.billingCurrency?.id}"/>
-                            </div><!-- .field -->
-                            <div class="field">
-                                <label><g:message code="financials.newCosts.billingSum"/></label>
-                                <input title="<g:message code="financials.newCosts.billingSum"/>" type="text"
-                                       readonly="readonly"
-                                       name="newCostInBillingCurrencyAfterTax2" id="newCostInBillingCurrencyAfterTax2"
-                                       value="<g:formatNumber
-                                               number="${costItem?.costInBillingCurrencyAfterTax}"
-                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
+                                    <g:select class="ui dropdown dk-width-auto" name="newCostCurrency2"
+                                              title="${g.message(code: 'financials.addNew.currencyType')}"
+                                              from="${currency}"
+                                              optionKey="id"
+                                              optionValue="${{ it.text.contains('-') ? it.text.split('-').first() : it.text }}"
+                                              value="${costItem?.billingCurrency?.id}"/>
+                                </div><!-- .field -->
+                                <div class="field">
+                                    <label><g:message code="financials.newCosts.billingSum"/></label>
+                                    <input title="<g:message code="financials.newCosts.billingSum"/>" type="text"
+                                           readonly="readonly"
+                                           name="newCostInBillingCurrencyAfterTax2"
+                                           id="newCostInBillingCurrencyAfterTax2"
+                                           value="<g:formatNumber
+                                                   number="${costItem?.costInBillingCurrencyAfterTax}"
+                                                   minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                            </div><!-- .field -->
-                        <!-- TODO -->
-                            <style>
-                            .dk-width-auto {
-                                width: auto !important;
-                                min-width: auto !important;
-                            }
-                            </style>
-                        </div>
-
-                        <div class="two fields">
-                            <div class="field la-exchange-rate">
-                                <label>${g.message(code: 'financials.newCosts.exchangeRate')}</label>
-                                <input title="${g.message(code: 'financials.addNew.currencyRate')}" type="number"
-                                       class="calc"
-                                       name="newCostCurrencyRate2" id="newCostCurrencyRate2"
-                                       placeholder="${g.message(code: 'financials.newCosts.exchangeRate')}"
-                                       value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001"/>
-
-                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton22"
-                                     data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                                     data-position="top center" data-variation="tiny">
-                                    <i class="calculator icon"></i>
-                                </div>
-                            </div><!-- .field -->
-
-                            <div class="field">
-                                <label>${message(code: 'financials.newCosts.taxTypeAndRate')}</label>
-                                <%
-                                    CostItem.TAX_TYPES taxKey
-                                    if (costItem?.taxKey && tab != "subscr")
-                                        taxKey = costItem.taxKey
-                                %>
-                                <g:select class="ui dropdown calc" name="newTaxRate2" title="TaxRate"
-                                          from="${CostItem.TAX_TYPES}"
-                                          optionKey="${{ it.taxType.class.name + ":" + it.taxType.id + "§" + it.taxRate }}"
-                                          optionValue="${{ it.taxType.getI10n("value") + " (" + it.taxRate + "%)" }}"
-                                          value="${taxKey?.taxType?.class?.name}:${taxKey?.taxType?.id}§${taxKey?.taxRate}"
-                                          noSelection="${['null§0': '']}"/>
-
-                            </div><!-- .field -->
-                        </div>
-
-                        <div class="two fields">
-                            <div class="field">
-                                <label>${g.message(code: 'financials.newCosts.value')}</label>
-                                <input title="${g.message(code: 'financials.addNew.LocalCurrency')}" type="text"
-                                       class="calc"
-                                       name="newCostInLocalCurrency2" id="newCostInLocalCurrency2"
-                                       placeholder="${message(code: 'financials.newCosts.value')}"
-                                       value="<g:formatNumber
-                                               number="${costItem?.costInLocalCurrency}"
-                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
-
-                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton12"
-                                     data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                                     data-position="top center" data-variation="tiny">
-                                    <i class="calculator icon"></i>
-                                </div>
-                            </div><!-- .field -->
-                            <div class="field">
-                                <label><g:message code="financials.newCosts.finalSum"/></label>
-                                <input title="<g:message code="financials.newCosts.finalSum"/>" type="text"
-                                       readonly="readonly"
-                                       name="newCostInLocalCurrencyAfterTax2" id="newCostInLocalCurrencyAfterTax2"
-                                       value="<g:formatNumber
-                                               number="${costItem?.costInLocalCurrencyAfterTax}"
-                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
-                            </div><!-- .field -->
-                        </div>
-
-                        <div class="field">
-                            <div class="ui checkbox">
-                                <label>Finalen Preis runden</label>
-                                <input name="newFinalCostRounding2" class="hidden calc" type="checkbox"
-                                       <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
+                                </div><!-- .field -->
+                            <!-- TODO -->
+                                <style>
+                                .dk-width-auto {
+                                    width: auto !important;
+                                    min-width: auto !important;
+                                }
+                                </style>
                             </div>
-                        </div><!-- .field -->
 
-                    </fieldset> <!-- 1/2 field |  .la-account-currency -->
+                            <div class="two fields">
+                                <div class="field la-exchange-rate">
+                                    <label>${g.message(code: 'financials.newCosts.exchangeRate')}</label>
+                                    <input title="${g.message(code: 'financials.addNew.currencyRate')}" type="number"
+                                           class="disabled"
+                                           name="newCostCurrencyRate2" id="newCostCurrencyRate2"
+                                           placeholder="${g.message(code: 'financials.newCosts.exchangeRate')}"
+                                           value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001" readonly="readonly"/>
 
-                </div><!-- three fields -->
+
+                                </div><!-- .field -->
+
+                                <div class="field">
+                                    <label>${message(code: 'financials.newCosts.taxTypeAndRate')}</label>
+                                    <%
+                                        CostItem.TAX_TYPES taxKey
+                                        if (costItem?.taxKey && tab != "subscr")
+                                            taxKey = costItem.taxKey
+                                    %>
+                                    <g:select class="ui dropdown calc" name="newTaxRate2" title="TaxRate"
+                                              from="${CostItem.TAX_TYPES}"
+                                              optionKey="${{ it.taxType.class.name + ":" + it.taxType.id + "§" + it.taxRate }}"
+                                              optionValue="${{ it.taxType.getI10n("value") + " (" + it.taxRate + "%)" }}"
+                                              value="${taxKey?.taxType?.class?.name}:${taxKey?.taxType?.id}§${taxKey?.taxRate}"
+                                              noSelection="${['null§0': '']}"/>
+
+                                </div><!-- .field -->
+                            </div>
+
+                            <div class="two fields">
+                                <div class="field">
+                                    <label>${g.message(code: 'financials.newCosts.value')}</label>
+                                    <input title="${g.message(code: 'financials.addNew.LocalCurrency')}" type="text"
+                                           class="disabled"
+                                           name="newCostInLocalCurrency2" id="newCostInLocalCurrency2"
+                                           placeholder="${message(code: 'financials.newCosts.value')}"
+                                           value="<g:formatNumber
+                                                   number="${costItem?.costInLocalCurrency}"
+                                                   minFractionDigits="2" maxFractionDigits="2"/>" readonly="readonly"/>
+
+                                </div><!-- .field -->
+                                <div class="field">
+                                    <label><g:message code="financials.newCosts.finalSum"/></label>
+                                    <input title="<g:message code="financials.newCosts.finalSum"/>" type="text"
+                                           readonly="readonly"
+                                           name="newCostInLocalCurrencyAfterTax2" id="newCostInLocalCurrencyAfterTax2"
+                                           value="<g:formatNumber
+                                                   number="${costItem?.costInLocalCurrencyAfterTax}"
+                                                   minFractionDigits="2" maxFractionDigits="2"/>"/>
+                                </div><!-- .field -->
+                            </div>
+
+                            <div class="field">
+                                <div class="ui checkbox">
+                                    <label><g:message code="financials.newCosts.finalSumRounded"/></label>
+                                    <input name="newFinalCostRounding2" class="hidden calc" type="checkbox"
+                                           <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
+                                </div>
+                            </div><!-- .field -->
+
+                        </fieldset> <!-- 1/2 field |  .la-account-currency -->
+
+                    </div><!-- three fields -->
+                    <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
+
+                    <div class="fields">
+                        <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
+                            <div class="field center aligned">
+
+                                <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
+                                <div class="ui right labeled input">
+                                <input type="number"
+                                       style="width:50%"
+                                       name="percentOnOldPrice"
+                                       placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
+                                       value="${0.0}" step="0.01"/>
+                                <div class="ui basic label">%</div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                </div>
 
                 <div class="two fields">
                     <div class="eight wide field" style="text-align: left;">
@@ -272,312 +279,135 @@
                     </div>
                 </div>
 
-                <h3><g:message code="surveyParticipants.hasAccess"/></h3>
+                <g:if test="${params.tab == 'selectedSubParticipants'}">
 
-                <g:set var="surveyParticipantsHasAccess"
-                       value="${selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
-                           it?.sortname
-                       }}"/>
+                    <h3><g:message code="surveyParticipants.hasAccess"/></h3>
 
-                <div class="four wide column">
+                    <g:set var="surveyParticipantsHasAccess"
+                           value="${selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
+                               it?.sortname
+                           }}"/>
 
-                    <g:link data-orgIdList="${(surveyParticipantsHasAccess.id).join(',')}"
-                            data-targetId="copyEmailaddresses_ajaxModal2"
-                            class="ui icon button right floated trigger-modal">
-                        <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                    </g:link>
+                    <div class="four wide column">
+
+                        <g:link data-orgIdList="${(surveyParticipantsHasAccess.id).join(',')}"
+                                data-targetId="copyEmailaddresses_ajaxModal2"
+                                class="ui icon button right floated trigger-modal">
+                            <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
+                        </g:link>
+
+                        <br>
+                        <br>
+
+                        <g:render template="/templates/filter/orgFilterTable"
+                                  model="[orgList         : surveyParticipantsHasAccess,
+                                          tmplShowCheckbox: true,
+                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                                          tableID         : 'costTable'
+                                  ]"/>
+
+                    </div>
+
+                    <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
+
+                    <g:set var="surveyParticipantsHasNotAccess"
+                           value="${selectedSubParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
+
+                    <div class="four wide column">
+
+                        <g:link data-orgIdList="${(surveyParticipantsHasNotAccess.id).join(',')}"
+                                data-targetId="copyEmailaddresses_ajaxModal3"
+                                class="ui icon button right floated trigger-modal">
+                            <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+                        </g:link>
+
+                        <br>
+                        <br>
+
+                        <g:render template="/templates/filter/orgFilterTable"
+                                  model="[orgList       : surveyParticipantsHasNotAccess,
+                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                                          tableID       : 'costTable'
+                                  ]"/>
+
+                    </div>
+
+                </g:if>
+
+
+                <g:if test="${params.tab == 'selectedParticipants'}">
+
+                    <h3><g:message code="surveyParticipants.hasAccess"/></h3>
+
+
+                    <g:set var="surveyParticipantsHasAccess"
+                           value="${selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
+
+                    <div class="four wide column">
+
+                        <g:link data-orgIdList="${(surveyParticipantsHasAccess.id).join(',')}"
+                                data-targetId="copyEmailaddresses_ajaxModal4"
+                                class="ui icon button right floated trigger-modal">
+                            <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
+                        </g:link>
+
+                    </div>
 
                     <br>
                     <br>
 
                     <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList         : surveyParticipantsHasAccess,
-                                      tmplShowCheckbox: true,
-                                      tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
-                                      tableID         : 'costTable'
-                              ]"/>
-
-                </div>
-
-                <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
-
-                <g:set var="surveyParticipantsHasNotAccess"
-                       value="${selectedSubParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
-
-                <div class="four wide column">
-
-                    <g:link data-orgIdList="${(surveyParticipantsHasNotAccess.id).join(',')}"
-                            data-targetId="copyEmailaddresses_ajaxModal3"
-                            class="ui icon button right floated trigger-modal">
-                        <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                    </g:link>
-
-                    <br>
-                    <br>
-
-                    <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : surveyParticipantsHasNotAccess,
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                              model="[orgList       : surveyParticipantsHasAccess,
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
                                       tableID       : 'costTable'
                               ]"/>
 
-                </div>
 
-            </g:form>
+                    <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
-        </g:if>
+                    <g:set var="surveyParticipantsHasNotAccess"
+                           value="${selectedParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
 
-
-        <g:if test="${params.tab == 'selectedParticipants'}">
-
-            <div class="ui bottom attached tab segment active">
-
-                <div class="four wide column">
-
-        %{--<button type="button" class="ui icon button right floated"
-                data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
+                    <div class="four wide column">
+                        <g:link data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}"
+                                data-targetId="copyEmailaddresses_ajaxModal6"
+                                class="ui icon button right floated trigger-modal">
+                            <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+                        </g:link>
+                    </div>
 
 
-        <g:render template="/survey/costItemModal"
-                  model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
+                    <br>
+                    <br>
 
-            <g:link onclick="addForAllSurveyCostItem([${(selectedParticipants?.id)?.join(',')}])"
-                    class="ui icon button right floated trigger-modal">
-                <i class="plus icon"></i>
-            </g:link>
-            </div>
-
-            <br>
-            <br>
-
-            <semui:filter>
-                <g:form action="surveyCostItems" method="post" class="ui form"
-                        params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
-                    <g:render template="/templates/filter/orgFilter"
-                              model="[
-                                      tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
-                                      tmplConfigFormFilter: true,
-                                      useNewLayouter      : true
+                    <g:render template="/templates/filter/orgFilterTable"
+                              model="[orgList         : surveyParticipantsHasNotAccess,
+                                      tmplShowCheckbox: true,
+                                      tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
+                                      tableID         : 'costTable'
                               ]"/>
-                </g:form>
-            </semui:filter>
 
-            <g:form action="processSurveyCostItemsBulk" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
-
-                <h3>${message(code: 'surveyCostItems.bulkOption')}:</h3>
-
-                <div class="fields">
-                    <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
-                        <label>${g.message(code: 'financials.newCosts.amount')}</label>
-
-                        <div class="two fields">
-                            <div class="field">
-                                <label>${message(code: 'financials.invoice_total')}</label>
-                                <input title="${g.message(code: 'financials.addNew.BillingCurrency')}" type="text"
-                                       class="calc"
-                                       style="width:50%"
-                                       name="newCostInBillingCurrency2" id="newCostInBillingCurrency2"
-                                       placeholder="${g.message(code: 'financials.invoice_total')}"
-                                       value="<g:formatNumber
-                                               number="${costItem?.costInBillingCurrency}"
-                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
-
-                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton32"
-                                     data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                                     data-position="top center" data-variation="tiny">
-                                    <i class="calculator icon"></i>
-                                </div>
-
-                                <g:select class="ui dropdown dk-width-auto" name="newCostCurrency2"
-                                          title="${g.message(code: 'financials.addNew.currencyType')}"
-                                          from="${currency}"
-                                          optionKey="id"
-                                          optionValue="${{ it.text.contains('-') ? it.text.split('-').first() : it.text }}"
-                                          value="${costItem?.billingCurrency?.id}"/>
-                            </div><!-- .field -->
-                            <div class="field">
-                                <label><g:message code="financials.newCosts.billingSum"/></label>
-                                <input title="<g:message code="financials.newCosts.billingSum"/>" type="text"
-                                       readonly="readonly"
-                                       name="newCostInBillingCurrencyAfterTax2" id="newCostInBillingCurrencyAfterTax2"
-                                       value="<g:formatNumber
-                                               number="${costItem?.costInBillingCurrencyAfterTax}"
-                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
-
-                            </div><!-- .field -->
-                        <!-- TODO -->
-                            <style>
-                            .dk-width-auto {
-                                width: auto !important;
-                                min-width: auto !important;
-                            }
-                            </style>
-                        </div>
-
-                        <div class="two fields">
-                            <div class="field la-exchange-rate">
-                                <label>${g.message(code: 'financials.newCosts.exchangeRate')}</label>
-                                <input title="${g.message(code: 'financials.addNew.currencyRate')}" type="number"
-                                       class="calc"
-                                       name="newCostCurrencyRate2" id="newCostCurrencyRate2"
-                                       placeholder="${g.message(code: 'financials.newCosts.exchangeRate')}"
-                                       value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001"/>
-
-                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton22"
-                                     data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                                     data-position="top center" data-variation="tiny">
-                                    <i class="calculator icon"></i>
-                                </div>
-                            </div><!-- .field -->
-
-                            <div class="field">
-                                <label>${message(code: 'financials.newCosts.taxTypeAndRate')}</label>
-                                <%
-                                    CostItem.TAX_TYPES taxKey
-                                    if (costItem?.taxKey && tab != "subscr")
-                                        taxKey = costItem.taxKey
-                                %>
-                                <g:select class="ui dropdown calc" name="newTaxRate2" title="TaxRate"
-                                          from="${CostItem.TAX_TYPES}"
-                                          optionKey="${{ it.taxType.class.name + ":" + it.taxType.id + "§" + it.taxRate }}"
-                                          optionValue="${{ it.taxType.getI10n("value") + " (" + it.taxRate + "%)" }}"
-                                          value="${taxKey?.taxType?.class?.name}:${taxKey?.taxType?.id}§${taxKey?.taxRate}"
-                                          noSelection="${['null§0': '']}"/>
-
-                            </div><!-- .field -->
-                        </div>
-
-                        <div class="two fields">
-                            <div class="field">
-                                <label>${g.message(code: 'financials.newCosts.value')}</label>
-                                <input title="${g.message(code: 'financials.addNew.LocalCurrency')}" type="text"
-                                       class="calc"
-                                       name="newCostInLocalCurrency2" id="newCostInLocalCurrency2"
-                                       placeholder="${message(code: 'financials.newCosts.value')}"
-                                       value="<g:formatNumber
-                                               number="${costItem?.costInLocalCurrency}"
-                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
-
-                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton12"
-                                     data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                                     data-position="top center" data-variation="tiny">
-                                    <i class="calculator icon"></i>
-                                </div>
-                            </div><!-- .field -->
-                            <div class="field">
-                                <label><g:message code="financials.newCosts.finalSum"/></label>
-                                <input title="<g:message code="financials.newCosts.finalSum"/>" type="text"
-                                       readonly="readonly"
-                                       name="newCostInLocalCurrencyAfterTax2" id="newCostInLocalCurrencyAfterTax2"
-                                       value="<g:formatNumber
-                                               number="${costItem?.costInLocalCurrencyAfterTax}"
-                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
-                            </div><!-- .field -->
-                        </div>
-
-                        <div class="field">
-                            <div class="ui checkbox">
-                                <label>Finalen Preis runden</label>
-                                <input name="newFinalCostRounding2" class="hidden calc" type="checkbox"
-                                       <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
-                            </div>
-                        </div><!-- .field -->
-
-                    </fieldset> <!-- 1/2 field |  .la-account-currency -->
-
-                </div><!-- three fields -->
-
-                <div class="two fields">
-                    <div class="eight wide field" style="text-align: left;">
-                        <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
                     </div>
 
-                    <div class="eight wide field" style="text-align: right;">
+                </g:if>
+            </g:form>
+            <br>
+            <br>
+
+            <g:form action="surveyCostItemsFinish" method="post" class="ui form"
+                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+
+                <div class="ui right floated compact segment">
+                    <div class="ui checkbox">
+                        <input type="checkbox" onchange="this.form.submit()"
+                               name="costItemsFinish" ${surveyConfig?.costItemsFinish ? 'checked' : ''}>
+                        <label><g:message code="surveyConfig.costItemsFinish.label"/></label>
                     </div>
                 </div>
 
-                <h3><g:message code="surveyParticipants.hasAccess"/></h3>
-
-
-                <g:set var="surveyParticipantsHasAccess"
-                       value="${selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
-
-                <div class="four wide column">
-
-                    <g:link data-orgIdList="${(surveyParticipantsHasAccess.id).join(',')}"
-                            data-targetId="copyEmailaddresses_ajaxModal4"
-                            class="ui icon button right floated trigger-modal">
-                        <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                    </g:link>
-
-                </div>
-
-
-            <%--<g:link action="copyEmailaddresses" params='[orgList: surveyParticipantsHasAccess]'
-                    data-targetId="copyEmailaddresses_ajaxModal5"
-                    class="ui icon button trigger-modal">
-                <i class="write icon"></i>
-            </g:link>--%>
-
-                <br>
-                <br>
-
-
-
-                <g:render template="/templates/filter/orgFilterTable"
-                          model="[orgList       : surveyParticipantsHasAccess,
-                                  tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
-                                  tableID       : 'costTable'
-                          ]"/>
-
-
-                <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
-
-                <g:set var="surveyParticipantsHasNotAccess"
-                       value="${selectedParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
-
-                <div class="four wide column">
-                    <g:link data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}"
-                            data-targetId="copyEmailaddresses_ajaxModal6"
-                            class="ui icon button right floated trigger-modal">
-                        <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                    </g:link>
-                </div>
-
-
-                <br>
-                <br>
-
-                <g:render template="/templates/filter/orgFilterTable"
-                          model="[orgList         : surveyParticipantsHasNotAccess,
-                                  tmplShowCheckbox: true,
-                                  tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
-                                  tableID         : 'costTable'
-                          ]"/>
-
-                </div>
             </g:form>
 
-        </g:if>
-
-        <br>
-        <br>
-
-        <g:form action="surveyCostItemsFinish" method="post" class="ui form"
-                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
-
-            <div class="ui right floated compact segment">
-                <div class="ui checkbox">
-                    <input type="checkbox" onchange="this.form.submit()"
-                           name="costItemsFinish" ${surveyConfig?.costItemsFinish ? 'checked' : ''}>
-                    <label><g:message code="surveyConfig.costItemsFinish.label"/></label>
-                </div>
-            </div>
-
-        </g:form>
-
-    </div>
+        </div>
     </div>
 </g:if>
 <g:else>
@@ -724,14 +554,14 @@ function addForAllSurveyCostItem(orgsIDs) {
         }
     });
 
-    $("form").submit(function (e) {
-        e.preventDefault();
-        if ($("[name='newCostCurrency2']").val() != 0) {
-            var valuesCorrect = checkValues();
-            if (valuesCorrect) {
-                $("#newCostCurrency2").parent(".field").removeClass("error");
-                if ($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
-                    alert("${message(code:'financials.newCosts.entitlementError')}");
+    /*    $("#surveyCostItemsBulk").submit(function (e) {
+            e.preventDefault();
+            if ($("[name='newCostCurrency2']").val() != 0) {
+                var valuesCorrect = checkValues();
+                if (valuesCorrect) {
+                    $("#newCostCurrency2").parent(".field").removeClass("error");
+                    if ($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
+                        alert("${message(code:'financials.newCosts.entitlementError')}");
                 else $(this).unbind('submit').submit();
             } else {
                 alert("${message(code:'financials.newCosts.calculationError')}");
@@ -740,7 +570,7 @@ function addForAllSurveyCostItem(orgsIDs) {
             alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
             $("#newCostCurrency2").parent(".field").addClass("error");
         }
-    });
+    });*/
 
     $("#newCostCurrency2").change(function () {
         //console.log("event listener succeeded, picked value is: "+$(this).val());

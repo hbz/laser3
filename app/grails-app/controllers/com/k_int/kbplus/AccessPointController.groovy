@@ -166,14 +166,13 @@ class AccessPointController extends AbstractDebugController {
         params.availableIpOptions = availableIPOptions()
 
         if (params.template) {
-            RefdataValue accessMethod = RefdataValue.getByValue(params.template)
+            RefdataValue accessMethod = RefdataValue.getByValueAndCategory(params.template, RDConstants.ACCESS_POINT_TYPE)
             return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
         } else {
             if (!params.accessMethod) {
                 params.accessMethod = RefdataValue.getByValueAndCategory('ip', RDConstants.ACCESS_POINT_TYPE).value
             }
-            params.accessMethod = RefdataValue.getByValue(params.accessMethod);
-
+            params.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE);
             return params
         }
 
@@ -201,6 +200,42 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
+            accessPoint.save(flush: true)
+
+            flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
+            redirect controller: 'accessPoint', action: 'edit_'+accessPoint.accessMethod.value, id: accessPoint.id
+        }
+    }
+
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def create_oa() {
+        // without the org somehow passed we can only create AccessPoints for the context org
+        Org orgInstance = contextService.getOrg()
+        def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
+
+        if (! params.name) {
+            flash.error = message(code: 'accessPoint.require.name', args: [params.name])
+            redirect(controller: "accessPoint", action: "create", params: params)
+            return
+        }
+
+        if (! params.entityId) {
+            flash.error = message(code: 'accessPoint.require.entityId')
+            redirect(controller: "accessPoint", action: "create", params: params)
+            return
+        }
+
+        if (oap) {
+            flash.error = message(code: 'accessPoint.duplicate.error', args: [params.name])
+            redirect(controller: "accessPoint", action: "create", params: params)
+        } else {
+            def accessPoint = new OrgAccessPointOA();
+            accessPoint.org = orgInstance
+            accessPoint.name = params.name
+            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
+            accessPoint.entityId = params.entityId
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
@@ -255,7 +290,7 @@ class AccessPointController extends AbstractDebugController {
             flash.error = message(code: 'accessPoint.duplicate.error', args: [params.name])
             redirect(controller: "accessPoint", action: "create", params: params)
         } else {
-            def accessPoint = new OrgAccessPoint();
+            def accessPoint = new OrgAccessPointVpn();
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
@@ -377,6 +412,11 @@ class AccessPointController extends AbstractDebugController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit_vpn() {
+        _edit()
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def edit_oa() {
         _edit()
     }
 

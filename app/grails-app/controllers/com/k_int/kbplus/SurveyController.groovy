@@ -81,7 +81,7 @@ class SurveyController {
 
         params.max = result.max
         params.offset = result.offset
-        params.filterStatus = params.filterStatus ?: (params.filterStatus == "" ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
+        params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
@@ -443,13 +443,13 @@ class SurveyController {
         }
 
         Subscription subscription = Subscription.get(Long.parseLong(params.sub))
-        boolean subSurveyUseForTransfer = SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true) ? false : (params.subSurveyUseForTransfer ? true : false)
+        boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true) || subscription.getCalculatedSuccessor()) ? false : (params.subSurveyUseForTransfer ? true : false)
 
         SurveyInfo surveyInfo = new SurveyInfo(
                 name: params.name,
                 startDate: startDate,
                 endDate: endDate,
-                type: subSurveyUseForTransfer ? RDStore.SURVEY_TYPE_RENEWAL : RDStore.SURVEY_TYPE_INTEREST,
+                type: subSurveyUseForTransfer ? RDStore.SURVEY_TYPE_RENEWAL : RDStore.SURVEY_TYPE_SUBSCRIPTION,
                 owner: contextService.getOrg(),
                 status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
@@ -478,7 +478,7 @@ class SurveyController {
             //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
             if (subSurveyUseForTransfer) {
                 SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                        surveyProperty: SurveyProperty.findByName('Participation'),
+                        surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SUR_PROP),
                         surveyConfig: surveyConfig)
 
                 if (configProperty.save(flush: true)) {
@@ -530,7 +530,7 @@ class SurveyController {
                 name: params.name,
                 startDate: startDate,
                 endDate: endDate,
-                type: RefdataValue.getByValueAndCategory('selection', RDConstants.SURVEY_TYPE),
+                type: RDStore.SURVEY_TYPE_TITLE_SELECTION,
                 owner: contextService.getOrg(),
                 status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
@@ -588,10 +588,11 @@ class SurveyController {
             result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : result.surveyInfo.surveyConfigs[0]
 
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo,  result.surveyConfig)
+            result.contextOrg = contextService.getOrg()
 
             if ( result.surveyConfig?.type == 'Subscription') {
                 result.authorizedOrgs = result.user?.authorizedOrgs
-                result.contextOrg = contextService.getOrg()
+
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []
                  result.surveyConfig?.subscription?.orgRelations?.each { or ->
@@ -832,8 +833,8 @@ class SurveyController {
 
             NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
             def cost_billing_currency = params.newCostInBillingCurrency2 ? format.parse(params.newCostInBillingCurrency2).doubleValue() : null //0.00
-            def cost_currency_rate = params.newCostCurrencyRate2 ? params.double('newCostCurrencyRate2', 1.00) : null //1.00
-            def cost_local_currency = params.newCostInLocalCurrency2 ? format.parse(params.newCostInLocalCurrency2).doubleValue() : null //0.00
+            //def cost_currency_rate = params.newCostCurrencyRate2 ? params.double('newCostCurrencyRate2', 1.00) : null //1.00
+            //def cost_local_currency = params.newCostInLocalCurrency2 ? format.parse(params.newCostInLocalCurrency2).doubleValue() : null //0.00
 
             def tax_key = null
             if (!params.newTaxRate2.contains("null")) {
@@ -868,13 +869,25 @@ class SurveyController {
                 SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(Org.get(Long.parseLong(id)), result.surveyConfig)
                 CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)
                 if(surveyCostItem){
-                    surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency //Not specified default to GDP
-                    surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
-                    surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
+
+                    if(params.percentOnOldPrice){
+                        Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
+                        Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(Org.get(Long.parseLong(id)))
+                        CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, contextService.getOrg(), RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
+                        surveyCostItem.costInBillingCurrency = costItem ? costItem.costInBillingCurrency*(1+(percentOnOldPrice/100)) : surveyCostItem.costInBillingCurrency
+                    }
+                    else
+                    {
+                        surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
+                    }
+
+                    surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
+                    //Not specified default to GDP
+                    //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
 
                     surveyCostItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
 
-                    surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
+                    //surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
                     surveyCostItem.taxKey = tax_key ?: surveyCostItem.taxKey
 
                     surveyCostItem.save()
@@ -897,7 +910,7 @@ class SurveyController {
 
         result.surveyConfig.configFinish = params.configFinish ?: false
         if (result.surveyConfig.save(flush: true)) {
-            flash.message = g.message(code: 'survey.change.successfull')
+            //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
         }
@@ -919,7 +932,7 @@ class SurveyController {
         result.surveyConfig.costItemsFinish = params.costItemsFinish ?: false
 
         if (result.surveyConfig.save(flush: true)) {
-            flash.message = g.message(code: 'survey.change.successfull')
+            //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
         }
@@ -968,7 +981,7 @@ class SurveyController {
         result.surveyConfig.transferWorkflow = transferWorkflow ?  (new JSON(transferWorkflow)).toString() : null
 
         if (result.surveyConfig.save(flush: true)) {
-            flash.message = g.message(code: 'survey.change.successfull')
+            //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
         }
@@ -991,6 +1004,8 @@ class SurveyController {
         params.tab = params.tab ?: 'surveyConfigsView'
 
         result.participants = result.surveyConfig?.orgs.org.sort { it.sortname }
+
+        result.subscriptionInstance =  result.surveyConfig?.subscription ?: null
 
         result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
         result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
@@ -1158,7 +1173,7 @@ class SurveyController {
         surveyOrg.finishDate = null
         surveyOrg.save(flush: true)
 
-        flash.message = message(code: 'openIssueEntitlementsSurveyAgain.info')
+        //flash.message = message(code: 'openIssueEntitlementsSurveyAgain.info')
 
         redirect(action: 'showEntitlementsRenew', id: result.surveyConfig?.id, params:[participant: result.participant?.id])
 
@@ -1306,28 +1321,6 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def evaluationConfigResult() {
-        def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : true
-
-        result.surveyProperty = SurveyProperty.get(params.prop)
-
-        result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfigAndType(result.institution, result.surveyConfig, result.surveyProperty).sort {
-            it.participant?.sortname
-        }
-
-        result
-
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
-    })
     def allSurveyProperties() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
@@ -1362,7 +1355,7 @@ class SurveyController {
                 secoundSurveyConfig.save(flush: true)
                 surveyConfig.configOrder = surveyConfig.configOrder - 1
                 if (surveyConfig.save(flush: true)) {
-                    flash.message = g.message(code: 'survey.change.successfull')
+                    //flash.message = g.message(code: 'survey.change.successfull')
                 } else {
                     flash.error = g.message(code: 'survey.change.fail')
                 }
@@ -1376,7 +1369,7 @@ class SurveyController {
                 surveyConfig.configOrder = surveyConfig.configOrder + 1
 
                 if (surveyConfig.save(flush: true)) {
-                    flash.message = g.message(code: 'survey.change.successfull')
+                    //flash.message = g.message(code: 'survey.change.successfull')
                 } else {
                     flash.error = g.message(code: 'survey.change.fail')
                 }
@@ -1407,13 +1400,13 @@ class SurveyController {
                 params.list('selectedProperty').each { propertyID ->
 
                     if (propertyID) {
-                        SurveyProperty property = SurveyProperty.get(Long.parseLong(propertyID))
+                        PropertyDefinition property = PropertyDefinition.get(Long.parseLong(propertyID))
                         //Config is Sub
                         if (surveyConfig) {
 
                             if (addSurPropToSurvey(surveyConfig, property)) {
 
-                                flash.message = g.message(code: "surveyConfigs.property.add.successfully")
+                                //flash.message = g.message(code: "surveyConfigs.property.add.successfully")
 
                             } else {
                                 flash.error = g.message(code: "surveyConfigs.property.exists")
@@ -1441,14 +1434,14 @@ class SurveyController {
         if (result.surveyInfo && result.editable) {
 
             if (params.selectedProperty) {
-                SurveyProperty property = SurveyProperty.get(Long.parseLong(params.selectedProperty))
+                PropertyDefinition property = PropertyDefinition.get(Long.parseLong(params.selectedProperty))
                 //Config is Sub
                 if (params.surveyConfigID) {
                     SurveyConfig surveyConfig = SurveyConfig.get(Long.parseLong(params.surveyConfigID))
 
                     if (addSurPropToSurvey(surveyConfig, property)) {
 
-                        flash.message = g.message(code: "surveyConfigs.property.add.successfully")
+                        //flash.message = g.message(code: "surveyConfigs.property.add.successfully")
 
                     } else {
                         flash.error = g.message(code: "surveyConfigs.property.exists")
@@ -1494,7 +1487,7 @@ class SurveyController {
                 }
 
                 surveyConfig.delete(flush: true)
-                flash.message = g.message(code: "default.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
+                //flash.message = g.message(code: "default.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
             }
             catch (DataIntegrityViolationException e) {
                 flash.error = g.message(code: "default.not.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
@@ -1530,7 +1523,7 @@ class SurveyController {
         if (result.editable) {
             try {
                 surveyConfigProp.delete(flush: true)
-                flash.message = g.message(code: "default.deleted.message", args: [g.message(code: "surveyProperty.label"), ''])
+                //flash.message = g.message(code: "default.deleted.message", args: [g.message(code: "surveyProperty.label"), ''])
             }
             catch (DataIntegrityViolationException e) {
                 flash.error = g.message(code: "default.not.deleted.message", args: [g.message(code: "surveyProperty.label"), ''])
@@ -1557,10 +1550,11 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        def surveyProperty = SurveyProperty.findWhere(
+        PropertyDefinition surveyProperty = PropertyDefinition.findWhere(
                 name: params.name,
                 type: params.type,
-                owner: result.institution,
+                tenant: result.institution,
+                descr: PropertyDefinition.SUR_PROP
         )
 
         if ((!surveyProperty) && params.name && params.type) {
@@ -1568,18 +1562,23 @@ class SurveyController {
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
             }
-            surveyProperty = SurveyProperty.loc(
-                    params.name,
-                    params.type,
-                    rdc,
-                    params.expl,
-                    params.comment,
-                    params.introduction,
-                    result.institution
-            )
 
-            if (surveyProperty.save(flush: true)) {
-                flash.message = message(code: 'surveyProperty.create.successfully', args: [surveyProperty.name])
+            Map<String, Object> map = [
+                    token       : params.name,
+                    category    : PropertyDefinition.SUR_PROP,
+                    type        : params.type,
+                    rdc         : rdc,
+                    tenant      : result.institution,
+                    i10n        : [
+                            name_de: params.name,
+                            name_en: params.name,
+                            expl_de: params.expl,
+                            expl_en: params.expl
+                    ]
+            ]
+
+            if (PropertyDefinition.construct(map)) {
+                //flash.message = message(code: 'surveyProperty.create.successfully', args: [surveyProperty.name])
             } else {
                 flash.error = message(code: 'surveyProperty.create.fail')
             }
@@ -1609,11 +1608,11 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        def surveyProperty = SurveyProperty.findByIdAndOwner(params.deleteId, result.institution)
+        def surveyProperty = PropertyDefinition.findByIdAndTenant(params.deleteId, result.institution)
 
         if (surveyProperty.countUsages()==0 && surveyProperty?.owner?.id == result.institution?.id && surveyProperty.delete())
         {
-            flash.message = message(code: 'default.deleted.message', args:[message(code: 'surveyProperty.label'), surveyProperty.getI10n('name')])
+            //flash.message = message(code: 'default.deleted.message', args:[message(code: 'surveyProperty.label'), surveyProperty.getI10n('name')])
         }
 
         redirect(action: 'allSurveyProperties', id: params.id)
@@ -1636,8 +1635,8 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        def surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        def surveyInfo = surveyConfig?.surveyInfo
+        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        SurveyInfo surveyInfo = surveyConfig?.surveyInfo
 
         result.editable = (surveyInfo && surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
@@ -1647,7 +1646,18 @@ class SurveyController {
 
                 Org org = Org.get(Long.parseLong(soId))
 
-                if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
+                boolean existsMultiYearTerm = false
+                Subscription sub = surveyConfig?.subscription
+                if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
+                    Subscription subChild = sub?.getDerivedSubscriptionBySubscribers(org)
+
+                    if (subChild?.isCurrentMultiYearSubscriptionNew()) {
+                        existsMultiYearTerm = true
+                    }
+
+                }
+
+                if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && !existsMultiYearTerm) {
                     SurveyOrg surveyOrg = new SurveyOrg(
                             surveyConfig: surveyConfig,
                             org: org
@@ -1656,7 +1666,7 @@ class SurveyController {
                     if (!surveyOrg.save(flush: true)) {
                         log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}");
                     } else {
-                        flash.message = g.message(code: "surveyParticipants.add.successfully")
+                        //flash.message = g.message(code: "surveyParticipants.add.successfully")
                     }
                 }
             }
@@ -1736,7 +1746,7 @@ class SurveyController {
             flash.message = g.message(code: "endSurvey.successfully")
         }
 
-        redirect action: 'renewalWithSurvey', params:[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]
+        redirect action: 'renewalWithSurvey', params:[surveyConfigID: result.surveyConfig?.id, id: surveyInfo?.id]
 
     }
 
@@ -1760,8 +1770,6 @@ class SurveyController {
 
             result.surveyConfigs.each { config ->
                 if(!config?.pickAndChoose) {
-                    if (config?.type == 'Subscription') {
-
                         config.orgs?.org?.each { org ->
 
                             config?.surveyProperties?.each { property ->
@@ -1782,23 +1790,6 @@ class SurveyController {
                                 }
                             }
                         }
-                    } else {
-                        config.orgs?.org?.each { org ->
-
-                            def surveyResult = new SurveyResult(
-                                    owner: result.institution,
-                                    participant: org ?: null,
-                                    startDate: currentDate,
-                                    endDate: result.surveyInfo.endDate,
-                                    type: config.surveyProperty,
-                                    surveyConfig: config
-                            )
-
-                            if (surveyResult.save(flush: true)) {
-
-                            }
-                        }
-                    }
                 }
 
             }
@@ -1832,7 +1823,7 @@ class SurveyController {
 
             params.list('selectedOrgs').each { soId ->
                 if (SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, Org.get(Long.parseLong(soId))).delete(flush: true)) {
-                    flash.message = g.message(code: "surveyParticipants.delete.successfully")
+                    //flash.message = g.message(code: "surveyParticipants.delete.successfully")
                 }
             }
         }
@@ -1869,7 +1860,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo?.status == RDStore.SURVEY_IN_PROCESSING)
+        result.editable = (result.surveyInfo?.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])
 
         if (result.editable) {
 
@@ -1893,24 +1884,35 @@ class SurveyController {
                         surveyOrg.delete(flush: true)
                     }
 
-                    //config.delete(flush: true)
+                    SurveyResult.findAllBySurveyConfig(config){
+                        it.delete(flush: true)
+                    }
+
+                    Task.findAllBySurveyConfig(config){
+                        it.delete(flush: true)
+                    }
+
+                    config.surveyInfo = null
+                    config.delete(flush: true)
                 }
+
 
                 SurveyInfo surveyInfo = SurveyInfo.get(result.surveyInfo.id)
 
-                SurveyConfig.findAllBySurveyInfo(surveyInfo).each { surConf ->
-                    surveyInfo.removeFromSurveyConfigs(surConf)
-                }
                 surveyInfo.delete(flush: true)
 
                 flash.message = message(code: 'surveyInfo.delete.successfully')
+
+                redirect action: 'currentSurveysConsortia'
             }
             catch (DataIntegrityViolationException e) {
                 flash.error = message(code: 'surveyInfo.delete.fail')
+
+                redirect(uri: request.getHeader('referer'))
             }
         }
 
-        redirect action: 'currentSurveysConsortia'
+
     }
 
 
@@ -2029,7 +2031,7 @@ class SurveyController {
         result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
 
         if (result.surveyInfo.save(flush: true)) {
-            flash.message = g.message(code: 'survey.change.successfull')
+            //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
         }
@@ -2052,7 +2054,7 @@ class SurveyController {
 
 
         if (result.surveyInfo.save(flush: true)) {
-            flash.message = g.message(code: 'survey.change.successfull')
+            //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
         }
@@ -2074,7 +2076,7 @@ class SurveyController {
 
         result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
         if (result.surveyInfo.save(flush: true)) {
-            flash.message = g.message(code: 'survey.change.successfull')
+            //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
         }
@@ -2125,7 +2127,7 @@ class SurveyController {
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
 
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty?.sort {
@@ -2136,12 +2138,12 @@ class SurveyController {
         result.multiYearTermThreeSurvey = null
         result.multiYearTermTwoSurvey = null
 
-        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")?.id in result.properties.id) {
-            result.multiYearTermThreeSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")
+        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_3?.id in result.properties.id) {
+            result.multiYearTermThreeSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
             result.properties.remove(result.multiYearTermThreeSurvey)
         }
-        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")?.id in result.properties.id) {
-            result.multiYearTermTwoSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")
+        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_2?.id in result.properties.id) {
+            result.multiYearTermTwoSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
             result.properties.remove(result.multiYearTermTwoSurvey)
 
         }
@@ -3069,11 +3071,11 @@ class SurveyController {
 
             NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
             def cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
-            def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
-            def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
+            //def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
+            //def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
 
             def cost_billing_currency_after_tax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
-            def cost_local_currency_after_tax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
+            //def cost_local_currency_after_tax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
             //moved to TAX_TYPES
             //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
             def tax_key = null
@@ -3167,12 +3169,12 @@ class SurveyController {
                     //newCostItem.taxCode = cost_tax_type -> to taxKey
                     newCostItem.costTitle = params.newCostTitle ?: null
                     newCostItem.costInBillingCurrency = cost_billing_currency as Double
-                    newCostItem.costInLocalCurrency = cost_local_currency as Double
+                    //newCostItem.costInLocalCurrency = cost_local_currency as Double
 
                     newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
                     newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
-                    newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
-                    newCostItem.currencyRate = cost_currency_rate as Double
+                    //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
+                    //newCostItem.currencyRate = cost_currency_rate as Double
                     //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
                     newCostItem.taxKey = tax_key
                     newCostItem.costItemElementConfiguration = cost_item_element_configuration
@@ -3277,7 +3279,7 @@ class SurveyController {
         result.participantsList = result.participantsList.sort{it.sortname}
 
 
-        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
 
         result
 
@@ -3386,9 +3388,9 @@ class SurveyController {
         result.properties
         if(params.tab == 'surveyProperties') {
             result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty.findAll{it.owner == null}
-            result.properties -= SurveyProperty.findByNameAndOwnerIsNull("Participation")
-            result.properties -= SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")
-            result.properties -= SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")
+            result.properties -= RDStore.SURVEY_PROPERTY_PARTICIPATION
+            result.properties -= RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
+            result.properties -= RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
         }
 
         if(params.tab == 'customProperties') {
@@ -3415,7 +3417,7 @@ class SurveyController {
 
 
                 if (params.tab == 'surveyProperties') {
-                    def surProp = SurveyProperty.get(result.selectedProperty)
+                    def surProp = PropertyDefinition.get(result.selectedProperty)
                     newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
                     def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, PropertyDefinition.SUB_PROP) : null
 
@@ -3472,7 +3474,7 @@ class SurveyController {
             if (params.tab == 'surveyProperties') {
                 result.selectedProperty = params.selectedProperty ?: null
 
-                surveyProperty = params.copyProperty ? SurveyProperty.get(Long.parseLong(params.copyProperty)) : null
+                surveyProperty = params.copyProperty ? PropertyDefinition.get(Long.parseLong(params.copyProperty)) : null
 
                 propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, PropertyDefinition.SUB_PROP) : null
                 if (!propDef && surveyProperty) {
@@ -3598,7 +3600,7 @@ class SurveyController {
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
 
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty)
@@ -3606,12 +3608,12 @@ class SurveyController {
         result.multiYearTermThreeSurvey = null
         result.multiYearTermTwoSurvey = null
 
-        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")?.id in result.properties.id) {
-            result.multiYearTermThreeSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")
+        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_3?.id in result.properties.id) {
+            result.multiYearTermThreeSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
             result.properties.remove(result.multiYearTermThreeSurvey)
         }
-        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")?.id in result.properties.id) {
-            result.multiYearTermTwoSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")
+        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_2?.id in result.properties.id) {
+            result.multiYearTermTwoSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
             result.properties.remove(result.multiYearTermTwoSurvey)
 
         }
@@ -3921,13 +3923,13 @@ class SurveyController {
         def props = []
 
         //private Property
-        SurveyProperty.findAllByOwnerAndOwnerIsNotNull(contextOrg).each { it ->
+        PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SUR_PROP, contextOrg).each { it ->
             props << it
 
         }
 
         //global Property
-        SurveyProperty.findAllByOwnerIsNull().each { it ->
+        PropertyDefinition.getAllByDescr(PropertyDefinition.SUR_PROP).each { it ->
             props << it
 
         }
@@ -3962,26 +3964,17 @@ class SurveyController {
                 if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
 
                     boolean existsMultiYearTerm = false
-                    def sub = surveyConfig?.subscription
+                    Subscription sub = surveyConfig?.subscription
                     if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
-                        def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
-                        def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
+                        Subscription subChild = sub?.getDerivedSubscriptionBySubscribers(org)
 
                         if (subChild?.isCurrentMultiYearSubscriptionNew()) {
                             existsMultiYearTerm = true
                         }
 
-                        if (!existsMultiYearTerm && property?.type == 'class com.k_int.kbplus.RefdataValue') {
-                            if (subChild?.customProperties?.find {
-                                it?.type?.id == property?.id
-                            }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
-                                existsMultiYearTerm = true
-                                return existsMultiYearTerm
-                            }
-                        }
                     }
                     if (!existsMultiYearTerm) {
-                        def surveyOrg = new SurveyOrg(
+                        SurveyOrg surveyOrg = new SurveyOrg(
                                 surveyConfig: surveyConfig,
                                 org: org
                         )
@@ -4075,7 +4068,7 @@ class SurveyController {
                     row.add([field: surveyCostItem?.costDescription ?: '', style: null])
 
                     row.add([field: result.type?.getI10n('name') ?: '', style: null])
-                    row.add([field: result.type?.getLocalizedType() ?: '', style: null])
+                    row.add([field: PropertyDefinition.getLocalizedValue(result.type.type) ?: '', style: null])
 
                     def value = ""
 
@@ -4420,7 +4413,7 @@ class SurveyController {
         results.groupBy {
             it?.type.id
         }.sort { it?.value[0]?.type?.name }.each { property ->
-            titles << SurveyProperty.get(property.key)?.getI10n('name')
+            titles << PropertyDefinition.get(property.key)?.getI10n('name')
             titles << g.message(code: 'surveyResult.participantComment')
         }
 
@@ -4512,7 +4505,7 @@ class SurveyController {
 
             row.add([field: surveyConfig?.getConfigName() ?: '', style: null])
 
-            row.add([field: surveyConfig?.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type) + '(' + surveyConfig?.surveyProperty?.getLocalizedType() + ')', style: null])
+            row.add([field: surveyConfig?.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig?.surveyProperty?.type) + ')', style: null])
 
             row.add([field: surveyConfig?.comment ?: '', style: null])
 
@@ -4732,7 +4725,7 @@ class SurveyController {
         parsed_date
     }
 
-    boolean addSurPropToSurvey(SurveyConfig surveyConfig, SurveyProperty surveyProperty) {
+    boolean addSurPropToSurvey(SurveyConfig surveyConfig, PropertyDefinition surveyProperty) {
 
         if (!SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(surveyProperty, surveyConfig) && surveyProperty && surveyConfig) {
             SurveyConfigProperties propertytoSub = new SurveyConfigProperties(surveyConfig: surveyConfig, surveyProperty: surveyProperty)

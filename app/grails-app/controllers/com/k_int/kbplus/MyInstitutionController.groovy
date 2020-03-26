@@ -896,7 +896,7 @@ join sub.orgRelations or_sub where
     }
 
 
-    private def exportcurrentSubscription(List<Subscription> subscriptions, String format,contextOrg) {
+    private def exportcurrentSubscription(List<Subscription> subscriptions, String format,Org contextOrg) {
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = ['Name',
                        g.message(code: 'license.label'),
@@ -920,7 +920,8 @@ join sub.orgRelations or_sub where
             asCons = true
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
-        titles.addAll(exportService.loadPropListHeaders(PropertyDefinition.SUB_PROP,contextOrg))
+        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
+        titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         Map<Subscription,Set> providers = [:]
         Map<Subscription,Set> agencies = [:]
         Map<Subscription,Set> identifiers = [:]
@@ -998,7 +999,7 @@ join sub.orgRelations or_sub where
                         row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
                         row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
                     }
-                    row.addAll(exportService.processPropertyListValues(PropertyDefinition.SUB_PROP,contextOrg,format,sub))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub))
                     subscriptionData.add(row)
                     break
                 case "csv":
@@ -1028,7 +1029,7 @@ join sub.orgRelations or_sub where
                         row.add(subscriptionMembers.get(sub.id) ?: 0)
                         row.add(costItemCounts.get(sub.id) ?: 0)
                     }
-                    row.addAll(exportService.processPropertyListValues(PropertyDefinition.SUB_PROP,contextOrg,format,sub))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub))
                     subscriptionData.add(row)
                     break
             }
@@ -1106,7 +1107,7 @@ join sub.orgRelations or_sub where
                     row.add([field: surveyCostItem?.costDescription ?: '', style: null])
 
                     row.add([field: result.type?.getI10n('name') ?: '', style: null])
-                    row.add([field: result.type?.getLocalizedType() ?: '', style: null])
+                    row.add([field: PropertyDefinition.getLocalizedValue(result.type.type) ?: '', style: null])
 
                     def value = ""
 
@@ -1476,7 +1477,12 @@ join sub.orgRelations or_sub where
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.getOrg()
 
-        params.asOrgType = params.asOrgType ? [params.asOrgType] : [RDStore.OT_INSTITUTION.id.toString()]
+        Set<RefdataValue> defaultOrgRoleType = []
+        if(accessService.checkPerm("ORG_CONSORTIUM"))
+            defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
+        else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
+
+        params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
 
 
         if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
@@ -2739,6 +2745,7 @@ AND EXISTS (
     def surveyInfos() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
+        result.contextOrg = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
@@ -2749,6 +2756,7 @@ AND EXISTS (
         }
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
+        result.surveyConfig = result.surveyInfo.surveyConfigs[0]
 
         def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
@@ -2935,15 +2943,24 @@ AND EXISTS (
             }
         }
         else{
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, surveyInfo.surveyConfigs)
 
             boolean allResultHaveValue = true
             //Verbindlich??|
-            if(SurveyInfo.get(params.id).isMandatory) {
-                surveyResults.each { surre ->
-                    SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
-                    if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
-                        allResultHaveValue = false
+            if(surveyInfo.isMandatory) {
+
+                boolean noParticipation = false
+                if(surveyInfo.surveyConfigs.size() == 1 && surveyInfo.surveyConfigs[0].subSurveyUseForTransfer){
+                    noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyInfo.surveyConfig[0], RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+                }
+
+                if(!noParticipation) {
+                    surveyResults.each { surre ->
+                        SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
+
+                        if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
+                            allResultHaveValue = false
+                    }
                 }
             }
             if (allResultHaveValue) {
@@ -4102,7 +4119,6 @@ AND EXISTS (
             propDefs[it] = itResult
         }
 
-        propDefs << ["Survey Property": SurveyProperty.findAllByOwner(result.institution, [sort: 'name'])]
 
         result.propertyDefinitions = propDefs
 
@@ -4127,8 +4143,6 @@ AND EXISTS (
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
             propDefs[it] = itResult
         }
-
-        propDefs << ["Survey Property": SurveyProperty.findAllByOwner(null, [sort: 'name'])]
 
         propDefs << ["${PropertyDefinition.PLA_PROP}": PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.PLA_PROP, null, [sort: 'name'])]
 

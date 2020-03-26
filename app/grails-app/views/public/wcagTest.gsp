@@ -33,8 +33,8 @@
         <g:render template="templatesWCAGTest/form" />
 
 
-        <h2 class="ui dividing header">7. Icons</h2>
-        <h3 class="ui dividing header">7.1. Dekoratives Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>
+%{--        <h2 class="ui dividing header">7. Icons</h2>
+        <h3 class="ui dividing header">7.1. Dekoratives Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>--}%
 %{--
         <div class="ui icon info message">
             <i aria-hidden="true" class="exclamation triangle icon"></i>
@@ -46,6 +46,21 @@
             </div>
         </div>--}%
 
+
+
+
+        <h2 class="ui dividing header">7. Paginierung</h2>
+        <g:render template="templatesWCAGTest/pagination" />
+
+        <h2 class="ui dividing header">8. X-Editable</h2>
+        <g:render template="templatesWCAGTest/xeditable" />
+
+
+        <h2 class="ui dividing header">9. Unternavigation - Alternativ zur Registernavigation</h2>
+        <g:render template="templatesWCAGTest/submenue" />
+
+        <h2 class="ui dividing header">10. Datepicker</h2>
+        <g:render template="templatesWCAGTest/datepicker" />
 
         <h2 class="ui dividing header">8. Modals</h2>
         <h3 class="ui dividing header">8.1. Confimation Modal</h3>
@@ -61,19 +76,6 @@
                 <i aria-hidden="true" class="trash alternate icon"></i>
             </g:link>
         </p>
-
-        <h2 class="ui dividing header">9. Paginierung</h2>
-        <g:render template="templatesWCAGTest/pagination" />
-
-        <h2 class="ui dividing header">10. X-Editable</h2>
-        <g:render template="templatesWCAGTest/xeditable" />
-
-
-        <h2 class="ui dividing header">12. Unternavigation - Alternativ zur Registernavigation</h2>
-        <g:render template="templatesWCAGTest/submenue" />
-
-        <h2 class="ui dividing header">13. Datepicker</h2>
-        <g:render template="templatesWCAGTest/datepicker" />
 
 
     </div>

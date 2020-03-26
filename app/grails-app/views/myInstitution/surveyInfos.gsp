@@ -1,11 +1,11 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataValue;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} : (${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')})</title>
+    <title>${message(code: 'laser')} : ${surveyInfo.type.getI10n('value')}</title>
 </head>
 
 <body>
@@ -81,7 +81,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
 
             <p>
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                <g:message code="surveyResult.finish.info" />.
+                <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finis.info'}"/>.
             </p>
         </div>
     </div>
@@ -268,7 +268,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
             controller="myInstitution"
             action="surveyInfoFinish"
             id="${surveyInfo.id}">
-        <g:message code="surveyResult.finish.info2"/>
+        <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finis.info2'}"/>
     </g:link>
 </g:if>
 <br>
