@@ -730,7 +730,7 @@ class Org
             ns = ns?.trim()
             //def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
             // TODO [ticket=1789]
-            Identifier ident = Identifier.construct([value: value, reference: this, namespace: ns])
+            Identifier ident = Identifier.construct([value: value, reference: this, namespace: ns, nsType: Org.class.name])
             //def id = new Identifier(ns:namespace, value:value).save()
             //new IdentifierOccurrence(identifier: id, org: this).save()
             log.debug("Create new identifier: ${ident.getId()} ns:${ns} value:${value}")
