@@ -18,7 +18,7 @@ class AccessPointController extends AbstractDebugController {
     def orgTypeService
 
 
-    static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST']]
+    static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST'], dynamicPlatformList: ['POST']]
 
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -154,6 +154,38 @@ class AccessPointController extends AbstractDebugController {
 
         ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry, [currentSubIds: currentSubIds])
         return render(template: "linked_subs_table", model: [linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages, params:params])
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def dynamicPlatformList() {
+        OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
+        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
+
+        def sort = params.sort ?: "LOWER(p.name)"
+        def order = params.order ?: "ASC"
+
+        String qry1 = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
+        List<HashMap> linkedPlatforms = Platform.executeQuery(qry1)
+        linkedPlatforms.each() {
+            String qry2 = """
+            SELECT distinct s from Subscription s
+            JOIN s.packages as sp
+            JOIN sp.pkg as pkg
+            JOIN pkg.tipps as tipps
+            WHERE s.id in (:currentSubIds)
+            AND tipps.platform.id = ${it.platform.id}
+            AND NOT EXISTS 
+            (SELECT ioapl from OrgAccessPointLink ioapl
+                WHERE ioapl.active=true and ioapl.subPkg=sp and ioapl.oap is null)
+"""
+            if (params.checked == "true"){
+                qry2 += " AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}"
+            }
+            ArrayList linkedSubs = Subscription.executeQuery(qry2, [currentSubIds: currentSubIds])
+            it['linkedSubs'] = linkedSubs
+        }
+        return render(template: "linked_platforms_table",
+            model: [linkedPlatforms: linkedPlatforms, params:params, accessPoint: orgAccessPoint])
     }
 
     @Secured(closure = {
@@ -443,6 +475,7 @@ class AccessPointController extends AbstractDebugController {
         String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4ranges'
         String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6ranges'
         Boolean autofocus = (params.autofocus) ? true : false
+        Boolean activeChecksOnly = (params.checked == 'false') ? false : true
 
         ArrayList accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);
 
@@ -470,6 +503,9 @@ class AccessPointController extends AbstractDebugController {
             (SELECT ioapl from OrgAccessPointLink ioapl
                 WHERE ioapl.active=true and ioapl.subPkg=sp and ioapl.oap is null)
 """
+            if (activeChecksOnly){
+                qry2 += " AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}"
+            }
             ArrayList linkedSubs = Subscription.executeQuery(qry2, [currentSubIds: currentSubIds])
             it['linkedSubs'] = linkedSubs
         }
@@ -498,7 +534,7 @@ class AccessPointController extends AbstractDebugController {
              autofocus             : autofocus,
              orgInstance           : orgAccessPoint.org,
              inContextOrg          : orgId == contextService.org.id,
-             activeSubsOnly        : true,
+             activeSubsOnly        : activeChecksOnly,
         ]
     }
 
