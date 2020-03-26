@@ -164,7 +164,7 @@
 
         <g:if test="${tmplShowCheckbox}">
             <td>
-                <g:if test="${controllerName in ["survey"]}">
+                <g:if test="${controllerName in ["survey"] && actionName == "surveyCostItems"}">
                     <g:if test="${com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}">
                         <g:checkBox name="selectedOrgs" value="${org.id}" checked="false"/>
                     </g:if>

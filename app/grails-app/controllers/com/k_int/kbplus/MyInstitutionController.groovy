@@ -2685,16 +2685,26 @@ AND EXISTS (
         }
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
-        result.surveyConfig = result.surveyInfo.surveyConfigs[0]
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : null
 
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-        result.surveyResults = (result.surveyInfo.surveyConfigs[0].type == "GeneralSurvey") ? surveyResults : surveyResults.groupBy {it?.surveyConfig?.id}
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
 
-        def tmpList = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)
-        if (tmpList) {
-            result.ownerId = tmpList[0].owner?.id
+        result.ownerId = result.surveyResults[0]?.owner?.id
+
+        if(result.surveyConfig?.type == 'Subscription') {
+            result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance?.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it.org.sortname }
         }
 
         if ( params.exportXLS ) {
@@ -2719,53 +2729,6 @@ AND EXISTS (
             }
         }
 
-    }
-
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
-    })
-    def surveyConfigsInfo() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-
-        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
-
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
-
-        result.ownerId = result.surveyResults[0]?.owner?.id
-
-        //result.navigation = surveyService.getParticipantConfigNavigation(result.institution, result.surveyInfo, result.surveyConfig)
-
-        if(result.surveyConfig?.type == 'Subscription') {
-            result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = []
-            result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-        }
-
-        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-
-
-        result
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
