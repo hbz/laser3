@@ -756,10 +756,12 @@ class DeletionService {
                 else {
                     //deleting IECoverages and IssueEntitlements marked deleted or where package data has disappeared
                     List<Long> iesConcerned = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and (ie.status = :deleted or tipp.pkg.name = '')",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
-                    IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ic where ic.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
-                    PriceItem.executeUpdate("delete from PriceItem pc where pc.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
-                    CostItem.executeUpdate("delete from CostItem ci where ci.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
-                    IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in :toDelete",[toDelete:iesConcerned])
+                    if(iesConcerned) {
+                        IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ic where ic.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
+                        PriceItem.executeUpdate("delete from PriceItem pc where pc.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
+                        CostItem.executeUpdate("delete from CostItem ci where ci.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
+                        IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in :toDelete",[toDelete:iesConcerned])
+                    }
                     //deleting tipps
                     List<Long> tippsConcerned = TitleInstancePackagePlatform.findAllByPkg(pkg).collect { tipp -> tipp.id }
                     TIPPCoverage.executeUpdate("delete from TIPPCoverage tc where tc.tipp.id in :toDelete",[toDelete:tippsConcerned])

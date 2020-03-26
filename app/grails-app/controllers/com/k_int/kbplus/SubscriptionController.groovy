@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
+import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
@@ -40,7 +41,6 @@ import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 
 import static de.laser.helper.RDStore.*
-import static de.laser.helper.RDStore.OR_LICENSEE_CONS
 
 // 2.0
 
@@ -119,7 +119,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }

@@ -19,6 +19,7 @@ import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.TitleInstancePackagePlatform
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.exceptions.CleanupException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -697,9 +698,8 @@ class YodaService {
                     TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGlobalUID(tippKey)
                     iesToNotify.each { IssueEntitlement ie ->
                         println("notifying subscription ${ie.subscription}")
-                        Map<String, Object> changeMap = [oid:"${ie.class.name}:${ie.id}",prop:'status',newValue:status,oldValue:ie.status]
-                        String changeDesc = 'pendingChange.message_TP02'
-                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,tipp.pkg))
+                        Map<String, Object> changeMap = [target:ie.subscription,oid:"${ie.class.name}:${ie.id}",prop:'status',newValue:status,oldValue:ie.status]
+                        changeNotificationService.determinePendingChangeBehavior(changeMap,PendingChangeConfiguration.TITLE_UPDATED,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,tipp.pkg))
                         //changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
                     }
                 }
