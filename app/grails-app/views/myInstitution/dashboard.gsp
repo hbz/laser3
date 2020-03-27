@@ -214,9 +214,6 @@
                     </div><!-- .column -->
                 </div>
                 <g:each in="${notifications}" var="entry">
-                    <div class="row">
-                        ${entry}
-                    </div>
                     <g:set var="row" value="${pendingChangeService.printRow(entry.change)}" />
                     <g:set var="event" value="${row.eventData}"/>
                     <div class="row">
@@ -230,10 +227,10 @@
                             </g:if>
                         </div><!-- .column -->
                         <div class="two wide column">
-                            <g:if test="${change.subscription}">
-                                <g:link controller="subscription" action="index" id="${change.subscription.id}">${change.subscription.dropdownNamingConvention()}</g:link>
+                            <g:if test="${entry.change.subscription}">
+                                <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
                             </g:if>
-                            <g:elseif test="${change.costItem}">
+                            <g:elseif test="${entry.change.costItem}">
 
                             </g:elseif>
                         </div><!-- .column -->
