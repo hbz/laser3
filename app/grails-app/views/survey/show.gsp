@@ -32,7 +32,7 @@
 <semui:messages data="${flash}"/>
 
 
-<div id="collapseableSubDetails" class="ui stackable grid">
+<div class="ui stackable grid">
     <div class="sixteen wide column">
 
         <div class="la-inline-lists">
