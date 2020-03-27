@@ -159,10 +159,17 @@
 
                                 <i class="icon clipboard outline la-list-icon"></i>
                                 <g:link controller="public" action="gasco"
-                                        params="[q: surveyConfig?.subscription?.name]">
+                                        params="${[q: '"'+surveyConfig?.subscription?.name+'"']}">
                                     ${surveyConfig?.subscription?.name}
                                 </g:link>
                             </h2>
+
+                            <div class="field" style="text-align: right;">
+                                <g:link class="ui button" controller="public" action="gasco"
+                                        params="${[q: '"'+surveyConfig?.subscription?.name+'"']}">
+                                    GASCO-Monitor
+                                </g:link>
+                            </div>
                         </g:if>
                         <g:else>
 
@@ -527,6 +534,16 @@
                     </td>
                     <td>
                         ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyProperty?.surveyProperty.type)}
+                        <g:if test="${surveyProperty?.surveyProperty.type == 'class com.k_int.kbplus.RefdataValue'}">
+                            <g:set var="refdataValues" value="${[]}"/>
+                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyProperty?.surveyProperty.refdataCategory)}"
+                                    var="refdataValue">
+                                <g:set var="refdataValues"
+                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                            </g:each>
+                            <br>
+                            (${refdataValues.join('/')})
+                        </g:if>
                     </td>
                     <td>
                         <g:if test="${editable && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING &&
@@ -594,11 +611,16 @@
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>${message(code: 'surveyResult.commentParticipant')}</th>
                 <th>
-                    ${message(code: 'surveyResult.commentOnlyForParticipant')}
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                          data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                        <i class="question circle icon"></i>
-                    </span>
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                        ${message(code: 'surveyResult.commentOnlyForOwner')}
+                    </g:if>
+                    <g:else>
+                        ${message(code: 'surveyResult.commentOnlyForParticipant')}
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </g:else>
                 </th>
             </tr>
             </thead>
@@ -621,6 +643,16 @@
                     </td>
                     <td>
                         ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyResult?.type.type)}
+                        <g:if test="${surveyResult?.type.type == 'class com.k_int.kbplus.RefdataValue'}">
+                            <g:set var="refdataValues" value="${[]}"/>
+                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult?.type.refdataCategory)}"
+                                    var="refdataValue">
+                                <g:set var="refdataValues"
+                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                            </g:each>
+                            <br>
+                            (${refdataValues.join('/')})
+                        </g:if>
                     </td>
                     <g:set var="surveyOrg"
                            value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, institution)}"/>
@@ -665,7 +697,12 @@
                             <semui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                         </td>
                         <td>
-                            <semui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                                <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
+                            </g:if>
+                            <g:else>
+                                <semui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                            </g:else>
                         </td>
                     </g:if>
                     <g:else>

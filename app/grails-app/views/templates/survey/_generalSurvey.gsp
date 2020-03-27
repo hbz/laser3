@@ -257,11 +257,16 @@
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>${message(code: 'surveyResult.commentParticipant')}</th>
                 <th>
-                    ${message(code: 'surveyResult.commentOnlyForParticipant')}
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                          data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                        <i class="question circle icon"></i>
-                    </span>
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                        ${message(code: 'surveyResult.commentOnlyForOwner')}
+                    </g:if>
+                    <g:else>
+                        ${message(code: 'surveyResult.commentOnlyForParticipant')}
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </g:else>
                 </th>
             </tr>
             </thead>
@@ -284,7 +289,7 @@
                     </td>
                     <td>
                         ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyResult?.type.type)}
-                        <g:if test="${surveyResult?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                        <g:if test="${surveyResult?.type.type == 'class com.k_int.kbplus.RefdataValue'}">
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult?.type.refdataCategory)}"
                                     var="refdataValue">
@@ -333,7 +338,12 @@
                         <semui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                     </td>
                     <td>
-                        <semui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                        <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                            <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
+                        </g:if>
+                        <g:else>
+                            <semui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                        </g:else>
                     </td>
                 </tr>
             </g:each>

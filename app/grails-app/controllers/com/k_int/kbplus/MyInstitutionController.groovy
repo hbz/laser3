@@ -2661,10 +2661,31 @@ AND EXISTS (
         def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution)
 
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+        List surveyResultsforExport = result.surveyResults.collect {it[1]}
         result.surveyResults = result.surveyResults.groupBy {it.id[1]}
         result.countSurveys = getSurveyParticipantCounts_New(result.institution)
 
-        result
+        if ( params.exportXLS ) {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyInfo(surveyResultsforExport, "xls", result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
+            return
+        }else {
+            withFormat {
+                html {
+                    result
+                }
+            }
+        }
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
@@ -2714,7 +2735,7 @@ AND EXISTS (
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyInfo(surveyResults, "xls", result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyInfo(result.surveyResults, "xls", result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -4252,84 +4273,6 @@ AND EXISTS (
         }
 
     }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def surveyParticipantConsortia() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfig) ?: null
-
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        result.participant = Org.get(params.id)
-
-        result.editable = (accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")  && result.surveyConfig.surveyInfo?.owner?.id == contextService.getOrg()?.id)
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfig(result.institution, result.participant, result.surveyConfig).sort{it?.surveyConfig?.configOrder}.groupBy {it?.surveyConfig?.id}
-
-        result
-
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def surveyParticipantConsortiaNew() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfig)
-
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        result.participant = Org.get(params.id)
-
-        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
-
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
-
-        result.ownerId = result.surveyResults[0]?.owner?.id
-
-        //result.navigation = surveyService.getParticipantConfigNavigation(result.participant, result.surveyInfo, result.surveyConfig)
-
-        if(result.surveyConfig?.type == 'Subscription') {
-            result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = []
-            result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == result.participant?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-        }
-
-        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-
-        result
-    }
-
-
 
     private def getSurveyParticipantCounts(Org participant){
         Map<String, Object> result = [:]
