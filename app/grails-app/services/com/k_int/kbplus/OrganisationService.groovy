@@ -641,6 +641,7 @@ class OrganisationService {
                                     [sub:'currentOwn',
                                      billingSum: 25680,
                                      currencyRate: 1.0,
+                                     currency: generalData.currencies.get('EUR'),
                                      status: generalData.costItemStatus.get('Actual'),
                                      startDate: generalData.dates.defaultStartDate,
                                      endDate: generalData.dates.defaultEndDate]
