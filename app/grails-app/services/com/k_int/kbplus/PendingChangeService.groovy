@@ -6,6 +6,7 @@ import de.laser.SubscriptionService
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.TIPPCoverage
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
@@ -578,10 +579,10 @@ class PendingChangeService extends AbstractLockableService {
                     eventIcon = '<i class="yellow circle outline icon"></i>'
                     instanceIcon = '<i class="book icon"></i>'
                     if(holdingLink && titleName && pkgName) {
-                        eventData = [holdingLink,titleName,pkgName,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),change.oldValue]
+                        eventData = [holdingLink,titleName,pkgName,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),output(change,'oldValue')]
                         if(change.targetProperty in ['hostPlatformURL'])
-                            eventData << "<a href='${change.newValue}'>${change.newValue}</a>"
-                        else eventData << change.newValue
+                            eventData << "<a href='${output(change,'newValue')}'>${output(change,'newValue')}</a>"
+                        else eventData << output(change,'newValue')
                     }
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break
@@ -598,7 +599,7 @@ class PendingChangeService extends AbstractLockableService {
                     eventIcon = '<i class="yellow circle outline icon"></i>'
                     instanceIcon = '<i class="file alternate icon"></i>'
                     if(holdingLink && pkgName && coverageString && titleName) {
-                        eventData = [holdingLink,pkgName,titleName,coverageString,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),change.oldValue,change.newValue]
+                        eventData = [holdingLink,pkgName,titleName,coverageString,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),output(change,'oldValue'),output(change,'newValue')]
                     }
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break
@@ -624,6 +625,23 @@ class PendingChangeService extends AbstractLockableService {
         if(eventString == null)
             eventString = messageSource.getMessage(change.msgToken,eventData.toArray(),locale)
         [instanceIcon:instanceIcon,eventIcon:eventIcon,eventString:eventString]
+    }
+
+    /**
+     * Converts the given value according to the field type
+     * @param key - the string value
+     * @return the value as {@link Date} or {@link String}
+     */
+    def output(PendingChange change,String key) {
+        def ret
+        if(change.targetProperty in PendingChange.DATE_FIELDS) {
+            ret = DateUtil.parseDateGeneric(change[key])
+        }
+        else if(change.targetProperty in PendingChange.REFDATA_FIELDS) {
+            ret = RefdataValue.get(change[key])
+        }
+        else ret = change[key]
+        ret
     }
 
 }
