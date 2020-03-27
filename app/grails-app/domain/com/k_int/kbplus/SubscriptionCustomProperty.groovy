@@ -145,8 +145,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
 
             slavedPendingChanges.each { spc ->
                 log.debug('autoAccept! performing: ' + spc)
-                def user = null
-                pendingChangeService.performAccept(spc, user)
+                pendingChangeService.performAccept(spc)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('SubscriptionCustomProperty.deleted')) {
