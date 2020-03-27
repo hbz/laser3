@@ -168,8 +168,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
 
             slavedPendingChanges.each { spc ->
                 log.debug('autoAccept! performing: ' + spc)
-                def user = null
-                pendingChangeService.performAccept(spc, user)
+                pendingChangeService.performAccept(spc)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.deleted')) {

@@ -60,22 +60,20 @@ class PendingChange {
     String msgToken
     String msgParams
 
-    Date dateCreated
-    Date lastUpdated
-
     String targetProperty
     String oldValue
     String newValue
+
+    Date actionDate
+
+    Date dateCreated
+    Date lastUpdated
 
     @Deprecated
     String desc
 
     @RefdataAnnotation(cat = RDConstants.PENDING_CHANGE_STATUS)
     RefdataValue status
-
-    Date actionDate
-    User user
-
 
     static mapping = {
         systemObject column:'pc_sys_obj'
@@ -98,7 +96,6 @@ class PendingChange {
                desc column:'pc_desc', type:'text'
              status column:'pc_status_rdv_fk'
          actionDate column:'pc_action_date'
-               user column:'pc_action_user_fk'
                sort "ts":"asc"
 
         dateCreated column: 'pc_date_created'
@@ -126,7 +123,6 @@ class PendingChange {
         desc(nullable:true, blank:false)
         status(nullable:true, blank:false)
         actionDate(nullable:true, blank:false)
-        user(nullable:true, blank:false)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)

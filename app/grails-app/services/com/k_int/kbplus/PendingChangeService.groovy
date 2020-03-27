@@ -43,17 +43,17 @@ class PendingChangeService extends AbstractLockableService {
 
     final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
 
-    boolean performMultipleAcceptsForJob(List<PendingChange> subscriptionChanges, List<PendingChange> licenseChanges, User user) {
+    boolean performMultipleAcceptsForJob(List<PendingChange> subscriptionChanges, List<PendingChange> licenseChanges) {
         log.debug('performMultipleAcceptsFromJob()')
 
         if (!running) {
             running = true
 
             subscriptionChanges.each {
-                pendingChangeService.performAccept(it, user)
+                pendingChangeService.performAccept(it)
             }
             licenseChanges.each {
-                pendingChangeService.performAccept(it, user)
+                pendingChangeService.performAccept(it)
             }
 
             running = false
@@ -65,9 +65,9 @@ class PendingChangeService extends AbstractLockableService {
     }
 
     @Deprecated
-    boolean performAccept(PendingChange pendingChange, User user) {
+    boolean performAccept(PendingChange pendingChange) {
 
-        log.debug('performAccept(): ' + pendingChange + ', ' + user)
+        log.debug('performAccept(): ' + pendingChange)
         boolean result = true
 
         PendingChange.withNewTransaction { TransactionStatus status ->
@@ -297,7 +297,6 @@ class PendingChangeService extends AbstractLockableService {
                     pendingChange.subscription?.save();*/
                     pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", RDConstants.PENDING_CHANGE_STATUS)
                     pendingChange.actionDate = new Date()
-                    pendingChange.user = user
                     //pendingChange.save()  // ERMS-2184 // called implicit somewhere
                     log.debug("Pending change accepted and saved")
                 }
@@ -311,7 +310,7 @@ class PendingChangeService extends AbstractLockableService {
     }
 
     @Deprecated
-    void performReject(PendingChange change, User user) {
+    void performReject(PendingChange change) {
         PendingChange.withNewTransaction { TransactionStatus status ->
             if (change) {
                 change.license?.pendingChanges?.remove(change)
@@ -319,7 +318,6 @@ class PendingChangeService extends AbstractLockableService {
                 change.subscription?.pendingChanges?.remove(change)
                 change.subscription?.save()
                 change.actionDate = new Date()
-                change.user = user
                 change.status = RefdataValue.getByValueAndCategory("Rejected",RDConstants.PENDING_CHANGE_STATUS)
                 change.save()
             }
