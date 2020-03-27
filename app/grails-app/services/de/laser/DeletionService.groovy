@@ -29,9 +29,9 @@ class DeletionService {
     static String RESULT_ERROR              = 'RESULT_ERROR'
     static String RESULT_SUBSTITUTE_NEEDED  = 'RESULT_SUBSTITUTE_NEEDED'
 
-    static String FLAG_BLOCKER      = 'red'
     static String FLAG_WARNING      = 'yellow'
-    static String FLAG_SUBSTITUTE   = 'blue'
+    static String FLAG_SUBSTITUTE   = 'teal'
+    static String FLAG_BLOCKER      = 'red'
 
     static Map<String, Object> deleteLicense(License lic, boolean dryRun) {
 
@@ -642,8 +642,6 @@ class DeletionService {
         List docs = Doc.executeQuery(
                 'select x from Doc x where x.creator = :user or x.user = :user', [user: user])
 
-        List pendingChanges = PendingChange.findAllByUser(user)
-
         List systemTickets = SystemTicket.findAllByAuthor(user)
 
         List tasks = Task.executeQuery(
@@ -659,9 +657,8 @@ class DeletionService {
 
         result.info << ['DashboardDueDate', ddds]
         result.info << ['Dokumente', docs, FLAG_SUBSTITUTE]
-        result.info << ['Anstehende Änderungen', pendingChanges, FLAG_SUBSTITUTE]
-        result.info << ['Tickets', systemTickets, FLAG_SUBSTITUTE]
-        result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
+        result.info << ['Tickets', systemTickets]
+        result.info << ['Aufgaben', tasks, FLAG_WARNING]
 
         // checking constraints and/or processing
 
@@ -696,6 +693,8 @@ class DeletionService {
                     // user settings
                     userSettings.each { tmp -> tmp.delete() }
 
+                    systemTickets.each { tmp ->tmp.delete() }
+
                     ddds.each { tmp -> tmp.delete() }
 
                     // docs
@@ -706,16 +705,6 @@ class DeletionService {
                         if (tmp.user?.id == user.id) {
                             tmp.user = replacement
                         }
-                        tmp.save()
-                    }
-
-                    pendingChanges.each { tmp ->
-                        tmp.user = replacement
-                        tmp.save()
-                    }
-
-                    systemTickets.each { tmp ->
-                        tmp.author = replacement
                         tmp.save()
                     }
 

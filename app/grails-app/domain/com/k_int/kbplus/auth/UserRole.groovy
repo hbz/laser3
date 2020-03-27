@@ -77,6 +77,11 @@ class UserRole implements Serializable, Comparable {
         return user?.display + ' ' + role?.authority
     }
 
+    @Override
+    String toString() {
+        return '(' + user?.id + ',' + role?.id + ')'
+    }
+
     @Transient
     int compareTo(obj) {
         sortString.compareTo(obj?.sortString)
