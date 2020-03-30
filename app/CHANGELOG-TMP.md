@@ -2,9 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
 2303    30.03.2020  rc1.3       Moe     Bug/Feature Umfrage exportieren
 
-2291    26.04.2020  hbz-dev     Daniel  Feature     Überarbeitung und Hinzufügung von Properties und Referenzwerten
+2291    26.03.2020  hbz-dev     Daniel  Feature     Überarbeitung und Hinzufügung von Properties und Referenzwerten
+
+2267    30.03.2020  rc1.3       David   Feature     Trennen von Identifier-Namensräumen
+
+2291    26.03.2020  hbz-dev     Daniel  Feature     Überarbeitung und Hinzufügung von Properties und Referenzwerten
+
+2284    26.03.2020  hbz-dev     Andreas Bug         Bezeichnung "Lokale Lizenz" korrigiert
 
 2283    25.03.2020  hbz-dev     Moe     Feature     Ausschüttungsfunktion CostItems
 

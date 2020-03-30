@@ -84,7 +84,7 @@ class LicenseController extends AbstractDebugController {
                 log.debug("Slaved lincence, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change, (User) result.user)) {
+                    if (!pendingChangeService.performAccept(change)) {
                         log.debug("Auto-accepting pending change has failed.")
                     } else {
                         changesDesc.add(change.desc)

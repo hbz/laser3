@@ -29,9 +29,9 @@ class DeletionService {
     static String RESULT_ERROR              = 'RESULT_ERROR'
     static String RESULT_SUBSTITUTE_NEEDED  = 'RESULT_SUBSTITUTE_NEEDED'
 
-    static String FLAG_BLOCKER      = 'red'
     static String FLAG_WARNING      = 'yellow'
-    static String FLAG_SUBSTITUTE   = 'blue'
+    static String FLAG_SUBSTITUTE   = 'teal'
+    static String FLAG_BLOCKER      = 'red'
 
     static Map<String, Object> deleteLicense(License lic, boolean dryRun) {
 
@@ -639,10 +639,12 @@ class DeletionService {
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
-        List docs = Doc.executeQuery(
-                'select x from Doc x where x.creator = :user or x.user = :user', [user: user])
+        List docs_private = Doc.executeQuery(
+                'select x from DocContext dc join dc.owner x where x.creator = :user and dc.shareConf = :creatorOnly',
+                [user: user, creatorOnly: RDStore.SHARE_CONF_CREATOR])
 
-        List pendingChanges = PendingChange.findAllByUser(user)
+        List docs = Doc.executeQuery('select x from Doc x where x.creator = :user or x.user = :user', [user: user])
+        docs.removeAll(docs_private)
 
         List systemTickets = SystemTicket.findAllByAuthor(user)
 
@@ -659,9 +661,9 @@ class DeletionService {
 
         result.info << ['DashboardDueDate', ddds]
         result.info << ['Dokumente', docs, FLAG_SUBSTITUTE]
-        result.info << ['Anstehende Änderungen', pendingChanges, FLAG_SUBSTITUTE]
-        result.info << ['Tickets', systemTickets, FLAG_SUBSTITUTE]
-        result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
+        result.info << ['Dokumente (private)', docs_private, FLAG_WARNING]
+        result.info << ['Tickets', systemTickets]
+        result.info << ['Aufgaben', tasks, FLAG_WARNING]
 
         // checking constraints and/or processing
 
@@ -696,9 +698,20 @@ class DeletionService {
                     // user settings
                     userSettings.each { tmp -> tmp.delete() }
 
+                    systemTickets.each { tmp ->tmp.delete() }
+
                     ddds.each { tmp -> tmp.delete() }
 
+                    tasks.each { tmp -> tmp.delete() }
+
                     // docs
+                    docs_private.each { tmp ->
+                        DocContext.findAllByOwner(tmp).each{ dc ->
+                            dc.delete()
+                        }
+                        tmp.delete()
+                    }
+
                     docs.each { tmp ->
                         if (tmp.creator?.id == user.id) {
                             tmp.creator = replacement
@@ -706,22 +719,6 @@ class DeletionService {
                         if (tmp.user?.id == user.id) {
                             tmp.user = replacement
                         }
-                        tmp.save()
-                    }
-
-                    pendingChanges.each { tmp ->
-                        tmp.user = replacement
-                        tmp.save()
-                    }
-
-                    systemTickets.each { tmp ->
-                        tmp.author = replacement
-                        tmp.save()
-                    }
-
-                    tasks.each { tmp ->
-                        tmp.responsibleUser = replacement
-                        tmp.creator = replacement
                         tmp.save()
                     }
 
