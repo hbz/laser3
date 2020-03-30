@@ -95,6 +95,9 @@ update identifier_namespace set
 	idns_last_updated = now() 
 where idns_ns = 'wibid';
 """)
+			}
+		}
+	}
 
     changeSet(author: "klober (modified)", id: "1585548682322-8") {
         grailsChange {
