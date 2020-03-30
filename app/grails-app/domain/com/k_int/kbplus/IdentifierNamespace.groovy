@@ -19,6 +19,17 @@ class IdentifierNamespace extends AbstractI10nOverride {
     @Transient
     public static final NS_CREATOR      = "com.k_int.kbplus.Creator"
 
+    @Transient
+    final static String[] CORE_ORG_NS = [
+            "ISIL",
+            "wibid",
+            "gnd_org_nr",
+            "ezb_org_id",
+            "GRID ID",
+            "DBS-ID",
+            "VAT"
+    ]
+
 
     @Transient
     final static String[] AVAILABLE_NSTYPES = [
@@ -86,5 +97,8 @@ class IdentifierNamespace extends AbstractI10nOverride {
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
+    }
+    boolean isCoreOrgNamespace(){
+        this.ns in CORE_ORG_NS
     }
 }
