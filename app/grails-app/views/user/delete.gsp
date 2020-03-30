@@ -35,64 +35,46 @@
                 <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
-            <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
-            <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+            <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}">
 
-            <g:if test="${editable}">
-                <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}" style="display:inline-block;vertical-align:top">
+                <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
+
+                <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+
+                <g:if test="${editable}">
 
                     <g:if test="${delResult.deletable}">
                         <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
-                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}"
+                                   onclick="return confirm('${message(code:'user.delete.confirm')}')" />
 
-                            <br /><br />
-                            Beim Löschen relevante Daten an folgenden Nutzer übertragen:
+                            <br/><br/>${message(code:'user.delete.moveToNewUser')}<br/>
 
                             <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
                                       from="${substituteList.sort()}"
-                                      optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}" optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
+                                      optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}"
+                                      optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
                         </g:if>
                         <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
-                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}"
+                                   onclick="return confirm('${message(code:'user.delete.confirm')}')" />
                         </g:elseif>
                     </g:if>
                     <g:else>
                         <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
                     </g:else>
-                </g:form>
-            </g:if>
+
+                </g:if>
+            </g:form>
 
         </g:else>
-
-        <%-- --%>
-
-        <div class="ui list">
-            <div class="item">
-                <span class="ui circular label yellow">1</span>
-                <span class="content">
-                    ${message(code:'user.delete.warning')}
-                </span>
-            </div>
-            <div class="item">
-                <span class="ui circular label teal">2</span>
-                <span class="content">
-                    ${message(code:'user.delete.moveToNewUser')}
-                </span>
-            </div>
-            <div class="item">
-                <span class="ui circular label red">3</span>
-                <span class="content">
-                    ${message(code:'user.delete.blocker')}
-                </span>
-            </div>
-        </div>
 
         <%-- --%>
 
         <table class="ui celled la-table la-table-small table">
             <thead>
             <tr>
-                <th>Anhängende, bzw. referenzierte Objekte</th>
+                <th>Objekte, Referenzen</th>
                 <th>Anzahl</th>
                 <th>Objekt-Ids</th>
             </tr>
@@ -110,7 +92,7 @@
                                     data-content="${message(code:'user.delete.warning')}"
                                 </g:if>
                                 <g:if test="${info[2] == DeletionService.FLAG_SUBSTITUTE}">
-                                    data-content="${message(code:'user.delete.moveToNewUser')}"
+                                    data-content="${message(code:'user.delete.substitute')}"
                                 </g:if>
                                 <g:if test="${info[2] == DeletionService.FLAG_BLOCKER}">
                                     data-content="${message(code:'user.delete.blocker')}"
@@ -130,6 +112,32 @@
             </g:each>
             </tbody>
         </table>
+
+        <%-- --%>
+
+        <br />
+
+        <div class="ui list">
+            <div class="item">
+                <span class="ui circular label yellow">1</span>
+                <span class="content">
+                    ${message(code:'user.delete.warning')}
+                </span>
+            </div>
+            <div class="item">
+                <span class="ui circular label teal">2</span>
+                <span class="content">
+                    ${message(code:'user.delete.substitute')}
+                </span>
+            </div>
+            <div class="item">
+                <span class="ui circular label red">3</span>
+                <span class="content">
+                    ${message(code:'user.delete.blocker')}
+                </span>
+            </div>
+        </div>
+
     </g:if>
 
 </body>

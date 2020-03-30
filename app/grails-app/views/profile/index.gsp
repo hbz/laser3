@@ -14,6 +14,14 @@
     <semui:crumb message="profile.bc.profile" class="active"/>
 </semui:breadcrumbs>
 
+<semui:controlButtons>
+    <semui:actionsDropdown>
+        <g:link class="ui item" controller="profile" action="deleteProfile">
+            ${message(code:'profile.account.delete.button')}
+        </g:link>
+    </semui:actionsDropdown>
+</semui:controlButtons>
+
 %{--<semui:controlButtons>
     <semui:actionsDropdown>
 

@@ -75,10 +75,10 @@
         </tbody>
     </table>
     <style>
-        #ct-chart-0 .ct-series-b .ct-bar { stroke: darkgreen; }
+        #ct-chart-0 .ct-series-b .ct-bar { stroke: darkorange; }
 
         .ct-series-a .ct-bar { stroke: #98b500; }
-        .ct-series-b .ct-bar { stroke: orange; }
+        .ct-series-b .ct-bar { stroke: #bad722; }
     </style>
 </body>
 </html>
