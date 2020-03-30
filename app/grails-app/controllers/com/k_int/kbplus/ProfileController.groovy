@@ -4,6 +4,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
+import de.laser.DeletionService
+import de.laser.helper.DebugAnnotation
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -142,6 +144,35 @@ class ProfileController {
             redirect(action: "index")
         }
 
+    }
+
+    @Secured(['ROLE_USER'])
+    def deleteProfile() {
+        Map<String, Object> result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+
+         // TODO : isLastAdminForOrg
+
+        if (params.process) {
+            User userReplacement = genericOIDService.resolveOID(params.userReplacement)
+
+            result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+
+            if (result.delResult.status == DeletionService.RESULT_SUCCESS) {
+                redirect controller: 'logout', action: 'index'
+                return
+            }
+        }
+        else {
+            result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+        }
+
+        result.substituteList = User.executeQuery(
+                'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg and u != :self',
+                [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg(), self: result.user]
+        )
+
+        render view: 'deleteProfile', model: result
     }
 
     private validateEmailAddress(String email) {
