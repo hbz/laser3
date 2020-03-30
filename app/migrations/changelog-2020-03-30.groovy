@@ -8,7 +8,9 @@ databaseChangeLog = {
 				IdentifierNamespace isp = IdentifierNamespace.findByNs('ISIL_Paketsigel')
 				if (!isp) {
 					new IdentifierNamespace(
-							ns: 'ISIL_Paketsigel'
+							ns: 'ISIL_Paketsigel',
+							dateCreated: new Date(),
+							lastUpdated: new Date()
 					).save(flush: true)
 				}
 			}
@@ -19,9 +21,9 @@ databaseChangeLog = {
 		grailsChange {
 			change {
 				sql.execute("""
-update identifier set id_ns_fk = (
-    select idns_id from identifier_namespace where idns_ns = 'ISIL_Paketsigel'
-)
+update identifier set 
+	id_ns_fk = ( select idns_id from identifier_namespace where idns_ns = 'ISIL_Paketsigel' ),
+	id_last_updated = now()
 where id_ns_fk = (
     select idns_id from identifier_namespace where idns_ns = 'ISIL'
 ) and ( id_sub_fk is not null or id_pkg_fk is not null );
@@ -33,7 +35,12 @@ where id_ns_fk = (
 	changeSet(author: "klober (modified)", id: "1585548682322-3") {
 		grailsChange {
 			change {
-				sql.execute("update identifier_namespace set idns_type = 'com.k_int.kbplus.Org' where idns_ns = 'ISIL';")
+				sql.execute("""
+update identifier_namespace set 
+	idns_type = 'com.k_int.kbplus.Org',
+	idns_last_updated = now()
+where idns_ns = 'ISIL';
+""")
 			}
 		}
 	}
@@ -45,6 +52,8 @@ where id_ns_fk = (
 				new IdentifierNamespace(
 						ns: 'ezb_org_id',
 						nsType: 'com.k_int.kbplus.Org',
+						dateCreated: new Date(),
+						lastUpdated: new Date()
 				).save(flush: true)
 			}
 		}
@@ -54,9 +63,9 @@ where id_ns_fk = (
 		grailsChange {
 			change {
 				sql.execute("""
-update identifier set id_ns_fk = (
-    select idns_id from identifier_namespace where idns_ns = 'ezb_org_id'
-)
+update identifier set 
+	id_ns_fk = ( select idns_id from identifier_namespace where idns_ns = 'ezb_org_id' ),
+	id_last_updated = now()
 where id_ns_fk = (
     select idns_id from identifier_namespace where idns_ns = 'ezb'
 ) and id_org_fk is not null;
@@ -80,7 +89,12 @@ delete from identifier where id_ns_fk = (
 	changeSet(author: "klober (modified)", id: "1585548682322-7") {
 		grailsChange {
 			change {
-				sql.execute("update identifier_namespace set idns_type = 'com.k_int.kbplus.Org' where idns_ns = 'wibid';")
+				sql.execute("""
+update identifier_namespace set 
+	idns_type = 'com.k_int.kbplus.Org',
+	idns_last_updated = now() 
+where idns_ns = 'wibid';
+""")
 			}
 		}
 	}
