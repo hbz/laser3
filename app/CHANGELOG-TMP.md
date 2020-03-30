@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2309    30.03.2020  rc1-3       Moe     Bug         Mailadressenexport Trennzeichen
 
 2303    30.03.2020  rc1.3       Moe     Bug/Feature Umfrage exportieren
 
