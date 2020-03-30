@@ -2,7 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2307    30.03.2020  rc1.3       Andreas Bug         Paket kann wieder mit Lizenz verknüpft werden (von Paketsicht aus)
+1901    30.03.2020  rc1.3       Andreas Bug         Paket kann wieder mit Lizenz verknüpft werden (von Paketsicht aus)
 
 2268    30.03.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume
 
