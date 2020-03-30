@@ -22,7 +22,7 @@ class PendingChange {
     @Transient
     def genericOIDService
     @Transient
-    PendingChangeService pendingChangeService
+    def pendingChangeService
 
     @Transient
     final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
@@ -142,6 +142,9 @@ class PendingChange {
                 executeUpdate('update PendingChange pc set status = :superseded where :target in (subscription,license,costItem) and targetProperty = :prop',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,prop:configMap.prop])
                 pc.targetProperty = configMap.prop
             }
+            else {
+                executeUpdate('update PendingChange pc set status = :superseded where :target in (subscription,license,costItem) and oid = :oid and msgToken = :msgToken',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,oid:configMap.oid,msgToken:configMap.msgToken])
+            }
             if(configMap.target instanceof Subscription)
                 pc.subscription = (Subscription) configMap.target
             else if(configMap.target instanceof License)
@@ -173,6 +176,12 @@ class PendingChange {
     boolean accept() throws ChangeAcceptException {
         boolean done = false
         def target = genericOIDService.resolveOID(oid)
+        def parsedNewValue
+        if(targetProperty in DATE_FIELDS)
+            parsedNewValue = DateUtil.parseDateGeneric(newValue)
+        else if(targetProperty in REFDATA_FIELDS)
+            parsedNewValue = RefdataValue.get(Long.parseLong(newValue))
+        else parsedNewValue = newValue
         switch(msgToken) {
             //pendingChange.message_TP01 (newTitle)
             case PendingChangeConfiguration.NEW_TITLE:
@@ -189,7 +198,7 @@ class PendingChange {
             case PendingChangeConfiguration.TITLE_UPDATED:
                 if(target instanceof IssueEntitlement) {
                     IssueEntitlement targetTitle = (IssueEntitlement) target
-                    targetTitle[targetProperty] = newValue
+                    targetTitle[targetProperty] = parsedNewValue
                     if(targetTitle.save()) {
                         done = true
                     }
@@ -213,7 +222,7 @@ class PendingChange {
             case PendingChangeConfiguration.COVERAGE_UPDATED:
                 if(target instanceof IssueEntitlementCoverage) {
                     IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
-                    targetCov[targetProperty] = newValue
+                    targetCov[targetProperty] = parsedNewValue
                     if(targetCov.save())
                         done = true
                     else throw new ChangeAcceptException("problems when updating coverage statement - pending change not accepted: ${targetCov.errors}")
