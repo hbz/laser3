@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2268    30.03.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume
+
 2267    30.03.2020  rc1.3       David   Feature     Trennen von Identifier-Namensräumen
 
 2291    26.03.2020  hbz-dev     Daniel  Feature     Überarbeitung und Hinzufügung von Properties und Referenzwerten
