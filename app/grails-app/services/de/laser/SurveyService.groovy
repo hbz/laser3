@@ -58,11 +58,11 @@ class SurveyService {
             return true
         }
 
-        if (!surveyConfig?.pickAndChoose) {
+        if (!surveyConfig.pickAndChoose) {
             return false
         }
 
-        if (surveyConfig?.surveyInfo.status != RDStore.SURVEY_SURVEY_STARTED) {
+        if (surveyConfig.surveyInfo.status != RDStore.SURVEY_SURVEY_STARTED) {
             return false
         }
 
@@ -205,61 +205,61 @@ class SurveyService {
             boolean exportForSurveyOwner = (surveyConfig.surveyInfo.owner.id == contextOrg.id)
 
             if (exportForSurveyOwner) {
-                titles.push(messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale()))
-                titles.push(messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()))
+                titles.addAll([messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale())])
                 if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
                     titles.push(messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()))
                 }
                 if (surveyConfig.type == 'GeneralSurvey') {
-                    titles.push(messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()))
+                    titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale())])
                 }
 
-                titles.push(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
+                titles.add(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
 
                 if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
-                    titles.push(messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.packages.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.kind.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.form.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.resource.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.isPublicForApi.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.hasPerpetualAccess.label', null, LocaleContextHolder.getLocale()))
+                    titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.packages.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.kind.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.form.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.resource.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.isPublicForApi.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.hasPerpetualAccess.label', null, LocaleContextHolder.getLocale())])
 
                     if (surveyConfig.subSurveyUseForTransfer) {
-                        titles.push(messageSource.getMessage('surveyConfigsInfo.newPrice', null, LocaleContextHolder.getLocale()))
-                        titles.push(messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()))
-                        titles.push(messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale()))
+                        titles.addAll([messageSource.getMessage('surveyConfigsInfo.newPrice', null, LocaleContextHolder.getLocale()),
+                                       messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                                       messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale())])
                     }
                 }
 
                 surveyConfig.surveyProperties.each {
-                    titles.push(messageSource.getMessage('surveyProperty.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('default.type.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyResult.commentOnlyForOwner', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale()))
+                    titles.addAll([messageSource.getMessage('surveyProperty.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('default.type.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyResult.commentOnlyForOwner', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale())])
                 }
 
             } else {
                 titles.push(messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()))
                 titles.push(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
                 if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
-                    titles.push(messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.packages.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.kind.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.form.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.resource.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.isPublicForApi.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('subscription.hasPerpetualAccess.label', null, LocaleContextHolder.getLocale()))
+                    titles.addAll([messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.packages.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.kind.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.form.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.resource.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.isPublicForApi.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('subscription.hasPerpetualAccess.label', null, LocaleContextHolder.getLocale())])
                     if (surveyConfig.subSurveyUseForTransfer) {
                         titles.push(messageSource.getMessage('surveyConfigsInfo.newPrice', null, LocaleContextHolder.getLocale()))
                         titles.push(messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()))
@@ -391,13 +391,12 @@ class SurveyService {
                 surveyData.add([])
                 surveyData.add([])
                 surveyData.add([])
-                List row2 = []
-                row2.add([field: messageSource.getMessage('surveyProperty.label', null, LocaleContextHolder.getLocale()), style: 'bold'])
-                row2.add([field: messageSource.getMessage('default.type.label', null, LocaleContextHolder.getLocale()), style: 'bold'])
-                row2.add([field: messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()), style: 'bold'])
-                row2.add([field: messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()), style: 'bold'])
-                row2.add([field: messageSource.getMessage('surveyResult.commentOnlyForParticipant', null, LocaleContextHolder.getLocale()), style: 'bold'])
-                row2.add([field: messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale()), style: 'bold'])
+                List row2 = [[field: messageSource.getMessage('surveyProperty.label', null, LocaleContextHolder.getLocale()), style: 'bold'],
+                             [field: messageSource.getMessage('default.type.label', null, LocaleContextHolder.getLocale()), style: 'bold'],
+                             [field: messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()), style: 'bold'],
+                             [field: messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()), style: 'bold'],
+                             [field: messageSource.getMessage('surveyResult.commentOnlyForParticipant', null, LocaleContextHolder.getLocale()), style: 'bold'],
+                             [field: messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale()), style: 'bold']]
                 surveyData.add(row2)
 
 
