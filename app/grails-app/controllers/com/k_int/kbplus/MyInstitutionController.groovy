@@ -1046,121 +1046,6 @@ join sub.orgRelations or_sub where
         }
     }
 
-    private def exportSurveyInfo(List<SurveyResult> results, String format, Org org) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        List titles = [g.message(code: 'surveyInfo.owner.label'),
-
-                       g.message(code: 'surveyConfigsInfo.comment'),
-
-                       g.message(code: 'surveyProperty.subName'),
-                       g.message(code: 'surveyProperty.subProvider'),
-                       g.message(code: 'surveyProperty.subAgency'),
-                       g.message(code: 'license.label'),
-                       g.message(code: 'subscription.packages.label'),
-                       g.message(code: 'default.status.label'),
-                       g.message(code: 'subscription.type.label'),
-                       g.message(code: 'subscription.form.label'),
-                       g.message(code: 'subscription.resource.label'),
-                       g.message(code: 'subscription.isPublicForApi.label'),
-                       g.message(code: 'subscription.hasPerpetualAccess.label'),
-
-                       g.message(code: 'surveyConfigsInfo.newPrice'),
-                       g.message(code: 'surveyConfigsInfo.newPrice.comment'),
-
-                       g.message(code: 'surveyProperty.label'),
-                       g.message(code: 'default.type.label'),
-                       g.message(code: 'surveyResult.result'),
-                       g.message(code: 'surveyResult.comment'),
-                        g.message(code: 'surveyResult.finishDate')]
-
-        List surveyData = []
-        results.findAll{it.surveyConfig.type == 'Subscription'}.each { result ->
-            List row = []
-            switch (format) {
-                case "xls":
-                case "xlsx":
-
-                    def sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org)
-
-                    def surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, org),RDStore.COST_ITEM_DELETED)
-
-                    row.add([field: result?.owner?.name ?: '', style: null])
-                    row.add([field: result?.surveyConfig?.comment ?: '', style: null])
-                    row.add([field: sub?.name ?: "", style: null])
-
-
-                    row.add([field: sub?.providers ? sub?.providers?.join(", "): '', style: null])
-                    row.add([field: sub?.agencies ? sub?.agencies?.join(", "): '', style: null])
-
-                    row.add([field: sub?.owner?.reference ?: '', style: null])
-                    List packageNames = sub?.packages?.collect {
-                        it.pkg.name
-                    }
-                    row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
-                    row.add([field: sub?.status?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub?.type?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub?.form?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub?.resource?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
-                    row.add([field: sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
-
-                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits:"2", maxFractionDigits:"2", type:"number") : '', style: null])
-
-                    row.add([field: surveyCostItem?.costDescription ?: '', style: null])
-
-                    row.add([field: result.type?.getI10n('name') ?: '', style: null])
-                    row.add([field: PropertyDefinition.getLocalizedValue(result.type.type) ?: '', style: null])
-
-                    def value = ""
-
-                    if(result?.type?.type == Integer.toString())
-                    {
-                        value = result?.intValue ? result?.intValue.toString() : ""
-                    }
-                    else if (result?.type?.type == String.toString())
-                    {
-                        value = result?.stringValue ?: ""
-                    }
-                    else if (result?.type?.type ==  BigDecimal.toString())
-                    {
-                        value = result?.decValue ? result?.decValue.toString() : ""
-                    }
-                    else if (result?.type?.type == Date.toString())
-                    {
-                        value = result?.dateValue ? sdf.format(result?.dateValue) : ""
-                    }
-                    else if (result?.type?.type == URL.toString())
-                    {
-                        value = result?.urlValue ? result?.urlValue.toString() : ""
-                    }
-                    else if (result?.type?.type == RefdataValue.toString())
-                    {
-                        value = result?.refValue ? result?.refValue.getI10n('value') : ""
-                    }
-
-                    def surveyOrg =SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, org)
-
-                    if (surveyOrg?.existsMultiYearTerm()){
-                        value = g.message(code: "surveyOrg.perennialTerm.available")
-                    }
-
-                    row.add([field: value ?: '', style: null])
-                    row.add([field: result.comment ?: '', style: null])
-                    row.add([field: result.finishDate ? sdf.format(result?.finishDate) : '', style: null])
-
-                    surveyData.add(row)
-                    break
-            }
-        }
-        switch(format) {
-            case 'xls':
-            case 'xlsx':
-                Map sheetData = [:]
-                sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: surveyData]
-                return exportService.generateXLSXWorkbook(sheetData)
-        }
-    }
-
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -2661,18 +2546,16 @@ AND EXISTS (
         def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution)
 
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
-        List surveyResultsforExport = result.surveyResults.collect {it[1]}
-        result.surveyResults = result.surveyResults.groupBy {it.id[1]}
-        result.countSurveys = getSurveyParticipantCounts_New(result.institution)
 
-        if ( params.exportXLS ) {
+        if ( params.exportXLSX ) {
+            List surveyConfigsforExport = result.surveyResults.collect {it[1]}
             SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            String filename = "${datetoday}_" + g.message(code: "survey.plural")
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyInfo(surveyResultsforExport, "xls", result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(surveyConfigsforExport, result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -2680,8 +2563,12 @@ AND EXISTS (
 
             return
         }else {
+            result.surveyResults = result.surveyResults.groupBy {it.id[1]}
+            result.countSurveys = getSurveyParticipantCounts_New(result.institution)
+
             withFormat {
                 html {
+
                     result
                 }
             }
@@ -2728,14 +2615,14 @@ AND EXISTS (
             result.visibleOrgRelations.sort { it.org.sortname }
         }
 
-        if ( params.exportXLS ) {
+        if ( params.exportXLSX ) {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "survey.label")
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyInfo(result.surveyResults, "xls", result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()

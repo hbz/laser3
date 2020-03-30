@@ -17,6 +17,12 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="survey" action="currentSurveysConsortia"
+                    params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -343,7 +349,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui button icon">
+                        <g:link controller="survey" action="show" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button icon">
                             <i class="pencil icon"></i>
                         </g:link>
                     </td>

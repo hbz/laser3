@@ -94,12 +94,29 @@ class SurveyController {
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
 
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
-        result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
-        result.countSurveyConfigs = getSurveyConfigCounts()
 
-        result.filterSet = params.filterSet ? true : false
+        if ( params.exportXLSX ) {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.plural")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
 
-        result
+            return
+        }else {
+            result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
+            result.countSurveyConfigs = getSurveyConfigCounts()
+
+            result.filterSet = params.filterSet ? true : false
+
+            result
+        }
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
@@ -131,12 +148,30 @@ class SurveyController {
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
 
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
-        result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
-        result.countSurveyConfigs = getSurveyConfigCounts()
 
-        result.filterSet = params.filterSet ? true : false
+        if ( params.exportXLSX ) {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.plural")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(SurveyConfig.findAllByIdInList(result.surveys.collect {it[1].id}), result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
 
-        result
+            return
+        }else {
+            result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
+            result.countSurveyConfigs = getSurveyConfigCounts()
+
+            result.filterSet = params.filterSet ? true : false
+
+            result
+        }
+
     }
 
 
@@ -642,8 +677,23 @@ class SurveyController {
             }*/
         }
 
-        result
+        if ( params.exportXLSX ) {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
 
+            return
+        }else {
+            result
+        }
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
@@ -1003,7 +1053,7 @@ class SurveyController {
 
         params.tab = params.tab ?: 'surveyConfigsView'
 
-        result.participants = result.surveyConfig?.orgs.org.sort { it.sortname }
+        result.participants = result.surveyConfig?.orgs?.org.sort { it.sortname }
 
         result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
         result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
@@ -1012,7 +1062,23 @@ class SurveyController {
             it.participant?.sortname
         }
 
-        result
+        if ( params.exportXLSX ) {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
+            return
+        }else {
+            result
+        }
 
     }
 
@@ -1036,8 +1102,23 @@ class SurveyController {
             it?.sortname
         }
 
-        result
+        if ( params.exportXLSX ) {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
 
+            return
+        }else {
+                    result
+            }
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
@@ -1080,7 +1161,7 @@ class SurveyController {
             }
             out.flush()
             out.close()
-        }else if(params.exportXLS) {
+        }else if(params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             List titles = [
@@ -2011,50 +2092,6 @@ class SurveyController {
         render(template: "/survey/costItemModal", model: result)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def exportParticipantResult() {
-        def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-
-        def surveyResults
-
-        if (result.surveyConfig) {
-            surveyResults = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).sort {
-                it?.participant.sortname
-            }
-
-        } else {
-
-            surveyResults = SurveyResult.findAllByOwnerAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort {
-                params.exportConfigs ? it?.surveyConfig?.configOrder : it?.participant.sortname
-            }
-        }
-
-
-        if (params.exportXLS) {
-            def sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) ((params.surveyConfigID) ? exportSurveyParticipantResultMin(surveyResults, "xls", result.institution) : exportSurveyParticipantResult(surveyResults, "xls", result.institution))
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-
-            return
-        } else {
-            redirect(uri: request.getHeader('referer'))
-        }
-
-    }
-
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
@@ -2423,7 +2460,7 @@ class SurveyController {
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message + "_" + result?.surveyConfig?.getSurveyName() +"_${datetoday}"
-        if (params.exportXLS) {
+        if (params.exportXLSX) {
             try {
                 SXSSFWorkbook wb = (SXSSFWorkbook) exportRenewalResult(result)
                 // Write the output to a file
@@ -3015,7 +3052,7 @@ class SurveyController {
 
            def surveyConfig = SurveyConfig.findByIdAndSurveyInfo(params.surveyConfigID, surveyInfo)*/
 
-        if (params.exportXLS) {
+        if (params.exportXLSX) {
             def sdf = DateUtil.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "survey.label")
@@ -4539,7 +4576,7 @@ class SurveyController {
 
             row.add([field: surveyConfig?.surveyInfo?.name ?: '', style: null])
 
-            row.add([field: surveyConfig?.getConfigName() ?: '', style: null])
+            row.add([field: surveyConfig?.getConfigNameShort ?: '', style: null])
 
             row.add([field: surveyConfig?.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig?.surveyProperty?.type) + ')', style: null])
 
