@@ -698,7 +698,7 @@ class YodaService {
                     TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGlobalUID(tippKey)
                     iesToNotify.each { IssueEntitlement ie ->
                         println("notifying subscription ${ie.subscription}")
-                        Map<String, Object> changeMap = [target:ie.subscription,oid:"${ie.class.name}:${ie.id}",prop:'status',newValue:status,oldValue:ie.status]
+                        Map<String, Object> changeMap = [target:ie.subscription,oid:"${ie.class.name}:${ie.id}",prop:'status',newValue:status.id,oldValue:ie.status.id]
                         changeNotificationService.determinePendingChangeBehavior(changeMap,PendingChangeConfiguration.TITLE_UPDATED,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,tipp.pkg))
                         //changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
                     }

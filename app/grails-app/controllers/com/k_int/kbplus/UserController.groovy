@@ -60,8 +60,8 @@ class UserController extends AbstractDebugController {
             }
 
             result.substituteList = User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg',
-                    [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg()]
+                    'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg and u != :self',
+                    [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg(), self: result.user]
             )
         }
 

@@ -2,7 +2,6 @@ package com.k_int.kbplus.batch
 
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.auth.User
 import de.laser.SystemEvent
 import de.laser.helper.RDConstants
 import de.laser.quartz.AbstractJob
@@ -48,7 +47,6 @@ class ChangeAcceptJob extends AbstractJob {
         try {
             RefdataValue pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", RDConstants.PENDING_CHANGE_STATUS)
             //def pending_change_pending_status = RefdataCategory.lookupOrCreate(RDConstants.PENDING_CHANGE_STATUS, "Pending")
-            User user = User.findByDisplay("Admin")
 
             // Get all changes associated with slaved subscriptions
             String subQueryStr = "select pc.id from PendingChange as pc where subscription.isSlaved = true and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
@@ -61,7 +59,7 @@ class ChangeAcceptJob extends AbstractJob {
             def licPendingChanges = PendingChange.executeQuery(licQueryStr, [ pending_change_pending_status ]);
             log.debug( licPendingChanges.size() +" pending changes have been found for slaved licenses")
 
-            if (! pendingChangeService.performMultipleAcceptsForJob(subPendingChanges, licPendingChanges, user)) {
+            if (! pendingChangeService.performMultipleAcceptsForJob(subPendingChanges, licPendingChanges)) {
                 log.warn( 'Failed. Maybe ignored due blocked pendingChangeService')
             }
 

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.DeletionService" %>
 <g:set var="deletionService" bean="deletionService" />
 <laser:serviceInjection />
 <!doctype html>
@@ -15,51 +16,56 @@
     </h1>
 
     <g:if test="${delResult}">
-        <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
+        <g:if test="${delResult.status == DeletionService.RESULT_SUCCESS}">
             <semui:msg class="positive" header="" message="deletion.success.msg" />
             <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
         </g:if>
         <g:else>
-            <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+            <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
                 <semui:msg class="info" header="" message="user.delete.info2" />
             </g:if>
             <g:else>
                 <semui:msg class="info" header="" message="user.delete.info" />
             </g:else>
 
-            <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
+            <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
                 <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
             </g:if>
-            <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
+            <g:if test="${delResult.status == DeletionService.RESULT_ERROR}">
                 <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
-            <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
-            <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+            <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}">
 
-            <g:if test="${editable}">
-                <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}" style="display:inline-block;vertical-align:top">
+                <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
+
+                <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+
+                <g:if test="${editable}">
 
                     <g:if test="${delResult.deletable}">
-                        <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
-                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                        <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
+                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}"
+                                   onclick="return confirm('${message(code:'user.delete.confirm')}')" />
 
-                            <br /><br />
-                            Beim Löschen relevante Daten an folgenden Nutzer übertragen:
+                            <br/><br/>${message(code:'user.delete.moveToNewUser')}<br/>
 
                             <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
                                       from="${substituteList.sort()}"
-                                      optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}" optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
+                                      optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}"
+                                      optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
                         </g:if>
-                        <g:elseif test="${delResult.status != deletionService.RESULT_ERROR}">
-                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                        <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
+                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}"
+                                   onclick="return confirm('${message(code:'user.delete.confirm')}')" />
                         </g:elseif>
                     </g:if>
                     <g:else>
                         <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
                     </g:else>
-                </g:form>
-            </g:if>
+
+                </g:if>
+            </g:form>
 
         </g:else>
 
@@ -68,7 +74,7 @@
         <table class="ui celled la-table la-table-small table">
             <thead>
             <tr>
-                <th>Anhängende, bzw. referenzierte Objekte</th>
+                <th>Objekte, Referenzen</th>
                 <th>Anzahl</th>
                 <th>Objekt-Ids</th>
             </tr>
@@ -82,8 +88,14 @@
                     <td style="text-align:center">
                         <g:if test="${info.size() > 2 && info[1].size() > 0}">
                             <span class="ui circular label la-popup-tooltip la-delay ${info[2]}"
-                                <g:if test="${info[2] == 'blue'}">
-                                    data-content="${message(code:'user.delete.moveToNewUser')}"
+                                <g:if test="${info[2] == DeletionService.FLAG_WARNING}">
+                                    data-content="${message(code:'user.delete.warning')}"
+                                </g:if>
+                                <g:if test="${info[2] == DeletionService.FLAG_SUBSTITUTE}">
+                                    data-content="${message(code:'user.delete.substitute')}"
+                                </g:if>
+                                <g:if test="${info[2] == DeletionService.FLAG_BLOCKER}">
+                                    data-content="${message(code:'user.delete.blocker')}"
                                 </g:if>
                             >${info[1].size()}</span>
                         </g:if>
@@ -93,13 +105,39 @@
                     </td>
                     <td>
                         <div style="overflow-y:scroll;scrollbar-color:grey white;max-height:14.25em">
-                            ${info[1].collect{ item -> item.hasProperty('id') ? item.id : 'x'}.sort().join(', ')}
+                            ${info[1].collect{ item -> (item.hasProperty('id') && item.id) ? item.id : item}.sort().join(', ')}
                         </div>
                     </td>
                 </tr>
             </g:each>
             </tbody>
         </table>
+
+        <%-- --%>
+
+        <br />
+
+        <div class="ui list">
+            <div class="item">
+                <span class="ui circular label yellow">1</span>
+                <span class="content">
+                    ${message(code:'user.delete.warning')}
+                </span>
+            </div>
+            <div class="item">
+                <span class="ui circular label teal">2</span>
+                <span class="content">
+                    ${message(code:'user.delete.substitute')}
+                </span>
+            </div>
+            <div class="item">
+                <span class="ui circular label red">3</span>
+                <span class="content">
+                    ${message(code:'user.delete.blocker')}
+                </span>
+            </div>
+        </div>
+
     </g:if>
 
 </body>
