@@ -78,7 +78,7 @@ class SurveyService {
         }
 
     }
-
+    @Deprecated
     Map<String, Object> getParticipantConfigNavigation(Org org, SurveyInfo surveyInfo, SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]
         def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo?.surveyConfigs).sort { it.surveyConfig.configOrder }
