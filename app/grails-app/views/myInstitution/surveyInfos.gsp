@@ -22,7 +22,7 @@
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="surveyInfos"
-                    params="${params + [exportXLS: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
+                    params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
 </semui:controlButtons>
@@ -124,22 +124,27 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
 
 <br>
 
-<div class="la-inline-lists">
-    <g:if test="${surveyInfo && surveyInfo.surveyConfigs[0].type == "Subscription"}">
+<div class="ui stackable grid">
+    <div class="sixteen wide column">
 
-        <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
-                                                                          subscriptionInstance: subscriptionInstance,
-                                                                          visibleOrgRelations : visibleOrgRelations,
-                                                                          surveyResults       : surveyResults]"/>
+        <div class="la-inline-lists">
+            <g:if test="${surveyInfo && surveyInfo.surveyConfigs[0].type == "Subscription"}">
 
-    </g:if>
+                <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                                                                                  subscriptionInstance: subscriptionInstance,
+                                                                                  visibleOrgRelations : visibleOrgRelations,
+                                                                                  surveyResults       : surveyResults]"/>
 
-    <g:if test="${surveyInfo && surveyInfo.surveyConfigs[0].type == "GeneralSurvey"}">
+            </g:if>
 
-        <g:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
-                                                                     surveyResults: surveyResults]"/>
-    </g:if>
+            <g:if test="${surveyInfo && surveyInfo.surveyConfigs[0].type == "GeneralSurvey"}">
 
+                <g:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
+                                                                             surveyResults: surveyResults]"/>
+            </g:if>
+
+        </div>
+    </div>
 </div>
 
 <br>

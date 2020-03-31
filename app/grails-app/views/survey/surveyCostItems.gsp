@@ -24,7 +24,7 @@
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:link class="item" action="exportSurCostItems" id="${surveyInfo?.id}"
-                    params="[exportXLS: true, surveyConfigID: surveyConfig?.id]">${message(code: 'survey.exportCostItems')}</g:link>
+                    params="[exportXLSX: true, surveyConfigID: surveyConfig?.id]">${message(code: 'survey.exportCostItems')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <g:render template="actions"/>

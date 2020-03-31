@@ -36,8 +36,8 @@
 <semui:messages data="${flash}"/>
 
 <g:if test="${participant}">
-    <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(participant.id)}" />
-    <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}" />
+    <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(participant.id)}"/>
+    <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
     <table class="ui table la-table la-table-small">
         <tbody>
@@ -49,10 +49,11 @@
             </td>
             <td>
                 <g:if test="${choosenOrgCPAs}">
-                    <g:set var="oldEditable" value="${editable}" />
+                    <g:set var="oldEditable" value="${editable}"/>
                     <g:set var="editable" value="${false}" scope="request"/>
                     <g:each in="${choosenOrgCPAs}" var="gcp">
-                        <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
+                        <g:render template="/templates/cpa/person_details"
+                                  model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                     </g:each>
                     <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
                 </g:if>
@@ -62,23 +63,31 @@
     </table>
 </g:if>
 
-<g:if test="${surveyConfig.type == "Subscription"}">
+<div class="ui stackable grid">
+    <div class="sixteen wide column">
 
-    <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
-                                                    subscriptionInstance: subscriptionInstance,
-                                                    visibleOrgRelations: visibleOrgRelations,
-                                                    surveyResults: surveyResults]"/>
-</g:if>
+        <div class="la-inline-lists">
 
-<g:if test="${surveyConfig.type == "GeneralSurvey"}">
+            <g:if test="${surveyConfig.type == "Subscription"}">
 
-    <g:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
-                                               costItemSums: costItemSums,
-                                               subscriptionInstance: surveyConfig.subscription,
-                                               tasks: tasks,
-                                               visibleOrgRelations: visibleOrgRelations,
-                                               properties: properties]"/>
-</g:if>
+                <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                                                                                  subscriptionInstance: subscriptionInstance,
+                                                                                  visibleOrgRelations : visibleOrgRelations,
+                                                                                  surveyResults       : surveyResults]"/>
+            </g:if>
 
+            <g:if test="${surveyConfig.type == "GeneralSurvey"}">
+
+                <g:render template="/templates/survey/generalSurvey" model="[surveyConfig        : surveyConfig,
+                                                                             costItemSums        : costItemSums,
+                                                                             subscriptionInstance: surveyConfig.subscription,
+                                                                             tasks               : tasks,
+                                                                             visibleOrgRelations : visibleOrgRelations,
+                                                                             properties          : properties]"/>
+            </g:if>
+
+        </div>
+    </div>
+</div>
 </body>
 </html>
