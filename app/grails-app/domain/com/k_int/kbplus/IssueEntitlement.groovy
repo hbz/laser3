@@ -128,9 +128,11 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
 
   static IssueEntitlement construct(Map<String,Object> configMap) throws EntitlementCreationException {
     if(configMap.subscription instanceof Subscription && configMap.tipp instanceof TitleInstancePackagePlatform) {
-      IssueEntitlement ie = findBySubscriptionAndTipp(configMap.subscription,configMap.tipp)
+      Subscription subscription = (Subscription) configMap.subscription
+      TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
+      IssueEntitlement ie = findBySubscriptionAndTipp(subscription,tipp)
       if(!ie) {
-        ie = new IssueEntitlement(subscription: configMap.subscription,tipp: configMap.tipp)
+        ie = new IssueEntitlement(subscription: subscription,tipp: tipp, status:tipp.status)
       }
       if(!ie.save())
         throw new EntitlementCreationException(ie.errors)

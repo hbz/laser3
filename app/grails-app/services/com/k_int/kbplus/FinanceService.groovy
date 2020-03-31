@@ -302,7 +302,10 @@ class FinanceService {
         if(params.filterSubProviders) {
             subFilterQuery += " and sub in (select oo.sub from OrgRole as oo where oo.org in (:filterSubProviders)) "
             List<Org> filterSubProviders = []
-            String[] subProviders = params.list("filterSubProviders")
+            String[] subProviders
+            if(params.filterSubProviders.contains(","))
+                subProviders = params.filterSubProviders.split(',')
+            else subProviders = [params.filterSubProviders]
             subProviders.each { subProvider ->
                 filterSubProviders.add(genericOIDService.resolveOID(subProvider))
             }
@@ -1110,10 +1113,7 @@ class FinanceService {
             result.subscription = Subscription.get(subId)
             if(!(result.subscription instanceof Subscription))
                 throw new FinancialDataException("Invalid or no subscription found!")
-            else result.editable = result.subscription.isEditableBy(result.user)
         }
-        else
-            result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         /*
             Decision tree
             We may see this view from the perspective of:
@@ -1131,6 +1131,7 @@ class FinanceService {
             12. basic member or department: child subscription (show subscriber tab) (level 2 or 3)
          */
         List<String> dataToDisplay = []
+        boolean editable = false
         //Determine own org belonging, then, in which relationship I am to the given subscription instance
         switch(result.institution.getCustomerType()) {
         //cases one to three
@@ -1154,6 +1155,7 @@ class FinanceService {
                             result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
                             result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                             result.editConf.showVisibilitySettings = true
+                            editable = true
                         }
                     }
                     //case one: parent subscription
@@ -1164,6 +1166,7 @@ class FinanceService {
                         result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
                         result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                         result.editConf.showVisibilitySettings = true
+                        editable = true
                     }
                 }
                 //case one for all subscriptions
@@ -1182,6 +1185,7 @@ class FinanceService {
                                     'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,consortialType:OR_SUBSCRIPTION_CONSORTIA,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                     result.consMembers = consMembers
                     result.editConf.showVisibilitySettings = true
+                    editable = true
                 }
                 break
         //cases four to nine
@@ -1203,6 +1207,7 @@ class FinanceService {
                                 result.sortConfig.collSort = 'ci.costTitle'
                                 result.showCollectiveFunctions = true
                                 result.editConf.showVisibilitySettings = true
+                                editable = true
                             }
                         }
                         //case seven: child of consortial subscription, collective level
@@ -1213,6 +1218,8 @@ class FinanceService {
                             result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
                             result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                             result.editConf.showVisibilitySettings = true
+                            result.editConf.enableNewAndCopy = true
+                            editable = true
                         }
                     }
                     //case four: local parent subscription
@@ -1223,6 +1230,7 @@ class FinanceService {
                         result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
                         result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                         result.editConf.showVisibilitySettings = true
+                        editable = true
                     }
                 }
                 //case seven summing up everything what the collective user may have subscribed
@@ -1233,6 +1241,7 @@ class FinanceService {
                     result.editConf.showVisibilitySettings = true
                     result.subMembersLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
                     result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo join s.instanceOf.orgRelations parent where oo.roleType in :subscrRoles and parent.org = :contextOrg order by sortname asc',[contextOrg:result.institution,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
+                    editable = true
                 }
                 break
         //cases ten and eleven
@@ -1242,6 +1251,7 @@ class FinanceService {
                     if(result.subscription.instanceOf) {
                         dataToDisplay.addAll(['own','subscr'])
                         result.showView = 'subscr'
+                        editable = true
                     }
                     //case ten: local subscription
                     else {
@@ -1253,6 +1263,7 @@ class FinanceService {
                 else {
                     dataToDisplay.addAll(['own','subscr'])
                     result.showView = 'subscr'
+                    editable = true
                 }
                 break
         //cases twelve: basic member
@@ -1261,6 +1272,8 @@ class FinanceService {
                 result.showView = 'subscr'
                 break
         }
+        if(editable)
+            result.editable = accessService.checkPermAffiliationX("ORG_INST","INST_EDITOR","ROLE_ADMIN")
         result.dataToDisplay = dataToDisplay
         //override default view to show if checked by pagination or from elsewhere
         if(params.showView){
@@ -1273,14 +1286,23 @@ class FinanceService {
     }
 
     Map<String,Object> setAdditionalGenericEditResults(Map configMap) {
+        Locale locale = LocaleContextHolder.getLocale()
         Map<String,Object> result = setEditVars(configMap.institution)
+        if(configMap.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
+            result.licenseeLabel = messageSource.getMessage( 'consortium.member',null,locale)
+            result.licenseeTargetLabel = messageSource.getMessage('financials.newCosts.consortia.licenseeTargetLabel',null,locale)
+        }
+        else if(configMap.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'].&contains)) {
+            result.licenseeLabel = messageSource.getMessage('collective.member',null,locale)
+            result.licenseeTargetLabel = messageSource.getMessage('financials.newCosts.collective.licenseeTargetLabel',null,locale)
+        }
         Map<Long,Object> orgConfigurations = [:]
         result.costItemElements.each { oc ->
             orgConfigurations.put(oc.costItemElement.id,oc.elementSign.id)
         }
         result.orgConfigurations = orgConfigurations as JSON
-        if(configMap.showView in ["cons","coll"] && configMap.subMembers) {
-            result.validSubChilds = [[id: 'forParent', label: messageSource.getMessage('financials.newCosts.forParentSubscription', null, LocaleContextHolder.getLocale())], [id: 'forAllSubscribers', label: configMap.licenseeTargetLabel]]
+        if(configMap.dataToDisplay.stream().anyMatch(["cons","coll"].&contains) && configMap.subMembers) {
+            result.validSubChilds = [[id: 'forParent', label: messageSource.getMessage('financials.newCosts.forParentSubscription', null, locale)], [id: 'forAllSubscribers', label: configMap.licenseeTargetLabel]]
             result.validSubChilds.addAll(configMap.subMembers)
         }
         result

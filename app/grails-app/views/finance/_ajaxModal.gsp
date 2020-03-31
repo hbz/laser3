@@ -11,7 +11,7 @@
                 </div>
             </div>
         </g:if>
-        <g:elseif test="${copyCostsfromConsortia}">
+        <g:elseif test="${copyCostsFromConsortia}">
             <div class="content la-twoSided-ribbon">
                 <div class="ui blue ribbon label">
                     <strong><g:message code="financials.transferConsortialCosts"/>: </strong>
@@ -192,7 +192,7 @@
                         <input title="<g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.newCosts.value')}"
-                               value="<g:formatNumber number="${fromConsortia ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
+                               value="<g:formatNumber number="${copyCostsFromConsortia ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
                         <div class="ui icon button la-popup-tooltip la-delay" id="costButton1" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -202,7 +202,7 @@
                         <label><g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
                         <input title="<g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
-                               value="<g:formatNumber number="${fromConsortia ? 0.0 : costItem?.costInLocalCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2"/>"/>
+                               value="<g:formatNumber number="${copyCostsFromConsortia ? 0.0 : costItem?.costInLocalCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2"/>"/>
                     </div><!-- .field -->
                 </div>
 
