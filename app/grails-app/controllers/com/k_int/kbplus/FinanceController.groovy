@@ -712,15 +712,6 @@ class FinanceController extends AbstractDebugController {
         result.putAll(financeService.setAdditionalGenericEditResults(result))
         result.modalText = message(code:'financials.addNewCost')
         result.submitButtonLabel = message(code:'default.button.create_new.label')
-        if(result.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
-            result.licenseeLabel = message(code: 'consortium.member')
-            result.licenseeTargetLabel = message(code:'financials.newCosts.consortia.licenseeTargetLabel')
-        }
-        else if(result.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'])) {
-            result.licenseeLabel = message(code:'collective.member')
-            result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
-        }
-        result.putAll(financeService.setAdditionalGenericEditResults(result))
         result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
         render(template: "/finance/ajaxModal", model: result)
     }
@@ -730,16 +721,6 @@ class FinanceController extends AbstractDebugController {
     Object editCostItem() {
         Map<String, Object> result = financeService.setResultGenerics(params)
         result.costItem = CostItem.get(params.id)
-        result.putAll(financeService.setAdditionalGenericEditResults(result))
-
-        if(result.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
-            result.licenseeLabel = message(code: 'consortium.member')
-            result.licenseeTargetLabel = message(code:'financials.newCosts.consortia.licenseeTargetLabel')
-        }
-        else if(result.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'])) {
-            result.licenseeLabel = message(code:'collective.member')
-            result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
-        }
         result.putAll(financeService.setAdditionalGenericEditResults(result))
         if(!result.dataToDisplay.contains('subscr')) {
             if(result.costItem.taxKey)
@@ -759,12 +740,7 @@ class FinanceController extends AbstractDebugController {
         result.putAll(financeService.setAdditionalGenericEditResults(result))
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
-        if(result.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'])) {
-            result.licenseeLabel = message(code:'collective.member')
-            result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
-        }
-        result.putAll(financeService.setAdditionalGenericEditResults(result))
-        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.subscription?.getConsortia()
+        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia()
         result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[tab:result.tab, mode:"copy"])
         result.mode = "copy"
         render(template: "/finance/ajaxModal", model: result)

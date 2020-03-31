@@ -1,6 +1,10 @@
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.License; de.laser.helper.RDStore; com.k_int.kbplus.Package; com.k_int.kbplus.IdentifierNamespace" %>
+<%@ page import="com.k_int.kbplus.ApiSource; de.laser.helper.RDStore; com.k_int.kbplus.IdentifierNamespace" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Package; com.k_int.kbplus.Subscription" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
+
+<g:set var="objIsOrgAndInst" value="${object instanceof Org && object.getallOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)}" />
+
 <aside class="ui segment metaboxContent accordion">
     <div class="title">
         <i class="dropdown icon la-dropdown-accordion"></i><g:message code="default.identifiers.show"/>
@@ -12,7 +16,10 @@
                 <dt><g:message code="org.globalUID.label"/></dt>
                 <dd><g:fieldValue bean="${object}" field="globalUID"/></dd>
 
-                <g:if test="${!(object instanceof com.k_int.kbplus.License) && !(object instanceof com.k_int.kbplus.Subscription)}">
+                <g:if test="${! objIsOrgAndInst}"><%-- hidden if org.institution--%>
+
+                    <g:if test="${!(object instanceof License) && !(object instanceof Subscription)}">
+
                     <dt><g:message code="org.gokbId.label" default="GOKB UUID"/></dt>
                     <dd>
                         <g:set var="editableGOKBID" value=""/>
@@ -22,16 +29,16 @@
                         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_YODA,ROLE_ORG_EDITOR'>
                             <g:set var="editableGOKBID" value="${true}"/>
                         </sec:ifAnyGranted>
-                        <g:if test="${object instanceof com.k_int.kbplus.Org && object?.gokbId == null && editableGOKBID}">
+                        <g:if test="${object instanceof Org && object.gokbId == null && editableGOKBID}">
                             <semui:xEditable owner="${object}" field="gokbId"/>
                         </g:if>
                         <g:else>
                             <g:fieldValue bean="${object}" field="gokbId"/>
                         </g:else>
 
-                        <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                        <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                                 var="gokbAPI">
-                            <g:if test="${object?.gokbId}">
+                            <g:if test="${object.gokbId}">
                                 <g:if test="${object instanceof Package}">
                                     <a target="_blank"
                                        href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/packageContent/' + object?.gokbId : '#'}"><i
@@ -45,8 +52,9 @@
                             </g:if>
                         </g:each>
                     </dd>
-                </g:if>
 
+                    </g:if>
+                </g:if><%-- hidden if org.institution--%>
 
                 <dt>
                     <g:message code="org.ids.label"/>
@@ -57,7 +65,9 @@
                         <tr>
                             <th>${message(code: 'identifier.namespace.label')}</th>
                             <th>${message(code: 'default.identifier.label')}</th>
-                            <th>${message(code: 'default.actions.label')}</th>
+                            <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
+                                <th>${message(code: 'default.actions.label')}</th>
+                            </g:if><%-- hidden if org[type=institution] --%>
                         </tr>
                         </thead>
                         <tbody>
@@ -79,21 +89,25 @@
                                 <td>
                                     ${ident.value}
                                 </td>
-                                <td>
-                                    <g:if test="${editable}">
-                                        <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
-                                                params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'>
-                                            <i class="icon trash alternate"></i>
-                                        </g:link>
-                                    </g:if>
-                                </td>
+                                <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
+                                    <td>
+                                        <g:if test="${editable}">
+                                            <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
+                                                    params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'>
+                                                <i class="icon trash alternate"></i>
+                                            </g:link>
+                                        </g:if>
+                                    </td>
+                                </g:if><%-- hidden if org[type=institution] --%>
                             </tr>
                         </g:each>
                         </tbody>
                     </table>
                 </dd>
 
-                <%
+                <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
+
+                    <%
                     List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == object.class.name || nsType == null)}
                             .list(sort: 'ns')
                             .sort { a, b ->
@@ -102,11 +116,10 @@
                                 aVal.compareToIgnoreCase bVal
                             }
                             .collect{ it }
-                %>
-                <g:if test="${editable && nsList}">
-                    <dt class="la-js-hideMe">
-                        &nbsp;
-                    </dt>
+                    %>
+                    <g:if test="${editable && nsList}">
+
+                    <dt class="la-js-hideMe"></dt>
 
                     <dd class="la-js-hideMe">
                         <g:if test="${object.class.simpleName == 'License'}">
@@ -144,7 +157,9 @@
                             </div>
                         </g:form>
                     </dd>
-                </g:if>
+                    </g:if>
+
+                </g:if><%-- hidden if org[type=institution] --%>
 
             </dl>
         </div>

@@ -50,15 +50,10 @@
     <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
     <semui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" message="default.notes.label" />
 
-    <g:if test="${grailsApplication.config.feature_finance}">
     %{--Custom URL mapping for re-use of index--}%
-
-        <g:link class="item${controllerName == 'finance' ? ' active':''}" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">
-            ${message(code:'subscription.details.financials.label')}
-        </g:link>
-
-    </g:if>
-
+    <g:link class="item${controllerName == 'finance' ? ' active':''}" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">
+        ${message(code:'subscription.details.financials.label')}
+    </g:link>
     <semui:subNavItem controller="subscription" action="changes" params="${[id:params.id]}" message="license.nav.todo_history" />
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">

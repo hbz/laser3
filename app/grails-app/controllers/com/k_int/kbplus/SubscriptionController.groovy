@@ -2437,6 +2437,8 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
 
+                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceId(Subscription.class.name,result.subscriptionInstance.id)
+
                 members.each { cm ->
 
                     if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
@@ -2494,6 +2496,10 @@ class SubscriptionController extends AbstractDebugController {
                                 form: result.subscriptionInstance.form ?: null,
                                 isMultiYear: params.checkSubRunTimeMultiYear ?: false
                         )
+
+                        inheritedAttributes.each { attr ->
+                            memberSub[attr.referenceField] = result.subscriptionInstance[attr.referenceField]
+                        }
 
                         if (!memberSub.save()) {
                             memberSub?.errors.each { e ->
