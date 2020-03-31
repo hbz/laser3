@@ -159,14 +159,14 @@
 
                                 <i class="icon clipboard outline la-list-icon"></i>
                                 <g:link controller="public" action="gasco"
-                                        params="${[q: '"'+surveyConfig?.subscription?.name+'"']}">
+                                        params="${[q: '"' + surveyConfig?.subscription?.name + '"']}">
                                     ${surveyConfig?.subscription?.name}
                                 </g:link>
                             </h2>
 
                             <div class="field" style="text-align: right;">
                                 <g:link class="ui button" controller="public" action="gasco"
-                                        params="${[q: '"'+surveyConfig?.subscription?.name+'"']}">
+                                        params="${[q: '"' + surveyConfig?.subscription?.name + '"']}">
                                     GASCO-Monitor
                                 </g:link>
                             </div>
@@ -270,115 +270,6 @@
                         </div>
 
 
-                        <div class="ui card la-time-card">
-
-                            <div class="content">
-                                <div class="header"><g:message code="surveyConfigsInfo.costItems"/></div>
-                            </div>
-
-                            <div class="content">
-
-                                <g:set var="surveyOrg"
-                                       value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
-                                <g:set var="costItemSurvey"
-                                       value="${surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrg(surveyOrg) : null}"/>
-                                <g:set var="costItemsSub"
-                                       value="${subscriptionInstance?.costItems?.findAll {
-                                           it?.costItemElement?.id == costItemSurvey?.costItemElement?.id
-                                       }}"/>
-
-                                <%
-                                    // ERMS-1521 HOTFIX
-                                    if (!costItemsSub) {
-                                        costItemsSub = subscriptionInstance?.costItems.findAll {
-                                            it.costItemElement?.id == com.k_int.kbplus.RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)?.id
-                                        }
-                                    }
-                                %>
-
-                                <table class="ui celled la-table-small la-table-inCard table">
-                                    <thead>
-                                    <tr>
-                                        <th>
-                                            <g:message code="surveyConfigsInfo.oldPrice"/>
-                                        </th>
-                                        <th>
-                                            <g:message code="surveyConfigsInfo.newPrice"/>
-                                        </th>
-                                        <th>Diff.</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody class="top aligned">
-                                    <tr>
-                                        <td>
-                                            <g:if test="${costItemsSub}">
-                                                <g:each in="${costItemsSub}" var="costItemSub">
-                                                    ${costItemSub?.costItemElement?.getI10n('value')}
-                                                    <b><g:formatNumber
-                                                            number="${costItemSub?.costInBillingCurrency}"
-                                                            minFractionDigits="2" maxFractionDigits="2"
-                                                            type="number"/></b>
-
-                                                    ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
-
-                                                    <g:set var="oldCostItem"
-                                                           value="${costItemSub.costInBillingCurrency ?: 0.0}"/>
-
-                                                    <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
-                                                        <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
-                                                    </g:if>
-                                                    <br>
-
-                                                </g:each>
-                                            </g:if>
-                                        </td>
-                                        <td>
-                                            <g:if test="${costItemSurvey}">
-                                                ${costItemSurvey?.costItemElement?.getI10n('value')}
-                                                <b><g:formatNumber
-                                                        number="${costItemSurvey?.costInBillingCurrency}"
-                                                        minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
-
-                                                ${(costItemSurvey?.billingCurrency?.getI10n('value').split('-')).first()}
-
-                                                <g:set var="newCostItem"
-                                                       value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
-
-                                                <g:if test="${costItemSurvey?.startDate || costItemSurvey?.endDate}">
-                                                    <br>(${formatDate(date: costItemSurvey?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey?.endDate, format: message(code: 'default.date.format.notime'))})
-                                                </g:if>
-
-                                                <g:if test="${costItemSurvey?.costDescription}">
-                                                    <br>
-
-                                                    <div class="ui icon la-popup-tooltip la-delay"
-                                                         data-position="right center"
-                                                         data-variation="tiny"
-                                                         data-content="${costItemSurvey?.costDescription}">
-                                                        <i class="question small circular inverted icon"></i>
-                                                    </div>
-                                                </g:if>
-
-                                            </g:if>
-                                        </td>
-                                        <td>
-                                            <g:if test="${oldCostItem && newCostItem}">
-                                                <b><g:formatNumber
-                                                        number="${(newCostItem - oldCostItem)}"
-                                                        minFractionDigits="2" maxFractionDigits="2" type="number"/>
-                                                    <br>
-                                                    (<g:formatNumber
-                                                            number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
-                                                            minFractionDigits="2"
-                                                            maxFractionDigits="2" type="number"/>%)</b>
-                                            </g:if>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
                         <br>
                         <g:set var="derivedPropDefGroups"
                                value="${subscriptionInstance?.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
@@ -452,6 +343,118 @@
             </div>
 
         </div>
+
+        <g:if test="${surveyInfo?.type.id == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL.id}">
+            <div class="ui card la-time-card">
+
+                <div class="content">
+                    <div class="header"><g:message code="surveyConfigsInfo.costItems"/></div>
+                </div>
+
+                <div class="content">
+
+                    <g:set var="surveyOrg"
+                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+                    <g:set var="costItemSurvey"
+                           value="${surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrg(surveyOrg) : null}"/>
+                    <g:set var="costItemsSub"
+                           value="${subscriptionInstance?.costItems?.findAll {
+                               it?.costItemElement?.id == costItemSurvey?.costItemElement?.id
+                           }}"/>
+
+                    <%
+                        // ERMS-1521 HOTFIX
+                        if (!costItemsSub) {
+                            costItemsSub = subscriptionInstance?.costItems.findAll {
+                                it.costItemElement?.id == com.k_int.kbplus.RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)?.id
+                            }
+                        }
+                    %>
+
+                    <table class="ui celled la-table-small la-table-inCard table">
+                        <thead>
+                        <tr>
+                            <th>
+                                <g:message code="surveyConfigsInfo.oldPrice"/>
+                            </th>
+                            <th>
+                                <g:message code="surveyConfigsInfo.newPrice"/>
+                            </th>
+                            <th>Diff.</th>
+                        </tr>
+                        </thead>
+                        <tbody class="top aligned">
+                        <tr>
+                            <td>
+                                <g:if test="${costItemsSub}">
+                                    <g:each in="${costItemsSub}" var="costItemSub">
+                                        ${costItemSub?.costItemElement?.getI10n('value')}
+                                        <b><g:formatNumber
+                                                number="${costItemSub?.costInBillingCurrency}"
+                                                minFractionDigits="2" maxFractionDigits="2"
+                                                type="number"/></b>
+
+                                        ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                                        <g:set var="oldCostItem"
+                                               value="${costItemSub.costInBillingCurrency ?: 0.0}"/>
+
+                                        <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
+                                            <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
+                                        </g:if>
+                                        <br>
+
+                                    </g:each>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${costItemSurvey}">
+                                    ${costItemSurvey?.costItemElement?.getI10n('value')}
+                                    <b><g:formatNumber
+                                            number="${costItemSurvey?.costInBillingCurrency}"
+                                            minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
+
+                                    ${(costItemSurvey?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                                    <g:set var="newCostItem"
+                                           value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
+
+                                    <g:if test="${costItemSurvey?.startDate || costItemSurvey?.endDate}">
+                                        <br>(${formatDate(date: costItemSurvey?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey?.endDate, format: message(code: 'default.date.format.notime'))})
+                                    </g:if>
+
+                                    <g:if test="${costItemSurvey?.costDescription}">
+                                        <br>
+
+                                        <div class="ui icon la-popup-tooltip la-delay"
+                                             data-position="right center"
+                                             data-variation="tiny"
+                                             data-content="${costItemSurvey?.costDescription}">
+                                            <i class="question small circular inverted icon"></i>
+                                        </div>
+                                    </g:if>
+
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${oldCostItem && newCostItem}">
+                                    <b><g:formatNumber
+                                            number="${(newCostItem - oldCostItem)}"
+                                            minFractionDigits="2" maxFractionDigits="2" type="number"/>
+                                        <br>
+                                        (<g:formatNumber
+                                                number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
+                                                minFractionDigits="2"
+                                                maxFractionDigits="2" type="number"/>%)</b>
+                                </g:if>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </g:if>
+
     </div>
 
     <aside class="four wide column la-sidekick">
