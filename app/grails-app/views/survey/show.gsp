@@ -13,7 +13,12 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="survey" action="show"
+                    params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -32,7 +37,7 @@
 <semui:messages data="${flash}"/>
 
 
-<div id="collapseableSubDetails" class="ui stackable grid">
+<div class="ui stackable grid">
     <div class="sixteen wide column">
 
         <div class="la-inline-lists">

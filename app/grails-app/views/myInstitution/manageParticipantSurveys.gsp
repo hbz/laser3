@@ -27,7 +27,7 @@
     <g:form action="manageParticipantSurveys" controller="myInstitution" method="post" id="${params.id}"
             params="[tab: params.tab]" class="ui small form">
 
-        <div class="three fields">
+        <div class="two fields">
             <div class="field">
                 <label for="name">${message(code: 'surveyInfo.name.label')}
                 </label>
@@ -39,21 +39,13 @@
                 </div>
             </div>
 
-
             <div class="field fieldcontain">
-                <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
-                                  placeholder="filter.placeholder" value="${params.startDate}"/>
-            </div>
-
-
-            <div class="field fieldcontain">
-                <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
-                                  placeholder="filter.placeholder" value="${params.endDate}"/>
+                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${params.validOn}" />
             </div>
 
         </div>
 
-        <div class="four fields">
+        <div class="two fields">
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
@@ -63,6 +55,39 @@
                               optionValue="value"
                               value="${params.type}"
                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
+
+            <div class="field">
+                <label>${message(code: 'surveyInfo.options')}</label>
+
+                <div class="inline fields la-filter-inline">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkMandatory">${message(code: 'surveyInfo.isMandatory.label')}</label>
+                            <input id="checkMandatory" name="mandatory" type="checkbox"
+                                   <g:if test="${params.mandatory}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkNoMandatory">${message(code: 'surveyInfo.isNotMandatory.label')}</label>
+                            <input id="checkNoMandatory" name="noMandatory" type="checkbox"
+                                   <g:if test="${params.noMandatory}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubSurveyUseForTransfer">${message(code: 'surveyConfig.subSurveyUseForTransfer.label')}</label>
+                            <input id="checkSubSurveyUseForTransfer" name="checkSubSurveyUseForTransfer" type="checkbox"
+                                   <g:if test="${params.checkSubSurveyUseForTransfer}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -210,9 +235,8 @@
                         <g:if test="${!surveyConfig?.pickAndChoose}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                                <g:link action="surveyParticipantConsortiaNew" id="${participant?.id}"
-                                        params="[surveyConfig: surveyConfig?.id]"
-                                        class="ui icon button">
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button">
                                     <i class="write icon"></i>
                                 </g:link>
                             </span>

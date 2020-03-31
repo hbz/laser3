@@ -178,7 +178,7 @@
 
         </div>
 
-        <div class="three fields">
+        <div class="four fields">
 
             <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
             <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID}">
@@ -221,35 +221,6 @@
                 </select>
 
             </div>
-
-            <div class="field">
-                <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
-                <div class="inline fields la-filter-inline">
-                    <div class="inline field">
-                        <div class="ui checkbox">
-                            <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
-                            <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
-                                   tabindex="0">
-                        </div>
-                    </div>
-                    <div class="inline field">
-                        <div class="ui checkbox">
-                            <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
-                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
-                                   tabindex="0">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <g:if test="${accessService.checkPerm("ORG_INST")}">
-            <div class="four fields">
-        </g:if>
-        <g:else>
-            <div class="three fields">
-        </g:else>
             <div class="field">
                 <label>${message(code:'subscription.isPublicForApi.label')}</label>
                 <laser:select class="ui fluid dropdown" name="isPublicForApi"
@@ -268,6 +239,36 @@
                               value="${params.hasPerpetualAccess}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
+
+
+
+        </div>
+
+        <g:if test="${accessService.checkPerm("ORG_INST")}">
+            <div class="three fields">
+        </g:if>
+        <g:else>
+            <div class="two fields">
+        </g:else>
+        <div class="field">
+            <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
+            <div class="inline fields la-filter-inline">
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
+                        <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
+                               tabindex="0">
+                    </div>
+                </div>
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
+                        <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
+                               tabindex="0">
+                    </div>
+                </div>
+            </div>
+        </div>
 
             <g:if test="${accessService.checkPerm("ORG_INST")}">
             <div class="field">
