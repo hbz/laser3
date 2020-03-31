@@ -25,7 +25,7 @@
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:link class="item" action="renewalWithSurvey" id="${surveyInfo.id}"
-                    params="[surveyConfigID: surveyConfig.id, exportXLS: true]">${message(code: 'renewalWithSurvey.exportRenewal')}</g:link>
+                    params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'renewalWithSurvey.exportRenewal')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <semui:actionsDropdown>

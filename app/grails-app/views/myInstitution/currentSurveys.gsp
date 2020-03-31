@@ -16,14 +16,14 @@
     <semui:crumb message="currentSurveys.label" class="active"/>
 </semui:breadcrumbs>
 
-%{--<semui:controlButtons>
+<semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="currentSurveys"
-                    params="${params + [exportXLS: true]}">${message(code: 'survey.exportSurveys')}</g:link>
+                    params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
-</semui:controlButtons>--}%
+</semui:controlButtons>
 
 
 <br>

@@ -21,6 +21,8 @@ class PendingChange {
 
     @Transient
     def genericOIDService
+    @Transient
+    def pendingChangeService
 
     @Transient
     final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
@@ -140,6 +142,9 @@ class PendingChange {
                 executeUpdate('update PendingChange pc set status = :superseded where :target in (subscription,license,costItem) and targetProperty = :prop',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,prop:configMap.prop])
                 pc.targetProperty = configMap.prop
             }
+            else {
+                executeUpdate('update PendingChange pc set status = :superseded where :target in (subscription,license,costItem) and oid = :oid and msgToken = :msgToken',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,oid:configMap.oid,msgToken:configMap.msgToken])
+            }
             if(configMap.target instanceof Subscription)
                 pc.subscription = (Subscription) configMap.target
             else if(configMap.target instanceof License)
@@ -171,6 +176,12 @@ class PendingChange {
     boolean accept() throws ChangeAcceptException {
         boolean done = false
         def target = genericOIDService.resolveOID(oid)
+        def parsedNewValue
+        if(targetProperty in DATE_FIELDS)
+            parsedNewValue = DateUtil.parseDateGeneric(newValue)
+        else if(targetProperty in REFDATA_FIELDS)
+            parsedNewValue = RefdataValue.get(Long.parseLong(newValue))
+        else parsedNewValue = newValue
         switch(msgToken) {
             //pendingChange.message_TP01 (newTitle)
             case PendingChangeConfiguration.NEW_TITLE:
@@ -187,7 +198,7 @@ class PendingChange {
             case PendingChangeConfiguration.TITLE_UPDATED:
                 if(target instanceof IssueEntitlement) {
                     IssueEntitlement targetTitle = (IssueEntitlement) target
-                    targetTitle[targetProperty] = getNewValue()
+                    targetTitle[targetProperty] = parsedNewValue
                     if(targetTitle.save()) {
                         done = true
                     }
@@ -211,7 +222,7 @@ class PendingChange {
             case PendingChangeConfiguration.COVERAGE_UPDATED:
                 if(target instanceof IssueEntitlementCoverage) {
                     IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
-                    targetCov[targetProperty] = getNewValue()
+                    targetCov[targetProperty] = parsedNewValue
                     if(targetCov.save())
                         done = true
                     else throw new ChangeAcceptException("problems when updating coverage statement - pending change not accepted: ${targetCov.errors}")
@@ -256,35 +267,6 @@ class PendingChange {
             throw new ChangeAcceptException("problems when submitting new pending change status: ${errors}")
         }
         true
-    }
-
-    def getOldValue() {
-        if(oldValue)
-            return outputField(oldValue)
-        else return null
-    }
-
-    def getNewValue() {
-        if(newValue)
-            return outputField(newValue)
-        else return null
-    }
-
-    /**
-     * Converts the given value according to the field type
-     * @param value - the string value
-     * @return the value as {@link Date} or {@link String}
-     */
-    def outputField(String value) {
-        def ret
-        if(targetProperty in DATE_FIELDS) {
-            ret = DateUtil.parseDateGeneric(value)
-        }
-        else if(targetProperty in REFDATA_FIELDS) {
-            ret = RefdataValue.get(value)
-        }
-        else ret = value
-        ret
     }
 
     def workaroundForDatamigrate() {

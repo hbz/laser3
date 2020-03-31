@@ -862,30 +862,40 @@ class PackageController extends AbstractDebugController {
         Package pkg = Package.get(params.id)
         Subscription sub = Subscription.get(params.subid)
         boolean add_entitlements = params.addEntitlements == 'true'
+        String baseUrl = ApiSource.get(1).baseUrl
+        GlobalRecordSource source = GlobalRecordSource.findByUri("${baseUrl}/gokb/oai/packages")
+        log.debug("addToSub. Global Record Source URL: " +source.baseUrl)
+        globalSourceSyncService.source = source
         GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:pkg.gokbId])
-        executorService.submit({
-            Thread.currentThread().setName("PackageSync_"+sub.id)
-            try {
-                globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
-                List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
-                globalSourceSyncService.notifyDependencies([tippsToNotify])
-                globalSourceSyncService.cleanUpGorm()
-                println "Sync done, adding package to subscription ${sub}, with entitlements?: ${add_entitlements}"
-                pkg.addToSubscription(sub, add_entitlements)
-                if(add_entitlements) {
-                    flash.message = message(code:'subscription.details.link.processingWithEntitlements')
-                    redirect controller: 'subscription', action: 'index', id: params.subid
+        if(packageRecord) {
+            executorService.submit({
+                Thread.currentThread().setName("PackageSync_"+sub.id)
+                try {
+                    globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
+                    List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
+                    globalSourceSyncService.notifyDependencies([tippsToNotify])
+                    globalSourceSyncService.cleanUpGorm()
+                    println "Sync done, adding package to subscription ${sub}, with entitlements?: ${add_entitlements}"
+                    pkg.addToSubscription(sub, add_entitlements)
                 }
-                else {
-                    flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
-                    redirect controller: 'subscription', action: 'addEntitlements', params: [id: params.subid, pkgfilter: pkg.gokbId]
+                catch (Exception e) {
+                    log.error("sync job has failed, please consult stacktrace as follows: ")
+                    e.printStackTrace()
                 }
+            } as Callable)
+            if(add_entitlements) {
+                flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                redirect controller: 'subscription', action: 'index', id: params.subid
             }
-            catch (Exception e) {
-                log.error("sync job has failed, please consult stacktrace as follows: ")
-                e.printStackTrace()
+            else {
+                flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                redirect controller: 'subscription', action: 'addEntitlements', params: [id: params.subid, pkgfilter: pkg.gokbId]
             }
-        } as Callable)
+        }
+        else {
+            flash.error = message(code:'subscription.details.link.packageNotFound')
+            redirect controller: 'subscription', action: 'linkPackage', id: params.subid
+        }
     }
 
 
