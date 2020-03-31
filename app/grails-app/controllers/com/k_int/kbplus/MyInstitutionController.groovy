@@ -1133,7 +1133,6 @@ join sub.orgRelations or_sub where
             cal.set(Calendar.MONTH, Calendar.DECEMBER)
             cal.set(Calendar.DAY_OF_MONTH, 31)
             result.defaultEndYear = sdf.format(cal.getTime())
-            result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
             if(accessService.checkPerm("ORG_CONSORTIUM,ORG_INST_COLLECTIVE")) {
                 if(accessService.checkPerm("ORG_CONSORTIUM")) {
@@ -1211,20 +1210,16 @@ join sub.orgRelations or_sub where
                     endDate: endDate,
                     status: status,
                     administrative: administrative,
-                    identifier: params.newEmptySubId)
+                    identifier: java.util.UUID.randomUUID().toString()
+            )
 
             if (new_sub.save()) {
-                OrgRole new_sub_link = new OrgRole(org: result.institution,
-                        sub: new_sub,
-                        roleType: orgRole).save();
+                new OrgRole(org: result.institution, sub: new_sub, roleType: orgRole).save()
                         
-                // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType) && params.linkToAll == "Y"){ // old code
-
                 if (accessService.checkPerm('ORG_INST_COLLECTIVE') ||
                         (accessService.checkPerm('ORG_CONSORTIUM') && subType != RDStore.SUBSCRIPTION_TYPE_LOCAL)
                 ){
-                    
-                    def cons_members = []
+                    List<Org> cons_members = []
 
                     params.list('selectedOrgs').each{ it ->
                         Org fo =  Org.findById(Long.valueOf(it))
@@ -1239,7 +1234,7 @@ join sub.orgRelations or_sub where
 
                     if (params.generateSlavedSubs == "Y") {
                         log.debug("Generating seperate slaved instances for consortia members")
-                        def postfix = cm.get(0).shortname ?: cm.get(0).name
+                        String postfix = cm.get(0).shortname ?: cm.get(0).name
 
                         Subscription cons_sub = new Subscription(
                                             // type: RefdataValue.getByValue("Subscription Taken"),
@@ -1254,51 +1249,24 @@ join sub.orgRelations or_sub where
                                           administrative: administrative,
                                           instanceOf: new_sub,
                                           isSlaved: true)
-                        if(new_sub.administrative) {
-                            new OrgRole(org: cm,
-                                    sub: cons_sub,
-                                    roleType: role_sub_cons_hidden).save()
+
+                        if (new_sub.administrative) {
+                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_cons_hidden).save()
                         }
                         else {
-                            new OrgRole(org: cm,
-                                    sub: cons_sub,
-                                    roleType: memberRole).save()
+                            new OrgRole(org: cm, sub: cons_sub, roleType: memberRole).save()
                         }
 
-
-                        new OrgRole(org: result.institution,
-                            sub: cons_sub,
-                            roleType: orgRole).save()
+                        new OrgRole(org: result.institution, sub: cons_sub, roleType: orgRole).save()
                     }
                     else {
                         if(new_sub.administrative) {
-                            new OrgRole(org: cm,
-                                    sub: new_sub,
-                                    roleType: role_sub_cons_hidden).save()
+                            new OrgRole(org: cm, sub: new_sub, roleType: role_sub_cons_hidden).save()
                         }
                         else {
-                            new OrgRole(org: cm,
-                                    sub: new_sub,
-                                    roleType: memberRole).save()
+                            new OrgRole(org: cm, sub: new_sub, roleType: memberRole).save()
                         }
                     }
-                  }
-                }
-
-
-                if (params.newEmptySubId) {
-                  def sub_id_components = params.newEmptySubId.split(':');
-                  if ( sub_id_components.length == 2 ) {
-                      // TODO [ticket=1789]
-                      //def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);
-                      //new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
-                      Identifier ident = Identifier.construct([value: sub_id_components[1], reference: new_sub, namespace: sub_id_components[0]])
-                  }
-                  else {
-                      // TODO [ticket=1789]
-                      //def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown', params.newEmptySubId);
-                      //new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
-                      Identifier ident = Identifier.construct([value: params.newEmptySubId, reference: new_sub, namespace: 'Unkown'])
                   }
                 }
 
