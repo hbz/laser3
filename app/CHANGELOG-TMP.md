@@ -8,6 +8,8 @@
 
 2306    31.03.2020  rc1.3       Andreas Bug         Vererbung funktionierte bei neuem Anlegen von Teilnehmern nicht
 
+2304    31.03.2020  rc1.3       David   Feature     Organisationsprofil: Verkürztes Identifikatoren-Panel
+
 1901    30.03.2020  rc1.3       Andreas Bug         Paket kann wieder mit Lizenz verknüpft werden (von Paketsicht aus)
 
 2268    30.03.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume
