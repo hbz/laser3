@@ -388,18 +388,18 @@
                             <td>
                                 <g:if test="${costItemsSub}">
                                     <g:each in="${costItemsSub}" var="costItemSub">
-                                        ${costItemSub?.costItemElement?.getI10n('value')}
+                                        ${costItemSub.costItemElement.getI10n('value')}
                                         <b><g:formatNumber
-                                                number="${costItemSub?.costInBillingCurrency}"
+                                                number="${costItemSub.costInBillingCurrency}"
                                                 minFractionDigits="2" maxFractionDigits="2"
                                                 type="number"/></b>
 
-                                        ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
+                                        ${(costItemSub.billingCurrency.getI10n('value').split('-')).first()}
 
                                         <g:set var="oldCostItem"
                                                value="${costItemSub.costInBillingCurrency ?: 0.0}"/>
 
-                                        <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
+                                        <g:if test="${costItemSub.startDate || costItemSub.endDate}">
                                             <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
                                         </g:if>
                                         <br>
@@ -409,27 +409,27 @@
                             </td>
                             <td>
                                 <g:if test="${costItemSurvey}">
-                                    ${costItemSurvey?.costItemElement?.getI10n('value')}
+                                    ${costItemSurvey.costItemElement.getI10n('value')}
                                     <b><g:formatNumber
-                                            number="${costItemSurvey?.costInBillingCurrency}"
+                                            number="${costItemSurvey.costInBillingCurrency}"
                                             minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
-                                    ${(costItemSurvey?.billingCurrency?.getI10n('value').split('-')).first()}
+                                    ${(costItemSurvey.billingCurrency.getI10n('value').split('-')).first()}
 
                                     <g:set var="newCostItem"
                                            value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
 
-                                    <g:if test="${costItemSurvey?.startDate || costItemSurvey?.endDate}">
-                                        <br>(${formatDate(date: costItemSurvey?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey?.endDate, format: message(code: 'default.date.format.notime'))})
+                                    <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
+                                        <br>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
                                     </g:if>
 
-                                    <g:if test="${costItemSurvey?.costDescription}">
+                                    <g:if test="${costItemSurvey.costDescription}">
                                         <br>
 
                                         <div class="ui icon la-popup-tooltip la-delay"
                                              data-position="right center"
                                              data-variation="tiny"
-                                             data-content="${costItemSurvey?.costDescription}">
+                                             data-content="${costItemSurvey.costDescription}">
                                             <i class="question small circular inverted icon"></i>
                                         </div>
                                     </g:if>
