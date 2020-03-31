@@ -122,7 +122,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     log.info("Endloop")
                 }
                 if(maxTimestamp > oldDate.time) {
-                    source.haveUpTo = new Date(maxTimestamp)
+                    source.haveUpTo = new Date(maxTimestamp+1) // +1 because otherwise, the last record is always dumped in list
                     source.save()
                     log.info("all OAI info fetched, local records updated, notifying dependent entitlements ...")
                 }
@@ -477,7 +477,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 try {
                     switch(titleRecord.type.text()) {
                         case 'BookInstance': titleInstance = titleInstance ? (BookInstance) titleInstance : BookInstance.construct([gokbId:titleUUID])
-                            titleInstance.editionNumber = titleRecord.editionNumber.text() ? Integer.parseInt(titleRecord.editionNumber.text()) : null
+                            if(titleRecord.editionNumber.text()) {
+                                try {
+                                    titleInstance.editionNumber = Integer.parseInt(titleRecord.editionNumber.text())
+                                }
+                                catch (NumberFormatException e) {
+                                    log.warn("${titleUUID} has invalid edition number supplied: ${titleRecord.editionNumber.text()}")
+                                    titleInstance.editionNumber = null
+                                }
+                            }
+                            else titleInstance.editionNumber = null
                             titleInstance.editionDifferentiator = titleRecord.editionDifferentiator.text() ?: null
                             titleInstance.editionStatement = titleRecord.editionStatement.text() ?: null
                             titleInstance.volume = titleRecord.volumeNumber.text() ?: null
@@ -944,6 +953,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         changeMap.prop = diff.prop
                                         if(diff.prop in PendingChange.REFDATA_FIELDS)
                                             changeMap.oldValue = ie[diff.prop].id
+                                        else if(diff.prop in ['hostPlatformURL'])
+                                            changeMap.oldValue = diff.oldValue
                                         else
                                             changeMap.oldValue = ie[diff.prop]
                                         changeMap.newValue = diff.newValue
@@ -984,10 +995,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     null
                 }
                 else if(response[queryParams.verb] && response[queryParams.verb] instanceof GPathResult) {
-                    response[queryParams.verb]
+                    if(queryParams.verb == 'GetRecord') {
+                        if(response[queryParams.verb].record?.header?.status != 'deleted')
+                            response[queryParams.verb]
+                        else {
+                            log.error('Request successed but result data has been marked as deleted. We must not use this record, please do checks!')
+                            null
+                        }
+                    }
+                    else {
+                        if(response[queryParams.verb])
+                            response[queryParams.verb]
+                        else null
+                    }
                 }
                 else {
-                    log.error('Request succeeded but result data invalid. Please do checks')
+                    log.error('Request succeeded but result data invalid. Please do checks!')
                     null
                 }
             }

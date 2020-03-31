@@ -235,10 +235,7 @@ class YodaService {
                                         if(candidateRecord)
                                             oaiRecords.put(titleCandidate.gokbId,candidateRecord)
                                     }
-                                    if(candidateRecord && candidateRecord.record.header.status == 'deleted') {
-                                        println("TitleInstance in GOKb is marked as deleted!")
-                                    }
-                                    else if(candidateRecord && candidateRecord.record.metadata.gokb.title.size() > 0) {
+                                    if(candidateRecord && candidateRecord.record.metadata.gokb.title.size() > 0) {
                                         GPathResult gokbTitleHistory = candidateRecord.record.metadata.gokb.title.history
                                         guessedTitle = gokbTitleHistory.historyEvent.'**'.find { thep ->
                                             thep.title.text() == titleA.title
