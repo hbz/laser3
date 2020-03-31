@@ -411,7 +411,7 @@ class ProfileController {
             }
 
         } else {
-            flash.message += message(code:'profile.password.update.enterValidCurrentPassword')
+            flash.error = message(code:'profile.password.update.enterValidCurrentPassword')
         }
         redirect(action: "index")
     }
