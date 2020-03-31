@@ -35,6 +35,17 @@
     <g:render template="message"/>
 </g:if>
 
+<g:if test="${deletedSPs}">
+    <div class="ui exclamation icon negative message">
+        <i class="exclamation icon"></i>
+        <ul class="list">
+            <g:each in="${deletedSPs}" var="sp">
+                <li><g:message code="subscription.details.packagesDeleted.header" args="${[sp.name]}"/> ${message(code:"subscription.details.packagesDeleted.entry",args:[raw(link(url:sp.link){'GOKb'})])}</li>
+            </g:each>
+        </ul>
+    </div>
+</g:if>
+
 <div class="ui grid">
 
     <div class="row">

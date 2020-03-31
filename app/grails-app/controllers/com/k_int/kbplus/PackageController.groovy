@@ -509,8 +509,8 @@ class PackageController extends AbstractDebugController {
             roleTypes.addAll([RDStore.OR_SUBSCRIPTION_COLLECTIVE, RDStore.OR_SUBSCRIBER_COLLECTIVE])
         }
 
-        result.subscriptionList = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and oo.sub.status = :current and not exists (select sp.subscription from SubscriptionPackage sp where sp.subscription = oo.sub)',
-                [contextOrg: contextService.org, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT])
+        result.subscriptionList = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and oo.sub.status = :current and not exists (select sp.subscription from SubscriptionPackage sp where sp.subscription = oo.sub and sp.pkg = :pkg)',
+                [contextOrg: contextService.org, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT,pkg:packageInstance])
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         params.max = result.max
@@ -862,7 +862,7 @@ class PackageController extends AbstractDebugController {
         Package pkg = Package.get(params.id)
         Subscription sub = Subscription.get(params.subid)
         boolean add_entitlements = params.addEntitlements == 'true'
-        String baseUrl = ApiSource.get(1).baseUrl
+        String baseUrl = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true).baseUrl
         GlobalRecordSource source = GlobalRecordSource.findByUri("${baseUrl}/gokb/oai/packages")
         log.debug("addToSub. Global Record Source URL: " +source.baseUrl)
         globalSourceSyncService.source = source

@@ -139,23 +139,12 @@
 
                     <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
                         <div class="divider"></div>
-                        <g:if test="${grailsApplication.config.featureSurvey}">
                         <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
-                        </g:if>
-                        <g:else>
-                            <semui:securedMainNavItem role="menuitem" orgPerm="FAKE" affiliation="INST_USER" controller="myInstitution" action="" message="menu.my.surveys" />
-                        </g:else>
                     </g:if>
 
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                                <g:if test="${grailsApplication.config.featureSurvey}">
                                 <div class="divider"></div>
                                 <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
-                                </g:if>
-                                <g:else>
-                                <div class="divider"></div>
-                                <semui:securedMainNavItem role="menuitem" orgPerm="FAKE" affiliation="INST_USER" controller="myInstitution" action="" message="menu.my.surveys" />
-                                </g:else>
 
                                 <div class="divider"></div>
 
