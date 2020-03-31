@@ -26,7 +26,7 @@
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig?.id}"
-                    params="${[exportXLS: true, participant: participant?.id]}">${message(code: 'default.button.exports.xls')}</g:link>
+                    params="${[exportXLSX: true, participant: participant?.id]}">${message(code: 'default.button.exports.xls')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <semui:actionsDropdown>

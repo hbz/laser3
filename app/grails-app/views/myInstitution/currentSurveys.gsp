@@ -15,6 +15,17 @@
 <semui:breadcrumbs>
     <semui:crumb message="currentSurveys.label" class="active"/>
 </semui:breadcrumbs>
+
+<semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="myInstitution" action="currentSurveys"
+                    params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
+</semui:controlButtons>
+
+
 <br>
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label')}
 <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
@@ -39,7 +50,7 @@
 
 
             <div class="field fieldcontain">
-                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${params.validOn}" />
             </div>
 
 

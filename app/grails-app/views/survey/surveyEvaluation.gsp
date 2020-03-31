@@ -22,10 +22,8 @@
     <g:if test="${surveyInfo.status != de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
-                        params="[exportXLS: true, exportConfigs: true]">${message(code: 'survey.exportResultsConfigs')}</g:link>
-                <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
-                        params="[exportXLS: true]">${message(code: 'survey.exportResultsOrgs')}</g:link>
+                <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
     </g:if>

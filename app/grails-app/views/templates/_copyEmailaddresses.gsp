@@ -106,7 +106,7 @@
                 url: '<g:createLink controller="ajax" action="getEmailAddresses"/>'
                 + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + jsonOrgIdList + '&format=json',
                 success: function (data) {
-                    $("#emailAddressesTextArea").val(data);
+                    $("#emailAddressesTextArea").val(data.join('; '));
                 }
             });
 

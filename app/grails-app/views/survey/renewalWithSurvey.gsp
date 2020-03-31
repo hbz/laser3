@@ -25,7 +25,7 @@
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:link class="item" action="renewalWithSurvey" id="${surveyInfo.id}"
-                    params="[surveyConfigID: surveyConfig.id, exportXLS: true]">${message(code: 'renewalWithSurvey.exportRenewal')}</g:link>
+                    params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'renewalWithSurvey.exportRenewal')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <semui:actionsDropdown>
@@ -309,11 +309,10 @@ ${surveyInfo?.name}
                     </g:if>
                 </td>
                 <td>
-
-                    <g:link controller="myInstitution" action="surveyParticipantConsortiaNew"
-                            id="${participantResult?.participant?.id}"
-                            params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i
-                            class="icon chart pie"></i></g:link>
+                    <g:link controller="survey" action="evaluationParticipant"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult?.participant.id]" class="ui icon button">
+                        <i class="write icon"></i>
+                    </g:link>
 
                     <g:if test="${participantResult?.sub}">
                         <br>
@@ -520,11 +519,10 @@ ${surveyInfo?.name}
                     </g:if>
                 </td>
                 <td>
-
-                    <g:link controller="myInstitution" action="surveyParticipantConsortiaNew"
-                            id="${participantResult?.participant?.id}"
-                            params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i
-                            class="icon chart pie"></i></g:link>
+                    <g:link controller="survey" action="evaluationParticipant"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult?.participant.id]" class="ui icon button">
+                        <i class="write icon"></i>
+                    </g:link>
 
                     <g:if test="${participantResult?.sub}">
                         <br>
@@ -788,11 +786,10 @@ ${surveyInfo?.name}
                     </g:if>
                 </td>
                 <td>
-
-                    <g:link controller="myInstitution" action="surveyParticipantConsortiaNew"
-                            id="${participantResult?.participant?.id}"
-                            params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i
-                            class="icon chart pie"></i></g:link>
+                    <g:link controller="survey" action="evaluationParticipant"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult?.participant.id]" class="ui icon button">
+                        <i class="write icon"></i>
+                    </g:link>
 
                     <g:if test="${participantResult?.sub}">
                         <br>
@@ -953,10 +950,10 @@ ${surveyInfo?.name}
                 </td>
                 <td>
 
-                    <g:link controller="myInstitution" action="surveyParticipantConsortiaNew"
-                            id="${participantResult?.participant?.id}"
-                            params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i
-                            class="icon chart pie"></i></g:link>
+                    <g:link controller="survey" action="evaluationParticipant"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult?.participant.id]" class="ui icon button">
+                        <i class="write icon"></i>
+                    </g:link>
 
                     <g:if test="${participantResult?.sub}">
                         <br>

@@ -124,4 +124,18 @@ delete from identifier_namespace where idns_ns in (
 			}
 		}
 	}
+
+	changeSet(author: "klober (modified)", id: "1585548682322-10") {
+		grailsChange {
+			change {
+				sql.execute("""
+delete from identifier where id_sub_fk is not null and id_ns_fk = (
+		select idns_id
+from identifier_namespace
+where idns_ns = 'Unkown'
+);
+""")
+			}
+		}
+	}
 }

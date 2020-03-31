@@ -8,6 +8,16 @@
 
 2306    31.03.2020  rc1.3       Andreas Bug         Vererbung funktionierte bei neuem Anlegen von Teilnehmern nicht
 
+1901    30.03.2020  rc1.3       Andreas Bug         Paket kann wieder mit Lizenz verknüpft werden (von Paketsicht aus)
+
+2268    30.03.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume
+
+2308    30.03.2020  rc1.3       Moe     Bug         Drop Down bei Lizenztyp nicht bündig mit anderen Feldern bei Filter
+
+2309    30.03.2020  rc1.3       Moe     Bug         Mailadressenexport Trennzeichen
+
+2303    30.03.2020  rc1.3       Moe     Bug/Feature Umfrage exportieren
+
 2268    30.03.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume
 
 2267    30.03.2020  rc1.3       David   Feature     Trennen von Identifier-Namensräumen
