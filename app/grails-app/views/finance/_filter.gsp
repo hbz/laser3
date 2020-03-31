@@ -282,11 +282,11 @@
         else {
             subStatus = "FETCH_ALL";
         }
-        var fixedSubscriptionString = "";
+        let fixedSubscriptionString = "";
         <g:if test="${fixedSubscription}">
             fixedSubscriptionString = "&ctx=${fixedSubscription.class.name}:${fixedSubscription.id}"
         </g:if>
-        var links = {
+        const links = {
             "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProvidersAgencies"])}?query={query}&forFinanceView=true",
             "filterCISub": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
             "filterCISPkg": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
