@@ -22,8 +22,6 @@
 
         <semui:form>
             <g:form action="processEmptySubscription" controller="myInstitution" method="post" class="ui form newLicence">
-                <input type="hidden" name="newEmptySubId" value="${defaultSubIdentifier}"/>
-
 
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name')}</label>

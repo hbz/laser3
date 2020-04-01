@@ -93,7 +93,7 @@
                     <td>
                         <g:link controller="package" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
                     </td>
-                    <g:if test="${accessService.checkPermAffiliation("ORG_INST","INST_USER")}">
+                    <g:if test="${accessService.checkPermAffiliation("ORG_INST","INST_EDITOR")}">
                         <td class="x">
                             <g:if test="${editable}">
                                 <g:if test="${fixedSubscription}">

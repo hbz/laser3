@@ -2,6 +2,28 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      31.03.2020  rc1.3       Andreas Bug         falsche Ausgabe der Fehlermeldung "Falsches Passwort" bei Änderung des Passwortes
+
+2307    31.03.2020  rc1.3       Andreas Bug         Filter nach Anbieter und Lieferant funktionierte nicht richtig
+
+2306    31.03.2020  rc1.3       Andreas Bug         Vererbung funktionierte bei neuem Anlegen von Teilnehmern nicht
+
+2304    31.03.2020  rc1.3       David   Feature     Organisationsprofil: Verkürztes Identifikatoren-Panel
+
+1901    30.03.2020  rc1.3       Andreas Bug         Paket kann wieder mit Lizenz verknüpft werden (von Paketsicht aus)
+
+2268    30.03.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume
+
+2308    30.03.2020  rc1.3       Moe     Bug         Drop Down bei Lizenztyp nicht bündig mit anderen Feldern bei Filter
+
+2309    30.03.2020  rc1.3       Moe     Bug         Mailadressenexport Trennzeichen
+
+2303    30.03.2020  rc1.3       Moe     Bug/Feature Umfrage exportieren
+
+2268    30.03.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume
+
+2267    30.03.2020  rc1.3       David   Feature     Trennen von Identifier-Namensräumen
+
 2291    26.03.2020  hbz-dev     Daniel  Feature     Überarbeitung und Hinzufügung von Properties und Referenzwerten
 
 2284    26.03.2020  hbz-dev     Andreas Bug         Bezeichnung "Lokale Lizenz" korrigiert
