@@ -349,7 +349,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:link controller="survey" action="show" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button icon">
+                        <g:link controller="survey" action="show" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button icon">
                             <i class="pencil icon"></i>
                         </g:link>
                     </td>
