@@ -220,7 +220,7 @@
                        value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
                 <g:set var="participantsTotal"
-                       value="${surveyConfig.orgs}"/>
+                       value="${surveyConfig?.orgs}"/>
 
                 <tr>
                     <td class="center aligned">
@@ -230,7 +230,7 @@
                     <td>
                         <div class="la-flexbox">
                             <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
-                                ${surveyConfig.getSurveyName()}
+                                ${surveyConfig ? surveyConfig.getSurveyName() : surveyInfo.name}
                             </g:link>
                         </div>
                     </td>
@@ -349,7 +349,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button icon">
+                        <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button icon">
                             <i class="pencil icon"></i>
                         </g:link>
                     </td>
