@@ -14,7 +14,7 @@
         <div class="field fieldcontain">
             <label for="namespace">${message(code: 'identifier.namespace.label')}:</label>
             <g:if test="${identifier}">
-                <input type="text" id="namespace" name="namespace" value="${identifier?.ns.getI10n('name') ?: identifier.ns.ns}" disabled/>
+                <input type="text" id="namespace" name="ns.id" value="${identifier?.ns.getI10n('name') ?: identifier.ns.ns}" disabled/>
             </g:if>
             <g:else>
                 <%
@@ -41,7 +41,7 @@
         <div class="field fieldcontain">
             <label for="value">${message(code: 'default.identifier.label')}:</label>
 
-            <input type="text" id="value" name="value" value="${identifier?.value}"/>
+            <input type="text" id="value" name="value" value="${identifier?.value}" required/>
         </div>
 
         <div class="field fieldcontain">

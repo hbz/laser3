@@ -2,6 +2,13 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2154    01.04.2020  rc1.3       Anja    Bug         automatisch Angelegte Identifikatoren ohne Text 'Unbekannt'
+
+2154    01.04.2020  rc1.3       Anja    Bug         Leere Identifikatoren werden ohne URL-Link angezeigt
+
+2154    01.04.2020  rc1.3       Anja    Bug         Sortierung Kundennummen
+
+
 --      31.03.2020  rc1.3       Andreas Bug         falsche Ausgabe der Fehlermeldung "Falsches Passwort" bei Änderung des Passwortes
 
 2307    31.03.2020  rc1.3       Andreas Bug         Filter nach Anbieter und Lieferant funktionierte nicht richtig

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.CustomerIdentifier; com.k_int.kbplus.IdentifierNamespace" %>
+<%@ page import="com.k_int.kbplus.Platform; com.k_int.kbplus.CustomerIdentifier; com.k_int.kbplus.IdentifierNamespace" %>
 <semui:modal id="modalCreateCustomerIdentifier"
              text="${customeridentifier? message(code:'org.customerIdentifier.create.edit') : message(code:'org.customerIdentifier.create.new')}"
              isEditModal="true"
@@ -33,7 +33,7 @@
         <div class="field fieldcontain">
             <label for="value">${message(code: 'org.customerIdentifier')}:</label>
 
-            <input type="text" id="value" name="value" value="${customeridentifier?.value}"/>
+            <input type="text" id="value" name="value" value="${customeridentifier?.value}" required/>
         </div>
 
         <div class="field fieldcontain">
