@@ -407,8 +407,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 title: [
                         gokbId: tipp.title.'@uuid'.text()
                 ],
-                status: tipp.status.text(),
                 platformUUID: tipp.platform.'@uuid'.text(),
+                status: tipp.status.text(),
                 coverages: [],
                 hostPlatformURL: tipp.url.text(),
                 identifiers: [],

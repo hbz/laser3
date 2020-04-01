@@ -330,7 +330,6 @@
                                       <h5 class="ui header">
                                           <g:message code="subscription.packages.config.label" args="${[subscriptionPackage.pkg.name]}"/>
                                       </h5>
-                                  <%-- TODO: move away from table to dl-dt-dd-dd, and place it into collapsable --%>
                                       <g:form action="setupPendingChangeConfiguration" params="[id:subscriptionInstance.id,subscriptionPackage:subscriptionPackage.id]">
                                           <dl>
                                               <dt class="control-label"><g:message code="subscription.packages.changeType.label"/></dt>
