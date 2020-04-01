@@ -42,7 +42,7 @@ trait AuditableTrait {
 
         log?.debug("onChange(id:${this.id}): ${oldMap} => ${newMap}")
 
-        if(this instanceof Subscription && !this.instanceOf) {
+        if((this instanceof Subscription && !this.instanceOf) || !(this instanceof Subscription)) {
             List<String> gwp = auditService.getWatchedProperties(this)
 
             log?.debug("found watched properties: ${gwp}")

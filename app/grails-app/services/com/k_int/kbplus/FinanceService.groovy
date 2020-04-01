@@ -1288,6 +1288,7 @@ class FinanceService {
     Map<String,Object> setAdditionalGenericEditResults(Map configMap) {
         Locale locale = LocaleContextHolder.getLocale()
         Map<String,Object> result = setEditVars(configMap.institution)
+        log.debug(configMap.dataToDisplay)
         if(configMap.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
             result.licenseeLabel = messageSource.getMessage( 'consortium.member',null,locale)
             result.licenseeTargetLabel = messageSource.getMessage('financials.newCosts.consortia.licenseeTargetLabel',null,locale)
@@ -1302,7 +1303,7 @@ class FinanceService {
         }
         result.orgConfigurations = orgConfigurations as JSON
         if(configMap.dataToDisplay.stream().anyMatch(["cons","coll"].&contains) && configMap.subMembers) {
-            result.validSubChilds = [[id: 'forParent', label: messageSource.getMessage('financials.newCosts.forParentSubscription', null, locale)], [id: 'forAllSubscribers', label: configMap.licenseeTargetLabel]]
+            result.validSubChilds = [[id: 'forParent', label: messageSource.getMessage('financials.newCosts.forParentSubscription', null, locale)], [id: 'forAllSubscribers', label: result.licenseeTargetLabel]]
             result.validSubChilds.addAll(configMap.subMembers)
         }
         result

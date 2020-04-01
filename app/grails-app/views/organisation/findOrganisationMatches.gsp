@@ -93,12 +93,7 @@
 										<td>${organisationInstance.country}</td>
 										<td>
 										<%-- here: switch if in consortia or not --%>
-											<g:if test="${!members.get(organisationInstance.id).contains(institution.id)}">
-												<g:link class="ui icon positive button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
-													<i class="plus icon"></i>
-												</g:link>
-											</g:if>
-											<g:elseif test="${members.get(organisationInstance.id).contains(institution.id)}">
+											<g:if test="${members.get(organisationInstance.id)?.contains(institution.id)}">
 												<g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
 														data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [organisationInstance.name])}"
 														data-confirm-term-how="unlink"
@@ -108,7 +103,12 @@
 														params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
 													<i class="minus icon"></i>
 												</g:link>
-											</g:elseif>
+											</g:if>
+											<g:else>
+												<g:link class="ui icon positive button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
+													<i class="plus icon"></i>
+												</g:link>
+											</g:else>
 										</td>
 									</g:if>
 									<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">

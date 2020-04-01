@@ -608,22 +608,29 @@ class OrganisationController extends AbstractDebugController {
     Map findOrganisationMatches() {
         Map memberMap = [:]
         RefdataValue comboType
-        if(accessService.checkPerm('ORG_CONSORTIUM'))
+
+        if (accessService.checkPerm('ORG_CONSORTIUM')) {
             comboType = COMBO_TYPE_CONSORTIUM
-        else if(accessService.checkPerm('ORG_INST_COLLECTIVE'))
+        }
+        else if (accessService.checkPerm('ORG_INST_COLLECTIVE')) {
             comboType = COMBO_TYPE_DEPARTMENT
+        }
+
         Combo.findAllByType(comboType).each { lObj ->
             Combo link = (Combo) lObj
             List members = memberMap.get(link.fromOrg.id)
-            if(!members)
+            if(!members) {
                 members = [link.toOrg.id]
-            else members << link.toOrg.id
+            } else {
+                members << link.toOrg.id
+            }
             memberMap.put(link.fromOrg.id,members)
         }
-        Map result=[institution:contextService.org,organisationMatches:[],members:memberMap,comboType:comboType]
+
+        Map result = [institution:contextService.org,organisationMatches:[],members:memberMap,comboType:comboType]
         //searching members for consortium, i.e. the context org is a consortium
-        if(comboType == COMBO_TYPE_CONSORTIUM) {
-            if ( params.proposedOrganisation ) {
+        if (comboType == COMBO_TYPE_CONSORTIUM) {
+            if (params.proposedOrganisation) {
                 result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName) ",
                         [institution: OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
             }
@@ -633,12 +640,13 @@ class OrganisationController extends AbstractDebugController {
             }
         }
         //searching departments of the institution, i.e. the context org is an institution
-        else if(comboType == COMBO_TYPE_DEPARTMENT) {
-            if(params.proposedOrganisation) {
+        else if (comboType == COMBO_TYPE_DEPARTMENT) {
+            if (params.proposedOrganisation) {
                 result.organisationMatches.addAll(Org.executeQuery("select c.fromOrg from Combo c join c.fromOrg o where c.toOrg = :contextOrg and c.type = :department and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName)",
                         [department: comboType, contextOrg: contextService.org, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
             }
         }
+
         result
     }
 

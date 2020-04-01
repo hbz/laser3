@@ -13,7 +13,7 @@ laserSystemId = 'local'
 documentStorageLocation = '/tmp/laser' // for uploaded documents
 deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // for database backups in context of deploys
 
-featureSurvey = false
+//featureSurvey = false
 //notificationsJobActive = true
 //activateTestJob = true
 
