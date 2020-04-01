@@ -166,13 +166,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
             providersToUpdate << provider.'@uuid'.text()
         }
         titlesToUpdate.each { titleUUID ->
-            createOrUpdateTitle(titleUUID)
+            try {
+                createOrUpdateTitle(titleUUID)
+            }
+            catch (SyncException e) {
+                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleRecordKey:titleUUID])
+            }
         }
         platformsToUpdate.each { Map<String,String> platformParams ->
             createOrUpdatePlatform(platformParams)
         }
         providersToUpdate.each { providerUUID ->
-            createOrUpdateProvider(providerUUID)
+            try {
+                createOrUpdateProvider(providerUUID)
+            }
+            catch (SyncException e) {
+                SystemEvent.createEvent('GSSS_OAI_ERROR',[providerRecordKey:providerUUID])
+            }
         }
     }
 
@@ -223,103 +233,122 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(result) {
                     //local package exists -> update closure, build up GokbDiffEngine and the horrendous closures
                     log.info("package successfully found, processing LAS:eR id #${result.id}, with GOKb id ${result.gokbId}")
-                    Map<String,Object> newPackageProps = [
-                            uuid: packageUUID,
-                            name: packageName,
-                            packageStatus: packageStatus,
-                            listVerifiedDate: listVerifiedDate,
-                            packageScope: packageScope,
-                            packageListStatus: packageListStatus,
-                            breakable: breakable,
-                            consistent: consistent,
-                            fixed: fixed
-                    ]
-                    if(platformUUID) {
-                        newPackageProps.nominalPlatform = Platform.findByGokbId(platformUUID)
-                    }
-                    Set<Map<String,Object>> pkgPropDiffs = getPkgPropDiff(result,newPackageProps)
-                    result.name = packageName
-                    result.packageStatus = packageStatus
-                    result.listVerifiedDate = listVerifiedDate
-                    result.packageScope = packageScope //needed?
-                    result.packageListStatus = packageListStatus //needed?
-                    result.breakable = breakable //needed?
-                    result.consistent = consistent //needed?
-                    result.fixed = fixed //needed?
-                    if(platformUUID)
-                        result.nominalPlatform = Platform.findByGokbId(platformUUID)
-                    if(result.save()) {
-                        if(pkgPropDiffs)
-                            tippsToNotify << [event:"pkgPropUpdate",diffs:pkgPropDiffs,target:result]
-                        tipps.each { Map<String, Object> tippB ->
-                            TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform a -> a.gokbId == tippB.uuid } //we have to consider here TIPPs, too, which were deleted but have been reactivated
-                            if(tippA) {
-                                //ex updatedTippClosure / tippUnchangedClosure
-                                RefdataValue status = RefdataValue.getByValueAndCategory(tippB.status,RDConstants.TIPP_STATUS)
-                                if(status == RDStore.TIPP_STATUS_DELETED) {
-                                    log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${result.gokbId}")
-                                    tippA.status = status
-                                    tippsToNotify << [event:"delete",target:tippA]
-                                }
-                                else {
-                                    Set<Map<String,Object>> diffs = getTippDiff(tippA,tippB) //includes also changes in coverage statement set
-                                    if(diffs) {
-                                        log.info("Got tipp diffs: ${diffs}")
-                                        //process actual diffs
-                                        diffs.each { diff ->
-                                            if(diff.prop == 'coverage') {
-                                                diff.covDiffs.each { entry ->
-                                                    switch(entry.event) {
-                                                        case 'add':
-                                                            if(!entry.target.save())
-                                                                throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                                            break
-                                                        case 'delete': tippA.coverages.remove(entry.target)
-                                                            break
-                                                        case 'update': entry.diffs.each { covDiff ->
-                                                                entry.target[covDiff.prop] = covDiff.newValue
-                                                            }
-                                                            if(!entry.target.save())
-                                                                throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                                            break
-                                                    }
-                                                }
-                                            }
-                                            else {
-                                                if (diff.prop in PendingChange.REFDATA_FIELDS) {
-                                                    tippA[diff.prop] = RefdataValue.get(diff.newValue)
-                                                }
-                                                else {
-                                                    tippA[diff.prop] = diff.newValue
-                                                }
-                                            }
-                                        }
-                                        tippsToNotify << [event:'update',target:tippA,diffs:diffs]
-                                    }
-                                    //ex updatedTitleAfterPackageReconcile
-                                    TitleInstance titleInstance = TitleInstance.findByGokbId(tippB.title.gokbId)
-                                    //TitleInstance titleInstance = createOrUpdateTitle((String) tippB.title.gokbId)
-                                    //createOrUpdatePlatform([name:tippB.platformName,gokbId:tippB.platformUUID,primaryUrl:tippB.primaryUrl],tippA.platform)
-                                    if(titleInstance) {
-                                        tippA.title = titleInstance
-                                        tippA.platform = Platform.findByGokbId(tippB.platformUUID)
-                                        if(!tippA.save())
-                                            throw new SyncException("Error on updating TIPP with UUID ${tippA.gokbId}: ${tippA.errors}")
-                                    }
-                                    else {
-                                        throw new SyncException("Title loading failed for ${tippB.title.gokbId}!")
-                                    }
-                                }
+                    if(packageStatus == RDStore.PACKAGE_STATUS_DELETED) {
+                        log.info("package #${result.id}, with GOKb id ${result.gokbId} got deleted, mark as deleted all cascaded elements and rapport!")
+                        tippsToNotify << [event:"pkgDelete",diffs:[[prop: 'packageStatus', newValue: packageStatus, oldValue: result.packageStatus]],target:result]
+                        result.packageStatus = packageStatus
+                        if(result.save()) {
+                            result.tipps.each { tippA ->
+                                log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${result.gokbId}")
+                                tippA.status = RDStore.TIPP_STATUS_DELETED
+                                tippsToNotify << [event:"delete",target:tippA]
+                                if(!tippA.save())
+                                    throw new SyncException("Error on marking TIPP with UUID ${tippA.gokbId}: ${tippA.errors} as deleted!")
                             }
-                            else {
-                                //ex newTippClosure
-                                TitleInstancePackagePlatform target = addNewTIPP(result,tippB)
-                                tippsToNotify << [event:'add',target:target]
-                            }
+                        }
+                        else {
+                            throw new SyncException("Error on marking package ${result.id}: ${result.errors} as deleted!")
                         }
                     }
                     else {
-                        throw new SyncException("Error on updating package ${result.id}: ${result.errors}")
+                        Map<String,Object> newPackageProps = [
+                                uuid: packageUUID,
+                                name: packageName,
+                                packageStatus: packageStatus,
+                                listVerifiedDate: listVerifiedDate,
+                                packageScope: packageScope,
+                                packageListStatus: packageListStatus,
+                                breakable: breakable,
+                                consistent: consistent,
+                                fixed: fixed
+                        ]
+                        if(platformUUID) {
+                            newPackageProps.nominalPlatform = Platform.findByGokbId(platformUUID)
+                        }
+                        Set<Map<String,Object>> pkgPropDiffs = getPkgPropDiff(result,newPackageProps)
+                        result.name = packageName
+                        result.packageStatus = packageStatus
+                        result.listVerifiedDate = listVerifiedDate
+                        result.packageScope = packageScope //needed?
+                        result.packageListStatus = packageListStatus //needed?
+                        result.breakable = breakable //needed?
+                        result.consistent = consistent //needed?
+                        result.fixed = fixed //needed?
+                        if(platformUUID)
+                            result.nominalPlatform = Platform.findByGokbId(platformUUID)
+                        if(result.save()) {
+                            if(pkgPropDiffs)
+                                tippsToNotify << [event:"pkgPropUpdate",diffs:pkgPropDiffs,target:result]
+                            tipps.each { Map<String, Object> tippB ->
+                                TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform a -> a.gokbId == tippB.uuid } //we have to consider here TIPPs, too, which were deleted but have been reactivated
+                                if(tippA) {
+                                    //ex updatedTippClosure / tippUnchangedClosure
+                                    RefdataValue status = RefdataValue.getByValueAndCategory(tippB.status,RDConstants.TIPP_STATUS)
+                                    if(status == RDStore.TIPP_STATUS_DELETED) {
+                                        log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${result.gokbId}")
+                                        tippA.status = status
+                                        tippsToNotify << [event:"delete",target:tippA]
+                                    }
+                                    else {
+                                        Set<Map<String,Object>> diffs = getTippDiff(tippA,tippB) //includes also changes in coverage statement set
+                                        if(diffs) {
+                                            log.info("Got tipp diffs: ${diffs}")
+                                            //process actual diffs
+                                            diffs.each { diff ->
+                                                if(diff.prop == 'coverage') {
+                                                    diff.covDiffs.each { entry ->
+                                                        switch(entry.event) {
+                                                            case 'add':
+                                                                if(!entry.target.save())
+                                                                    throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                                                break
+                                                            case 'delete': tippA.coverages.remove(entry.target)
+                                                                break
+                                                            case 'update': entry.diffs.each { covDiff ->
+                                                                entry.target[covDiff.prop] = covDiff.newValue
+                                                            }
+                                                                if(!entry.target.save())
+                                                                    throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                                                break
+                                                        }
+                                                    }
+                                                }
+                                                else {
+                                                    if (diff.prop in PendingChange.REFDATA_FIELDS) {
+                                                        tippA[diff.prop] = RefdataValue.get(diff.newValue)
+                                                    }
+                                                    else {
+                                                        tippA[diff.prop] = diff.newValue
+                                                    }
+                                                }
+                                            }
+                                            tippsToNotify << [event:'update',target:tippA,diffs:diffs]
+                                        }
+                                        //ex updatedTitleAfterPackageReconcile
+                                        TitleInstance titleInstance = TitleInstance.findByGokbId(tippB.title.gokbId)
+                                        //TitleInstance titleInstance = createOrUpdateTitle((String) tippB.title.gokbId)
+                                        //createOrUpdatePlatform([name:tippB.platformName,gokbId:tippB.platformUUID,primaryUrl:tippB.primaryUrl],tippA.platform)
+                                        if(titleInstance) {
+                                            tippA.title = titleInstance
+                                            tippA.platform = Platform.findByGokbId(tippB.platformUUID)
+                                            if(!tippA.save())
+                                                throw new SyncException("Error on updating TIPP with UUID ${tippA.gokbId}: ${tippA.errors}")
+                                        }
+                                        else {
+                                            throw new SyncException("Title loading failed for ${tippB.title.gokbId}!")
+                                        }
+                                    }
+                                }
+                                else {
+                                    //ex newTippClosure
+                                    TitleInstancePackagePlatform target = addNewTIPP(result,tippB)
+                                    tippsToNotify << [event:'add',target:target]
+                                }
+                            }
+                        }
+                        else {
+                            throw new SyncException("Error on updating package ${result.id}: ${result.errors}")
+                        }
                     }
                 }
                 else {
@@ -896,11 +925,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
         tippsToNotify.each { entry ->
             entry.each { notify ->
                 log.debug(notify)
-                if(notify.event == 'pkgPropUpdate') {
+                if(notify.event in ['pkgPropUpdate','pkgDelete']) {
+                    String msgToken
+                    if(notify.event == 'pkgPropUpdate')
+                        msgToken = PendingChangeConfiguration.PACKAGE_PROP
+                    else if(notify.event == 'pkgDelete')
+                        msgToken = PendingChangeConfiguration.PACKAGE_DELETED
                     Package target = (Package) notify.target
                     Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target])
                     ieConcerned.each { ie ->
-                        changeNotificationService.determinePendingChangeBehavior([target:ie.subscription,oid:"${target.class.name}:${target.id}"],PendingChangeConfiguration.PACKAGE_PROP,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target))
+                        changeNotificationService.determinePendingChangeBehavior([target:ie.subscription,oid:"${target.class.name}:${target.id}"],msgToken,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target))
                     }
                 }
                 else {
@@ -964,7 +998,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     break
                                 case 'delete':
                                     changeDesc = PendingChangeConfiguration.TITLE_DELETED
-                                    changeMap.oid = "${target.class.name}:${target.id}"
+                                    changeMap.oid = "${ie.class.name}:${ie.id}"
                                     changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                     break
                             }
@@ -995,19 +1029,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     null
                 }
                 else if(response[queryParams.verb] && response[queryParams.verb] instanceof GPathResult) {
-                    if(queryParams.verb == 'GetRecord') {
-                        if(response[queryParams.verb].record?.header?.status != 'deleted')
-                            response[queryParams.verb]
-                        else {
-                            log.error('Request successed but result data has been marked as deleted. We must not use this record, please do checks!')
-                            null
-                        }
-                    }
-                    else {
-                        if(response[queryParams.verb])
-                            response[queryParams.verb]
-                        else null
-                    }
+                    if(response[queryParams.verb])
+                        response[queryParams.verb]
+                    else null
                 }
                 else {
                     log.error('Request succeeded but result data invalid. Please do checks!')

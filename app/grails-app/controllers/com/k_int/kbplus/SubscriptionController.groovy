@@ -15,7 +15,6 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
-import de.laser.oai.OaiClientLaser
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
@@ -241,6 +240,16 @@ class SubscriptionController extends AbstractDebugController {
 
         if ((params.format == 'html' || params.format == null) && !params.exportKBart) {
             result.entitlements = entitlements.drop(result.offset).take(result.max)
+        }
+
+        Set<SubscriptionPackage> deletedSPs = result.subscriptionInstance.packages.findAll {sp -> sp.pkg.packageStatus == PACKAGE_STATUS_DELETED}
+
+        if(deletedSPs) {
+            result.deletedSPs = []
+            ApiSource source = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
+            deletedSPs.each { sp ->
+                result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/gokb/resource/show/${sp.pkg.gokbId}"]
+            }
         }
 
         // Now we add back the sort so that the sortable column will recognize asc/desc
@@ -3267,7 +3276,7 @@ class SubscriptionController extends AbstractDebugController {
             globalSourceSyncService.source = source
             String addType = params.addType
             GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:params.addUUID])
-            if(packageRecord) {
+            if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
                 executorService.submit({
                     Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
                     try {
