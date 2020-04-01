@@ -8,13 +8,13 @@
 
         <g:hiddenField name="orgid" value="${orgInstance?.id}"/>
         <g:if test="${identifier}">
-            <g:hiddenField name="identifierId" value="${identifier?.id}"/>
+            <g:hiddenField name="identifierId" value="${identifier.id}"/>
         </g:if>
 
         <div class="field fieldcontain">
             <label for="namespace">${message(code: 'identifier.namespace.label')}:</label>
             <g:if test="${identifier}">
-                <input type="text" id="namespace" name="ns.id" value="${identifier?.ns.getI10n('name') ?: identifier.ns.ns}" disabled/>
+                <input type="text" id="namespace" name="ns.id" value="${identifier.ns.getI10n('name') ?: identifier.ns.ns}" disabled/>
             </g:if>
             <g:else>
                 <%
@@ -32,11 +32,10 @@
                           from="${nsList}"
                           optionKey="id"
                           required=""
-                          value="${identifier?.ns?.id}"
                           optionValue="${{ it.getI10n('name') ?: it.ns }}"
                           class="ui search dropdown"/>
             </g:else>
-        </div>
+       </div>
 
         <div class="field fieldcontain">
             <label for="value">${message(code: 'default.identifier.label')}:</label>

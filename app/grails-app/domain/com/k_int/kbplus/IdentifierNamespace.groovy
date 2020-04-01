@@ -20,7 +20,7 @@ class IdentifierNamespace extends AbstractI10nOverride {
     public static final NS_CREATOR      = "com.k_int.kbplus.Creator"
 
     @Transient
-    final static String[] CORE_ORG_NS = [
+    final static List<String> CORE_ORG_NS = [
             "ISIL",
             "wibid",
             "gnd_org_nr",

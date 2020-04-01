@@ -14,7 +14,7 @@
         <div class="field fieldcontain">
             <label for="addCIPlatform">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</label>
             <g:if test="${customeridentifier}">
-                <% Platform p = customeridentifier?.platform%>
+                <% Platform p = customeridentifier.platform%>
                 <input type="text" id="addCIPlatform" name="addCIPlatform" value="${ p.org.name + (p.org.sortname ? " (${p.org.sortname})" : '') + ' : ' + p.name}" disabled/>
             </g:if>
             <g:else>
@@ -22,13 +22,11 @@
                           from="${allPlatforms}"
                           required=""
                           class="ui search dropdown"
-                          value="${customeridentifier?.id}"
                           optionKey="id"
-                          optionValue="${{ it.org.name + (it.org.sortname ? " (${it.org.sortname})" : '') + ' : ' + it.name}}" />
+                          optionValue="${{ it.org.name + (it.org.sortname ? " (${it.org.sortname})" : '') + ' : ' + it.name}}"
+                />
             </g:else>
         </div>
-                      %{--optionKey="${{'com.k_int.kbplus.Platform:' + it.id}}"--}%
-
 
         <div class="field fieldcontain">
             <label for="value">${message(code: 'org.customerIdentifier')}:</label>
