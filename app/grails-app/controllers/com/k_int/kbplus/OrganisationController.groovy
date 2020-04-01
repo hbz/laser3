@@ -396,9 +396,9 @@ class OrganisationController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
+        IdentifierNamespace namespace   = IdentifierNamespace.get(params?.ns?.id)
         if (!namespace){
-            flash.error = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params?.ns?.id])
             redirect(url: request.getHeader('referer'))
             return
         }
