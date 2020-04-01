@@ -57,10 +57,8 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
                 <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
             </g:if>
-            <g:if test="${grailsApplication.config.featureSurvey}">
-                <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
-                    <th class="la-th-wrap">${message(code: 'survey.active')}</th>
-                </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
+                <th class="la-th-wrap">${message(code: 'survey.active')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('identifier')}">
                 <th>Identifier</th>
@@ -415,7 +413,6 @@
                     </div>
                 </td>
             </g:if>
-            <g:if test="${grailsApplication.config.featureSurvey}">
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
                     <td class="center aligned">
                         <div class="la-flexbox">
@@ -454,7 +451,6 @@
                         </div>
                     </td>
                 </g:if>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('identifier')}">
                 <td><g:if test="${org.ids}">
                     <div class="ui list">

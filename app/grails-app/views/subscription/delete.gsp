@@ -1,4 +1,5 @@
 <g:set var="deletionService" bean="deletionService" />
+<g:set var="accessService" bean="accessService" />
 
 <!doctype html>
 <html>
@@ -22,6 +23,9 @@
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
             <semui:msg class="positive" header="" message="deletion.success.msg" />
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">${message(code:'menu.my.subscriptions')}</g:link>
+            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                <g:link controller="subscription" action="members" id="${parentId}" class="ui button">${message(code:"subscription.details.consortiaMembers.label")}</g:link>
+            </g:if>
         </g:if>
         <g:else>
             <semui:msg class="info" header="" message="subscription.delete.info" />
@@ -34,6 +38,9 @@
             </g:if>
 
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">${message(code:'menu.my.subscriptions')}</g:link>
+            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                <g:link controller="subscription" action="members" id="${parentId}" class="ui button">${message(code:"subscription.details.consortiaMembers.label")}</g:link>
+            </g:if>
             <g:link controller="subscription" action="show" params="${[id: subscription.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
 
             <g:if test="${editable}">
@@ -51,9 +58,9 @@
         <table class="ui celled la-table la-table-small table">
             <thead>
             <tr>
-                <th>Anhängende, bzw. referenzierte Objekte</th>
-                <th>Anzahl</th>
-                <th>Objekt-Ids</th>
+                <th><g:message code="subscription.delete.header.referencingObject"/></th>
+                <th><g:message code="subscription.delete.header.count"/></th>
+                <th><g:message code="subscription.delete.header.objectIDs"/></th>
             </tr>
             </thead>
             <tbody>

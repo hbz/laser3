@@ -2,6 +2,20 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2323    01.04.2020  rc1.3       Andreas Feature     Neuer zurückleitender Knopf "Teilnehmer" für Konsortien bei Löschen von Kindlizenzen eingeführt
+
+2322    01.04.2020  rc1.3       Andreas Bug         Vererbung von Merkmalen funktioniert jetzt wieder für Verträge
+
+2315    31.03.2020  rc1.3       David   Bug         Bug im Formular "Einrichtung anlegen"
+
+--      31.03.2020  rc1.3       Andreas Bug         falsche Ausgabe der Fehlermeldung "Falsches Passwort" bei Änderung des Passwortes
+
+2307    31.03.2020  rc1.3       Andreas Bug         Filter nach Anbieter und Lieferant funktionierte nicht richtig
+
+2306    31.03.2020  rc1.3       Andreas Bug         Vererbung funktionierte bei neuem Anlegen von Teilnehmern nicht
+
+2304    31.03.2020  rc1.3       David   Feature     Organisationsprofil: Verkürztes Identifikatoren-Panel
+
 1901    30.03.2020  rc1.3       Andreas Bug         Paket kann wieder mit Lizenz verknüpft werden (von Paketsicht aus)
 
 2268    30.03.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume
@@ -12,11 +26,11 @@
 
 2303    30.03.2020  rc1.3       Moe     Bug/Feature Umfrage exportieren
 
-2291    26.03.2020  hbz-dev     Daniel  Feature     Überarbeitung und Hinzufügung von Properties und Referenzwerten
-
 2268    30.03.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume
 
 2267    30.03.2020  rc1.3       David   Feature     Trennen von Identifier-Namensräumen
+
+2291    26.03.2020  hbz-dev     Daniel  Feature     Überarbeitung und Hinzufügung von Properties und Referenzwerten
 
 2284    26.03.2020  hbz-dev     Andreas Bug         Bezeichnung "Lokale Lizenz" korrigiert
 

@@ -67,19 +67,21 @@
 
                 </g:if>
                 <g:else>
-                    <dl>
-                        <dt class="control-label">
-                            ${message(code: 'surveyConfig.url.label')}
-                        </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"
-                                             overwriteEditable="${false}"/>
-                        <g:if test="${surveyConfig.url}">
-                            <semui:linkIcon href="${surveyConfig.url}"/>
-                        </g:if>
-                            <br/>&nbsp<br/>&nbsp<br/>
-                        </dd>
+                    <g:if test="${surveyConfig.url}">
+                        <dl>
+                            <dt class="control-label">
+                                ${message(code: 'surveyConfig.url.label')}
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"
+                                                 overwriteEditable="${false}"/>
 
-                    </dl>
+                                <semui:linkIcon href="${surveyConfig.url}"/>
+
+                                <br/>&nbsp<br/>&nbsp<br/>
+                            </dd>
+
+                        </dl>
+                    </g:if>
 
                     <div class="ui form">
                         <div class="field">
