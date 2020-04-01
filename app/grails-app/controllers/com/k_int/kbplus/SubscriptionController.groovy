@@ -349,6 +349,8 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
+        if(result.subscription.instanceOf)
+            result.parentId = result.subscription.instanceOf.id
 
         if (params.process  && result.editable) {
             result.delResult = deletionService.deleteSubscription(result.subscription, false)
