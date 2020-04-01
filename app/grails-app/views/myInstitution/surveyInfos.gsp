@@ -119,6 +119,20 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
             </tr>
             </tbody>
         </table>
+
+        <div class="ui form">
+            <div class="field">
+                <label>
+                    <g:message code="surveyInfo.comment.label"/>
+                </label>
+                <g:if test="${surveyInfo.comment}">
+                    <textarea readonly="readonly" rows="3">${surveyInfo.comment}</textarea>
+                </g:if>
+                <g:else>
+                    <g:message code="surveyConfigsInfo.comment.noComment"/>
+                </g:else>
+            </div>
+        </div>
     </semui:form>
 </g:if>
 
