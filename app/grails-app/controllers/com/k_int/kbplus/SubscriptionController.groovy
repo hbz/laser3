@@ -3276,7 +3276,7 @@ class SubscriptionController extends AbstractDebugController {
             globalSourceSyncService.source = source
             String addType = params.addType
             GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:params.addUUID])
-            if(packageRecord) {
+            if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
                 executorService.submit({
                     Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
                     try {

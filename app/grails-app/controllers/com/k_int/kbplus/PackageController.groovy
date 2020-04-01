@@ -867,7 +867,7 @@ class PackageController extends AbstractDebugController {
         log.debug("addToSub. Global Record Source URL: " +source.baseUrl)
         globalSourceSyncService.source = source
         GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:pkg.gokbId])
-        if(packageRecord) {
+        if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
             executorService.submit({
                 Thread.currentThread().setName("PackageSync_"+sub.id)
                 try {

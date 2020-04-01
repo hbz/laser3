@@ -1,5 +1,5 @@
 
-### API - Version 0.81
+### API - Version 0.82
 
 
 #### Objects

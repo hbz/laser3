@@ -166,13 +166,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
             providersToUpdate << provider.'@uuid'.text()
         }
         titlesToUpdate.each { titleUUID ->
-            createOrUpdateTitle(titleUUID)
+            try {
+                createOrUpdateTitle(titleUUID)
+            }
+            catch (SyncException e) {
+                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleRecordKey:titleUUID])
+            }
         }
         platformsToUpdate.each { Map<String,String> platformParams ->
             createOrUpdatePlatform(platformParams)
         }
         providersToUpdate.each { providerUUID ->
-            createOrUpdateProvider(providerUUID)
+            try {
+                createOrUpdateProvider(providerUUID)
+            }
+            catch (SyncException e) {
+                SystemEvent.createEvent('GSSS_OAI_ERROR',[providerRecordKey:providerUUID])
+            }
         }
     }
 
@@ -1019,19 +1029,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     null
                 }
                 else if(response[queryParams.verb] && response[queryParams.verb] instanceof GPathResult) {
-                    if(queryParams.verb == 'GetRecord') {
-                        if(response[queryParams.verb].record?.header?.status != 'deleted')
-                            response[queryParams.verb]
-                        else {
-                            log.error('Request successed but result data has been marked as deleted. We must not use this record, please do checks!')
-                            null
-                        }
-                    }
-                    else {
-                        if(response[queryParams.verb])
-                            response[queryParams.verb]
-                        else null
-                    }
+                    if(response[queryParams.verb])
+                        response[queryParams.verb]
+                    else null
                 }
                 else {
                     log.error('Request succeeded but result data invalid. Please do checks!')
