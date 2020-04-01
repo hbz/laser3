@@ -344,7 +344,7 @@ class ChangeNotificationService extends AbstractLockableService {
         else contextOrg = subscriptionPackage.subscription.getSubscriber()
         RefdataValue settingValue
         PendingChangeConfiguration directConf = subscriptionPackage.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == msgToken}
-        if(msgToken == PendingChangeConfiguration.PACKAGE_PROP || args.prop in ['hostPlatformURL']) {
+        if(msgToken in [PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED] || args.prop in ['hostPlatformURL']) {
             if(directConf) {
                 if(directConf.withNotification)
                     PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])

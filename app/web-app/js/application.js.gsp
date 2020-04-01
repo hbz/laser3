@@ -226,9 +226,19 @@ r2d2 = {
             format:   gspDateFormat,
             validate: function(value) {
                 // custom validate functions via semui:xEditable validation="xy"
-                if ('notEmpty' == $(this).attr('data-validation')) {
-                    if($.trim(value) == '') {
-                        return "Das Feld darf nicht leer sein";
+                var dVal = $(this).attr('data-validation')
+                if (dVal) {
+                    if (dVal.includes('notEmpty')) {
+                        if($.trim(value) == '') {
+                            return "Das Feld darf nicht leer sein";
+                        }
+                    }
+                    if (dVal.includes('url')) {
+                        var regex = /^(https?|ftp):\/\/(.)*/;
+                        var test = regex.test($.trim(value)) || $.trim(value) == ''
+                        if (! test) {
+                            return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
+                        }
                     }
                 }
             },
@@ -249,9 +259,19 @@ r2d2 = {
                     }
                 }
                 // custom validate functions via semui:xEditable validation="xy"
-                if ('notEmpty' == $(this).attr('data-validation')) {
-                    if($.trim(value) == '') {
-                        return "Das Feld darf nicht leer sein";
+                var dVal = $(this).attr('data-validation')
+                if (dVal) {
+                    if (dVal.includes('notEmpty')) {
+                        if($.trim(value) == '') {
+                            return "Das Feld darf nicht leer sein";
+                        }
+                    }
+                    if (dVal.includes('url')) {
+                        var regex = /^(https?|ftp):\/\/(.)*/;
+                        var test = regex.test($.trim(value)) || $.trim(value) == ''
+                        if (! test) {
+                            return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
+                        }
                     }
                 }
             },

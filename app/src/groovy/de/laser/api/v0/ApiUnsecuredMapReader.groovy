@@ -136,7 +136,7 @@ class ApiUnsecuredMapReader {
         result.gokbId       = title.gokbId
         result.title        = title.title
         result.normTitle    = title.normTitle
-        result.type         = title.type?.value
+        result.type         = title.printTitleType()
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(title.ids) // com.k_int.kbplus.Identifier

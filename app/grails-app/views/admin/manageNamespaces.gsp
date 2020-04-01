@@ -132,7 +132,7 @@
                                         <semui:xEditable owner="${idNs}" field="validationRegex"/>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="urlPrefix"/>
+                                        <semui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
                                     </td>
                                     <%--<td>${fieldValue(bean: idNs, field: "hide")}</td>--%>
                                     <td>
@@ -168,7 +168,7 @@
                                         ${fieldValue(bean: idNs, field: "validationRegex")}
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="urlPrefix"/>
+                                        <semui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
                                     </td>
                                     <%--<td>${fieldValue(bean: idNs, field: "hide")}</td>--%>
                                     <td>

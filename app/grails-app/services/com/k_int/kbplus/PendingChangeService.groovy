@@ -553,6 +553,11 @@ class PendingChangeService extends AbstractLockableService {
                 String endDate = target.endDate ? sdf.format(target.endDate) : ""
                 coverageString = "${startDate} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${endDate} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
             }
+            else if(change.oid.contains(Package.class.name)) {
+                Package target = (Package) genericOIDService.resolveOID(change.oid)
+                pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'current', id: target.id)
+                pkgName = target.name
+            }
             switch(change.msgToken) {
             //pendingChange.message_TP01 (newTitle)
                 case PendingChangeConfiguration.NEW_TITLE:
@@ -564,7 +569,7 @@ class PendingChangeService extends AbstractLockableService {
                     break
             //pendingChange.message_TP02 (titleUpdated)
                 case PendingChangeConfiguration.TITLE_UPDATED:
-                    eventIcon = '<i class="yellow circle outline icon"></i>'
+                    eventIcon = '<i class="yellow circle icon"></i>'
                     instanceIcon = '<i class="book icon"></i>'
                     if(holdingLink && titleName && pkgName) {
                         eventData = [holdingLink,titleName,pkgName,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),output(change,'oldValue')]
@@ -584,7 +589,7 @@ class PendingChangeService extends AbstractLockableService {
                     break
             //pendingChange.message_TC01 (coverageUpdated)
                 case PendingChangeConfiguration.COVERAGE_UPDATED:
-                    eventIcon = '<i class="yellow circle outline icon"></i>'
+                    eventIcon = '<i class="yellow circle icon"></i>'
                     instanceIcon = '<i class="file alternate icon"></i>'
                     if(holdingLink && pkgName && coverageString && titleName) {
                         eventData = [holdingLink,pkgName,titleName,coverageString,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),output(change,'oldValue'),output(change,'newValue')]
@@ -607,10 +612,26 @@ class PendingChangeService extends AbstractLockableService {
                         eventData = [coverageString,holdingLink]
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break
+            //pendingChange.message_PK01 (pkgPropUpdate)
+                case PendingChangeConfiguration.PACKAGE_PROP:
+                    eventIcon = '<i class="yellow circle icon"></i>'
+                    instanceIcon = '<i class="gift icon"></i>'
+                    if(pkgLink && pkgName)
+                        eventData = [pkgLink,pkgName,messageSource.getMessage("package.${change.targetProperty}",null,locale),output(change,'oldValue'),output(change,'newValue')]
+                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
+                    break
+            //pendingChange.message_PK02 (pkgDeleted)
+                case PendingChangeConfiguration.PACKAGE_DELETED:
+                    eventIcon = '<i class="red minus icon"></i>'
+                    instanceIcon = '<i class="gift icon"></i>'
+                    if(pkgName)
+                        eventData = [pkgName]
+                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
+                    break
             }
         }
 
-        if(eventString == null)
+        if(eventString == null && eventData)
             eventString = messageSource.getMessage(change.msgToken,eventData.toArray(),locale)
         [instanceIcon:instanceIcon,eventIcon:eventIcon,eventString:eventString]
     }

@@ -2,12 +2,17 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2323    01.04.2020  rc1.3       Andreas Feature     Neuer zurückleitender Knopf "Teilnehmer" für Konsortien bei Löschen von Kindlizenzen eingeführt
+
+2322    01.04.2020  rc1.3       Andreas Bug         Vererbung von Merkmalen funktioniert jetzt wieder für Verträge
+
 2154    01.04.2020  rc1.3       Anja    Bug         automatisch Angelegte Identifikatoren ohne Text 'Unbekannt'
 
 2154    01.04.2020  rc1.3       Anja    Bug         Leere Identifikatoren werden ohne URL-Link angezeigt
 
 2154    01.04.2020  rc1.3       Anja    Bug         Sortierung Kundennummen
 
+2315    31.03.2020  rc1.3       David   Bug         Bug im Formular "Einrichtung anlegen"
 
 --      31.03.2020  rc1.3       Andreas Bug         falsche Ausgabe der Fehlermeldung "Falsches Passwort" bei Änderung des Passwortes
 

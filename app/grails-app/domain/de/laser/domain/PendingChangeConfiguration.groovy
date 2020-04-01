@@ -21,7 +21,8 @@ class PendingChangeConfiguration {
     static final String NEW_COVERAGE = "pendingChange.message_TC02"
     static final String COVERAGE_DELETED = "pendingChange.message_TC03"
     static final String PACKAGE_PROP = "pendingChange.message_PK01"
-    static final Set<String> settingKeys = [NEW_TITLE,TITLE_UPDATED,TITLE_DELETED,NEW_COVERAGE,COVERAGE_UPDATED,COVERAGE_DELETED,PACKAGE_PROP]
+    static final String PACKAGE_DELETED = "pendingChange.message_PK02"
+    static final Set<String> settingKeys = [NEW_TITLE,TITLE_UPDATED,TITLE_DELETED,NEW_COVERAGE,COVERAGE_UPDATED,COVERAGE_DELETED,PACKAGE_PROP,PACKAGE_DELETED]
 
     String settingKey
     @RefdataAnnotation(cat = RDConstants.PENDING_CHANGE_CONFIG_SETTING)
