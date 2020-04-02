@@ -29,6 +29,8 @@ class DeletionService {
     static String RESULT_ERROR              = 'RESULT_ERROR'
     static String RESULT_SUBSTITUTE_NEEDED  = 'RESULT_SUBSTITUTE_NEEDED'
 
+    static String RESULT_CUSTOM             = 'RESULT_CUSTOM'
+
     static String FLAG_WARNING      = 'yellow'
     static String FLAG_SUBSTITUTE   = 'teal'
     static String FLAG_BLOCKER      = 'red'
@@ -676,6 +678,11 @@ class DeletionService {
 
             if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
                 result.status = RESULT_BLOCKED
+                result.deletable = false
+            }
+
+            if (user.isLastInstAdmin()) {
+                result.status = RESULT_CUSTOM
                 result.deletable = false
             }
         }

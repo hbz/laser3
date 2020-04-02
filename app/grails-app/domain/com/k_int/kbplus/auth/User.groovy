@@ -12,6 +12,7 @@ class User {
     def contextService
     def yodaService
     def userService
+    def instAdmService
     def grailsApplication
 
   String username
@@ -203,6 +204,17 @@ class User {
             }
         }
         result
+    }
+
+    boolean isLastInstAdmin() {
+        boolean lia = false
+
+        affiliations.each { aff ->
+            if (instAdmService.isUserLastInstAdminForOrg(this, aff.org)) {
+                lia = true
+            }
+        }
+        lia
     }
 
     static String generateRandomPassword() {
