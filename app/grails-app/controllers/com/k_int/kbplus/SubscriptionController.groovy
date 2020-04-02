@@ -807,10 +807,10 @@ class SubscriptionController extends AbstractDebugController {
         List errorList = []
         if (result.subscriptionInstance) {
             EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}", contextService.USER_SCOPE)
-            Map<TitleInstancePackagePlatform,IssueEntitlement> addedTipps = [:]
+            Map<TitleInstance,IssueEntitlement> addedTipps = [:]
             result.subscriptionInstance.issueEntitlements.each { ie ->
-                if(ie instanceof IssueEntitlement)
-                    addedTipps[ie.tipp] = ie
+                if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
+                    addedTipps[ie.tipp.title] = ie
             }
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             def basequery = null;
@@ -964,17 +964,17 @@ class SubscriptionController extends AbstractDebugController {
                         //is title in LAS:eR?
                         //List tiObj = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.title ti join ti.ids identifiers where identifiers.identifier.value in :idCandidates',[idCandidates:idCandidates])
                         //log.debug(idCandidates)
-                        def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select ident from Identifier ident where ident.ns in :namespaces and ident.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
-                        if(tiObj) {
+                        Identifier id = Identifier.findByValueAndNsInList(idCandidate.value,idCandidate.namespaces)
+                        if(id && id.ti) {
                             //is title already added?
-                            if(addedTipps.get(tiObj)) {
+                            if(addedTipps.get(id.ti)) {
                                 errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${message(code:'subscription.details.addEntitlements.titleAlreadyAdded')}")
                             }
                             /*else if(!issueEntitlement) {
                                 errors += g.message([code:'subscription.details.addEntitlements.titleNotMatched',args:cols[0]])
                             }*/
                         }
-                        else if(!tiObj) {
+                        else if(!id) {
                             errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${message(code:'subscription.details.addEntitlements.titleNotInERMS')}")
                         }
                     }
@@ -2771,8 +2771,8 @@ class SubscriptionController extends AbstractDebugController {
             EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}", contextService.USER_SCOPE)
             Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
             if(!params.singleTitle) {
-                if(cache.get('checked')) {
-                    Map checked = cache.get('checked')
+                Map checked = cache.get('checked')
+                if(checked) {
                     checked.each { k,v ->
                         if(v == 'checked') {
                             try {
@@ -4089,13 +4089,13 @@ class SubscriptionController extends AbstractDebugController {
                             subMember.packages?.each { pkg ->
                                 def pkgOapls = pkg.oapls
                                 pkg.properties.oapls = null
+                                pkg.properties.pendingChangeConfig = null
                                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                 InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                 newSubscriptionPackage.subscription = newSubscription
 
                                 if(newSubscriptionPackage.save()){
                                     pkgOapls.each{ oapl ->
-
                                         def oaplProperties = oapl.properties
                                         oaplProperties.globalUID = null
                                         OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
@@ -4314,20 +4314,30 @@ class SubscriptionController extends AbstractDebugController {
                                 //Package
                                 baseSub.packages?.each { pkg ->
                                     def pkgOapls = pkg.oapls
+                                    Set<PendingChangeConfiguration> pkgPendingChangeConfig = pkg.pendingChangeConfig
                                     pkg.properties.oapls = null
+                                    pkg.properties.pendingChangeConfig = null
                                     SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                     InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                     newSubscriptionPackage.subscription = newSub
 
                                     if(newSubscriptionPackage.save()){
                                         pkgOapls.each{ oapl ->
-
                                             def oaplProperties = oapl.properties
                                             oaplProperties.globalUID = null
                                             OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                             InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                             newOrgAccessPointLink.subPkg = newSubscriptionPackage
                                             newOrgAccessPointLink.save(flush: true)
+                                        }
+                                        pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
+                                            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
+                                            if(newPcc) {
+                                                Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSub.class.name,baseSub.id,PendingChangeConfiguration.settingKeys)
+                                                auditables.each { audit ->
+                                                    AuditConfig.addConfig(newSub,audit.referenceField)
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -5333,13 +5343,21 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             }
                             pkgOapls.each{ oapl ->
-
                                 def oaplProperties = oapl.properties
                                 oaplProperties.globalUID = null
                                 OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                 InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                 newOrgAccessPointLink.subPkg = newSubscriptionPackage
                                 newOrgAccessPointLink.save()
+                            }
+                            pcc.each { PendingChangeConfiguration config ->
+                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
+                                if(newPcc) {
+                                    Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)
+                                    auditables.each { audit ->
+                                        AuditConfig.addConfig(newSubscriptionInstance,audit.referenceField)
+                                    }
+                                }
                             }
                         }
                     }
