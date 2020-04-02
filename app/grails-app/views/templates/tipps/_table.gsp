@@ -26,7 +26,7 @@
         <tr>
             <td>${counter++}</td>
             <td>
-                <semui:listIcon type="${tipp.title?.medium?.value}"/>
+                <semui:listIcon type="${tipp.title.medium?.value}"/>
                 <strong><g:link controller="title" action="show"
                                 id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 

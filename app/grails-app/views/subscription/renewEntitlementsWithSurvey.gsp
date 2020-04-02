@@ -8,9 +8,10 @@
 
 <body>
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}"/>
-    <semui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
+    <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
+    <semui:crumb message="issueEntitlementsSurvey.label"/>
+    <semui:crumb controller="subscription" action="index" id="${newSub.id}" class="active"
+                 text="${newSub.name}"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -32,22 +33,32 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
-<g:message code="issueEntitlementsSurvey.label" />: ${surveyConfig?.surveyInfo?.name}
+<br>
+
+
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
+${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}
+<semui:surveyStatus object="${surveyConfig.surveyInfo}"/>
 </h1>
 
-<g:render template="nav"/>
-
-%{--<g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id])}">
-    <g:render template="message"/>
-</g:if>--}%
-
-<%--<g:set var="counter" value="${offset + 1}"/>
-${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )--%>
+<br>
 
 <g:if test="${flash}">
     <semui:messages data="${flash}"/>
 </g:if>
+
+<div class="sixteen wide column">
+    <div class="two fields">
+
+        <div class="eight wide field" style="text-align: right;">
+            <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
+                    id="${surveyConfig?.id}"
+                    class="ui button">
+                <g:message code="surveyInfo.backToSurvey"/>
+            </g:link>
+        </div>
+    </div>
+</div>
 
 <g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber)?.finishDate != null}">
     <div class="ui icon positive message">
@@ -115,9 +126,49 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
     <div class="ui grid">
 
         <div class="row">
-            <g:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "source", surveyFunction: true, showPackage: true, showPlattform: true]}" />
-            <g:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "target", surveyFunction: true, showPackage: true, showPlattform: true]}" />
+
+            <div class="sixteen wide column">
+            <g:if test="${targetInfoMessage}">
+                <h3 class="ui header center aligned"><g:message code="${targetInfoMessage}"/></h3>
+            </g:if>
+
+            <g:if test="${sourceInfoMessage}">
+                <h3 class="ui header center aligned"><g:message code="${sourceInfoMessage}"/></h3>
+            </g:if>
+
+
+            <div class="ui horizontal segments">
+                <div class="ui segment center aligned">
+                    <h3><g:message code="renewEntitlementsWithSurvey.selectableTitles"/> (${num_ies_rows})</h3>
+                </div>
+
+                <div class="ui segment center aligned">
+                    <h3><g:message code="renewEntitlementsWithSurvey.currentEntitlements"/> (${countSelectedIEs})</h3>
+                </div>
+            </div>
+
+            <semui:form>
+                <g:message code="subscription"/>: <b><g:link action="show" id="${newSub?.id}">${newSub?.name}</g:link></b>
+                <br>
+                <br>
+                <g:message code="package"/>:
+
+                <div class="ui list">
+                    <g:each in="${newSub?.packages.sort { it?.pkg?.name }}" var="subPkg">
+                        <div class="item">
+                            <b>${subPkg?.pkg?.name}</b> (<g:message
+                                code="title.plural"/>: ${raw(subPkg.getIEandPackageSize())})
+                        </div>
+                    </g:each>
+                </div>
+            </semui:form>
+            </div>
+
+            <g:render template="/templates/survey/entitlementTableSurvey" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], showPackage: true, showPlattform: true]}" />
         </div>
+
+    </div>
+    </semui:form>
 
         <div class="sixteen wide column">
             <div class="two fields">
@@ -140,15 +191,19 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         </div>
 
 
-    </div>
+    <g:if test="${sourceIEs}">
+        <semui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}" max="${params.max}"
+                        total="${num_ies_rows}"/>
+    </g:if>
 
-    </semui:form>
 </g:form>
 
 </body>
 <r:script>
     $(document).ready(function() {
-        var iesToAdd = [], tippsToDelete = [];
+        var iesToAdd = [];
 
         $(".select-all").click(function() {
             var id = $(this).parents("table").attr("id");
@@ -163,55 +218,21 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             $("#"+id+" .bulkcheck").trigger("change");
         });
 
-        $("#source .titleCell").each(function(k) {
-            var v = $(this).height();
-            $("#target .titleCell").eq(k).height(v);
-        });
-
-        $("#source .bulkcheck").change(function() {
+        $("#surveyEntitlements .bulkcheck").change(function() {
             var index = $(this).parents("tr").attr("data-index");
-            var corresp = $("#target tr[data-index='"+index+"']");
             if(this.checked) {
-                if(corresp.attr("data-empty")) {
                     $("tr[data-index='"+index+"'").addClass("positive");
-                    if(iesToAdd.indexOf($(this).parents("tr").attr("data-ieId")) < 0)
-                        iesToAdd.push($(this).parents("tr").attr("data-ieId"));
-                }
-                else if(corresp.find(".bulkcheck:checked")) {
-                    var delIdx = tippsToDelete.indexOf($(this).parents("tr").attr("data-ieId"));
-                    if (~delIdx) tippsToDelete.slice(delIdx,1);
-                    $("tr[data-index='"+index+"'").removeClass("negative").addClass("positive");
-                    corresp.find(".bulkcheck:checked").prop("checked", false);
                     iesToAdd.push($(this).parents("tr").attr("data-ieId"));
-                }
             }
             else {
                 $("tr[data-index='"+index+"'").removeClass("positive");
                 var delIdx = iesToAdd.indexOf($(this).parents("tr").attr("data-ieId"));
-                if (~delIdx) iesToAdd.slice(delIdx,1);
-            }
-        });
-
-        $("#target .bulkcheck").change(function() {
-            var index = $(this).parents("tr").attr("data-index");
-            var corresp = $("#source tr[data-index='"+index+"']");
-            if(this.checked) {
-                var delIdx = iesToAdd.indexOf($(this).parents("tr").attr("data-ieId"));
-                if (~delIdx) iesToAdd.slice(delIdx,1);
-                $("tr[data-index='"+index+"'").removeClass("positive").addClass("negative");
-                corresp.find(".bulkcheck:checked").prop("checked", false);
-                tippsToDelete.push($(this).parents("tr").attr("data-ieId"));
-            }
-            else {
-                $("tr[data-index='"+index+"'").removeClass("negative");
-                var delIdx = tippsToDelete.indexOf($(this).parents("tr").attr("data-ieId"));
-                if (~delIdx) tippsToDelete.slice(delIdx,1);
+                if (~delIdx) iesToAdd.splice(delIdx,1);
             }
         });
 
         $("#renewEntitlements").submit(function(){
             $("#iesToAdd").val(iesToAdd.join(','));
-            $("#tippsToDelete").val(tippsToDelete.join(','));
         });
 
     });
