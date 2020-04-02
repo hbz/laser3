@@ -312,8 +312,17 @@ class OrganisationController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
+        //                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name || nsType == null)}
+        List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name)}
+                .list(sort: 'ns')
+                .sort { a, b ->
+            String aVal = a.getI10n('name') ?: a.ns
+            String bVal = b.getI10n('name') ?: b.ns
+            aVal.compareToIgnoreCase bVal
+        }
+        .collect{ it }
 
-        render template: '/templates/identifier/modal_create', model: [orgInstance: org]
+        render template: '/templates/identifier/modal_create', model: [orgInstance: org, nsList: nsList]
     }
 
     def editIdentifier(){
@@ -447,6 +456,7 @@ class OrganisationController extends AbstractDebugController {
 
         render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, allPlatforms: allPlatforms]
     }
+
     def editCustomerIdentifier(){
         log.debug("OrganisationController::editCustomerIdentifier ${params}")
         CustomerIdentifier customeridentifier = CustomerIdentifier.get(params.customeridentifier)
@@ -457,9 +467,8 @@ class OrganisationController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        List allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
 
-        render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, allPlatforms: allPlatforms, customeridentifier: customeridentifier]
+        render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, customeridentifier: customeridentifier]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
@@ -725,38 +734,11 @@ class OrganisationController extends AbstractDebugController {
             }
         }
 
-//        du.setBenchmark('identifier')
-//
-//        if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
-//
-//            boolean foundIsil = false
-//            boolean foundWibid = false
-//            boolean foundEZB = false
-//
-//            result.orgInstance.ids.each {ident ->
-//                if(ident.ns?.ns == 'ISIL') {
-//                    foundIsil = true
-//                }
-//                if(ident.ns?.ns == 'wibid') {
-//                    foundWibid = true
-//                }
-//                if(ident.ns?.ns == 'ezb') {
-//                    foundEZB = true
-//                }
-//            }
-//
-//            if(!foundIsil) {
-//                result.orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
-//            }
-//            if(!foundWibid) {
-//                result.orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
-//            }
-//            if(!foundEZB) {
-//                result.orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
-//            }
-//            if(!foundIsil || !foundWibid || !foundEZB)
-//                result.orgInstance.refresh()
-//        }
+        du.setBenchmark('identifier')
+
+        if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
+            result.orgInstance = createCoreIdentifiersIfNotExist(result.orgInstance)
+        }
 
         du.setBenchmark('createdBy and legallyObligedBy')
 
@@ -841,62 +823,7 @@ class OrganisationController extends AbstractDebugController {
         //waitAll(task_orgRoles, task_properties)
 
         if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
-
-            boolean foundIsil = false
-            boolean foundWibid = false
-            boolean foundEZB = false
-            boolean foundGRID = false
-            boolean foundDBS = false
-            boolean foundGND = false
-            boolean foundVAT = false
-
-            result.orgInstance.ids.each {ident ->
-                if(ident.ns?.ns == 'ISIL') {
-                    foundIsil = true
-                }
-                if(ident.ns?.ns == 'wibid') {
-                    foundWibid = true
-                }
-                if(ident.ns?.ns == 'ezb') {
-                    foundEZB = true
-                }
-                if(ident.ns?.ns == 'gridid') {
-                    foundGRID = true
-                }
-                if(ident.ns?.ns == 'dbsid') {
-                    foundDBS = true
-                }
-                if(ident.ns?.ns == 'gndnr') {
-                    foundGND = true
-                }
-                if(ident.ns?.ns == 'VAT') {
-                    foundVAT = true
-                }
-            }
-
-            if(!foundIsil) {
-                result.orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
-            }
-            if(!foundWibid) {
-                result.orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
-            }
-            if(!foundEZB) {
-                result.orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
-            }
-            if(!foundGRID) {
-                result.orgInstance.addOnlySpecialIdentifiers('gridid', 'Unknown')
-            }
-            if(!foundDBS) {
-                result.orgInstance.addOnlySpecialIdentifiers('dbsid', 'Unknown')
-            }
-            if(!foundGND) {
-                result.orgInstance.addOnlySpecialIdentifiers('gndnr', 'Unknown')
-            }
-            if(!foundVAT) {
-                result.orgInstance.addOnlySpecialIdentifiers('VAT', 'Unknown')
-            }
-            if(!foundIsil || !foundWibid || !foundEZB || !foundGRID || !foundDBS || !foundGND || !foundVAT)
-                result.orgInstance.refresh()
+            result.orgInstance = createCoreIdentifiersIfNotExist(result.orgInstance)
         }
 
 //------------------------orgSettings --------------------
@@ -978,6 +905,67 @@ class OrganisationController extends AbstractDebugController {
         result.benchMark = bm
 
         result
+    }
+    private Org createCoreIdentifiersIfNotExist(Org orgInstance){
+        if(!Combo.findByFromOrgAndType(orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in orgInstance.getallOrgTypeIds())){
+
+            boolean foundIsil = false
+            boolean foundWibid = false
+            boolean foundEZB = false
+            boolean foundGRID = false
+            boolean foundDBS = false
+            boolean foundGND = false
+            boolean foundVAT = false
+
+            orgInstance.ids.each {ident ->
+                if(ident.ns?.ns == 'ISIL') {
+                    foundIsil = true
+                }
+                if(ident.ns?.ns == 'wibid') {
+                    foundWibid = true
+                }
+                if(ident.ns?.ns == 'ezb') {
+                    foundEZB = true
+                }
+                if(ident.ns?.ns == 'gridid') {
+                    foundGRID = true
+                }
+                if(ident.ns?.ns == 'dbsid') {
+                    foundDBS = true
+                }
+                if(ident.ns?.ns == 'gndnr') {
+                    foundGND = true
+                }
+                if(ident.ns?.ns == 'VAT') {
+                    foundVAT = true
+                }
+            }
+
+            if(!foundIsil) {
+                orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
+            }
+            if(!foundWibid) {
+                orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
+            }
+            if(!foundEZB) {
+                orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
+            }
+            if(!foundGRID) {
+                orgInstance.addOnlySpecialIdentifiers('gridid', 'Unknown')
+            }
+            if(!foundDBS) {
+                orgInstance.addOnlySpecialIdentifiers('dbsid', 'Unknown')
+            }
+            if(!foundGND) {
+                orgInstance.addOnlySpecialIdentifiers('gndnr', 'Unknown')
+            }
+            if(!foundVAT) {
+                orgInstance.addOnlySpecialIdentifiers('VAT', 'Unknown')
+            }
+            if(!foundIsil || !foundWibid || !foundEZB || !foundGRID || !foundDBS || !foundGND || !foundVAT)
+                orgInstance.refresh()
+        }
+        orgInstance
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")

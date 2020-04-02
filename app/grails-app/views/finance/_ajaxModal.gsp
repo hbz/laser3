@@ -470,7 +470,7 @@
                                 alert("${message(code:'financials.newCosts.noSubscriptionError')}") //continue here: a confirm if the consortial user wants really to attach cost items to the parent subscription
                             }
                             else {
-                                if($("[name='newLicenseeTarget").val().indexOf('forParent') > -1) {
+                                if($("[name='newLicenseeTarget']").val() && $("[name='newLicenseeTarget']").val().indexOf('forParent') > -1) {
                                     if(confirm("${message(code:'financials.newCosts.confirmForParent')}")) $(this).unbind('submit').submit();
                                 }
                                 else $(this).unbind('submit').submit();
