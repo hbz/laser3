@@ -323,7 +323,7 @@
                                 </div>
                             </g:link>
                         </g:if>
-                        <g:if test="${surveyConfig && surveyConfig.type == 'Subscription' && surveyConfig.pickAndChoose}">
+                        <g:if test="${surveyConfig && surveyConfig.type == 'IssueEntitlementsSurvey' && surveyConfig.pickAndChoose}">
 
                             <g:set var="participantsTitleSurveyFinish"
                                    value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>

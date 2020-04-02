@@ -80,7 +80,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 }
                 else if(corresp.find(".bulkcheck:checked")) {
                     var delIdx = tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
-                    if (~delIdx) tippsToDelete.slice(delIdx,1);
+                    if (~delIdx) tippsToDelete.splice(delIdx,1);
                     $("tr[data-index='"+index+"'").removeClass("negative").addClass("positive");
                     corresp.find(".bulkcheck:checked").prop("checked", false);
                     tippsToAdd.push($(this).parents("tr").attr("data-gokbId"));
@@ -89,7 +89,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             else {
                 $("tr[data-index='"+index+"'").removeClass("positive");
                 var delIdx = tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) tippsToAdd.slice(delIdx,1);
+                if (~delIdx) tippsToAdd.splice(delIdx,1);
             }
         });
 
@@ -98,7 +98,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             var corresp = $("#source tr[data-index='"+index+"']");
             if(this.checked) {
                 var delIdx = tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) tippsToAdd.slice(delIdx,1);
+                if (~delIdx) tippsToAdd.splice(delIdx,1);
                 $("tr[data-index='"+index+"'").removeClass("positive").addClass("negative");
                 corresp.find(".bulkcheck:checked").prop("checked", false);
                 tippsToDelete.push($(this).parents("tr").attr("data-gokbId"));
@@ -106,7 +106,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             else {
                 $("tr[data-index='"+index+"'").removeClass("negative");
                 var delIdx = tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) tippsToDelete.slice(delIdx,1);
+                if (~delIdx) tippsToDelete.splice(delIdx,1);
             }
         });
 

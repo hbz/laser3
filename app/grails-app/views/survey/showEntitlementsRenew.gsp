@@ -30,7 +30,7 @@
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <semui:actionsDropdown>
-        <g:if test="${surveyOrg?.finishDate && surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED?.id}">
+        <g:if test="${surveyOrg?.finishDate && surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
             <semui:actionsDropdownItem controller="survey" action="openIssueEntitlementsSurveyAgain"
                                        params="[id: surveyConfig?.id, participant: participant?.id]"
                                        message="openIssueEntitlementsSurveyAgain.label"/>
@@ -42,7 +42,7 @@
                                        message="completeIssueEntitlementsSurvey.forParticipant.label"/>
         </g:if>
         <g:else>
-            <semui:actionsDropdownItemDisabled controller="survey"
+            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'renewEntitlementsWithSurvey.noCompleted')}" controller="survey"
                                                action="completeIssueEntitlementsSurveyforParticipant"
                                                message="completeIssueEntitlementsSurvey.forParticipant.label"/>
         </g:else>
@@ -134,7 +134,7 @@
                     <td class="titleCell">
                         <semui:ieAcceptStatusIcon status="${ie?.acceptStatus}"/>
 
-                        <semui:listIcon type="${tipp.title?.type?.value}"/>
+                        <semui:listIcon type="${ie.tipp.title.class.name}"/>
                         <strong><g:link controller="title" action="show"
                                         id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 

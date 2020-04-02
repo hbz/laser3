@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2317    02.01.2020  rc1.3       Moe     Feature     Titelverlängerung: Titelauswahl umstrukturieren
+
 2154    01.04.2020  rc1.3       Anja    Bug         Bugfix modaler Dialog lässt sich beim n-ten mal nicht mehr schließen
 
 2154    01.04.2020  rc1.3       Anja    Bug         automatisch Angelegte Identifikatoren ohne Text 'Unbekannt'

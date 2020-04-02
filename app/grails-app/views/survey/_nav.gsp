@@ -84,6 +84,8 @@
     </g:if>
     <g:else>
 
+        <semui:subNavItem controller="survey" action="show" params="${[id: params.id]}" message="surveyShow.label"/>
+
         <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyTitles"
                           params="${[id: params.id, surveyConfigID: surveyConfig?.id]}"
                           message="surveyTitles.label"/>

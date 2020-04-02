@@ -11,7 +11,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+
     <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
     <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
