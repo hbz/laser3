@@ -80,7 +80,7 @@
             <tr>
 
               <td>
-                  <semui:listIcon type="${tip?.title?.medium?.value}"/>
+                  <semui:listIcon type="${tip.title.medium?.value}"/>
                   <strong><g:link controller="myInstitution" action="tip" id="${tip.id}">${tip?.title?.title} ${message(code:'default.via')} ${tip?.provider?.name}</g:link></strong><br>
                   <g:link controller="title" action="show" id="${tip?.title?.id}">${message(code:'myinst.tipview.link_to_title')}</g:link>
               </td>
