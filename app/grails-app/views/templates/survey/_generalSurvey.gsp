@@ -261,6 +261,10 @@
                 <th>
                     <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
+                            <i class="question circle icon"></i>
+                        </span>
                     </g:if>
                     <g:else>
                         ${message(code: 'surveyResult.commentOnlyForParticipant')}

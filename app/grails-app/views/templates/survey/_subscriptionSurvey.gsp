@@ -381,14 +381,14 @@
                     <g:set var="costItemSurvey"
                            value="${surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrg(surveyOrg) : null}"/>
                     <g:set var="costItemsSub"
-                           value="${subscriptionInstance.costItems.findAll {
+                           value="${subscriptionInstance.costItems?.findAll {
                                it.costItemElement?.id == costItemSurvey?.costItemElement?.id
                            }}"/>
 
                     <%
                         // ERMS-1521 HOTFIX
                         if (!costItemsSub) {
-                            costItemsSub = subscriptionInstance.costItems.findAll {
+                            costItemsSub = subscriptionInstance.costItems?.findAll {
                                 it.costItemElement?.id == com.k_int.kbplus.RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)?.id
                             }
                         }
@@ -639,6 +639,10 @@
                 <th>
                     <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
+                            <i class="question circle icon"></i>
+                        </span>
                     </g:if>
                     <g:else>
                         ${message(code: 'surveyResult.commentOnlyForParticipant')}

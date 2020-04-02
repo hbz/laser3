@@ -153,11 +153,6 @@
                                                    number="${costItem?.costInBillingCurrency}"
                                                    minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                                    <div class="ui icon button la-popup-tooltip la-delay" id="costButton32"
-                                         data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                                         data-position="top center" data-variation="tiny">
-                                        <i class="calculator icon"></i>
-                                    </div>
 
                                     <g:select class="ui dropdown dk-width-auto" name="newCostCurrency2"
                                               title="${g.message(code: 'financials.addNew.currencyType')}"
@@ -188,13 +183,6 @@
 
                             <div class="two fields">
                                 <div class="field la-exchange-rate">
-                                    <label>${g.message(code: 'financials.newCosts.exchangeRate')}</label>
-                                    <input title="${g.message(code: 'financials.addNew.currencyRate')}" type="number"
-                                           class="disabled"
-                                           name="newCostCurrencyRate2" id="newCostCurrencyRate2"
-                                           placeholder="${g.message(code: 'financials.newCosts.exchangeRate')}"
-                                           value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001" readonly="readonly"/>
-
 
                                 </div><!-- .field -->
 
@@ -215,29 +203,6 @@
                                 </div><!-- .field -->
                             </div>
 
-                            <div class="two fields">
-                                <div class="field">
-                                    <label>${g.message(code: 'financials.newCosts.value')}</label>
-                                    <input title="${g.message(code: 'financials.addNew.LocalCurrency')}" type="text"
-                                           class="disabled"
-                                           name="newCostInLocalCurrency2" id="newCostInLocalCurrency2"
-                                           placeholder="${message(code: 'financials.newCosts.value')}"
-                                           value="<g:formatNumber
-                                                   number="${costItem?.costInLocalCurrency}"
-                                                   minFractionDigits="2" maxFractionDigits="2"/>" readonly="readonly"/>
-
-                                </div><!-- .field -->
-                                <div class="field">
-                                    <label><g:message code="financials.newCosts.finalSum"/></label>
-                                    <input title="<g:message code="financials.newCosts.finalSum"/>" type="text"
-                                           readonly="readonly"
-                                           name="newCostInLocalCurrencyAfterTax2" id="newCostInLocalCurrencyAfterTax2"
-                                           value="<g:formatNumber
-                                                   number="${costItem?.costInLocalCurrencyAfterTax}"
-                                                   minFractionDigits="2" maxFractionDigits="2"/>"/>
-                                </div><!-- .field -->
-                            </div>
-
                             <div class="field">
                                 <div class="ui checkbox">
                                     <label><g:message code="financials.newCosts.finalSumRounded"/></label>
@@ -249,6 +214,7 @@
                         </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
                     </div><!-- three fields -->
+                    <g:if test="${params.tab == 'selectedSubParticipants' }">
                     <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 
                     <div class="fields">
@@ -267,6 +233,7 @@
                             </div>
                         </fieldset>
                     </div>
+                    </g:if>
 
                 </div>
 
@@ -328,6 +295,7 @@
 
                         <g:render template="/templates/filter/orgFilterTable"
                                   model="[orgList       : surveyParticipantsHasNotAccess,
+                                          tmplShowCheckbox: true,
                                           tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
                                           tableID       : 'costTable'
                                   ]"/>
@@ -361,6 +329,7 @@
 
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : surveyParticipantsHasAccess,
+                                      tmplShowCheckbox: true,
                                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
                                       tableID       : 'costTable'
                               ]"/>
@@ -472,47 +441,7 @@ function addForAllSurveyCostItem(orgsIDs) {
 
     var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
-    $("#newCostInBillingCurrency2").change(function () {
-        var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR','Currency').id};
-        if ($("#newCostCurrency2").val() == currencyEUR) {
-            $("#costButton12").click();
-        }
-    });
 
-    $("#costButton12").click(function () {
-        if (!isError("#newCostInBillingCurrency2") && !isError("#newCostCurrencyRate2")) {
-            var input = $(this).siblings("input");
-            input.transition('glow');
-            var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency2").val());
-            input.val(convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate2").val()));
-
-            $(".la-account-currency").find(".field").removeClass("error");
-            calcTaxResults()
-        }
-    });
-    $("#costButton22").click(function () {
-        if (!isError("#newCostInLocalCurrency2") && !isError("#newCostInBillingCurrency2")) {
-            var input = $(this).siblings("input");
-            input.transition('glow');
-            var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency2").val());
-            var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency2").val());
-            input.val((parsedLocalCurrency / parsedBillingCurrency));
-
-            $(".la-account-currency").find(".field").removeClass("error");
-            calcTaxResults()
-        }
-    });
-    $("#costButton32").click(function () {
-        if (!isError("#newCostInLocalCurrency2") && !isError("#newCostCurrencyRate2")) {
-            var input = $(this).siblings("input");
-            input.transition('glow');
-            var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency2").val());
-            input.val(convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate2").val()));
-
-            $(".la-account-currency").find(".field").removeClass("error");
-            calcTaxResults()
-        }
-    });
     $("#newCostItemElement2").change(function () {
         if (typeof (costItemElementConfigurations[$(this).val()]) !== 'undefined')
             $("[name='ciec']").dropdown('set selected', costItemElementConfigurations[$(this).val()]);
@@ -538,63 +467,23 @@ function addForAllSurveyCostItem(orgsIDs) {
         var taxF = 1.0 + (0.01 * $("*[name=newTaxRate2]").val().split("§")[1]);
 
         var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency2").val());
-        var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency2").val());
+
 
         $('#newCostInBillingCurrencyAfterTax2').val(
             roundF ? Math.round(parsedBillingCurrency * taxF) : convertDouble(parsedBillingCurrency * taxF)
         );
-        $('#newCostInLocalCurrencyAfterTax2').val(
-            roundF ? Math.round(parsedLocalCurrency * taxF) : convertDouble(parsedLocalCurrency * taxF)
-        );
+
     };
 
-    var costElems = $("#newCostInLocalCurrency2, #newCostCurrencyRate2, #newCostInBillingCurrency2");
+    var costElems = $("#newCostInBillingCurrency2");
 
     costElems.on('change', function () {
-        checkValues();
         if ($("[name='newCostCurrency2']").val() != 0) {
             $("#newCostCurrency2").parent(".field").removeClass("error");
         } else {
             $("#newCostCurrency2").parent(".field").addClass("error");
         }
     });
-
-    /*    $("#surveyCostItemsBulk").submit(function (e) {
-            e.preventDefault();
-            if ($("[name='newCostCurrency2']").val() != 0) {
-                var valuesCorrect = checkValues();
-                if (valuesCorrect) {
-                    $("#newCostCurrency2").parent(".field").removeClass("error");
-                    if ($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
-                        alert("${message(code:'financials.newCosts.entitlementError')}");
-                else $(this).unbind('submit').submit();
-            } else {
-                alert("${message(code:'financials.newCosts.calculationError')}");
-            }
-        } else {
-            alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
-            $("#newCostCurrency2").parent(".field").addClass("error");
-        }
-    });*/
-
-    $("#newCostCurrency2").change(function () {
-        //console.log("event listener succeeded, picked value is: "+$(this).val());
-        if ($(this).val() === eurVal)
-            $("#newCostCurrencyRate2").val(1.0);
-        else $("#newCostCurrencyRate2").val(0.0);
-        $("#costButton12").click();
-    });
-
-
-    function checkValues() {
-        if (convertDouble($("#newCostInBillingCurrency2").val()) * $("#newCostCurrencyRate2").val() !== convertDouble($("#newCostInLocalCurrency2").val())) {
-            costElems.parent('.field').addClass('error');
-            return false;
-        } else {
-            costElems.parent('.field').removeClass('error');
-            return true;
-        }
-    }
 
     function convertDouble(input) {
         console.log("input: " + input + ", typeof: " + typeof (input))
