@@ -1240,7 +1240,14 @@ class FinanceService {
                     result.showCollectiveFunctions = true
                     result.editConf.showVisibilitySettings = true
                     result.subMembersLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
-                    result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo join s.instanceOf.orgRelations parent where oo.roleType in :subscrRoles and parent.org = :contextOrg order by sortname asc',[contextOrg:result.institution,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
+                    Set<Org> consMembers = Subscription.executeQuery(
+                            'select oo.org, oo.org.sortname as sortname from Subscription s ' +
+                                    'join s.instanceOf subC ' +
+                                    'join subC.orgRelations roleC ' +
+                                    'join s.orgRelations roleMC ' +
+                                    'join s.orgRelations oo ' +
+                                    'where roleC.org = :contextOrg and roleMC.roleType = :collectiveType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,collectiveType: OR_SUBSCRIPTION_COLLECTIVE,subscrRoles:OR_SUBSCRIBER_COLLECTIVE]).collect { row -> row[0]}
+                    //result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo join s.instanceOf.orgRelations parent where oo.roleType in :subscrRoles and parent.org = :contextOrg order by sortname asc',[contextOrg:result.institution,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                     editable = true
                 }
                 break
@@ -1273,7 +1280,7 @@ class FinanceService {
                 break
         }
         if(editable)
-            result.editable = accessService.checkPermAffiliationX("ORG_INST","INST_EDITOR","ROLE_ADMIN")
+            result.editable = accessService.checkPermAffiliationX("ORG_INST, ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")
         result.dataToDisplay = dataToDisplay
         //override default view to show if checked by pagination or from elsewhere
         if(params.showView){

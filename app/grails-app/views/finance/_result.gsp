@@ -40,29 +40,33 @@
                     <div data-tab="cons" class="ui bottom attached tab">
 
                         <br>
-                        <div class="field" style="text-align: right;">
-                            <button id="bulkCostItems-toggle"
-                                    class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
-                            <script>
-                                $('#bulkCostItems-toggle').on('click', function () {
-                                    $('#bulkCostItems').toggleClass('hidden')
-                                    if ($('#bulkCostItems').hasClass('hidden')) {
-                                        $(this).text("${g.message(code: 'financials.bulkCostItems.show')}")
-                                    } else {
-                                        $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
-                                    }
-                                })
-                            </script>
-                        </div>
-
-                            <g:form action="processCostItemsBulk" name="costItemsBulk" method="post" class="ui form">
-                            <div id="bulkCostItems" class="hidden">
-                                <g:render template="bulkCostItems"/>
+                        <g:if test="${editable}">
+                            <div class="field" style="text-align: right;">
+                                <button id="bulkCostItems-toggle"
+                                        class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
+                                <script>
+                                    $('#bulkCostItems-toggle').on('click', function () {
+                                        $('#bulkCostItems').toggleClass('hidden')
+                                        if ($('#bulkCostItems').hasClass('hidden')) {
+                                            $(this).text("${g.message(code: 'financials.bulkCostItems.show')}")
+                                        } else {
+                                            $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
+                                        }
+                                    })
+                                </script>
                             </div>
 
-                            <g:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
+                            <g:form action="processCostItemsBulk" name="costItemsBulk" method="post" class="ui form">
+                                <div id="bulkCostItems" class="hidden">
+                                    <g:render template="bulkCostItems"/>
+                                </div>
 
+                                <g:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
                             </g:form>
+                        </g:if>
+                        <g:else>
+                            <g:render template="result_tab_cons" model="[tmplShowCheckbox: false, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
+                        </g:else>
                     </div>
                 </g:if>
                 <g:if test="${view in ['coll','collAtSubscr']}">

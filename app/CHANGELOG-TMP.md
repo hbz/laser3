@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      02.04.2020  rc1.3       Andreas Bug         Sicherung der Kostenausschüttung gegen INST_EDITOR
+
+2307    02.04.2020  rc1.3       Andreas Bug         Rechteüberprüfung für Editable unvollständig
+
 2323    01.04.2020  rc1.3       Andreas Feature     Neuer zurückleitender Knopf "Teilnehmer" für Konsortien bei Löschen von Kindlizenzen eingeführt
 
 2322    01.04.2020  rc1.3       Andreas Bug         Vererbung von Merkmalen funktioniert jetzt wieder für Verträge
