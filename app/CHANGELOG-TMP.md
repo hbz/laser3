@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2325    02.04.2020  rc1.3       David   Bug         Profil nicht löschbar, falls einziger INST_ADM
+
 2317    02.04.2020  rc1.3       Moe     Feature     Titelverlängerung: Titelauswahl umstrukturieren
 
 --      02.04.2020  rc1.3       Andreas Bug         Sicherung der Kostenausschüttung gegen INST_EDITOR
