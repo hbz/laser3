@@ -51,10 +51,16 @@ class InstAdmService {
         else result = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_ADM")
         result
     }
-    boolean isLastAdminForOrg(Org orgToCheck, User usertoCheck){
-        Role role = Role.findByAuthority("INST_ADM")
-        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndFormalRoleAndStatus(orgToCheck, role, UserOrg.STATUS_APPROVED)
-        if(userOrgs && userOrgs.size() == 1 && userOrgs[0].user == usertoCheck) {
+
+    boolean isUserLastInstAdminForOrg(User user, Org org){
+
+        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndFormalRoleAndStatus(
+                org,
+                Role.findByAuthority("INST_ADM"),
+                UserOrg.STATUS_APPROVED
+        )
+
+        if (userOrgs.size() == 1 && userOrgs[0].user == user) {
             return  true
         }
         else {
