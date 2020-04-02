@@ -171,7 +171,7 @@
                                 </span>
                             </g:if>
 
-                            <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION?.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
+                            <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
                                       data-variation="tiny"
                                       data-content="${message(code: 'surveyResult.particiption.terminated')}">
@@ -305,7 +305,7 @@
                                 </span>
                             </g:if>
 
-                            <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION?.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
+                            <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
                                       data-variation="tiny"
                                       data-content="${message(code: 'surveyResult.particiption.terminated')}">

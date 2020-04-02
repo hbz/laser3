@@ -30,7 +30,7 @@
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <semui:actionsDropdown>
-        <g:if test="${surveyOrg?.finishDate && surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED?.id}">
+        <g:if test="${surveyOrg?.finishDate && surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
             <semui:actionsDropdownItem controller="survey" action="openIssueEntitlementsSurveyAgain"
                                        params="[id: surveyConfig?.id, participant: participant?.id]"
                                        message="openIssueEntitlementsSurveyAgain.label"/>
