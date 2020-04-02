@@ -93,7 +93,7 @@ class ApiLicense {
         Collection<Object> result = []
 
         List<License> available = License.executeQuery(
-                'SELECT lic FROM License lic JOIN lic.orgLinks oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
+                'SELECT DISTINCT(lic) FROM License lic JOIN lic.orgLinks oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
                 [
                         owner: owner,
                         roles: [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
