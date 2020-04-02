@@ -102,7 +102,7 @@
                     </div>
                 </div>
             </div>
-            <g:if test="${surveyInfo?.type == de.laser.helper.RDStore.SURVEY_TYPE_TITLE_SELECTION}">
+            <g:if test="${surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_TITLE_SELECTION}">
                 <g:set var="finish"
                        value="${com.k_int.kbplus.SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(surveyConfig).size()}"/>
                 <g:set var="total"
@@ -162,7 +162,6 @@
 
             <br>
             <g:if test="${surveyConfig}">
-
                 <g:if test="${surveyConfig.type == "Subscription"}">
 
                     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
@@ -171,6 +170,15 @@
                                                                 tasks: tasks,
                                                                 visibleOrgRelations: visibleOrgRelations,
                                                                 properties: properties]"/>
+                </g:if>
+
+                <g:if test="${surveyConfig.type == "IssueEntitlementsSurvey"}">
+
+                    <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
+                                                                                      subscriptionInstance: surveyConfig.subscription,
+                                                                                      tasks: tasks,
+                                                                                      visibleOrgRelations: visibleOrgRelations,
+                                                                                      ]"/>
                 </g:if>
 
                 <g:if test="${surveyConfig.type == "GeneralSurvey"}">

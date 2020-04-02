@@ -109,7 +109,7 @@ class TitleStreamService {
                 //publisher_name (no value?)
                 row.add(' ')
                 //publication_type
-                switch(entitlement?.tipp?.title?.type) {
+                switch(entitlement?.tipp?.title?.medium) {
                     case RDStore.TITLE_TYPE_JOURNAL: row.add('serial')
                         break
                     case RDStore.TITLE_TYPE_EBOOK: row.add('monograph')

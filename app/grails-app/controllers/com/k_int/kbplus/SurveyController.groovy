@@ -779,15 +779,13 @@ class SurveyController {
         result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status.id != RDStore.SURVEY_IN_PROCESSING.id) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo.status.id != RDStore.SURVEY_IN_PROCESSING.id) ? false : result.editable
 
-        result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
-
-        params.surveyConfigID = params.surveyConfigID ?: result?.surveyConfigs[0]?.id?.toString()
+        params.surveyConfigID = params.surveyConfigID ?: result.surveyConfigs[0].id?.toString()
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        def surveyOrgs = result.surveyConfig?.getSurveyOrgsIDs()
+        def surveyOrgs = result.surveyConfig.getSurveyOrgsIDs()
 
         result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
@@ -1143,13 +1141,12 @@ class SurveyController {
 
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
-        result.subscriptionInstance =  result.surveyConfig?.subscription
 
         result.subscriptionParticipant = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
 
-        result.ies = subscriptionService.getCurrentIssueEntitlements(result.subscriptionParticipant)
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscriptionParticipant)
 
-        def filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention(result.participant))}"
+        def filename = "renewEntitlements_${escapeService.escapeString(result.surveyConfig.subscription.dropdownNamingConvention(result.participant))}"
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -1178,26 +1175,40 @@ class SurveyController {
 
             ]
             List rows = []
-            result.ies?.each { ie ->
+            result.ies.each { ie ->
                 List row = []
-                row.add([field: ie?.tipp?.title?.title ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.editionStatement ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
+                row.add([field: ie.tipp.title.title ?: '', style:null])
+                if(ie.tipp.title instanceof BookInstance) {
+                    row.add([field: ie.tipp.title.volume ?: '', style: null])
+                    row.add([field: ie.tipp.title.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
+                    row.add([field: ie.tipp.title.editionStatement ?: '', style:null])
+                    row.add([field: ie.tipp.title.summaryOfContent ?: '', style:null])
+                }else{
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                }
+
 
                 def identifiers = []
-                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
-                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                ie.tipp.title.ids?.sort { it.ns.ns }.each{ ident ->
+                    identifiers << "${ident.ns.ns}: ${ident.value}"
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 
-                row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
-                row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
-                row.add([field: ie?.acceptStatus?.getI10n('value') ?: '', style:null])
+                if(ie.tipp.title instanceof BookInstance) {
+                    row.add([field: ie.tipp.title.dateFirstInPrint ? g.formatDate(date: ie.tipp.title.dateFirstInPrint, format: message(code: 'default.date.format.notime')) : '', style: null])
+                    row.add([field: ie.tipp.title.dateFirstOnline ? g.formatDate(date: ie.tipp.title.dateFirstOnline, format: message(code: 'default.date.format.notime')) : '', style: null])
+                }else{
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                }
 
-                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
-                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
+                row.add([field: ie.acceptStatus?.getI10n('value') ?: '', style:null])
+
+                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, type: 'currency', currencySymbol: ie.priceItem.listCurrency, currencyCode: ie.priceItem.listCurrency) : '', style:null])
+                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, type: 'currency', currencySymbol: ie.priceItem.localCurrency, currencyCode: ie.priceItem?.localCurrency) : '', style:null])
 
 
                 rows.add(row)
@@ -1217,6 +1228,63 @@ class SurveyController {
             }
         }
     }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def surveyTitlesSubscriber() {
+        Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+        result.editable = result.surveyInfo?.isEditable() ?: false
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.subscriptionInstance = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
+
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscriptionInstance)
+        result.iesListPriceSum = 0
+        result.ies?.each{
+            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it?.priceItem?.listPrice ? it?.priceItem?.listPrice : 0) : 0)
+        }
+
+
+        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscriptionInstance)
+        result.iesFixListPriceSum = 0
+        result.iesFix?.each{
+            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it?.priceItem?.listPrice ? it?.priceItem?.listPrice : 0) : 0)
+        }
+
+
+        result.ownerId = result.surveyConfig.surveyInfo.owner.id ?: null
+
+        if(result.subscriptionInstance) {
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance?.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it.org.sortname }
+        }
+
+        result
+
+    }
+
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
@@ -1827,8 +1895,11 @@ class SurveyController {
             flash.message = g.message(code: "endSurvey.successfully")
         }
 
-        redirect action: 'renewalWithSurvey', params:[surveyConfigID: result.surveyConfig?.id, id: result.surveyInfo?.id]
-
+        if(result.surveyConfig && result.surveyConfig.subSurveyUseForTransfer) {
+            redirect action: 'renewalWithSurvey', params: [surveyConfigID: result.surveyConfig.id, id: result.surveyInfo.id]
+        }else{
+            redirect(uri: request.getHeader('referer'))
+        }
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
@@ -3461,7 +3532,7 @@ class SurveyController {
         result.selectedProperty
         result.properties
         if(params.tab == 'surveyProperties') {
-            result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty.findAll{it.owner == null}
+            result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty.findAll{it.tenant == null}
             result.properties -= RDStore.SURVEY_PROPERTY_PARTICIPATION
             result.properties -= RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
             result.properties -= RDStore.SURVEY_PROPERTY_MULTI_YEAR_3

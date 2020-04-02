@@ -8,8 +8,8 @@
 
 <body>
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
+    <semui:crumb message="issueEntitlementsSurvey.label"/>
     <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
     <semui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
@@ -91,7 +91,7 @@
                     <td class="titleCell">
                         <semui:ieAcceptStatusIcon status="${ie?.acceptStatus}"/>
 
-                        <semui:listIcon type="${tipp.title?.type?.value}"/>
+                        <semui:listIcon type="${tipp.title?.class.name}"/>
                         <strong><g:link controller="title" action="show"
                                         id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 

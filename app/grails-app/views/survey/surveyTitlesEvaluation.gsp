@@ -75,11 +75,13 @@
                            }}"/>
 
                     <div class="four wide column">
+                    <g:if test="${surveyParticipantsHasAccess}">
                         <g:link data-orgIdList="${(surveyParticipantsHasAccess?.id).join(',')}"
                                 data-targetId="copyEmailaddresses_ajaxModal2"
                                 class="ui icon button right floated trigger-modal">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                         </g:link>
+                    </g:if>
                     </div>
 
                     <br>
@@ -137,7 +139,7 @@
                                 </td>
                                 <td>
 
-                                    <g:link action="showEntitlementsRenew"
+                                    <g:link action="surveyTitlesSubscriber"
                                             id="${surveyConfig?.id}" params="[participant: participant?.id]"
                                             class="ui icon button"><i
                                             class="write icon"></i>
@@ -156,11 +158,13 @@
                     <g:set var="surveyParticipantsHasNotAccess" value="${participantsFinish.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
                     <div class="four wide column">
+                    <g:if test="${surveyParticipantsHasNotAccess}">
                         <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.id).join(',')}"
                                 data-targetId="copyEmailaddresses_ajaxModal3"
                                 class="ui icon button right floated trigger-modal">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                         </g:link>
+                    </g:if>
                     </div>
 
                     <br>
@@ -214,7 +218,7 @@
                                 </td>
                                 <td>
 
-                                    <g:link action="showEntitlementsRenew"
+                                    <g:link action="surveyTitlesSubscriber"
                                             id="${surveyConfig?.id}" params="[participant: participant?.id]"
                                             class="ui icon button"><i
                                             class="write icon"></i>
@@ -247,11 +251,13 @@
                        }}"/>
 
                 <div class="four wide column">
+                <g:if test="${surveyParticipantsHasAccess}">
                     <g:link data-orgIdList="${(surveyParticipantsHasAccess?.id).join(',')}"
                             data-targetId="copyEmailaddresses_ajaxModal4"
                             class="ui icon button right floated trigger-modal">
                         <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                     </g:link>
+                </g:if>
                 </div>
 
                 <br>
@@ -308,7 +314,7 @@
                             </td>
                             <td>
 
-                                <g:link action="showEntitlementsRenew"
+                                <g:link action="surveyTitlesSubscriber"
                                         id="${surveyConfig?.id}" params="[participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
@@ -327,11 +333,13 @@
                 <g:set var="surveyParticipantsHasNotAccess" value="${participantsNotFinish.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
                 <div class="four wide column">
+                <g:if test="${surveyParticipantsHasNotAccess}">
                     <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.id).join(',')}"
                             data-targetId="copyEmailaddresses_ajaxModal5"
                             class="ui icon button right floated trigger-modal">
                         <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                     </g:link>
+                </g:if>
                 </div>
 
                 <br>
@@ -385,7 +393,7 @@
                             </td>
                             <td>
 
-                                <g:link action="showEntitlementsRenew"
+                                <g:link action="surveyTitlesSubscriber"
                                         id="${surveyConfig?.id}" params="[participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
@@ -418,11 +426,13 @@
                        }}"/>
 
                 <div class="four wide column">
+                <g:if test="${surveyParticipantsHasAccess}">
                     <g:link data-orgIdList="${(surveyParticipantsHasAccess?.id).join(',')}"
                             data-targetId="copyEmailaddresses_ajaxModal6"
                             class="ui icon button right floated trigger-modal">
                         <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                     </g:link>
+                </g:if>
                 </div>
 
                 <br>
@@ -479,7 +489,7 @@
                             </td>
                             <td>
 
-                                <g:link action="showEntitlementsRenew"
+                                <g:link action="surveyTitlesSubscriber"
                                         id="${surveyConfig?.id}" params="[participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
@@ -498,11 +508,13 @@
                 <g:set var="surveyParticipantsHasNotAccess" value="${participants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
                 <div class="four wide column">
+                <g:if test="${surveyParticipantsHasNotAccess}">
                     <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.id).join(',')}"
                             data-targetId="copyEmailaddresses_ajaxModal7"
                             class="ui icon button right floated trigger-modal">
                         <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                     </g:link>
+                </g:if>
                 </div>
 
                 <br>
@@ -556,7 +568,7 @@
                             </td>
                             <td>
 
-                                <g:link action="showEntitlementsRenew"
+                                <g:link action="surveyTitlesSubscriber"
                                         id="${surveyConfig?.id}" params="[participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>

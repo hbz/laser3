@@ -42,7 +42,7 @@
                                        message="completeIssueEntitlementsSurvey.forParticipant.label"/>
         </g:if>
         <g:else>
-            <semui:actionsDropdownItemDisabled controller="survey"
+            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'renewEntitlementsWithSurvey.noCompleted')}" controller="survey"
                                                action="completeIssueEntitlementsSurveyforParticipant"
                                                message="completeIssueEntitlementsSurvey.forParticipant.label"/>
         </g:else>
@@ -134,7 +134,7 @@
                     <td class="titleCell">
                         <semui:ieAcceptStatusIcon status="${ie?.acceptStatus}"/>
 
-                        <semui:listIcon type="${tipp.title?.type?.value}"/>
+                        <semui:listIcon type="${ie.tipp.title.class.name}"/>
                         <strong><g:link controller="title" action="show"
                                         id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 

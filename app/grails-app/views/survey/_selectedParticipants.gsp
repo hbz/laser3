@@ -20,11 +20,13 @@
            value="${selectedParticipants?.findAll{ it?.hasAccessOrg() }?.sort{ it?.sortname }}"/>
 
     <div class="four wide column">
+    <g:if test="${surveyParticipantsHasAccess}">
         <g:link data-orgIdList="${(surveyParticipantsHasAccess?.id)?.join(',')}"
                 data-targetId="copyEmailaddresses_ajaxModal4"
                 class="ui icon button right floated trigger-modal">
             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
         </g:link>
+    </g:if>
     </div>
     <br>
     <br>
@@ -42,11 +44,13 @@
            value="${selectedParticipants.findAll{ !it?.hasAccessOrg() }.sort{ it?.sortname }}"/>
 
     <div class="four wide column">
+    <g:if test="${surveyParticipantsHasNotAccess}">
         <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.id)?.join(',')}"
                 data-targetId="copyEmailaddresses_ajaxModal5"
                 class="ui icon button right floated trigger-modal">
             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
         </g:link>
+    </g:if>
     </div>
 
     <br>
