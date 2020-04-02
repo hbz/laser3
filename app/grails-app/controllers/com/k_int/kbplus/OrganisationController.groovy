@@ -402,7 +402,7 @@ class OrganisationController extends AbstractDebugController {
             return
         }
         if ( ! params.value){
-            flash.error = message(code: 'identifier.edit.err.missingvalue', args: [identifier?.ns.getI10n('name') ?: identifier.ns.ns])
+            flash.error = message(code: 'identifier.edit.err.missingvalue', args: [identifier.ns?.getI10n('name') ?: identifier.ns?.ns])
             redirect(url: request.getHeader('referer'))
             return
         }
