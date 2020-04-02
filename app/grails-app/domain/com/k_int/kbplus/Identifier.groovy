@@ -320,21 +320,17 @@ class Identifier {
 
     @Transient
     def afterInsert = {
-        if(this.ns?.ns in ['wibid','ezb', 'gridid', 'dbsid', 'gndnr', 'VAT']) {
-            if(this.value == 'Unknown') {
+        if(this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
+            if(this.value == IdentifierNamespace.UNKNOWN) {
                 this.value = ''
                 this.save()
             }
         }
 
-        if(this.ns?.ns == 'ISIL')
+        if(this.ns?.ns == IdentifierNamespace.ISIL)
         {
-            if(this.value == 'Unknown')
-            {
-                this.value = ''
-                this.save()
-            }
-            else if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')
+            if( (this.value != IdentifierNamespace.UNKNOWN) &&
+                    ((!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')))
             {
                 this.value = 'DE-'+this.value.trim()
             }
