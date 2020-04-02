@@ -71,7 +71,12 @@
                     </g:if>
                 </th>
             </g:each>
-            <th>${message(code: 'surveyResult.commentOnlyForOwner')}</th>
+            <th>${message(code: 'surveyResult.commentOnlyForOwner')}
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
+                    <i class="question circle icon"></i>
+                </span>
+            </th>
         </tr>
         </thead>
         <g:each in="${surveyParticipantsHasAccess.groupBy { it?.participant.id }}" var="result" status="i">
@@ -242,7 +247,11 @@
                     </g:if>
                 </th>
             </g:each>
-            <th>${message(code: 'surveyResult.commentOnlyForOwner')}</th>
+            <th>${message(code: 'surveyResult.commentOnlyForOwner')}
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
+                    <i class="question circle icon"></i>
+                </span></th>
         </tr>
         </thead>
         <g:each in="${surveyParticipantsHasNotAccess.groupBy { it?.participant.id }}" var="result" status="i">
