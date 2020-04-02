@@ -5,7 +5,6 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.DeletionService
-import de.laser.helper.DebugAnnotation
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -118,32 +117,6 @@ class ProfileController {
         }
 
         redirect(action: "index")
-    }
-
-    @Secured(['ROLE_USER'])
-    def processDeleteUser() {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-
-        String name = result.user.getDisplayName()
-        boolean isLastAdminForOrg = false
-
-        result.user.affiliations.each { aff ->
-            if(aff.status == UserOrg.STATUS_APPROVED) {
-                if (instAdmService.isLastAdminForOrg(aff.org, result.user)) {
-                    isLastAdminForOrg = true
-                }
-            }
-        }
-
-        if (!isLastAdminForOrg) {
-            result = deletionService.deleteUser(result.user, User.findByUsername('anonymous'), false)
-            redirect(controller: 'logout', action: 'index')
-        }else{
-            flash.error = message(code:'user.affiliation.lastAdminForOrg', args: [name])
-            redirect(action: "index")
-        }
-
     }
 
     @Secured(['ROLE_USER'])

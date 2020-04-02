@@ -4,6 +4,14 @@
 
 2317    02.01.2020  rc1.3       Moe     Feature     Titelverlängerung: Titelauswahl umstrukturieren
 
+2154    01.04.2020  rc1.3       Anja    Bug         Bugfix modaler Dialog lässt sich beim n-ten mal nicht mehr schließen
+
+2154    01.04.2020  rc1.3       Anja    Bug         automatisch Angelegte Identifikatoren ohne Text 'Unbekannt'
+
+2154    01.04.2020  rc1.3       Anja    Bug         Leere Identifikatoren werden ohne URL-Link angezeigt
+
+2154    01.04.2020  rc1.3       Anja    Bug         Sortierung Kundennummen
+
 2323    01.04.2020  rc1.3       Andreas Feature     Neuer zurückleitender Knopf "Teilnehmer" für Konsortien bei Löschen von Kindlizenzen eingeführt
 
 2322    01.04.2020  rc1.3       Andreas Bug         Vererbung von Merkmalen funktioniert jetzt wieder für Verträge
