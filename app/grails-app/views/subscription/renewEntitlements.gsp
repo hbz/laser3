@@ -106,7 +106,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             else {
                 $("tr[data-index='"+index+"'").removeClass("negative");
                 var delIdx = tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) tippsToDelete.slpice(delIdx,1);
+                if (~delIdx) tippsToDelete.splice(delIdx,1);
             }
         });
 
