@@ -70,6 +70,18 @@
                         <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
 
                     </dl>
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.url.label')}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"/>
+                        <g:if test="${surveyConfig.url}">
+                            <semui:linkIcon href="${surveyConfig.url}"/>
+                        </g:if>
+                            <br/>&nbsp<br/>&nbsp<br/>
+                        </dd>
+
+                    </dl>
 
                     <br>
 
@@ -109,6 +121,22 @@
                             </dt>
                             <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
                                                  overwriteEditable="${false}"/></dd>
+
+                        </dl>
+                    </g:if>
+
+                    <g:if test="${surveyConfig.url}">
+                        <dl>
+                            <dt class="control-label">
+                                ${message(code: 'surveyConfig.url.label')}
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"
+                                                 overwriteEditable="${false}"/>
+
+                                <semui:linkIcon href="${surveyConfig.url}"/>
+
+                                <br/>&nbsp<br/>&nbsp<br/>
+                            </dd>
 
                         </dl>
                     </g:if>
@@ -188,27 +216,22 @@
                             <div class="column">
                                 <dl>
                                     <dt class="control-label">${message(code: 'default.status.label')}</dt>
-                                    <dd>${subscriptionInstance.status.getI10n('value')}</dd>
+                                    <dd>${subscriptionInstance.status?.getI10n('value')}</dd>
                                     <dd><semui:auditInfo auditable="[subscriptionInstance, 'status']"/></dd>
                                 </dl>
                                 <dl>
-                                    <dt class="control-label">${message(code: 'subscription.type.label')}</dt>
-                                    <dd>${subscriptionInstance.type.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscriptionInstance, 'type']"/></dd>
-                                </dl>
-                                <dl>
                                     <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
-                                    <dd>${subscriptionInstance.kind.getI10n('value')}</dd>
+                                    <dd>${subscriptionInstance.kind?.getI10n('value')}</dd>
                                     <dd><semui:auditInfo auditable="[subscriptionInstance, 'kind']"/></dd>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
-                                    <dd>${subscriptionInstance.form.getI10n('value')}</dd>
+                                    <dd>${subscriptionInstance.form?.getI10n('value')}</dd>
                                     <dd><semui:auditInfo auditable="[subscriptionInstance, 'form']"/></dd>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
-                                    <dd>${subscriptionInstance.resource.getI10n('value')}</dd>
+                                    <dd>${subscriptionInstance.resource?.getI10n('value')}</dd>
                                     <dd><semui:auditInfo auditable="[subscriptionInstance, 'resource']"/></dd>
                                 </dl>
                                 <dl>
@@ -388,13 +411,13 @@
                             <td>
                                 <g:if test="${costItemsSub}">
                                     <g:each in="${costItemsSub}" var="costItemSub">
-                                        ${costItemSub.costItemElement.getI10n('value')}
+                                        ${costItemSub.costItemElement?.getI10n('value')}
                                         <b><g:formatNumber
                                                 number="${costItemSub.costInBillingCurrency}"
                                                 minFractionDigits="2" maxFractionDigits="2"
                                                 type="number"/></b>
 
-                                        ${(costItemSub.billingCurrency.getI10n('value').split('-')).first()}
+                                        ${(costItemSub.billingCurrency?.getI10n('value').split('-')).first()}
 
                                         <g:set var="oldCostItem"
                                                value="${costItemSub.costInBillingCurrency ?: 0.0}"/>
@@ -409,12 +432,12 @@
                             </td>
                             <td>
                                 <g:if test="${costItemSurvey}">
-                                    ${costItemSurvey.costItemElement.getI10n('value')}
+                                    ${costItemSurvey.costItemElement?.getI10n('value')}
                                     <b><g:formatNumber
                                             number="${costItemSurvey.costInBillingCurrency}"
                                             minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
-                                    ${(costItemSurvey.billingCurrency.getI10n('value').split('-')).first()}
+                                    ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
 
                                     <g:set var="newCostItem"
                                            value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>

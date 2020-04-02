@@ -8,35 +8,39 @@
 
         <g:hiddenField name="orgid" value="${orgInstance?.id}"/>
         <g:if test="${identifier}">
-            <g:hiddenField name="identifierId" value="${identifier?.id}"/>
+            <g:hiddenField name="identifierId" value="${identifier.id}"/>
         </g:if>
 
         <div class="field fieldcontain">
             <label for="namespace">${message(code: 'identifier.namespace.label')}:</label>
-            <%
-//                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name || nsType == null)}
-                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name)}
-                        .list(sort: 'ns')
-                        .sort { a, b ->
-                    String aVal = a.getI10n('name') ?: a.ns
-                    String bVal = b.getI10n('name') ?: b.ns
-                    aVal.compareToIgnoreCase bVal
-                }
-                .collect{ it }
-            %>
-            <g:select id="namespace" name="ns.id"
-                      from="${nsList}"
-                      optionKey="id"
-                      required=""
-                      optionValue="${{ it.getI10n('name') ?: it.ns }}"
-                      value="${identifier?.ns?.id}"
-                      class="ui search dropdown"/>
-        </div>
+            <g:if test="${identifier}">
+                <input type="text" id="namespace" name="ns.id" value="${identifier.ns.getI10n('name') ?: identifier.ns.ns}" disabled/>
+            </g:if>
+            <g:else>
+                <%
+    //                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name || nsType == null)}
+                    List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name)}
+                            .list(sort: 'ns')
+                            .sort { a, b ->
+                        String aVal = a.getI10n('name') ?: a.ns
+                        String bVal = b.getI10n('name') ?: b.ns
+                        aVal.compareToIgnoreCase bVal
+                    }
+                    .collect{ it }
+                %>
+                <g:select id="namespace" name="ns.id"
+                          from="${nsList}"
+                          optionKey="id"
+                          required=""
+                          optionValue="${{ it.getI10n('name') ?: it.ns }}"
+                          class="ui search dropdown"/>
+            </g:else>
+       </div>
 
         <div class="field fieldcontain">
             <label for="value">${message(code: 'default.identifier.label')}:</label>
 
-            <input type="text" id="value" name="value" value="${identifier?.value}"/>
+            <input type="text" id="value" name="value" value="${identifier?.value}" required/>
         </div>
 
         <div class="field fieldcontain">

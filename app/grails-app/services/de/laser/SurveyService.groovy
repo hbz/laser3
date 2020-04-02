@@ -304,7 +304,7 @@ class SurveyService {
                         row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
 
                         row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
-                        row.add([field: subscription?.type?.getI10n("value") ?: '', style: null])
+                        row.add([field: subscription?.kind?.getI10n("value") ?: '', style: null])
                         row.add([field: subscription?.form?.getI10n("value") ?: '', style: null])
                         row.add([field: subscription?.resource?.getI10n("value") ?: '', style: null])
                         row.add([field: subscription?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
@@ -367,7 +367,7 @@ class SurveyService {
                     }
                     row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
                     row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
-                    row.add([field: subscription?.type?.getI10n("value") ?: '', style: null])
+                    row.add([field: subscription?.kind?.getI10n("value") ?: '', style: null])
                     row.add([field: subscription?.form?.getI10n("value") ?: '', style: null])
                     row.add([field: subscription?.resource?.getI10n("value") ?: '', style: null])
                     row.add([field: subscription?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])

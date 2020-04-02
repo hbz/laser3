@@ -360,7 +360,7 @@ class OrganisationController extends AbstractDebugController {
     def processCreateCustomerIdentifier(){
         log.debug("OrganisationController::processCreateCustomerIdentifier ${params}")
         Org org   = params.orgid ? Org.get(params.orgid) : null
-        if ( ! (org && params.addCIPlatform && params.value)){
+        if ( ! (org && params.addCIPlatform)){
             flash.error = message(code: 'menu.admin.error')
             redirect(url: request.getHeader('referer'))
             return
@@ -368,6 +368,12 @@ class OrganisationController extends AbstractDebugController {
         Platform plt = Platform.get(params.addCIPlatform)
         if (!plt){
             flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.provider.platform.label'), params.addCIPlatform])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if ( ! params.value){
+            String p = plt.org.name + (plt.org.sortname ? " (${plt.org.sortname})" : '') + ' : ' + plt.name
+            flash.error = message(code: 'org.customerIdentifier.create.err.missingvalue', args: [p])
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -389,22 +395,18 @@ class OrganisationController extends AbstractDebugController {
 
     def processEditIdentifier(){
         log.debug("OrganisationController::processEditIdentifier ${params}")
-        Org org   = params.orgid ? Org.get(params.orgid) : null
         Identifier identifier   = Identifier.get(params.identifierId)
-        if ( ! (org && identifier)){
+        if ( ! identifier){
             flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId])
             redirect(url: request.getHeader('referer'))
             return
         }
-        IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
-        if (!namespace){
-            flash.error = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+        if ( ! params.value){
+            flash.error = message(code: 'identifier.edit.err.missingvalue', args: [identifier.ns?.getI10n('name') ?: identifier.ns?.ns])
             redirect(url: request.getHeader('referer'))
             return
         }
-        if (params.value) {
-            identifier.value = params.value
-        }
+        identifier.value = params.value.trim()
         identifier.note = params.note?.trim()
         identifier.save()
 
@@ -412,23 +414,20 @@ class OrganisationController extends AbstractDebugController {
     }
     def processEditCustomerIdentifier(){
         log.debug("OrganisationController::processEditIdentifier ${params}")
-        Org org   = params.orgid ? Org.get(params.orgid) : null
         CustomerIdentifier customeridentifier   = CustomerIdentifier.get(params.customeridentifier)
-        if ( ! (org && customeridentifier)){
+        if ( ! customeridentifier){
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId])
             redirect(url: request.getHeader('referer'))
             return
         }
-        Platform plt = Platform.get(params.addCIPlatform)
-        if (!plt){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+        if ( ! params.value){
+            Platform plt = customeridentifier.platform
+            String p = plt.org.name + (plt.org.sortname ? " (${plt.org.sortname})" : '') + ' : ' + plt.name
+            flash.error = message(code: 'org.customerIdentifier.edit.err.missingvalue', args: [p])
             redirect(url: request.getHeader('referer'))
             return
         }
-        customeridentifier.platform = plt
-        if (params.value) {
-            customeridentifier.value = params.value
-        }
+        customeridentifier.value = params.value
         customeridentifier.note = params.note?.trim()
         customeridentifier.save()
 
@@ -609,22 +608,29 @@ class OrganisationController extends AbstractDebugController {
     Map findOrganisationMatches() {
         Map memberMap = [:]
         RefdataValue comboType
-        if(accessService.checkPerm('ORG_CONSORTIUM'))
+
+        if (accessService.checkPerm('ORG_CONSORTIUM')) {
             comboType = COMBO_TYPE_CONSORTIUM
-        else if(accessService.checkPerm('ORG_INST_COLLECTIVE'))
+        }
+        else if (accessService.checkPerm('ORG_INST_COLLECTIVE')) {
             comboType = COMBO_TYPE_DEPARTMENT
+        }
+
         Combo.findAllByType(comboType).each { lObj ->
             Combo link = (Combo) lObj
             List members = memberMap.get(link.fromOrg.id)
-            if(!members)
+            if(!members) {
                 members = [link.toOrg.id]
-            else members << link.toOrg.id
+            } else {
+                members << link.toOrg.id
+            }
             memberMap.put(link.fromOrg.id,members)
         }
-        Map result=[institution:contextService.org,organisationMatches:[],members:memberMap,comboType:comboType]
+
+        Map result = [institution:contextService.org,organisationMatches:[],members:memberMap,comboType:comboType]
         //searching members for consortium, i.e. the context org is a consortium
-        if(comboType == COMBO_TYPE_CONSORTIUM) {
-            if ( params.proposedOrganisation ) {
+        if (comboType == COMBO_TYPE_CONSORTIUM) {
+            if (params.proposedOrganisation) {
                 result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName) ",
                         [institution: OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
             }
@@ -634,12 +640,13 @@ class OrganisationController extends AbstractDebugController {
             }
         }
         //searching departments of the institution, i.e. the context org is an institution
-        else if(comboType == COMBO_TYPE_DEPARTMENT) {
-            if(params.proposedOrganisation) {
+        else if (comboType == COMBO_TYPE_DEPARTMENT) {
+            if (params.proposedOrganisation) {
                 result.organisationMatches.addAll(Org.executeQuery("select c.fromOrg from Combo c join c.fromOrg o where c.toOrg = :contextOrg and c.type = :department and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName)",
                         [department: comboType, contextOrg: contextService.org, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
             }
         }
+
         result
     }
 
@@ -941,7 +948,7 @@ class OrganisationController extends AbstractDebugController {
             result.settings.addAll(allSettings.findAll { it.key in ownerSet })
             result.settings.addAll(allSettings.findAll { it.key in accessSet })
             result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
+            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
         }
         else if (inContextOrg) {
             log.debug( 'settings for own org')
@@ -950,11 +957,11 @@ class OrganisationController extends AbstractDebugController {
             if (org.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
+                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
             }
             else if (['ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
+                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
             }
             else if (['FAKE'].contains(org.getCustomerType())) {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
@@ -962,7 +969,7 @@ class OrganisationController extends AbstractDebugController {
         }
         else if (isComboRelated){
             log.debug( 'settings for combo related org: consortia or collective')
-            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
+            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
         }
         du.setBenchmark('allPlatforms')
 
