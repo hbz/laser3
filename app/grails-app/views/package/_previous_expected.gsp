@@ -93,7 +93,7 @@
                    <g:link controller="title" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span>
-                    <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span>
+                    <span>${message(code:'title.type.label')}: ${t.title.medium.getI10n('value')}</span>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
                    <g:if test="${t.hostPlatformURL != null}">

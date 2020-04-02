@@ -50,33 +50,35 @@
 
 <br>
 
-<g:if test="${surveyConfigs}">
+<g:if test="${surveyConfig}">
     <div class="ui grid">
         <div class="sixteen wide stretched column">
             <div class="ui top attached tabular menu">
 
-                <g:if test="${surveyConfig?.type == 'Subscription'}">
+                <g:if test="${surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey'}">
                     <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                             controller="survey" action="surveyParticipants"
-                            id="${surveyConfig?.surveyInfo?.id}"
-                            params="[surveyConfigID: surveyConfig?.id, tab: 'selectedSubParticipants']">
+                            id="${surveyConfig.surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id, tab: 'selectedSubParticipants']">
                         ${message(code: 'surveyParticipants.selectedSubParticipants')}
                         <div class="ui floating circular label">${selectedSubParticipants.size() ?: 0}</div>
                     </g:link>
                 </g:if>
 
-                <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                        controller="survey" action="surveyParticipants"
-                        id="${surveyConfig?.surveyInfo?.id}"
-                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedParticipants']">
-                    ${surveyConfig?.type == 'Subscription' ? message(code: 'surveyParticipants.selectedParticipants') : message(code: 'surveyParticipants.label')}
-                    <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></g:link>
+                <g:if test="${surveyConfig.type != 'IssueEntitlementsSurvey'}">
+                    <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
+                            controller="survey" action="surveyParticipants"
+                            id="${surveyConfig.surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
+                        ${surveyConfig.type == 'Subscription' ? message(code: 'surveyParticipants.selectedParticipants') : message(code: 'surveyParticipants.label')}
+                        <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></g:link>
+                </g:if>
 
                 <g:if test="${editable}">
                     <g:link class="item ${params.tab == 'consortiaMembers' ? 'active' : ''}"
                             controller="survey" action="surveyParticipants"
-                            id="${surveyConfig?.surveyInfo?.id}"
-                            params="[surveyConfigID: surveyConfig?.id, tab: 'consortiaMembers']">
+                            id="${surveyConfig.surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id, tab: 'consortiaMembers']">
                         ${message(code: 'surveyParticipants.consortiaMembers')}
                         <div class="ui floating circular label">${consortiaMembers.size() ?: 0}</div>
                     </g:link>

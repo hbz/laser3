@@ -503,7 +503,7 @@
                     <td>
                         <g:if test="${editable && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING &&
                                 com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty?.surveyProperty)
-                                && (de.laser.helper.RDStore.SURVEY_PROPERTY_PARTICIPATION?.id != surveyProperty?.surveyProperty?.id)}">
+                                && (de.laser.helper.RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty?.surveyProperty?.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
                                     id="${surveyProperty?.id}">

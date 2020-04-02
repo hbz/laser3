@@ -28,6 +28,9 @@
                 <semui:msg class="info" header="" message="user.delete.info" />
             </g:else>
 
+            <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
+                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
+            </g:if>
             <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
                 <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
             </g:if>
