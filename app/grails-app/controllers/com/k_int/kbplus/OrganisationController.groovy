@@ -737,7 +737,7 @@ class OrganisationController extends AbstractDebugController {
         du.setBenchmark('identifier')
 
         if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
-            result.orgInstance = createCoreIdentifiersIfNotExist(result.orgInstance)
+            result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
         du.setBenchmark('createdBy and legallyObligedBy')
@@ -823,7 +823,7 @@ class OrganisationController extends AbstractDebugController {
         //waitAll(task_orgRoles, task_properties)
 
         if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
-            result.orgInstance = createCoreIdentifiersIfNotExist(result.orgInstance)
+            result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
 //------------------------orgSettings --------------------
@@ -905,67 +905,6 @@ class OrganisationController extends AbstractDebugController {
         result.benchMark = bm
 
         result
-    }
-    private Org createCoreIdentifiersIfNotExist(Org orgInstance){
-        if(!Combo.findByFromOrgAndType(orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in orgInstance.getallOrgTypeIds())){
-
-            boolean foundIsil = false
-            boolean foundWibid = false
-            boolean foundEZB = false
-            boolean foundGRID = false
-            boolean foundDBS = false
-            boolean foundGND = false
-            boolean foundVAT = false
-
-            orgInstance.ids.each {ident ->
-                if(ident.ns?.ns == 'ISIL') {
-                    foundIsil = true
-                }
-                if(ident.ns?.ns == 'wibid') {
-                    foundWibid = true
-                }
-                if(ident.ns?.ns == 'ezb') {
-                    foundEZB = true
-                }
-                if(ident.ns?.ns == 'gridid') {
-                    foundGRID = true
-                }
-                if(ident.ns?.ns == 'dbsid') {
-                    foundDBS = true
-                }
-                if(ident.ns?.ns == 'gndnr') {
-                    foundGND = true
-                }
-                if(ident.ns?.ns == 'VAT') {
-                    foundVAT = true
-                }
-            }
-
-            if(!foundIsil) {
-                orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
-            }
-            if(!foundWibid) {
-                orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
-            }
-            if(!foundEZB) {
-                orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
-            }
-            if(!foundGRID) {
-                orgInstance.addOnlySpecialIdentifiers('gridid', 'Unknown')
-            }
-            if(!foundDBS) {
-                orgInstance.addOnlySpecialIdentifiers('dbsid', 'Unknown')
-            }
-            if(!foundGND) {
-                orgInstance.addOnlySpecialIdentifiers('gndnr', 'Unknown')
-            }
-            if(!foundVAT) {
-                orgInstance.addOnlySpecialIdentifiers('VAT', 'Unknown')
-            }
-            if(!foundIsil || !foundWibid || !foundEZB || !foundGRID || !foundDBS || !foundGND || !foundVAT)
-                orgInstance.refresh()
-        }
-        orgInstance
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")

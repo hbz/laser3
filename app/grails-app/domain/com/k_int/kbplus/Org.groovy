@@ -24,6 +24,9 @@ import org.hibernate.AssertionFailure
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
+import static de.laser.helper.RDStore.getCOMBO_TYPE_DEPARTMENT
+import static de.laser.helper.RDStore.getOT_PROVIDER
+
 @Log4j
 class Org
         extends AbstractBaseDomain
@@ -714,7 +717,19 @@ class Org
     boolean isDepartment() {
         isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !hasPerm("ORG_INST")
     }
+    void createCoreIdentifiersIfNotExist(){
+        if(!Combo.findByFromOrgAndType(this ,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in this.getallOrgTypeIds())){
 
+            boolean isChanged = false
+            IdentifierNamespace.CORE_ORG_NS.each{ coreNs ->
+                if ( ! ids.find {it.ns?.ns == coreNs}){
+                    addOnlySpecialIdentifiers(coreNs, IdentifierNamespace.UNKNOWN)
+                    isChanged = true
+                }
+            }
+            if (isChanged) refresh()
+        }
+    }
     // Only for ISIL, EZB, WIBID
     void addOnlySpecialIdentifiers(String ns, String value) {
         boolean found = false
