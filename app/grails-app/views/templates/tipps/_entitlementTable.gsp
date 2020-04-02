@@ -12,43 +12,6 @@
         <h3 class="ui header center aligned"><g:message code="${sourceInfoMessage}" /></h3>
     </g:if>
 
-    <g:if test="${side == 'target' && surveyFunction}">
-        <h2 class="ui header center aligned"><g:message code="renewEntitlementsWithSurvey.currentEntitlements" /> (${targetIEs.size()?:0})</h2>
-
-        <semui:form>
-            <g:message code="subscription" />: <b><g:link action="show" id="${newSub?.id}">${newSub?.name}</g:link></b>
-            <br>
-            <br>
-            %{--<g:message code="package" />:--}%<br>
-            <div class="ui list">
-                <g:each in="${newSub?.packages.sort{it?.pkg?.name}}" var="subPkg">
-                    <div class="item">
-                        <br>
-                    </div>
-                </g:each>
-            </div>
-        </semui:form>
-
-    </g:if>
-
-    <g:if test="${side == 'source' && surveyFunction}">
-        <h2 class="ui header center aligned"><g:message code="renewEntitlementsWithSurvey.selectableTitles" /> (${sourceIEs.size()?:0})</h2>
-
-        <semui:form>
-            <g:message code="subscription" />: <b>${subscription?.name}</b>
-        <br>
-            <br>
-            <g:message code="package" />:
-            <div class="ui bulleted list">
-            <g:each in="${subscription?.packages.sort{it?.pkg?.name}}" var="subPkg">
-                <div class="item">
-                    <b>${subPkg?.pkg?.name}</b> (<g:message code="title.plural" />: ${subPkg?.pkg?.tipps?.size()?: 0})
-                </div>
-            </g:each>
-            </div>
-        </semui:form>
-    </g:if>
-
 
     <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header" id="${side}">
         <thead>
@@ -75,11 +38,7 @@
                     <tr data-gokbId="${tipp.gokbId}" data-ieId="${ie?.id}" data-index="${counter}">
                         <td>
 
-                            <g:if test="${surveyFunction && !isContainedByTarget && editable && side == 'source'}">
-                                <input type="checkbox" name="bulkflag" data-index="${ie.id}" class="bulkcheck">
-                            </g:if>
-
-                            <g:if test="${!surveyFunction && !isContainedByTarget && editable}">
+                            <g:if test="${!isContainedByTarget && editable}">
                                 <input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck">
                             </g:if>
 
@@ -95,7 +54,7 @@
                                 </div>
                             </g:else>
 
-                            <semui:listIcon type="${tipp.title?.type?.value}"/>
+                            <semui:listIcon type="${ie.tipp.title.class.name}"/>
                             <strong><g:link controller="title" action="show"
                                             id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
@@ -258,23 +217,6 @@
                         </td>
                         <td>
 
-                            <g:if test="${surveyFunction}">
-                                <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == de.laser.helper.RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
-                                    <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveIssueEntitlementsSurvey"
-                                            params="${[id: subscriptionInstance.id, singleTitle: isContainedByTarget.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
-                                            data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                                        <i class="minus icon"></i>
-                                    </g:link>
-                                </g:if>
-                                <g:elseif test="${side == 'source' && !isContainedByTarget && editable}">
-                                    <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddIssueEntitlementsSurvey"
-                                            params="${[id: subscriptionInstance.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
-                                            data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                        <i class="plus icon"></i>
-                                    </g:link>
-                                </g:elseif>
-                            </g:if>
-                            <g:else>
                                 <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == de.laser.helper.RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
                                     <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
                                             params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId]}"
@@ -289,8 +231,6 @@
                                         <i class="plus icon"></i>
                                     </g:link>
                                 </g:elseif>
-                            </g:else>
-
 
                         </td>
                     </tr>

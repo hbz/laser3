@@ -208,7 +208,7 @@
 		<tr>
 			
 			<td>
-				<semui:listIcon type="${currentTitle[0]?.type?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
+				<semui:listIcon type="${currentTitle[0].medium?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
                           <g:each in="${currentTitle[0].ids?.sort{it?.ns?.ns}}" var="id">

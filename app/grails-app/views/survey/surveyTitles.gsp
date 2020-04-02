@@ -50,15 +50,15 @@
 <g:message code="showSurveyInfo.pickAndChoose.Package"/>
 </p>
 <br>
-<g:link controller="subscription" class="ui button" action="index" id="${surveyConfig?.subscription?.id}">
-    ${surveyConfig?.subscription?.name} (${surveyConfig?.subscription?.status?.getI10n('value')})
+<g:link controller="subscription" class="ui button" action="index" target="_blank" id="${surveyConfig.subscription.id}">
+    ${surveyConfig.subscription.name} (${surveyConfig.subscription.status.getI10n('value')})
 </g:link>
 
-<g:link controller="subscription" class="ui button" action="linkPackage" id="${surveyConfig?.subscription?.id}">
+<g:link controller="subscription" class="ui button" action="linkPackage" target="_blank" id="${surveyConfig.subscription.id}">
     <g:message code="subscription.details.linkPackage.label"/>
 </g:link>
 
-<g:link controller="subscription" class="ui button" action="addEntitlements" id="${surveyConfig?.subscription?.id}">
+<g:link controller="subscription" class="ui button" action="addEntitlements" target="_blank" id="${surveyConfig.subscription.id}">
     <g:message code="subscription.details.addEntitlements.label"/>
 </g:link>
 
@@ -70,7 +70,7 @@
 <div class="row">
 <div class="column">
 
-    <g:if test="${entitlements?.size() > 0}">
+    <g:if test="${entitlements.size() > 0}">
         ${message(code: 'subscription.entitlement.plural')} ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (entitlements?.size())), num_sub_rows])}.     </g:if>
     <g:else>
         ${message(code: 'subscription.details.no_ents', default: 'No entitlements yet')}
@@ -91,7 +91,7 @@
             <th class="one wide"></th>
         </tr>
         <tr>
-            <th rowspan="2" colspan="4"></th>
+            <th rowspan="2" colspan="3"></th>
             <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
                               title="${message(code: 'default.from')}"/>
             <g:sortableColumn class="la-smaller-table-head" params="${params}"
@@ -120,16 +120,16 @@
 
                     <td>${counter++}</td>
                     <td>
-                        <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
+                        <semui:listIcon type="${ie.tipp.title.class.name}"/>
                         <g:link controller="issueEntitlement" id="${ie.id}"
-                                action="show"><strong>${ie.tipp?.title.title}</strong>
+                                action="show"><strong>${ie.tipp.title.title}</strong>
                         </g:link>
-                        <g:if test="${ie.tipp?.hostPlatformURL}">
+                        <g:if test="${ie.tipp.hostPlatformURL}">
                             <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                             <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
-                               data-content="${ie.tipp?.platform.name}"
+                               data-content="${ie.tipp.platform.name}"
 
-                               href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
+                               href="${ie.tipp.hostPlatformURL.contains('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"
                                target="_blank"><i class="cloud icon"></i></a>
                         </g:if>
                         <br>
@@ -145,16 +145,16 @@
                                                 overwriteEditable="${false}"/>
                     </td>
                     <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-                        <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                        <g:if test="${ie.tipp.title instanceof com.k_int.kbplus.BookInstance}">
 
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${ie?.tipp?.title?.dateFirstInPrint}"/>
+                                          date="${ie.tipp.title.dateFirstInPrint}"/>
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${ie?.tipp?.title?.dateFirstOnline}"/>
+                                          date="${ie.tipp.title.dateFirstOnline}"/>
 
                         </g:if>
                         <g:else>
@@ -188,7 +188,7 @@
                             <semui:xEditable field="listPrice"
                                                                                  owner="${ie.priceItem}"
                                                                                  overwriteEditable="${false}"/>
-                            ${ie.priceItem?.listCurrency?.getI10n('value')?.split('-')?.first()}
+                            ${ie.priceItem.listCurrency.getI10n('value').split('-').first()}
                         %{--<semui:xEditableRefData
                                     field="listCurrency" owner="${ie.priceItem}" overwriteEditable="${false}"
                                     config="Currency"/> --}%

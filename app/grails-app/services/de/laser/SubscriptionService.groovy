@@ -251,6 +251,8 @@ class SubscriptionService {
 
             List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
 
+
+
             ies.sort { it.tipp.title.title }
             ies
         }else{
@@ -967,12 +969,12 @@ class SubscriptionService {
                     }
                 }
                 if(withPriceData && issueEntitlementOverwrite) {
-                    if(issueEntitlementOverwrite instanceof IssueEntitlement && issueEntitlementOverwrite?.priceItem) {
-                        PriceItem pi = new PriceItem(priceDate: issueEntitlementOverwrite?.priceItem?.priceDate ?: null,
-                                listPrice: issueEntitlementOverwrite?.priceItem?.listPrice ?: null,
-                                listCurrency: issueEntitlementOverwrite?.priceItem?.listCurrency ?: null,
-                                localPrice: issueEntitlementOverwrite?.priceItem?.localPrice ?: null,
-                                localCurrency: issueEntitlementOverwrite?.priceItem?.localCurrency ?: null,
+                    if(issueEntitlementOverwrite instanceof IssueEntitlement && issueEntitlementOverwrite.priceItem) {
+                        PriceItem pi = new PriceItem(priceDate: issueEntitlementOverwrite.priceItem.priceDate ?: null,
+                                listPrice: issueEntitlementOverwrite.priceItem.listPrice ?: null,
+                                listCurrency: issueEntitlementOverwrite.priceItem.listCurrency ?: null,
+                                localPrice: issueEntitlementOverwrite.priceItem.localPrice ?: null,
+                                localCurrency: issueEntitlementOverwrite.priceItem.localCurrency ?: null,
                                 issueEntitlement: new_ie
                         )
                         pi.setGlobalUID()
@@ -982,7 +984,8 @@ class SubscriptionService {
                             throw new EntitlementCreationException(pi.errors)
                         }
 
-                    }else {
+                    }
+                    /*else {
 
                         PriceItem pi = new PriceItem(priceDate: DateUtil.parseDateGeneric(issueEntitlementOverwrite.priceDate),
                                 listPrice: issueEntitlementOverwrite.listPrice,
@@ -997,7 +1000,7 @@ class SubscriptionService {
                         else {
                             throw new EntitlementCreationException(pi.errors)
                         }
-                    }
+                    }*/
 
                 }
                 else return true
