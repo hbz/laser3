@@ -5170,7 +5170,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def baseSubscription = com.k_int.kbplus.Subscription.get(params.baseSubscription)
+        Subscription baseSubscription = Subscription.get(params.baseSubscription)
 
         if (baseSubscription) {
 
@@ -5283,12 +5283,23 @@ class SubscriptionController extends AbstractDebugController {
                 if (params.subscription.copyPackages) {
                     baseSubscription.packages?.each { pkg ->
                         def pkgOapls = pkg.oapls
+                        Set<PendingChangeConfiguration> pcc = pkg.pendingChangeConfig
                         pkg.properties.oapls = null
+                        pkg.properties.pendingChangeConfig = null
                         SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                         InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                         newSubscriptionPackage.subscription = newSubscriptionInstance
 
                         if(newSubscriptionPackage.save()){
+                            pcc.each { PendingChangeConfiguration config ->
+                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
+                                if(newPcc) {
+                                    Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)
+                                    auditables.each { audit ->
+                                        AuditConfig.addConfig(baseSubscription,audit.referenceField)
+                                    }
+                                }
+                            }
                             pkgOapls.each{ oapl ->
 
                                 def oaplProperties = oapl.properties
