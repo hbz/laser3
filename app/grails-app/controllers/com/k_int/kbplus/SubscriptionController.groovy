@@ -1112,21 +1112,36 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
+        Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
         params.id = params.targetSubscriptionId
         params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
-        params.offset = 0
-        params.max = 2000
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+        result.offset = params.offset  ? Integer.parseInt(params.offset) : 0
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        params.offset = 0
+        params.max = 5000
+
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        result.sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
-        result.targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params)
+
+        List<IssueEntitlement> sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
+        List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
+
+        result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
+
+        result.num_ies_rows = sourceIEs.size()
+        result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
+        result.targetIEs = targetIEs
         result.newSub = newSub
         result.subscription = baseSub
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.subscriber = result.newSub.getSubscriber()
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+
+        params.offset = result.offset
+        params.max = result.max
 
         String filename = "${escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())}"
 
@@ -1134,7 +1149,7 @@ class SubscriptionController extends AbstractDebugController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.sourceIEs)
+            Map<String, List> tableData = titleStreamService.generateTitleExportList(sourceIEs)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -1155,25 +1170,38 @@ class SubscriptionController extends AbstractDebugController {
                     g.message(code:'tipp.price')
             ]
             List rows = []
-            result.sourceIEs.each { ie ->
+            sourceIEs.each { ie ->
                 List row = []
-                row.add([field: ie?.tipp?.title?.title ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.editionStatement ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
+                row.add([field: ie.tipp.title.title ?: '', style:null])
+                if(ie.tipp.title instanceof BookInstance) {
+                    row.add([field: ie.tipp.title.volume ?: '', style: null])
+                    row.add([field: ie.tipp.title.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
+                    row.add([field: ie.tipp.title.editionStatement ?: '', style:null])
+                    row.add([field: ie.tipp.title.summaryOfContent ?: '', style:null])
+                }else{
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                }
+
 
                 def identifiers = []
-                ie?.tipp?.title?.ids?.sort { it?.ns?.ns }?.each{ ident ->
-                    identifiers << "${ident.ns?.ns}: ${ident.value}"
+                ie.tipp.title.ids?.sort { it.ns.ns }.each{ ident ->
+                    identifiers << "${ident.ns.ns}: ${ident.value}"
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 
-                row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
-                row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
+                if(ie.tipp.title instanceof BookInstance) {
+                    row.add([field: ie.tipp.title.dateFirstInPrint ? g.formatDate(date: ie.tipp.title.dateFirstInPrint, format: message(code: 'default.date.format.notime')) : '', style: null])
+                    row.add([field: ie.tipp.title.dateFirstOnline ? g.formatDate(date: ie.tipp.title.dateFirstOnline, format: message(code: 'default.date.format.notime')) : '', style: null])
+                }else{
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                }
 
-                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
-                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
+                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, type: 'currency', currencySymbol: ie.priceItem.listCurrency, currencyCode: ie.priceItem.listCurrency) : '', style:null])
+                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, type: 'currency', currencySymbol: ie.priceItem.localCurrency, currencyCode: ie.priceItem.localCurrency) : '', style:null])
 
                 rows.add(row)
             }
@@ -1213,9 +1241,9 @@ class SubscriptionController extends AbstractDebugController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.subscriptionInstance =  result.surveyConfig?.subscription
+        result.subscriptionInstance =  result.surveyConfig.subscription
 
-        result.ies = subscriptionService.getCurrentIssueEntitlements(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution))
 
         String filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
 
@@ -2952,22 +2980,24 @@ class SubscriptionController extends AbstractDebugController {
 
         def ie_accept_status = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
 
-        def countIEsToAdd = 0
+        Integer countIEsToAdd = 0
 
         if(result.subscriptionInstance) {
             iesToAdd.each { ieID ->
                 IssueEntitlement ie = IssueEntitlement.findById(ieID)
                 def tipp = ie.tipp
 
-                try {
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, true, ie_accept_status)) {
-                        log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
-                        countIEsToAdd++
+                if(tipp) {
+                    try {
+                        if (subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, true, ie_accept_status)) {
+                            log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
+                            countIEsToAdd++
+                        }
                     }
-                }
-                catch (EntitlementCreationException e) {
-                    log.debug("Error: Added tipp ${tipp} to sub ${result.subscriptionInstance.id}: "+e.getMessage())
-                    flash.error = message(code:'renewEntitlementsWithSurvey.noSelectedTipps')
+                    catch (EntitlementCreationException e) {
+                        log.debug("Error: Added tipp ${tipp} to sub ${result.subscriptionInstance.id}: " + e.getMessage())
+                        flash.error = message(code: 'renewEntitlementsWithSurvey.noSelectedTipps')
+                    }
                 }
             }
 
