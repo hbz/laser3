@@ -171,7 +171,7 @@
                     url: url,
                     success: function(result){
                         $("#dynamicModalContainer").empty();
-                        $("#modalCreateCustomerIdentifier").remove();
+                        $("#modalCreateCustomerIdentifier, #modalCreateIdentifier").remove();
 
                         $("#dynamicModalContainer").html(result);
                         $("#dynamicModalContainer .ui.modal").modal({

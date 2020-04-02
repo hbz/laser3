@@ -171,7 +171,7 @@ class Identifier {
     }
 
     String getURL() {
-        if (ns.urlPrefix) {
+        if (ns.urlPrefix && value) {
             if (ns.urlPrefix.endsWith('=')) {
                 return "${ns.urlPrefix}${value}"
             }
@@ -320,7 +320,7 @@ class Identifier {
 
     @Transient
     def afterInsert = {
-        if(this.ns?.ns in ['wibid','ezb']) {
+        if(this.ns?.ns in ['wibid','ezb', 'gridid', 'dbsid', 'gndnr', 'VAT']) {
             if(this.value == 'Unknown') {
                 this.value = ''
                 this.save()
