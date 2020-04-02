@@ -9,7 +9,7 @@
 	<body>
 	<semui:breadcrumbs>
 		<g:if test="${(OT_PROVIDER.id in addressInstance?.org?.getallOrgTypeIds())}">
-			<semui:crumb message="menu.public.all_provider" controller="organisation" action="listProvider"/>
+			<semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
 			<semui:crumb message="${addressInstance?.org?.getDesignation()}" controller="organisation" action="show" id="${addressInstance?.org?.id}"/>
 			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 		</g:if>
