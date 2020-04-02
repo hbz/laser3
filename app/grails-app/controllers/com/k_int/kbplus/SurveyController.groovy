@@ -1255,14 +1255,14 @@ class SurveyController {
         result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscriptionInstance)
         result.iesListPriceSum = 0
         result.ies?.each{
-            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it?.priceItem?.listPrice ? it?.priceItem?.listPrice : 0) : 0)
+            result.iesListPriceSum = result.iesListPriceSum + (it.priceItem ? (it.priceItem.listPrice ? it.priceItem.listPrice : 0) : 0)
         }
 
 
         result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscriptionInstance)
         result.iesFixListPriceSum = 0
         result.iesFix?.each{
-            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it?.priceItem?.listPrice ? it?.priceItem?.listPrice : 0) : 0)
+            result.iesFixListPriceSum = result.iesFixListPriceSum + (it.priceItem ? (it.priceItem.listPrice ? it.priceItem.listPrice : 0) : 0)
         }
 
 
