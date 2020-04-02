@@ -98,7 +98,7 @@
                                 <semui:securedMainNavItem role="menuitem" orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                                               controller="organisation" action="listInstitution" message="menu.public.all_insts" />
 
-                                <g:link class="item" role="menuitem" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
+                                <g:link class="item" role="menuitem" controller="organisation" action="listProvider">${message(code:'menu.public.all_providers')}</g:link>
 
                                 <g:link class="item" role="menuitem" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</g:link>
 

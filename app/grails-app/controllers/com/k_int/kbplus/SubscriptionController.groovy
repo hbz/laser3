@@ -360,6 +360,8 @@ class SubscriptionController extends AbstractDebugController {
         def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
         if(result.subscription.instanceOf)
             result.parentId = result.subscription.instanceOf.id
+        else if(result.subscription.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE])
+            result.parentId = result.subscription.id
 
         if (params.process  && result.editable) {
             result.delResult = deletionService.deleteSubscription(result.subscription, false)

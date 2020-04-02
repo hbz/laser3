@@ -28,15 +28,17 @@ class ControlledListService {
         if(params.forFinanceView) {
             //PLEASE! Do not assign providers or agencies to administrative subscriptions! That will screw up this query ...
             List subscriptions = Subscription.executeQuery('select s from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE,RDStore.OR_SUBSCRIBER_COLLECTIVE]])
-            Map filter = [providerAgency: [RDStore.OR_PROVIDER,RDStore.OR_AGENCY],subscriptions:subscriptions]
-            String filterString = " "
-            if(params.query && params.query.length() > 0) {
-                filter.put("query",params.query)
-                filterString += " and genfunc_filter_matcher(oo.org.name,:query) = true "
-            }
-            List providers = Org.executeQuery('select distinct oo.org, oo.org.name from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType in (:providerAgency)'+filterString+'order by oo.org.name asc',filter)
-            providers.each { p ->
-                result.results.add([name:p[1],value:p[0].class.name + ":" + p[0].id])
+            if(subscriptions) {
+                Map filter = [providerAgency: [RDStore.OR_PROVIDER,RDStore.OR_AGENCY],subscriptions:subscriptions]
+                String filterString = " "
+                if(params.query && params.query.length() > 0) {
+                    filter.put("query",params.query)
+                    filterString += " and genfunc_filter_matcher(oo.org.name,:query) = true "
+                }
+                List providers = Org.executeQuery('select distinct oo.org, oo.org.name from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType in (:providerAgency)'+filterString+'order by oo.org.name asc',filter)
+                providers.each { p ->
+                    result.results.add([name:p[1],value:p[0].class.name + ":" + p[0].id])
+                }
             }
         }
         else {
