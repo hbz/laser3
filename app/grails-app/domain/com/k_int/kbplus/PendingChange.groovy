@@ -292,7 +292,8 @@ class PendingChange {
                     if(targetCov.delete()) {
                         if(auditService.getAuditConfig(subscription,msgToken)) {
                             subscription.derivedSubscriptions.each { Subscription childSub ->
-                                IssueEntitlementCoverage childCov = IssueEntitlementCoverage.executeQuery('select ic from IssueEntitlementCoverage ic where ic.issueEntitlement.tipp = :tipp and ic.issueEntitlement.subscription = :child',[child:childSub,tipp:targetCov.issueEntitlement.tipp])[0]
+                                IssueEntitlement childIe = IssueEntitlement.findBySubscriptionAndTipp(childSub,targetCov.issueEntitlement.tipp)
+                                IssueEntitlementCoverage childCov = targetCov.findEquivalent(childIe.coverages)
                                 if(!childCov.delete())
                                     throw new ChangeAcceptException("problems when broadcasting entitlement coverage update - pending change not accepted: ${childCov.errors}")
                             }
