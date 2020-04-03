@@ -37,9 +37,16 @@
 <g:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, departmentalView: departmentalView, institutionalView: institutionalView]}"/>
 
-<g:if test="${editable}">
+<g:if test="${editable_identifier || editable_customeridentifier}">
     <semui:controlButtons>
-        <g:render template="actions" model="${[org: orgInstance, user: user, editable: editable]}"/>
+        <g:render template="actions" model="${[
+                org: orgInstance,
+                user: user,
+                editable: (editable_identifier || editable_customoeridentifier),
+                editable_identifier: editable_identifier,
+                editable_customeridentifier: editable_customeridentifier,
+                hasAccessToCustomeridentifier: hasAccessToCustomeridentifier
+        ]}"/>
     </semui:controlButtons>
 </g:if>
 
@@ -50,11 +57,10 @@
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
 %{--<g:if test="${departmentalView == false}">--}%
-    %{--<g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>--}%
+    %{--<g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable_identifier]}"/>--}%
 %{--</g:if>--}%
 
 <semui:messages data="${flash}"/>
-
 %{---------------IDENTIFIERS-----------------------}%
 <div class="ui stackable grid">
     <div class="sixteen wide column">
@@ -81,12 +87,11 @@
                     </tr>
                 </thead>
                 <tbody>
-
-                <g:each in="${orgInstance.ids?.toSorted{it.ns?.ns?.toLowerCase()}}" var="id">
-                    <g:render template="idTableRow"
-                              model="[orgInstance:orgInstance, tableRowNr:++tableIdentifierRowNr, id:id]"/>
+                    <g:each in="${orgInstance.ids?.toSorted{it.ns?.ns?.toLowerCase()}}" var="id">
+                        <g:render template="idTableRow"
+                                  model="[orgInstance:orgInstance, tableRowNr:++tableIdentifierRowNr, id:id, editable:editable_identifier]"
+                         />
                 </g:each>
-                </dd>
                 </tbody>
             </table>
         </div>
@@ -94,6 +99,8 @@
 </g:if>
 
 %{--------------CUSTOMER IDENTIFIERS------------------------}%
+        <g:if test="${hasAccessToCustomeridentifier}">
+
             <div class="ui card">
                 <div class="content">
                     <div class="header"><g:message code="org.customerIdentifier.plural"/></div>
@@ -123,7 +130,7 @@
                                     <td>${ci.value}</td>
                                     <td>${ci.note}</td>
                                     <td>
-                                        <g:if test="${editable}">
+                                        <g:if test="${editable_customeridentifier}">
                                             <button class="ui icon button" onclick="IdContoller.editCustomerIdentifier(${ci.id});"><i class="write icon"></i></button>
                                             <g:link controller="organisation"
                                                     action="deleteCustomerIdentifier"
@@ -144,6 +151,7 @@
                 </table>
                 </div>
             </div>
+        </g:if>
 </body>
 </html>
 <g:if test="${actionName == 'ids'}">

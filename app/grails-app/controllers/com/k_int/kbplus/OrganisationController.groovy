@@ -775,11 +775,12 @@ class OrganisationController extends AbstractDebugController {
             response.sendError(401)
             return
         }
+        result.editable_identifier = result.editable
 
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
 
-        du.setBenchmark('editable')
+        du.setBenchmark('editable_identifier')
 
 
         def orgSector = O_SECTOR_PUBLISHER
@@ -787,28 +788,28 @@ class OrganisationController extends AbstractDebugController {
 
         //IF ORG is a Provider
         if(result.orgInstance?.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
-            du.setBenchmark('editable2')
-            result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
+            du.setBenchmark('editable_identifier2')
+            result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
         }
         else {
-            du.setBenchmark('editable2')
+            du.setBenchmark('editable_identifier2')
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
                 List<Long> consortia = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
                     it.toOrg.id
                 }
                 if(consortia.size() == 1 && consortia.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
-                    result.editable = true
+                    result.editable_identifier = true
             }
             else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
                 List<Long> department = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_DEPARTMENT,result.orgInstance).collect { it ->
                     it.toOrg.id
                 }
                 if (department.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))
-                    result.editable = true
+                    result.editable_identifier = true
             }
             else
-                result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+                result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
 
       if (!result.orgInstance) {
@@ -831,20 +832,22 @@ class OrganisationController extends AbstractDebugController {
         Boolean inContextOrg = contextService.getOrg().id == org.id
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
 
-        Boolean hasAccess = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
+        result.hasAccessToCustomeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
                 (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         // forbidden access
-        if (! hasAccess) {
-            redirect controller: 'organisation', action: 'show', id: org.id
-        }
+//        if (! hasAccess) {
+//            redirect controller: 'organisation', action: 'show', id: org.id
+//        }
 
         result.user = user
         result.orgInstance = org
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+
         result.inContextOrg = inContextOrg
-        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
+        result.editable_customeridentifier =
+                SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ||
+                (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
         result.isComboRelated = isComboRelated
 
         // adding default settings
@@ -898,12 +901,8 @@ class OrganisationController extends AbstractDebugController {
             log.debug( 'settings for combo related org: consortia or collective')
             result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
         }
-        du.setBenchmark('allPlatforms')
-
-        result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
         List bm = du.stopBenchmark()
         result.benchMark = bm
-
         result
     }
 

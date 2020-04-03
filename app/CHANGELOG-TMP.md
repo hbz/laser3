@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2154    03.04.2020  rc1.3       Anja    Bug         org/ids Rechte fürs Anzeigen/Editieren
+
 2320    02.04.2020  rc1.3       David   Bug         API (0.86): Duplikate in Listenendpunkten
 
 2325    02.04.2020  rc1.3       David   Bug         Profil nicht löschbar, falls einziger INST_ADM
