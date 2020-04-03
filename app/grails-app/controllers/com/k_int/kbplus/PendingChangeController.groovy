@@ -21,10 +21,12 @@ class PendingChangeController extends AbstractDebugController {
         log.debug("Accept")
         //distinct between legacy accept and new accept!
         PendingChange pc = PendingChange.get(params.long('id'))
-        if(pc.msgParams)
+        if (pc.msgParams) {
             pendingChangeService.performAccept(pc)
-        else if(!pc.payload)
+        }
+        else if (!pc.payload) {
             pc.accept()
+        }
         redirect(url: request.getHeader('referer'))
     }
 
@@ -33,11 +35,13 @@ class PendingChangeController extends AbstractDebugController {
     def reject() {
         log.debug("Reject")
         //distinct between legacy reject and new reject!
-        PendingChange pc = PendingChange.get(Long.parseLong(params.id))
-        if(pc.msgParams)
+        PendingChange pc = PendingChange.get(params.long('id'))
+        if (pc.msgParams) {
             pendingChangeService.performReject(pc)
-        else if(!pc.payload)
+        }
+        else if (!pc.payload) {
             pc.reject()
+        }
         redirect(url: request.getHeader('referer'))
     }
 
@@ -47,12 +51,12 @@ class PendingChangeController extends AbstractDebugController {
         log.debug("acceptAll - ${params}")
         def owner = genericOIDService.resolveOID(params.OID)
 
-        def changes_to_accept = []
-        def pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", RDConstants.PENDING_CHANGE_STATUS)
-        List<PendingChange> pendingChanges = owner?.pendingChanges.findAll {
+        RefdataValue pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", RDConstants.PENDING_CHANGE_STATUS)
+
+        Collection<PendingChange> pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }
-        User user = User.get(springSecurityService.principal.id)
+
         executorWrapperService.processClosure({
             pendingChanges.each { pc ->
                 pendingChangeService.performAccept(pc)
@@ -68,16 +72,15 @@ class PendingChangeController extends AbstractDebugController {
         log.debug("rejectAll ${params}")
         def owner = genericOIDService.resolveOID(params.OID)
 
-        def changes_to_reject = []
-        def pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", RDConstants.PENDING_CHANGE_STATUS)
-        def pendingChanges = owner?.pendingChanges.findAll {
+        RefdataValue pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", RDConstants.PENDING_CHANGE_STATUS)
+
+        Collection<PendingChange> pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }
-        pendingChanges = pendingChanges.collect { it.id }
 
         executorWrapperService.processClosure({
             pendingChanges.each { pc ->
-                pendingChangeService.performReject(PendingChange.get(pc))
+                pendingChangeService.performReject(pc)
             }
         }, owner)
 
