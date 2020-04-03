@@ -102,6 +102,14 @@ components:
       description: Concrete globalUID of context organisation
 </g:else>
 
+    debug:
+      name: x-debug
+      in: header
+      schema:
+        type: boolean
+      required: false
+      description: Send debug informations or not
+
     authorization:
       name: x-authorization
       in: header

@@ -299,6 +299,8 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     @Secured(['permitAll']) // TODO
     def v0() {
         Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')
+        boolean debugMode = request.getAttribute('debugMode')
+
         log.debug("API Call [${apiOrg.id}] - " + params)
 
         def result
@@ -367,7 +369,13 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             break
                     }
 
-                    result = ApiManager.read((String) obj, (String) query, (String) value, (Org) contextOrg, format)
+                    result = ApiManager.read(
+                            (String) obj,
+                            (String) query,
+                            (String) value,
+                            (Org) contextOrg,
+                            format
+                    )
 
                     if (result instanceof Doc) {
                         response.contentType = result.mimeType
@@ -408,13 +416,17 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
-        response.setHeader("Debug-Result-Length", json.toString().length().toString())
-        response.setHeader("Debug-Result-Time", responseTime)
-
-        if (json.target instanceof List) {
-            response.setHeader("Debug-Result-Size", json.target.size().toString())
-        }
         response.setStatus(status)
+
+        if (debugMode) {
+            response.setHeader("Debug-Mode", "true")
+            response.setHeader("Debug-Result-Length", json.toString().length().toString())
+            response.setHeader("Debug-Result-Time", responseTime)
+
+            if (json.target instanceof List) {
+                response.setHeader("Debug-Result-Size", json.target.size().toString())
+            }
+        }
 
         if (json.target instanceof List) {
             log.debug("API Call [${apiOrg.id}] - (Code: ${status}, Time: ${responseTime}, Items: ${json.target.size().toString()})")
