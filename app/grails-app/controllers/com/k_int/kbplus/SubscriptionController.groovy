@@ -4339,7 +4339,9 @@ class SubscriptionController extends AbstractDebugController {
                                             newOrgAccessPointLink.save(flush: true)
                                         }
                                         pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
-                                            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
+                                            Map configSettings = config.properties
+                                            configSettings.subscriptionPackage = newSubscriptionPackage
+                                            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
                                             if(newPcc) {
                                                 Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSub.class.name,baseSub.id,PendingChangeConfiguration.settingKeys)
                                                 auditables.each { audit ->
@@ -5341,15 +5343,6 @@ class SubscriptionController extends AbstractDebugController {
                         newSubscriptionPackage.subscription = newSubscriptionInstance
 
                         if(newSubscriptionPackage.save()){
-                            pcc.each { PendingChangeConfiguration config ->
-                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
-                                if(newPcc) {
-                                    Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)
-                                    auditables.each { audit ->
-                                        AuditConfig.addConfig(baseSubscription,audit.referenceField)
-                                    }
-                                }
-                            }
                             pkgOapls.each{ oapl ->
                                 def oaplProperties = oapl.properties
                                 oaplProperties.globalUID = null
@@ -5359,7 +5352,9 @@ class SubscriptionController extends AbstractDebugController {
                                 newOrgAccessPointLink.save()
                             }
                             pcc.each { PendingChangeConfiguration config ->
-                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
+                                Map configSettings = config.properties
+                                configSettings.subscriptionPackage = newSubscriptionPackage
+                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
                                 if(newPcc) {
                                     Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)
                                     auditables.each { audit ->

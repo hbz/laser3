@@ -426,7 +426,7 @@ class SubscriptionService {
             } else {
 
                 List<OrgAccessPointLink> pkgOapls = OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
-                Set<PendingChangeConfiguration> pkgPendingChangeConfig = subscriptionPackage.pendingChangeConfig
+                Set<PendingChangeConfiguration> pkgPendingChangeConfig = PendingChangeConfiguration.findAllByIdInList(subscriptionPackage.pendingChangeConfig.id)
                 subscriptionPackage.properties.oapls = null
                 subscriptionPackage.properties.pendingChangeConfig = null
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
@@ -444,7 +444,9 @@ class SubscriptionService {
                         newOrgAccessPointLink.save(flush: true)
                     }
                     pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
-                        PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
+                        Map configSettings = config.properties
+                        configSettings.subscriptionPackage = newSubscriptionPackage
+                        PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
                         if(newPcc) {
                             Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(subscriptionPackage.subscription.class.name,subscriptionPackage.subscription.id,PendingChangeConfiguration.settingKeys)
                             auditables.each { audit ->
@@ -604,7 +606,7 @@ class SubscriptionService {
                     }
                     if (subMember.issueEntitlements && targetSub.issueEntitlements) {
                         subMember.issueEntitlements?.each { ie ->
-                            if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+                            if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                                 def ieProperties = ie.properties
                                 ieProperties.globalUID = null
 
