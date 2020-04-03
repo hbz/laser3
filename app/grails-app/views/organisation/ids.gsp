@@ -42,7 +42,7 @@
         <g:render template="actions" model="${[
                 org: orgInstance,
                 user: user,
-                editable: (editable_identifier || editable_customoeridentifier),
+                editable: (editable_identifier || editable_customeridentifier),
                 editable_identifier: editable_identifier,
                 editable_customeridentifier: editable_customeridentifier,
                 hasAccessToCustomeridentifier: hasAccessToCustomeridentifier

@@ -783,8 +783,8 @@ class OrganisationController extends AbstractDebugController {
         du.setBenchmark('editable_identifier')
 
 
-        def orgSector = O_SECTOR_PUBLISHER
-        def orgType = OT_PROVIDER
+        def orgSector = RDStore.O_SECTOR_PUBLISHER
+        def orgType = RDStore.OT_PROVIDER
 
         //IF ORG is a Provider
         if(result.orgInstance?.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
@@ -795,14 +795,14 @@ class OrganisationController extends AbstractDebugController {
         else {
             du.setBenchmark('editable_identifier2')
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                List<Long> consortia = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
+                List<Long> consortia = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
                     it.toOrg.id
                 }
                 if(consortia.size() == 1 && consortia.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
                     result.editable_identifier = true
             }
             else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                List<Long> department = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_DEPARTMENT,result.orgInstance).collect { it ->
+                List<Long> department = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_DEPARTMENT,result.orgInstance).collect { it ->
                     it.toOrg.id
                 }
                 if (department.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))
@@ -823,7 +823,7 @@ class OrganisationController extends AbstractDebugController {
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
 
-        if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
+        if(!Combo.findByFromOrgAndType(result.orgInstance,RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
