@@ -8,6 +8,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.EntitlementCreationException
@@ -404,14 +405,16 @@ class SubscriptionService {
 
 
     boolean copyPackages(List<SubscriptionPackage> packagesToTake, Subscription targetSub, def flash) {
-        packagesToTake?.each { subscriptionPackage ->
+        packagesToTake.each { subscriptionPackage ->
             if (targetSub.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }) {
                 Object[] args = [subscriptionPackage.pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
             } else {
 
                 List<OrgAccessPointLink> pkgOapls = OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
+                Set<PendingChangeConfiguration> pkgPendingChangeConfig = subscriptionPackage.pendingChangeConfig
                 subscriptionPackage.properties.oapls = null
+                subscriptionPackage.properties.pendingChangeConfig = null
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                 InvokerHelper.setProperties(newSubscriptionPackage, subscriptionPackage.properties)
                 newSubscriptionPackage.subscription = targetSub
@@ -425,6 +428,15 @@ class SubscriptionService {
                         InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save(flush: true)
+                    }
+                    pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
+                        PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
+                        if(newPcc) {
+                            Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(subscriptionPackage.subscription.class.name,subscriptionPackage.subscription.id,PendingChangeConfiguration.settingKeys)
+                            auditables.each { audit ->
+                                AuditConfig.addConfig(targetSub,audit.referenceField)
+                            }
+                        }
                     }
                 }
             }
@@ -558,6 +570,7 @@ class SubscriptionService {
                         subMember.packages?.each { pkg ->
                             def pkgOapls = pkg.oapls
                             pkg.properties.oapls = null
+                            pkg.properties.pendingChangeConfig = null
                             SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                             InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                             newSubscriptionPackage.subscription = newSubscription
@@ -985,7 +998,7 @@ class SubscriptionService {
                         }
 
                     }
-                    /*else {
+                    else {
 
                         PriceItem pi = new PriceItem(priceDate: DateUtil.parseDateGeneric(issueEntitlementOverwrite.priceDate),
                                 listPrice: issueEntitlementOverwrite.listPrice,
@@ -1000,7 +1013,7 @@ class SubscriptionService {
                         else {
                             throw new EntitlementCreationException(pi.errors)
                         }
-                    }*/
+                    }
 
                 }
                 else return true
