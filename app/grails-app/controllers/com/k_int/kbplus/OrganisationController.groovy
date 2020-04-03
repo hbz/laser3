@@ -836,70 +836,64 @@ class OrganisationController extends AbstractDebugController {
                 (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
-        // forbidden access
-//        if (! hasAccess) {
-//            redirect controller: 'organisation', action: 'show', id: org.id
-//        }
+        if (! result.hasAccessToCustomeridentifier) {
 
-        result.user = user
-        result.orgInstance = org
+            result.user = user
+            result.orgInstance = org
 
-        result.inContextOrg = inContextOrg
-        result.editable_customeridentifier =
-                SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ||
-                (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
-        result.isComboRelated = isComboRelated
+            result.inContextOrg = inContextOrg
+            result.editable_customeridentifier =
+                    SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ||
+                            (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
+            result.isComboRelated = isComboRelated
 
-        // adding default settings
-        organisationService.initMandatorySettings(org)
+            // adding default settings
+            organisationService.initMandatorySettings(org)
 
-        // collecting visible settings by customer type, role and/or combo
-        List<OrgSettings> allSettings = OrgSettings.findAllByOrg(org)
+            // collecting visible settings by customer type, role and/or combo
+            List<OrgSettings> allSettings = OrgSettings.findAllByOrg(org)
 
-        List<OrgSettings.KEYS> ownerSet = [
-                OrgSettings.KEYS.API_LEVEL,
-                OrgSettings.KEYS.API_KEY,
-                OrgSettings.KEYS.API_PASSWORD,
-                OrgSettings.KEYS.CUSTOMER_TYPE,
-                OrgSettings.KEYS.GASCO_ENTRY
-        ]
-        List<OrgSettings.KEYS> accessSet = [
-                OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
-                OrgSettings.KEYS.NATSTAT_SERVER_ACCESS
-        ]
-        List<OrgSettings.KEYS> credentialsSet = [
-                OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,
-                OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID
-        ]
+            List<OrgSettings.KEYS> ownerSet = [
+                    OrgSettings.KEYS.API_LEVEL,
+                    OrgSettings.KEYS.API_KEY,
+                    OrgSettings.KEYS.API_PASSWORD,
+                    OrgSettings.KEYS.CUSTOMER_TYPE,
+                    OrgSettings.KEYS.GASCO_ENTRY
+            ]
+            List<OrgSettings.KEYS> accessSet = [
+                    OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
+                    OrgSettings.KEYS.NATSTAT_SERVER_ACCESS
+            ]
+            List<OrgSettings.KEYS> credentialsSet = [
+                    OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,
+                    OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+            ]
 
-        result.settings = []
+            result.settings = []
 
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
-            result.settings.addAll(allSettings.findAll { it.key in ownerSet })
-            result.settings.addAll(allSettings.findAll { it.key in accessSet })
-            result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
-        }
-        else if (inContextOrg) {
-            log.debug( 'settings for own org')
-            result.settings.addAll(allSettings.findAll { it.key in ownerSet })
-
-            if (org.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
+            if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
+                result.settings.addAll(allSettings.findAll { it.key in ownerSet })
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
                 result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
-            }
-            else if (['ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
-                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+            } else if (inContextOrg) {
+                log.debug('settings for own org')
+                result.settings.addAll(allSettings.findAll { it.key in ownerSet })
+
+                if (org.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
+                    result.settings.addAll(allSettings.findAll { it.key in accessSet })
+                    result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
+                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
+                } else if (['ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
+                    result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
+                } else if (['FAKE'].contains(org.getCustomerType())) {
+                    result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                }
+            } else if (isComboRelated) {
+                log.debug('settings for combo related org: consortia or collective')
                 result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
             }
-            else if (['FAKE'].contains(org.getCustomerType())) {
-                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
-            }
-        }
-        else if (isComboRelated){
-            log.debug( 'settings for combo related org: consortia or collective')
-            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
         }
         List bm = du.stopBenchmark()
         result.benchMark = bm
