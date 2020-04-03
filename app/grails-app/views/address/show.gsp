@@ -1,22 +1,21 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Address; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; de.laser.helper.RDConstants; static de.laser.helper.RDStore.*" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Address; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; de.laser.helper.RDConstants;" %>
 <!doctype html>
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'address.label')}" />
-		<title><g:message code="default.show.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
 	<semui:breadcrumbs>
-		<g:if test="${(OT_PROVIDER.id in addressInstance?.org?.getallOrgTypeIds())}">
-			<semui:crumb message="menu.public.all_provider" controller="organisation" action="listProvider"/>
-			<semui:crumb message="${addressInstance?.org?.getDesignation()}" controller="organisation" action="show" id="${addressInstance?.org?.id}"/>
-			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
+		<g:if test="${addressInstance.org && (RDStore.OT_PROVIDER.id in addressInstance.org.getallOrgTypeIds())}">
+			<semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
+			<semui:crumb message="${addressInstance.org.getDesignation()}" controller="organisation" action="show" id="${addressInstance.org.id}"/>
 		</g:if>
 		<g:else>
 			<semui:crumb message="menu.public.all_orgs" controller="organisation" action="index"/>
-			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 		</g:else>
+		<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
 	<br>
 		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
@@ -46,23 +45,23 @@
                             <dt>${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}</dt>
                             <dd><semui:xEditableRefData owner="${addressInstance}" field="type" config="${RDConstants.ADDRESS_TYPE}" /></dd>
 
-                            <g:if test="${addressInstance?.prs}">
+                            <g:if test="${addressInstance.prs}">
                                 <dt><g:message code="address.prs.label" /></dt>
-                                <dd><g:link controller="person" action="show" id="${addressInstance?.prs?.id}">${addressInstance?.prs}</g:link></dd>
+                                <dd><g:link controller="person" action="show" id="${addressInstance.prs.id}">${addressInstance.prs}</g:link></dd>
                             </g:if>
 
-                            <g:if test="${addressInstance?.org}">
+                            <g:if test="${addressInstance.org}">
                                 <dt><g:message code="address.org.label" /></dt>
-                                <dd><g:link controller="organisation" action="show" id="${addressInstance?.org?.id}">${addressInstance?.org}</g:link></dd>
+                                <dd><g:link controller="organisation" action="show" id="${addressInstance.org.id}">${addressInstance.org}</g:link></dd>
                             </g:if>
 
 
-                            <g:if test="${addressInstance?.prs?.tenant}">
+                            <g:if test="${addressInstance.prs?.tenant}">
                                 <dt><g:message code="person.tenant.label" /></dt>
-                                <dd><g:link controller="organisation" action="show" id="${addressInstance?.prs?.tenant?.id}">${addressInstance?.prs?.tenant}</g:link></dd>
+                                <dd><g:link controller="organisation" action="show" id="${addressInstance.prs.tenant.id}">${addressInstance.prs.tenant}</g:link></dd>
                             </g:if>
 
-                            <g:if test="${addressInstance?.prs?.isPublic}">
+                            <g:if test="${addressInstance.prs?.isPublic}">
                                 <dt><g:message code="person.isPublic.label" /></dt>
                                 <dd>${RDStore.YN_YES.getI10n('value')}</dd>
                             </g:if>

@@ -1,11 +1,10 @@
-
-<%@ page import="com.k_int.kbplus.Address" %>
+<%@ page import="com.k_int.kbplus.Address;de.laser.helper.RDStore;" %>
 <!doctype html>
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'address.label')}" />
-		<title><g:message code="default.list.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
 		<div>
@@ -63,7 +62,7 @@
 						
 							<td>${fieldValue(bean: addressInstance, field: "org")}</td>
 							
-							<td>${addressInstance?.prs?.isPublic ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</td>
+							<td>${addressInstance.prs?.isPublic ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</td>
 						
 							<td class="link">
 								<g:link action="show" id="${addressInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>

@@ -4,21 +4,19 @@
 	<head>
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'address.label')}" />
-		<title><g:message code="default.edit.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 
 	<body>
 	<semui:breadcrumbs>
-		<g:if test="${(RDStore.OT_PROVIDER.id in addressInstance?.org?.getallOrgTypeIds())}">
-			<semui:crumb message="menu.public.all_provider" controller="organisation" action="listProvider"/>
-			<semui:crumb message="${addressInstance?.org?.getDesignation()}" controller="organisation" action="show" id="${addressInstance?.org?.id}"/>
-			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
+		<g:if test="${addressInstance.org && (RDStore.OT_PROVIDER.id in addressInstance.org.getallOrgTypeIds())}">
+			<semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
+			<semui:crumb message="${addressInstance.org.getDesignation()}" controller="organisation" action="show" id="${addressInstance.org.id}"/>
 		</g:if>
 		<g:else>
 			<semui:crumb message="menu.public.all_orgs" controller="organisation" action="index"/>
-			<semui:crumb message="${addressInstance?.org?.getDesignation()}" controller="organisation" action="show" id="${addressInstance?.org?.id}"/>
-			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 		</g:else>
+		<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
 	<br>
 		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
@@ -32,8 +30,8 @@
 			<div class="twelve wide column">
 
 				<fieldset>
-					<g:form class="ui form" action="edit" id="${addressInstance?.id}" >
-						<g:hiddenField name="version" value="${addressInstance?.version}" />
+					<g:form class="ui form" action="edit" id="${addressInstance.id}" >
+						<g:hiddenField name="version" value="${addressInstance.version}" />
 						<fieldset>
 							<% // <f:all bean="addressInstance"/> %>
 							<g:render template="form"/>
