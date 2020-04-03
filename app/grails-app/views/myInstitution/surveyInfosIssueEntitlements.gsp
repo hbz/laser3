@@ -153,8 +153,8 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                             <div class="eight wide field" style="text-align: left;">
                                 <g:if test="${subscriptionInstance}">
                                     <g:link controller="subscription" action="renewEntitlementsWithSurvey"
-                                            id="${subscriptionInstance?.id}"
-                                            params="${[targetSubscriptionId: subscriptionInstance?.id,
+                                            id="${subscriptionInstance.id}"
+                                            params="${[targetSubscriptionId: subscriptionInstance.id,
                                                        surveyConfigID      : surveyConfig?.id]}"
                                             class="ui button">
                                         <g:message code="surveyInfo.toIssueEntitlementsSurvey"/>
