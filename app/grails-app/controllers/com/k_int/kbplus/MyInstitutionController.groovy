@@ -2711,7 +2711,7 @@ AND EXISTS (
             }
         }
         else{
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, surveyConfig)
+            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
 
             boolean allResultHaveValue = true
             //Verbindlich??|
