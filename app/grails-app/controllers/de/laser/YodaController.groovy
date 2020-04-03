@@ -686,6 +686,21 @@ class YodaController {
         Map<String, Object> result = [:]
         log.debug("manageESSources ..")
         result.sources = ElasticsearchSource.list()
+        result.editable = true
+
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def manageFTControl() {
+        Map<String, Object> result = [:]
+        log.debug("manageFTControle ..")
+        result.ftControls = FTControl.list()
+        result.dataloadService = [:]
+        result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
+        result.dataloadService.update_running = dataloadService.update_running
+        result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
+        result.editable = true
 
         result
     }
