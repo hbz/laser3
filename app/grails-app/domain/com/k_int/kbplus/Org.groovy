@@ -13,19 +13,14 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
-import grails.util.Holders
+
 import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.codehaus.groovy.grails.web.util.WebUtils
-import org.hibernate.AssertionFailure
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
-
-import static de.laser.helper.RDStore.getCOMBO_TYPE_DEPARTMENT
-import static de.laser.helper.RDStore.getOT_PROVIDER
 
 @Log4j
 class Org
@@ -718,7 +713,7 @@ class Org
         isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !hasPerm("ORG_INST")
     }
     void createCoreIdentifiersIfNotExist(){
-        if(!Combo.findByFromOrgAndType(this ,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in this.getallOrgTypeIds())){
+        if(!Combo.findByFromOrgAndType(this, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in this.getallOrgTypeIds())){
 
             boolean isChanged = false
             IdentifierNamespace.CORE_ORG_NS.each{ coreNs ->
