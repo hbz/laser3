@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2329    02.04.2020  rc1.3       Moe     Bug         Menüleiste "Alle" - "Alle Titel" : Bug      
+
 --      02.04.2020  rc1.3       Andreas Feature     Neuer Lizenzstatus "Im Auswahlprozess"
 
 2320    02.04.2020  rc1.3       David   Bug         API (0.86): Duplikate in Listenendpunkten
