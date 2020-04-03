@@ -41,6 +41,8 @@ class ApiFilter extends GenericFilterBean {
                 def body = IOUtils.toString(request.getInputStream())
 
                 String authorization = request.getHeader('X-Authorization')
+                boolean debugMode    = request.getHeader('X-Debug') == 'true'
+
                 try {
                     if (authorization) {
                         def p1 = authorization.split(' ')
@@ -79,10 +81,12 @@ class ApiFilter extends GenericFilterBean {
                             if (isAuthorized) {
                                 request.setAttribute('authorizedApiOrg', apiOrg)
                                 request.setAttribute('authorizedApiPostBody', body)
+                                request.setAttribute('debugMode', debugMode)
                             }
                         }
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     isAuthorized = false
                 }
 
@@ -90,7 +94,8 @@ class ApiFilter extends GenericFilterBean {
                     //println "VALID authorization: " + authorization
                     request.getRequestDispatcher(path).forward(servletRequest, servletResponse)
                     return
-                } else {
+                }
+                else {
                     //println "INVALID authorization: " + authorization + " < " + checksum
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
                     response.setContentType(Constants.MIME_APPLICATION_JSON)
