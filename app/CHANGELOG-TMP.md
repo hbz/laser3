@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      03.04.2020  rc1.3       David   Feature     "Änderungen automatisch übernehmen?" auf JA bei neuen Teilnehmerverträgen     
+
+2334    03.04.2020  rc1.3       David   Feature     API (0.87): Optionale Ausgabe von Zusatzinformationen (subscriptionList, licenseList)
+
 2335    03.04.2020  rc1.3       David   Bug         "Alle Änderungen annehmen" funktioniert nicht
 
 2329    03.04.2020  rc1.3       Moe     Bug         Menüleiste "Alle" - "Alle Titel" : Bug      
