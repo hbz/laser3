@@ -783,11 +783,11 @@ class OrganisationController extends AbstractDebugController {
         du.setBenchmark('editable_identifier')
 
 
-        def orgSector = RDStore.O_SECTOR_PUBLISHER
-        def orgType = RDStore.OT_PROVIDER
+        RefdataValue orgSector = RDStore.O_SECTOR_PUBLISHER
+        RefdataValue orgType = RDStore.OT_PROVIDER
 
         //IF ORG is a Provider
-        if(result.orgInstance?.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
+        if(result.orgInstance?.sector == orgSector || orgType.id in result.orgInstance?.getallOrgTypeIds()) {
             du.setBenchmark('editable_identifier2')
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
