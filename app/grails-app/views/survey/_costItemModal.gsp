@@ -243,16 +243,6 @@
         $("#editCost").submit(function(e){
             e.preventDefault();
             if($("[name='newCostCurrency']").val() != 0) {
-                var valuesCorrect = checkValues();
-                if(valuesCorrect) {
-                    $("#newCostCurrency").parent(".field").removeClass("error");
-                    if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
-                        alert("${message(code:'financials.newCosts.entitlementError')}");
-                    else $(this).unbind('submit').submit();
-                }
-                else {
-                    alert("${message(code:'financials.newCosts.calculationError')}");
-                }
             }
             else {
                 alert("${message(code:'financials.newCosts.noCurrencyPicked')}");

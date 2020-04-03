@@ -1117,28 +1117,36 @@ class SubscriptionController extends AbstractDebugController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
-        params.id = params.targetSubscriptionId
-        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
         result.offset = params.offset  ? Integer.parseInt(params.offset) : 0
 
         params.offset = 0
         params.max = 5000
+        params.tab = params.tab ?: 'allIEs'
 
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : Subscription.get(params.id)
+        Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
+        params.id = newSub.id
+        params.sourceSubscriptionId = baseSub.id
 
-        List<IssueEntitlement> sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
+        List<IssueEntitlement> sourceIEs
+
+        if(params.tab == 'allIEs') {
+            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
+        }
+        if(params.tab == 'selectedIEs') {
+            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params+[ieAcceptStatusNotFixed: true])
+        }
         List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
 
         result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
-
-        result.num_ies_rows = sourceIEs.size()
+        result.countAllIEs = subscriptionService.getIssueEntitlementsFixed(baseSub).size()
+        result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
         result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
         result.targetIEs = targetIEs
         result.newSub = newSub
         result.subscription = baseSub
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.subscriber = result.newSub.getSubscriber()
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
 

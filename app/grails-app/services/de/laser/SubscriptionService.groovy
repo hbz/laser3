@@ -238,6 +238,11 @@ class SubscriptionService {
                 qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
             }
 
+            if(params.ieAcceptStatusNotFixed) {
+                base_qry += " and ie.acceptStatus != :ieAcceptStatus "
+                qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+            }
+
             if (params.pkgfilter && (params.pkgfilter != '')) {
                 base_qry += " and ie.tipp.pkg.id = :pkgId "
                 qry_params.pkgId = Long.parseLong(params.pkgfilter)
@@ -282,6 +287,15 @@ class SubscriptionService {
     }
 
     List getIssueEntitlementsNotFixed(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
+
+    List getSelectedIssueEntitlementsBySurvey(Subscription subscription, SurveyInfo surveyInfo) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])

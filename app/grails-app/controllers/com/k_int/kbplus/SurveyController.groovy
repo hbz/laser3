@@ -790,7 +790,7 @@ class SurveyController {
         result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        params.tab = params.tab ?: (result.surveyConfig.type == 'Subscription' ? 'selectedSubParticipants' : 'selectedParticipants')
+        params.tab = params.tab ?: (result.surveyConfig.type == 'GeneralSurvey' ? 'selectedParticipants' : 'selectedSubParticipants')
 
         result
 
