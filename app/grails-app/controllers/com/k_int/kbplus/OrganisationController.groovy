@@ -836,7 +836,7 @@ class OrganisationController extends AbstractDebugController {
                 (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
-        if (! result.hasAccessToCustomeridentifier) {
+        if (result.hasAccessToCustomeridentifier) {
 
             result.user = user
             result.orgInstance = org
