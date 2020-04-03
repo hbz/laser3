@@ -4,6 +4,9 @@
 
 2329    02.04.2020  rc1.3       Moe     Bug         Menüleiste "Alle" - "Alle Titel" : Bug      
 
+2332    03.04.2020  rc1.3       David   Bug         Fehler bei Aufruf des Einrichtungsprofils
+
+
 --      02.04.2020  rc1.3       Andreas Feature     Neuer Lizenzstatus "Im Auswahlprozess"
 
 2320    02.04.2020  rc1.3       David   Bug         API (0.86): Duplikate in Listenendpunkten

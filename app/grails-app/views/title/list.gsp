@@ -78,7 +78,7 @@
                             ${hit.getSourceAsMap().publisher?:''}
                           </td>
                           <td>
-                            <g:each in="${hit.getSourceAsMap().identifiers.sort{it.type}}" var="id">
+                            <g:each in="${hit.getSourceAsMap().identifiers?.sort{it.type}}" var="id">
                               <div style="white-space:nowrap"><span>${id.type}:</span> <span>${id.value}</span></div>
                             </g:each>
                           </td>
