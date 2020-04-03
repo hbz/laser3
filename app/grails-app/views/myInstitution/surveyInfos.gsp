@@ -142,7 +142,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
     <div class="sixteen wide column">
 
         <div class="la-inline-lists">
-            <g:if test="${surveyInfo && surveyInfo.surveyConfigs[0].type == "Subscription"}">
+            <g:if test="${surveyInfo && surveyConfig.type == "Subscription"}">
 
                 <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                                   subscriptionInstance: subscriptionInstance,
@@ -151,7 +151,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
 
             </g:if>
 
-            <g:if test="${surveyInfo && surveyInfo.surveyConfigs[0].type == "GeneralSurvey"}">
+            <g:if test="${surveyInfo && surveyConfig.type == "GeneralSurvey"}">
 
                 <g:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
                                                                              surveyResults: surveyResults]"/>
@@ -169,7 +169,8 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
             data-confirm-term-how="concludeBinding"
             controller="myInstitution"
             action="surveyInfoFinish"
-            id="${surveyInfo.id}">
+            id="${surveyInfo.id}"
+            params="[surveyConfigID: surveyConfig.id]">
         <g:message
                 code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finis.info2'}"/>
     </g:link>

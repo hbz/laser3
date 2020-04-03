@@ -68,6 +68,9 @@
 
         <g:if test="${accessService.checkPerm("ORG_INST") && subscriptionInstance.instanceOf}">
             <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: params.id]}" message="myinst.copyMyElements" />
+            <g:if test="${navPrevSubscription}">
+            <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: navPrevSubscription[0].id, targetSubscriptionId: params.id]}" message="myinst.copyMyElementsFromPrevSubscription" />
+            </g:if>
         </g:if>
 
         <div class="divider"></div>

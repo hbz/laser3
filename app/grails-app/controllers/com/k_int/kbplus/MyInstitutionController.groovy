@@ -2711,15 +2711,15 @@ AND EXISTS (
             }
         }
         else{
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, surveyInfo.surveyConfigs)
+            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, surveyConfig)
 
             boolean allResultHaveValue = true
             //Verbindlich??|
             if(surveyInfo.isMandatory) {
 
                 boolean noParticipation = false
-                if(surveyInfo.surveyConfigs.size() == 1 && surveyInfo.surveyConfigs[0].subSurveyUseForTransfer){
-                    noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyInfo.surveyConfig[0], RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+                if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
+                    noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
                 }
 
                 if(!noParticipation) {

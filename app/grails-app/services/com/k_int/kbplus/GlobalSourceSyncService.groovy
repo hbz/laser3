@@ -166,8 +166,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
             providersToUpdate << provider.'@uuid'.text()
         }
         titlesToUpdate.each { titleUUID ->
+            //that may destruct debugging ...
             try {
                 createOrUpdateTitle(titleUUID)
+                cleanUpGorm()
             }
             catch (SyncException e) {
                 SystemEvent.createEvent('GSSS_OAI_ERROR',[titleRecordKey:titleUUID])
@@ -175,10 +177,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         platformsToUpdate.each { Map<String,String> platformParams ->
             createOrUpdatePlatform(platformParams)
+            cleanUpGorm()
         }
         providersToUpdate.each { providerUUID ->
             try {
                 createOrUpdateProvider(providerUUID)
+                cleanUpGorm()
             }
             catch (SyncException e) {
                 SystemEvent.createEvent('GSSS_OAI_ERROR',[providerRecordKey:providerUUID])
@@ -373,7 +377,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         if(platformUUID) {
                             result.nominalPlatform = Platform.findByGokbId(platformUUID)
                         }
-                        tipps.each { tipp ->
+                        tipps.eachWithIndex { tipp, int idx ->
+                            log.info("now processing entry #${idx} with UUID ${tipp.uuid}")
                             addNewTIPP(result,tipp)
                         }
                     }
@@ -407,8 +412,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 title: [
                         gokbId: tipp.title.'@uuid'.text()
                 ],
-                status: tipp.status.text(),
                 platformUUID: tipp.platform.'@uuid'.text(),
+                status: tipp.status.text(),
                 coverages: [],
                 hostPlatformURL: tipp.url.text(),
                 identifiers: [],

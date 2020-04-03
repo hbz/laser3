@@ -64,7 +64,7 @@
                 <td>
                     <p><strong>${choosenOrg.name} (${choosenOrg.shortname})</strong></p>
 
-                    ${choosenOrg.libraryType.getI10n('value')}
+                    ${choosenOrg.libraryType?.getI10n('value')}
                 </td>
                 <td>
                     <g:if test="${choosenOrgCPAs}">
