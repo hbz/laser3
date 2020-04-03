@@ -2,10 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2329    02.04.2020  rc1.3       Moe     Bug         Menüleiste "Alle" - "Alle Titel" : Bug      
+2335    03.04.2020  rc1.3       David   Bug         "Alle Änderungen annehmen" funktioniert nicht
+
+2329    03.04.2020  rc1.3       Moe     Bug         Menüleiste "Alle" - "Alle Titel" : Bug      
 
 2332    03.04.2020  rc1.3       David   Bug         Fehler bei Aufruf des Einrichtungsprofils
-
 
 --      02.04.2020  rc1.3       Andreas Feature     Neuer Lizenzstatus "Im Auswahlprozess"
 
