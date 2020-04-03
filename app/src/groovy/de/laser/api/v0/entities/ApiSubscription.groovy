@@ -105,6 +105,8 @@ class ApiSubscription {
 			result.add(ApiStubReader.requestSubscriptionStub(sub, context))
         }
 
+		ApiToolkit.cleanUpDebugInfo(result)
+
 		return (result ? new JSON(result) : null)
     }
 

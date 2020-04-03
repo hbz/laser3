@@ -322,21 +322,34 @@ class LicenseController extends AbstractDebugController {
         if (accessService.checkPerm("ORG_CONSORTIUM")) {
             orgType = [OT_CONSORTIUM.id.toString()]
         }
-        RefdataValue role_lic      = OR_LICENSEE_CONS
-        RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
-        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            role_lic = OR_LICENSEE_COLL
+
+        // TODO: not longer used? -> remove and refactor params
+        //RefdataValue role_lic      = OR_LICENSEE_CONS
+        //RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
+        //if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+        //    role_lic = OR_LICENSEE_COLL
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             if (accessService.checkPerm("ORG_INST_COLLECTIVE, ORG_CONSORTIUM")) {
-                List<Org> members = []
-                def licenseCopy
 
-                params.list('selectedOrgs').each { it ->
-                    def fo = Org.findById(Long.valueOf(it))
-                    members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
+                if (params.cmd == 'generate') {
+                    institutionsService.copyLicense(
+                            result.license, [
+                                lic_name: "${result.license.reference} (Teilnehmervertrag)",
+                                isSlaved: "true",
+                                asOrgType: orgType,
+                                copyStartEnd: true
+                            ],
+                            InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                 }
+
+                /*--
+                    not longer used? -> remove and refactor params
+
+
+                License licenseCopy
+                List<Org> members = []
 
                 Map<String, Object> copyParams = [
                         lic_name: "${result.license.reference}",
@@ -345,15 +358,13 @@ class LicenseController extends AbstractDebugController {
                         copyStartEnd: true
                 ]
 
-                if (params.cmd == 'generate') {
-                    copyParams['lic_name'] = copyParams['lic_name'] + " (Teilnehmervertrag)"
-
-                    licenseCopy = institutionsService.copyLicense(
-                            result.license, copyParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                params.list('selectedOrgs').each { it ->
+                    Org fo = Org.findById(Long.valueOf(it))
+                    members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
                 }
 
                 members.each { cm ->
-                    def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
+                    String postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
 
                     if (result.license) {
                         copyParams['lic_name'] = copyParams['lic_name'] + " (${postfix})"
@@ -376,6 +387,8 @@ class LicenseController extends AbstractDebugController {
                         }
                     }
                 }
+                --*/
+
                 redirect controller: 'license', action: 'members', params: [id: result.license?.id]
             }
             else {

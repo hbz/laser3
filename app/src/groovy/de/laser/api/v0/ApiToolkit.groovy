@@ -7,6 +7,8 @@ import de.laser.helper.Constants
 import de.laser.helper.DateUtil
 import groovy.util.logging.Log4j
 import org.apache.commons.lang.RandomStringUtils
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.RequestContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -66,6 +68,19 @@ class ApiToolkit {
             return ApiToolkit.API_LEVEL_INVOICETOOL == apiLevel.getValue()
         }
         return false
+    }
+
+    static boolean isDebugMode() {
+        RequestAttributes reqAttr = RequestContextHolder.currentRequestAttributes()
+        reqAttr.getAttribute('debugMode', RequestAttributes.SCOPE_REQUEST)
+    }
+
+    static cleanUpDebugInfo(Collection<Object> list) {
+        if (! isDebugMode()) {
+            list.removeAll(Constants.HTTP_FORBIDDEN)
+        }
+
+        list
     }
 
     static Map<String, Object> cleanUp(Map map, boolean removeNullValues, boolean removeEmptyLists) {
