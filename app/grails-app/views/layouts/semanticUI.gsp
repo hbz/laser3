@@ -474,10 +474,17 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</g:link>
-                            <g:link class="item" role="menuitem" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</g:link>
-                            <%--<g:link class="item" role="menuitem" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
-                            <g:link class="item" role="menuitem" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
+                            <div class="item" role="menuitem" aria-haspopup="true">
+                                ElasticSearch
+                                <i aria-hidden="true" class="dropdown icon"></i>
+                                <div class="menu">
+                                    <g:link class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</g:link>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</g:link>
+                                    <%--<g:link class="item" role="menuitem" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="manageFTControl" >Manage FTControl</g:link>
+                                </div>
+                            </div>
 
                             <div class="divider"></div>
 
