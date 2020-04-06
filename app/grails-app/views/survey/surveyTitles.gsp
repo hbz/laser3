@@ -125,12 +125,7 @@
                                 action="show"><strong>${ie.tipp.title.title}</strong>
                         </g:link>
                         <g:if test="${ie.tipp.hostPlatformURL}">
-                            <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                            <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
-                               data-content="${ie.tipp.platform.name}"
-
-                               href="${ie.tipp.hostPlatformURL.contains('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"
-                               target="_blank"><i class="cloud icon"></i></a>
+                            <semui:linkIcon href="${ie.tipp.hostPlatformURL.startsWith('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"/>
                         </g:if>
                         <br>
                         <!-- START TEMPLATE -->

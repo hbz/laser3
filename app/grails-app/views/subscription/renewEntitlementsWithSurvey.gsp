@@ -99,6 +99,18 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                                       value="${params.asAt}"/>
                 </div>
             </g:if>
+        </div>
+        <div class="three fields">
+
+            <div class="field">
+                <label for="ebookFirstAutorOrFirstEditor">${message(code: 'renewEntitlementsWithSurvey.filter.ebookFirstAutorOrFirstEditor')}</label>
+                <input name="ebookFirstAutorOrFirstEditor" id="ebookFirstAutorOrFirstEditor" value="${params.ebookFirstAutorOrFirstEditor}"/>
+            </div>
+
+            <div class="field">
+                <label for="summaryOfContent">${message(code: 'renewEntitlementsWithSurvey.filter.summaryOfContent')}</label>
+                <input name="summaryOfContent" id="summaryOfContent" value="${params.summaryOfContent}"/>
+            </div>
             <div class="field la-field-right-aligned">
                 <g:link action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
@@ -118,7 +130,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             id="${newSub.id}"
             params="[surveyConfigID: surveyConfig.id, tab: 'allIEs']">
         <g:message code="renewEntitlementsWithSurvey.selectableTitles"/>
-        <div class="ui floating circular label">${countAllIEs}</div>
+        <div class="ui circular label">${countAllIEs}</div>
     </g:link>
 
     <g:link class="item ${params.tab == 'selectedIEs' ? 'active' : ''}"
@@ -126,7 +138,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             id="${newSub.id}"
             params="[surveyConfigID: surveyConfig.id, tab: 'selectedIEs']">
         <g:message code="renewEntitlementsWithSurvey.currentEntitlements"/>
-        <div class="ui floating circular label">${countSelectedIEs}</div></g:link>
+        <div class="ui circular label">${countSelectedIEs}</div></g:link>
 
 </div>
 

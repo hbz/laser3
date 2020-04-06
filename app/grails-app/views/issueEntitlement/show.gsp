@@ -93,7 +93,7 @@
 
   <g:if test="${issueEntitlementInstance.tipp.hostPlatformURL}">
       <dt><g:message code="tipp.hostPlatformURL"/></dt>
-      <dd> <a href="${issueEntitlementInstance.tipp.hostPlatformURL.contains('http') ?:'http://'+issueEntitlementInstance.tipp.hostPlatformURL}" target="_blank" TITLE="${issueEntitlementInstance.tipp.hostPlatformURL}">${issueEntitlementInstance.tipp.platform.name}</a></dd>
+      <dd> <a href="${issueEntitlementInstance.tipp.hostPlatformURL.startsWith('http') ?:'http://'+issueEntitlementInstance.tipp.hostPlatformURL}" target="_blank" TITLE="${issueEntitlementInstance.tipp.hostPlatformURL}">${issueEntitlementInstance.tipp.platform.name}</a></dd>
   </g:if>
 </dl>
 

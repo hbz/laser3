@@ -44,14 +44,15 @@
                 </div>
             </div>
         </g:if><g:else>
-        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info3')}">
-        <div class="field disabled">
+
+        <div class="field">
+            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info3')}">
             <label>${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info')} <i class="question circle icon"></i></label>
-            <div>
-                <input type="checkbox" name="subSurveyUseForTransfer" readonly="">
+            </span>
+            <div class="field disabled">
+                <input type="checkbox" name="subSurveyUseForTransfer">
             </div>
         </div>
-        </span>
     </g:else>
 
         <div class="field">
