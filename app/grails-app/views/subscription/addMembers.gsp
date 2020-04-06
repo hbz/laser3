@@ -108,13 +108,13 @@
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics"
                                        value="shared">
-                                <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_shared', args: superOrgType)}</label>
+                                <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_shared')}</label>
                             </div>
 
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics"
                                        value="explicit">
-                                <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_explicit', args: superOrgType)}</label>
+                                <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_explicit')}</label>
                             </div>
 
                             <g:if test="${subscriptionInstance.owner.derivedLicenses}">
@@ -151,16 +151,16 @@
             <div class="two fields">
                 <div class="field">
                     <label><g:message code="myinst.addMembers.linkPackages"/></label>
-                    <div class="ui checkbox">
-                        <input type="checkbox" id="linkAllPackages" name="linkAllPackages">
-                        <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages" args="${superOrgType}"/></label>
-                    </div>
-                    <div class="ui checkbox">
-                        <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements">
-                        <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
-                    </div>
                     <div class="field">
                         <g:if test="${validPackages}">
+                            <div class="ui checkbox">
+                                <input type="checkbox" id="linkAllPackages" name="linkAllPackages">
+                                <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages" args="${superOrgType}"/></label>
+                            </div>
+                            <div class="ui checkbox">
+                                <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements">
+                                <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                            </div>
                             <g:select class="ui search multiple dropdown"
                                       optionKey="id" optionValue="${{ it.getPackageName() }}"
                                       from="${validPackages}" name="packageSelection" value=""

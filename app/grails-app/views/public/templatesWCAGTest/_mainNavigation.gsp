@@ -64,7 +64,7 @@
 
                     <div class="divider"></div>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Konsorten</a>
+                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Teilnehmer</a>
 
                     <a href="https://www.w3.org" class="item" role="menuitem" >Meine Lizenzen pro Teilnehmer</a>
 

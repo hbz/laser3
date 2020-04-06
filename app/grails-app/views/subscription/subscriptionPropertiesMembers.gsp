@@ -191,6 +191,14 @@
                         </div>
 
                         <div class="field">
+                            <label>${message(code: 'subscription.form.label')}</label>
+                            <laser:select name="form"
+                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
+                                          optionKey="id" optionValue="value" noSelection="${['': '']}"
+                                          value="${['': '']}"/>
+                        </div>
+
+                        <div class="field">
                             <label>${message(code: 'subscription.resource.label')}</label>
                             <laser:select name="resource"
                                           from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"

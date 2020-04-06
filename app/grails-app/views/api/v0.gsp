@@ -174,7 +174,7 @@ console.log('(http-header) x-authorization: ' + authorization)
             }
 
             var jabba = SwaggerUIBundle({
-                url: "${grailsApplication.config.grails.serverURL}/api/${apiVersion}/spec",
+                url: "${grailsApplication.config.grails.serverURL}/api/${apiVersion}/specs.yaml",
                 dom_id: '#main-container',
                 presets: [
                     SwaggerUIBundle.presets.apis,

@@ -124,7 +124,7 @@
 
             <g:if test="${availableComboConsOrgs}">
                 <div class="ui segment form">
-                    <g:set var="orgLabel" value="Konsorten" />
+                    <g:set var="orgLabel" value="Teilnehmer" />
 
                     <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboConsOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
                 </div>
