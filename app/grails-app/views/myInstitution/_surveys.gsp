@@ -27,6 +27,10 @@
                             ${surveyConfig?.getSurveyName()}
                         </g:link>
                     </g:if>
+
+                    <div class="ui label left pointing survey-${surveyInfo?.type.value}">
+                        ${surveyInfo?.type.getI10n('value')}
+                    </div>
                 </div>
 
                 <div class="meta">
@@ -54,17 +58,6 @@
                     </p>
                 </div>
 
-                <div class="extra">
-
-                    <div class="ui label">
-                        ${surveyInfo?.status.getI10n('value')}
-                    </div>
-
-                    <div class="ui label survey-${surveyInfo?.type.value}">
-                       ${surveyInfo?.type.getI10n('value')}
-                    </div>
-
-                </div>
             </div>
         </div>
 

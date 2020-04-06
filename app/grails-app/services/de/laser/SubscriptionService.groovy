@@ -244,6 +244,16 @@ class SubscriptionService {
                 qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
             }
 
+            if(params.summaryOfContent) {
+                base_qry += " and lower(ie.tipp.title.summaryOfContent) like :summaryOfContent "
+                qry_params.summaryOfContent = "%${params.summaryOfContent}%"
+            }
+
+            if(params.ebookFirstAutorOrFirstEditor) {
+                base_qry += " and (lower(ie.tipp.title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+                qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor}%"
+            }
+
             if (params.pkgfilter && (params.pkgfilter != '')) {
                 base_qry += " and ie.tipp.pkg.id = :pkgId "
                 qry_params.pkgId = Long.parseLong(params.pkgfilter)
