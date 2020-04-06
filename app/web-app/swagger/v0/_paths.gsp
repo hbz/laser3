@@ -251,6 +251,7 @@
 
       parameters:
         - $ref: "#/components/parameters/authorization"
+        - $ref: "#/components/parameters/debug"
 
       responses:
         200:
@@ -274,6 +275,7 @@
 
       parameters:
         - $ref: "#/components/parameters/authorization"
+        - $ref: "#/components/parameters/debug"
 
       responses:
         200:

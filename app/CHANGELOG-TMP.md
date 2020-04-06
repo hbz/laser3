@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2341    05.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
+2337    06.04.2020  rc1.3       David   Feature     API (0.89): Doku und Ausgabe für Properties aktualisieren
+
+2341    06.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
 
 2339    03.04.2020  rc1.3       Andreas Bug         verschiedene Ansichts- und Darstellungssachen
 
