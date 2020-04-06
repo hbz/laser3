@@ -244,7 +244,7 @@
                                             action="show"><strong>${ie.tipp.title.title}</strong>
                                     </g:link>
                                     <g:if test="${ie.tipp.hostPlatformURL}">
-                                        <semui:linkIcon href="${ie.tipp.hostPlatformURL.contains('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"/>
+                                        <semui:linkIcon href="${ie.tipp.hostPlatformURL.startsWith('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"/>
                                     </g:if>
                                     <br>
                                     <!-- START TEMPLATE -->

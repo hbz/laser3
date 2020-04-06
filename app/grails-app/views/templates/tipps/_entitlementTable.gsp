@@ -59,11 +59,11 @@
                                             id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
                             <g:if test="${tipp.hostPlatformURL}">
-                                <semui:linkIcon href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+                                <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                             </g:if>
                             <br>
                             <div class="la-icon-list">
-                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title.volume}">
+                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp.title.volume}">
                                     <div class="item">
                                         <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
                                         <div class="content">
@@ -72,7 +72,7 @@
                                     </div>
                                 </g:if>
 
-                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title.firstAuthor || tipp?.title.firstEditor)}">
+                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
                                     <div class="item">
                                         <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
                                         <div class="content">
@@ -81,7 +81,7 @@
                                     </div>
                                 </g:if>
 
-                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title.editionStatement}">
+                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp.title.editionStatement}">
                                     <div class="item">
                                         <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
                                         <div class="content">
@@ -90,7 +90,7 @@
                                     </div>
                                 </g:if>
 
-                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title.summaryOfContent}">
+                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp.title.summaryOfContent}">
                                     <div class="item">
                                         <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
                                         <div class="content">

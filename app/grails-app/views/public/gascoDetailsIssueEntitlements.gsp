@@ -73,7 +73,7 @@
                         <br />
 
                         <g:if test="${tipp.hostPlatformURL}">
-                            <semui:linkIcon href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+                            <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                         </g:if>
                         <br />
 

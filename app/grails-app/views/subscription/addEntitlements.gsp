@@ -198,11 +198,11 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             <strong><g:link controller="title" action="show"
                             id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
-            <g:if test="${tipp?.title instanceof BookInstance && tipp?.title?.volume}">
+            <g:if test="${tipp?.title instanceof BookInstance && tipp.title.volume}">
                 (${message(code: 'title.volume.label')} ${tipp.title.volume})
             </g:if>
 
-            <g:if test="${tipp?.title instanceof BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
+            <g:if test="${tipp?.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
                 <br><b>${tipp?.title?.getEbookFirstAutorOrFirstEditor()}</b>
             </g:if>
 
@@ -244,7 +244,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             </g:if>
 
             <g:if test="${tipp.hostPlatformURL}">
-                <semui:linkIcon href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+                <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
             </g:if>
             <br>
             <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
