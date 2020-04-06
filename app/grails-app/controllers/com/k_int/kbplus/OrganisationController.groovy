@@ -833,7 +833,7 @@ class OrganisationController extends AbstractDebugController {
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
 
         result.hasAccessToCustomeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_ADM')) ||
+                (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_USER')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         if (result.hasAccessToCustomeridentifier) {
@@ -842,9 +842,9 @@ class OrganisationController extends AbstractDebugController {
             result.orgInstance = org
 
             result.inContextOrg = inContextOrg
-            result.editable_customeridentifier =
-                    SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ||
-                            (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
+            result.editable_customeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
+                    (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')) ||
+                    SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
             result.isComboRelated = isComboRelated
 
             // adding default settings
@@ -1230,7 +1230,7 @@ class OrganisationController extends AbstractDebugController {
                 org: Org.get(request.getRequestURI().split('/').last()),
                 affiliation: "INST_USER",
                 comboPerm: "ORG_CONSORTIUM",
-                comboAffiliation: "INST_EDITOR",
+                comboAffiliation: "INST_USER",
                 specRoles: "ROLE_ADMIN,ROLE_ORG_EDITOR"
                 ])
     })
@@ -1256,7 +1256,7 @@ class OrganisationController extends AbstractDebugController {
                 org: Org.get(request.getRequestURI().split('/').last()),
                 affiliation: "INST_USER",
                 comboPerm: "ORG_CONSORTIUM",
-                comboAffiliation: "INST_EDITOR",
+                comboAffiliation: "INST_USER",
                 specRoles: "ROLE_ADMIN"
         ])
     })

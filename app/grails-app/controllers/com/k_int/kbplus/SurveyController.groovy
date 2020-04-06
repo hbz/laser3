@@ -1637,6 +1637,7 @@ class SurveyController {
                 }
 
                 surveyConfig.delete(flush: true)
+
                 //flash.message = g.message(code: "default.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
             }
             catch (DataIntegrityViolationException e) {
@@ -2056,39 +2057,35 @@ class SurveyController {
 
                     SurveyConfig.findAllBySurveyInfo(surveyInfo).each { config ->
 
-                        config.surveyInfo = null
                         DocContext.findAllBySurveyConfig(config).each {
-                            it.delete()
+                            it.delete(flush: true)
                         }
 
                         SurveyConfigProperties.findAllBySurveyConfig(config).each {
-                            it.delete()
+                            it.delete(flush: true)
                         }
 
                         SurveyOrg.findAllBySurveyConfig(config).each { surveyOrg ->
                             CostItem.findAllBySurveyOrg(surveyOrg).each {
-                                it.delete()
+                                it.delete(flush: true)
                             }
 
-                            surveyOrg.delete()
+                            surveyOrg.delete(flush: true)
                         }
 
                         SurveyResult.findAllBySurveyConfig(config) {
-                            it.delete()
+                            it.delete(flush: true)
                         }
 
                         Task.findAllBySurveyConfig(config) {
-                            it.delete()
+                            it.delete(flush: true)
                         }
-                        config.save()
-
                     }
 
-                    surveyInfo.surveyConfigs.clear()
+                    SurveyConfig.executeUpdate("delete from SurveyConfig sc where sc.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
-                    SurveyConfig.findAllBySurveyInfo(surveyInfo).each {it.delete()}
 
-                    surveyInfo.delete()
+                    surveyInfo.delete(flush: true)
                 }
 
                 flash.message = message(code: 'surveyInfo.delete.successfully')

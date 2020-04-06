@@ -224,16 +224,16 @@
                                 <strong><g:link controller="title" action="show"
                                                 id="${ti?.id}">${ti?.title}</g:link></strong>
 
-                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && ti?.volume}">
-                                    (${message(code: 'title.volume.label')} ${ti?.volume})
+                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && ti.volume}">
+                                    (${message(code: 'title.volume.label')} ${ti.volume})
                                 </g:if>
 
-                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && (ti?.firstAuthor || ti?.firstEditor)}">
+                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && (ti.firstAuthor || ti.firstEditor)}">
                                     <br><b>${ti?.getEbookFirstAutorOrFirstEditor()}</b>
                                 </g:if>
 
-                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance}">
-                                    <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${ti?.editionStatement}
+                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && ti.editionStatement}">
+                                    <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${ti.editionStatement}
                                     </div>
                                     <br/>
                                 </g:if>
@@ -250,7 +250,7 @@
                                 </g:each>
 
                                 <g:each in="${ti?.ids?.sort { it?.ns?.ns }}" var="id">
-                                    <span class="ui small teal image label">
+                                    <span class="ui small blue image label">
                                         ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:each>
