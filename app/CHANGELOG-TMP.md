@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2341    05.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
+
 2335/2184   03.04.2020  rc1.3   Andreas Bug         automatisches Akzeptieren von Änderungen bei Lizenzen und Verträgen korrigiert
 
 --      03.04.2020  rc1.3       David   Feature     "Änderungen automatisch übernehmen?" auf JA bei neuen Teilnehmerverträgen     

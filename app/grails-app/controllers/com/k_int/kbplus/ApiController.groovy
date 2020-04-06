@@ -35,8 +35,7 @@ class ApiController {
         }
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
-    def loadSpec() {
+    def loadSpecs() {
         Map<String, Object> result = fillRequestMap(params)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
@@ -47,7 +46,17 @@ class ApiController {
         }
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    def loadChangelog() {
+        Map<String, Object> result = fillRequestMap(params)
+
+        switch ( (params.version ?: 'v0').toLowerCase() ) {
+            default:
+                result.apiVersion = 'v0'
+                render view: '/swagger/v0/changelog.md.gsp', model: result
+                break
+        }
+    }
+
     def dispatch() {
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             default:
