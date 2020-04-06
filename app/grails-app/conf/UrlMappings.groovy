@@ -17,15 +17,14 @@ class UrlMappings {
         name subfinanceEditCI:          "/subscription/$sub/editCostItem/$id"   (controller: 'finance', action: 'editCostItem')
         name subfinanceCopyCI:          "/subscription/$sub/copyCostItem/$id"   (controller: 'finance', action: 'copyCostItem')
 
-
-
         "/ajax/$action?/$id?"(controller: 'ajax')
 
         // new custom api
         "/api/push/orgs"        (controller: 'api', action: 'importInstitutions', parseRequest: false)
 
-        "/api/$version/spec"    (controller: 'api', action: 'loadSpec')
-        "/api/$version/$obj"    (controller: 'api', action: 'dispatch')
+        "/api/$version/specs.yaml"      (controller: 'api', action: 'loadSpecs')
+        "/api/$version/changelog.md"    (controller: 'api', action: 'loadChangelog')
+        "/api/$version/$obj"            (controller: 'api', action: 'dispatch')
 
         "/"                     (controller: 'public', action: 'index')
         "/gasco"                (controller: 'public', action: 'gasco')
