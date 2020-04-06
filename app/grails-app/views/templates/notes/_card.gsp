@@ -54,7 +54,7 @@
                         </div>
                         <div class="right aligned six wide column la-column-left-lessPadding">
                             <%-- START First Button --%>
-                            <g:if test="${!docctx.sharedFrom}">
+                            <g:if test="${!docctx.isShared}">
                                 <g:link controller="${controllerName}" action="deleteDocuments" class="ui mini icon negative button"
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
                                     <i class="trash alternate icon"></i>
