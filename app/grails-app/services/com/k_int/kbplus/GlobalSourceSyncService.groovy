@@ -111,7 +111,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             if(recordTimestamp.getTime() > maxTimestamp)
                                 maxTimestamp = recordTimestamp.getTime()
                         }
-                        if(listOAI.resumptionToken.size() > 0) {
+                        if(listOAI.resumptionToken.size() > 0 && listOAI.resumptionToken.text().length() > 0) {
                             resumption = listOAI.resumptionToken
                             log.info("Continue with next iteration, token: ${resumption}")
                             cleanUpGorm()
@@ -237,7 +237,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(result) {
                     //local package exists -> update closure, build up GokbDiffEngine and the horrendous closures
                     log.info("package successfully found, processing LAS:eR id #${result.id}, with GOKb id ${result.gokbId}")
-                    if(packageStatus == RDStore.PACKAGE_STATUS_DELETED) {
+                    if(packageStatus == RDStore.PACKAGE_STATUS_DELETED && result.packageStatus != RDStore.PACKAGE_STATUS_DELETED) {
                         log.info("package #${result.id}, with GOKb id ${result.gokbId} got deleted, mark as deleted all cascaded elements and rapport!")
                         tippsToNotify << [event:"pkgDelete",diffs:[[prop: 'packageStatus', newValue: packageStatus, oldValue: result.packageStatus]],target:result]
                         result.packageStatus = packageStatus
@@ -537,7 +537,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 catch (GroovyCastException e) {
                     log.error("Title type mismatch! This should not be possible! Inform GOKb team! -> ${titleInstance.gokbId} is corrupt!")
-                    SystemEvent.createEvent('GSSS_OAI_ERROR',[titleInstance:titleInstance.gokbId])
+                    SystemEvent.createEvent('GSSS_OAI_ERROR',[titleInstance:titleInstance.gokbId,errorType:"titleTypeMismatch"])
                 }
                 titleInstance.title = titleRecord.name.text()
                 titleInstance.medium = medium
@@ -633,6 +633,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                             else {
                                 log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id} to GOKb!")
+                                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleHistoryEvent:eventData.@id,errorType:"historyEventWithoutDate"])
                             }
                         }
                     }
@@ -646,7 +647,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 throw new SyncException("ALARM! Title record ${titleUUID} without title type! Unable to process!")
             }
         }
-        else throw new SyncException("Title creation for ${titleUUID} called without record data! PANIC!")
+        else {
+            throw new SyncException("Title creation for ${titleUUID} called without record data! PANIC!")
+        }
     }
 
     /**
