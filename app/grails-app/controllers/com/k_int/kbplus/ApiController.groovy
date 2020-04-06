@@ -425,15 +425,16 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
+        response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
         response.setStatus(status)
 
         if (debugMode) {
-            response.setHeader("Debug-Mode", "true")
-            response.setHeader("Debug-Result-Length", json.toString().length().toString())
-            response.setHeader("Debug-Result-Time", responseTime)
+            response.setHeader("Laser-Api-Debug-Mode", "true")
+            response.setHeader("Laser-Api-Debug-Result-Length", json.toString().length().toString())
+            response.setHeader("Laser-Api-Debug-Result-Time", responseTime)
 
             if (json.target instanceof List) {
-                response.setHeader("Debug-Result-Size", json.target.size().toString())
+                response.setHeader("Laser-Api-Debug-Result-Size", json.target.size().toString())
             }
         }
 

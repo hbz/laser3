@@ -2,6 +2,7 @@ package com.k_int.kbplus.filter
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgSettings
+import de.laser.api.v0.ApiManager
 import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.transaction.Transactional
@@ -28,9 +29,10 @@ class ApiFilter extends GenericFilterBean {
         HttpServletResponse response = (HttpServletResponse) servletResponse
 
         // ignore non api calls
-        if (request.getServletPath().startsWith('/api/v')) {
+        String servletPath = request.getServletPath()
+        if (servletPath.startsWith('/api/v')) {
             // ignore api meta calls
-            if (! (request.getServletPath() =~ /api\/v\d+\/[specs|changelog]/)) {
+            if (! (servletPath.endsWith('/specs.yaml') || servletPath.endsWith('/changelog.md')) ) {
 
                 boolean isAuthorized = false
                 String checksum
@@ -67,7 +69,6 @@ class ApiFilter extends GenericFilterBean {
 
                             String apiSecret = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_PASSWORD)?.getValue()
 
-
                             checksum = hmac(
                                         method +    // http-method
                                         path +      // uri
@@ -99,6 +100,7 @@ class ApiFilter extends GenericFilterBean {
                     //println "INVALID authorization: " + authorization + " < " + checksum
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
                     response.setContentType(Constants.MIME_APPLICATION_JSON)
+                    response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
 
                     def result = new JSON([
                             "message"      : "unauthorized access",
@@ -106,7 +108,6 @@ class ApiFilter extends GenericFilterBean {
                             "path"         : path,
                             "query"        : query,
                             "method"       : method
-                            //"_httpStatus": HttpStatus.UNAUTHORIZED.value()
                     ])
                     response.getWriter().print(result.toString(true))
                     return
