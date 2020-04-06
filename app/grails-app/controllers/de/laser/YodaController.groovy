@@ -1118,7 +1118,7 @@ class YodaController {
             if (o.setDefaultCustomerType()) { instCount++ }
         }
 
-        flash.message = "Kundentyp wurde für ${consCount} Konsortien und ${instCount} Konsorten gesetzt."
+        flash.message = "Kundentyp wurde für ${consCount} Konsortien und ${instCount} Teilnehmer gesetzt."
         redirect(url: request.getHeader('referer'))
     }
 
