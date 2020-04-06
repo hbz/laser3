@@ -4,9 +4,11 @@
 
 2338    06.04.2020  rc1.3       Moe     Bug         Überarbeitung Titel Umfrage
 
-2341    06.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
-
 2340    06.04.2020  rc1.3       David   Bug         Berechtigungen: Identifikatoren / Kundennummern
+
+2337    06.04.2020  rc1.3       David   Feature     API (0.89): Doku und Ausgabe für Properties aktualisieren
+
+2341    06.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
 
 2339    03.04.2020  rc1.3       Andreas Bug         verschiedene Ansichts- und Darstellungssachen
 
@@ -23,7 +25,6 @@
 2329    03.04.2020  rc1.3       Moe     Bug         Menüleiste "Alle" - "Alle Titel" : Bug      
 
 2332    03.04.2020  rc1.3       David   Bug         Fehler bei Aufruf des Einrichtungsprofils
-
 
 --      02.04.2020  rc1.3       Andreas Feature     Neuer Lizenzstatus "Im Auswahlprozess"
 
