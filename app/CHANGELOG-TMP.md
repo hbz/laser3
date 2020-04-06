@@ -3,9 +3,9 @@
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
 
-2340    06.04.2020  rc1.3       David   Bug         Berechtigungen: Identifikatoren / Kundennummern
+2341    06.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
 
-2341    05.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
+2340    06.04.2020  rc1.3       David   Bug         Berechtigungen: Identifikatoren / Kundennummern
 
 2339    03.04.2020  rc1.3       Andreas Bug         verschiedene Ansichts- und Darstellungssachen
 
