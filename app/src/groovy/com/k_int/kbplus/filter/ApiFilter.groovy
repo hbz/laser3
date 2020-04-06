@@ -29,7 +29,7 @@ class ApiFilter extends GenericFilterBean {
 
         // ignore non api calls
         if (request.getServletPath().startsWith('/api/v')) {
-            // ignore api spec calls
+            // ignore api meta calls
             if (! (request.getServletPath() =~ /api\/v\d+\/[specs|changelog]/)) {
 
                 boolean isAuthorized = false

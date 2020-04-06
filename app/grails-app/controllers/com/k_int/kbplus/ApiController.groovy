@@ -310,7 +310,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')
         boolean debugMode = request.getAttribute('debugMode')
 
-        log.debug("API Call [${apiOrg.id}] - " + params)
+        log.debug("API Call [${apiOrg?.id}] - " + params)
 
         def result
         boolean hasAccess = false
@@ -438,10 +438,10 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         }
 
         if (json.target instanceof List) {
-            log.debug("API Call [${apiOrg.id}] - (Code: ${status}, Time: ${responseTime}, Items: ${json.target.size().toString()})")
+            log.debug("API Call [${apiOrg?.id}] - (Code: ${status}, Time: ${responseTime}, Items: ${json.target.size().toString()})")
         }
         else {
-            log.debug("API Call [${apiOrg.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${json.toString().length().toString()})")
+            log.debug("API Call [${apiOrg?.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${json.toString().length().toString()})")
         }
 
         render json.toString(true)
