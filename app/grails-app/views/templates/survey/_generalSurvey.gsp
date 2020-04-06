@@ -257,7 +257,18 @@
                 <th>${message(code: 'surveyProperty.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
-                <th>${message(code: 'surveyResult.commentParticipant')}</th>
+                <th>
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                        ${message(code: 'surveyResult.participantComment')}
+                    </g:if>
+                    <g:else>
+                        ${message(code: 'surveyResult.commentParticipant')}
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: 'surveyResult.commentParticipant.info')}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </g:else>
+                </th>
                 <th>
                     <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}

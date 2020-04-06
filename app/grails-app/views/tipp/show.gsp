@@ -162,11 +162,7 @@
         </div>
         <br>
         <g:if test="${tipp.hostPlatformURL}">
-            <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-            <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
-               data-content="${tipp?.platform.name}"
-               href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
-               target="_blank"><i class="cloud icon"></i></a>
+            <semui:linkIcon href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
         </g:if>
 
         <%--

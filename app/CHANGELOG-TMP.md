@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2338    06.04.2020  rc1.3       Moe     Bug         Überarbeitung Titel Umfrage
 
 2341    06.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
 
@@ -22,6 +23,7 @@
 2329    03.04.2020  rc1.3       Moe     Bug         Menüleiste "Alle" - "Alle Titel" : Bug      
 
 2332    03.04.2020  rc1.3       David   Bug         Fehler bei Aufruf des Einrichtungsprofils
+
 
 --      02.04.2020  rc1.3       Andreas Feature     Neuer Lizenzstatus "Im Auswahlprozess"
 

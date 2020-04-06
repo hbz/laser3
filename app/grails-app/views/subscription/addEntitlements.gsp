@@ -198,8 +198,8 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             <strong><g:link controller="title" action="show"
                             id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
-            <g:if test="${tipp?.title instanceof BookInstance }">
-                (${message(code: 'title.volume.label')} ${tipp?.title?.volume})
+            <g:if test="${tipp?.title instanceof BookInstance && tipp?.title?.volume}">
+                (${message(code: 'title.volume.label')} ${tipp.title.volume})
             </g:if>
 
             <g:if test="${tipp?.title instanceof BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
@@ -207,36 +207,48 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             </g:if>
 
             <br>
-            <g:link controller="tipp" action="show"
-                    id="${tipp.id}">${message(code: 'platform.show.full_tipp')}</g:link>
-            &nbsp;&nbsp;&nbsp;
-            <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                    var="gokbAPI">
-                <g:if test="${tipp?.gokbId}">
-                    <a target="_blank"
-                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"><i
-                            title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
+                <g:if test="${tipp?.id}">
+                    <div class="la-title">${message(code: 'default.details.label')}</div>
+                    <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                            data-content="${message(code: 'laser')}"
+                            href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
+                            target="_blank"
+                            controller="tipp" action="show"
+                            id="${tipp?.id}">
+                        <i class="book icon"></i>
+                    </g:link>
                 </g:if>
-            </g:each>
+                <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                        var="gokbAPI">
+                    <g:if test="${tipp?.gokbId}">
+                        <a role="button"
+                           class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                           data-content="${message(code: 'gokb')}"
+                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"
+                           target="_blank"><i class="la-gokb  icon"></i>
+                        </a>
+                    </g:if>
+                </g:each>
             <br>
 
             <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
-                <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
+                <g:if test="${tipp?.title?.editionStatement}">
+                <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp.title.editionStatement}
                 </div>
+                </g:if>
+                <g:if test="${tipp?.title?.summaryOfContent}">
                 <div class="item">
-                     ${tipp?.title?.summaryOfContent}
+                     ${tipp.title.summaryOfContent}
                 </div>
+                </g:if>
             </g:if>
 
             <g:if test="${tipp.hostPlatformURL}">
-                <a role="button" class="ui icon mini blue button la-url-button la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                   href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
-                   target="_blank"><i class="share square icon"></i></a>
+                <semui:linkIcon href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
             </g:if>
             <br>
             <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
-                <span class="ui small teal image label">
+                <span class="ui small blue image label">
                     ${id.ns.ns}: <div class="detail">${id.value}</div>
                 </span>
             </g:each>
