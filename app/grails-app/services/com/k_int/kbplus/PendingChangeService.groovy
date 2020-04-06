@@ -647,7 +647,9 @@ class PendingChangeService extends AbstractLockableService {
         def ret
         if(change.targetProperty in PendingChange.DATE_FIELDS) {
             Date date = DateUtil.parseDateGeneric(change[key])
-            ret = date.format(messageSource.getMessage('default.date.format.notime',null,locale))
+            if(date)
+                ret = date.format(messageSource.getMessage('default.date.format.notime',null,locale))
+            else ret = null
         }
         else if(change.targetProperty in PendingChange.REFDATA_FIELDS) {
             ret = RefdataValue.get(change[key])

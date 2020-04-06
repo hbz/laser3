@@ -348,6 +348,7 @@ class SubscriptionController extends AbstractDebugController {
         IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
         Long subId = ieCoverage.issueEntitlement.subscription.id
         if(ieCoverage) {
+            PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
             ieCoverage.delete()
             redirect action: 'index', id: subId, params: params
         }
@@ -2477,7 +2478,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
 
-                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceId(Subscription.class.name,result.subscriptionInstance.id)
+                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.settingKeys)
 
                 members.each { cm ->
 
