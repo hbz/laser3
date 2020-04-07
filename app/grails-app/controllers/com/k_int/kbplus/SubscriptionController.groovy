@@ -1142,6 +1142,7 @@ class SubscriptionController extends AbstractDebugController {
 
         List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
 
+
         result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
         println("Moe: "+ result.subjects)
         result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()

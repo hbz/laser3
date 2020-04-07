@@ -324,12 +324,14 @@ class SubscriptionService {
         ies
     }
 
-    List getSubjects(List titleIDs) {
+    Set<String> getSubjects(List titleIDs) {
         println(titleIDs)
-        def subjects = titleIDs ?
-                BookInstance.executeQuery("select distinct summaryOfContent from BookInstance where id in (:ieTitleIDs)",
-                        [ieTitleIDs: titleIDs])
-                : []
+        Set<String> subjects = []
+
+        if(titleIDs){
+            subjects = BookInstance.findAllByIdInListAndSummaryOfContent(titleIDs, 'Architektur')
+            println("Moe")
+        }
 
         println(subjects)
         subjects
