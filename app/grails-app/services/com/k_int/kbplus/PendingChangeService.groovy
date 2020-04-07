@@ -427,7 +427,7 @@ class PendingChangeService extends AbstractLockableService {
 
     Map<String,Object> getChanges(LinkedHashMap<String, Object> configMap) {
         Set<Map<String,Object>> pendingChanges = [], acceptedChanges = []
-        String queryOwn = "select pc from PendingChange pc where pc.owner = :contextOrg and "
+        String queryOwn = "select pc from PendingChange pc where pc.owner = :contextOrg "
         List queryClauses = []
         Map<String,Object> queryParams = [contextOrg:configMap.contextOrg]
         if(configMap.periodInDays) {
@@ -435,13 +435,13 @@ class PendingChangeService extends AbstractLockableService {
             queryParams.time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
         }
         if(queryClauses)
-            queryOwn += queryClauses.join(" and ")
+            queryOwn += ' and '+queryClauses.join(" and ")
         Map<String,List<RefdataValue>> statusFilter = [queryStatus:[RDStore.PENDING_CHANGE_PENDING,RDStore.PENDING_CHANGE_ACCEPTED]]
         Set<PendingChange> result = PendingChange.executeQuery("${queryOwn} and pc.status in :queryStatus",queryParams+statusFilter)
         if(!configMap.consortialView) {
-            String queryMember = "select pc from PendingChange pc join pc.subscription sub join sub.orgRelations oo where oo.roleType in :subRoleTypes and oo.org = :contextOrg and "
+            String queryMember = "select pc from PendingChange pc join pc.subscription sub join sub.orgRelations oo where oo.roleType in :subRoleTypes and oo.org = :contextOrg "
             if(queryClauses)
-                queryMember += queryClauses.join(" and ")
+                queryMember += ' and '+queryClauses.join(" and ")
             Set<PendingChange> memberPCs = PendingChange.executeQuery("${queryMember} and pc.status in :queryStatus",queryParams+statusFilter+[subRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE]])
             result.addAll(memberPCs)
         }
