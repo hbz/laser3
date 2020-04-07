@@ -4492,8 +4492,8 @@ class SubscriptionController extends AbstractDebugController {
             def sub_type = params.subType
             def sub_form = params.subForm
             def sub_resource = params.subResource
-            def sub_hasPerpetualAccess = params.subHasPerpetualAccess
-            def sub_isPublicForApi = params.subIsPublicForApi
+            def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
+            def sub_isPublicForApi = params.subIsPublicForApi == '1'
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
