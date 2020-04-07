@@ -59,23 +59,6 @@
 					</dl>
 
 				</div>
-
-				<g:if test="${false && editable}">
-					<g:form>
-						<g:hiddenField name="id" value="${contactInstance?.id}" />
-						<div class="ui form-actions">
-							<g:link class="ui button" action="edit" id="${contactInstance?.id}">
-								<i class="write icon"></i>
-								<g:message code="default.button.edit.label" />
-							</g:link>
-							<button class="ui negative button" type="submit" name="_action_delete">
-								<i class="trash alternate icon"></i>
-								<g:message code="default.button.delete.label" />
-							</button>
-						</div>
-					</g:form>
-				</g:if>
-
 			</div><!-- .twelve -->
 
             <aside class="four wide column">

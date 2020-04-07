@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2350    07.04.2020  rc1.3       David   Bug         Mein Adressbuch: "Kontaktdaten hinzufügen" funktioniert nicht
+
 --      07.04.2020  rc1.3       David   Feature     API (0.90)
 
 2343    06.04.2020  rc1.3       Andreas Bug         Musterdaten für Einrichtungen auf QA überarbeitet
