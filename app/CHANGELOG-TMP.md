@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2336    07.04.2020  rc1.3       Moe     Bug         Umfragenkosten werden nicht angelegt
+
 2338    06.04.2020  rc1.3       Moe     Bug         Überarbeitung Titel Umfrage
 
 2341    06.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
