@@ -246,7 +246,7 @@
                                     <dd>
                                         <g:each in="${subscriptionInstance.ids?.sort { it.ns.ns }}"
                                                 var="id">
-                                            <span class="ui small teal image label">
+                                            <span class="ui small blue image label">
                                                 ${id.ns.ns}: <div class="detail">${id.value}</div>
                                             </span>
                                         </g:each>
@@ -381,14 +381,14 @@
                     <g:set var="costItemSurvey"
                            value="${surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrg(surveyOrg) : null}"/>
                     <g:set var="costItemsSub"
-                           value="${subscriptionInstance.costItems.findAll {
+                           value="${subscriptionInstance?.costItems?.findAll {
                                it.costItemElement?.id == costItemSurvey?.costItemElement?.id
                            }}"/>
 
                     <%
                         // ERMS-1521 HOTFIX
                         if (!costItemsSub) {
-                            costItemsSub = subscriptionInstance.costItems.findAll {
+                            costItemsSub = subscriptionInstance?.costItems?.findAll {
                                 it.costItemElement?.id == com.k_int.kbplus.RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)?.id
                             }
                         }
@@ -635,10 +635,25 @@
                 <th>${message(code: 'surveyProperty.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
-                <th>${message(code: 'surveyResult.commentParticipant')}</th>
+                <th>
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                        ${message(code: 'surveyResult.participantComment')}
+                    </g:if>
+                    <g:else>
+                        ${message(code: 'surveyResult.commentParticipant')}
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: 'surveyResult.commentParticipant.info')}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </g:else>
+                </th>
                 <th>
                     <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
+                            <i class="question circle icon"></i>
+                        </span>
                     </g:if>
                     <g:else>
                         ${message(code: 'surveyResult.commentOnlyForParticipant')}

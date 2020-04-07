@@ -16,8 +16,20 @@
             <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
         </g:if>
         <g:if test="${actionName == 'ids'}">
-            <a class="item" onclick="IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
-            <a class="item" onclick="IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
+            <g:if test="${editable_identifier}">
+                <a class="item" onclick="IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
+            </g:if>
+            <g:else>
+                <semui:subNavItem message="identifier.create.new" disabled="disabled" />
+            </g:else>
+            <g:if test="${hasAccessToCustomeridentifier}">
+                <g:if test="${editable_customeridentifier}">
+                    <a class="item" onclick="IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
+                </g:if>
+                <g:else>
+                    <semui:subNavItem message="org.customerIdentifier.create.new" disabled="disabled" />
+                </g:else>
+            </g:if>
         </g:if>
         <g:if test="${actionName == 'users'}">
             <semui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: orgInstance.id]" />

@@ -8,6 +8,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.EntitlementCreationException
@@ -238,6 +239,21 @@ class SubscriptionService {
                 qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
             }
 
+            if(params.ieAcceptStatusNotFixed) {
+                base_qry += " and ie.acceptStatus != :ieAcceptStatus "
+                qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+            }
+
+            if(params.summaryOfContent) {
+                base_qry += " and lower(ie.tipp.title.summaryOfContent) like :summaryOfContent "
+                qry_params.summaryOfContent = "%${params.summaryOfContent}%"
+            }
+
+            if(params.ebookFirstAutorOrFirstEditor) {
+                base_qry += " and (lower(ie.tipp.title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+                qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor}%"
+            }
+
             if (params.pkgfilter && (params.pkgfilter != '')) {
                 base_qry += " and ie.tipp.pkg.id = :pkgId "
                 qry_params.pkgId = Long.parseLong(params.pkgfilter)
@@ -282,6 +298,15 @@ class SubscriptionService {
     }
 
     List getIssueEntitlementsNotFixed(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
+
+    List getSelectedIssueEntitlementsBySurvey(Subscription subscription, SurveyInfo surveyInfo) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
@@ -404,14 +429,16 @@ class SubscriptionService {
 
 
     boolean copyPackages(List<SubscriptionPackage> packagesToTake, Subscription targetSub, def flash) {
-        packagesToTake?.each { subscriptionPackage ->
+        packagesToTake.each { subscriptionPackage ->
             if (targetSub.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }) {
                 Object[] args = [subscriptionPackage.pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
             } else {
 
                 List<OrgAccessPointLink> pkgOapls = OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
+                Set<PendingChangeConfiguration> pkgPendingChangeConfig = PendingChangeConfiguration.findAllByIdInList(subscriptionPackage.pendingChangeConfig.id)
                 subscriptionPackage.properties.oapls = null
+                subscriptionPackage.properties.pendingChangeConfig = null
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                 InvokerHelper.setProperties(newSubscriptionPackage, subscriptionPackage.properties)
                 newSubscriptionPackage.subscription = targetSub
@@ -425,6 +452,17 @@ class SubscriptionService {
                         InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save(flush: true)
+                    }
+                    pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
+                        Map configSettings = config.properties
+                        configSettings.subscriptionPackage = newSubscriptionPackage
+                        PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
+                        if(newPcc) {
+                            Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(subscriptionPackage.subscription.class.name,subscriptionPackage.subscription.id,PendingChangeConfiguration.settingKeys)
+                            auditables.each { audit ->
+                                AuditConfig.addConfig(targetSub,audit.referenceField)
+                            }
+                        }
                     }
                 }
             }
@@ -558,6 +596,7 @@ class SubscriptionService {
                         subMember.packages?.each { pkg ->
                             def pkgOapls = pkg.oapls
                             pkg.properties.oapls = null
+                            pkg.properties.pendingChangeConfig = null
                             SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                             InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                             newSubscriptionPackage.subscription = newSubscription
@@ -577,7 +616,7 @@ class SubscriptionService {
                     }
                     if (subMember.issueEntitlements && targetSub.issueEntitlements) {
                         subMember.issueEntitlements?.each { ie ->
-                            if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+                            if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                                 def ieProperties = ie.properties
                                 ieProperties.globalUID = null
 
@@ -985,7 +1024,7 @@ class SubscriptionService {
                         }
 
                     }
-                    /*else {
+                    else {
 
                         PriceItem pi = new PriceItem(priceDate: DateUtil.parseDateGeneric(issueEntitlementOverwrite.priceDate),
                                 listPrice: issueEntitlementOverwrite.listPrice,
@@ -1000,7 +1039,7 @@ class SubscriptionService {
                         else {
                             throw new EntitlementCreationException(pi.errors)
                         }
-                    }*/
+                    }
 
                 }
                 else return true

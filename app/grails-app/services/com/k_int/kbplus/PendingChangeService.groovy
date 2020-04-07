@@ -73,7 +73,8 @@ class PendingChangeService extends AbstractLockableService {
         log.debug('performAccept(): ' + pendingChange)
         boolean result = true
 
-        PendingChange.withNewTransaction { TransactionStatus status ->
+        //does not work for inheritance - ERMS-2335
+        //PendingChange.withNewTransaction { TransactionStatus status ->
             boolean saveWithoutError = false
 
             try {
@@ -300,7 +301,7 @@ class PendingChangeService extends AbstractLockableService {
                     pendingChange.subscription?.save();*/
                     pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", RDConstants.PENDING_CHANGE_STATUS)
                     pendingChange.actionDate = new Date()
-                    //pendingChange.save()  // ERMS-2184 // called implicit somewhere
+                    pendingChange.save()  // ERMS-2184 // called implicit somewhere
                     log.debug("Pending change accepted and saved")
                 }
             }
@@ -308,8 +309,9 @@ class PendingChangeService extends AbstractLockableService {
                 log.error("Problem accepting change",e)
                 result = false
             }
+            //status.flush()
             return result
-        }
+        //}
     }
 
     @Deprecated

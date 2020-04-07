@@ -257,10 +257,25 @@
                 <th>${message(code: 'surveyProperty.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
-                <th>${message(code: 'surveyResult.commentParticipant')}</th>
+                <th>
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                        ${message(code: 'surveyResult.participantComment')}
+                    </g:if>
+                    <g:else>
+                        ${message(code: 'surveyResult.commentParticipant')}
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: 'surveyResult.commentParticipant.info')}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </g:else>
+                </th>
                 <th>
                     <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
+                            <i class="question circle icon"></i>
+                        </span>
                     </g:if>
                     <g:else>
                         ${message(code: 'surveyResult.commentOnlyForParticipant')}
@@ -325,7 +340,7 @@
                         </g:elseif>
                         <g:elseif test="${surveyResult?.type?.type == com.k_int.kbplus.RefdataValue.toString()}">
 
-                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.tenant?.id != institution?.id}">
+                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.owner?.id != institution?.id}">
                                 <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
                                                         id="participation"
                                                         config="${surveyResult.type?.refdataCategory}"/>

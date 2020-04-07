@@ -7,7 +7,11 @@ info:
     Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react).
     Please copy and paste required/generated fields.
 
-     &#10095; [Here]() you find an example for HMAC generation.
+     &#10095;
+     [Here](${grailsApplication.config.grails.serverURL}/api/v0/changelog.md) you will find the changelog,
+     [here](${grailsApplication.config.grails.serverURL}/api/v0/specs.yaml) you will find almost current specs and
+     [here]() you will get an example for the HMAC generation.
+
   contact:
     email: david.klober@hbz-nrw.de
   version: "<% print de.laser.api.v0.ApiManager.VERSION %>"
@@ -101,6 +105,14 @@ components:
       required: true
       description: Concrete globalUID of context organisation
 </g:else>
+
+    debug:
+      name: x-debug
+      in: header
+      schema:
+        type: boolean
+      required: false
+      description: Send debug informations or not
 
     authorization:
       name: x-authorization

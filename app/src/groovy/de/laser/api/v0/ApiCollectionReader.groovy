@@ -1,6 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import com.k_int.properties.PropertyDefinition
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.helper.Constants
@@ -164,8 +165,8 @@ class ApiCollectionReader {
         list.each { it ->       // com.k_int.kbplus.<x>CustomProperty
             Map<String, Object> tmp = [:]
 
-            tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
-            tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
+            tmp.token   = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
+            tmp.scope   = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
             //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
 
             if (it.dateValue) {
@@ -173,8 +174,9 @@ class ApiCollectionReader {
             }
             else {
                 tmp.value   = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: null))))) // RefdataValue
-
             }
+
+            tmp.type = PropertyDefinition.validTypes2[it.type.type]['en']
 
             if (it.type.type == RefdataValue.toString()) {
                 tmp.refdataCategory = it.type.refdataCategory
@@ -393,17 +395,23 @@ class ApiCollectionReader {
         list.findAll{ it.owner.id == context.id || it.type.tenant?.id == context.id}?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
             Map<String, Object> tmp = [:]
 
-            tmp.name            = it.type.name     // com.k_int.kbplus.PropertyDefinition.String
-            tmp.description     = it.type.descr    // com.k_int.kbplus.PropertyDefinition.String
+            tmp.token   = it.type.name     // com.k_int.kbplus.PropertyDefinition.String
+            tmp.scope   = it.type.descr    // com.k_int.kbplus.PropertyDefinition.String
             //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
             //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
-            tmp.note            = it.note
+            tmp.note    = it.note
 
             if (it.dateValue) {
                 tmp.value   = ApiToolkit.formatInternalDate(it.dateValue)
             }
             else {
                 tmp.value   = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: null))))) // RefdataValue
+            }
+
+            tmp.type = PropertyDefinition.validTypes2[it.type.type]['en']
+
+            if (it.type.type == RefdataValue.toString()) {
+                tmp.refdataCategory = it.type.refdataCategory
             }
 
             tmp.dateCreated = ApiToolkit.formatInternalDate(it.dateCreated)

@@ -49,44 +49,48 @@
                             ${ti.printTitleType()}
                         </div>
                     </div>
-                    <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && (ti?.firstAuthor || ti?.firstEditor)}">
+                    <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && (ti.firstAuthor || ti.firstEditor)}">
                         <div class="item">
                             <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
                             <div class="content">
-                                ${ti?.getEbookFirstAutorOrFirstEditor()}
+                                ${ti.getEbookFirstAutorOrFirstEditor()}
                             </div>
                         </div>
                     </g:if>
 
                     <g:if test="${ti instanceof com.k_int.kbplus.BookInstance}">
+                        <g:if test="${ti.volume}">
                         <div class="item">
                             <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
                             <div class="content">
-                                 ${ti?.volume})
+                                 ${ti.volume})
                             </div>
                         </div>
-
+                        </g:if>
+                        <g:if test="${ti.editionStatement}">
                         <div class="item">
                             <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
                             <div class="content">
-                                ${ti?.editionStatement}
+                                ${ti.editionStatement}
                             </div>
                         </div>
-
+                        </g:if>
+                        <g:if test="${ti.editionNumber}">
                         <div class="item">
                             <i class="grey icon copy outline la-popup-tooltip la-delay" data-content="${message(code: 'title.editionNumber.label')}"></i>
                             <div class="content">
-                                ${ti?.editionNumber}
+                                ${ti.editionNumber}
                             </div>
                         </div>
-
+                        </g:if>
+                        <g:if test="${ti.summaryOfContent}">
                         <div class="item">
                             <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
                             <div class="content">
-                                ${ti?.summaryOfContent}
+                                ${ti.summaryOfContent}
                             </div>
                         </div>
-
+                        </g:if>
                         <div class="item">
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
@@ -403,7 +407,7 @@
                   </g:if>
 
                   <g:each in="${t?.title?.ids?.sort{it?.ns?.ns}}" var="id">
-                      <span class="ui small teal image label">
+                      <span class="ui small blue image label">
                           ${id.ns.ns}: <div class="detail">${id.value}</div>
                       </span>
                   </g:each>

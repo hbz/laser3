@@ -1,5 +1,18 @@
 <%@ page import="com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.ReaderNumber; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.ReaderNumber; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.OrgSettings" %>
 <laser:serviceInjection/>
+<g:if test="${'surveySubCostItem' in tmplConfigShow}">
+    <g:set var="oldCostItem" value="${0.0}"/>
+    <g:set var="oldCostItemAfterTax" value="${0.0}"/>
+    <g:set var="sumOldCostItemAfterTax" value="${0.0}"/>
+    <g:set var="sumOldCostItem" value="${0.0}"/>
+</g:if>
+
+<g:if test="${'surveyCostItem' in tmplConfigShow}">
+    <g:set var="sumNewCostItem" value="${0.0}"/>
+    <g:set var="sumSurveyCostItem" value="${0.0}"/>
+    <g:set var="sumNewCostItemAfterTax" value="${0.0}"/>
+    <g:set var="sumSurveyCostItemAfterTax" value="${0.0}"/>
+</g:if>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-table table">
     <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
@@ -611,6 +624,14 @@
 
                                 ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
 
+                                <g:set var="sumOldCostItem"
+                                       value="${sumOldCostItem + costItem.costInBillingCurrency?:0}"/>
+                                <g:set var="sumOldCostItemAfterTax"
+                                       value="${sumOldCostItemAfterTax + costItem.costInBillingCurrencyAfterTax?:0}"/>
+
+                                <g:set var="oldCostItem" value="${costItem.costInBillingCurrency?:null}"/>
+                                <g:set var="oldCostItemAfterTax" value="${costItem.costInBillingCurrencyAfterTax?:null}"/>
+
                             </g:if>
                         </g:each>
                     </g:else>
@@ -637,6 +658,20 @@
                                              maxFractionDigits="2" type="number"/>)
 
                             ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
+
+                            <g:set var="sumSurveyCostItem"
+                                   value="${sumSurveyCostItem + costItem.costInBillingCurrency?:0}"/>
+                            <g:set var="sumSurveyCostItemAfterTax"
+                                   value="${sumSurveyCostItemAfterTax + costItem.costInBillingCurrencyAfterTax?:0}"/>
+
+                            <g:if test="${oldCostItem || oldCostItemAfterTax}">
+                                <br><b><g:formatNumber number="${((costItem.costInBillingCurrencyAfterTax-oldCostItemAfterTax)/oldCostItemAfterTax)*100}"
+                                                       minFractionDigits="2"
+                                                       maxFractionDigits="2" type="number"/>%</b>
+
+                                (<g:formatNumber number="${((costItem.costInBillingCurrency-oldCostItem)/oldCostItem)*100}" minFractionDigits="2"
+                                                 maxFractionDigits="2" type="number"/>%)
+                            </g:if>
 
                             <br>
                             <g:if test="${costItem?.startDate || costItem?.endDate}">
@@ -675,6 +710,43 @@
         </tr>
     </g:each><!-- orgList -->
     </tbody>
+    <g:if test="${orgList && ('surveySubCostItem' in tmplConfigShow || 'surveyCostItem' in tmplConfigShow)}">
+        <tfoot>
+        <tr>
+            <g:if test="${tmplShowCheckbox}">
+                <td></td>
+            </g:if>
+            <g:each in="${1..(tmplConfigShow?.size()-2)}" var="tmplConfigItem">
+                    <td></td>
+            </g:each>
+            <g:if test="${'surveySubCostItem' in tmplConfigShow}">
+                <td>
+                    <b><g:formatNumber number="${sumOldCostItemAfterTax}" minFractionDigits="2"
+                                       maxFractionDigits="2" type="number"/></b>
+                    (<g:formatNumber number="${sumOldCostItem}" minFractionDigits="2"
+                                     maxFractionDigits="2" type="number"/>)
+                </td>
+            </g:if>
+            <g:if test="${'surveyCostItem' in tmplConfigShow}">
+                <td>
+                    <b><g:formatNumber number="${sumSurveyCostItemAfterTax}" minFractionDigits="2"
+                                       maxFractionDigits="2" type="number"/></b>
+                    (<g:formatNumber number="${sumSurveyCostItem}" minFractionDigits="2"
+                                     maxFractionDigits="2" type="number"/>)
+
+                    <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
+                        <br><b><g:formatNumber number="${((sumSurveyCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
+                                               minFractionDigits="2"
+                                               maxFractionDigits="2" type="number"/>%</b>
+
+                        (<g:formatNumber number="${((sumSurveyCostItem-sumOldCostItem)/sumOldCostItem)*100}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>%)
+                    </g:if>
+                </td>
+            </g:if>
+        </tr>
+        </tfoot>
+    </g:if>
 </table>
 
 <g:if test="${tmplShowCheckbox}">

@@ -35,8 +35,7 @@ class ApiController {
         }
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
-    def loadSpec() {
+    def loadSpecs() {
         Map<String, Object> result = fillRequestMap(params)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
@@ -47,7 +46,17 @@ class ApiController {
         }
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    def loadChangelog() {
+        Map<String, Object> result = fillRequestMap(params)
+
+        switch ( (params.version ?: 'v0').toLowerCase() ) {
+            default:
+                result.apiVersion = 'v0'
+                render view: '/swagger/v0/changelog.md.gsp', model: result
+                break
+        }
+    }
+
     def dispatch() {
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             default:
@@ -299,7 +308,9 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     @Secured(['permitAll']) // TODO
     def v0() {
         Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')
-        log.debug("API Call [${apiOrg.id}] - " + params)
+        boolean debugMode = request.getAttribute('debugMode')
+
+        log.debug("API Call [${apiOrg?.id}] - " + params)
 
         def result
         boolean hasAccess = false
@@ -367,7 +378,13 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             break
                     }
 
-                    result = ApiManager.read((String) obj, (String) query, (String) value, (Org) contextOrg, format)
+                    result = ApiManager.read(
+                            (String) obj,
+                            (String) query,
+                            (String) value,
+                            (Org) contextOrg,
+                            format
+                    )
 
                     if (result instanceof Doc) {
                         response.contentType = result.mimeType
@@ -408,19 +425,24 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
-        response.setHeader("Debug-Result-Length", json.toString().length().toString())
-        response.setHeader("Debug-Result-Time", responseTime)
-
-        if (json.target instanceof List) {
-            response.setHeader("Debug-Result-Size", json.target.size().toString())
-        }
+        response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
         response.setStatus(status)
 
+        if (debugMode) {
+            response.setHeader("Laser-Api-Debug-Mode", "true")
+            response.setHeader("Laser-Api-Debug-Result-Length", json.toString().length().toString())
+            response.setHeader("Laser-Api-Debug-Result-Time", responseTime)
+
+            if (json.target instanceof List) {
+                response.setHeader("Laser-Api-Debug-Result-Size", json.target.size().toString())
+            }
+        }
+
         if (json.target instanceof List) {
-            log.debug("API Call [${apiOrg.id}] - (Code: ${status}, Time: ${responseTime}, Items: ${json.target.size().toString()})")
+            log.debug("API Call [${apiOrg?.id}] - (Code: ${status}, Time: ${responseTime}, Items: ${json.target.size().toString()})")
         }
         else {
-            log.debug("API Call [${apiOrg.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${json.toString().length().toString()})")
+            log.debug("API Call [${apiOrg?.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${json.toString().length().toString()})")
         }
 
         render json.toString(true)

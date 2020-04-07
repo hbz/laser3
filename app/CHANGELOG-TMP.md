@@ -2,6 +2,32 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2338    06.04.2020  rc1.3       Moe     Bug         Überarbeitung Titel Umfrage
+
+2340    06.04.2020  rc1.3       David   Bug         Berechtigungen: Identifikatoren / Kundennummern
+
+2337    06.04.2020  rc1.3       David   Feature     API (0.89): Doku und Ausgabe für Properties aktualisieren
+
+2341    06.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
+
+2339    03.04.2020  rc1.3       Andreas Bug         verschiedene Ansichts- und Darstellungssachen
+
+2335/2184   03.04.2020  rc1.3   Andreas Bug         automatisches Akzeptieren von Änderungen bei Lizenzen und Verträgen korrigiert
+
+--      03.04.2020  rc1.3       David   Feature     "Änderungen automatisch übernehmen?" auf JA bei neuen Teilnehmerverträgen     
+
+2334    03.04.2020  rc1.3       David   Feature     API (0.87): Optionale Ausgabe von Zusatzinformationen (subscriptionList, licenseList)
+
+2154    03.04.2020  rc1.3       Anja    Bug         org/ids Rechte fürs Anzeigen/Editieren
+
+2335    03.04.2020  rc1.3       David   Bug         "Alle Änderungen annehmen" funktioniert nicht
+
+2329    03.04.2020  rc1.3       Moe     Bug         Menüleiste "Alle" - "Alle Titel" : Bug      
+
+2332    03.04.2020  rc1.3       David   Bug         Fehler bei Aufruf des Einrichtungsprofils
+
+--      02.04.2020  rc1.3       Andreas Feature     Neuer Lizenzstatus "Im Auswahlprozess"
+
 2320    02.04.2020  rc1.3       David   Bug         API (0.86): Duplikate in Listenendpunkten
 
 2325    02.04.2020  rc1.3       David   Bug         Profil nicht löschbar, falls einziger INST_ADM

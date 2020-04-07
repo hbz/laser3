@@ -162,15 +162,19 @@ console.log('(http-header) x-authorization: ' + authorization)
     <script>
         window.onload = function() {
 
-            var placeholders = {
-                query_q: 'q - Identifier for this query',
-                query_v: 'v - Value for this query',
-                authorization: 'x-authorization - hmac-sha256 generated auth header',
-                context: 'context - Concrete globalUID of context organisation'
+            var selectors = {
+                query_q:       'tr[data-param-name="q"] input',
+                query_v:       'tr[data-param-name="v"] input',
+                query_context: 'tr[data-param-name="context"] input',
+
+                top:      '.topbar-wrapper',
+                top_key:  '.topbar-wrapper input[name=apiKey]',
+                top_pass: '.topbar-wrapper input[name=apiPassword]',
+                top_auth: '.topbar-wrapper input[name="apiAuth"]'
             }
 
             var jabba = SwaggerUIBundle({
-                url: "${grailsApplication.config.grails.serverURL}/api/${apiVersion}/spec",
+                url: "${grailsApplication.config.grails.serverURL}/api/${apiVersion}/specs.yaml",
                 dom_id: '#main-container',
                 presets: [
                     SwaggerUIBundle.presets.apis,
@@ -185,10 +189,10 @@ console.log('(http-header) x-authorization: ' + authorization)
             window.jabba = jabba
 
             setTimeout(function(){
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Key <input name="apiKey" type="text" placeholder="Current API Key" value="${apiKey}"></span>')
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Pass <input name="apiPassword" type="password" placeholder="Current API Password" value="${apiPassword}"></span>')
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Context <input name="apiContext" type="text" placeholder="Current Context" value="${apiContext}"></span>')
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Generate after the request is defined .." value=""></span>')
+                jQuery(selectors.top).append('<span class="ui-box">Key <input name="apiKey" type="text" placeholder="Current API Key" value="${apiKey}"></span>')
+                jQuery(selectors.top).append('<span class="ui-box">Pass <input name="apiPassword" type="password" placeholder="Current API Password" value="${apiPassword}"></span>')
+                jQuery(selectors.top).append('<span class="ui-box">Context <input name="apiContext" type="text" placeholder="Current Context" value="${apiContext}"></span>')
+                jQuery(selectors.top).append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Generate after the request is defined .." value=""></span>')
 
                 jQuery('.information-container a[href=""]').on('click', function(event) {
                     event.preventDefault()
@@ -198,10 +202,10 @@ console.log('(http-header) x-authorization: ' + authorization)
                 jQuery('#hmac-info button').on('click', function(event) {
                     jQuery('#hmac-info').addClass('display_none')
                 })
-            }, 1000)
+            }, 750)
 
             setTimeout(function(){
-                jQuery('.topbar-wrapper input').on('focus', function(){
+                jQuery(selectors.top + ' input').on('focus', function(){
                     jQuery(this).select()
                 })
 
@@ -213,20 +217,20 @@ console.log('(http-header) x-authorization: ' + authorization)
                     var div = jQuery(event.target).parents('.opblock').find('.parameters').first()
                     if (div.length) {
                         var auth = genDigist(div)
-                        jQuery('.topbar-wrapper input[name="apiAuth"]').val(auth)
+                        jQuery(selectors.top_auth).val(auth)
                     }
                 })
-            }, 2000)
+            }, 2500)
 
             function genDigist(div) {
-                var id        = jQuery('.topbar-wrapper input[name=apiKey]').val().trim()
-                var key       = jQuery('.topbar-wrapper input[name=apiPassword]').val().trim()
+                var id        = jQuery(selectors.top_key).val().trim()
+                var key       = jQuery(selectors.top_pass).val().trim()
                 var method    = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
                 var path      = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path span').text()
                 var timestamp = ""
                 var nounce    = ""
 
-                var context = jQuery(div).find('input[placeholder="' + placeholders.context + '"]')
+                var context = jQuery(div).find(selectors.query_context)
                 if (context.length) {
                     context = context.val().trim()
                 }
@@ -238,8 +242,8 @@ console.log('(http-header) x-authorization: ' + authorization)
                 var body      = ""
 
                 if(method == "GET") {
-                    var q = jQuery(div).find('input[placeholder="' + placeholders.query_q + '"]')
-                    var v = jQuery(div).find('input[placeholder="' + placeholders.query_v + '"]')
+                    var q = jQuery(div).find(selectors.query_q)
+                    var v = jQuery(div).find(selectors.query_v)
 
                     q = (q.length && q.val().trim().length) ? "q=" + q.val().trim() : ''
                     v = (v.length && v.val().trim().length) ? "v=" + v.val().trim() : ''

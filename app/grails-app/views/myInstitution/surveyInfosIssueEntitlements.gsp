@@ -147,12 +147,30 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                 </div>
 
                 <div class="content">
-                    <div class="ui la-vertical buttons">
-                        <g:link controller="subscription" action="showEntitlementsRenewWithSurvey"
-                                id="${surveyConfig?.id}"
-                                class="ui button">
-                            <g:message code="renewEntitlementsWithSurvey.toCurrentEntitlements"/>
-                        </g:link>
+                    <div class="ui form twelve wide column">
+                        <div class="two fields">
+
+                            <div class="eight wide field" style="text-align: left;">
+                                <g:if test="${subscriptionInstance}">
+                                    <g:link controller="subscription" action="renewEntitlementsWithSurvey"
+                                            id="${subscriptionInstance.id}"
+                                            params="${[targetSubscriptionId: subscriptionInstance.id,
+                                                       surveyConfigID      : surveyConfig?.id]}"
+                                            class="ui button">
+                                        <g:message code="surveyInfo.toIssueEntitlementsSurvey"/>
+                                    </g:link>
+                                </g:if>
+                            </div>
+
+
+                            <div class="eight wide field" style="text-align: right;">
+                                <g:link controller="subscription" action="showEntitlementsRenewWithSurvey"
+                                        id="${surveyConfig?.id}"
+                                        class="ui button">
+                                    <g:message code="renewEntitlementsWithSurvey.toCurrentEntitlements"/>
+                                </g:link>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -162,9 +180,6 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
     </div>
 
     <div class="ui form twelve wide column">
-        <div class="two fields">
-
-            <div class="eight wide field" style="text-align: left;">
                 <g:if test="${subscriptionInstance && editable}">
                     <g:link class="ui button green js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.concludeBinding.renewalEntitlements")}"
@@ -175,21 +190,6 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                         <g:message code="renewEntitlementsWithSurvey.submit"/>
                     </g:link>
                 </g:if>
-            </div>
-
-
-            <div class="eight wide field" style="text-align: right;">
-                <g:if test="${subscriptionInstance}">
-                    <g:link controller="subscription" action="renewEntitlementsWithSurvey"
-                            id="${subscriptionInstance?.id}"
-                            params="${[targetSubscriptionId: subscriptionInstance?.id,
-                                       surveyConfigID      : surveyConfig?.id]}"
-                            class="ui button">
-                        <g:message code="surveyInfo.toIssueEntitlementsSurvey"/>
-                    </g:link>
-                </g:if>
-            </div>
-        </div>
     </div>
 
 </div><!-- .grid -->

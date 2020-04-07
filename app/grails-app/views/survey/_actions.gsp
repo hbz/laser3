@@ -1,6 +1,6 @@
 <%@ page import="de.laser.helper.RDStore" %>
 <semui:actionsDropdown>
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
 
             <semui:actionsDropdownItem controller="survey" action="createGeneralSurvey"

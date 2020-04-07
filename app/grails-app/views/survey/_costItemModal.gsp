@@ -99,10 +99,6 @@
                                        number="${costItem?.costInBillingCurrency}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton3" data-content="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
-                            <i class="calculator icon"></i>
-                        </div>
-
                         <g:select class="ui dropdown dk-width-auto" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
@@ -129,11 +125,7 @@
 
                 <div class="two fields">
                     <div class="field la-exchange-rate">
-                        <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
-                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="disabled"
-                               name="newCostCurrencyRate" id="newCostCurrencyRate"
-                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
-                               value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001" readonly="readonly"/>
+
 
                     </div><!-- .field -->
                     <div class="field">
@@ -148,33 +140,11 @@
                     </div><!-- .field -->
                 </div>
 
-                <div class="two fields">
-                    <div class="field">
-                        <label><g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
-                        <input title="<g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" class="disabled"
-                               name="newCostInLocalCurrency" id="newCostInLocalCurrency"
-                               placeholder="${message(code: 'financials.newCosts.value')}"
-                               value="<g:formatNumber
-                                       number="${costItem?.costInLocalCurrency}"
-                                       minFractionDigits="2" maxFractionDigits="2"/>" readonly="readonly"/>
-
-                    </div><!-- .field -->
-                    <div class="field">
-                        <label><g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
-                        <input title="<g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" readonly="readonly"
-                               name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
-                               value="<g:formatNumber
-                                       number="${costItem?.costInLocalCurrencyAfterTax}"
-                                       minFractionDigits="2" maxFractionDigits="2"/>"/>
-                    </div><!-- .field -->
-                </div>
-
                 <div class="field">
                     <div class="ui checkbox">
                         <label><g:message code="financials.newCosts.finalSumRounded"/></label>
                         <input name="newFinalCostRounding" class="hidden calc" type="checkbox"
-                               <g:if test="${costItem?.finalCostRounding}"> checked="checked" </g:if>
-                        />
+                               <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
                     </div>
                 </div><!-- .field -->
 
@@ -226,29 +196,8 @@
                 calcTaxResults()
             }
         });
-        $("#costButton2").click(function () {
-            if (!isError("#newCostInLocalCurrency") && !isError("#newCostInBillingCurrency")) {
-                var input = $(this).siblings("input");
-                input.transition('glow');
-                var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
-                var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
-                input.val((parsedLocalCurrency / parsedBillingCurrency));
 
-                $(".la-account-currency").find(".field").removeClass("error");
-                calcTaxResults()
-            }
-        });
-        $("#costButton3").click(function () {
-            if (!isError("#newCostInLocalCurrency") && !isError("#newCostCurrencyRate")) {
-                var input = $(this).siblings("input");
-                input.transition('glow');
-                var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
-                input.val(convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate").val()));
 
-                $(".la-account-currency").find(".field").removeClass("error");
-                calcTaxResults()
-            }
-        });
         $("#newCostItemElement").change(function () {
             if (typeof(costItemElementConfigurations[$(this).val()]) !== 'undefined')
                 $("[name='ciec']").dropdown('set selected', costItemElementConfigurations[$(this).val()]);
@@ -274,20 +223,15 @@
             var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val().split("§")[1]);
 
             var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
-            var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
 
             $('#newCostInBillingCurrencyAfterTax').val(
                 roundF ? Math.round(parsedBillingCurrency * taxF) : convertDouble(parsedBillingCurrency * taxF)
             );
-            $('#newCostInLocalCurrencyAfterTax').val(
-                roundF ? Math.round(parsedLocalCurrency * taxF) : convertDouble(parsedLocalCurrency * taxF)
-            );
         };
 
-        var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency");
+        var costElems = $("#newCostInBillingCurrency");
 
         costElems.on('change', function () {
-            checkValues();
             if($("[name='newCostCurrency']").val() != 0) {
                 $("#newCostCurrency").parent(".field").removeClass("error");
             }
@@ -299,16 +243,6 @@
         $("#editCost").submit(function(e){
             e.preventDefault();
             if($("[name='newCostCurrency']").val() != 0) {
-                var valuesCorrect = checkValues();
-                if(valuesCorrect) {
-                    $("#newCostCurrency").parent(".field").removeClass("error");
-                    if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
-                        alert("${message(code:'financials.newCosts.entitlementError')}");
-                    else $(this).unbind('submit').submit();
-                }
-                else {
-                    alert("${message(code:'financials.newCosts.calculationError')}");
-                }
             }
             else {
                 alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
@@ -316,25 +250,6 @@
             }
         });
 
-        $("#newCostCurrency").change(function () {
-            //console.log("event listener succeeded, picked value is: "+$(this).val());
-            if ($(this).val() === eurVal)
-                $("#newCostCurrencyRate").val(1.0);
-            else $("#newCostCurrencyRate").val(0.0);
-            $("#costButton1").click();
-        });
-
-        function checkValues() {
-            if ( (convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2) !== convertDouble($("#newCostInLocalCurrency").val()).toFixed(2) ) {
-                console.log("inserted values are: "+convertDouble($("#newCostInBillingCurrency").val())+" * "+$("#newCostCurrencyRate").val()+" = "+convertDouble($("#newCostInLocalCurrency").val()).toFixed(2)+", correct would be: "+(convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2));
-                costElems.parent('.field').addClass('error');
-                return false;
-            }
-            else {
-                costElems.parent('.field').removeClass('error');
-                return true;
-            }
-        }
 
         function convertDouble(input) {
             //console.log("input: "+input+", typeof: "+typeof(input));

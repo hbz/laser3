@@ -100,9 +100,13 @@ class ApiLicense {
                 ]
         )
 
+        println "${available.size()} available licenses found .."
+
         available.each { lic ->
             result.add(ApiStubReader.requestLicenseStub(lic, context))
         }
+
+        ApiToolkit.cleanUpDebugInfo(result)
 
         return (result ? new JSON(result) : null)
     }

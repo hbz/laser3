@@ -807,10 +807,10 @@ class SubscriptionController extends AbstractDebugController {
         List errorList = []
         if (result.subscriptionInstance) {
             EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}", contextService.USER_SCOPE)
-            Map<TitleInstancePackagePlatform,IssueEntitlement> addedTipps = [:]
+            Map<TitleInstance,IssueEntitlement> addedTipps = [:]
             result.subscriptionInstance.issueEntitlements.each { ie ->
-                if(ie instanceof IssueEntitlement)
-                    addedTipps[ie.tipp] = ie
+                if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
+                    addedTipps[ie.tipp.title] = ie
             }
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             def basequery = null;
@@ -964,17 +964,17 @@ class SubscriptionController extends AbstractDebugController {
                         //is title in LAS:eR?
                         //List tiObj = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.title ti join ti.ids identifiers where identifiers.identifier.value in :idCandidates',[idCandidates:idCandidates])
                         //log.debug(idCandidates)
-                        def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select ident from Identifier ident where ident.ns in :namespaces and ident.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
-                        if(tiObj) {
+                        Identifier id = Identifier.findByValueAndNsInList(idCandidate.value,idCandidate.namespaces)
+                        if(id && id.ti) {
                             //is title already added?
-                            if(addedTipps.get(tiObj)) {
+                            if(addedTipps.get(id.ti)) {
                                 errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${message(code:'subscription.details.addEntitlements.titleAlreadyAdded')}")
                             }
                             /*else if(!issueEntitlement) {
                                 errors += g.message([code:'subscription.details.addEntitlements.titleNotMatched',args:cols[0]])
                             }*/
                         }
-                        else if(!tiObj) {
+                        else if(!id) {
                             errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${message(code:'subscription.details.addEntitlements.titleNotInERMS')}")
                         }
                     }
@@ -1117,28 +1117,36 @@ class SubscriptionController extends AbstractDebugController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
-        params.id = params.targetSubscriptionId
-        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
         result.offset = params.offset  ? Integer.parseInt(params.offset) : 0
 
         params.offset = 0
         params.max = 5000
+        params.tab = params.tab ?: 'allIEs'
 
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : Subscription.get(params.id)
+        Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
+        params.id = newSub.id
+        params.sourceSubscriptionId = baseSub.id
 
-        List<IssueEntitlement> sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
+        List<IssueEntitlement> sourceIEs
+
+        if(params.tab == 'allIEs') {
+            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
+        }
+        if(params.tab == 'selectedIEs') {
+            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params+[ieAcceptStatusNotFixed: true])
+        }
         List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
 
         result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
-
-        result.num_ies_rows = sourceIEs.size()
+        result.countAllIEs = subscriptionService.getIssueEntitlementsFixed(baseSub).size()
+        result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
         result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
         result.targetIEs = targetIEs
         result.newSub = newSub
         result.subscription = baseSub
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.subscriber = result.newSub.getSubscriber()
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
 
@@ -2771,8 +2779,8 @@ class SubscriptionController extends AbstractDebugController {
             EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}", contextService.USER_SCOPE)
             Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
             if(!params.singleTitle) {
-                if(cache.get('checked')) {
-                    Map checked = cache.get('checked')
+                Map checked = cache.get('checked')
+                if(checked) {
                     checked.each { k,v ->
                         if(v == 'checked') {
                             try {
@@ -4089,13 +4097,13 @@ class SubscriptionController extends AbstractDebugController {
                             subMember.packages?.each { pkg ->
                                 def pkgOapls = pkg.oapls
                                 pkg.properties.oapls = null
+                                pkg.properties.pendingChangeConfig = null
                                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                 InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                 newSubscriptionPackage.subscription = newSubscription
 
                                 if(newSubscriptionPackage.save()){
                                     pkgOapls.each{ oapl ->
-
                                         def oaplProperties = oapl.properties
                                         oaplProperties.globalUID = null
                                         OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
@@ -4314,20 +4322,32 @@ class SubscriptionController extends AbstractDebugController {
                                 //Package
                                 baseSub.packages?.each { pkg ->
                                     def pkgOapls = pkg.oapls
+                                    Set<PendingChangeConfiguration> pkgPendingChangeConfig = pkg.pendingChangeConfig
                                     pkg.properties.oapls = null
+                                    pkg.properties.pendingChangeConfig = null
                                     SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                     InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                     newSubscriptionPackage.subscription = newSub
 
                                     if(newSubscriptionPackage.save()){
                                         pkgOapls.each{ oapl ->
-
                                             def oaplProperties = oapl.properties
                                             oaplProperties.globalUID = null
                                             OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                             InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                             newOrgAccessPointLink.subPkg = newSubscriptionPackage
                                             newOrgAccessPointLink.save(flush: true)
+                                        }
+                                        pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
+                                            Map configSettings = config.properties
+                                            configSettings.subscriptionPackage = newSubscriptionPackage
+                                            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
+                                            if(newPcc) {
+                                                Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSub.class.name,baseSub.id,PendingChangeConfiguration.settingKeys)
+                                                auditables.each { audit ->
+                                                    AuditConfig.addConfig(newSub,audit.referenceField)
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -5202,7 +5222,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def baseSubscription = com.k_int.kbplus.Subscription.get(params.baseSubscription)
+        Subscription baseSubscription = Subscription.get(params.baseSubscription)
 
         if (baseSubscription) {
 
@@ -5315,20 +5335,32 @@ class SubscriptionController extends AbstractDebugController {
                 if (params.subscription.copyPackages) {
                     baseSubscription.packages?.each { pkg ->
                         def pkgOapls = pkg.oapls
+                        Set<PendingChangeConfiguration> pcc = pkg.pendingChangeConfig
                         pkg.properties.oapls = null
+                        pkg.properties.pendingChangeConfig = null
                         SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                         InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                         newSubscriptionPackage.subscription = newSubscriptionInstance
 
                         if(newSubscriptionPackage.save()){
                             pkgOapls.each{ oapl ->
-
                                 def oaplProperties = oapl.properties
                                 oaplProperties.globalUID = null
                                 OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                 InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                 newOrgAccessPointLink.subPkg = newSubscriptionPackage
                                 newOrgAccessPointLink.save()
+                            }
+                            pcc.each { PendingChangeConfiguration config ->
+                                Map configSettings = config.properties
+                                configSettings.subscriptionPackage = newSubscriptionPackage
+                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
+                                if(newPcc) {
+                                    Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)
+                                    auditables.each { audit ->
+                                        AuditConfig.addConfig(newSubscriptionInstance,audit.referenceField)
+                                    }
+                                }
                             }
                         }
                     }

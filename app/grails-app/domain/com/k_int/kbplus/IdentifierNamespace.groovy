@@ -7,6 +7,9 @@ import javax.persistence.Transient
 class IdentifierNamespace extends AbstractI10nOverride {
 
     @Transient
+    public static final String UNKNOWN    = "Unknown"
+
+    @Transient
     public static final NS_ORGANISATION = "com.k_int.kbplus.Org"
     @Transient
     public static final NS_LICENSE      = "com.k_int.kbplus.License"
@@ -20,14 +23,30 @@ class IdentifierNamespace extends AbstractI10nOverride {
     public static final NS_CREATOR      = "com.k_int.kbplus.Creator"
 
     @Transient
+    public static final String ISIL       = "ISIL"
+    @Transient
+    public static final String WIBID      = "wibid"
+    @Transient
+    public static final String GND_ORG_NR = "gnd_org_nr"
+    @Transient
+    public static final String EZB_ORG_ID = "ezb_org_id"
+    @Transient
+    public static final String GRID_ID    = "GRID ID"
+    @Transient
+    public static final String DBS_ID     = "DBS-ID"
+    @Transient
+    public static final String VAT        = "VAT"
+
+
+    @Transient
     final static List<String> CORE_ORG_NS = [
-            "ISIL",
-            "wibid",
-            "gnd_org_nr",
-            "ezb_org_id",
-            "GRID ID",
-            "DBS-ID",
-            "VAT"
+            ISIL,
+            WIBID,
+            GND_ORG_NR,
+            EZB_ORG_ID,
+            GRID_ID,
+            DBS_ID,
+            VAT
     ]
 
 
