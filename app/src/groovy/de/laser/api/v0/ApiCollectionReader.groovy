@@ -165,9 +165,10 @@ class ApiCollectionReader {
         list.each { it ->       // com.k_int.kbplus.<x>CustomProperty
             Map<String, Object> tmp = [:]
 
-            tmp.token   = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
-            tmp.scope   = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
-            //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
+            tmp.token       = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
+            tmp.scope       = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
+            tmp.note        = it.note
+            tmp.isPublic    = "Yes" // derived to substitute private properties tentant
 
             if (it.dateValue) {
                 tmp.value   = ApiToolkit.formatInternalDate(it.dateValue)
@@ -181,9 +182,6 @@ class ApiCollectionReader {
             if (it.type.type == RefdataValue.toString()) {
                 tmp.refdataCategory = it.type.refdataCategory
             }
-
-            tmp.note            = it.note
-            tmp.isPublic        = "Yes" // derived to substitute private properties tentant
 
             if (it instanceof LicenseCustomProperty) {
                 tmp.paragraph = it.paragraph
@@ -267,9 +265,9 @@ class ApiCollectionReader {
             Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // com.k_int.kbplus.Package
             result << pkg
 
-            if (pkg != Constants.HTTP_FORBIDDEN) {
+            //if (pkg != Constants.HTTP_FORBIDDEN) {
                 pkg.issueEntitlements = getIssueEntitlementCollection(subPkg, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
-            }
+            //}
         }
 
         return ApiToolkit.cleanUp(result, true, false)
@@ -397,9 +395,8 @@ class ApiCollectionReader {
 
             tmp.token   = it.type.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.scope   = it.type.descr    // com.k_int.kbplus.PropertyDefinition.String
-            //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
-            //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
             tmp.note    = it.note
+            //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
 
             if (it.dateValue) {
                 tmp.value   = ApiToolkit.formatInternalDate(it.dateValue)
