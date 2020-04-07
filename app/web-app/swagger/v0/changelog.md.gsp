@@ -5,6 +5,7 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 #### 0.90
 
 - added request header `x-debug` for __/statistic__
+- internal refactoring
 
 #### 0.89
 
