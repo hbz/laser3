@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Contact;de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.Contact;com.k_int.kbplus.Person;com.k_int.kbplus.Org;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
 
 <semui:modal id="${modalId ?: 'contactFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}">
@@ -14,7 +14,7 @@
                         <g:message code="contact.contentType.label" />
                     </label>
                     <laser:select class="ui dropdown" id="contentType" name="contentType.id"
-                        from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
+                        from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
                         optionKey="id"
                         optionValue="value"
                         value="${contactInstance?.contentType?.id}"/>
@@ -22,10 +22,10 @@
 
                 <div class="field eight wide required">
                     <label for="type">
-                        ${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
+                        ${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
                     </label>
                     <laser:select class="ui dropdown" id="type" name="type.id"
-                                  from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
+                                  from="${Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${contactInstance?.type?.id}"/>
@@ -46,11 +46,11 @@
                     <g:message code="contact.prs.label" />
                 </label>
                 <g:if test="${prsId}">
-                    ${com.k_int.kbplus.Person.findById(prsId)}
+                    ${Person.findById(prsId)}
                     <input id="prs" name="prs.id" type="hidden" value="${prsId}" />
                 </g:if>
                 <g:else>
-                    <g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${personInstance?.id}" class="many-to-one" noSelection="['null': '']"/>
+                    <g:select id="prs" name="prs.id" from="${Person.list()}" optionKey="id" value="${personInstance?.id}" class="many-to-one" noSelection="['null': '']"/>
                 </g:else>
             </div>
         </g:if>
@@ -61,11 +61,11 @@
                     <g:message code="contact.belongesTo.uppercase.label"  />
                 </label>
                 <g:if test="${orgId}">
-                    <i class="icon university la-list-icon"></i>${com.k_int.kbplus.Org.findById(orgId)}
+                    <i class="icon university la-list-icon"></i>${Org.findById(orgId)}
                     <input id="org" name="org.id" type="hidden" value="${orgId}" />
                 </g:if>
                 <g:else>
-                    <g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${org?.id}" class="many-to-one" noSelection="['null': '']"/>
+                    <g:select id="org" name="org.id" from="${Org.list()}" optionKey="id" value="${org?.id}" class="many-to-one" noSelection="['null': '']"/>
                 </g:else>
             </div>
         </g:if>
