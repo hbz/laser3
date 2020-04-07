@@ -4340,8 +4340,7 @@ class SubscriptionController extends AbstractDebugController {
                                             newOrgAccessPointLink.save(flush: true)
                                         }
                                         pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
-                                            Map configSettings = config.properties
-                                            configSettings.subscriptionPackage = newSubscriptionPackage
+                                            Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
                                             PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
                                             if(newPcc) {
                                                 Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSub.class.name,baseSub.id,PendingChangeConfiguration.settingKeys)
@@ -5353,8 +5352,7 @@ class SubscriptionController extends AbstractDebugController {
                                 newOrgAccessPointLink.save()
                             }
                             pcc.each { PendingChangeConfiguration config ->
-                                Map configSettings = config.properties
-                                configSettings.subscriptionPackage = newSubscriptionPackage
+                                Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
                                 PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
                                 if(newPcc) {
                                     Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)

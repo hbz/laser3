@@ -238,7 +238,18 @@ class PendingChange {
                 if(target instanceof TIPPCoverage) {
                     TIPPCoverage tippCoverage = (TIPPCoverage) target
                     IssueEntitlement owner = IssueEntitlement.findBySubscriptionAndTipp(subscription,tippCoverage.tipp)
-                    IssueEntitlementCoverage ieCov = new IssueEntitlementCoverage([issueEntitlement:owner])
+                    Map<String,Object> configMap = [issueEntitlement:owner,
+                            startDate: tippCoverage.startDate,
+                            startIssue: tippCoverage.startIssue,
+                            startVolume: tippCoverage.startVolume,
+                            endDate: tippCoverage.endDate,
+                            endIssue: tippCoverage.endIssue,
+                            endVolume: tippCoverage.endVolume,
+                            embargo: tippCoverage.embargo,
+                            coverageDepth: tippCoverage.coverageDepth,
+                            coverageNote: tippCoverage.coverageNote,
+                    ]
+                    IssueEntitlementCoverage ieCov = new IssueEntitlementCoverage(configMap)
                     if(ieCov.save()) {
                         done = true
                     }

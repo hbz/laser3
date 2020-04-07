@@ -324,7 +324,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             }
                                             tippsToNotify << [event:'update',target:tippA,diffs:diffs]
                                         }
-                                        //ex updatedTitleAfterPackageReconcile
+                                        /*//ex updatedTitleAfterPackageReconcile
                                         TitleInstance titleInstance = TitleInstance.findByGokbId(tippB.title.gokbId)
                                         //TitleInstance titleInstance = createOrUpdateTitle((String) tippB.title.gokbId)
                                         //createOrUpdatePlatform([name:tippB.platformName,gokbId:tippB.platformUUID,primaryUrl:tippB.primaryUrl],tippA.platform)
@@ -336,7 +336,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         }
                                         else {
                                             throw new SyncException("Title loading failed for ${tippB.title.gokbId}!")
-                                        }
+                                        }*/
                                     }
                                 }
                                 else {
@@ -628,8 +628,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 }
                             }
                             else {
-                                log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id} to GOKb!")
-                                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleHistoryEvent:eventData.@id,errorType:"historyEventWithoutDate"])
+                                log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id.text()} to GOKb!")
+                                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleHistoryEvent:eventData.@id.text(),errorType:"historyEventWithoutDate"])
                             }
                         }
                     }
@@ -978,7 +978,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                         changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                                     }
                                                     break
-                                                case 'added':
+                                                case 'add':
                                                     changeDesc = PendingChangeConfiguration.NEW_COVERAGE
                                                     changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
                                                     changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
