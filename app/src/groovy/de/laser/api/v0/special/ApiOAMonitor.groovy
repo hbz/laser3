@@ -130,6 +130,10 @@ class ApiOAMonitor {
             result.add(ApiStubReader.requestSubscriptionStub(sub, org))
         }
 
+        if (! ApiToolkit.isDebugMode()) {
+            result.removeAll(Constants.HTTP_FORBIDDEN)
+        }
+
         ApiToolkit.cleanUp(result, true, true)
     }
 }

@@ -370,6 +370,7 @@
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
         - $ref: "#/components/parameters/authorization"
+        - $ref: "#/components/parameters/debug"
 
       responses:
         200:
@@ -422,6 +423,7 @@
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
         - $ref: "#/components/parameters/authorization"
+        - $ref: "#/components/parameters/debug"
 
       responses:
         200:
