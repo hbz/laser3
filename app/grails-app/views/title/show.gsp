@@ -412,14 +412,14 @@
                       </span>
                   </g:each>
                   <div class="la-icon-list">
-                      <g:if test="${t.availabilityStatus?.getI10n('value')}">
+                     %{-- <g:if test="${t.availabilityStatus?.getI10n('value')}">
                           <div class="item">
                               <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label')}"></i>
                               <div class="content">
                                   ${t.availabilityStatus?.getI10n('value')}
                               </div>
                           </div>
-                      </g:if>
+                      </g:if>--}%
 
                       <div class="item">
                           <i class="grey clipboard check clip icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>

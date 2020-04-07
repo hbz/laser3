@@ -80,7 +80,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
         <div class="three fields">
             <div class="field">
-                <label for="filter">${message(code: 'default.filter.label')}</label>
+                <label for="filter">${message(code: 'title.label')}</label>
                 <input name="filter" id="filter" value="${params.filter}"/>
             </div>
 
@@ -93,12 +93,12 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                     </g:each>
                 </select>
             </div>
-            <g:if test="${params.mode != 'advanced'}">
+            %{--<g:if test="${params.mode != 'advanced'}">
                 <div class="field">
                     <semui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
                                       value="${params.asAt}"/>
                 </div>
-            </g:if>
+            </g:if>--}%
         </div>
         <div class="three fields">
 

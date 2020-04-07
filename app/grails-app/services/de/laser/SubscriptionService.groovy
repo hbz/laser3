@@ -324,6 +324,18 @@ class SubscriptionService {
         ies
     }
 
+    List getSubjects(List titleIDs) {
+        println(titleIDs)
+        def subjects = titleIDs ?
+                BookInstance.executeQuery("select distinct summaryOfContent from BookInstance where id in (:ieTitleIDs)",
+                        [ieTitleIDs: titleIDs])
+                : []
+
+        println(subjects)
+        subjects
+
+    }
+
     List getCurrentIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
