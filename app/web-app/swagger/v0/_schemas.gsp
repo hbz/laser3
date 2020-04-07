@@ -620,8 +620,8 @@
         type:
           type: string
           enum: <% println "[" + PropertyDefinition.validTypes.keySet().collect{"\"${it}\""}.join(', ') + "]" %>
-        refdataCategory: # only if type = "Refdata"
-          description: Only if type is Refdata
+        refdataCategory:
+          description: Only if type = "Refdata"
           type: string
         note:
           type: string
