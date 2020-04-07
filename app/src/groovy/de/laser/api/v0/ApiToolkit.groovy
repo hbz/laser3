@@ -75,7 +75,7 @@ class ApiToolkit {
         reqAttr.getAttribute('debugMode', RequestAttributes.SCOPE_REQUEST)
     }
 
-    static cleanUpDebugInfo(Collection<Object> list) {
+    static Collection<Object> cleanUpDebugInfo(Collection<Object> list) {
         if (! isDebugMode()) {
             list.removeAll(Constants.HTTP_FORBIDDEN)
         }

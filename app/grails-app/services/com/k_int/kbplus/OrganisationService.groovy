@@ -296,7 +296,7 @@ class OrganisationService {
     boolean setupBasicTestData(Org current) {
         try {
             log.info("check if data exists for org...")
-            if(!OrgRole.findAllByOrg(current) && !Person.findAllByTenant(current) && !CostItem.findAllByOwner(current) && !PropertyDefinition.findAllByTenant(current)) {
+            //if(!OrgRole.findAllByOrg(current) && !Person.findAllByTenant(current) && !CostItem.findAllByOwner(current) && !PropertyDefinition.findAllByTenant(current)) {
                 /*
                 data to be setup:
                 a) for institutions: Org Mustereinrichtung
@@ -378,7 +378,7 @@ class OrganisationService {
                         'duz: Deutsche Universitätszeitung': Package.findByGlobalUID('package:af054973-443d-42d9-b561-9e80f0f234ba'), //check
                         'Brepols: Bibliography of British and Irish History': Package.findByGlobalUID('package:1e8092c7-494b-4633-b06f-1a22708b7a7a'), //check
                         'Naxos: Naxos Music Library World': Package.findByGlobalUID('package:8a6f1483-6231-49dd-b3df-dbb418f84563'), //check
-                        'Thieme: Thieme eRef Lehrbuecher': Package.findByGlobalUID('package:a414de1e-358e-4889-b982-e6f6741a61d6'), //check
+                        'UTB Alle Titel': Package.findByGlobalUID('package:8e356b83-4142-4bc5-a377-dc18351744f3'), //check
                         'American Chemical Society: American Chemical Society Journals': Package.findByGlobalUID('package:b108178b-f27c-455d-9061-c8837905dc65'), //check
                         'EBSCO: SportDiscus': Package.findByGlobalUID('package:348a270f-715d-4ee1-b3b2-e28db9e8c0a3') //check
                 ]
@@ -405,11 +405,11 @@ class OrganisationService {
                     errors.add("Kein Kundentyp gegeben!")
                     return false
                 }
-            }
-            else {
-                errors.add("Diese Einrichtung verfügt bereits über einen Testdatensatz!")
-                return false
-            }
+            //}
+            //else {
+                //errors.add("Diese Einrichtung verfügt bereits über einen Testdatensatz!")
+                //return false
+            //}
         }
         catch (CreationException e) {
             log.error(e.printStackTrace())
@@ -422,133 +422,138 @@ class OrganisationService {
     boolean setupTestDataForInst(Map generalData,Org current) {
         //set up parent subscriptions
         //pray that there will be no UID change on the example objects!! - there was. Damn it. Reset everything ...
-        Subscription underConsiderationDatenAParent = Subscription.findByGlobalUID("subscription:550361c5-bc89-415e-b9ff-8505aa39d2c3")
+        Subscription underConsiderationDatenAParent = Subscription.findByGlobalUID("subscription:9195762f-a33d-4c02-8ea1-d94ac24b9a1b") //check
         Subscription currentDatenAParent = Subscription.findByGlobalUID("subscription:0f43143c-851b-4623-b3d9-063d86d30640") //check
-        Subscription eBookPickParent = Subscription.findByGlobalUID("subscription:b9db1e2f-7ea6-4e28-8284-1a1a3ce960fb")
-        Subscription journalPaketExtremParent = Subscription.findByGlobalUID('subscription:833c5da6-b77a-4c36-98cc-32292adde93c')
+        Subscription eBookPickParent = Subscription.findByGlobalUID("subscription:a00738d6-5134-4bdb-8e9c-70aefcfd4d06") //check
+        Subscription journalPaketExtremParent = Subscription.findByGlobalUID('subscription:bef14b4a-897a-4bf8-880d-6c9eee7de2a5') //check
         Org consortium = Org.findByGlobalUID('org:0b3311f1-a307-476c-91c9-ee5b44765bd2') //check
-        log.info("creating cost item element configurations ...")
-        Set<CostItemElementConfiguration> ciecs = [
-                new CostItemElementConfiguration(forOrganisation: current,
-                        costItemElement: generalData.costItemElements.get('price: provider price'),
-                        elementSign: RDStore.CIEC_POSITIVE),
-                new CostItemElementConfiguration(forOrganisation: current,
-                        costItemElement: generalData.costItemElements.get('price: list price'),
-                        elementSign: RDStore.CIEC_NEUTRAL),
-                new CostItemElementConfiguration(forOrganisation: current,
-                        costItemElement: generalData.costItemElements.get('discount: multiyear discount'),
-                        elementSign: RDStore.CIEC_NEGATIVE)
-        ]
-        ciecs.each { ciec ->
-            if(!ciec.save()) {
-                errors.add(ciec.errors.toString())
-                return false
-            }
-        }
-        log.info("creating property definition groups ...")
-        List propertyDefinitionGroups = [
-                [group:new PropertyDefinitionGroup(name: 'Fernleihe', description: 'Fernleihbedingungen', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.getByNameAndDescr('ILL record keeping required', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('ILL print or fax', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('ILL secure electronic transmission', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('ILL term note', PropertyDefinition.LIC_PROP)]
-                ],
-                [group:new PropertyDefinitionGroup(name: 'Archivrecht', description: 'Welches Archivrecht ist gegeben?', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.getByNameAndDescr('Archival Copy Content', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('Archival Copy: Cost', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('Archival Copy: Permission', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('Archival Copy: Time', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('Archiving rights', PropertyDefinition.LIC_PROP)]
-                ],
-                [group:new PropertyDefinitionGroup(name: 'Zugriffsbedingungen', description: 'Welche Zugriffsmöglichkeiten sind erlaubt?', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.getByNameAndDescr('Walk-in Access', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('Walk-in User Term Note', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('Wifi Access', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('Remote Access', PropertyDefinition.LIC_PROP)]
-                ],
-                [group:new PropertyDefinitionGroup(name: 'Fremdsysteme', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.getByNameAndDescr('DBIS link', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('EZB tagging (yellow)', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('SFX entry', PropertyDefinition.SUB_PROP)]
-                ],
-                [group:new PropertyDefinitionGroup(name: 'Statistik', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.getByNameAndDescr('Statistic', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Statistics Link', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Statistic access', PropertyDefinition.SUB_PROP)]
-                ]
-        ]
-        propertyDefinitionGroups.each { pdg ->
-            if(pdg.group.save()) {
-                pdg.items.each { pd ->
-                    PropertyDefinitionGroupItem pdgi = new PropertyDefinitionGroupItem(propDef: pd, propDefGroup: pdg.group)
-                    if(!pdgi.save()) {
-                        errors.add(pdgi.errors.toString())
-                        return false
-                    }
+        if(!CostItemElementConfiguration.findAllByForOrganisation(current)) {
+            log.info("creating cost item element configurations ...")
+            Set<CostItemElementConfiguration> ciecs = [
+                    new CostItemElementConfiguration(forOrganisation: current,
+                            costItemElement: generalData.costItemElements.get('price: provider price'),
+                            elementSign: RDStore.CIEC_POSITIVE),
+                    new CostItemElementConfiguration(forOrganisation: current,
+                            costItemElement: generalData.costItemElements.get('price: list price'),
+                            elementSign: RDStore.CIEC_NEUTRAL),
+                    new CostItemElementConfiguration(forOrganisation: current,
+                            costItemElement: generalData.costItemElements.get('discount: multiyear discount'),
+                            elementSign: RDStore.CIEC_NEGATIVE)
+            ]
+            ciecs.each { ciec ->
+                if(!ciec.save()) {
+                    errors.add(ciec.errors.toString())
+                    return false
                 }
             }
-            else {
-                errors.add(pdg.group.errors.toString())
-                return false
+        }
+        if(!PropertyDefinitionGroup.findAllByTenant(current)) {
+            log.info("creating property definition groups ...")
+            List propertyDefinitionGroups = [
+                    [group:new PropertyDefinitionGroup(name: 'Fernleihe', description: 'Fernleihbedingungen', ownerType: License.class.name, tenant: current, isVisible: true),
+                     items:[PropertyDefinition.getByNameAndDescr('ILL record keeping required', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('ILL print or fax', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('ILL secure electronic transmission', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('ILL term note', PropertyDefinition.LIC_PROP)]
+                    ],
+                    [group:new PropertyDefinitionGroup(name: 'Archivrecht', description: 'Welches Archivrecht ist gegeben?', ownerType: License.class.name, tenant: current, isVisible: true),
+                     items:[PropertyDefinition.getByNameAndDescr('Archival Copy Content', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('Archival Copy: Cost', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('Archival Copy: Permission', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('Archival Copy: Time', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('Archiving rights', PropertyDefinition.LIC_PROP)]
+                    ],
+                    [group:new PropertyDefinitionGroup(name: 'Zugriffsbedingungen', description: 'Welche Zugriffsmöglichkeiten sind erlaubt?', ownerType: License.class.name, tenant: current, isVisible: true),
+                     items:[PropertyDefinition.getByNameAndDescr('Walk-in Access', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('Walk-in User Term Note', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('Wifi Access', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('Remote Access', PropertyDefinition.LIC_PROP)]
+                    ],
+                    [group:new PropertyDefinitionGroup(name: 'Fremdsysteme', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
+                     items:[PropertyDefinition.getByNameAndDescr('DBIS link', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('EZB tagging (yellow)', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('SFX entry', PropertyDefinition.SUB_PROP)]
+                    ],
+                    [group:new PropertyDefinitionGroup(name: 'Statistik', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
+                     items:[PropertyDefinition.getByNameAndDescr('Statistic', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Statistics Link', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Statistic access', PropertyDefinition.SUB_PROP)]
+                    ]
+            ]
+            propertyDefinitionGroups.each { pdg ->
+                if(pdg.group.save()) {
+                    pdg.items.each { pd ->
+                        PropertyDefinitionGroupItem pdgi = new PropertyDefinitionGroupItem(propDef: pd, propDefGroup: pdg.group)
+                        if(!pdgi.save()) {
+                            errors.add(pdgi.errors.toString())
+                            return false
+                        }
+                    }
+                }
+                else {
+                    errors.add(pdg.group.errors.toString())
+                    return false
+                }
             }
         }
-        log.info("creating private contacts ...")
-        Map franzEric = [mainParams: [
-                first_name:'Franz',
-                last_name:'Eric',
-                gender: generalData.gender.get('Male'),
-                contactType: RDStore.CONTACT_TYPE_PERSONAL,
-                tenant: current,
-                isPublic: false
-        ],
-                         addParams: [
-                                 contact: [[contentType:RDStore.CCT_EMAIL,
-                                            type: generalData.contactTypes.get('Job-related'),
-                                            content: 'e.franz@anbieter.de'
-                                           ]],
-                                 personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Books'),
-                                                functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
-                                 ]
-                         ]
-        ]
-        Map nameVorname = [mainParams:[
-                first_name: 'Vorname',
-                last_name: 'Name',
-                gender: generalData.gender.get('Third Gender'),
-                contactType: RDStore.CONTACT_TYPE_PERSONAL,
-                tenant: current,
-                isPublic: false
-        ],
+        if(!Person.findAllByTenant(current)) {
+            log.info("creating private contacts ...")
+            Map franzEric = [mainParams: [
+                    first_name:'Franz',
+                    last_name:'Eric',
+                    gender: generalData.gender.get('Male'),
+                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    tenant: current,
+                    isPublic: false
+            ], addParams: [
+                    contact: [[contentType:RDStore.CCT_EMAIL,
+                               type: generalData.contactTypes.get('Job-related'),
+                               content: 'e.franz@anbieter.de'
+                              ]],
+                    personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Books'),
+                                   functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+                    ]
+            ]
+            ]
+            Map nameVorname = [mainParams:[
+                    first_name: 'Vorname',
+                    last_name: 'Name',
+                    gender: generalData.gender.get('Third Gender'),
+                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                               addParams: [
+                                       contact: [[contentType: RDStore.CCT_PHONE,
+                                                  type: generalData.contactTypes.get('Job-related'),
+                                                  content: '00 49 021 456 789'
+                                                 ]],
+                                       personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter A'),
+                                                      functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS],
+                                                     [org:generalData.exampleOrgs.get('Musteranbieter A'),
+                                                      positionType: RefdataValue.getByValueAndCategory('Sales Director', RDConstants.PERSON_POSITION)]
+                                       ]
+                               ]
+            ]
+            Map technik = [mainParams: [
+                    last_name: 'Technik',
+                    contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
                            addParams: [
-                                   contact: [[contentType: RDStore.CCT_PHONE,
-                                              type: generalData.contactTypes.get('Job-related'),
-                                              content: '00 49 021 456 789'
-                                             ]],
+                                   contact:[[contentType: RDStore.CCT_EMAIL,
+                                             type: generalData.contactTypes.get('Job-related'),
+                                             content: 'tech@support.com'
+                                            ]],
                                    personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter A'),
-                                                  functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS],
-                                                 [org:generalData.exampleOrgs.get('Musteranbieter A'),
-                                                  positionType: RefdataValue.getByValueAndCategory('Sales Director', RDConstants.PERSON_POSITION)]
-                                   ]
-                           ]
-        ]
-        Map technik = [mainParams: [
-                last_name: 'Technik',
-                contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
-                tenant: current,
-                isPublic: false
-        ],
-                       addParams: [
-                               contact:[[contentType: RDStore.CCT_EMAIL,
-                                         type: generalData.contactTypes.get('Job-related'),
-                                         content: 'tech@support.com'
-                                        ]],
-                               personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter A'),
-                                              functionType: RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)]]]
-        ]
-        Set<Map> personalContacts = [franzEric,nameVorname,technik]
-        personalContacts.each { contact ->
-            createObject('Person',contact,consortium,current)
+                                                  functionType: RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)]]]
+            ]
+            Set<Map> personalContacts = [franzEric,nameVorname,technik]
+            personalContacts.each { contact ->
+                createObject('Person',contact,consortium,current)
+            }
         }
         log.info("creating consortial member subscriptions ...")
         String testDatenAChildIdentifier = UUID.randomUUID().toString()
@@ -608,22 +613,7 @@ class OrganisationService {
                              instanceOf: eBookPickParent,
                              form: generalData.subscriptionForms.get('singlePurchase'),
                              resource: generalData.subscriptionResources.get('ebookSingle')],
-                addParams: [packages:[[pkg:generalData.examplePackages.get('Thieme: Thieme eRef Lehrbuecher'),
-                                       issueEntitlementISBNs:['9783131906953',
-                                                              '9783131934345',
-                                                              '9783132412743',
-                                                              '9783132404069',
-                                                              '9783132414310',
-                                                              '9783131928634',
-                                                              '9783131920317',
-                                                              '9783132407060',
-                                                              '9783131915160',
-                                                              '9783131945730',
-                                                              '9783131911810',
-                                                              '9783132412651',
-                                                              '9783131945228',
-                                                              '9783132406360']
-                                      ]
+                addParams: [packages:[[pkg:generalData.examplePackages.get('UTB Alle Titel')]
                 ],
                             /*provider:generalData.exampleOrgs.get('Musteranbieter E-Books'),*/
                             costItems:[
@@ -732,14 +722,44 @@ class OrganisationService {
                                     journalPaketExtremChildParams,
                                     musterdatenbankParams]
         subscriptionSet.each { sub ->
-            createObject('Subscription',sub,consortium,current)
+            Set<Long> subs = OrgRole.executeQuery('select oo.sub.id from OrgRole oo where oo.sub.name = :name and oo.sub.status = :status and oo.org = :current',[name:sub.mainParams.name,status:sub.mainParams.status,current:current])
+            if(!subs)
+                createObject('Subscription',sub,consortium,current)
+            else {
+                Subscription subToModify = Subscription.get(subs[0])
+                switch(subToModify.name) {
+                    case testDatenAChildParams.mainParams.name: testDatenAChildIdentifier = subToModify.identifier
+                        subToModify.instanceOf = underConsiderationDatenAParent
+                        break
+                    case currentDatenAChildParams.mainParams.name: currentDatenAChildIdentifier = subToModify.identifier
+                        subToModify.instanceOf = currentDatenAParent
+                        break
+                    case eBookPickChildParams.mainParams.name: eBookPickChildIdentifier = subToModify.identifier
+                        subToModify.instanceOf = eBookPickParent
+                        break
+                    case expiredJournalPaketParams.mainParams.name:
+                    case currentJournalPaketParams.mainParams.name:
+                        if(subToModify.status == RDStore.SUBSCRIPTION_EXPIRED)
+                            expiredJournalPaketIdentifier = subToModify.identifier
+                        else if(subToModify.status == RDStore.SUBSCRIPTION_CURRENT)
+                            currentJournalPaketIdentifier = subToModify.identifier
+                        break
+                    case journalPaketExtremChildParams.mainParams.name: journalPaketExtremChildIdentifier = subToModify.identifier
+                        subToModify.instanceOf = journalPaketExtremParent
+                        break
+                    case musterdatenbankParams.mainParams.name: musterdatenbankIdentifier = subToModify.identifier
+                        break
+                }
+                subToModify.save(flush:true) //needed because of list processing
+            }
         }
         log.info("creating links between consortia member subscriptions ...")
         Map dateALinking = [linkType: RDStore.LINKTYPE_FOLLOWS,objectType:Subscription.class.name,source:Subscription.findByIdentifier(currentDatenAChildIdentifier).id,destination:Subscription.findByIdentifier(testDatenAChildIdentifier).id,owner:current]
         Map journalPaketLinking = [linkType: RDStore.LINKTYPE_FOLLOWS,objectType:Subscription.class.name,source:Subscription.findByIdentifier(currentJournalPaketIdentifier).id,destination:Subscription.findByIdentifier(expiredJournalPaketIdentifier).id,owner:current]
         Set<Map> linkSet = [dateALinking,journalPaketLinking]
         linkSet.each { link ->
-            setupLinking(link)
+            if(!Links.findBySourceAndDestination(link.source,link.destination))
+                setupLinking(link)
         }
         log.info("creating consortia member licenses ...")
         Map rahmenvertragChildParams = [
@@ -802,202 +822,214 @@ class OrganisationService {
             linkSubscriptionsToLicense(cl.baseLicense,cl.ownedSubscriptions,current)
         }
         licWithoutBaseSet.each { lwob ->
-            createObject('License',(Map) lwob,consortium,current)
+            if(!License.findByReference(lwob.mainParams.reference))
+                createObject('License',(Map) lwob,consortium,current)
         }
         return true
     }
 
     boolean setupTestDataForCons(Map generalData,Org current) {
-        log.info("creating private properties ...")
-
-        Map<String, Object> map1 = [
-                token       : "Quellensteuer-Befreiung",
-                category    : PropertyDefinition.SUB_PROP,
-                type        : "class com.k_int.kbplus.RefdataValue",
-                rdc         : RDConstants.Y_N_O,
-                tenant      : current,
-                i10n        : [
-                        name_de: "Quellensteuer-Befreiung",
-                        name_en: "Quellensteuer-Befreiung",
-                        expl_de: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?",
-                        expl_en: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?"
-                ]
-        ]
-
-        Map<String, Object> map2 = [
-                token       : "BGA",
-                category    : PropertyDefinition.ORG_PROP,
-                type        : "class com.k_int.kbplus.RefdataValue",
-                rdc         : RDConstants.Y_N,
-                tenant      : current,
-                i10n        : [
-                        name_de: "BGA",
-                        name_en: "BGA",
-                        expl_de: "Betrieb gewerblicher Art",
-                        expl_en: "Betrieb gewerblicher Art"
-                ]
-        ]
-
-        Map<String, Object> map3 = [
-                token       : "EGP Nr.",
-                category    : PropertyDefinition.ORG_PROP,
-                type        : "class java.lang.Integer",
-                tenant      : current,
-                i10n        : [
-                        name_de: "EGP Nr.",
-                        name_en: "EGP Nr.",
-                        expl_de: "ID für das SAP System des rechtlichen Trägers",
-                        expl_en: "ID für das SAP System des rechtlichen Trägers"
-                ]
-        ]
-
-        Set<PropertyDefinition> privatePropertyDefMaps = [
-                PropertyDefinition.construct(map1),
-                PropertyDefinition.construct(map2),
-                PropertyDefinition.construct(map3)
-                ]
-        /*
-        Set<PropertyDefinition> privatePropertyDefMaps = [
-                new PropertyDefinition(name:'Quellensteuer-Befreiung',
-                        tenant:current,
-                        refdataCategory:RDConstants.Y_N_O,
-                        descr:'Subscription Property',
-                        type:'class com.k_int.kbplus.RefdataValue',
-                        expl:'Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?'),
-                new PropertyDefinition(name:'BGA',
-                        tenant:current,
-                        refdataCategory:RDConstants.Y_N,
-                        descr:'Organisation Property',
-                        type:'class com.k_int.kbplus.RefdataValue',
-                        expl:'Betrieb gewerblicher Art'),
-                new PropertyDefinition(name:'EGP Nr.',
-                        tenant:current,
-                        descr:'Organisation Property',
-                        type:'class java.lang.Integer',
-                        expl:'ID für das SAP System des rechtlichen Trägers')
-        ]
-        */
-
         Map<String,PropertyDefinition> privateProperties = [:]
-        privatePropertyDefMaps.each { propDef ->
-            if(propDef.save()) {
-                privateProperties.put(propDef.name,propDef)
-            }
-            else {
-                errors.add(propDef.errors.toString())
-                return false
-            }
-        }
-        log.info("creating property definition groups ...")
-        List propertyDefinitionGroups = [
-                [group:new PropertyDefinitionGroup(name: 'ausgeübtes Recht', description: 'Welches Recht wird angewandt?', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.getByNameAndDescr('Governing law', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('Governing jurisdiction', PropertyDefinition.LIC_PROP)]
-                ],
-                [group:new PropertyDefinitionGroup(name: 'Fernleihe', description: 'ist eine Fernleihe erlaubt?', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.getByNameAndDescr('ILL record keeping required', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('ILL print or fax', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('ILL secure electronic transmission', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('ILL term note', PropertyDefinition.LIC_PROP)]
-                ],
-                [group:new PropertyDefinitionGroup(name: 'GASCO', description: 'Merkmale, die den GASCO-Monitor steuern', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP)]
-                ],
-                [group:new PropertyDefinitionGroup(name: 'meinKonsortium', description: 'alle für meine Konsortialstelle relevanten Merkmale', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.getByNameAndDescr('Open country-wide', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Restricted user group', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Perennial term', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Perennial term checked', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Due date for volume discount', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Newcomer discount', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Price increase', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Pricing advantage by licensing of another product', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Private institutions', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Product dependency', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Discount', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Scale of discount', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Calculation of discount', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Billing done by provider', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Time of billing', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('reverse charge', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Partial payment', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Time span for testing', PropertyDefinition.SUB_PROP),
-                        PropertyDefinition.getByNameAndDescr('Joining during the period', PropertyDefinition.SUB_PROP)]
-                ],
-                [group:new PropertyDefinitionGroup(name: 'Open Access', description: 'Open Access vereinbart', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.getByNameAndDescr('OA Note', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('OA Last Date', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('OA First Date', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('Offsetting', PropertyDefinition.LIC_PROP),
-                        PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP)]
-                ]
-        ]
-        propertyDefinitionGroups.each { pdg ->
-            if(pdg.group.save()) {
-                pdg.items.each { pd ->
-                    PropertyDefinitionGroupItem pdgi = new PropertyDefinitionGroupItem(propDef: pd, propDefGroup: pdg.group)
-                    if(!pdgi.save()) {
-                        errors.add(pdgi.errors.toString())
-                        return false
-                    }
+        if(!PropertyDefinition.findAllByTenant(current)) {
+            log.info("creating private properties ...")
+
+            Map<String, Object> map1 = [
+                    token       : "Quellensteuer-Befreiung",
+                    category    : PropertyDefinition.SUB_PROP,
+                    type        : "class com.k_int.kbplus.RefdataValue",
+                    rdc         : RDConstants.Y_N_O,
+                    tenant      : current,
+                    i10n        : [
+                            name_de: "Quellensteuer-Befreiung",
+                            name_en: "Quellensteuer-Befreiung",
+                            expl_de: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?",
+                            expl_en: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?"
+                    ]
+            ]
+
+            Map<String, Object> map2 = [
+                    token       : "BGA",
+                    category    : PropertyDefinition.ORG_PROP,
+                    type        : "class com.k_int.kbplus.RefdataValue",
+                    rdc         : RDConstants.Y_N,
+                    tenant      : current,
+                    i10n        : [
+                            name_de: "BGA",
+                            name_en: "BGA",
+                            expl_de: "Betrieb gewerblicher Art",
+                            expl_en: "Betrieb gewerblicher Art"
+                    ]
+            ]
+
+            Map<String, Object> map3 = [
+                    token       : "EGP Nr.",
+                    category    : PropertyDefinition.ORG_PROP,
+                    type        : "class java.lang.Integer",
+                    tenant      : current,
+                    i10n        : [
+                            name_de: "EGP Nr.",
+                            name_en: "EGP Nr.",
+                            expl_de: "ID für das SAP System des rechtlichen Trägers",
+                            expl_en: "ID für das SAP System des rechtlichen Trägers"
+                    ]
+            ]
+            Set<PropertyDefinition> privatePropertyDefMaps = [
+                    PropertyDefinition.construct(map1),
+                    PropertyDefinition.construct(map2),
+                    PropertyDefinition.construct(map3)
+            ]
+            /*
+            Set<PropertyDefinition> privatePropertyDefMaps = [
+                    new PropertyDefinition(name:'Quellensteuer-Befreiung',
+                            tenant:current,
+                            refdataCategory:RDConstants.Y_N_O,
+                            descr:'Subscription Property',
+                            type:'class com.k_int.kbplus.RefdataValue',
+                            expl:'Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?'),
+                    new PropertyDefinition(name:'BGA',
+                            tenant:current,
+                            refdataCategory:RDConstants.Y_N,
+                            descr:'Organisation Property',
+                            type:'class com.k_int.kbplus.RefdataValue',
+                            expl:'Betrieb gewerblicher Art'),
+                    new PropertyDefinition(name:'EGP Nr.',
+                            tenant:current,
+                            descr:'Organisation Property',
+                            type:'class java.lang.Integer',
+                            expl:'ID für das SAP System des rechtlichen Trägers')
+            ]
+            */
+            privatePropertyDefMaps.each { propDef ->
+                if(propDef.save()) {
+                    privateProperties.put(propDef.name,propDef)
+                }
+                else {
+                    errors.add(propDef.errors.toString())
+                    return false
                 }
             }
-            else {
-                errors.add(pdg.group.errors.toString())
-                return false
+        }
+        else {
+            PropertyDefinition.findAllByTenant(current).each { PropertyDefinition pd ->
+                privateProperties.put(pd.name,pd)
             }
         }
-        log.info("creating model member org ...")
-        Object[] argv0 = [current.name]
-        Object[] argv1 = [current.shortname]
-        Org modelMember = new Org(name: messageSource.getMessage('org.setup.modelOrgName',argv0,LocaleContextHolder.getLocale()),
-                sortname: messageSource.getMessage('org.setup.modelOrgSortname',argv1,LocaleContextHolder.getLocale()),
-                url: 'www.mustereinichtung.de', urlGov: 'www.muster_uni.de', status: RDStore.O_STATUS_CURRENT,
-                libraryType: RefdataValue.getByValueAndCategory('Universität', RDConstants.LIBRARY_TYPE),
-                libraryNetwork: RefdataValue.getByValueAndCategory('No Network', RDConstants.LIBRARY_NETWORK),
-                federalState: current.federalState ,country: current.country,
-                orgType: [RDStore.OT_INSTITUTION],
-                sector: RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR))
-        if(!modelMember.save()) {
-            errors.add(modelMember.errors.toString())
-            return false
+
+        if(!PropertyDefinitionGroup.findAllByTenant(current)) {
+            log.info("creating property definition groups ...")
+            List propertyDefinitionGroups = [
+                    [group:new PropertyDefinitionGroup(name: 'ausgeübtes Recht', description: 'Welches Recht wird angewandt?', ownerType: License.class.name, tenant: current, isVisible: true),
+                     items:[PropertyDefinition.getByNameAndDescr('Governing law', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('Governing jurisdiction', PropertyDefinition.LIC_PROP)]
+                    ],
+                    [group:new PropertyDefinitionGroup(name: 'Fernleihe', description: 'ist eine Fernleihe erlaubt?', ownerType: License.class.name, tenant: current, isVisible: true),
+                     items:[PropertyDefinition.getByNameAndDescr('ILL record keeping required', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('ILL print or fax', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('ILL secure electronic transmission', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('ILL term note', PropertyDefinition.LIC_PROP)]
+                    ],
+                    [group:new PropertyDefinitionGroup(name: 'GASCO', description: 'Merkmale, die den GASCO-Monitor steuern', ownerType: Subscription.class.name, tenant: current, isVisible: true),
+                     items:[PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP)]
+                    ],
+                    [group:new PropertyDefinitionGroup(name: 'meinKonsortium', description: 'alle für meine Konsortialstelle relevanten Merkmale', ownerType: Subscription.class.name, tenant: current, isVisible: true),
+                     items:[PropertyDefinition.getByNameAndDescr('Open country-wide', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Restricted user group', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Perennial term', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Perennial term checked', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Due date for volume discount', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Newcomer discount', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Price increase', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Pricing advantage by licensing of another product', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Private institutions', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Product dependency', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Discount', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Scale of discount', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Calculation of discount', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Billing done by provider', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Time of billing', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('reverse charge', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Partial payment', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Time span for testing', PropertyDefinition.SUB_PROP),
+                            PropertyDefinition.getByNameAndDescr('Joining during the period', PropertyDefinition.SUB_PROP)]
+                    ],
+                    [group:new PropertyDefinitionGroup(name: 'Open Access', description: 'Open Access vereinbart', ownerType: License.class.name, tenant: current, isVisible: true),
+                     items:[PropertyDefinition.getByNameAndDescr('OA Note', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('OA Last Date', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('OA First Date', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('Offsetting', PropertyDefinition.LIC_PROP),
+                            PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP)]
+                    ]
+            ]
+            propertyDefinitionGroups.each { pdg ->
+                if(pdg.group.save()) {
+                    pdg.items.each { pd ->
+                        PropertyDefinitionGroupItem pdgi = new PropertyDefinitionGroupItem(propDef: pd, propDefGroup: pdg.group)
+                        if(!pdgi.save()) {
+                            errors.add(pdgi.errors.toString())
+                            return false
+                        }
+                    }
+                }
+                else {
+                    errors.add(pdg.group.errors.toString())
+                    return false
+                }
+            }
         }
-        modelMember.setDefaultCustomerType()
-        OrgPrivateProperty opp = new OrgPrivateProperty(owner: modelMember, type: privateProperties.get('BGA'), refValue: RDStore.YN_YES)
-        if(!opp.save()) {
-            errors.add(opp.errors.toString())
-            return false
-        }
-        Map legalPatronAddressMap = [type:RefdataValue.getByValueAndCategory('Legal patron address', RDConstants.ADDRESS_TYPE),
-                                     name:'Rechtlicher Träger',
-                                     street_1:'Universitätsstraße',
-                                     street_2:'1',
-                                     zipcode:'55555',
-                                     city:'Musterhausen',
-                                     state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants.FEDERAL_STATE),
-                                     country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
-                                     org:modelMember]
-        Map postalAddressMap = [type:RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE),
-                                name:'Bibliothek',
-                                additionFirst:'Erwerbungsabteilung',
-                                street_1:'Musterstraße',
-                                street_2:'1',
-                                zipcode:'55555',
-                                city:'Musterhausen',
-                                state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants.FEDERAL_STATE),
-                                country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
-                                org:modelMember]
-        Set<Map> addresses = [legalPatronAddressMap,postalAddressMap]
-        addresses.each { addressData ->
-            Address address = new Address(addressData)
-            if(!address.save()) {
-                errors.add(address.errors.toString())
+        Org modelMember = Org.findByName(messageSource.getMessage('org.setup.modelOrgName',argv0,LocaleContextHolder.getLocale()))
+        if(!modelMember) {
+            log.info("creating model member org ...")
+            Object[] argv0 = [current.name]
+            Object[] argv1 = [current.shortname]
+            modelMember = new Org(name: messageSource.getMessage('org.setup.modelOrgName',argv0,LocaleContextHolder.getLocale()),
+                    sortname: messageSource.getMessage('org.setup.modelOrgSortname',argv1,LocaleContextHolder.getLocale()),
+                    url: 'www.mustereinichtung.de', urlGov: 'www.muster_uni.de', status: RDStore.O_STATUS_CURRENT,
+                    libraryType: RefdataValue.getByValueAndCategory('Universität', RDConstants.LIBRARY_TYPE),
+                    libraryNetwork: RefdataValue.getByValueAndCategory('No Network', RDConstants.LIBRARY_NETWORK),
+                    federalState: current.federalState ,country: current.country,
+                    orgType: [RDStore.OT_INSTITUTION],
+                    sector: RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR))
+            if(!modelMember.save()) {
+                errors.add(modelMember.errors.toString())
                 return false
+            }
+            modelMember.setDefaultCustomerType()
+            OrgPrivateProperty opp = new OrgPrivateProperty(owner: modelMember, type: privateProperties.get('BGA'), refValue: RDStore.YN_YES)
+            if(!opp.save()) {
+                errors.add(opp.errors.toString())
+                return false
+            }
+            Map legalPatronAddressMap = [type:RefdataValue.getByValueAndCategory('Legal patron address', RDConstants.ADDRESS_TYPE),
+                                         name:'Rechtlicher Träger',
+                                         street_1:'Universitätsstraße',
+                                         street_2:'1',
+                                         zipcode:'55555',
+                                         city:'Musterhausen',
+                                         state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants.FEDERAL_STATE),
+                                         country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
+                                         org:modelMember]
+            Map postalAddressMap = [type:RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE),
+                                    name:'Bibliothek',
+                                    additionFirst:'Erwerbungsabteilung',
+                                    street_1:'Musterstraße',
+                                    street_2:'1',
+                                    zipcode:'55555',
+                                    city:'Musterhausen',
+                                    state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants.FEDERAL_STATE),
+                                    country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
+                                    org:modelMember]
+            Set<Map> addresses = [legalPatronAddressMap,postalAddressMap]
+            addresses.each { addressData ->
+                Address address = new Address(addressData)
+                if(!address.save()) {
+                    errors.add(address.errors.toString())
+                    return false
+                }
             }
         }
         Org member1Aachen = Org.findByGlobalUID('org:51c0f85a-0e96-43d4-ad6f-70011114643f') //check
@@ -1007,10 +1039,12 @@ class OrganisationService {
         Org member5Bremen = Org.findByGlobalUID('org:e6b3bd22-1a93-47c7-aa92-a8ad9b607b46') //check
         Set<Org> consortialMembers = [member1Aachen,member2Zittau,member3Munich,member4Greifswald,member5Bremen,modelMember]
         consortialMembers.each { member ->
-            Combo memberCombo = new Combo(fromOrg:member,toOrg:current,type:RDStore.COMBO_TYPE_CONSORTIUM)
-            if(!memberCombo.save()) {
-                errors.add(memberCombo.errors.toString())
-                return false
+            if(!Combo.findByFromOrgAndToOrg(member,current)) {
+                Combo memberCombo = new Combo(fromOrg:member,toOrg:current,type:RDStore.COMBO_TYPE_CONSORTIUM)
+                if(!memberCombo.save()) {
+                    errors.add(memberCombo.errors.toString())
+                    return false
+                }
             }
         }
         Map<String,Map> consortialPartnerIdentifiers = [modelMember:[:],member1Aachen:[:],member2Zittau:[:],member3Munich:[:],member4Greifswald:[:],member5Bremen:[:]]
@@ -1024,203 +1058,207 @@ class OrganisationService {
             consortialPartnerIdentifiers[k].eBookPickIdentifier = UUID.randomUUID() //ex subscription #44
             consortialPartnerIdentifiers[k].journalPaketExtremIdentifier = UUID.randomUUID() //ex subscription #17
         }
-        log.info("creating cost item element configurations ...")
-        Set<CostItemElementConfiguration> ciecs = [
-                new CostItemElementConfiguration(forOrganisation: current,
-                        costItemElement: generalData.costItemElements.get('price: consortial price'),
-                        elementSign: RDStore.CIEC_POSITIVE),
-                new CostItemElementConfiguration(forOrganisation: current,
-                        costItemElement: generalData.costItemElements.get('price: list price'),
-                        elementSign: RDStore.CIEC_POSITIVE),
-                new CostItemElementConfiguration(forOrganisation: current,
-                        costItemElement: generalData.costItemElements.get('discount: consortial discount'),
-                        elementSign: RDStore.CIEC_NEGATIVE),
-                new CostItemElementConfiguration(forOrganisation: current,
-                        costItemElement: generalData.costItemElements.get('special funds: central funding'),
-                        elementSign: RDStore.CIEC_NEUTRAL)
-        ]
-        ciecs.each { ciec ->
-            if(!ciec.save()) {
-                errors.add(ciec.errors.toString())
-                return false
+        if(!CostItemElementConfiguration.findByForOrganisation(current)) {
+            log.info("creating cost item element configurations ...")
+            Set<CostItemElementConfiguration> ciecs = [
+                    new CostItemElementConfiguration(forOrganisation: current,
+                            costItemElement: generalData.costItemElements.get('price: consortial price'),
+                            elementSign: RDStore.CIEC_POSITIVE),
+                    new CostItemElementConfiguration(forOrganisation: current,
+                            costItemElement: generalData.costItemElements.get('price: list price'),
+                            elementSign: RDStore.CIEC_POSITIVE),
+                    new CostItemElementConfiguration(forOrganisation: current,
+                            costItemElement: generalData.costItemElements.get('discount: consortial discount'),
+                            elementSign: RDStore.CIEC_NEGATIVE),
+                    new CostItemElementConfiguration(forOrganisation: current,
+                            costItemElement: generalData.costItemElements.get('special funds: central funding'),
+                            elementSign: RDStore.CIEC_NEUTRAL)
+            ]
+            ciecs.each { ciec ->
+                if(!ciec.save()) {
+                    errors.add(ciec.errors.toString())
+                    return false
+                }
             }
         }
-        log.info("creating private contacts ...")
-        Map erwerbung = [mainParams:[
-                last_name: 'Erwerbung',
-                contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
-                tenant: current,
-                isPublic: false
-                ],
-                         addParams: [
-                                 contact: [[contentType: RDStore.CCT_EMAIL,
-                                            type: generalData.contactTypes.get('Job-related'),
-                                            content: 'erwerbung@xxx.de']
-                                 ],
-                                 personRoles: [[org:member5Bremen,
-                                                functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
-                         ]
-        ]
-        Map jamesFrank = [mainParams:[
-                first_name: 'James',
-                last_name: 'Frank',
-                gender: generalData.gender.get('Male'),
-                contactType: RDStore.CONTACT_TYPE_PERSONAL,
-                tenant: current,
-                isPublic: false
-                ],
-                          addParams: [
-                                  contact: [[contentType: RDStore.CCT_EMAIL,
-                                             type: generalData.contactTypes.get('Job-related'),
-                                             content: 'f.james@xyz.com'],
-                                            [contentType: RDStore.CCT_PHONE,
-                                             type: generalData.contactTypes.get('Job-related'),
-                                             content: '0045-4567 345']
-                                  ],
-                                  personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Journals'),
-                                                 functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
-                          ]
-        ]
-        Map peterKlein = [mainParams:[
-                first_name: 'Peter',
-                last_name: 'Klein',
-                gender: generalData.gender.get('Male'),
-                contactType: RDStore.CONTACT_TYPE_PERSONAL,
-                tenant: current,
-                isPublic: false
-                ],
-                          addParams: [
-                                  contact: [[contentType: RDStore.CCT_EMAIL,
-                                             type: generalData.contactTypes.get('Job-related'),
-                                             content: 'p.klein@anbieter.de']],
-                                  personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter A'),
-                                                 functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
-                          ]
-        ]
-        Map miaMeyer = [mainParams:[
-                first_name: 'Mia',
-                last_name: 'Meyer',
-                gender: generalData.gender.get('Female'),
-                contactType: RDStore.CONTACT_TYPE_PERSONAL,
-                tenant: current,
-                isPublic: false
-                ],
-                        addParams: [
-                                contact: [[contentType: RDStore.CCT_EMAIL,
-                                           type: generalData.contactTypes.get('Job-related'),
-                                           content: 'meyer@gg.de']],
-                                personRoles: [[org:member4Greifswald,
-                                               functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
-                        ]
-        ]
-        Map peterMiller = [mainParams:[
-                first_name: 'Peter',
-                last_name: 'Miller',
-                gender: generalData.gender.get('Male'),
-                contactType: RDStore.CONTACT_TYPE_PERSONAL,
-                tenant: current,
-                isPublic: false
-                ],
-                           addParams: [
-                                   contact: [[contentType: RDStore.CCT_EMAIL,
-                                              type: generalData.contactTypes.get('Job-related'),
-                                              content: 'miller@e-books.com']],
-                                   personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Books'),
-                                                  functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
-                           ]
-        ]
-        Map rechnungsadresse = [mainParams: [
-                last_name: 'Rechnungsadresse',
-                contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
-                tenant: current,
-                isPublic: false
-        ],
-                                addParams: [
-                                        address: [[type:RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE),
-                                                   additionFirst:'Erwerbungsabteilung',
-                                                   street_1:'Musterhaus',
-                                                   street_2:'1',
-                                                   zipcode:'11111',
-                                                   city:'Bremen',
-                                                   state:RefdataValue.getByValueAndCategory('Bremen',RDConstants.FEDERAL_STATE),
-                                                   country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY)]],
-                                        personRoles: [[org:member5Bremen,
-                                                       functionType: RefdataValue.getByValueAndCategory('Functional Contact Postal Address',RDConstants.PERSON_FUNCTION)]]]
-        ]
-        Map technischerSupport = [mainParams: [
-                last_name: 'Technischer Support',
-                contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
-                tenant: current,
-                isPublic: false
-        ],
-                                  addParams: [
-                                          contact:[[contentType: RDStore.CCT_EMAIL,
-                                                    type: generalData.contactTypes.get('Job-related'),
-                                                    content: 'it_support@wef.com']],
-                                          personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Books'),
-                                                         functionType: RefdataValue.getByValueAndCategory('Technical Support',RDConstants.PERSON_FUNCTION)]]]
-        ]
-        Map franzEmil = [mainParams: [
-                first_name:'franz',
-                last_name:'emil',
-                gender: generalData.gender.get('Third Gender'),
-                contactType: RDStore.CONTACT_TYPE_PERSONAL,
-                tenant: current,
-                isPublic: false
-        ],
-                         addParams: [
-                                 contact: [[contentType:RDStore.CCT_EMAIL,
-                                            type: generalData.contactTypes.get('Job-related'),
-                                            content: 'stats@eugf.com']],
-                                 personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Books'),
-                                                functionType: RefdataValue.getByValueAndCategory('Statistical Support',RDConstants.PERSON_FUNCTION)]]]
-        ]
-        Map annaMueller = [mainParams:[
-                first_name: 'anna',
-                last_name: 'müller',
-                gender: generalData.gender.get('Female'),
-                contactType: RDStore.CONTACT_TYPE_PERSONAL,
-                tenant: current,
-                isPublic: false
-        ],
-                           addParams: [
-                                   contact: [[contentType: RDStore.CCT_EMAIL,
-                                              type: generalData.contactTypes.get('Job-related'),
-                                              content: 'a.mueller@muster.de']],
-                                   personRoles: [[org:member1Aachen,
-                                                  functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
-                           ]
-        ]
-        Map salesTeam = [mainParams: [
-                last_name: 'sales-team',
-                contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
-                tenant: current,
-                isPublic: false
-        ],
-                         addParams: [
-                                 contact:[[contentType: RDStore.CCT_EMAIL,
-                                           type: generalData.contactTypes.get('Job-related'),
-                                           content: 'sales_team@muster.de']],
-                                 personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter B'),
-                                                functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]]
-        ]
-        Map samSmith = [mainParams:[
-                first_name: 'sam',
-                last_name: 'smith',
-                gender: generalData.gender.get('Male'),
-                contactType: RDStore.CONTACT_TYPE_PERSONAL,
-                tenant: current,
-                isPublic: false
-        ], addParams: [
-                contact: [[contentType: RDStore.CCT_EMAIL,
-                           type: generalData.contactTypes.get('Job-related'),
-                           content: 'rechnungen@ewewf.com']],
-                personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Journals'),
-                               functionType: RefdataValue.getByValueAndCategory('Functional Contact Billing Adress',RDConstants.PERSON_FUNCTION)]]]
-        ]
-        Set<Map> personalContacts = [erwerbung,jamesFrank,peterKlein,miaMeyer,peterMiller,rechnungsadresse,technischerSupport,franzEmil,annaMueller,salesTeam,samSmith]
-        personalContacts.each { contact ->
-            createObject('Person',contact,current,null)
+        if(!Person.findByTenant(current)) {
+            log.info("creating private contacts ...")
+            Map erwerbung = [mainParams:[
+                    last_name: 'Erwerbung',
+                    contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                             addParams: [
+                                     contact: [[contentType: RDStore.CCT_EMAIL,
+                                                type: generalData.contactTypes.get('Job-related'),
+                                                content: 'erwerbung@xxx.de']
+                                     ],
+                                     personRoles: [[org:member5Bremen,
+                                                    functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
+                             ]
+            ]
+            Map jamesFrank = [mainParams:[
+                    first_name: 'James',
+                    last_name: 'Frank',
+                    gender: generalData.gender.get('Male'),
+                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                              addParams: [
+                                      contact: [[contentType: RDStore.CCT_EMAIL,
+                                                 type: generalData.contactTypes.get('Job-related'),
+                                                 content: 'f.james@xyz.com'],
+                                                [contentType: RDStore.CCT_PHONE,
+                                                 type: generalData.contactTypes.get('Job-related'),
+                                                 content: '0045-4567 345']
+                                      ],
+                                      personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Journals'),
+                                                     functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
+                              ]
+            ]
+            Map peterKlein = [mainParams:[
+                    first_name: 'Peter',
+                    last_name: 'Klein',
+                    gender: generalData.gender.get('Male'),
+                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                              addParams: [
+                                      contact: [[contentType: RDStore.CCT_EMAIL,
+                                                 type: generalData.contactTypes.get('Job-related'),
+                                                 content: 'p.klein@anbieter.de']],
+                                      personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter A'),
+                                                     functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
+                              ]
+            ]
+            Map miaMeyer = [mainParams:[
+                    first_name: 'Mia',
+                    last_name: 'Meyer',
+                    gender: generalData.gender.get('Female'),
+                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                            addParams: [
+                                    contact: [[contentType: RDStore.CCT_EMAIL,
+                                               type: generalData.contactTypes.get('Job-related'),
+                                               content: 'meyer@gg.de']],
+                                    personRoles: [[org:member4Greifswald,
+                                                   functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
+                            ]
+            ]
+            Map peterMiller = [mainParams:[
+                    first_name: 'Peter',
+                    last_name: 'Miller',
+                    gender: generalData.gender.get('Male'),
+                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                               addParams: [
+                                       contact: [[contentType: RDStore.CCT_EMAIL,
+                                                  type: generalData.contactTypes.get('Job-related'),
+                                                  content: 'miller@e-books.com']],
+                                       personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Books'),
+                                                      functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
+                               ]
+            ]
+            Map rechnungsadresse = [mainParams: [
+                    last_name: 'Rechnungsadresse',
+                    contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                                    addParams: [
+                                            address: [[type:RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE),
+                                                       additionFirst:'Erwerbungsabteilung',
+                                                       street_1:'Musterhaus',
+                                                       street_2:'1',
+                                                       zipcode:'11111',
+                                                       city:'Bremen',
+                                                       state:RefdataValue.getByValueAndCategory('Bremen',RDConstants.FEDERAL_STATE),
+                                                       country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY)]],
+                                            personRoles: [[org:member5Bremen,
+                                                           functionType: RefdataValue.getByValueAndCategory('Functional Contact Postal Address',RDConstants.PERSON_FUNCTION)]]]
+            ]
+            Map technischerSupport = [mainParams: [
+                    last_name: 'Technischer Support',
+                    contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                                      addParams: [
+                                              contact:[[contentType: RDStore.CCT_EMAIL,
+                                                        type: generalData.contactTypes.get('Job-related'),
+                                                        content: 'it_support@wef.com']],
+                                              personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Books'),
+                                                             functionType: RefdataValue.getByValueAndCategory('Technical Support',RDConstants.PERSON_FUNCTION)]]]
+            ]
+            Map franzEmil = [mainParams: [
+                    first_name:'franz',
+                    last_name:'emil',
+                    gender: generalData.gender.get('Third Gender'),
+                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                             addParams: [
+                                     contact: [[contentType:RDStore.CCT_EMAIL,
+                                                type: generalData.contactTypes.get('Job-related'),
+                                                content: 'stats@eugf.com']],
+                                     personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Books'),
+                                                    functionType: RefdataValue.getByValueAndCategory('Statistical Support',RDConstants.PERSON_FUNCTION)]]]
+            ]
+            Map annaMueller = [mainParams:[
+                    first_name: 'anna',
+                    last_name: 'müller',
+                    gender: generalData.gender.get('Female'),
+                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                               addParams: [
+                                       contact: [[contentType: RDStore.CCT_EMAIL,
+                                                  type: generalData.contactTypes.get('Job-related'),
+                                                  content: 'a.mueller@muster.de']],
+                                       personRoles: [[org:member1Aachen,
+                                                      functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]
+                               ]
+            ]
+            Map salesTeam = [mainParams: [
+                    last_name: 'sales-team',
+                    contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
+                    tenant: current,
+                    isPublic: false
+            ],
+                             addParams: [
+                                     contact:[[contentType: RDStore.CCT_EMAIL,
+                                               type: generalData.contactTypes.get('Job-related'),
+                                               content: 'sales_team@muster.de']],
+                                     personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter B'),
+                                                    functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]]]
+            ]
+            Map samSmith = [mainParams:[
+                    first_name: 'sam',
+                    last_name: 'smith',
+                    gender: generalData.gender.get('Male'),
+                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    tenant: current,
+                    isPublic: false
+            ], addParams: [
+                    contact: [[contentType: RDStore.CCT_EMAIL,
+                               type: generalData.contactTypes.get('Job-related'),
+                               content: 'rechnungen@ewewf.com']],
+                    personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Journals'),
+                                   functionType: RefdataValue.getByValueAndCategory('Functional Contact Billing Adress',RDConstants.PERSON_FUNCTION)]]]
+            ]
+            Set<Map> personalContacts = [erwerbung,jamesFrank,peterKlein,miaMeyer,peterMiller,rechnungsadresse,technischerSupport,franzEmil,annaMueller,salesTeam,samSmith]
+            personalContacts.each { contact ->
+                createObject('Person',contact,current,null)
+            }
         }
         log.info("creating consortial licenses ...")
         Map rahmenvertragParams = [
@@ -1263,7 +1301,9 @@ class OrganisationService {
         Set<Map> consortialLicenseParamsSet = [rahmenvertragParams,rahmenvertragEBookParams]
         Map<String,License> consortialLicenses = [:]
         consortialLicenseParamsSet.each { licParam ->
-            License lic = (License) createObject("License",licParam,current,null)
+            License lic = License.findByReference(licParam.mainParams.reference)
+            if(!lic)
+                lic = (License) createObject("License",licParam,current,null)
             consortialLicenses.put(lic.reference,lic)
             License.executeQuery("select oo.lic from OrgRole oo where oo.lic.reference = :memberRef and oo.org = :consortium",[memberRef:"${lic.reference} (Teilnehmervertrag)",consortium:current]).each { memLicObj ->
                 License memberLic = (License) memLicObj
@@ -1731,7 +1771,7 @@ class OrganisationService {
                              form: generalData.subscriptionForms.get('singlePurchase'),
                              resource: generalData.subscriptionResources.get('ebookSingle'),
                              owner: consortialLicenses.get('Rahmenvertrag eBook')],
-                addParams: [packages: [[pkg:generalData.examplePackages.get('Thieme: Thieme eRef Lehrbuecher')]],
+                addParams: [packages: [[pkg:generalData.examplePackages.get('UTB Alle Titel')]],
                             provider: generalData.exampleOrgs.get('Musteranbieter E-Books'),
                             sharedProperties:['name','form','resource'],
                             customProperties: [
@@ -1756,7 +1796,7 @@ class OrganisationService {
                                                                 currencyRate:1.0,
                                                                 localSum:0,
                                                                 taxKey: CostItem.TAX_TYPES.TAXABLE_7,
-                                                                subPkg: generalData.examplePackages.get('Thieme: Thieme eRef Lehrbuecher'),
+                                                                subPkg: generalData.examplePackages.get('UTB Alle Titel'),
                                                                 startDate: generalData.dates.previousYearRingStart,
                                                                 endDate: generalData.dates.defaultEndDate,
                                                                 status: generalData.costItemStatus.get('Actual'),
@@ -1772,7 +1812,7 @@ class OrganisationService {
                                                                 currencyRate:1.0,
                                                                 localSum:0,
                                                                 taxKey: CostItem.TAX_TYPES.TAXABLE_7,
-                                                                subPkg: generalData.examplePackages.get('Thieme: Thieme eRef Lehrbuecher'),
+                                                                subPkg: generalData.examplePackages.get('UTB Alle Titel'),
                                                                 startDate: generalData.dates.previousYearRingStart,
                                                                 endDate: generalData.dates.defaultEndDate,
                                                                 status: generalData.costItemStatus.get('Actual'),
@@ -1785,7 +1825,7 @@ class OrganisationService {
                                                                 currencyRate:1.0,
                                                                 localSum:0,
                                                                 taxKey: CostItem.TAX_TYPES.TAXABLE_7,
-                                                                subPkg: generalData.examplePackages.get('Thieme: Thieme eRef Lehrbuecher'),
+                                                                subPkg: generalData.examplePackages.get('UTB Alle Titel'),
                                                                 startDate: generalData.dates.previousYearRingStart,
                                                                 endDate: generalData.dates.defaultEndDate,
                                                                 status: generalData.costItemStatus.get('Actual'),
@@ -1802,7 +1842,7 @@ class OrganisationService {
                                                                 currencyRate:1.0,
                                                                 localSum:0,
                                                                 taxKey: CostItem.TAX_TYPES.TAXABLE_7,
-                                                                subPkg: generalData.examplePackages.get('Thieme: Thieme eRef Lehrbuecher'),
+                                                                subPkg: generalData.examplePackages.get('UTB Alle Titel'),
                                                                 startDate: generalData.dates.previousYearRingStart,
                                                                 endDate: generalData.dates.defaultEndDate,
                                                                 status: generalData.costItemStatus.get('Actual'),
@@ -1912,7 +1952,36 @@ class OrganisationService {
         ]
         Set<Map> consortialSubscriptionParams = [expiredDatenAParams,currentDatenAParams,testDatenAParams,currentDatenbankParams,currentDatenbank2Params,intendedDatenbank2Params,eBookPickParams,journalPaketExtremParams]
         consortialSubscriptionParams.each { consortialSubscription ->
-            createObject('Subscription',consortialSubscription,current,null)
+            Set<Subscription> sub = OrgRole.executeQuery('select oo.sub from OrgRole oo where oo.sub.name = :name and oo.sub.status = :status and oo.org = :current',[name:consortialSubscription.mainParams.name,status:consortialSubscription.mainParams.status,current:current])
+            if(!sub)
+                createObject('Subscription',consortialSubscription,current,null)
+            else {
+                switch(sub[0].name) {
+                    case expiredDatenAParams.mainParams.name:
+                    case currentDatenAParams.mainParams.name:
+                    case testDatenAParams.mainParams.name:
+                        if(sub[0].status == RDStore.SUBSCRIPTION_EXPIRED)
+                            expiredDatenAIdentifier = sub[0].identifier
+                        if(sub[0].status == RDStore.SUBSCRIPTION_CURRENT)
+                            currentDatenAIdentifier = sub[0].identifier
+                        if(sub[0].status == RefdataValue.getByValueAndCategory('Test Access',RDConstants.SUBSCRIPTION_TYPE))
+                            testDatenAIdentifier = sub[0].identifier
+                        break
+                    case currentDatenbankParams.mainParams.name: currentDatenbankIdentifier = sub[0].identifier
+                        break
+                    case currentDatenbank2Params.mainParams.name:
+                    case intendedDatenbank2Params.mainParams.name:
+                        if(sub[0].status == RDStore.SUBSCRIPTION_CURRENT)
+                            currentDatenbank2Identifier = sub[0].identifier
+                        if(sub[0].status == RDStore.SUBSCRIPTION_INTENDED)
+                            intendedDatenbank2Identifier = sub[0].identifier
+                        break
+                    case eBookPickParams.mainParams.name: eBookPickIdentifier = sub[0].identifier
+                        break
+                    case journalPaketExtremParams.mainParams.name: journalPaketExtremIdentifier = sub[0].identifier
+                        break
+                }
+            }
         }
         log.info("creating contacts with specific responsibilities ...")
         Map antonGross = [mainParams:[
@@ -1940,7 +2009,8 @@ class OrganisationService {
         Set<Map> personalContactsWithSpecificResponsibilities = [antonGross]
         //this loop can be executed only if the objects to which the responsibility is bound to has been created already
         personalContactsWithSpecificResponsibilities.each { contact ->
-            createObject('Person',contact,current,null)
+            if(!Person.findByTenantAndFirst_nameAndLast_name(current,antonGross.first_name,antonGross.last_name))
+                createObject('Person',contact,current,null)
         }
         log.info("create subscription linkings ...")
         setupLinking([owner:current,source:Subscription.findByIdentifier(currentDatenAIdentifier).id,destination:Subscription.findByIdentifier(currentDatenbank2Identifier).id,objectType:Subscription.class.name,linkType:RefdataValue.getByValueAndCategory('is condition for',RDConstants.LINK_TYPE)])
@@ -1951,11 +2021,13 @@ class OrganisationService {
         subIdentifiersWithChildrenToLink.each { pair ->
             Subscription source = Subscription.findByIdentifier(pair.source)
             Subscription destination = Subscription.findByIdentifier(pair.destination)
-            setupLinking([owner:current,source:source.id,destination:destination.id,objectType:Subscription.class.name,linkType:RDStore.LINKTYPE_FOLLOWS])
+            if(!Links.findBySourceAndDestination(source.id,destination.id))
+                setupLinking([owner:current,source:source.id,destination:destination.id,objectType:Subscription.class.name,linkType:RDStore.LINKTYPE_FOLLOWS])
             source.derivedSubscriptions.each { childSub ->
                 Org childSubscriber = childSub.orgRelations.find { it.roleType == RDStore.OR_SUBSCRIBER_CONS }.org
                 Subscription childPair = destination.derivedSubscriptions.find { it.orgRelations.find { it.org == childSubscriber } }
-                setupLinking([owner:current,source:childPair.id,destination:childPair.id,objectType:Subscription.class.name,linkType:RDStore.LINKTYPE_FOLLOWS])
+                if(!Links.findBySourceAndDestination(childSub.id,childPair.id))
+                    setupLinking([owner:current,source:childSub.id,destination:childPair.id,objectType:Subscription.class.name,linkType:RDStore.LINKTYPE_FOLLOWS])
             }
         }
     }
@@ -2390,7 +2462,7 @@ class OrganisationService {
                 endDate: costItemParams.endDate,
                 costItemElement: costItemParams.costItemElement,
                 costItemElementConfiguration: costItemParams.costItemElementConfiguration,
-                isVisibleForSubscriber: costItemParams.isVisibleForSubscriber
+                isVisibleForSubscriber: costItemParams.isVisibleForSubscriber ?: false
         )
         if(ci && !ci.save()) {
             throw new CreationException(ci.errors)

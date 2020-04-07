@@ -1,6 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import de.laser.domain.IssueEntitlementCoverage
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -163,6 +164,26 @@ class ApiUnsecuredMapReader {
 
         // References
         result.owner               = getOrganisationStubMap(invoice.owner) // com.k_int.kbplus.Org
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    static Map<String, Object> getIssueEntitlementCoverageMap(IssueEntitlementCoverage coverage) {
+        if (!coverage) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.startDate        = ApiToolkit.formatInternalDate(coverage.startDate)
+        result.startVolume      = coverage.startVolume
+        result.startIssue       = coverage.startIssue
+        result.endDate          = ApiToolkit.formatInternalDate(coverage.endDate)
+        result.endVolume        = coverage.endVolume
+        result.endIssue         = coverage.endIssue
+        result.embargo          = coverage.embargo
+        result.coverageDepth    = coverage.coverageDepth
+        result.coverageNote     = coverage.coverageNote
+        result.lastUpdated      = ApiToolkit.formatInternalDate(coverage.lastUpdated)
 
         ApiToolkit.cleanUp(result, true, true)
     }

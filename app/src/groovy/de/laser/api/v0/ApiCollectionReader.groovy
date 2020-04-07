@@ -4,14 +4,12 @@ import com.k_int.kbplus.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
-import de.laser.helper.Constants
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 
 @Log4j
 class ApiCollectionReader {
-
-    // ################### FULL OBJECTS ###################
 
     static Collection<Object> getAddressCollection(Collection<Address> list, allowedTypes) {
         Collection<Object> result = []
@@ -165,9 +163,10 @@ class ApiCollectionReader {
         list.each { it ->       // com.k_int.kbplus.<x>CustomProperty
             Map<String, Object> tmp = [:]
 
-            tmp.token   = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
-            tmp.scope   = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
-            //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
+            tmp.token       = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
+            tmp.scope       = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
+            tmp.note        = it.note
+            tmp.isPublic    = "Yes" // derived to substitute private properties tentant
 
             if (it.dateValue) {
                 tmp.value   = ApiToolkit.formatInternalDate(it.dateValue)
@@ -181,9 +180,6 @@ class ApiCollectionReader {
             if (it.type.type == RefdataValue.toString()) {
                 tmp.refdataCategory = it.type.refdataCategory
             }
-
-            tmp.note            = it.note
-            tmp.isPublic        = "Yes" // derived to substitute private properties tentant
 
             if (it instanceof LicenseCustomProperty) {
                 tmp.paragraph = it.paragraph
@@ -238,6 +234,16 @@ class ApiCollectionReader {
         return ApiToolkit.cleanUp(result, true, true)
     }
 
+    static Collection<Object> getIssueEntitlementCoverageCollection(Collection<IssueEntitlementCoverage> list) {
+        Collection<Object> result = []
+
+        list?.each { it -> // com.k_int.kbplus.IssueEntitlementCoverage
+            result << ApiUnsecuredMapReader.getIssueEntitlementCoverageMap(it)
+        }
+
+        result
+    }
+
     /**
      * @param list
      * @param ignoreRelation
@@ -267,46 +273,13 @@ class ApiCollectionReader {
             Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // com.k_int.kbplus.Package
             result << pkg
 
-            if (pkg != Constants.HTTP_FORBIDDEN) {
+            //if (pkg != Constants.HTTP_FORBIDDEN) {
                 pkg.issueEntitlements = getIssueEntitlementCollection(subPkg, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
-            }
+            //}
         }
 
         return ApiToolkit.cleanUp(result, true, false)
     }
-
-    /* not used
-    def resolveLink(Link link) {
-        Map<String, Object> result = [:]
-        if (!link) {
-            return null
-        }
-        result.id   = link.id
-
-        // RefdataValues
-        result.status   = link.status?.value
-        result.type     = link.type?.value
-        result.isSlaved = link.isSlaved?.value
-
-        def context = null // TODO: use context
-        result.fromLic  = ApiStubReader.resolveLicenseStub(link.fromLic, context) // com.k_int.kbplus.License
-        result.toLic    = ApiStubReader.resolveLicenseStub(link.toLic, context) // com.k_int.kbplus.License
-
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-    */
-
-    /* not used
-    def resolveLinks(list) {
-        def result = []
-        if(list) {
-            list.each { it -> // com.k_int.kbplus.Link
-                result << resolveLink(it)
-            }
-        }
-        result
-    }
-    */
 
     static Collection<Object> getOrgLinkCollection(Collection<OrgRole> list, ignoreRelationType, Org context) { // TODO
         Collection<Object> result = []
@@ -345,30 +318,6 @@ class ApiCollectionReader {
         result
     }
 
-    static Map<String, Object> getPersonMap(Person prs, allowedContactTypes, allowedAddressTypes, Org context) {
-        Map<String, Object> result = [:]
-
-        if (prs) {
-            result.globalUID       = prs.globalUID
-            result.firstName       = prs.first_name
-            result.middleName      = prs.middle_name
-            result.lastName        = prs.last_name
-            result.title           = prs.title
-            result.lastUpdated     = ApiToolkit.formatInternalDate(prs.lastUpdated)
-
-            // RefdataValues
-            result.gender          = prs.gender?.value
-            result.isPublic        = prs.isPublic ? 'Yes' : 'No'
-            result.contactType     = prs.contactType?.value
-
-            // References
-            result.contacts     = getContactCollection(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact
-            result.addresses    = getAddressCollection(prs.addresses, allowedAddressTypes) // com.k_int.kbplus.Address
-            result.properties   = getPrivatePropertyCollection(prs.privateProperties, context) // com.k_int.kbplus.PersonPrivateProperty
-        }
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-
     /**
      * Access rights due wrapping object
      */
@@ -397,9 +346,8 @@ class ApiCollectionReader {
 
             tmp.token   = it.type.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.scope   = it.type.descr    // com.k_int.kbplus.PropertyDefinition.String
-            //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
-            //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
             tmp.note    = it.note
+            //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
 
             if (it.dateValue) {
                 tmp.value   = ApiToolkit.formatInternalDate(it.dateValue)
@@ -456,7 +404,7 @@ class ApiCollectionReader {
                 def person = tmp.find {it.globalUID == x}
 
                 if(!person) {
-                    person = getPersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // com.k_int.kbplus.Person
+                    person = ApiMapReader.getPersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // com.k_int.kbplus.Person
 
                     // export public
                     if("No" != person.isPublic?.value?.toString()) {
@@ -523,55 +471,6 @@ class ApiCollectionReader {
     }
 
     /**
-     * Access rights due wrapping object. Some relations may be blocked
-     *
-     * @param com.k_int.kbplus.TitleInstancePackagePlatform tipp
-     * @param ignoreRelation
-     * @param com.k_int.kbplus.Org context
-     * @return Map<String, Object>
-     */
-    static Map<String, Object> getTippMap(TitleInstancePackagePlatform tipp, def ignoreRelation, Org context) {
-        Map<String, Object> result = [:]
-
-        if (! tipp) {
-            return null
-        }
-
-        result.globalUID        = tipp.globalUID
-        result.hostPlatformURL  = tipp.hostPlatformURL
-        result.gokbId           = tipp.gokbId
-        result.lastUpdated      = ApiToolkit.formatInternalDate(tipp.lastUpdated)
-        //result.rectype          = tipp.rectype    // legacy; not needed ?
-
-        // RefdataValues
-        result.status           = tipp.status?.value
-        result.option           = tipp.option?.value
-        result.delayedOA        = tipp.delayedOA?.value
-        result.hybridOA         = tipp.hybridOA?.value
-        result.statusReason     = tipp.statusReason?.value
-        result.payment          = tipp.payment?.value
-
-        // References
-        //result.additionalPlatforms  = getPlatformTippCollection(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
-        result.identifiers          = getIdentifierCollection(tipp.ids)       // com.k_int.kbplus.Identifier
-        result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
-        result.title                = ApiUnsecuredMapReader.getTitleStubMap(tipp.title)       // com.k_int.kbplus.TitleInstance
-
-        if (ignoreRelation != ApiReader.IGNORE_ALL) {
-            if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
-                result.package = ApiUnsecuredMapReader.getPackageStubMap(tipp.pkg) // com.k_int.kbplus.Package
-            }
-            if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
-                result.subscription = ApiStubReader.requestSubscriptionStub(tipp.sub, context) // com.k_int.kbplus.Subscription
-            }
-        }
-        //result.derivedFrom      = ApiStubReader.resolveTippStub(tipp.derivedFrom)  // com.k_int.kbplus.TitleInstancePackagePlatform
-        //result.masterTipp       = ApiStubReader.resolveTippStub(tipp.masterTipp)   // com.k_int.kbplus.TitleInstancePackagePlatform
-
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-
-    /**
      * Access rights due wrapping object
      *
      * @param list
@@ -583,46 +482,11 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { it -> // com.k_int.kbplus.TitleInstancePackagePlatform
-            result << getTippMap(it, ignoreRelation, context)
+            result << ApiMapReader.getTippMap(it, ignoreRelation, context)
         }
 
         result
     }
-
-    /* not used
-    def resolveTitle(TitleInstance title) {
-        Map<String, Object> result = [:]
-        if (!title) {
-            return null
-        }
-
-        result.id               = title.id
-        result.title            = title.title
-        result.normTitle        = title.normTitle
-        result.keyTitle         = title.keyTitle
-        result.sortTitle        = title.sortTitle
-        //result.impId            = title.impId
-        result.dateCreated      = title.dateCreated
-        result.lastUpdated      = title.lastUpdated
-
-        // RefdataValues
-
-        result.status       = title.status?.value
-        result.type         = title.type?.value
-
-        // References
-
-        result.identifiers  = resolveIdentifiers(title.ids) // com.k_int.kbplus.IdentifierOccurrence
-
-        // TODO
-        //tipps:  TitleInstancePackagePlatform,
-        //orgs:   OrgRole,
-        //historyEvents: TitleHistoryEventParticipant,
-        //prsLinks: PersonRole
-
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-    */
 
     static Collection<Object> getSubscriptionPackageStubCollection(Collection<SubscriptionPackage> list, def ignoreRelation, Org context) {
         Collection<Object> result = []

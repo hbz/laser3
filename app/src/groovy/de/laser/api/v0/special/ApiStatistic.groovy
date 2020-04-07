@@ -135,12 +135,15 @@ class ApiStatistic {
         ApiToolkit.cleanUp(result, true, true)
     }
 
-    static private getPkgLicense(License lic) {
+    static private Map<String, Object> getPkgLicense(License lic) {
         if (! lic) {
             return null
         }
         else if (! lic.isPublicForApi) {
-            return ["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC]
+            if (ApiToolkit.isDebugMode()) {
+                return ["NO_ACCESS": ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC]
+            }
+            return null
         }
         def result = ApiUnsecuredMapReader.getLicenseStubMap(lic)
 
@@ -187,7 +190,9 @@ class ApiStatistic {
         subscriptionPackages.each { subPkg ->
 
             if (! subPkg.subscription.isPublicForApi) {
-                result.add(["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC])
+                if (ApiToolkit.isDebugMode()) {
+                    result.add(["NO_ACCESS": ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC])
+                }
             }
             else {
                 Map<String, Object> sub = ApiUnsecuredMapReader.getSubscriptionStubMap(subPkg.subscription)
@@ -227,8 +232,10 @@ class ApiStatistic {
                     result.add(sub)
                 }
                 else {
-                    // result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
-                    result.add( ["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NO_APPROVAL] )
+                    if (ApiToolkit.isDebugMode()) {
+                        // result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
+                        result.add(["NO_ACCESS": ApiToolkit.NO_ACCESS_DUE_NO_APPROVAL])
+                    }
                 }
             }
         }

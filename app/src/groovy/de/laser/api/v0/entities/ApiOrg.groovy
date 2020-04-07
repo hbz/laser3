@@ -27,9 +27,6 @@ class ApiOrg {
             case 'globalUID':
                 result = Org.findAllWhere(globalUID: value)
                 break
-//            case 'impId':
-//                result = Org.findAllWhere(impId: value)
-//                break
             case 'gokbId':
                 result = Org.findAllWhere(gokbId: value)
                 break

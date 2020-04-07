@@ -2,6 +2,11 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.90
+
+- added request header `x-debug` for __/oaMonitor__ and __/statistic__
+- internal refactoring
+
 #### 0.89
 
 - added new attribute: `Property.type`
