@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      06.04.2020  rc1.3       David   Feature     API (0.90)
+
 2338    06.04.2020  rc1.3       Moe     Bug         Überarbeitung Titel Umfrage
 
 2340    06.04.2020  rc1.3       David   Bug         Berechtigungen: Identifikatoren / Kundennummern
