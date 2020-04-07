@@ -465,11 +465,10 @@ class SubscriptionService {
                         OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                         InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
-                        newOrgAccessPointLink.save(flush: true)
+                        newOrgAccessPointLink.save()
                     }
                     pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
-                        Map configSettings = config.properties
-                        configSettings.subscriptionPackage = newSubscriptionPackage
+                        Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
                         PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
                         if(newPcc) {
                             Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(subscriptionPackage.subscription.class.name,subscriptionPackage.subscription.id,PendingChangeConfiguration.settingKeys)
@@ -903,7 +902,7 @@ class SubscriptionService {
     }
 
     private boolean save(obj, flash){
-        if (obj.save(flush: true)){
+        if (obj.save()){
             log.debug("Save ${obj} ok")
             return true
         } else {

@@ -2,6 +2,19 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.90
+
+- added request header `x-debug` for __/oaMonitor__ and __/statistic__
+- internal refactoring
+
+#### 0.89
+
+- added new attribute: `Property.type`
+- added new attribute: `Property.refdataCategory`
+- renamed attribute: `Property.name` to `Property.token`
+- renamed attribute: `Property.description` to `Property.scope`
+- added request header `x-debug` for __/propertyList__ and __/refdataList__
+
 #### 0.88
 
 - added new changelog: `/api/${apiVersion}/changelog.md`

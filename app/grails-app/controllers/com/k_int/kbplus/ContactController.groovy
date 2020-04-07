@@ -13,12 +13,7 @@ class ContactController extends AbstractDebugController {
 	def addressbookService
 	def contextService
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
-
-    @Secured(['ROLE_USER'])
-    def index() {
-        redirect action: 'list', params: params
-    }
+    static allowedMethods = [create: ['GET', 'POST'], delete: 'POST']
 
     @Secured(['ROLE_USER'])
     def list() {
@@ -75,45 +70,6 @@ class ContactController extends AbstractDebugController {
     def edit() {
 		redirect controller: 'contact', action: 'show', params: params
 		return // ----- deprecated
-
-		Contact contactInstance = Contact.get(params.id)
-        if (! contactInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id])
-            redirect action: 'list'
-            return
-        }
-        if (! addressbookService.isContactEditable(contactInstance, springSecurityService.getCurrentUser())) {
-            redirect action: 'show', id: params.id
-            return
-        }
-
-		switch (request.method) {
-		case 'GET':
-	        [contactInstance: contactInstance]
-			break
-		case 'POST':
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (contactInstance.version > version) {
-	                contactInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'contact.label')] as Object[],
-	                          "Another user has updated this Contact while you were editing")
-	                render view: 'edit', model: [contactInstance: contactInstance]
-	                return
-	            }
-	        }
-
-	        contactInstance.properties = params
-
-	        if (! contactInstance.save(flush: true)) {
-	            render view: 'edit', model: [contactInstance: contactInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'contact.label'), contactInstance.id])
-	        redirect action: 'show', id: contactInstance.id
-			break
-		}
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

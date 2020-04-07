@@ -10,9 +10,7 @@
 	<body>
 		<div>
 				
-
-					<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /></h1>
-
+			<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /></h1>
 
 			<semui:messages data="${flash}" />
 				
@@ -26,7 +24,7 @@
 						
 							<th class="header">${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}</th>
 
-               <th class="header"><g:message code="contact.prs.label" /></th>
+               				<th class="header"><g:message code="contact.prs.label" /></th>
 
 							<th class="header"><g:message code="contact.org.label" /></th>
 
@@ -53,7 +51,6 @@
 							
 							<td class="link">
 								<g:link action="show" id="${contactInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>
-								<g:link action="edit" id="${contactInstance.id}" class="ui tiny button">${message('code':'default.button.edit.label')}</g:link>
 							</td>
 						</tr>
 					</g:each>

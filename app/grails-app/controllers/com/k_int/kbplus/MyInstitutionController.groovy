@@ -2200,7 +2200,7 @@ AND EXISTS (
 
         // changes
 
-        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,periodInDays:periodInDays,max:result.max,offset:0,pending:true,notifications:true]
+        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:0,pending:true,notifications:true]
 
         result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
