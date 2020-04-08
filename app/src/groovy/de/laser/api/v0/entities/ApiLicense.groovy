@@ -30,9 +30,6 @@ class ApiLicense {
             case 'globalUID':
                 result = License.findAllWhere(globalUID: value)
                 break
-//            case 'impId':
-//                result = License.findAllWhere(impId: value)
-//                break
             case 'ns:identifier':
                 result = Identifier.lookupObjectsByIdentifierString(new License(), value)
                 break

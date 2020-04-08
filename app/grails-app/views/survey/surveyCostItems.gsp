@@ -441,13 +441,6 @@ function addForAllSurveyCostItem(orgsIDs) {
 
     var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
-
-    $("#newCostItemElement2").change(function () {
-        if (typeof (costItemElementConfigurations[$(this).val()]) !== 'undefined')
-            $("[name='ciec']").dropdown('set selected', costItemElementConfigurations[$(this).val()]);
-        else
-            $("[name='ciec']").dropdown('set selected', 'null');
-    });
     var isError = function (cssSel) {
         if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
             $(".la-account-currency").children(".field").removeClass("error");

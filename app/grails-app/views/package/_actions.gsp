@@ -15,7 +15,7 @@
         <div class="divider"></div>
     </g:if>
 
-    <semui:actionsDropdownItem controller="package" action="compare" message="menu.public.comp_pkg" />
+    <semui:actionsDropdownItemDisabled controller="package" action="compare" message="menu.public.comp_pkg" />
 
     <g:if test="${actionName == 'show'}">
         <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">

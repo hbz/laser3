@@ -3,9 +3,11 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
 import de.laser.api.v0.ApiCollectionReader
+import de.laser.api.v0.ApiMapReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiToolkit
+import de.laser.api.v0.ApiUnsecuredMapReader
 import de.laser.domain.IssueEntitlementCoverage
 import groovy.util.logging.Log4j
 
@@ -86,16 +88,16 @@ class ApiIssueEntitlement {
         result.medium           = ie.medium?.value
         //result.status           = ie.status?.value // legacy; not needed ?
 
-        result.coverages        = getIssueEntitlementCoverageCollection(ie.coverages, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+        result.coverages        = ApiCollectionReader.getIssueEntitlementCoverageCollection(ie.coverages) // com.k_int.kbplus.TitleInstancePackagePlatform
 
         // References
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                result.tipp = ApiCollectionReader.getTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+                result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
             }
             else {
                 if (ignoreRelation != ApiReader.IGNORE_TIPP) {
-                    result.tipp = ApiCollectionReader.getTippMap(ie.tipp, ApiReader.IGNORE_NONE, context)
+                    result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_NONE, context)
                     // com.k_int.kbplus.TitleInstancePackagePlatform
                 }
                 if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
@@ -106,46 +108,5 @@ class ApiIssueEntitlement {
         }
 
         ApiToolkit.cleanUp(result, true, true)
-    }
-
-    /**
-     * @return Map<String, Object>
-     */
-    static Map<String, Object> getIssueEntitlementCoverageMap(IssueEntitlementCoverage coverage, def ignoreRelation, Org context) {
-        Map<String, Object> result = [:]
-        if (! coverage) {
-            return null
-        }
-
-        result.startDate        = ApiToolkit.formatInternalDate(coverage.startDate)
-        result.startVolume      = coverage.startVolume
-        result.startIssue       = coverage.startIssue
-        result.endDate          = ApiToolkit.formatInternalDate(coverage.endDate)
-        result.endVolume        = coverage.endVolume
-        result.endIssue         = coverage.endIssue
-        result.embargo          = coverage.embargo
-        result.coverageDepth    = coverage.coverageDepth
-        result.coverageNote     = coverage.coverageNote
-        result.lastUpdated      = ApiToolkit.formatInternalDate(coverage.lastUpdated)
-
-        ApiToolkit.cleanUp(result, true, true)
-    }
-
-    /**
-     * Access rights due wrapping object
-     *
-     * @param list
-     * @param ignoreRelation
-     * @param com.k_int.kbplus.Org context
-     * @return Collection<Object>
-     */
-    static Collection<Object> getIssueEntitlementCoverageCollection(Collection<IssueEntitlementCoverage> list, def ignoreRelation, Org context) {
-        def result = []
-
-        list?.each { it -> // com.k_int.kbplus.IssueEntitlementCoverage
-            result << getIssueEntitlementCoverageMap(it, ignoreRelation, context)
-        }
-
-        result
     }
 }

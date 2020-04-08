@@ -44,14 +44,14 @@
 
 
 <div class="la-icon-list">
-  <g:if test="${item.availabilityStatus?.getI10n('value')}">
+  %{--<g:if test="${item.availabilityStatus?.getI10n('value')}">
     <div class="item">
       <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label')}"></i>
       <div class="content">
         ${item.availabilityStatus?.getI10n('value')}
       </div>
     </div>
-  </g:if>
+  </g:if>--}%
 
   <g:if test="${item.tipp.pkg.id}">
     <div class="item">

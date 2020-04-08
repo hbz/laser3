@@ -112,7 +112,7 @@ components:
       schema:
         type: boolean
       required: false
-      description: Send debug informations or not
+      description: Adding debug informations
 
     authorization:
       name: x-authorization
