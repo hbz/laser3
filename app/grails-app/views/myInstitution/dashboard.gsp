@@ -134,7 +134,7 @@
         <g:if test="${editable}">
             <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'PendingChanges' || US_DASHBOARD_TAB.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
                 <div class="la-float-right">
-                    <g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>
+                    <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
                 </div>
                 <div class="ui internally celled grid">
                     <div class="row">
@@ -155,9 +155,6 @@
                         </div><!-- .column -->
                     </div>
                     <g:each in="${pending}" var="entry">
-                        <%--<div class="row">
-                            ${entry}
-                        </div>--%>
                         <g:set var="row" value="${pendingChangeService.printRow(entry.change)}" />
                         <g:set var="event" value="${row.eventData}"/>
                         <div class="row">
@@ -194,7 +191,7 @@
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'AcceptedChanges'}" data-tab="acceptedchanges">
             <div class="la-float-right">
-                <g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>
+                <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
             </div>
             <div class="ui internally celled grid">
                 <div class="row">

@@ -265,7 +265,8 @@
 
                                 <g:link class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                                 <g:link class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
-                                <g:link class="item" role="menuitem" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
+                                <g:link class="item" role="menuitem" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link>
+                                <div class="divider"></div>
                             </sec:ifAnyGranted>
 
                             <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_GLOBAL_DATA">
@@ -369,6 +370,7 @@
                                     <g:link class="item" role="menuitem" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="titlesImport">${message(code:'menu.admin.bulkOps.titlesImport')}</g:link>
+                                    <g:link class="item" role="menuitem" controller="admin" action="importSeriesToEBooks">Import Series to EBooks</g:link>
                                 </div>
                             </div>
                             <div class="divider"></div>

@@ -243,6 +243,7 @@
         $("#editCost").submit(function(e){
             e.preventDefault();
             if($("[name='newCostCurrency']").val() != 0) {
+                $(this).unbind('submit').submit();
             }
             else {
                 alert("${message(code:'financials.newCosts.noCurrencyPicked')}");

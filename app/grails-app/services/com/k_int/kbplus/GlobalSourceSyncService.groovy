@@ -16,15 +16,11 @@ import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.HttpResponseException
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.hibernate.SessionFactory
 import org.hibernate.classic.Session
-import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
-import javax.persistence.Transient
 import java.text.SimpleDateFormat
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
@@ -328,7 +324,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             }
                                             tippsToNotify << [event:'update',target:tippA,diffs:diffs]
                                         }
-                                        //ex updatedTitleAfterPackageReconcile
+                                        /*//ex updatedTitleAfterPackageReconcile
                                         TitleInstance titleInstance = TitleInstance.findByGokbId(tippB.title.gokbId)
                                         //TitleInstance titleInstance = createOrUpdateTitle((String) tippB.title.gokbId)
                                         //createOrUpdatePlatform([name:tippB.platformName,gokbId:tippB.platformUUID,primaryUrl:tippB.primaryUrl],tippA.platform)
@@ -340,7 +336,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         }
                                         else {
                                             throw new SyncException("Title loading failed for ${tippB.title.gokbId}!")
-                                        }
+                                        }*/
                                     }
                                 }
                                 else {
@@ -632,8 +628,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 }
                             }
                             else {
-                                log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id} to GOKb!")
-                                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleHistoryEvent:eventData.@id,errorType:"historyEventWithoutDate"])
+                                log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id.text()} to GOKb!")
+                                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleHistoryEvent:eventData.@id.text(),errorType:"historyEventWithoutDate"])
                             }
                         }
                     }
@@ -966,16 +962,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             TIPPCoverage tippCov = (TIPPCoverage) covEntry.target
                                             switch(covEntry.event) {
                                                 case 'update': IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                    covEntry.diffs.each { covDiff ->
-                                                        changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
-                                                        changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
-                                                        changeMap.prop = covDiff.prop
-                                                        changeMap.oldValue = ieCov[covDiff.prop]
-                                                        changeMap.newValue = covDiff.newValue
+                                                    if(ieCov) {
+                                                        covEntry.diffs.each { covDiff ->
+                                                            changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
+                                                            changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                            changeMap.prop = covDiff.prop
+                                                            changeMap.oldValue = ieCov[covDiff.prop]
+                                                            changeMap.newValue = covDiff.newValue
+                                                            changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                                        }
+                                                    }
+                                                    else {
+                                                        changeDesc = PendingChangeConfiguration.NEW_COVERAGE
+                                                        changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
                                                         changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                                     }
                                                     break
-                                                case 'added':
+                                                case 'add':
                                                     changeDesc = PendingChangeConfiguration.NEW_COVERAGE
                                                     changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
                                                     changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))

@@ -3,22 +3,26 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} : Yoda Dashboard</title>
+    <title>${message(code: 'laser')} : Import Series to EBooks</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.yoda.dash" class="active"/>
+    <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
 </semui:breadcrumbs>
 
+<br>
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>Import Series to EBooks</h1>
 
 <br>
 <br>
+<br>
 
 <semui:messages data="${flash}"/>
-<g:form class="ui form" controller="yoda" action="importSeriesToEBooks" params="" method="post"
+
+<br>
+<g:form class="ui form" controller="admin" action="importSeriesToEBooks" params="" method="post"
         enctype="multipart/form-data">
     <div class="two fields">
         <div class="field">
