@@ -931,9 +931,9 @@ class OrganisationController extends AbstractDebugController {
         render template: "/templates/documents/modal", model: result
     }
 
-    @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def deleteCustomerIdentifier() {
         log.debug("OrganisationController::deleteIdentifier ${params}");
@@ -941,8 +941,7 @@ class OrganisationController extends AbstractDebugController {
         if (ci && ci.owner == contextService.org) {
             ci.delete()
         }
-        redirect action: 'ids', id: contextService.org.id
-        return
+        redirect action: 'ids', id: params.id
     }
 
     @Secured(['ROLE_USER'])

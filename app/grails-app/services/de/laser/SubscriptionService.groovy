@@ -246,12 +246,12 @@ class SubscriptionService {
 
             if(params.summaryOfContent) {
                 base_qry += " and lower(ie.tipp.title.summaryOfContent) like :summaryOfContent "
-                qry_params.summaryOfContent = "%${params.summaryOfContent}%"
+                qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
             }
 
             if(params.ebookFirstAutorOrFirstEditor) {
                 base_qry += " and (lower(ie.tipp.title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-                qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor}%"
+                qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
             }
 
             if (params.pkgfilter && (params.pkgfilter != '')) {
@@ -329,8 +329,9 @@ class SubscriptionService {
         Set<String> subjects = []
 
         if(titleIDs){
-            subjects = BookInstance.findAllByIdInListAndSummaryOfContent(titleIDs, 'Architektur')
-
+            subjects = BookInstance.executeQuery("select distinct(summaryOfContent) from BookInstance where summaryOfContent is not null and id in (:titleIDs)", [titleIDs: titleIDs])
+            //println("Moe!")
+            //println(BookInstance.executeQuery("select bk.summaryOfContent from BookInstance as bk where bk.id in (15415, 15368, 15838)"))
         }
 
         //println(subjects)
@@ -766,28 +767,8 @@ class SubscriptionService {
 
             if (ownerSub && namespace && value) {
                 FactoryResult factoryResult = Identifier.constructWithFactoryResult([value: value, reference: ownerSub, namespace: namespace])
-                Object[] args = [factoryResult.result.ns.ns, factoryResult.result.value]
-                factoryResult.status.each {
-                    switch (it){
-                        case FactoryResult.STATUS_OK:
-                            flash.message += messageSource.getMessage('identifier.create.success', args, locale)
-                            break;
-                        case FactoryResult.STATUS_ERR:
-                            flash.error += messageSource.getMessage('identifier.create.err', args, locale)
-                            break;
-                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_REFERENCE_OBJ:
-                            flash.error += messageSource.getMessage('identifier.create.err.alreadyExist', args, locale)
-                            break;
-                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ:
-                            flash.error += messageSource.getMessage('identifier.create.warn.alreadyExistSeveralTimes', args, locale)
-                            break;
-                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_SYSTEM:
-                            flash.error += messageSource.getMessage('identifier.create.err.uniqueNs', args, locale)
-                            break;
-                        default:
-                            flash.error += factoryResult.status
-                    }
-                }
+
+                factoryResult.setFlashScopeByStatus(flash)
             }
         }
     }
