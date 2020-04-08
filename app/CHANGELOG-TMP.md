@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2154    08.04.2020  rc1.3       Andreas Bug         VAT nicht als Kern-ID angezeigt und Kundennummer per Konsortialzugriff löschbar
+
 2351    08.04.2020  rc1.3       David   Bug         Einzigartige Identifikatoren
 
 2336    07.04.2020  rc1.3       Moe     Bug         Umfragenkosten werden nicht angelegt
