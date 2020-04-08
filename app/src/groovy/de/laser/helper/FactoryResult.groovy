@@ -1,5 +1,8 @@
 package de.laser.helper
 
+import grails.util.Holders
+import org.codehaus.groovy.grails.web.servlet.FlashScope
+import org.springframework.context.i18n.LocaleContextHolder
 
 
 public class FactoryResult {
@@ -22,4 +25,35 @@ public class FactoryResult {
 //        new FactoryResult(result, null, STATUS_OK)
 //    }
 
+    void setFlashScopeByStatus(FlashScope flash) {
+        Object messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+
+        Object[] args = [result?.ns?.ns, result?.value]
+
+        flash.message = (flash.message != null)  ?: ""
+        flash.error   = (flash.error != null)    ?: ""
+
+        status.each {
+            switch (it) {
+                case FactoryResult.STATUS_OK:
+                    flash.message += messageSource.getMessage('identifier.create.success', args, locale)
+                    break;
+                case FactoryResult.STATUS_ERR:
+                    flash.error += messageSource.getMessage('identifier.create.err', args, locale)
+                    break;
+                case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_REFERENCE_OBJ:
+                    flash.error += messageSource.getMessage('identifier.create.err.alreadyExist', args, locale)
+                    break;
+                case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ:
+                    flash.error += messageSource.getMessage('identifier.create.warn.alreadyExistSeveralTimes', args, locale)
+                    break;
+                case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_SYSTEM:
+                    flash.error += messageSource.getMessage('identifier.create.err.uniqueNs', args, locale)
+                    break;
+                default:
+                    flash.error += status
+            }
+        }
+    }
 }

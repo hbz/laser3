@@ -753,28 +753,8 @@ class SubscriptionService {
 
             if (ownerSub && namespace && value) {
                 FactoryResult factoryResult = Identifier.constructWithFactoryResult([value: value, reference: ownerSub, namespace: namespace])
-                Object[] args = [factoryResult.result.ns.ns, factoryResult.result.value]
-                factoryResult.status.each {
-                    switch (it){
-                        case FactoryResult.STATUS_OK:
-                            flash.message += messageSource.getMessage('identifier.create.success', args, locale)
-                            break;
-                        case FactoryResult.STATUS_ERR:
-                            flash.error += messageSource.getMessage('identifier.create.err', args, locale)
-                            break;
-                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_REFERENCE_OBJ:
-                            flash.error += messageSource.getMessage('identifier.create.err.alreadyExist', args, locale)
-                            break;
-                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ:
-                            flash.error += messageSource.getMessage('identifier.create.warn.alreadyExistSeveralTimes', args, locale)
-                            break;
-                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_SYSTEM:
-                            flash.error += messageSource.getMessage('identifier.create.err.uniqueNs', args, locale)
-                            break;
-                        default:
-                            flash.error += factoryResult.status
-                    }
-                }
+
+                factoryResult.setFlashScopeByStatus(flash)
             }
         }
     }

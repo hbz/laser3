@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2351    07.04.2020  rc1.3       David   Bug         Einzigartige Identifikatoren
+
 --      07.04.2020  rc1.3       David   Feature     API (0.90)
 
 2343    06.04.2020  rc1.3       Andreas Bug         Musterdaten für Einrichtungen auf QA überarbeitet
