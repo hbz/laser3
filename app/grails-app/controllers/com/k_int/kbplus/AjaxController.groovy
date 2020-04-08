@@ -2130,7 +2130,9 @@ class AjaxController {
         String value = params.value?.trim()
 
         if (owner && namespace && value) {
-            Identifier.construct([value: value, reference: owner, namespace: namespace])
+            FactoryResult fr = Identifier.constructWithFactoryResult([value: value, reference: owner, namespace: namespace])
+
+            fr.setFlashScopeByStatus(flash)
         }
         redirect(url: request.getHeader('referer'))
     }
