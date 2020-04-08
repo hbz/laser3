@@ -109,7 +109,11 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
             <div class="field">
                 <label for="summaryOfContent">${message(code: 'renewEntitlementsWithSurvey.filter.summaryOfContent')}</label>
-                <input name="summaryOfContent" id="summaryOfContent" value="${params.summaryOfContent}"/>
+               %{-- <input name="summaryOfContent" id="summaryOfContent" value="${params.summaryOfContent}"/>--}%
+               <g:select class="ui dropdown" name="summaryOfContent" title="${g.message(code: 'renewEntitlementsWithSurvey.filter.summaryOfContent')}"
+                         from="${subjects}" noSelection="${['':'']}" value="${params.summaryOfContent}"/>
+
+
             </div>
             <div class="field la-field-right-aligned">
                 <g:link action="renewEntitlementsWithSurvey"
