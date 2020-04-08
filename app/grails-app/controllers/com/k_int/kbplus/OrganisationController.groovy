@@ -938,11 +938,10 @@ class OrganisationController extends AbstractDebugController {
     def deleteCustomerIdentifier() {
         log.debug("OrganisationController::deleteIdentifier ${params}");
         CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
-        long redirectId = ci.customer.id
         if (ci && ci.owner == contextService.org) {
             ci.delete()
         }
-        redirect action: 'ids', id: redirectId
+        redirect action: 'ids', id: params.id
     }
 
     @Secured(['ROLE_USER'])
