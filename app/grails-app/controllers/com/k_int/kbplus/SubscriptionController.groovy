@@ -1141,8 +1141,13 @@ class SubscriptionController extends AbstractDebugController {
         }
         List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
 
+        List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
+
+
+        //result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
+
         result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
-        result.countAllIEs = subscriptionService.getIssueEntitlementsFixed(baseSub).size()
+        result.countAllIEs = allIEs.size()
         result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
         result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
         result.targetIEs = targetIEs
@@ -4487,8 +4492,8 @@ class SubscriptionController extends AbstractDebugController {
             def sub_type = params.subType
             def sub_form = params.subForm
             def sub_resource = params.subResource
-            def sub_hasPerpetualAccess = params.subHasPerpetualAccess
-            def sub_isPublicForApi = params.subIsPublicForApi
+            def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
+            def sub_isPublicForApi = params.subIsPublicForApi == '1'
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
@@ -5364,6 +5369,13 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
                 }
+                //Copy Identifiers
+                if (params.subscription.copyIds) {
+                    baseSubscription.ids?.each { id ->
+                        Identifier.construct([value: id.value, reference: newSubscriptionInstance, namespace: id.ns])
+                    }
+                }
+
                 //Copy License
                 if (params.subscription.copyLicense) {
                     newSubscriptionInstance.owner = baseSubscription.owner ?: null
