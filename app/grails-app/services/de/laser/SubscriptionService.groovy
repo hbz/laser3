@@ -330,7 +330,7 @@ class SubscriptionService {
 
         if(titleIDs){
             subjects = BookInstance.executeQuery("select distinct(summaryOfContent) from BookInstance where summaryOfContent is not null and id in (:titleIDs)", [titleIDs: titleIDs])
-            println("Moe!")
+            //println("Moe!")
             //println(BookInstance.executeQuery("select bk.summaryOfContent from BookInstance as bk where bk.id in (15415, 15368, 15838)"))
         }
 
