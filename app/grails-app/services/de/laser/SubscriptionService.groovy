@@ -246,12 +246,12 @@ class SubscriptionService {
 
             if(params.summaryOfContent) {
                 base_qry += " and lower(ie.tipp.title.summaryOfContent) like :summaryOfContent "
-                qry_params.summaryOfContent = "%${params.summaryOfContent}%"
+                qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
             }
 
             if(params.ebookFirstAutorOrFirstEditor) {
                 base_qry += " and (lower(ie.tipp.title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-                qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor}%"
+                qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
             }
 
             if (params.pkgfilter && (params.pkgfilter != '')) {
@@ -329,8 +329,9 @@ class SubscriptionService {
         Set<String> subjects = []
 
         if(titleIDs){
-            subjects = BookInstance.findAllByIdInListAndSummaryOfContent(titleIDs, 'Architektur')
-
+            subjects = BookInstance.executeQuery("select distinct(summaryOfContent) from BookInstance where summaryOfContent is not null and id in (:titleIDs)", [titleIDs: titleIDs])
+            println("Moe!")
+            //println(BookInstance.executeQuery("select bk.summaryOfContent from BookInstance as bk where bk.id in (15415, 15368, 15838)"))
         }
 
         //println(subjects)
