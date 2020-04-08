@@ -1741,7 +1741,7 @@ class AdminController extends AbstractDebugController {
                     def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                     if(tiObj) {
 
-                        tiObj?.each { titleInstance ->
+                        tiObj.each { titleInstance ->
                             if(titleInstance instanceof BookInstance) {
                                 count++
 
