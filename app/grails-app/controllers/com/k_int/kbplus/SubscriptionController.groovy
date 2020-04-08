@@ -1144,8 +1144,8 @@ class SubscriptionController extends AbstractDebugController {
         List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
 
 
-        result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
-        println("Moe: "+ result.subjects)
+        //result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
+
         result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
         result.countAllIEs = allIEs.size()
         result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
@@ -5369,6 +5369,13 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
                 }
+                //Copy Identifiers
+                if (params.subscription.copyIds) {
+                    baseSubscription.ids?.each { id ->
+                        Identifier.construct([value: id.value, reference: newSubscriptionInstance, namespace: id.ns])
+                    }
+                }
+
                 //Copy License
                 if (params.subscription.copyLicense) {
                     newSubscriptionInstance.owner = baseSubscription.owner ?: null

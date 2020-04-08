@@ -325,15 +325,15 @@ class SubscriptionService {
     }
 
     Set<String> getSubjects(List titleIDs) {
-        println(titleIDs)
+        //println(titleIDs)
         Set<String> subjects = []
 
         if(titleIDs){
             subjects = BookInstance.findAllByIdInListAndSummaryOfContent(titleIDs, 'Architektur')
-            println("Moe")
+
         }
 
-        println(subjects)
+        //println(subjects)
         subjects
 
     }
