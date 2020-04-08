@@ -227,10 +227,20 @@ class SurveyConfig {
             int countFinish = 0
             int countNotFinish = 0
 
-            def surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+            boolean noParticipation = false
+            if(subSurveyUseForTransfer){
+                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+            }
 
-            if(surveyResults?.finishDate.contains(null)){
-                return false
+            if(!noParticipation) {
+
+                List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+
+                if (surveyResults?.finishDate.contains(null)) {
+                    return false
+                } else {
+                    return true
+                }
             }else {
                 return true
             }

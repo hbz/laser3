@@ -324,6 +324,20 @@ class SubscriptionService {
         ies
     }
 
+    Set<String> getSubjects(List titleIDs) {
+        //println(titleIDs)
+        Set<String> subjects = []
+
+        if(titleIDs){
+            subjects = BookInstance.findAllByIdInListAndSummaryOfContent(titleIDs, 'Architektur')
+
+        }
+
+        //println(subjects)
+        subjects
+
+    }
+
     List getCurrentIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",

@@ -135,6 +135,19 @@
             </tr>
 
             <tr>
+                <th><g:checkBox name="subscription.copyIds" value="${true}" /></th>
+                <th>${message(code:'subscription.copyIds')}</th>
+                <td>
+                    <g:each in="${subscription.ids?.sort { it.ns.ns }}"
+                            var="id">
+                        <span class="ui small blue image label">
+                            ${id.ns.ns}: <div class="detail">${id.value}</div>
+                        </span>
+                    </g:each>
+                </td>
+            </tr>
+
+            <tr>
                 <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
                 <th>${message(code:'subscription.copyDocs')}</th>
                 <td>
