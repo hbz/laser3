@@ -52,14 +52,14 @@
                 <div class="ui divider"></div>
             </g:if>
 
-            <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose
+            <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose
                     && surveyInfo.status?.id in [de.laser.helper.RDStore.SURVEY_SURVEY_COMPLETED.id, de.laser.helper.RDStore.SURVEY_IN_EVALUATION.id, de.laser.helper.RDStore.SURVEY_COMPLETED.id]}">
                 <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey"
-                                           params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]"
+                                           params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]"
                                            message="surveyInfo.renewal.action"/>
                 <div class="ui divider"></div>
                 <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs"
-                                           params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]"
+                                           params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]"
                                            message="surveyInfo.transferOverView"/>
                 <div class="ui divider"></div>
 
@@ -99,20 +99,20 @@
 
             </g:if>
 
-            <g:if test="${!surveyConfig?.pickAndChoose && (surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING.id)}">
+            <g:if test="${(surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING.id)}">
                 <semui:actionsDropdownItem controller="survey" action="allSurveyProperties" params="[id: params.id]"
                                            message="survey.SurveyProp.all"/>
 
                 <div class="ui divider"></div>
             </g:if>
 
-            <g:if test="${surveyConfig?.orgs}">
+            <g:if test="${surveyConfig.orgs}">
                 <semui:actionsDropdownItem data-semui="modal"
                                            href="#copyEmailaddresses_static"
                                            message="survey.copyEmailaddresses.participants"/>
 
                 <g:set var="orgs"
-                       value="${com.k_int.kbplus.Org.findAllByIdInList(surveyConfig?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort { it.sortname }}"/>
+                       value="${com.k_int.kbplus.Org.findAllByIdInList(surveyConfig.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort { it.sortname }}"/>
 
                 <g:render template="copyEmailaddresses"
                           model="[modalID: 'copyEmailaddresses_static', orgList: orgs ?: null]"/>
@@ -126,10 +126,10 @@
                 <div class="ui divider"></div>
 
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.survey", args: [surveyConfig?.getSurveyName()])}"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.survey", args: [surveyConfig.getSurveyName()])}"
                         data-confirm-term-how="delete"
                         controller="survey" action="deleteSurveyInfo"
-                        id="${surveyInfo?.id}">
+                        id="${surveyInfo.id}">
                     <i class="trash alternate icon"></i> ${message(code:'deletion.survey')}
                 </g:link>
 
@@ -142,7 +142,7 @@
     <semui:modal id="openSurveyAgain" text="${message(code:'openSurveyAgain.button')}" msgSave="${message(code:'openSurveyAgain.button')}">
 
         <g:form class="ui form"
-                url="[controller: 'survey', action: 'openSurveyAgain', params: [id: params.id, surveyConfigID: surveyConfig?.id], method: 'post']">
+                url="[controller: 'survey', action: 'openSurveyAgain', params: [id: params.id, surveyConfigID: surveyConfig.id], method: 'post']">
             <div class="field">
                 <semui:datepicker label="surveyInfo.endDate.new" id="newEndDate" name="newEndDate" placeholder="surveyInfo.endDate.new" />
             </div>

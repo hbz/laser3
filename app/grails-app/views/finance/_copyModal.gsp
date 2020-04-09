@@ -5,7 +5,7 @@
 <semui:modal id="costItem_ajaxModal" text="${message(code:'financials.costItem.copy.tooltip')}">
     <g:form class="ui small form" id="copyCost" url="${formUrl}">
 
-        <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
+        <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}" />
         <g:hiddenField name="process" value="process" />
 
         <div class="field">

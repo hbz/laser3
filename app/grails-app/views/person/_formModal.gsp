@@ -94,7 +94,7 @@
                                        default="Tenant (Permissions to edit this person and depending addresses and contacts)"/>
                         </label>
                         <g:select id="tenant" name="tenant.id" from="${contextService.getMemberships()}" optionKey="id"
-                                  value="${contextService.getOrg()?.id}"/>
+                                  value="${contextService.getOrg().id}"/>
                     </div>
 
                     <div class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">

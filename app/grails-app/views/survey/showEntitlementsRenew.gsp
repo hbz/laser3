@@ -21,16 +21,16 @@
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig?.id}"
+            <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig.id}"
                     params="${[exportKBart: true, participant: participant?.id]}">KBART Export</g:link>
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
-            <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig?.id}"
+            <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig.id}"
                     params="${[exportXLSX: true, participant: participant?.id]}">${message(code: 'default.button.exports.xls')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <semui:actionsDropdown>
-        <g:if test="${surveyOrg?.finishDate && surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+        <g:if test="${surveyOrg.finishDate && surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
             <semui:actionsDropdownItem controller="survey" action="openIssueEntitlementsSurveyAgain"
                                        params="[id: surveyConfig?.id, participant: participant?.id]"
                                        message="openIssueEntitlementsSurveyAgain.label"/>
@@ -52,7 +52,7 @@
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
 <g:message code="issueEntitlementsSurvey.label"/>: <g:link controller="subscription" action="index"
-                                                           id="${subscriptionParticipant?.id}">${surveyConfig?.surveyInfo?.name}</g:link>
+                                                           id="${subscriptionParticipant?.id}">${surveyConfig?.surveyInfo.name}</g:link>
 </h1>
 
 

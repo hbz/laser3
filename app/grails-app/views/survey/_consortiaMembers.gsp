@@ -19,8 +19,8 @@
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList          : consortiaMembers,
                       tmplShowCheckbox : editable,
-                      tmplDisableOrgIds: surveyConfig?.orgs?.org?.id,
-                      tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig?.type == 'Subscription' ? 'surveySubInfo' : '')]
+                      tmplDisableOrgIds: surveyConfig.orgs?.org?.id,
+                      tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.type == 'Subscription' ? 'surveySubInfo' : '')]
               ]"/>
 
     <br/>

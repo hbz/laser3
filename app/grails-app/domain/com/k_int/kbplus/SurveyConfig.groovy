@@ -142,7 +142,7 @@ class SurveyConfig {
         if (type == 'Subscription') {
             return subscription?.name
         } else {
-            return surveyInfo?.name
+            return surveyInfo.name
         }
     }
 
@@ -151,7 +151,7 @@ class SurveyConfig {
         if (type == 'Subscription' && surveyInfo.isSubscriptionSurvey) {
             return subscription?.name
         } else {
-            return surveyInfo?.name
+            return surveyInfo.name
         }
     }
 
@@ -167,7 +167,7 @@ class SurveyConfig {
                     (subscription?.startDate ? ')' : '')
 
         } else {
-            return surveyInfo?.name
+            return surveyInfo.name
         }
     }
 
@@ -253,7 +253,7 @@ class SurveyConfig {
     {
         def next
 
-        for(int i = 0 ; i < this.surveyInfo?.surveyConfigs?.size() ; i++ ) {
+        for(int i = 0 ; i < this.surveyInfo.surveyConfigs?.size() ; i++ ) {
             def curr = this.surveyInfo.surveyConfigs[ i ]
 
             if(curr?.id == this.id)
