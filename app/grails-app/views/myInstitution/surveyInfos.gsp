@@ -172,7 +172,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
             id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id]">
         <g:message
-                code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finis.info2'}"/>
+                code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
     </g:link>
 </g:if>
 <br>
