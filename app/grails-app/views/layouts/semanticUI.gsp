@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -288,7 +288,7 @@
                                 <%--<g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0).size()}" />--%>
                                 <%
                                     Object organisationService = grailsApplication.mainContext.getBean("organisationService")
-                                    Map affilRequestMap = organisationService.getPendingRequests(contextService.getUser(), contextService.getOrg())
+                                    Map affilRequestMap = organisationService.getPendingRequests(contextUser, contextOrg)
                                     int newAffiliationRequests = affilRequestMap?.pendingRequests?.size()
                                 %>
                                 <g:if test="${newAffiliationRequests > 0}">
@@ -732,13 +732,13 @@
         </r:script>
 
         <%-- maintenance --%>
-        <g:if test="${com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrgIsNull(true)}">
+        <g:if test="${SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || SystemMessage.findAllByShowNowAndOrgIsNull(true)}">
             <div id="maintenance">
                 <div class="ui segment center aligned inverted orange">
                     <strong>ACHTUNG:</strong>
 
                     <div class="ui list">
-                        <g:each in="${com.k_int.kbplus.SystemMessage.findAllByShowNow(true)}" var="message">
+                        <g:each in="${SystemMessage.findAllByShowNow(true)}" var="message">
                             <div class="item">
                                 <g:if test="${message.org}">
                                     <g:if test="${contextOrg.id == message.org.id}">
