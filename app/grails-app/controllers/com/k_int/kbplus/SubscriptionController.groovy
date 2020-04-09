@@ -5243,13 +5243,21 @@ class SubscriptionController extends AbstractDebugController {
                     resource: baseSubscription.resource ?: null,
                     form: baseSubscription.form ?: null,
             )
+            //Copy License
+            if (params.subscription.copyLicense) {
+                newSubscriptionInstance.owner = baseSubscription.owner ?: null
+            }
+            //Copy InstanceOf
+            if (params.subscription.copylinktoSubscription) {
+                newSubscriptionInstance.instanceOf = baseSubscription?.instanceOf ?: null
+            }
 
 
             if (!newSubscriptionInstance.save(flush: true)) {
                 log.error("Problem saving subscription ${newSubscriptionInstance.errors}");
                 return newSubscriptionInstance
             } else {
-                log.debug("Save ok");
+                log.debug("Save ok")
 
                 baseSubscription.documents?.each { dctx ->
 
@@ -5374,15 +5382,6 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
 
-                //Copy License
-                if (params.subscription.copyLicense) {
-                    newSubscriptionInstance.owner = baseSubscription.owner ?: null
-                }
-                //Copy InstanceOf
-                if (params.subscription.copylinktoSubscription) {
-                    newSubscriptionInstance.instanceOf = baseSubscription?.instanceOf ?: null
-                }
-                newSubscriptionInstance.save()
 
                 if (params.subscription.copyEntitlements) {
 
