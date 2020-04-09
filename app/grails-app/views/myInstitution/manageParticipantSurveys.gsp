@@ -211,7 +211,7 @@
 
                     <td class="center aligned">
 
-                        <g:if test="${surveyConfig && !surveyConfig?.pickAndChoose}">
+                        <g:if test="${surveyConfig}">
                             <g:if test="${surveyConfig?.type == 'Subscription'}">
                                 <g:link controller="survey" action="show" id="${surveyInfo?.id}"
                                         params="[surveyConfigID: surveyConfig?.id]" class="ui icon">

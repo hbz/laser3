@@ -512,7 +512,7 @@
 
 </div><!-- .grid -->
 
-<g:if test="${controllerName == 'survey' && !surveyConfig.pickAndChoose && actionName == 'show'}">
+<g:if test="${controllerName == 'survey' && actionName == 'show'}">
     <g:set var="surveyProperties" value="${surveyConfig.surveyProperties}"/>
 
     <semui:form>
@@ -620,7 +620,7 @@
     </semui:form>
 </g:if>
 
-<g:if test="${surveyResults && !surveyConfig.pickAndChoose}">
+<g:if test="${surveyResults}">
 
     <semui:form>
         <h3><g:message code="surveyConfigsInfo.properties"/>
@@ -698,8 +698,18 @@
                     <g:set var="surveyOrg"
                            value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, institution)}"/>
 
-                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
+                    <g:if test="${surveyOrg?.existsMultiYearTerm() && surveyResult.surveyConfig.subSurveyUseForTransfer}">
+                        <td>
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                        </td>
+                        <td>
 
+                        </td>
+                        <td>
+
+                        </td>
+                    </g:if>
+                    <g:else>
                         <td>
                             <g:if test="${surveyResult.type.type == Integer.toString()}">
                                 <semui:xEditable owner="${surveyResult}" type="text" field="intValue"/>
@@ -745,23 +755,13 @@
                                 <semui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
                             </g:else>
                         </td>
-                    </g:if>
-                    <g:else>
-                        <td>
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                        </td>
-                        <td>
-
-                        </td>
-                        <td>
-
-                        </td>
                     </g:else>
 
                 </tr>
             </g:each>
         </table>
     </semui:form>
+    <br>
 </g:if>
 
 <r:script>

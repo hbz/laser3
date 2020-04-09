@@ -2626,6 +2626,8 @@ AND EXISTS (
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
+
         result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
         result.iesListPriceSum = 0
         result.ies?.each{
@@ -2710,7 +2712,7 @@ AND EXISTS (
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
             }
         }
-        else{
+
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
 
             boolean allResultHaveValue = true
@@ -2740,7 +2742,7 @@ AND EXISTS (
             } else {
                 flash.error = message(code: "surveyResult.finish.error")
             }
-        }
+
 
         redirect(url: request.getHeader('referer'))
     }

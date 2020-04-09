@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2353    09.04.2020  rc1.3       Moe     Bug         Titelauswahlumfrage Bug beim Auswählen von Titel
+
+2356    09.04.2020  rc1.3       Moe     Bug         Bug Umfrage Einzeltitel
+
 2260    09.04.2020  rc1.3       Andreas Bug         Kopieren von Lizenzen funktionierte weiterhin nicht, erneuter Bugfix
 
 #### day of release 1.3

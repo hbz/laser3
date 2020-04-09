@@ -111,8 +111,6 @@ class SurveyController {
             return
         }else {
             result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
-            result.countSurveyConfigs = getSurveyConfigCounts()
-
             result.filterSet = params.filterSet ? true : false
 
             result
@@ -512,13 +510,13 @@ class SurveyController {
 
             //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
             if (subSurveyUseForTransfer) {
-                SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                        surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SUR_PROP),
-                        surveyConfig: surveyConfig)
+                    SurveyConfigProperties configProperty = new SurveyConfigProperties(
+                            surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SUR_PROP),
+                            surveyConfig: surveyConfig)
 
-                if (configProperty.save(flush: true)) {
-                    addSubMembers(surveyConfig)
-                }
+                    if (configProperty.save(flush: true)) {
+                        addSubMembers(surveyConfig)
+                    }
                 } else {
                     addSubMembers(surveyConfig)
                 }
@@ -777,13 +775,16 @@ class SurveyController {
             fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
         }
         result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+        if(result.surveyConfig.pickAndChoose){
+
+            List orgs = subscriptionService.getValidSurveySubChildOrgs(result.surveyConfig.subscription)
+            result.consortiaMembers = result.consortiaMembers.findAll{ (it in orgs)}
+        }
+
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
         result.editable = (result.surveyInfo && result.surveyInfo.status.id != RDStore.SURVEY_IN_PROCESSING.id) ? false : result.editable
-
-        params.surveyConfigID = params.surveyConfigID ?: result.surveyConfigs[0].id?.toString()
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
         def surveyOrgs = result.surveyConfig.getSurveyOrgsIDs()
 
@@ -1098,6 +1099,12 @@ class SurveyController {
         }
         result.participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig)?.org.flatten().unique { a, b -> a.id <=> b.id }?.sort {
             it?.sortname
+        }
+
+        if(result.surveyConfig.surveyProperties?.size() > 0){
+            result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).sort {
+                it.participant?.sortname
+            }
         }
 
         if ( params.exportXLSX ) {
@@ -1825,7 +1832,7 @@ class SurveyController {
 
         }
 
-        redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']
+        redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID]
 
     }
 
@@ -1847,7 +1854,7 @@ class SurveyController {
 
             result.surveyConfigs.each { config ->
 
-                if(!config?.pickAndChoose) {
+
                     config.orgs?.org?.each { org ->
 
                             config?.surveyProperties?.each { property ->
@@ -1868,7 +1875,7 @@ class SurveyController {
                                 }
                             }
                         }
-                }
+
             }
 
             result.surveyInfo.status = RDStore.SURVEY_READY
@@ -1923,7 +1930,6 @@ class SurveyController {
             result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
 
             result.surveyConfigs.each { config ->
-                if(!config?.pickAndChoose) {
                         config.orgs?.org?.each { org ->
 
                             config?.surveyProperties?.each { property ->
@@ -1944,7 +1950,7 @@ class SurveyController {
                                 }
                             }
                         }
-                }
+
 
             }
 
@@ -4093,7 +4099,7 @@ class SurveyController {
         }
 
         def orgs = []
-        def currentMembersSubs = subscriptionService.getCurrentValidSubChilds(surveyConfig.subscription)
+        def currentMembersSubs = subscriptionService.getValidSurveySubChilds(surveyConfig.subscription)
 
         currentMembersSubs.each{ sub ->
             orgs.addAll(sub?.getAllSubscribers())

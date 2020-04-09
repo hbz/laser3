@@ -27,11 +27,13 @@
                it?.participant.sortname
            }}"/>
     <div class="four wide column">
+    <g:if test="${surveyParticipantsHasAccess}">
         <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess?.participant?.id})"
                 class="ui icon button right floated trigger-modal">
             <g:message
                     code="survey.copyEmailaddresses.participantsHasAccess"/>
         </g:link>
+    </g:if>
     </div>
 
     <br>
@@ -156,11 +158,13 @@
            }}"/>
 
     <div class="four wide column">
+    <g:if test="${surveyParticipantsHasNotAccess}">
         <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess?.participant?.id})"
                 class="ui icon button right floated trigger-modal">
             <g:message
                     code="survey.copyEmailaddresses.participantsHasNoAccess"/>
         </g:link>
+    </g:if>
     </div>
 
     <br>

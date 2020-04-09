@@ -103,7 +103,7 @@
 
                 <td class="center aligned">
 
-                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
+                    <g:if test="${surveyConfig}">
                         <g:link controller="survey" action="show" id="${surveyInfo?.id}"
                                 params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                             <div class="ui circular ${surveyConfig?.configFinish ? "green" : ""} label">

@@ -40,11 +40,13 @@
                it?.participant.sortname
            }}"/>
     <div class="four wide column">
+    <g:if test="${surveyParticipantsHasAccess}">
         <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess?.participant?.id})"
                 class="ui icon button right floated trigger-modal">
             <g:message
                     code="survey.copyEmailaddresses.participantsHasAccess"/>
         </g:link>
+    </g:if>
     </div>
 
     <br>
@@ -139,53 +141,7 @@
                         <g:set var="surveyOrg"
                                value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)}"/>
 
-                        <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
-
-                            <g:if test="${resultProperty?.type?.name == "Participation"}">
-                                <g:set var="resultPropertyParticipation" value="${resultProperty}"/>
-                            </g:if>
-
-                            <g:if test="${resultProperty?.type?.type == Integer.toString()}">
-                                <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
-                            </g:if>
-                            <g:elseif test="${resultProperty?.type?.type == String.toString()}">
-                                <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
-                            </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == BigDecimal.toString()}">
-                                <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
-                            </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == Date.toString()}">
-                                <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
-                            </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == URL.toString()}">
-                                <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
-                                                 overwriteEditable="${overwriteEditable}"
-                                                 class="la-overflow la-ellipsis"/>
-                                <g:if test="${resultProperty?.urlValue}">
-                                    <semui:linkIcon/>
-                                </g:if>
-                            </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == RefdataValue.toString()}">
-                                <semui:xEditableRefData owner="${resultProperty}" type="text" field="refValue"
-                                                        config="${resultProperty.type?.refdataCategory}"/>
-                            </g:elseif>
-                            <g:if test="${resultProperty?.comment}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${resultProperty?.comment}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </g:if>
-
-                            <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
-                                      data-variation="tiny"
-                                      data-content="${message(code: 'surveyResult.particiption.terminated')}">
-                                    <i class="minus circle big red icon"></i>
-                                </span>
-                            </g:if>
-
-                        </g:if>
-                        <g:else>
+                        <g:if test="${surveyOrg?.existsMultiYearTerm() && resultProperty?.surveyConfig.subSurveyUseForTransfer}">
 
                             <g:message code="surveyOrg.perennialTerm.available"/>
 
@@ -195,8 +151,54 @@
                                     <i class="question circle icon"></i>
                                 </span>
                             </g:if>
+                        </g:if>
+                            <g:else>
 
-                        </g:else>
+                                <g:if test="${resultProperty?.type?.name == "Participation"}">
+                                    <g:set var="resultPropertyParticipation" value="${resultProperty}"/>
+                                </g:if>
+
+                                <g:if test="${resultProperty?.type?.type == Integer.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
+                                </g:if>
+                                <g:elseif test="${resultProperty?.type?.type == String.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == BigDecimal.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == Date.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == URL.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
+                                                     overwriteEditable="${overwriteEditable}"
+                                                     class="la-overflow la-ellipsis"/>
+                                    <g:if test="${resultProperty?.urlValue}">
+                                        <semui:linkIcon/>
+                                    </g:if>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == RefdataValue.toString()}">
+                                    <semui:xEditableRefData owner="${resultProperty}" type="text" field="refValue"
+                                                            config="${resultProperty.type?.refdataCategory}"/>
+                                </g:elseif>
+                                <g:if test="${resultProperty?.comment}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${resultProperty?.comment}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </g:if>
+
+                                <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                          data-variation="tiny"
+                                          data-content="${message(code: 'surveyResult.particiption.terminated')}">
+                                        <i class="minus circle big red icon"></i>
+                                    </span>
+                                </g:if>
+
+                            </g:else>
+
                     </td>
                 </g:each>
                 <td>
@@ -217,11 +219,13 @@
            }}"/>
 
     <div class="four wide column">
+    <g:if test="${surveyParticipantsHasNotAccess}">
         <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess?.participant?.id})"
                 class="ui icon button right floated trigger-modal">
             <g:message
                     code="survey.copyEmailaddresses.participantsHasNoAccess"/>
         </g:link>
+    </g:if>
     </div>
 
     <br>
@@ -277,7 +281,18 @@
                         <g:set var="surveyOrg"
                                value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)}"/>
 
-                        <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
+                        <g:if test="${surveyOrg?.existsMultiYearTerm() && resultProperty?.surveyConfig.subSurveyUseForTransfer}">
+
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+
+                            <g:if test="${resultProperty?.comment}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${resultProperty?.comment}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </g:if>
+                        </g:if>
+                        <g:else>
 
                             <g:if test="${resultProperty?.type?.name == "Participation"}">
                                 <g:set var="resultPropertyParticipation" value="${resultProperty}"/>
@@ -319,17 +334,6 @@
                                       data-variation="tiny"
                                       data-content="${message(code: 'surveyResult.particiption.terminated')}">
                                     <i class="minus circle big red icon"></i>
-                                </span>
-                            </g:if>
-                        </g:if>
-                        <g:else>
-
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-
-                            <g:if test="${resultProperty?.comment}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${resultProperty?.comment}">
-                                    <i class="question circle icon"></i>
                                 </span>
                             </g:if>
 

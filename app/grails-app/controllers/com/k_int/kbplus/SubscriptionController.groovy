@@ -1181,8 +1181,8 @@ class SubscriptionController extends AbstractDebugController {
                     g.message(code:'identifier.label'),
                     g.message(code:'title.dateFirstInPrint.label'),
                     g.message(code:'title.dateFirstOnline.label'),
-                    g.message(code:'tipp.price')
-            ]
+                    g.message(code:'tipp.price')]
+
             List rows = []
             sourceIEs.each { ie ->
                 List row = []
@@ -2854,9 +2854,10 @@ class SubscriptionController extends AbstractDebugController {
             if(params.singleTitle) {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 def tipp = ie.tipp
+
                 try {
 
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, true, ie_accept_status)) {
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, ie.priceItem, ie_accept_status)) {
                           log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
                           flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp?.title.title])
                     }
@@ -3001,9 +3002,10 @@ class SubscriptionController extends AbstractDebugController {
                 IssueEntitlement ie = IssueEntitlement.findById(ieID)
                 def tipp = ie.tipp
 
+
                 if(tipp) {
                     try {
-                        if (subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, true, ie_accept_status)) {
+                        if (subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, ie.priceItem, ie_accept_status)) {
                             log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
                             countIEsToAdd++
                         }

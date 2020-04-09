@@ -178,7 +178,7 @@
                                                                                       subscriptionInstance: surveyConfig.subscription,
                                                                                       tasks: tasks,
                                                                                       visibleOrgRelations: visibleOrgRelations,
-                                                                                      ]"/>
+                                                                                      properties: properties]"/>
                 </g:if>
 
                 <g:if test="${surveyConfig.type == "GeneralSurvey"}">

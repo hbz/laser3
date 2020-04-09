@@ -172,6 +172,34 @@ class SubscriptionService {
         validSubChilds
     }
 
+    List getValidSurveySubChilds(Subscription subscription) {
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
+                subscription,
+                [SUBSCRIPTION_CURRENT, SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
+        )
+        validSubChilds = validSubChilds?.sort { a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa?.sortname ?: sa?.name ?: "")?.compareTo((sb?.sortname ?: sb?.name ?: ""))
+        }
+        validSubChilds
+    }
+
+    List getValidSurveySubChildOrgs(Subscription subscription) {
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
+                subscription,
+                [SUBSCRIPTION_CURRENT, SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
+        )
+
+        List orgs = OrgRole.findAllBySubInListAndRoleType(validSubChilds, RDStore.OR_SUBSCRIBER_CONS)
+
+        if(orgs){
+            return orgs.org
+        }else{
+            return []
+        }
+    }
+
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
@@ -247,6 +275,11 @@ class SubscriptionService {
             if(params.summaryOfContent) {
                 base_qry += " and lower(ie.tipp.title.summaryOfContent) like :summaryOfContent "
                 qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+            }
+
+            if (params.summaryOfContents && params.summaryOfContents != "" && params.list('summaryOfContents')) {
+                base_qry += " and lower(ie.tipp.title.summaryOfContent) in (:summaryOfContents)"
+                qry_params.summaryOfContents = params.list('summaryOfContents').collect { ""+it.toLowerCase()+"" }
             }
 
             if(params.ebookFirstAutorOrFirstEditor) {

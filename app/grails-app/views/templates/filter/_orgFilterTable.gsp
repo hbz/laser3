@@ -558,6 +558,11 @@
 
                         <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
+                            <br>
+                            <g:link controller="subscription" action="show"
+                                    id="${orgSub?.id}">
+                                ${orgSub?.name}
+                            </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="subscription" action="show"
@@ -574,6 +579,14 @@
                     <g:if test="${existSubforOrg}">
                         <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
+                            <br>
+                            <g:link controller="subscription" action="show"
+                                    id="${orgSub?.id}">
+                                <g:formatDate formatName="default.date.format.notime"
+                                              date="${orgSub?.startDate}"/><br>
+                                <g:formatDate formatName="default.date.format.notime"
+                                              date="${orgSub?.endDate}"/>
+                            </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="subscription" action="show"
@@ -592,6 +605,11 @@
                     <g:if test="${existSubforOrg}">
                         <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
+                            <br>
+                            <g:link controller="subscription" action="show"
+                                    id="${orgSub?.id}">
+                                ${orgSub?.status.getI10n('value')}
+                            </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="subscription" action="show"

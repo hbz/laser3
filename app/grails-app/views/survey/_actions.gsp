@@ -99,7 +99,7 @@
 
             </g:if>
 
-            <g:if test="${!surveyConfig?.pickAndChoose && (surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING.id)}">
+            <g:if test="${(surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING.id)}">
                 <semui:actionsDropdownItem controller="survey" action="allSurveyProperties" params="[id: params.id]"
                                            message="survey.SurveyProp.all"/>
 

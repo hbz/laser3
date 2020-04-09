@@ -110,12 +110,12 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
         <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                           subscriptionInstance: subscriptionInstance,
                                                                           visibleOrgRelations : visibleOrgRelations,
-        ]"/>
+                                                                          surveyResults       : surveyResults        ]"/>
     </div>
 
 <div class="ui stackable grid">
 
-    <div class="twelve wide column">
+    <div class="sixteen wide column">
         <div class="la-inline-lists">
             <div class="ui card la-time-card">
                 <div class="content">

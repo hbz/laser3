@@ -1083,7 +1083,16 @@ class SemanticUiTagLib {
 
         if (surveyConfig?.pickAndChoose) {
             def finishDate = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate
-            if (finishDate) {
+            List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)
+
+            boolean finish = false
+
+            if (surveyResults) {
+                finish = finishDate && surveyResults?.finishDate?.contains(null)
+            }else {
+                finishDate = finishDate ? true : false
+            }
+            if (finish) {
                 if (surveyOwnerView) {
                     out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
                     out << "data-content='${message(code: "surveyResult.finish.info.consortia")}'>"
