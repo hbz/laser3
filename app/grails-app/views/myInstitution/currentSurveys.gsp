@@ -255,6 +255,9 @@
                     <g:if test="${surveyInfo.isMandatory}">
                         <i class='check big green icon'></i>
                     </g:if>
+                    <g:else>
+                        <i class='close big red icon'></i>
+                    </g:else>
                 </td>
 
                 <td class="center aligned">

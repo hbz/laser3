@@ -254,6 +254,9 @@
                         <g:if test="${surveyInfo.isMandatory}">
                             <i class='check green icon'></i>
                         </g:if>
+                        <g:else>
+                            <i class='close big red icon'></i>
+                        </g:else>
                     </td>
 
                     <td class="center aligned">
@@ -308,11 +311,11 @@
                     </td>
 
                     <td class="center aligned">
-                        <g:if test="${surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose}">
+                        %{--<g:if test="${surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose}">
                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]"
                                     class="ui icon button">
-                                    %{--<div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" : ""} label">
+                                    --}%%{--<div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" : ""} label">
                                     <g:if
                                             test="${participantsFinish && participantsTotal}">
                                         <g:formatNumber
@@ -322,11 +325,11 @@
                                     </g:if>
                                     <g:else>
                                         0%
-                                    </g:else>--}%
+                                    </g:else>--}%%{--
                                     <i class="icon blue chart pie"></i>
                                 </div>
                             </g:link>
-                        </g:if>
+                        </g:if>--}%
                         <g:if test="${surveyConfig && surveyConfig.type == 'IssueEntitlementsSurvey' && surveyConfig.pickAndChoose}">
 
                            %{-- <g:set var="participantsTitleSurveyFinish"
@@ -352,6 +355,14 @@
                                 <i class="icon blue chart pie"></i>
                             </g:link>
                         </g:if>
+                        <g:else>
+                            <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
+                                    params="[surveyConfigID: surveyConfig.id]"
+                                    class="ui icon button">
+                                <i class="icon blue chart pie"></i>
+                                </div>
+                            </g:link>
+                        </g:else>
                     </td>
                     <td>
                         <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button icon">

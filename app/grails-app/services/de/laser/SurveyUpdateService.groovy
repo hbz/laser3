@@ -127,7 +127,7 @@ class SurveyUpdateService extends AbstractLockableService {
 
                     List generalContactsEMails = []
 
-                    survey?.owner?.getGeneralContactPersons(false)?.each { person ->
+                    survey.owner.getGeneralContactPersons(false)?.each { person ->
                         person?.contacts?.each { contact ->
                             if (['Mail', 'E-Mail'].contains(contact?.contentType?.value))
                             {
