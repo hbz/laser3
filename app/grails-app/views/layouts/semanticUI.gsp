@@ -407,6 +407,7 @@
                                 <div class="menu">
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
+                                    <g:link class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="appThreads">${message(code:'menu.yoda.appThreads')}</g:link>
@@ -417,8 +418,6 @@
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="systemProfiler">${message(code:'menu.yoda.systemProfiler')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="activityProfiler">${message(code:'menu.yoda.activityProfiler')}</g:link>
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="appSecurity">${message(code:'menu.yoda.security')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
