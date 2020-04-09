@@ -21,7 +21,7 @@
     <div>
       <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${institution.name} Cost Items</h1>
       <g:form action="index" class="ui form" method="post">
-        <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+        <input type="hidden" name="shortcode" value="${contextService.getOrg().shortcode}"/>
         <table class="ui celled la-table table table table-tworow">
           <thead>
           <tr><td colspan="9">&nbsp;</td></tr>

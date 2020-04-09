@@ -227,7 +227,7 @@
                             </span>
                         </g:if>
 
-                            <g:if test="${surveyInfo?.isSubscriptionSurvey}">
+                            <g:if test="${surveyInfo.isSubscriptionSurvey}">
                                 <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
                                          class="ui ">
                                     ${surveyConfig?.getSurveyName()}
@@ -242,12 +242,12 @@
                     ${surveyInfo.type.getI10n('value')}
                 </td>
                 <td>
-                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo?.endDate}"/>
+                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
                 </td>
 
                 <td class="center aligned">
 
-                    ${surveyInfo?.owner}
+                    ${surveyInfo.owner}
 
                 </td>
 
@@ -271,7 +271,7 @@
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <g:if test="${surveyConfig?.pickAndChoose}">
+                        <g:if test="${surveyConfig.pickAndChoose}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
                                 <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig?.id}"

@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}" />
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig]" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
     <semui:crumb message="surveyEvaluation.label" class="active"/>
 </semui:breadcrumbs>
@@ -51,14 +51,14 @@
 </g:if>
 <g:else>
     <h2 class="ui icon header la-clear-before la-noMargin-top">
-        <g:if test="${surveyConfig?.type == 'Subscription'}">
+        <g:if test="${surveyConfig.type == 'Subscription'}">
             <i class="icon clipboard outline la-list-icon"></i>
-            <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-                ${surveyConfig?.subscription?.name}
+            <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
+                ${surveyConfig.subscription?.name}
             </g:link>
         </g:if>
         <g:else>
-            ${surveyConfig?.getConfigNameShort()}
+            ${surveyConfig.getConfigNameShort()}
         </g:else>: ${message(code: 'surveyEvaluation.label')}
     </h2>
     <br>
@@ -70,27 +70,27 @@
 
                 <g:link class="item ${params.tab == 'surveyConfigsView' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
-                        params="[id: params.id, surveyConfigID: surveyConfig?.id, tab: 'surveyConfigsView']">
+                        params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'surveyConfigsView']">
                     ${message(code: 'surveyEvaluation.label')}
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
-                        params="[id: params.id, surveyConfigID: surveyConfig?.id, tab: 'participantsViewAllFinish']">
+                        params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
                     ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-                    <div class="ui floating circular label">${participantsFinish?.size() ?: 0}</div>
+                    <div class="ui floating circular label">${participantsFinish.size() ?: 0}</div>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
-                        params="[id: params.id, surveyConfigID: surveyConfig?.id, tab: 'participantsViewAllNotFinish']">
+                        params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
                     ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-                    <div class="ui floating circular label">${participantsNotFinish?.size() ?: 0}</div>
+                    <div class="ui floating circular label">${participantsNotFinish.size() ?: 0}</div>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
-                        params="[id: params.id, surveyConfigID: surveyConfig?.id, tab: 'participantsView']">
+                        params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
                     ${message(code: 'surveyEvaluation.participantsView')}
                     <div class="ui floating circular label">${participants?.size() ?: 0}</div>
                 </g:link>
