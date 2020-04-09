@@ -104,19 +104,19 @@
                                 </g:else>
                                 <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
                             </div>
-
+                            <br>
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics"
                                        value="shared">
                                 <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_shared')}</label>
                             </div>
-
+                            <br>
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics"
                                        value="explicit">
                                 <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_explicit')}</label>
                             </div>
-
+                            <br>
                             <g:if test="${subscriptionInstance.owner.derivedLicenses}">
                                 <div class="ui radio checkbox">
                                     <input class="hidden" type="radio" id="generateSlavedLics3" name="generateSlavedLics"

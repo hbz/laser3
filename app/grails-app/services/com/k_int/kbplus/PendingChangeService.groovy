@@ -582,19 +582,20 @@ class PendingChangeService extends AbstractLockableService {
                 pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'current', id: target.id)
                 pkgName = target.name
             }
+            String eventTooltip = messageSource.getMessage("subscription.packages.${change.msgToken}",null,locale)
             switch(change.msgToken) {
             //pendingChange.message_TP01 (newTitle)
                 case PendingChangeConfiguration.NEW_TITLE:
-                    eventIcon = '<i class="green plus icon"></i>'
-                    instanceIcon = '<i class="book icon"></i>'
+                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="green plus icon"></i></span>'
+                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('title',null,locale)+'"><i class="book icon"></i></span>'
                     if(pkgLink && pkgName && titleLink && titleName && platformLink && platformName)
                         eventData = [pkgLink,pkgName,titleLink,titleName,platformLink,platformName]
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break
             //pendingChange.message_TP02 (titleUpdated)
                 case PendingChangeConfiguration.TITLE_UPDATED:
-                    eventIcon = '<i class="yellow circle icon"></i>'
-                    instanceIcon = '<i class="book icon"></i>'
+                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="yellow circle icon"></i></span>'
+                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('title',null,locale)+'"><i class="book icon"></i></span>'
                     if(holdingLink && titleName && pkgName) {
                         eventData = [holdingLink,titleName,pkgName,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),output(change,'oldValue')]
                         if(change.targetProperty in ['hostPlatformURL'])
@@ -605,16 +606,16 @@ class PendingChangeService extends AbstractLockableService {
                     break
             //pendingChange.message_TP03 (titleDeleted)
                 case PendingChangeConfiguration.TITLE_DELETED:
-                    eventIcon = '<i class="red minus icon"></i>'
-                    instanceIcon = '<i class="book icon"></i>'
+                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="red minus icon"></i></span>'
+                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('title',null,locale)+'"><i class="book icon"></i></span>'
                     if(pkgName && titleName && holdingLink)
                         eventData = [pkgName,titleName,holdingLink]
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break
             //pendingChange.message_TC01 (coverageUpdated)
                 case PendingChangeConfiguration.COVERAGE_UPDATED:
-                    eventIcon = '<i class="yellow circle icon"></i>'
-                    instanceIcon = '<i class="file alternate icon"></i>'
+                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="yellow circle icon"></i></span>'
+                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('tipp.coverage',null,locale)+'"><i class="file alternate icon"></i></span>'
                     if(holdingLink && pkgName && coverageString && titleName) {
                         eventData = [holdingLink,pkgName,titleName,coverageString,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),output(change,'oldValue'),output(change,'newValue')]
                     }
@@ -622,32 +623,32 @@ class PendingChangeService extends AbstractLockableService {
                     break
             //pendingChange.message_TC02 (newCoverage)
                 case PendingChangeConfiguration.NEW_COVERAGE:
-                    eventIcon = '<i class="green plus icon"></i>'
-                    instanceIcon = '<i class="file alternate icon"></i>'
+                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="green plus icon"></i></span>'
+                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('tipp.coverage',null,locale)+'"><i class="file alternate icon"></i></span>'
                     if(coverageString)
                         eventData = [coverageString]
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break
             //pendingChange.message_TC03 (coverageDeleted)
                 case PendingChangeConfiguration.COVERAGE_DELETED:
-                    eventIcon = '<i class="red minus icon"></i>'
-                    instanceIcon = '<i class="file alternate icon"></i>'
+                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="red minus icon"></i></span>'
+                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('tipp.coverage',null,locale)+'"><i class="file alternate icon"></i></span>'
                     if(holdingLink && coverageString)
                         eventData = [coverageString,holdingLink]
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break
             //pendingChange.message_PK01 (pkgPropUpdate)
                 case PendingChangeConfiguration.PACKAGE_PROP:
-                    eventIcon = '<i class="yellow circle icon"></i>'
-                    instanceIcon = '<i class="gift icon"></i>'
+                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="yellow circle icon"></i></span>'
+                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('package',null,locale)+'"><i class="gift icon"></i></span>'
                     if(pkgLink && pkgName)
                         eventData = [pkgLink,pkgName,messageSource.getMessage("package.${change.targetProperty}",null,locale),output(change,'oldValue'),output(change,'newValue')]
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                     break
             //pendingChange.message_PK02 (pkgDeleted)
                 case PendingChangeConfiguration.PACKAGE_DELETED:
-                    eventIcon = '<i class="red minus icon"></i>'
-                    instanceIcon = '<i class="gift icon"></i>'
+                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="red minus icon"></i></span>'
+                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('package',null,locale)+'"><i class="gift icon"></i></span>'
                     if(pkgName)
                         eventData = [pkgName]
                     else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
