@@ -168,7 +168,7 @@ class SubscriptionService {
             validSubChilds = validSubChilds?.sort { a, b ->
                 def sa = a.getSubscriber()
                 def sb = b.getSubscriber()
-                (sa?.sortname ?: sa?.name ?: "")?.compareTo((sb?.sortname ?: sb?.name ?: ""))
+                (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
             }
         }
         validSubChilds
@@ -388,7 +388,7 @@ class SubscriptionService {
     List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
         List visibleOrgRelations = []
         subscription?.orgRelations?.each { or ->
-            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Subscription Consortia'])) {
+            if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Subscription Consortia'])) {
                 visibleOrgRelations << or
             }
         }
@@ -398,7 +398,7 @@ class SubscriptionService {
     List getVisibleOrgRelations(Subscription subscription) {
         List visibleOrgRelations = []
         subscription?.orgRelations?.each { or ->
-            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+            if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                 visibleOrgRelations << or
             }
         }
@@ -429,7 +429,7 @@ class SubscriptionService {
 
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Subscription sourceSub, Subscription targetSub, def flash) {
         sourceSub.orgRelations?.each { or ->
-            if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Subscription Consortia'])) {
+            if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Subscription Consortia'])) {
                 if (targetSub.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
                     Object[] args = [or?.roleType?.getI10n("value") + " " + or?.org?.name]
                     flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
@@ -692,7 +692,7 @@ class SubscriptionService {
 
                     //OrgRole
                     subMember.orgRelations?.each { or ->
-                        if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]) || (targetSub.orgRelations.size() >= 1)) {
+                        if ((or.org?.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]) || (targetSub.orgRelations.size() >= 1)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.sub = newSubscription

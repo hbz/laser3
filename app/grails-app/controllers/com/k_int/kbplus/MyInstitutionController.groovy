@@ -2576,7 +2576,7 @@ AND EXISTS (
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -2652,7 +2652,7 @@ AND EXISTS (
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }

@@ -252,7 +252,7 @@
                 <td>
                     <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, org)}"
                             var="personRole">
-                        <g:if test="${personRole.prs.isPublic || (!personRole.prs.isPublic && personRole?.prs?.tenant?.id == contextService.getOrg()?.id)}">
+                        <g:if test="${personRole.prs.isPublic || (!personRole.prs.isPublic && personRole?.prs?.tenant?.id == contextService.getOrg().id)}">
                             <div class="item">
                                 <%--
                                 <g:if test="${! personRole.prs.isPublic}">
@@ -351,7 +351,7 @@
                 <td>
                     <g:set var="visiblePrivateContacts" value="[]"/>
                     <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
-                        <g:if test="${pl?.functionType?.value && (!pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg()?.id}">
+                        <g:if test="${pl?.functionType?.value && (!pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg().id}">
 
                             <g:if test="${!visiblePrivateContacts.contains(pl.prs.id)}">
                                 <g:set var="visiblePrivateContacts" value="${visiblePrivateContacts + pl.prs.id}"/>
@@ -375,7 +375,7 @@
                             </g:if>
                         </g:if>
                     <%--
-                    <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg()?.id}">
+                    <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg().id}">
                         <g:render template="/templates/cpa/person_details" model="${[
                                 personRole          : pl,
                                 tmplShowDeleteButton: false,

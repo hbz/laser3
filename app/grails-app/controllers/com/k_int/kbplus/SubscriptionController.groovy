@@ -2024,7 +2024,7 @@ class SubscriptionController extends AbstractDebugController {
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
             result.visibleOrgRelations = []
             result.parentSub.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -3744,7 +3744,7 @@ class SubscriptionController extends AbstractDebugController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -4150,7 +4150,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         //OrgRole
                         subMember.orgRelations?.each { or ->
-                            if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (newSubConsortia.orgRelations.size() >= 1)) {
+                            if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (newSubConsortia.orgRelations.size() >= 1)) {
                                 OrgRole newOrgRole = new OrgRole()
                                 InvokerHelper.setProperties(newOrgRole, or.properties)
                                 newOrgRole.sub = newSubscription
@@ -4311,7 +4311,7 @@ class SubscriptionController extends AbstractDebugController {
                             //OrgRole
                             baseSub.orgRelations?.each { or ->
 
-                                if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
+                                if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
                                     OrgRole newOrgRole = new OrgRole()
                                     InvokerHelper.setProperties(newOrgRole, or.properties)
                                     newOrgRole.sub = newSub
@@ -4436,7 +4436,7 @@ class SubscriptionController extends AbstractDebugController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -4536,7 +4536,7 @@ class SubscriptionController extends AbstractDebugController {
                 //OrgRole
                 baseSub.orgRelations?.each { or ->
 
-                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
+                    if ((or.org?.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
@@ -5162,7 +5162,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.visibleOrgRelations = []
         result.subscriptionInstance.orgRelations?.each { or ->
-            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+            if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                 result.visibleOrgRelations << or
             }
         }
@@ -5334,7 +5334,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 //Copy References
                 baseSubscription.orgRelations?.each { or ->
-                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (params.subscription.copyLinks)) {
+                    if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (params.subscription.copyLinks)) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSubscriptionInstance
@@ -5639,7 +5639,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
-        if(result.subscription.getCollective()?.id == contextService.getOrg()?.id &&
+        if(result.subscription.getCollective()?.id == contextService.getOrg().id &&
                 (result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ||
                 result.subscription.instanceOf?.getConsortia()) &&
                 ! (params.action in ['addMembers', 'processAddMembers',

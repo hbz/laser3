@@ -18,7 +18,7 @@
     <g:if test="${delResult}">
         <g:if test="${delResult.status == DeletionService.RESULT_SUCCESS}">
             <semui:msg class="positive" header="" message="deletion.success.msg" />
-            <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
+            <g:link controller="organisation" action="users" params="${[id: contextService.getOrg().id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
         </g:if>
         <g:else>
             <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
@@ -40,7 +40,7 @@
 
             <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}">
 
-                <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
+                <g:link controller="organisation" action="users" params="${[id: contextService.getOrg().id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
 
                 <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
 

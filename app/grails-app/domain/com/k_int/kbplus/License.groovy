@@ -385,7 +385,7 @@ class License
             return true
         }
 
-        if (user.getAuthorizedOrgsIds().contains(contextService.getOrg()?.id)) {
+        if (user.getAuthorizedOrgsIds().contains(contextService.getOrg().id)) {
 
             OrgRole cons = OrgRole.findByLicAndOrgAndRoleType(
                     this, contextService.getOrg(), RDStore.OR_LICENSING_CONSORTIUM

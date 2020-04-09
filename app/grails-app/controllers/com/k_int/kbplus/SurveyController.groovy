@@ -631,7 +631,7 @@ class SurveyController {
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []
                  result.surveyConfig?.subscription?.orgRelations?.each { or ->
-                    if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                         result.visibleOrgRelations << or
                     }
                 }
@@ -1283,7 +1283,7 @@ class SurveyController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -1461,7 +1461,7 @@ class SurveyController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -2673,7 +2673,7 @@ class SurveyController {
                 //OrgRole
                 baseSub?.orgRelations?.each { or ->
 
-                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
@@ -4094,7 +4094,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') && surveyConfig.surveyInfo?.owner?.id == contextService.getOrg()?.id)
+        result.editable = (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') && surveyConfig.surveyInfo?.owner?.id == contextService.getOrg().id)
 
         if (!result.editable) {
             return

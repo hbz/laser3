@@ -25,7 +25,7 @@
 <semui:modal id="${modalID ?: 'modalSurveyCostItem'}" text="${modalText + (surveyOrg.surveyConfig.subscription ? ' ('+ surveyOrg.surveyConfig.subscription+ ')' : '')}" msgSave="${submitButtonLabel}">
     <g:form class="ui small form" name="editCost" action="newSurveyCostItem">
 
-        <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+        <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}"/>
         <g:if test="${setting == 'bulkForAll'}">
             <g:hiddenField name="surveyConfig" value="${surveyConfig.class.getName()}:${surveyConfig.id}"/>
             <g:hiddenField name="surveyOrgs" value="${surveyOrgList.join(",")}"/>
