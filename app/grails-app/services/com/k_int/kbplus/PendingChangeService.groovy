@@ -19,7 +19,6 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Duration
 
@@ -527,7 +526,11 @@ class PendingChangeService extends AbstractLockableService {
                 }
             }
             else if(change.costItem) {
-                //TODO
+                Map<String,Object> entry = [target:change.costItem,msgToken:change.msgToken,change:change]
+                if(change.status == RDStore.PENDING_CHANGE_PENDING)
+                    pendingChanges << entry
+                else if(change.status == RDStore.PENDING_CHANGE_ACCEPTED)
+                    acceptedChanges << entry
             }
         }
         [pending:pendingChanges,pendingCount:pendingChanges.size(),notifications:acceptedChanges,notificationsCount:acceptedChanges.size()]
@@ -655,7 +658,13 @@ class PendingChangeService extends AbstractLockableService {
                     break
             }
         }
-
+        else {
+            if(change.costItem) {
+                eventIcon = '<span data-tooltip="'+messageSource.getMessage('default.change.label',null,locale)+'"><i class="yellow circle icon"></i></span>'
+                instanceIcon = '<span data-tooltip="'+messageSource.getMessage('financials.costItem',null,locale)+'"><i class="money bill icon"></i></span>'
+                eventData = [change.oldValue,change.newValue]
+            }
+        }
         if(eventString == null && eventData)
             eventString = messageSource.getMessage(change.msgToken,eventData.toArray(),locale)
         [instanceIcon:instanceIcon,eventIcon:eventIcon,eventString:eventString]
