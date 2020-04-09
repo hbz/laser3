@@ -55,7 +55,7 @@
                     </g:link>
                 </td>
                 %{-- <td class="center aligned">
-                     <g:set var="finish" value="${surveyInfo?.checkSurveyInfoFinishByOrg(participant)}"/>
+                     <g:set var="finish" value="${surveyInfo.checkSurveyInfoFinishByOrg(participant)}"/>
                      <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_FINISH_BY_ORG}">
                          <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                data-content="${message(code: 'surveyConfig.allResultsFinishByOrg')}">

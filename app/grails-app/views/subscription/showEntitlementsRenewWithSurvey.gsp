@@ -29,7 +29,7 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
-<g:message code="issueEntitlementsSurvey.label"/>: ${surveyConfig?.surveyInfo?.name}
+<g:message code="issueEntitlementsSurvey.label"/>: ${surveyConfig?.surveyInfo.name}
 </h1>
 
 

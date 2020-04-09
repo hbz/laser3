@@ -1,3 +1,4 @@
+<%@ page import="de.laser.SystemEvent;" %>
 <!doctype html>
 <html>
 <head>
@@ -12,29 +13,35 @@
     <semui:crumb message="menu.admin.systemEvents" class="active"/>
 </semui:breadcrumbs>
 
-
     <semui:filter>
         <form class="ui form">
-            <div class="four fields">
+            <div class="five fields">
                 <div class="field">
                     <label>Category</label>
                     <g:select name="filter_category" class="ui dropdown"
-                              from="${de.laser.SystemEvent.CATEGORY.values()}"
+                              from="${SystemEvent.CATEGORY.values()}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value=""
                     />
                 </div>
                 <div class="field">
                     <label>Relevance</label>
                     <g:select name="filter_relevance" class="ui dropdown"
-                              from="${de.laser.SystemEvent.RELEVANCE.values()}"
+                              from="${SystemEvent.RELEVANCE.values()}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value=""
                     />
                 </div>
                 <div class="field">
                     <label>Source</label>
                     <g:select name="filter_source" class="ui dropdown"
-                              from="${de.laser.SystemEvent.getAllSources()}"
+                              from="${SystemEvent.getAllSources()}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value=""
+                    />
+                </div>
+                <div class="field">
+                    <label>Exclude <sup>!</sup></label>
+                    <g:select name="filter_exclude" class="ui dropdown"
+                              from="${SystemEvent.getAllSources()}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}" value="DataloadService"
                     />
                 </div>
                 <div class="field">
@@ -51,17 +58,21 @@
                 var fCat = $('#filter_category').val()
                 var fRel = $('#filter_relevance').val()
                 var fSrc = $('#filter_source').val()
+                var fExc = $('#filter_exclude').val()
                 var selector = ''
 
                 if (fCat) { selector += "[data-category='" + fCat + "']" }
                 if (fRel) { selector += "[data-relevance='" + fRel + "']" }
                 if (fSrc) { selector += "[data-source='" + fSrc + "']" }
+                if (fExc) { selector += "[data-source!='" + fExc + "']" }
 
                 var $valid = $('table tbody tr' + selector)
 
                 $('table tbody tr').addClass('hidden')
                 $valid.removeClass('hidden')
             })
+
+            $('#filterButton').trigger('click')
         </r:script>
     </semui:filter>
 

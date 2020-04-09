@@ -1,28 +1,21 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
-<%
-    User currentUser = contextService.getUser()
-    String currentLang = 'de'
-    String currentTheme = 'semanticUI'
 
-    if (currentUser) {
-        RefdataValue rdvLocale = currentUser?.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))?.getValue()
+<g:set var="currentServer" scope="page" />
+<g:set var="currentUser" scope="page" />
+<g:set var="currentLang" scope="page" />
+<g:set var="currentTheme" scope="page" />
 
-        if (rdvLocale) {
-            currentLang = rdvLocale.value
-            org.springframework.web.servlet.LocaleResolver localeResolver = org.springframework.web.servlet.support.RequestContextUtils.getLocaleResolver(request)
-            localeResolver.setLocale(request, response, new Locale(currentLang, currentLang.toUpperCase()))
-        }
+<g:set var="contextOrg" scope="page" />
+<g:set var="contextUser" scope="page" />
+<g:set var="contextMemberships" scope="page" />
 
-        RefdataValue rdvTheme = currentUser?.getSetting(UserSettings.KEYS.THEME, RefdataValue.getByValueAndCategory('semanticUI', RDConstants.USER_SETTING_THEME))?.getValue()
+<g:set var="newTickets" scope="page" />
+<g:set var="myInstNewAffils" scope="page" />
 
-        if (rdvTheme) {
-            currentTheme = rdvTheme.value
-        }
-    }
-%>
+<tmpl:/layouts/initVars />
 
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="${currentLang}"> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang="${currentLang}"> <![endif]-->
@@ -37,7 +30,6 @@
 
     <r:require modules="${currentTheme}" />
 
-
     <script>
         var gspLocale = "${message(code:'default.locale.label')}";
         var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
@@ -48,21 +40,16 @@
     <tmpl:/layouts/favicon />
 
     <r:layoutResources/>
-
 </head>
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">
 
-    <g:set var="contextOrg" value="${contextService.getOrg()}" />
-    <g:set var="contextUser" value="${contextService.getUser()}" />
-    <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
-
-    <g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_DEV}">
+    <g:if test="${currentServer == contextService.SERVER_DEV}">
         <div class="ui green label big la-server-label" aria-label="Sie befinden sich im Developer-System">
             <span>DEV</span>
         </div>
     </g:if>
-    <g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_QA}">
+    <g:if test="${currentServer == contextService.SERVER_QA}">
         <div class="ui red label big la-server-label">
             <span>QA</span>
         </div>
@@ -88,7 +75,7 @@
 
                                 <g:if test="${grailsApplication.config.feature.eBooks}">
                                     <a class="item" role="menuitem" href="http://gokb.k-int.com/gokbLabs">${message(code:'menu.institutions.ebooks')}</a>
-                                    <div c          lass="divider"></div>
+                                    <div class="divider"></div>
                                 </g:if>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
@@ -110,9 +97,9 @@
 
                                 <g:link class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
 
-                                <a href="${message(code:'url.gokb.' + grailsApplication.config.getCurrentServer())}" class="item" role="menuitem">GOKB</a>
+                                <a href="${message(code:'url.gokb.' + currentServer)}" class="item" role="menuitem">GOKB</a>
 
-                                <a href="${message(code:'url.ygor.' + grailsApplication.config.getCurrentServer())}" class="item" role="menuitem">YGOR</a>
+                                <a href="${message(code:'url.ygor.' + currentServer)}" class="item" role="menuitem">YGOR</a>
                         </div>
                     </div>
 
@@ -211,9 +198,7 @@
 
                             <div class="divider"></div>
 
-                            <g:set var="myInstNewAffils" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
-
-                            <semui:securedMainNavItem role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="userList" message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
+                            <semui:securedMainNavItem role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="userList" message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils.size()}" />
 
                             <sec:ifAnyGranted roles="ROLE_YODA">
                                    <g:link class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
@@ -293,9 +278,8 @@
                         <div class="menu">
                             <g:link class="item" role="menuitem" controller="profile" action="errorOverview">
                                 ${message(code: "menu.user.errorReport")}
-                                <g:set var="newTickets" value="${com.k_int.kbplus.SystemTicket.getNew().size()}" />
-                                <g:if test="${newTickets > 0}">
-                                    <div class="ui floating red circular label">${newTickets}</div>
+                                <g:if test="${newTickets.size() > 0}">
+                                    <div class="ui floating red circular label">${newTickets.size()}</div>
                                 </g:if>
                             </g:link>
 
@@ -304,7 +288,7 @@
                                 <%--<g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0).size()}" />--%>
                                 <%
                                     Object organisationService = grailsApplication.mainContext.getBean("organisationService")
-                                    Map affilRequestMap = organisationService.getPendingRequests(contextService.getUser(), contextService.getOrg())
+                                    Map affilRequestMap = organisationService.getPendingRequests(contextUser, contextOrg)
                                     int newAffiliationRequests = affilRequestMap?.pendingRequests?.size()
                                 %>
                                 <g:if test="${newAffiliationRequests > 0}">
@@ -407,6 +391,7 @@
                                 <div class="menu">
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
+                                    <g:link class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="appThreads">${message(code:'menu.yoda.appThreads')}</g:link>
@@ -417,8 +402,6 @@
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="systemProfiler">${message(code:'menu.yoda.systemProfiler')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="activityProfiler">${message(code:'menu.yoda.activityProfiler')}</g:link>
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="appSecurity">${message(code:'menu.yoda.security')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
@@ -564,8 +547,6 @@
                                         </g:else>
                                     </g:each>
                                 </g:if>
-
-
 
                                 <div class="divider"></div>
 
@@ -751,13 +732,13 @@
         </r:script>
 
         <%-- maintenance --%>
-        <g:if test="${com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrgIsNull(true)}">
+        <g:if test="${SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || SystemMessage.findAllByShowNowAndOrgIsNull(true)}">
             <div id="maintenance">
                 <div class="ui segment center aligned inverted orange">
                     <strong>ACHTUNG:</strong>
 
                     <div class="ui list">
-                        <g:each in="${com.k_int.kbplus.SystemMessage.findAllByShowNow(true)}" var="message">
+                        <g:each in="${SystemMessage.findAllByShowNow(true)}" var="message">
                             <div class="item">
                                 <g:if test="${message.org}">
                                     <g:if test="${contextOrg.id == message.org.id}">
