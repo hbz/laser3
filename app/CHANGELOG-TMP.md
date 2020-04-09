@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      09.04.2020  1.3         David   Bug         Doppelte Menüeinträge entfernt
+
 #### day of release 1.3
 
 2154    08.04.2020  rc1.3       Andreas Bug         VAT nicht als Kern-ID angezeigt und Kundennummer per Konsortialzugriff löschbar
