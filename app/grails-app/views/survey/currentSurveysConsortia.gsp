@@ -220,7 +220,7 @@
                        value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
                 <g:set var="participantsTotal"
-                       value="${surveyConfig?.orgs}"/>--}%
+                       value="${surveyConfig.orgs}"/>--}%
 
                 <tr>
                     <td class="center aligned">
@@ -285,10 +285,10 @@
                         <g:if test="${surveyConfig}">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
-                                    <div class="ui circular ${surveyConfig?.configFinish ? "yellow" : ""} label">
+                                    <div class="ui circular ${surveyConfig.configFinish ? "yellow" : ""} label">
                                     ${surveyConfig.orgs?.size() ?: 0}
                                     </div>
-                                %{--<div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : surveyConfig?.configFinish ? "yellow" : ""} label">
+                                %{--<div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
                                     ${participantsFinish?.size() ?: 0} / ${surveyConfig.orgs?.size() ?: 0}
                                 </div>--}%
                             </g:link>
@@ -354,7 +354,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button icon">
+                        <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button icon">
                             <i class="pencil icon"></i>
                         </g:link>
                     </td>

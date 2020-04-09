@@ -197,7 +197,7 @@
                                 </span>
                             </g:if>
                             <i class="icon chart pie la-list-icon"></i>
-                            <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
+                            <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
                                 ${surveyConfig?.getSurveyName()}
                             </g:link>
                         </div>
@@ -206,14 +206,14 @@
                         ${surveyInfo.type.getI10n('value')}
                     </td>
                     <td>
-                        <g:formatDate formatName="default.date.format.notime" date="${surveyInfo?.endDate}"/>
+                        <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
                     </td>
 
                     <td class="center aligned">
 
                         <g:if test="${surveyConfig}">
                             <g:if test="${surveyConfig?.type == 'Subscription'}">
-                                <g:link controller="survey" action="show" id="${surveyInfo?.id}"
+                                <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                                     <div class="ui circular label">
                                         ${surveyConfig?.surveyProperties?.size() ?: 0}
@@ -232,7 +232,7 @@
                         </td>
                     </g:if>
                     <td>
-                        <g:if test="${!surveyConfig?.pickAndChoose}">
+                        <g:if test="${!surveyConfig.pickAndChoose}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="survey" action="evaluationParticipant"
@@ -242,7 +242,7 @@
                             </span>
                         </g:if>
 
-                        <g:if test="${surveyConfig?.pickAndChoose}">
+                        <g:if test="${surveyConfig.pickAndChoose}">
                             <g:link controller="survey" action="showEntitlementsRenew"
                                     id="${surveyConfig?.id}" params="[participant: participant?.id]"
                                     class="ui icon button"><i

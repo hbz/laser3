@@ -24,7 +24,7 @@
 
     <g:set var="surveyParticipantsHasAccess"
            value="${surveyResult?.findAll { it.participant.hasAccessOrg() }.sort {
-               it?.participant.sortname
+               it.participant.sortname
            }}"/>
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasAccess}">
@@ -113,33 +113,33 @@
                 </td>
                 <g:each in="${result.value.sort { it?.type?.name }}" var="resultProperty">
                     <td>
-                            <g:if test="${resultProperty?.type?.type == Integer.toString()}">
+                            <g:if test="${resultProperty.type.type == Integer.toString()}">
                                 <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
                             </g:if>
-                            <g:elseif test="${resultProperty?.type?.type == String.toString()}">
+                            <g:elseif test="${resultProperty.type.type == String.toString()}">
                                 <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
                             </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == BigDecimal.toString()}">
+                            <g:elseif test="${resultProperty.type.type == BigDecimal.toString()}">
                                 <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
                             </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == Date.toString()}">
+                            <g:elseif test="${resultProperty.type.type == Date.toString()}">
                                 <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
                             </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == URL.toString()}">
+                            <g:elseif test="${resultProperty.type.type == URL.toString()}">
                                 <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
-                                <g:if test="${resultProperty?.urlValue}">
+                                <g:if test="${resultProperty.urlValue}">
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == RefdataValue.toString()}">
+                            <g:elseif test="${resultProperty.type.type == RefdataValue.toString()}">
                                 <semui:xEditableRefData owner="${resultProperty}" type="text" field="refValue"
-                                                        config="${resultProperty.type?.refdataCategory}"/>
+                                                        config="${resultProperty.type.refdataCategory}"/>
                             </g:elseif>
-                            <g:if test="${resultProperty?.comment}">
+                            <g:if test="${resultProperty.comment}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${resultProperty?.comment}">
+                                      data-content="${resultProperty.comment}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </g:if>
@@ -154,7 +154,7 @@
 
     <g:set var="surveyParticipantsHasNotAccess"
            value="${surveyResult?.findAll { !it.participant.hasAccessOrg() }.sort {
-               it?.participant.sortname
+               it.participant.sortname
            }}"/>
 
     <div class="four wide column">
@@ -211,33 +211,33 @@
                 </td>
                 <g:each in="${result.value.sort { it?.type?.name }}" var="resultProperty">
                     <td>
-                            <g:if test="${resultProperty?.type?.type == Integer.toString()}">
+                            <g:if test="${resultProperty.type.type == Integer.toString()}">
                                 <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
                             </g:if>
-                            <g:elseif test="${resultProperty?.type?.type == String.toString()}">
+                            <g:elseif test="${resultProperty.type.type == String.toString()}">
                                 <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
                             </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == BigDecimal.toString()}">
+                            <g:elseif test="${resultProperty.type.type == BigDecimal.toString()}">
                                 <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
                             </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == Date.toString()}">
+                            <g:elseif test="${resultProperty.type.type == Date.toString()}">
                                 <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
                             </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == URL.toString()}">
+                            <g:elseif test="${resultProperty.type.type == URL.toString()}">
                                 <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
-                                <g:if test="${resultProperty?.urlValue}">
+                                <g:if test="${resultProperty.urlValue}">
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>
-                            <g:elseif test="${resultProperty?.type?.type == RefdataValue.toString()}">
+                            <g:elseif test="${resultProperty.type.type == RefdataValue.toString()}">
                                 <semui:xEditableRefData owner="${resultProperty}" type="text" field="refValue"
-                                                        config="${resultProperty.type?.refdataCategory}"/>
+                                                        config="${resultProperty.type.refdataCategory}"/>
                             </g:elseif>
-                            <g:if test="${resultProperty?.comment}">
+                            <g:if test="${resultProperty.comment}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${resultProperty?.comment}">
+                                      data-content="${resultProperty.comment}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </g:if>

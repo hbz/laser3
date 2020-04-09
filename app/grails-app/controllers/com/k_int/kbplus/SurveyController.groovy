@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
+import de.laser.PropertyService
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -47,6 +48,7 @@ class SurveyController {
     def escapeService
     def titleStreamService
     def institutionsService
+    PropertyService propertyService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -499,7 +501,7 @@ class SurveyController {
         if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
             SurveyConfig surveyConfig = new SurveyConfig(
                     subscription: subscription,
-                    configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
+                    configOrder: surveyInfo.surveyConfigs?.size() ? surveyInfo.surveyConfigs?.size() + 1 : 1,
                     type: 'Subscription',
                     surveyInfo: surveyInfo,
                     subSurveyUseForTransfer: subSurveyUseForTransfer
@@ -581,7 +583,7 @@ class SurveyController {
         if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
             SurveyConfig surveyConfig = new SurveyConfig(
                     subscription: subscription,
-                    configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
+                    configOrder: surveyInfo.surveyConfigs?.size() ? surveyInfo.surveyConfigs?.size() + 1 : 1,
                     type: 'IssueEntitlementsSurvey',
                     surveyInfo: surveyInfo,
                     subSurveyUseForTransfer: false,
@@ -836,7 +838,7 @@ class SurveyController {
         result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         //Only SurveyConfigs with Subscriptions
-        result.surveyConfigs = result.surveyInfo?.surveyConfigs.findAll { it.subscription != null }?.sort {
+        result.surveyConfigs = result.surveyInfo.surveyConfigs.findAll { it.subscription != null }?.sort {
             it?.configOrder
         }
 
@@ -1139,7 +1141,7 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.editable = result.surveyInfo?.isEditable() ?: false
+        result.editable = result.surveyInfo.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1250,7 +1252,7 @@ class SurveyController {
         result.surveyInfo = result.surveyConfig.surveyInfo
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
-        result.editable = result.surveyInfo?.isEditable() ?: false
+        result.editable = result.surveyInfo.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1306,7 +1308,7 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.editable = result.surveyInfo?.isEditable() ?: false
+        result.editable = result.surveyInfo.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1346,7 +1348,7 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.editable = result.surveyInfo?.isEditable() ?: false
+        result.editable = result.surveyInfo.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1378,7 +1380,7 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.editable = result.surveyInfo?.isEditable() ?: false
+        result.editable = result.surveyInfo.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1399,7 +1401,7 @@ class SurveyController {
 
         flash.message = message(code: 'completeIssueEntitlementsSurvey.forFinishParticipant.info')
 
-        redirect(action: 'surveyTitlesEvaluation', id: result.surveyInfo?.id, params:[surveyConfigID: result.surveyConfig?.id])
+        redirect(action: 'surveyTitlesEvaluation', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig?.id])
 
     }
 
@@ -3300,7 +3302,7 @@ class SurveyController {
 
             surveyOrgsDo?.each { surveyOrg ->
 
-                if (!surveyOrg?.existsMultiYearTerm()) {
+                if (!surveyOrg.existsMultiYearTerm()) {
 
                     if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
                         newCostItem = genericOIDService.resolveOID(params.oldCostItem)
@@ -4234,9 +4236,9 @@ class SurveyController {
                         value = result?.refValue ? result?.refValue.getI10n('value') : ""
                     }
 
-                    def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)
+                    def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant)
 
-                    if (surveyOrg?.existsMultiYearTerm()) {
+                    if (surveyOrg.existsMultiYearTerm()) {
                         value = g.message(code: "surveyOrg.perennialTerm.available")
                     }
 
@@ -4290,42 +4292,42 @@ class SurveyController {
         renewalResult.orgsContinuetoSubscription.each { participantResult ->
             List row = []
 
-            row.add([field: participantResult?.participant?.sortname ?: '', style: null])
-            row.add([field: participantResult?.participant?.name ?: '', style: null])
-            row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
+            row.add([field: participantResult.participant?.sortname ?: '', style: null])
+            row.add([field: participantResult.participant?.name ?: '', style: null])
+            row.add([field: participantResult.resultOfParticipation?.getResult() ?: '', style: null])
 
-            row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
+            row.add([field: participantResult.resultOfParticipation?.comment ?: '', style: null])
 
 
             def period = ""
             if (renewalResult?.multiYearTermTwoSurvey) {
-                period = participantResult?.newSubPeriodTwoStartDate ? sdf.format(participantResult?.newSubPeriodTwoStartDate) : ""
-                period = participantResult?.newSubPeriodTwoEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
+                period = participantResult.newSubPeriodTwoStartDate ? sdf.format(participantResult.newSubPeriodTwoStartDate) : ""
+                period = participantResult.newSubPeriodTwoEndDate ? period + " - " +sdf.format(participantResult.newSubPeriodTwoEndDate) : ""
             }
 
             if (renewalResult?.multiYearTermThreeSurvey) {
-                period = participantResult?.newSubPeriodThreeStartDate ? sdf.format(participantResult?.newSubPeriodThreeStartDate) : ""
-                period = participantResult?.newSubPeriodThreeEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodThreeEndDate) : ""
+                period = participantResult.newSubPeriodThreeStartDate ? sdf.format(participantResult.newSubPeriodThreeStartDate) : ""
+                period = participantResult.newSubPeriodThreeEndDate ? period + " - " +sdf.format(participantResult.newSubPeriodThreeEndDate) : ""
             }
 
             row.add([field: period ?: '', style: null])
 
             if (renewalResult?.multiYearTermTwoSurvey) {
-                row.add([field: participantResult?.participantPropertyTwoComment ?: '', style: null])
+                row.add([field: participantResult.participantPropertyTwoComment ?: '', style: null])
             }
 
             if (renewalResult?.multiYearTermThreeSurvey) {
-                row.add([field: participantResult?.participantPropertyThreeComment ?: '', style: null])
+                row.add([field: participantResult.participantPropertyThreeComment ?: '', style: null])
             }
 
-            participantResult?.properties.sort { it?.type?.name }.each { participantResultProperty ->
-                row.add([field: participantResultProperty?.getResult() ?: "", style: null])
+            participantResult.properties.sort { it?.type?.name }.each { participantResultProperty ->
+                row.add([field: participantResult.getResult() ?: "", style: null])
 
-                row.add([field: participantResultProperty?.comment ?: "", style: null])
+                row.add([field: participantResult.comment ?: "", style: null])
 
             }
 
-            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant),RDStore.COST_ITEM_DELETED)
+            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult.resultOfParticipation?.surveyConfig, participantResult.participant),RDStore.COST_ITEM_DELETED)
 
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
@@ -4482,7 +4484,7 @@ class SurveyController {
             participantResult?.properties.sort {
                 it?.type?.name
             }.each { participantResultProperty ->
-                row.add([field: participantResultProperty?.getResult() ?: "", style: null])
+                row.add([field: participantresultProperty.getResult() ?: "", style: null])
 
                 row.add([field: participantResultProperty?.comment ?: "", style: null])
 
@@ -4588,25 +4590,25 @@ class SurveyController {
 
                     result.value.sort { it?.type?.name }.each { resultProperty ->
 
-                        def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)
+                        def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(resultProperty.surveyConfig, participant)
 
                         def value = ""
 
-                        if (resultProperty?.type?.type == Integer.toString()) {
-                            value = resultProperty?.intValue ? resultProperty?.intValue.toString() : ""
-                        } else if (resultProperty?.type?.type == String.toString()) {
-                            value = resultProperty?.stringValue ?: ""
-                        } else if (resultProperty?.type?.type == BigDecimal.toString()) {
-                            value = resultProperty?.decValue ? resultProperty?.decValue.toString() : ""
-                        } else if (resultProperty?.type?.type == Date.toString()) {
-                            value = resultProperty?.dateValue ? sdf.format(resultProperty?.dateValue) : ""
-                        } else if (resultProperty?.type?.type == URL.toString()) {
-                            value = resultProperty?.urlValue ? resultProperty?.urlValue.toString() : ""
-                        } else if (resultProperty?.type?.type == RefdataValue.toString()) {
-                            value = resultProperty?.refValue ? resultProperty?.refValue.getI10n('value') : ""
+                        if (resultProperty.type.type == Integer.toString()) {
+                            value = resultProperty.intValue ? resultProperty.intValue.toString() : ""
+                        } else if (resultProperty.type.type == String.toString()) {
+                            value = resultProperty.stringValue ?: ""
+                        } else if (resultProperty.type.type == BigDecimal.toString()) {
+                            value = resultProperty.decValue ? resultProperty.decValue.toString() : ""
+                        } else if (resultProperty.type.type == Date.toString()) {
+                            value = resultProperty.dateValue ? sdf.format(resultProperty.dateValue) : ""
+                        } else if (resultProperty.type.type == URL.toString()) {
+                            value = resultProperty.urlValue ? resultProperty.urlValue.toString() : ""
+                        } else if (resultProperty.type.type == RefdataValue.toString()) {
+                            value = resultProperty.refValue ? resultProperty.refValue.getI10n('value') : ""
                         }
 
-                        if (surveyOrg?.existsMultiYearTerm()) {
+                        if (surveyOrg.existsMultiYearTerm()) {
                             value = g.message(code: "surveyOrg.perennialTerm.available")
                         }
 
@@ -4649,26 +4651,26 @@ class SurveyController {
         surveyOrgs.each { surveyOrg ->
             List row = []
 
-            row.add([field: surveyConfig?.surveyInfo?.name ?: '', style: null])
+            row.add([field: surveyConfig.surveyInfo?.name ?: '', style: null])
 
-            row.add([field: surveyConfig?.getConfigNameShort ?: '', style: null])
+            row.add([field: surveyConfig.getConfigNameShort ?: '', style: null])
 
-            row.add([field: surveyConfig?.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig?.surveyProperty?.type) + ')', style: null])
+            row.add([field: surveyConfig.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig?.surveyProperty?.type) + ')', style: null])
 
-            row.add([field: surveyConfig?.comment ?: '', style: null])
+            row.add([field: surveyConfig.comment ?: '', style: null])
 
-            row.add([field: surveyOrg?.org?.name ?: '', style: null])
+            row.add([field: surveyOrg.org.name ?: '', style: null])
 
-            row.add([field: surveyOrg?.org?.shortname ?: '', style: null])
+            row.add([field: surveyOrg.org.shortname ?: '', style: null])
 
-            row.add([field: surveyOrg?.org?.libraryType?.getI10n('value') ?: '', style: null])
+            row.add([field: surveyOrg.org.libraryType?.getI10n('value') ?: '', style: null])
 
-            row.add([field: surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(surveyOrg?.org)?.name ?: '', style: null])
+            row.add([field: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)?.name ?: '', style: null])
 
 
             def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)
 
-            if (!surveyOrg?.existsMultiYearTerm()) {
+            if (!surveyOrg.existsMultiYearTerm()) {
                 if (costItem) {
                     row.add([field: g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number") + costItem?.billingCurrency?.getI10n('value').split('-').first(), style: null])
                 }

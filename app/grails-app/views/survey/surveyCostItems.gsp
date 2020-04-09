@@ -15,7 +15,7 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
-                     params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}"/>
+                     params="[surveyConfigID: surveyConfig]" text="${surveyConfig.getConfigNameShort()}"/>
     </g:if>
     <semui:crumb message="surveyCostItems.label" class="active"/>
 </semui:breadcrumbs>
@@ -23,8 +23,8 @@
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" action="exportSurCostItems" id="${surveyInfo?.id}"
-                    params="[exportXLSX: true, surveyConfigID: surveyConfig?.id]">${message(code: 'survey.exportCostItems')}</g:link>
+            <g:link class="item" action="exportSurCostItems" id="${surveyInfo.id}"
+                    params="[exportXLSX: true, surveyConfigID: surveyConfig.id]">${message(code: 'survey.exportCostItems')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <g:render template="actions"/>
@@ -46,15 +46,15 @@
 <br>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig?.type == 'Subscription'}">
+    <g:if test="${surveyConfig.type == 'Subscription'}">
         <i class="icon clipboard outline la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-            ${surveyConfig?.subscription?.name}
+        <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
+            ${surveyConfig.subscription?.name}
         </g:link>
 
     </g:if>
     <g:else>
-        ${surveyConfig?.getConfigNameShort()}
+        ${surveyConfig.getConfigNameShort()}
     </g:else>
     : ${message(code: 'surveyCostItems.label')}
 </h2>
@@ -70,7 +70,7 @@
         <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
                 style="${config?.costItemsFinish ? 'background-color: Lime' : ''}"
                 controller="survey" action="surveyCostItems"
-                id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
+                id="${config?.surveyInfo.id}" params="[surveyConfigID: config?.id]">
 
             <h5 class="ui header">${config?.getConfigNameShort()}</h5>
             ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
@@ -86,16 +86,16 @@
             <div class="ui top attached tabular menu">
                 <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                         controller="survey" action="surveyCostItems"
-                        id="${surveyConfig?.surveyInfo?.id}"
-                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedSubParticipants']">
+                        id="${surveyConfig.surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id, tab: 'selectedSubParticipants']">
                     ${message(code: 'surveyParticipants.selectedSubParticipants')}
                     <div class="ui floating circular label">${selectedSubParticipants?.size() ?: 0}</div>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
                         controller="survey" action="surveyCostItems"
-                        id="${surveyConfig?.surveyInfo?.id}"
-                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedParticipants']">
+                        id="${surveyConfig.surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
                     ${message(code: 'surveyParticipants.selectedParticipants')}
                     <div class="ui floating circular label">${selectedParticipants?.size() ?: 0}</div>
                 </g:link>
@@ -374,7 +374,7 @@
                 <div class="ui right floated compact segment">
                     <div class="ui checkbox">
                         <input type="checkbox" onchange="this.form.submit()"
-                               name="costItemsFinish" ${surveyConfig?.costItemsFinish ? 'checked' : ''}>
+                               name="costItemsFinish" ${surveyConfig.costItemsFinish ? 'checked' : ''}>
                         <label><g:message code="surveyConfig.costItemsFinish.label"/></label>
                     </div>
                 </div>
@@ -406,7 +406,7 @@ function addForAllSurveyCostItem(orgsIDs) {
                                 traditional: true,
                                 data: {
                                     id: "${params.id}",
-                                    surveyConfigID: "${surveyConfig?.id}",
+                                    surveyConfigID: "${surveyConfig.id}",
                                     orgsIDs: orgsIDs
                                 }
                             }).done(function (data) {

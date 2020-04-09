@@ -57,7 +57,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
         <p>
             <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Survey started', RDConstants.SURVEY_STATUS)}">
                 <g:message code="surveyInfo.status.surveyStarted"
-                           args="[g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.startDate), (g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo?.endDate) ?: '')]"/>
+                           args="[g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.startDate), (g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.endDate) ?: '')]"/>
             </g:if>
             <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Survey completed', RDConstants.SURVEY_STATUS)}">
                 <g:message code="surveyInfo.status.surveyCompleted"

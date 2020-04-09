@@ -154,7 +154,7 @@ class SubscriptionService {
         validSubChilds = validSubChilds?.sort { a, b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()
-            (sa?.sortname ?: sa?.name ?: "")?.compareTo((sb?.sortname ?: sb?.name ?: ""))
+            (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
         }
         validSubChilds
     }
@@ -164,10 +164,12 @@ class SubscriptionService {
                 subscription,
                 SUBSCRIPTION_CURRENT
         )
-        validSubChilds = validSubChilds?.sort { a, b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
-            (sa?.sortname ?: sa?.name ?: "")?.compareTo((sb?.sortname ?: sb?.name ?: ""))
+        if(validSubChilds) {
+            validSubChilds = validSubChilds?.sort { a, b ->
+                def sa = a.getSubscriber()
+                def sb = b.getSubscriber()
+                (sa?.sortname ?: sa?.name ?: "")?.compareTo((sb?.sortname ?: sb?.name ?: ""))
+            }
         }
         validSubChilds
     }
@@ -177,10 +179,12 @@ class SubscriptionService {
                 subscription,
                 [SUBSCRIPTION_CURRENT, SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
         )
-        validSubChilds = validSubChilds?.sort { a, b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
-            (sa?.sortname ?: sa?.name ?: "")?.compareTo((sb?.sortname ?: sb?.name ?: ""))
+        if(validSubChilds) {
+            validSubChilds = validSubChilds?.sort { a, b ->
+                def sa = a.getSubscriber()
+                def sb = b.getSubscriber()
+                (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
+            }
         }
         validSubChilds
     }

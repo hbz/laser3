@@ -41,10 +41,10 @@ class SurveyService {
             return false
         }
 
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo?.surveyConfigs)
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
         if (surveyResults) {
-            return surveyResults?.finishDate?.contains(null) ? true : false
+            return surveyResults.finishDate.contains(null) ? true : false
         } else {
             return false
         }
@@ -54,7 +54,7 @@ class SurveyService {
 
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig?.surveyInfo.owner?.id == contextService.getOrg()?.id) {
+        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg()?.id) {
             return true
         }
 
@@ -81,9 +81,9 @@ class SurveyService {
     @Deprecated
     Map<String, Object> getParticipantConfigNavigation(Org org, SurveyInfo surveyInfo, SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo?.surveyConfigs).sort { it.surveyConfig.configOrder }
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo.surveyConfigs).sort { it.surveyConfig.configOrder }
 
-        int currentOrder = surveyConfig?.configOrder
+        int currentOrder = surveyConfig.configOrder
         List<Integer> configOrders = SurveyConfig.findAllByIdInList(surveyResults.findAll { it.surveyConfig.type == 'Subscription' }.groupBy { it.surveyConfig.id }.keySet()).configOrder
         int currentOrderIndex = configOrders.indexOf(currentOrder)
 
@@ -102,8 +102,8 @@ class SurveyService {
 
     Map<String, Object> getConfigNavigation(SurveyInfo surveyInfo, SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]
-        int currentOrder = surveyConfig?.configOrder
-        List<Integer> configOrders = surveyInfo?.surveyConfigs?.sort { it.configOrder }.configOrder
+        int currentOrder = surveyConfig.configOrder
+        List<Integer> configOrders = surveyInfo.surveyConfigs?.sort { it.configOrder }.configOrder
         int currentOrderIndex = configOrders.indexOf(currentOrder)
 
         if (currentOrderIndex > 0) {

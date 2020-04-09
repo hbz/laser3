@@ -2857,7 +2857,7 @@ class SubscriptionController extends AbstractDebugController {
 
                 try {
 
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, ie.priceItem, ie_accept_status)) {
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, (ie.priceItem == null) , ie_accept_status)) {
                           log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
                           flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp?.title.title])
                     }
@@ -3005,7 +3005,7 @@ class SubscriptionController extends AbstractDebugController {
 
                 if(tipp) {
                     try {
-                        if (subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, ie.priceItem, ie_accept_status)) {
+                        if (subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, (ie.priceItem == null), ie_accept_status)) {
                             log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
                             countIEsToAdd++
                         }

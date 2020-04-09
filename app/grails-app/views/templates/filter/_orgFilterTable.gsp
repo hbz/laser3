@@ -161,9 +161,9 @@
 
         <g:if test="${controllerName in ["survey"]}">
             <g:set var="existSubforOrg"
-                   value="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}"/>
+                   value="${com.k_int.kbplus.Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}"/>
 
-            <g:set var="orgSub" value="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)}"/>
+            <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)}"/>
         </g:if>
 
         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
@@ -556,18 +556,18 @@
                 <td>
                     <g:if test="${existSubforOrg}">
 
-                        <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
+                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br>
                             <g:link controller="subscription" action="show"
-                                    id="${orgSub?.id}">
-                                ${orgSub?.name}
+                                    id="${orgSub.id}">
+                                ${orgSub.name}
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="subscription" action="show"
-                                    id="${orgSub?.id}">
-                                ${orgSub?.name}
+                                    id="${orgSub.id}">
+                                ${orgSub.name}
                             </g:link>
                         </g:else>
 
@@ -577,24 +577,24 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStartEndDate')}">
                 <td>
                     <g:if test="${existSubforOrg}">
-                        <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
+                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br>
                             <g:link controller="subscription" action="show"
-                                    id="${orgSub?.id}">
+                                    id="${orgSub.id}">
                                 <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub?.startDate}"/><br>
+                                              date="${orgSub.startDate}"/><br>
                                 <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub?.endDate}"/>
+                                              date="${orgSub.endDate}"/>
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="subscription" action="show"
-                                    id="${orgSub?.id}">
+                                    id="${orgSub.id}">
                                 <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub?.startDate}"/><br>
+                                              date="${orgSub.startDate}"/><br>
                                 <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub?.endDate}"/>
+                                              date="${orgSub.endDate}"/>
                             </g:link>
                         </g:else>
                     </g:if>
@@ -603,18 +603,18 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStatus')}">
                 <td>
                     <g:if test="${existSubforOrg}">
-                        <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
+                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br>
                             <g:link controller="subscription" action="show"
-                                    id="${orgSub?.id}">
-                                ${orgSub?.status.getI10n('value')}
+                                    id="${orgSub.id}">
+                                ${orgSub.status.getI10n('value')}
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="subscription" action="show"
-                                    id="${orgSub?.id}">
-                                ${orgSub?.status.getI10n('value')}
+                                    id="${orgSub.id}">
+                                ${orgSub.status.getI10n('value')}
                             </g:link>
                         </g:else>
 
@@ -624,7 +624,8 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
                 <td class="center aligned x">
 
-                    <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
+                <g:if test="${existSubforOrg}">
+                    <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
@@ -633,14 +634,14 @@
 
                             <g:if test="${costItem.costItemElement?.id?.toString() == selectedCostItemElement}">
 
-                                <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}"
+                                <b><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}"
                                                    minFractionDigits="2"
                                                    maxFractionDigits="2" type="number"/></b>
 
-                                (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                                (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
                                                  maxFractionDigits="2" type="number"/>)
 
-                                ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
+                                ${(costItem.billingCurrency?.getI10n('value')?.split('-')).first()}
 
                                 <g:set var="sumOldCostItem"
                                        value="${sumOldCostItem + costItem.costInBillingCurrency?:0}"/>
@@ -653,6 +654,7 @@
                             </g:if>
                         </g:each>
                     </g:else>
+                </g:if>
 
                 </td>
             </g:if>
@@ -669,13 +671,13 @@
 
                         <g:if test="${costItem}">
 
-                            <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                            <b><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
                                                maxFractionDigits="2" type="number"/></b>
 
-                            (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                            (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
                                              maxFractionDigits="2" type="number"/>)
 
-                            ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
+                            ${(costItem.billingCurrency?.getI10n('value')?.split('-')).first()}
 
                             <g:set var="sumSurveyCostItem"
                                    value="${sumSurveyCostItem + costItem.costInBillingCurrency?:0}"/>
@@ -692,17 +694,17 @@
                             </g:if>
 
                             <br>
-                            <g:if test="${costItem?.startDate || costItem?.endDate}">
-                                (${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notimeShort'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notimeShort'))})
+                            <g:if test="${costItem.startDate || costItem.endDate}">
+                                (${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notimeShort'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notimeShort'))})
                             </g:if>
 
-                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${costItem?.id})"
+                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
                                     class="ui icon circular button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${null})"
+                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${null})"
                                     class="ui icon circular button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
@@ -714,9 +716,9 @@
                 <td class="center aligned">
                     <g:set var="costItem" scope="request"
                            value="${com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}"/>
-                    <g:if test="${costItem?.costDescription}">
+                    <g:if test="${costItem && costItem.costDescription}">
 
-                        <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem?.costDescription}">
+                        <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem.costDescription}">
                             <i class="info circular inverted icon"></i>
                         </div>
                     </g:if>

@@ -519,7 +519,7 @@
                 <g:if test="${editable && properties && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
                     <td colspan="6">
                         <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
-                            <g:hiddenField name="id" value="${surveyInfo?.id}"/>
+                            <g:hiddenField name="id" value="${surveyInfo.id}"/>
                             <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
 
                             <div class="field required">
@@ -597,7 +597,7 @@
                     <g:set var="surveyOrg"
                            value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, institution)}"/>
 
-                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
+                    <g:if test="${!surveyOrg.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${surveyResult?.type?.type == Integer.toString()}">

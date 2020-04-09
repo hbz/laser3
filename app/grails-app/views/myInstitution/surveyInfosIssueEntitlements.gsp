@@ -155,7 +155,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                                     <g:link controller="subscription" action="renewEntitlementsWithSurvey"
                                             id="${subscriptionInstance.id}"
                                             params="${[targetSubscriptionId: subscriptionInstance.id,
-                                                       surveyConfigID      : surveyConfig?.id]}"
+                                                       surveyConfigID      : surveyConfig.id]}"
                                             class="ui button">
                                         <g:message code="surveyInfo.toIssueEntitlementsSurvey"/>
                                     </g:link>
@@ -165,7 +165,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 
                             <div class="eight wide field" style="text-align: right;">
                                 <g:link controller="subscription" action="showEntitlementsRenewWithSurvey"
-                                        id="${surveyConfig?.id}"
+                                        id="${surveyConfig.id}"
                                         class="ui button">
                                     <g:message code="renewEntitlementsWithSurvey.toCurrentEntitlements"/>
                                 </g:link>
@@ -186,7 +186,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                             data-confirm-term-how="concludeBinding"
                             controller="myInstitution" action="surveyInfoFinish"
                             id="${surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig?.id]">
+                            params="[surveyConfigID: surveyConfig.id]">
                         <g:message code="renewEntitlementsWithSurvey.submit"/>
                     </g:link>
                 </g:if>
