@@ -20,6 +20,9 @@
             <div class="column">
                 <div class="ui divided relaxed list">
                     <div class="item">
+                        <g:link controller="yoda" action="settings" target="_blank">${message(code:'menu.yoda.systemSettings')}</g:link>
+                    </div>
+                    <div class="item">
                         <g:link controller="admin" action="systemEvents" target="_blank">${message(code:'menu.admin.systemEvents')}</g:link>
                     </div>
                     <div class="item">
@@ -29,19 +32,13 @@
                         <g:link class="item" controller="yoda" action="appConfig" target="_blank">${message(code:'menu.yoda.appConfig')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="admin" action="databaseStatistics" target="_blank">${message(code: "menu.admin.databaseStatistics")}</g:link>
-                    </div>
-                    <div class="item">
-                        <g:link controller="admin" action="dataConsistency" target="_blank">${message(code: "menu.admin.dataConsistency")}</g:link>
+                        <g:link controller="yoda" action="appThreads" target="_blank">${message(code:'menu.yoda.appThreads')}</g:link>
                     </div>
                 </div>
             </div>
 
             <div class="column">
                 <div class="ui divided relaxed list">
-                    <div class="item">
-                        <g:link controller="yoda" action="appThreads" target="_blank">${message(code:'menu.yoda.appThreads')}</g:link>
-                    </div>
                     <div class="item">
                         <g:link controller="yoda" action="systemProfiler" target="_blank">${message(code:'menu.yoda.systemProfiler')}</g:link>
                     </div>
@@ -53,6 +50,9 @@
                     </div>
                     <div class="item">
                         <g:link controller="yoda" action="quartzInfo" target="_blank">${message(code:'menu.yoda.quartzInfo')}</g:link>
+                    </div>
+                    <div class="item">
+                        <g:link controller="yoda" action="cacheInfo" target="_blank">${message(code:'menu.yoda.cacheInfo')}</g:link>
                     </div>
                 </div>
             </div>
@@ -69,10 +69,13 @@
                         <g:link class="item" controller="yoda" action="userRoleDefinitions" target="_blank">${message(code:'menu.yoda.userRoleDefinitions')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link class="item" controller="admin" action="manageDeletedObjects" target="_blank">${message(code: "menu.admin.deletedObjects")}</g:link>
+                        <g:link controller="admin" action="databaseStatistics" target="_blank">${message(code: "menu.admin.databaseStatistics")}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="yoda" action="cacheInfo" target="_blank">${message(code:'menu.yoda.cacheInfo')}</g:link>
+                        <g:link controller="admin" action="dataConsistency" target="_blank">${message(code: "menu.admin.dataConsistency")}</g:link>
+                    </div>
+                    <div class="item">
+                        <g:link class="item" controller="admin" action="manageDeletedObjects" target="_blank">${message(code: "menu.admin.deletedObjects")}</g:link>
                     </div>
                 </div>
             </div>
