@@ -901,6 +901,7 @@ join sub.orgRelations or_sub where
     private def exportcurrentSubscription(List<Subscription> subscriptions, String format,Org contextOrg) {
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = ['Name',
+                       g.message(code: 'globalUID.label'),
                        g.message(code: 'license.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'consortium.label'),
@@ -975,6 +976,7 @@ join sub.orgRelations or_sub where
                 case "xls":
                 case "xlsx":
                     row.add([field: sub.name ?: "", style: 'bold'])
+                    row.add([field: sub.globalUID, style: null])
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
@@ -1006,6 +1008,7 @@ join sub.orgRelations or_sub where
                     break
                 case "csv":
                     row.add(sub.name ? sub.name.replaceAll(',',' ') : "")
+                    row.add(sub.globalUID)
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
@@ -3435,7 +3438,7 @@ AND EXISTS (
             subLinks.put(link.source,link.destination)
         }
         LinkedHashMap<Subscription,List<Org>> providers = [:]
-        OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).each { it ->
+        OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
             List<Org> orgs = providers.get(it.sub)
             if(orgs == null)
                 orgs = [it.org]
@@ -3443,6 +3446,23 @@ AND EXISTS (
             providers.put(it.sub,orgs)
         }
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
+                "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
+                [ctx: result.institution,
+                 roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
+                 email: RDStore.CCT_EMAIL])
+        Map<Org,Set<String>> mailAddresses = [:]
+        persons.each { personRow ->
+            Person person = (Person) personRow[1]
+            Org org = person.roleLinks.find{ p -> p.org != result.institution}.org
+            Set<String> addresses = mailAddresses.get(org)
+            String mailAddress = (String) personRow[0]
+            if(!addresses) {
+                addresses = []
+            }
+            addresses << mailAddress
+            mailAddresses.put(org,addresses)
+        }
 
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
@@ -3467,8 +3487,8 @@ AND EXISTS (
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
             headerRow.setHeightInPoints(16.75f)
-            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
-                           message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
+            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'globalUID.label'),
+                           message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
                            message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
             titles.eachWithIndex{ titleName, int i ->
@@ -3479,8 +3499,8 @@ AND EXISTS (
             Row row
             Cell cell
             int rownum = 1
-            int sumcell = 9
-            int sumTitleCell = 8
+            int sumcell = 11
+            int sumTitleCell = 10
             result.costItems.eachWithIndex { entry, int sidewideNumber ->
                 log.debug("processing entry ${sidewideNumber} ...")
                 CostItem ci = (CostItem) entry[0] ?: new CostItem()
@@ -3499,18 +3519,9 @@ AND EXISTS (
                 if(subscr.sortname) subscrName += subscr.sortname
                 subscrName += "(${subscr.name})"
                 cell.setCellValue(subscrName)
-                //general Contcats
-                List<Person> persons = Person.executeQuery("select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) " +
-                        "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType in (:selectedRoleTypes) ",
-                        [orgs: subscr,
-                         ctx: contextService.getOrg(),
-                         selectedRoleTypes: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS])
-
-                List<String> generalContacts = []
-                if (persons){
-                    generalContacts = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
-                            [persons: persons, contentType: RDStore.CCT_EMAIL])
-                }
+                log.debug("insert general contacts")
+                //general contcats
+                Set<String> generalContacts = mailAddresses.get(subscr)
                 cell = row.createCell(cellnum++)
                 if(generalContacts)
                     cell.setCellValue(generalContacts.join('; '))
@@ -3522,6 +3533,10 @@ AND EXISTS (
                 if(subLinks.getKey(subCons.id))
                     subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
                 cell.setCellValue(subscriptionString)
+                //subscription globalUID
+                log.debug("insert subscription global UID")
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(subCons.globalUID)
                 //license name
                 log.debug("insert license name")
                 cell = row.createCell(cellnum++)
@@ -3531,21 +3546,21 @@ AND EXISTS (
                 log.debug("insert package name")
                 cell = row.createCell(cellnum++)
                 cell.setCellStyle(lineBreaks)
-                String packagesString = ""
+                List<String> packageNames = []
                 subCons.packages.each { subPkg ->
-                    packagesString += "${subPkg.pkg.name}\n"
+                    packageNames << subPkg.pkg.name
                 }
-                cell.setCellValue(packagesString)
+                cell.setCellValue(packageNames.join("\n"))
                 //provider
                 log.debug("insert provider name")
                 cell = row.createCell(cellnum++)
                 cell.setCellStyle(lineBreaks)
-                String providersString = ""
+                List<String> providerNames = []
                 providers.get(subCons).each { p ->
                     log.debug("Getting provider ${p}")
-                    providersString += "${p.name}\n"
+                    providerNames << p.name
                 }
-                cell.setCellValue(providersString)
+                cell.setCellValue(providerNames.join("\n"))
                 //running time from / to
                 log.debug("insert running times")
                 cell = row.createCell(cellnum++)
@@ -3617,7 +3632,7 @@ AND EXISTS (
                     log.error("Null value in column ${i}")
                 }
             }
-            String filename = "${g.message(code:'export.my.consortiaSubscriptions')}_${sdf.format(new Date(System.currentTimeMillis()))}.xlsx"
+            String filename = "${DateUtil.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
             response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
@@ -3631,8 +3646,8 @@ AND EXISTS (
                     result
                 }
                 csv {
-                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
-                                   message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
+                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'), message(code:'globalUID.label'),
+                                   message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
                                    message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                                    message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
                     List columnData = []
@@ -3655,6 +3670,12 @@ AND EXISTS (
                         if(subscr.sortname) subscrName += subscr.sortname
                         subscrName += "(${subscr.name})"
                         row.add(subscrName.replaceAll(',',' '))
+                        log.debug("insert general contacts")
+                        //general contcats
+                        Set<String> generalContacts = mailAddresses.get(subscr)
+                        if(generalContacts)
+                            row.add(generalContacts.join('; '))
+                        else row.add(' ')
                         //subscription name
                         log.debug("insert subscription name")
                         cellnum++
@@ -3663,6 +3684,10 @@ AND EXISTS (
                         if(subLinks.getKey(subCons.id))
                             subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
                         row.add(subscriptionString.replaceAll(',',' '))
+                        //subscription global uid
+                        log.debug("insert global uid")
+                        cellnum++
+                        row.add(subCons.globalUID)
                         //license name
                         log.debug("insert license name")
                         cellnum++
@@ -3730,9 +3755,9 @@ AND EXISTS (
                     columnData.add([])
                     columnData.add([])
                     row = []
-                    //sumcell = 9
-                    //sumTitleCell = 8
-                    for(int h = 0;h < 8;h++) {
+                    //sumcell = 11
+                    //sumTitleCell = 10
+                    for(int h = 0;h < 10;h++) {
                         row.add(" ")
                     }
                     row.add(message(code:'financials.export.sums'))
@@ -3740,14 +3765,14 @@ AND EXISTS (
                     columnData.add([])
                     result.finances.each { entry ->
                         row = []
-                        for(int h = 0;h < 8;h++) {
+                        for(int h = 0;h < 10;h++) {
                             row.add(" ")
                         }
                         row.add("${message(code:'financials.sum.billing')} ${entry.key}")
                         row.add("${entry.value} ${entry.key}")
                         columnData.add(row)
                     }
-                    String filename = "${g.message(code:'export.my.consortiaSubscriptions')}_${sdf.format(new Date(System.currentTimeMillis()))}.csv"
+                    String filename = "${DateUtil.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code:'export.my.consortiaSubscriptions')}.csv"
                     response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
                     response.contentType = "text/csv"
                     response.outputStream.withWriter { writer ->
