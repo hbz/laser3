@@ -146,7 +146,7 @@ class SurveyUpdateService extends AbstractLockableService {
                             cc      ccAddress
                             replyTo replyTo
                             subject mailSubject
-                            body    (view: "/mailTemplates/html/notificationSurvey", model: [user: user, org: org, survey: survey])
+                            body    (view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
                         }
                     } else {
                         mailService.sendMail {
@@ -154,7 +154,7 @@ class SurveyUpdateService extends AbstractLockableService {
                             from from
                             replyTo replyTo
                             subject mailSubject
-                            body    (view: "/mailTemplates/html/notificationSurvey", model: [user: user, org: org, survey: survey])
+                            body    (view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
                         }
                     }
 
