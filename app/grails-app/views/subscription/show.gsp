@@ -341,7 +341,7 @@
                                               </dt>
                                               <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
                                                   <dt class="control-label">
-                                                      <g:message code="subscription.packages.auditable.label"/>
+                                                      <i class="ui large icon thumbtack"></i>
                                                   </dt>
                                               </g:if>
                                           </dl>

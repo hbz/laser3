@@ -169,7 +169,7 @@
                                     <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
                                 </g:if>
                                 <g:elseif test="${entry.change.costItem}">
-
+                                    <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.target.sub.id]}">${entry.target.sub.dropdownNamingConvention()}</g:link>
                                 </g:elseif>
                             </div><!-- .column -->
                             <div class="seven wide column">
@@ -226,7 +226,7 @@
                                 <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
                             </g:if>
                             <g:elseif test="${entry.change.costItem}">
-
+                                <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.target.sub.id]}">${entry.target.sub.dropdownNamingConvention()}</g:link>
                             </g:elseif>
                         </div><!-- .column -->
                         <div class="ten wide column">
