@@ -48,7 +48,7 @@ class MyInstitutionController extends AbstractDebugController {
     def userService
     def genericOIDService
     PendingChangeService pendingChangeService
-    def exportService
+    ExportService exportService
     def escapeService
     def institutionsService
     def docstoreService
@@ -58,16 +58,12 @@ class MyInstitutionController extends AbstractDebugController {
     def taskService
     def filterService
     def propertyService
-    def queryService
-    def dashboardDueDatesService
     def subscriptionsQueryService
     def orgTypeService
     def subscriptionService
     def organisationService
-    def titleStreamService
     def financeService
     def surveyService
-    def cacheService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -1779,7 +1775,7 @@ join sub.orgRelations or_sub where
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = titleStreamService.generateTitleExportList(result.titles)
+            Map<String,List> tableData = exportService.generateTitleExportList(result.titles)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }

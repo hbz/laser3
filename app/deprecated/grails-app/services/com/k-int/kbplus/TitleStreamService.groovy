@@ -7,7 +7,7 @@ import grails.transaction.Transactional
 
 import java.text.SimpleDateFormat
 
-@Transactional
+@Deprecated
 class TitleStreamService {
 
     def contextService
@@ -64,10 +64,10 @@ class TitleStreamService {
             //alles klar, Moe, dann wollen wir mal!
             entitlement.coverages.each { covStmt ->
                 List row = []
-                log.debug("processing ${entitlement?.tipp.title}")
+                de.laser.TitleStreamService.log.debug("processing ${entitlement?.tipp.title}")
                 //publication_title
                 row.add("${entitlement?.tipp?.title?.title}")
-                log.debug("add main identifiers")
+                de.laser.TitleStreamService.log.debug("add main identifiers")
                 //print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
                 if(entitlement?.tipp?.title?.getIdentifierValue('pISBN'))
                     row.add(entitlement?.tipp?.title?.getIdentifierValue('pISBN'))
@@ -80,7 +80,7 @@ class TitleStreamService {
                 else if(entitlement?.tipp?.title?.getIdentifierValue('eISSN'))
                     row.add(entitlement?.tipp?.title?.getIdentifierValue('eISSN'))
                 else row.add(' ')
-                log.debug("process package start and end")
+                de.laser.TitleStreamService.log.debug("process package start and end")
                 //date_first_issue_online
                 row.add(covStmt.startDate ? dateFormat.format(covStmt.startDate) : ' ')
                 //num_first_volume_online
@@ -93,7 +93,7 @@ class TitleStreamService {
                 row.add(covStmt.endVolume ?: ' ')
                 //num_last_issue_online
                 row.add(covStmt.endIssue ?: ' ')
-                log.debug("add title url")
+                de.laser.TitleStreamService.log.debug("add title url")
                 //title_url
                 row.add(entitlement?.tipp.hostPlatformURL ?: ' ')
                 //first_author (no value?)
@@ -144,7 +144,7 @@ class TitleStreamService {
                 row.add(entitlement?.derivedAccessStartDate ? dateFormat.format(entitlement?.derivedAccessStartDate) : ' ')
                 //access_end_date
                 row.add(entitlement?.derivedAccessEndDate ? dateFormat.format(entitlement?.derivedAccessEndDate) : ' ')
-                log.debug("processing identifiers")
+                de.laser.TitleStreamService.log.debug("processing identifiers")
                 //zdb_id
                 row.add(joinIdentifiers(entitlement?.tipp?.title?.ids,'zdb',','))
                 //zdb_ppn
