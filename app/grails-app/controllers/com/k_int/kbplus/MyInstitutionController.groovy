@@ -3447,9 +3447,9 @@ AND EXISTS (
         }
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
-                "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType in (:selectedRoleTypes)) and c.contentType = :email",
+                "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
                 [ctx: result.institution,
-                 selectedRoleTypes: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
+                 roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
                  email: RDStore.CCT_EMAIL])
         Map<Org,Set<String>> mailAddresses = [:]
         persons.each { personRow ->
