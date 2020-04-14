@@ -2,10 +2,10 @@
 
 <semui:breadcrumbs>
     <%-- TODO: breadcrumb refactoring
-    <g:if test="${license?.getLicensee() && license?.getLicensee()?.id == contextService.getOrg()?.id}">
+    <g:if test="${license?.getLicensee() && license?.getLicensee()?.id == contextService.getOrg().id}">
         <semui:crumb controller="myInstitution" action="dashboard" text="${license.getLicensee()?.getDesignation()}" />
     </g:if>
-    <g:elseif test="${license?.getLicensingConsortium()?.id == contextService.getOrg()?.id}">
+    <g:elseif test="${license?.getLicensingConsortium()?.id == contextService.getOrg().id}">
         <semui:crumb controller="myInstitution" action="dashboard" text="${license.getLicensingConsortium()?.getDesignation()}" />
     </g:elseif>
     --%>

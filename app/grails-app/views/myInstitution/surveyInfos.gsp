@@ -57,7 +57,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
         <p>
             <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Survey started', RDConstants.SURVEY_STATUS)}">
                 <g:message code="surveyInfo.status.surveyStarted"
-                           args="[g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.startDate), (g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo?.endDate) ?: '')]"/>
+                           args="[g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.startDate), (g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.endDate) ?: '')]"/>
             </g:if>
             <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Survey completed', RDConstants.SURVEY_STATUS)}">
                 <g:message code="surveyInfo.status.surveyCompleted"
@@ -84,7 +84,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
             <p>
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
                 <g:message
-                        code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finis.info'}"/>.
+                        code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finish.info'}"/>.
             </p>
         </div>
     </div>
@@ -172,7 +172,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
             id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id]">
         <g:message
-                code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finis.info2'}"/>
+                code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
     </g:link>
 </g:if>
 <br>

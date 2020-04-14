@@ -47,7 +47,7 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-${surveyInfo?.name}
+${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
@@ -86,8 +86,8 @@ ${surveyInfo?.name}
 
     </g:if>
     <g:else>
-        <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo?.id}"
-                params="[surveyConfig: surveyConfig?.id, parentSub: parentSubscription?.id]"
+        <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
+                params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription?.id]"
                 class="ui button ">
             <g:message code="renewalWithSurvey.newSub"/>
         </g:link>
@@ -99,14 +99,14 @@ ${surveyInfo?.name}
 
     <g:set var="consortiaSubscriptions"
            value="${com.k_int.kbplus.Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
-    <g:set var="surveyParticipants" value="${surveyConfig?.orgs?.size()}"/>
+    <g:set var="surveyParticipants" value="${surveyConfig.orgs?.size()}"/>
     <g:set var="totalOrgs"
            value="${(orgsContinuetoSubscription?.size() ?: 0) + (newOrgsContinuetoSubscription?.size() ?: 0) + (orgsWithMultiYearTermSub?.size() ?: 0) + (orgsLateCommers?.size() ?: 0) + (orgsWithTermination?.size() ?: 0) + (orgsWithoutResult?.size() ?: 0) + (orgsWithParticipationInParentSuccessor?.size() ?: 0)}"/>
 
 
     <h3 class="ui left aligned icon header la-clear-before">
-        <g:link action="surveyEvaluation" id="${surveyInfo?.id}"
-                params="[surveyConfigID: surveyConfig?.id]">${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}</g:link>
+        <g:link action="surveyEvaluation" id="${surveyInfo.id}"
+                params="[surveyConfigID: surveyConfig.id]">${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}</g:link>
         <semui:totalNumber total="${surveyParticipants}"/>
         <br>
         <g:link controller="subscription" action="members"
@@ -171,23 +171,23 @@ ${surveyInfo?.name}
                 </td>
                 <td>
                     <g:link controller="myInstitution" action="manageParticipantSurveys"
-                            id="${participantResult?.participant.id}">
-                        ${participantResult?.participant?.sortname}
+                            id="${participantResult.participant.id}">
+                        ${participantResult.participant?.sortname}
                     </g:link>
                     <br>
                     <g:link controller="organisation" action="show"
-                            id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
+                            id="${participantResult.participant.id}">(${fieldValue(bean: participantResult.participant, field: "name")})</g:link>
 
                     <div class="ui grid">
                         <div class="right aligned wide column">
-                            <g:if test="${!surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(participantResult?.participant)}">
+                            <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participantResult.participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.newOrg')}">
                                     <i class="star black large  icon"></i>
                                 </span>
                             </g:if>
 
-                            <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
@@ -200,7 +200,7 @@ ${surveyInfo?.name}
                                 </span>
                             </g:else>
 
-                            <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participantResult?.participant)}">
+                            <g:if test="${surveyConfig.isResultsSetFinishByOrg(participantResult.participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.finishOrg')}">
                                     <i class="check green icon"></i>
@@ -216,18 +216,18 @@ ${surveyInfo?.name}
                     </div>
                 </td>
                 <td>
-                    ${participantResult?.resultOfParticipation?.getResult()}
+                    ${participantResult.resultOfParticipation?.getResult()}
 
-                    <g:if test="${participantResult?.resultOfParticipation?.comment}">
+                    <g:if test="${participantResult.resultOfParticipation?.comment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.resultOfParticipation?.comment}">
+                              data-content="${participantResult.resultOfParticipation?.comment}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
 
-                    <g:if test="${participantResult?.resultOfParticipation?.ownerComment}">
+                    <g:if test="${participantResult.resultOfParticipation?.ownerComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.resultOfParticipation?.ownerComment}">
+                              data-content="${participantResult.resultOfParticipation?.ownerComment}">
                             <i class="info circle icon"></i>
                         </span>
                     </g:if>
@@ -240,14 +240,14 @@ ${surveyInfo?.name}
 
                 <g:if test="${multiYearTermTwoSurvey}">
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${participantResult?.newSubPeriodTwoStartDate}"/>
+                                  date="${participantResult.newSubPeriodTwoStartDate}"/>
                     <br>
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${participantResult?.newSubPeriodTwoEndDate}"/>
+                                  date="${participantResult.newSubPeriodTwoEndDate}"/>
 
-                    <g:if test="${participantResult?.participantPropertyTwoComment}">
+                    <g:if test="${participantResult.participantPropertyTwoComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.participantPropertyTwoComment}">
+                              data-content="${participantResult.participantPropertyTwoComment}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
@@ -255,14 +255,14 @@ ${surveyInfo?.name}
                 </g:if>
                 <g:if test="${multiYearTermThreeSurvey}">
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${participantResult?.newSubPeriodThreeStartDate}"/>
+                                  date="${participantResult.newSubPeriodThreeStartDate}"/>
                     <br>
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${participantResult?.newSubPeriodThreeEndDate}"/>
+                                  date="${participantResult.newSubPeriodThreeEndDate}"/>
 
-                    <g:if test="${participantResult?.participantPropertyThreeComment}">
+                    <g:if test="${participantResult.participantPropertyThreeComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.participantPropertyThreeComment}">
+                              data-content="${participantResult.participantPropertyThreeComment}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
@@ -272,7 +272,7 @@ ${surveyInfo?.name}
                     </td>
                 </g:if>
 
-                <g:each in="${participantResult?.properties.sort { it?.type?.name }}"
+                <g:each in="${participantResult.properties.sort { it?.type?.name }}"
                         var="participantResultProperty">
                     <td>
                         ${participantResultProperty?.getResult()}
@@ -296,7 +296,7 @@ ${surveyInfo?.name}
 
                 <td>
 
-                    <g:set var="costItem" value="${participantResult?.resultOfParticipation?.getCostItem()}"/>
+                    <g:set var="costItem" value="${participantResult.resultOfParticipation?.getCostItem()}"/>
 
                     <g:if test="${costItem}">
                         <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
@@ -310,13 +310,13 @@ ${surveyInfo?.name}
                 </td>
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult?.participant.id]" class="ui icon button">
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult.participant.id]" class="ui icon button">
                         <i class="write icon"></i>
                     </g:link>
 
-                    <g:if test="${participantResult?.sub}">
+                    <g:if test="${participantResult.sub}">
                         <br>
-                        <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
+                        <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
                                 class="ui button icon"><i class="icon clipboard"></i></g:link>
                     </g:if>
                 </td>
@@ -379,23 +379,23 @@ ${surveyInfo?.name}
                 </td>
                 <td>
                     <g:link controller="myInstitution" action="manageParticipantSurveys"
-                            id="${participantResult?.participant.id}">
-                        ${participantResult?.participant?.sortname}
+                            id="${participantResult.participant.id}">
+                        ${participantResult.participant?.sortname}
                     </g:link>
                     <br>
                     <g:link controller="organisation" action="show"
-                            id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
+                            id="${participantResult.participant.id}">(${fieldValue(bean: participantResult.participant, field: "name")})</g:link>
 
                     <div class="ui grid">
                         <div class="right aligned wide column">
-                            <g:if test="${!surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(participantResult?.participant)}">
+                            <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participantResult.participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.newOrg')}">
                                     <i class="star black large  icon"></i>
                                 </span>
                             </g:if>
 
-                            <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
@@ -408,7 +408,7 @@ ${surveyInfo?.name}
                                 </span>
                             </g:else>
 
-                            <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participantResult?.participant)}">
+                            <g:if test="${surveyConfig.isResultsSetFinishByOrg(participantResult.participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.finishOrg')}">
                                     <i class="check green icon"></i>
@@ -425,18 +425,18 @@ ${surveyInfo?.name}
                 </td>
 
                 <td>
-                    ${participantResult?.resultOfParticipation?.getResult()}
+                    ${participantResult.resultOfParticipation?.getResult()}
 
-                    <g:if test="${participantResult?.resultOfParticipation?.comment}">
+                    <g:if test="${participantResult.resultOfParticipation?.comment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.resultOfParticipation?.comment}">
+                              data-content="${participantResult.resultOfParticipation?.comment}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
 
-                    <g:if test="${participantResult?.resultOfParticipation?.ownerComment}">
+                    <g:if test="${participantResult.resultOfParticipation?.ownerComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.resultOfParticipation?.ownerComment}">
+                              data-content="${participantResult.resultOfParticipation?.ownerComment}">
                             <i class="info circle icon"></i>
                         </span>
                     </g:if>
@@ -449,28 +449,28 @@ ${surveyInfo?.name}
 
                 <g:if test="${multiYearTermTwoSurvey}">
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${participantResult?.newSubPeriodTwoStartDate}"/>
+                                  date="${participantResult.newSubPeriodTwoStartDate}"/>
                     <br>
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${participantResult?.newSubPeriodTwoEndDate}"/>
+                                  date="${participantResult.newSubPeriodTwoEndDate}"/>
 
-                    <g:if test="${participantResult?.participantPropertyTwoComment}">
+                    <g:if test="${participantResult.participantPropertyTwoComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.participantPropertyTwoComment}">
+                              data-content="${participantResult.participantPropertyTwoComment}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
                 </g:if>
                 <g:if test="${multiYearTermThreeSurvey}">
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${participantResult?.newSubPeriodThreeStartDate}"/>
+                                  date="${participantResult.newSubPeriodThreeStartDate}"/>
                     <br>
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${participantResult?.newSubPeriodThreeEndDate}"/>
+                                  date="${participantResult.newSubPeriodThreeEndDate}"/>
 
-                    <g:if test="${participantResult?.participantPropertyThreeComment}">
+                    <g:if test="${participantResult.participantPropertyThreeComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.participantPropertyThreeComment}">
+                              data-content="${participantResult.participantPropertyThreeComment}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
@@ -482,7 +482,7 @@ ${surveyInfo?.name}
 
 
 
-                <g:each in="${participantResult?.properties.sort { it?.type?.name }}"
+                <g:each in="${participantResult.properties.sort { it?.type?.name }}"
                         var="participantResultProperty">
                     <td>
                         ${participantResultProperty?.getResult()}
@@ -506,7 +506,7 @@ ${surveyInfo?.name}
 
                 <td>
 
-                    <g:set var="costItem" value="${participantResult?.resultOfParticipation?.getCostItem()}"/>
+                    <g:set var="costItem" value="${participantResult.resultOfParticipation?.getCostItem()}"/>
 
                     <g:if test="${costItem}">
                         <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
@@ -520,13 +520,13 @@ ${surveyInfo?.name}
                 </td>
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult?.participant.id]" class="ui icon button">
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult.participant.id]" class="ui icon button">
                         <i class="write icon"></i>
                     </g:link>
 
-                    <g:if test="${participantResult?.sub}">
+                    <g:if test="${participantResult.sub}">
                         <br>
-                        <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
+                        <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
                                 class="ui button icon"><i class="icon clipboard"></i></g:link>
                     </g:if>
                 </td>
@@ -687,23 +687,23 @@ ${surveyInfo?.name}
                 </td>
                 <td>
                     <g:link controller="myInstitution" action="manageParticipantSurveys"
-                            id="${participantResult?.participant.id}">
-                        ${participantResult?.participant?.sortname}
+                            id="${participantResult.participant.id}">
+                        ${participantResult.participant?.sortname}
                     </g:link>
                     <br>
                     <g:link controller="organisation" action="show"
-                            id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
+                            id="${participantResult.participant.id}">(${fieldValue(bean: participantResult.participant, field: "name")})</g:link>
 
                     <div class="ui grid">
                         <div class="right aligned wide column">
-                            <g:if test="${!surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(participantResult?.participant)}">
+                            <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participantResult.participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.newOrg')}">
                                     <i class="star black large  icon"></i>
                                 </span>
                             </g:if>
 
-                            <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
@@ -716,7 +716,7 @@ ${surveyInfo?.name}
                                 </span>
                             </g:else>
 
-                            <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participantResult?.participant)}">
+                            <g:if test="${surveyConfig.isResultsSetFinishByOrg(participantResult.participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.finishOrg')}">
                                     <i class="check green icon"></i>
@@ -733,25 +733,25 @@ ${surveyInfo?.name}
 
                 </td>
                 <td>
-                    ${participantResult?.resultOfParticipation?.getResult()}
+                    ${participantResult.resultOfParticipation?.getResult()}
 
-                    <g:if test="${participantResult?.resultOfParticipation?.comment}">
+                    <g:if test="${participantResult.resultOfParticipation?.comment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.resultOfParticipation?.comment}">
+                              data-content="${participantResult.resultOfParticipation?.comment}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
 
-                    <g:if test="${participantResult?.resultOfParticipation?.ownerComment}">
+                    <g:if test="${participantResult.resultOfParticipation?.ownerComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.resultOfParticipation?.ownerComment}">
+                              data-content="${participantResult.resultOfParticipation?.ownerComment}">
                             <i class="info circle icon"></i>
                         </span>
                     </g:if>
 
                 </td>
 
-                <g:each in="${participantResult?.properties.sort { it?.type?.name }}"
+                <g:each in="${participantResult.properties.sort { it?.type?.name }}"
                         var="participantResultProperty">
                     <td>
                         ${participantResultProperty?.getResult()}
@@ -774,7 +774,7 @@ ${surveyInfo?.name}
                 </g:each>
                 <td>
 
-                    <g:set var="costItem" value="${participantResult?.resultOfParticipation?.getCostItem()}"/>
+                    <g:set var="costItem" value="${participantResult.resultOfParticipation?.getCostItem()}"/>
                     <g:if test="${costItem}">
                         <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
                                            maxFractionDigits="2" type="number"/></b>
@@ -787,13 +787,13 @@ ${surveyInfo?.name}
                 </td>
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult?.participant.id]" class="ui icon button">
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult.participant.id]" class="ui icon button">
                         <i class="write icon"></i>
                     </g:link>
 
-                    <g:if test="${participantResult?.sub}">
+                    <g:if test="${participantResult.sub}">
                         <br>
-                        <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
+                        <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
                                 class="ui button icon"><i class="icon clipboard"></i></g:link>
                     </g:if>
                 </td>
@@ -849,25 +849,25 @@ ${surveyInfo?.name}
                 <td>
 
                     <g:link controller="myInstitution" action="manageParticipantSurveys"
-                            id="${participantResult?.participant.id}">
-                        ${participantResult?.participant?.sortname}
+                            id="${participantResult.participant.id}">
+                        ${participantResult.participant?.sortname}
                     </g:link>
 
                     <br>
 
                     <g:link controller="organisation" action="show"
-                            id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
+                            id="${participantResult.participant.id}">(${fieldValue(bean: participantResult.participant, field: "name")})</g:link>
 
                     <div class="ui grid">
                         <div class="right aligned wide column">
-                            <g:if test="${!surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(participantResult?.participant)}">
+                            <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participantResult.participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.newOrg')}">
                                     <i class="star black large  icon"></i>
                                 </span>
                             </g:if>
 
-                            <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
@@ -880,7 +880,7 @@ ${surveyInfo?.name}
                                 </span>
                             </g:else>
 
-                            <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participantResult?.participant)}">
+                            <g:if test="${surveyConfig.isResultsSetFinishByOrg(participantResult.participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.finishOrg')}">
                                     <i class="check green icon"></i>
@@ -896,25 +896,25 @@ ${surveyInfo?.name}
                     </div>
                 </td>
                 <td>
-                    ${participantResult?.resultOfParticipation?.getResult()}
+                    ${participantResult.resultOfParticipation?.getResult()}
 
-                    <g:if test="${participantResult?.resultOfParticipation?.comment}">
+                    <g:if test="${participantResult.resultOfParticipation?.comment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.resultOfParticipation?.comment}">
+                              data-content="${participantResult.resultOfParticipation?.comment}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
 
-                    <g:if test="${participantResult?.resultOfParticipation?.ownerComment}">
+                    <g:if test="${participantResult.resultOfParticipation?.ownerComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult?.resultOfParticipation?.ownerComment}">
+                              data-content="${participantResult.resultOfParticipation?.ownerComment}">
                             <i class="info circle icon"></i>
                         </span>
                     </g:if>
 
                 </td>
 
-                <g:each in="${participantResult?.properties.sort { it?.type?.name }}"
+                <g:each in="${participantResult.properties.sort { it?.type?.name }}"
                         var="participantResultProperty">
                     <td>
                         ${participantResultProperty?.getResult()}
@@ -937,7 +937,7 @@ ${surveyInfo?.name}
                 </g:each>
                 <td>
 
-                    <g:set var="costItem" value="${participantResult?.resultOfParticipation?.getCostItem()}"/>
+                    <g:set var="costItem" value="${participantResult.resultOfParticipation?.getCostItem()}"/>
                     <g:if test="${costItem}">
                         <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
                                            maxFractionDigits="2" type="number"/></b>
@@ -951,13 +951,13 @@ ${surveyInfo?.name}
                 <td>
 
                     <g:link controller="survey" action="evaluationParticipant"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult?.participant.id]" class="ui icon button">
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult.participant.id]" class="ui icon button">
                         <i class="write icon"></i>
                     </g:link>
 
-                    <g:if test="${participantResult?.sub}">
+                    <g:if test="${participantResult.sub}">
                         <br>
-                        <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
+                        <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
                                 class="ui button icon"><i class="icon clipboard"></i></g:link>
                     </g:if>
                 </td>
@@ -977,7 +977,7 @@ ${surveyInfo?.name}
         <h3><g:message code="surveyInfo.transferParticipants.option"/>:</h3>
 
         <g:form class="ui form"
-                url="[controller: 'survey', action: 'processTransferParticipants', params: [id: params.id, surveyConfigID: surveyConfig?.id]]">
+                url="[controller: 'survey', action: 'processTransferParticipants', params: [id: params.id, surveyConfigID: surveyConfig.id]]">
             <div class="field">
                 <g:set var="properties" value="${de.laser.AuditConfig.getConfigs(parentSuccessorSubscription)}"></g:set>
                 <g:if test="${properties}">

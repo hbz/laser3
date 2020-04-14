@@ -3,7 +3,7 @@
 
 <semui:form>
     <form class="ui form" id="createCost">
-        <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>
+        <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}"></g:hiddenField>
 
         <div class="ui grid">
 

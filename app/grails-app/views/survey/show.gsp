@@ -109,7 +109,7 @@
                        value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                 <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
-                <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+                <g:if test="${finishProcess > 0 || surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
                     <div class="ui card">
 
                         <div class="content">
@@ -137,7 +137,7 @@
                        value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                 <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
-                <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+                <g:if test="${finishProcess > 0 || surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
                     <div class="ui card">
 
                         <div class="content">
@@ -178,7 +178,7 @@
                                                                                       subscriptionInstance: surveyConfig.subscription,
                                                                                       tasks: tasks,
                                                                                       visibleOrgRelations: visibleOrgRelations,
-                                                                                      ]"/>
+                                                                                      properties: properties]"/>
                 </g:if>
 
                 <g:if test="${surveyConfig.type == "GeneralSurvey"}">
