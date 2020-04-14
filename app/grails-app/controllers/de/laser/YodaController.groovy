@@ -186,7 +186,7 @@ class YodaController {
             result += '<br/><br/>'
         }
         else {
-            result += oldNs ? '' : pre('<strong>ERROR</strong>: old namespace <strong>inid_' + ns_str + '</strong> not found')
+            result += oldNs ? '' : pre('<strong>ERROR</strong>: old namespace <strong>' + ns_old_str + '</strong> not found')
             result += newNs ? '' : pre('<strong>ERROR</strong>: new namespace <strong>' + ns_str + '</strong> not found')
         }
 
