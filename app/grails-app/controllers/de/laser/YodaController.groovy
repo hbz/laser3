@@ -84,6 +84,17 @@ class YodaController {
         Closure code = { tmp ->
             '<code>' + tmp.join('<br>') + '</code>'
         }
+        Closure href = { reference ->
+            String link = reference instanceof TitleInstance ? '/title/show/' : (
+                          reference instanceof License ? '/lic/show/' : (
+                          reference instanceof Subscription ? '/subscription/show/' : (
+                          reference instanceof Package ? '/package/show/' : (
+                          reference instanceof Org ? '/org/show/' : (
+                          null
+            )))))
+
+            return link ? (grailsApplication.config.grails.serverURL + link + reference.id) : null
+        }
 
         if (params.ns) {
             nsList = ["${params.ns}"]
@@ -94,6 +105,15 @@ class YodaController {
 
             IdentifierNamespace oldNs = IdentifierNamespace.findByNs('inid_' + ns)
             IdentifierNamespace newNs = IdentifierNamespace.findByNs(ns)
+
+            if (!newNs) {
+                result += pre('ERROR: new namespace ' + ns + ' not found')
+                return
+            }
+            if (!oldNs) {
+                result += pre('ERROR: old namespace inid_' + ns + ' not found')
+                return
+            }
 
             List<Identifier> oldIds = Identifier.findAllByNs(oldNs)
             matches  = []
@@ -116,26 +136,18 @@ class YodaController {
                         tipp: old.tipp,
                         cre:  old.cre
                 ])
+                def reference = old.getReference()
 
                 if (! newIds.isEmpty()) {
                     matches.add([
                             oldNs: oldNs,
                             oldId: old,
                             newNs: newNs,
-                            newIds: newIds
+                            newIds: newIds,
+                            link: href(reference)
                     ])
                 }
                 else {
-                    def reference = old.getReference()
-                    String link = (
-                            reference instanceof TitleInstance ? '/title/show/' : (
-                            reference instanceof License ? '/lic/show/' : (
-                            reference instanceof Subscription ? '/subscription/show/' : (
-                            reference instanceof Package ? '/package/show/' : (
-                            reference instanceof Org ? '/org/show/' : (
-                            null
-                            )))))
-                    )
                     orphaned.add([
                             oldNs: oldNs,
                             oldId: old,
@@ -143,7 +155,7 @@ class YodaController {
                                     id: reference.id,
                                     gokbId: reference.hasProperty('gokbId') ? reference.gokbId : null,
                                     type: reference.getClass()?.canonicalName,
-                                    link: link ? (grailsApplication.config.grails.serverURL + link + reference.id) : null
+                                    link: href(reference)
                             ]
                     ])
                 }
@@ -154,9 +166,13 @@ class YodaController {
                 String[] m = []
                 matches.each { c ->
                     String tmp = "NS:${c.oldNs.id} <strong>${c.oldNs.ns}</strong> / ID:${c.oldId.id} <strong>${c.oldId.value}</strong>"
-                    tmp += " --> " + (c.newIds.collect{ it ->
+                    tmp += " <-- " + (c.newIds.collect{ it ->
                         "NS:${c.newNs.id} <strong>${c.newNs.ns}</strong> / ID:${it.id} <strong>${it.value}</strong>"
                     }).join(", ")
+
+                    if( c.link) {
+                        tmp += " <----- [ <a href='${c.link}' target='_blank'>${c.link.replace(grailsApplication.config.grails.serverURL,'')}</a> ]"
+                    }
                     m += tmp
                 }
                 result += pre('Matches:')
@@ -167,15 +183,13 @@ class YodaController {
                 String[] o = []
                 orphaned.each { c ->
                     String tmp = "NS:${c.oldNs.id} <strong>${c.oldNs.ns}</strong> / ID:${c.oldId.id} <strong>${c.oldId.value}</strong> "
-                    tmp += " <----- "
+                    tmp += " <----- [ ${c.reference.type}:${c.reference.id} - "
+
                     if (c.reference.gokbId) {
-                        tmp += "GOKBID:${c.reference.gokbId} / "
+                        tmp += "GOKBID:${c.reference.gokbId} - "
                     }
                     if (c.reference.link) {
-                        tmp += "<a href='${c.reference.link}' target='_blank'>${c.reference.type}:${c.reference.id}</a>"
-                    }
-                    else {
-                        tmp += "${c.reference.type}:${c.reference.id}"
+                        tmp += "<a href='${c.reference.link}' target='_blank'>${c.reference.link.replace(grailsApplication.config.grails.serverURL,'')}</a> ]"
                     }
                     o += tmp
                 }
@@ -192,7 +206,7 @@ class YodaController {
                 "# Processing time: ${System.currentTimeMillis() - ts} ms"
         ])
 
-        render text: result
+        render text: '<!DOCTYPE html><html lang="en"><head><title>' + grailsApplication.config.grails.serverURL + '</title></head><body>' + result + '</body></html>'
     }
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ORG_EDITOR")
