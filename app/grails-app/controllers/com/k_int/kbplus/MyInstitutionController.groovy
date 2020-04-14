@@ -2628,23 +2628,23 @@ AND EXISTS (
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
 
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-        result.iesListPriceSum = 0
+        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscriptionInstance)
+        result.iesListPriceSum = 0.0
         result.ies?.each{
-            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0) : 0)
+            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
         }
 
 
-        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-        result.iesFixListPriceSum = 0
+        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscriptionInstance)
+        result.iesFixListPriceSum = 0.0
         result.iesFix?.each{
-            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0) : 0)
+            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
         }
 
 
         result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
-
-        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
 
         if(result.subscriptionInstance) {
             result.authorizedOrgs = result.user?.authorizedOrgs

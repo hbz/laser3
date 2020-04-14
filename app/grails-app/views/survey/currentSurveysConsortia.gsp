@@ -228,11 +228,18 @@
                     </td>
 
                     <td>
-                        <div class="la-flexbox">
-                            <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
+                        <g:link controller="survey" action="show" id="${surveyInfo.id}" class="la-main-object">
                                 ${surveyConfig ? surveyConfig.getSurveyName() : surveyInfo.name}
-                            </g:link>
-                        </div>
+                        </g:link>
+                            <g:if test="${surveyConfig.subscription}">
+                                <g:set var="providers" value="${surveyConfig.subscription.getProviders()}"/>
+                                <g:if test="${providers}">
+
+                                    <div class="la-flexbox">
+                                    (<g:each in="${providers}" var="provider">${provider.name}</g:each>)
+                                    </div>
+                                </g:if>
+                            </g:if>
                     </td>
 
                     <td class="center aligned">
@@ -255,7 +262,7 @@
                             <i class='check green icon'></i>
                         </g:if>
                         <g:else>
-                            <i class='close big red icon'></i>
+                            <i class='close red icon'></i>
                         </g:else>
                     </td>
 
