@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1710    09.04.2020  rc1.3       Andreas Feature     Anpassung der PendingChanges für Kosten an neue Struktur
+
 --      09.04.2020  rc1.3       David   Bug         Doppelte Menüeinträge entfernt
 
 2353    09.04.2020  rc1.3       Moe     Bug         Titelauswahlumfrage Bug beim Auswählen von Titel
