@@ -70,13 +70,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def erms2362() {
-
-        String result = ''
-        long ts = System.currentTimeMillis()
-
-        List<String> nsList = ['acs', 'ebookcentral', 'emerald', 'herdt', 'mitpress', 'oup']
-        List matches
-        List orphaned
+        // List<String> nsList = ['acs', 'ebookcentral', 'emerald', 'herdt', 'mitpress', 'oup']
 
         Closure pre = { tmp ->
             "<pre>" + tmp + "</pre>"
@@ -96,30 +90,23 @@ class YodaController {
             return link ? (grailsApplication.config.grails.serverURL + link + reference.id) : null
         }
 
-        if (params.ns) {
-            nsList = ["${params.ns}"]
-        }
+        String result       = ''
+        String ns_str       = params.ns ?: null
+        String ns_old_str   = ns_str ? 'inid_' + ns_str : null
 
-        nsList.each { ns ->
-            log.debug('erms2362() -> processing: ' + ns)
+        long ts = System.currentTimeMillis()
 
-            IdentifierNamespace oldNs = IdentifierNamespace.findByNs('inid_' + ns)
-            IdentifierNamespace newNs = IdentifierNamespace.findByNs(ns)
+        log.debug('erms2362() processing: ' + ns_old_str + ' <-- ' + ns_str)
 
-            if (!newNs) {
-                result += pre('ERROR: new namespace ' + ns + ' not found')
-                return
-            }
-            if (!oldNs) {
-                result += pre('ERROR: old namespace inid_' + ns + ' not found')
-                return
-            }
+        IdentifierNamespace oldNs = IdentifierNamespace.findByNs(ns_old_str)
+        IdentifierNamespace newNs = IdentifierNamespace.findByNs(ns_str)
 
+        if (oldNs && newNs) {
             List<Identifier> oldIds = Identifier.findAllByNs(oldNs)
-            matches  = []
-            orphaned = []
+            List matches  = []
+            List orphaned = []
 
-            result += "<h2>NS:${oldNs.id} <strong>${oldNs.ns}</strong> --> NS:${newNs.id} <strong>${newNs.ns}</strong></h2>"
+            result += "<h2>NS:${oldNs.id} <strong>${oldNs.ns}</strong> <-- NS:${newNs.id} <strong>${newNs.ns}</strong></h2>"
             result += pre("${oldIds.size()} identifier/s in old namespace found")
 
             oldIds.eachWithIndex { old, i ->
@@ -165,13 +152,13 @@ class YodaController {
             if (! matches.isEmpty()) {
                 String[] m = []
                 matches.each { c ->
-                    String tmp = "NS:${c.oldNs.id} <strong>${c.oldNs.ns}</strong> / ID:${c.oldId.id} <strong>${c.oldId.value}</strong>"
-                    tmp += " <-- " + (c.newIds.collect{ it ->
-                        "NS:${c.newNs.id} <strong>${c.newNs.ns}</strong> / ID:${it.id} <strong>${it.value}</strong>"
+                    String tmp = "[ NS:${c.oldNs.id} <strong>${c.oldNs.ns}</strong> / ID:${c.oldId.id} <strong>${c.oldId.value}</strong> ]"
+                    tmp += " <strong><--</strong> " + (c.newIds.collect{ it ->
+                        "[ NS:${c.newNs.id} <strong>${c.newNs.ns}</strong> / ID:${it.id} <strong>${it.value}</strong> ]"
                     }).join(", ")
 
                     if( c.link) {
-                        tmp += " <----- [ <a href='${c.link}' target='_blank'>${c.link.replace(grailsApplication.config.grails.serverURL,'')}</a> ]"
+                        tmp += " -----> [ <a href='${c.link}' target='_blank'>${c.link.replace(grailsApplication.config.grails.serverURL,'')}</a> ]"
                     }
                     m += tmp
                 }
@@ -182,8 +169,8 @@ class YodaController {
             if (! orphaned.isEmpty()) {
                 String[] o = []
                 orphaned.each { c ->
-                    String tmp = "NS:${c.oldNs.id} <strong>${c.oldNs.ns}</strong> / ID:${c.oldId.id} <strong>${c.oldId.value}</strong> "
-                    tmp += " <----- [ ${c.reference.type}:${c.reference.id} - "
+                    String tmp = "[ NS:${c.oldNs.id} <strong>${c.oldNs.ns}</strong> / ID:${c.oldId.id} <strong>${c.oldId.value}</strong> ]"
+                    tmp += " -----> [ ${c.reference.type}:${c.reference.id} - "
 
                     if (c.reference.gokbId) {
                         tmp += "GOKBID:${c.reference.gokbId} - "
@@ -196,9 +183,12 @@ class YodaController {
                 result += pre('Orphans:')
                 result += code(o)
             }
+            result += '<br/><br/>'
         }
-
-        result += '<br/><br/>'
+        else {
+            result += oldNs ? '' : pre('<strong>ERROR</strong>: old namespace <strong>' + ns_old_str + '</strong> not found')
+            result += newNs ? '' : pre('<strong>ERROR</strong>: new namespace <strong>' + ns_str + '</strong> not found')
+        }
 
         result += code([
                 "# ${grailsApplication.config.grails.serverURL}",
