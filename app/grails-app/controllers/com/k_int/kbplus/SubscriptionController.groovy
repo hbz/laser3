@@ -1434,6 +1434,7 @@ class SubscriptionController extends AbstractDebugController {
                     org.name = subscr.name
                     org.sortname = subscr.sortname
                     org.shortname = subscr.shortname
+                    org.globalUID = subChild.globalUID
                     org.libraryType = subscr.libraryType
                     org.libraryNetwork = subscr.libraryNetwork
                     org.funderType = subscr.funderType
@@ -5676,8 +5677,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {
-        def titles = [
-                g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label')]
+        def titles = [g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label'),g.message(code:'globalUID.label')]
 
         RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR)
         RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
@@ -5754,6 +5754,9 @@ class SubscriptionController extends AbstractDebugController {
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(org.shortname ?: '')
 
+                    //subscription globalUID
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.globalUID)
 
                     if (addHigherEducationTitles) {
 
@@ -5862,6 +5865,8 @@ class SubscriptionController extends AbstractDebugController {
                     row.add(org.name ? org.name.replaceAll(',','') : '')
                     //Shortname
                     row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
+                    //subscription globalUID
+                    row.add(org.globalUID)
                     if(addHigherEducationTitles) {
                         //libraryType
                         row.add(org.libraryType?.getI10n('value') ?: ' ')
