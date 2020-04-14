@@ -84,7 +84,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
             <p>
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
                 <g:message
-                        code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finis.info'}"/>.
+                        code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finish.info'}"/>.
             </p>
         </div>
     </div>

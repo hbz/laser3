@@ -2227,8 +2227,8 @@ AND EXISTS (
         result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
         result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
 
-        def activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
-                " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org) " +
+        List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
+                " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
                 " order by surConfig.surveyInfo.name",
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
@@ -2628,23 +2628,23 @@ AND EXISTS (
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
 
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-        result.iesListPriceSum = 0
+        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscriptionInstance)
+        result.iesListPriceSum = 0.0
         result.ies?.each{
-            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0) : 0)
+            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
         }
 
 
-        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-        result.iesFixListPriceSum = 0
+        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscriptionInstance)
+        result.iesFixListPriceSum = 0.0
         result.iesFix?.each{
-            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0) : 0)
+            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
         }
 
 
         result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
-
-        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
 
         if(result.subscriptionInstance) {
             result.authorizedOrgs = result.user?.authorizedOrgs
@@ -2748,6 +2748,7 @@ AND EXISTS (
     }
 
 
+    @Deprecated
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")

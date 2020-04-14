@@ -70,18 +70,25 @@ class SurveyInfo {
 
     boolean checkOpenSurvey()
     {
-        boolean check = this.surveyConfigs?.size() > 0 ? true : false
+        boolean check = this.surveyConfigs.size() > 0 ? true : false
 
-        this.surveyConfigs?.each {
+        this.surveyConfigs.each {
 
-            if(it?.subscription)
+            if(it.subscription)
             {
-                if(!it.pickAndChoose && !(it?.surveyProperties?.size() > 0)) {
+                if(!it.pickAndChoose && !(it.surveyProperties.size() > 0)) {
                     check = false
                 }
             }
 
-            if(!(it?.orgs.org?.size > 0)){
+            if(!it.subscription)
+            {
+                if(!(it.surveyProperties.size() > 0)) {
+                    check = false
+                }
+            }
+
+            if(!(it.orgs.org.size > 0)){
                 check = false
             }
         }
