@@ -445,20 +445,21 @@ from License as l where (
 		List bm = du.stopBenchmark()
 		result.benchMark = bm
 
-        String filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
+        SimpleDateFormat sdfNoPoint = DateUtil.getSDF_NoTimeNoPoint()
+        String filename = "${sdfNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code: 'export.my.currentLicenses')}"
+        List titles = [
+                g.message(code:'license.details.reference'),
+                g.message(code:'license.details.linked_subs'),
+                g.message(code:'consortium'),
+                g.message(code:'license.licensor.label'),
+                g.message(code:'license.startDate'),
+                g.message(code:'license.endDate')
+        ]
+        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP],result.institution)
+        titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            List titles = [
-                    g.message(code:'license.details.reference'),
-                    g.message(code:'license.details.linked_subs'),
-                    g.message(code:'consortium'),
-                    g.message(code:'license.licensor.label'),
-                    g.message(code:'license.startDate'),
-                    g.message(code:'license.endDate'),
-                    g.message(code:'license.properties'),
-                    g.message(code:'license.properties.private')+" "+result.institution.name
-            ]
             List rows = []
             totalLicenses.each { licObj ->
                 License license = (License) licObj
@@ -471,7 +472,8 @@ from License as l where (
                 row.add([field:license.licensor ? license.licensor.name : '',style:null])
                 row.add([field:license.startDate ? sdf.format(license.startDate) : '',style:null])
                 row.add([field:license.endDate ? sdf.format(license.endDate) : '',style:null])
-                //TODO [ticket=2248] for 1.4
+                row.addAll(exportService.processPropertyListValues(propertyDefinitions,'xls',license))
+                /*
                 List customProps = license.customProperties.collect { customProp ->
                     if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
                         "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
@@ -486,6 +488,7 @@ from License as l where (
                         "${privateProp.type.getI10n('name')}: ${privateProp.getValue()}"
                 }
                 row.add([field:privateProps.join(", "),style:null])
+                */
                 rows.add(row)
             }
             Map sheetData = [:]
@@ -509,16 +512,6 @@ from License as l where (
                 response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
-                List titles = [
-                        g.message(code:'license.details.reference'),
-                        g.message(code:'license.details.linked_subs'),
-                        g.message(code:'consortium'),
-                        g.message(code:'license.licensor.label'),
-                        g.message(code:'license.startDate'),
-                        g.message(code:'license.endDate'),
-                        g.message(code:'license.properties'),
-                        g.message(code:'license.properties.private')+" "+result.institution.name
-                ]
                 List rows = []
                 totalLicenses.each { licObj ->
                     License license = (License) licObj
@@ -531,6 +524,8 @@ from License as l where (
                     row.add(license.licensor)
                     row.add(license.startDate ? sdf.format(license.startDate) : '')
                     row.add(license.endDate ? sdf.format(license.endDate) : '')
+                    row.addAll(row.addAll(exportService.processPropertyListValues(propertyDefinitions,'csv',license)))
+                    /*
                     List customProps = license.customProperties.collect { customProp ->
                         if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
                             "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
@@ -545,6 +540,7 @@ from License as l where (
                             "${privateProp.type.getI10n('name')}: ${privateProp.getValue()}"
                     }
                     row.add(privateProps.join("; "))
+                    */
                     rows.add(row)
                 }
                 out.withWriter { writer ->

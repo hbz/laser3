@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2253    14.04.2020  hbz-dev     Andreas Feature     Teil eins: Export von Vertragsmerkmalen in eigenen Spalten
+
 #### day of release 1.3
 
 2154    08.04.2020  rc1.3       Andreas Bug         VAT nicht als Kern-ID angezeigt und Kundennummer per Konsortialzugriff löschbar
