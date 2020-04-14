@@ -35,7 +35,7 @@ class ApiManager {
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
-        def checkRequest = { endpoint, supportedFormats ->
+        Closure checkRequest = { endpoint, supportedFormats ->
             if (! endpoint.equalsIgnoreCase(obj)) {
                 return Constants.HTTP_NOT_IMPLEMENTED
             }
@@ -45,7 +45,7 @@ class ApiManager {
             return Constants.VALID_REQUEST
         }
 
-        def checkFailureCodes = { check ->
+        Closure checkFailureCodes = { check ->
             return check && !(check.toString() in failureCodes)
         }
 

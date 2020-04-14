@@ -156,8 +156,27 @@ class Identifier {
         cre  = owner instanceof Creator ? owner : cre
     }
 
+    Object getReference() {
+        int refCount = 0
+        def ref
+
+        List<String> fks = ['lic', 'org', 'pkg', 'sub', 'ti', 'tipp', 'cre']
+        fks.each { fk ->
+            if (this."${fk}") {
+                refCount++
+                ref = this."${fk}"
+            }
+        }
+        if (refCount == 1) {
+            return ref
+        }
+
+        static_logger.debug("WARNING: identifier #${this.id}, refCount: ${refCount}")
+        return null
+    }
+
     static String getAttributeName(def object) {
-        def name
+        String name
 
         name = object instanceof License ?  'lic' : name
         name = object instanceof Org ?      'org' : name
@@ -184,7 +203,6 @@ class Identifier {
         }
         null
     }
-
 
   def beforeUpdate() {
     value = value?.trim()
