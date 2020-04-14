@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2365    14.04.2020  rc1.3       Andreas Bug         Konsortialstellen erhalten keine Dublette mehr bei Auswahl eines einzelnen Teilnehmers
+
 1710    09.04.2020  rc1.3       Andreas Feature     Anpassung der PendingChanges für Kosten an neue Struktur
 
 --      09.04.2020  rc1.3       David   Bug         Doppelte Menüeinträge entfernt
