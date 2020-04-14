@@ -70,7 +70,6 @@
 
                         <div class="menu">
                                 <g:link class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</g:link>
-
                                 <g:link class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</g:link>
 
                                 <g:if test="${grailsApplication.config.feature.eBooks}">
@@ -86,7 +85,6 @@
                                                               controller="organisation" action="listInstitution" message="menu.public.all_insts" />
 
                                 <g:link class="item" role="menuitem" controller="organisation" action="listProvider">${message(code:'menu.public.all_providers')}</g:link>
-
                                 <g:link class="item" role="menuitem" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</g:link>
 
                                 <div class="divider"></div>
@@ -110,19 +108,12 @@
                         <div class="menu">
 
                             <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
-
                             <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
-
                             <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
-
                             <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
-
                             <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
-
                             <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
-
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
-
 
                     <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
                         <div class="divider"></div>
@@ -136,7 +127,6 @@
                                 <div class="divider"></div>
 
                                 <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
-
                                 <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
                             <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
@@ -148,13 +138,11 @@
                             <div class="divider"></div>
 
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
-
                             <semui:securedMainNavItemDisabled role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
 
                             <div class="divider"></div>
 
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
-
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.my.comp_lic" />
 
                             <%--
@@ -182,15 +170,10 @@
                             <g:link class="item" role="menuitem" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
-
                             <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
-
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
-
                             <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
                             <%--<semui:securedMainNavItemDisabled role="menuitem" message="menu.institutions.financeImport" />--%>
@@ -247,7 +230,6 @@
                                 <g:link class="item" role="menuitem" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
                                 <g:link class="item" role="menuitem" controller="license" action="create">${message(code:'license.template.new')}</g:link>
                                 <%--<g:link class="item" role="menuitem" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>--%>
-
                                 <g:link class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                                 <g:link class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
                                 <g:link class="item" role="menuitem" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link>
@@ -263,6 +245,7 @@
                                 <div class="divider"></div>
                                 <%--<g:link class="item" role="menuitem" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>--%>
                                 <g:link class="item" role="menuitem" controller="title" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
+
                                 <div class="divider"></div>
                                 <g:link class="item" role="menuitem" controller="dataManager" action="listMailTemplates">Mail Templates</g:link>
                             </sec:ifAnyGranted>
@@ -361,7 +344,6 @@
 
                             <g:link class="item" role="menuitem" controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</g:link>
-
                             <g:link class="item" role="menuitem" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="manageContentItems">${message(code:'menu.admin.manageContentItems')}</g:link>
