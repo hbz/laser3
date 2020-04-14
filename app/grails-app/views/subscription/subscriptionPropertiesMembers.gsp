@@ -422,7 +422,7 @@
                                                 <div class="content">
                                                     <g:render template="/templates/links/orgLinksAsList"
                                                               model="${[roleLinks    : sub.orgRelations?.findAll {
-                                                                  !(it.org?.id == contextService.getOrg()?.id) && !(it.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id])
+                                                                  !(it.org?.id == contextService.getOrg().id) && !(it.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id])
                                                               }.sort { it?.org?.sortname },
                                                                         roleObject   : sub,
                                                                         roleRespValue: 'Specific subscription editor',

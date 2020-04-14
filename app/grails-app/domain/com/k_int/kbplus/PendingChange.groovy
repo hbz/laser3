@@ -177,7 +177,11 @@ class PendingChange {
 
     boolean accept() throws ChangeAcceptException {
         boolean done = false
-        def target = genericOIDService.resolveOID(oid)
+        def target
+        if(oid)
+            target = genericOIDService.resolveOID(oid)
+        else if(costItem)
+            target = costItem
         def parsedNewValue
         if(targetProperty in DATE_FIELDS)
             parsedNewValue = DateUtil.parseDateGeneric(newValue)
@@ -267,6 +271,26 @@ class PendingChange {
                     else throw new ChangeAcceptException("problems when deleting coverage statement - pending change not accepted: ${targetCov.errors}")
                 }
                 else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${oid}! Pending change is void!")
+                break
+            //pendingChange.message_CI01 (billingSum)
+            case PendingChangeConfiguration.BILLING_SUM_UPDATED:
+                if(target instanceof CostItem) {
+                    CostItem costItem = (CostItem) target
+                    costItem.costInBillingCurrency = Double.parseDouble(newValue)
+                    if(costItem.save())
+                        done = true
+                    else throw new ChangeAcceptException("problems when updating billing sum - pending change not accepted: ${costItem.errors}")
+                }
+                break
+            //pendingChange.message_CI02 (localSum)
+            case PendingChangeConfiguration.LOCAL_SUM_UPDATED:
+                if(target instanceof CostItem) {
+                    CostItem costItem = (CostItem) target
+                    costItem.costInLocalCurrency = Double.parseDouble(newValue)
+                    if(costItem.save())
+                        done = true
+                    else throw new ChangeAcceptException("problems when updating local sum - pending change not accepted: ${costItem.errors}")
+                }
                 break
         }
         if(done) {

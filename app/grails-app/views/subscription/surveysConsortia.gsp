@@ -82,29 +82,29 @@
                             </span>
                         </g:if>
 
-                        <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
+                        <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
                             ${surveyConfig?.getConfigNameShort()}
                         </g:link>
                     </div>
                 </td>
                 <td>
-                    ${surveyInfo?.status.getI10n('value')}
+                    ${surveyInfo.status.getI10n('value')}
                 </td>
                 <td>
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${surveyInfo?.startDate}"/>
+                                  date="${surveyInfo.startDate}"/>
 
                 </td>
                 <td>
 
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${surveyInfo?.endDate}"/>
+                                  date="${surveyInfo.endDate}"/>
                 </td>
 
                 <td class="center aligned">
 
-                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
-                        <g:link controller="survey" action="show" id="${surveyInfo?.id}"
+                    <g:if test="${surveyConfig}">
+                        <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                             <div class="ui circular ${surveyConfig?.configFinish ? "green" : ""} label">
                                 ${surveyConfig?.surveyProperties?.size() ?: 0}
@@ -115,7 +115,7 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${surveyConfig}">
-                        <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo?.id}"
+                        <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                             <div class="ui circular label">
                                 ${surveyConfig?.getCurrentDocs()?.size() ?: 0}
@@ -126,10 +126,10 @@
 
                 <td class="center aligned">
                     <g:if test="${surveyConfig}">
-                        <g:link controller="survey" action="surveyParticipants" id="${surveyInfo?.id}"
+                        <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                            <div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : surveyConfig?.configFinish ? "yellow" : ""} label">
-                                ${participantsFinish?.size() ?: 0} / ${surveyConfig?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0}
+                            <div class="ui circular ${participantsFinish.size() == participantsTotal.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
+                                ${participantsFinish.size() ?: 0} / ${surveyConfig.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0}
                             </div>
                         </g:link>
                     </g:if>
@@ -138,7 +138,7 @@
 
                 <td class="center aligned">
                     <g:if test="${surveyConfig && !surveyConfig.pickAndChoose && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
-                        <g:link controller="survey" action="surveyCostItems" id="${surveyInfo?.id}"
+                        <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                             <div class="ui circular ${surveyConfig?.costItemsFinish ? "green" : ""} label">
                                 ${surveyConfig?.getSurveyConfigCostItems()?.size() ?: 0}
@@ -149,14 +149,14 @@
 
                 <td class="center aligned">
                     <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
-                        <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo?.id}"
+                        <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig?.id]"
                                 class="ui icon">
-                            <div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" : ""} label">
+                            <div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
                                 <g:if
                                         test="${participantsFinish && participantsTotal}">
                                     <g:formatNumber
-                                            number="${(participantsFinish?.size() / participantsTotal?.size()) * 100}"
+                                            number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
                                             minFractionDigits="2"
                                             maxFractionDigits="2"/>%
                                 </g:if>
@@ -168,14 +168,14 @@
                     </g:if>
 
                     <g:if test="${surveyConfig && surveyConfig.pickAndChoose}">
-                        <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo?.id}"
+                        <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig?.id]"
                                 class="ui icon">
-                            <div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" : ""} label">
+                            <div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
                                 <g:if
                                         test="${participantsFinish && participantsTotal}">
                                     <g:formatNumber
-                                            number="${(participantsFinish?.size() / participantsTotal?.size()) * 100}"
+                                            number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
                                             minFractionDigits="2"
                                             maxFractionDigits="2"/>%
                                 </g:if>
@@ -190,7 +190,7 @@
                 <td>
                     <span class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <g:link controller="survey" action="show" id="${surveyInfo?.id}"
+                        <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig?.id]"
                                 class="ui button icon">
                             <i class="write icon"></i>

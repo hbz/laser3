@@ -2063,7 +2063,7 @@ class AjaxController {
 
   def lookup() {
       // fallback for static refdataFind calls
-      params.shortcode  = contextService.getOrg()?.shortcode
+      params.shortcode  = contextService.getOrg().shortcode
 
     // log.debug("AjaxController::lookup ${params}");
     Map<String, Object> result = [:]
@@ -2088,7 +2088,7 @@ class AjaxController {
   // used only from IdentifierTabLib.formAddIdentifier
   def lookup2() {
       // fallback for static refdataFind calls
-      params.shortcode  = contextService.getOrg()?.shortcode
+      params.shortcode  = contextService.getOrg().shortcode
 
     Map<String, Object> result = [:]
     def domain_class = grailsApplication.getArtefact('Domain', params.baseClass)

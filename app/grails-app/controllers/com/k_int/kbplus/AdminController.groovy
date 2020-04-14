@@ -1745,9 +1745,9 @@ class AdminController extends AbstractDebugController {
                             if(titleInstance instanceof BookInstance) {
                                 count++
 
-                                if((cols[colMap.seriesTitleCol] != null || cols[colMap.seriesTitleCol] != "") && (cols[colMap.seriesTitleCol] != titleInstance.summaryOfContent) ){
+                                if((cols[colMap.seriesTitleCol] != null || cols[colMap.seriesTitleCol] != "") && (cols[colMap.seriesTitleCol].trim() != titleInstance.summaryOfContent) ){
                                     countChanges++
-                                    titleInstance.summaryOfContent = cols[colMap.seriesTitleCol]
+                                    titleInstance.summaryOfContent = cols[colMap.seriesTitleCol].trim()
                                     titleInstance.save(flush: true)
                                 }
                             }

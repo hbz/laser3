@@ -182,14 +182,6 @@ class DataloadService {
                     }
                     //result.keyTitle = ti.keyTitle
                     //result.normTitle = ti.normTitle
-                    result.publisher = ti.getPublisher()?.name ?: ''
-                    result.rectype = 'Title'
-                    result.sortTitle = ti.sortTitle
-                    result.status = ti.status?.value
-                    result.statusId = ti.status?.id
-                    result.typTitle = ti.medium?.value
-                    result.name = ti.title
-                    result.visible = 'Public'
                 } else {
                     log.warn("Title with no title string - ${ti.id}")
                 }

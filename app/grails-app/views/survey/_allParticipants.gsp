@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Org;" %>
 
-<g:set var="surveyConfigOrgs" value="${Org.findAllByIdInList(surveyConfig?.orgs.org.id) ?: null}" />
+<g:set var="surveyConfigOrgs" value="${Org.findAllByIdInList(surveyConfig.orgs.org.id) ?: null}" />
 
 ${surveyConfigSubOrgs?.id}
     <g:render template="/templates/filter/orgFilterTable"

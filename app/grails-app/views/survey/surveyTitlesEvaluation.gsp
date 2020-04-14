@@ -35,14 +35,21 @@
     <div class="sixteen wide stretched column">
         <div class="ui top attached tabular menu">
 
-            <a class="item active" data-tab="participantsViewAllFinish">
+
+            <g:if test="${surveyConfig.surveyProperties?.size() > 0}">
+                <a class="item active" data-tab="surveyConfigsView">
+                ${message(code: 'surveyEvaluation.label')}
+                </a>
+            </g:if>
+
+            <a class="item ${surveyConfig.surveyProperties?.size() > 0 ? '' : 'active'}" data-tab="participantsViewAllFinish">
                 ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-                <div class="ui floating circular label">${participantsFinish?.size() ?: 0}</div>
+                <div class="ui floating circular label">${participantsFinish.size() ?: 0}</div>
             </a>
 
             <a class="item" data-tab="participantsViewAllNotFinish">
                 ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-                <div class="ui floating circular label">${participantsNotFinish?.size() ?: 0}</div>
+                <div class="ui floating circular label">${participantsNotFinish.size() ?: 0}</div>
             </a>
 
             <a class="item" data-tab="participantsView">
@@ -52,13 +59,25 @@
 
         </div>
 
+        <g:if test="${surveyConfig.surveyProperties?.size() > 0}">
+            <div class="ui bottom attached tab segment active">
 
-        <div class="ui bottom attached tab segment active" data-tab="participantsViewAllFinish">
+                <g:if test="${surveyConfig}">
+
+                    <g:if test="${surveyConfig.type == "IssueEntitlementsSurvey"}">
+                        <g:render template="evaluationSubscription" />
+                    </g:if>
+
+                </g:if>
+            </div>
+        </g:if>
+
+        <div class="ui bottom attached tab segment ${surveyConfig.surveyProperties?.size() > 0 ? '' : 'active'}" data-tab="participantsViewAllFinish">
 
                 <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
-                        total="${participantsFinish?.size()}"/></h2>
+                        total="${participantsFinish.size()}"/></h2>
                 <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_EVALUATION.id}">
-                                <g:link controller="survey" action="completeIssueEntitlementsSurvey" id="${surveyConfig?.id}"
+                                <g:link controller="survey" action="completeIssueEntitlementsSurvey" id="${surveyConfig.id}"
                                         class="ui icon button right floated">
                                     <g:message code="completeIssueEntitlementsSurvey.forFinishParticipant.label"/>
                                 </g:link>
@@ -70,7 +89,7 @@
                     <h4><g:message code="surveyParticipants.hasAccess"/></h4>
 
                     <g:set var="surveyParticipantsHasAccess"
-                           value="${participantsFinish?.findAll { it?.hasAccessOrg() }?.sort {
+                           value="${participantsFinish.findAll { it?.hasAccessOrg() }?.sort {
                                it?.sortname
                            }}"/>
 
@@ -140,7 +159,7 @@
                                 <td>
 
                                     <g:link action="surveyTitlesSubscriber"
-                                            id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                            id="${surveyConfig.id}" params="[participant: participant?.id]"
                                             class="ui icon button"><i
                                             class="write icon"></i>
                                     </g:link>
@@ -219,7 +238,7 @@
                                 <td>
 
                                     <g:link action="surveyTitlesSubscriber"
-                                            id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                            id="${surveyConfig.id}" params="[participant: participant?.id]"
                                             class="ui icon button"><i
                                             class="write icon"></i>
                                     </g:link>
@@ -315,7 +334,7 @@
                             <td>
 
                                 <g:link action="surveyTitlesSubscriber"
-                                        id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                        id="${surveyConfig.id}" params="[participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>
@@ -394,7 +413,7 @@
                             <td>
 
                                 <g:link action="surveyTitlesSubscriber"
-                                        id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                        id="${surveyConfig.id}" params="[participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>
@@ -490,7 +509,7 @@
                             <td>
 
                                 <g:link action="surveyTitlesSubscriber"
-                                        id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                        id="${surveyConfig.id}" params="[participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>
@@ -569,7 +588,7 @@
                             <td>
 
                                 <g:link action="surveyTitlesSubscriber"
-                                        id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                        id="${surveyConfig.id}" params="[participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>

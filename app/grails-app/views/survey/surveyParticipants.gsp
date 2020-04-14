@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}" />
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig]" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
     <semui:crumb message="surveyParticipants.label" class="active"/>
 </semui:breadcrumbs>
@@ -36,14 +36,14 @@
 <br>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig?.type == 'Subscription'}">
+    <g:if test="${surveyConfig.type == 'Subscription'}">
         <i class="icon clipboard outline la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-            ${surveyConfig?.subscription?.name}
+        <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
+            ${surveyConfig.subscription?.name}
         </g:link>
     </g:if>
     <g:else>
-        ${surveyConfig?.getConfigNameShort()}
+        ${surveyConfig.getConfigNameShort()}
     </g:else>
     : ${message(code: 'surveyParticipants.label')}
 </h2>

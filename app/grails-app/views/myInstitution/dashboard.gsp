@@ -169,7 +169,7 @@
                                     <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
                                 </g:if>
                                 <g:elseif test="${entry.change.costItem}">
-
+                                    <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.target.sub.id]}">${entry.target.sub.dropdownNamingConvention()}</g:link>
                                 </g:elseif>
                             </div><!-- .column -->
                             <div class="seven wide column">
@@ -226,7 +226,7 @@
                                 <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
                             </g:if>
                             <g:elseif test="${entry.change.costItem}">
-
+                                <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.target.sub.id]}">${entry.target.sub.dropdownNamingConvention()}</g:link>
                             </g:elseif>
                         </div><!-- .column -->
                         <div class="ten wide column">
@@ -381,7 +381,7 @@
                                             </g:if>
                                         </span>
                                     <g:if test="${tskObj.controller.contains('survey')}">
-                                        <g:link controller="${tskObj.controller}" action="show" params="${[id: tskObj.object?.surveyInfo?.id, surveyConfigID:tskObj.object?.id]}">${tskObj.object.getSurveyName()}</g:link>
+                                        <g:link controller="${tskObj.controller}" action="show" params="${[id: tskObj.object?.surveyInfo.id, surveyConfigID:tskObj.object?.id]}">${tskObj.object.getSurveyName()}</g:link>
                                     </g:if>
                                         <g:else>
                                             <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>

@@ -3,6 +3,8 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.CacheService
 import de.laser.controller.AbstractDebugController
+import de.laser.domain.PendingChangeConfiguration
+import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -815,7 +817,7 @@ class FinanceController extends AbstractDebugController {
                       break
                   default:
                       if (params.newLicenseeTarget) {
-                          subsToDo << genericOIDService.resolveOID(params.newLicenseeTarget)
+                          subsToDo = [genericOIDService.resolveOID(params.newLicenseeTarget)]
                       }
                       break
               }
@@ -916,16 +918,18 @@ class FinanceController extends AbstractDebugController {
 
                   List<CostItem> copiedCostItems = []
 
-                  if (params.costItemId) {
+                  if(params.costItemId && params.mode != 'copy') {
                       newCostItem = CostItem.get(Long.parseLong(params.costItemId))
                       //get copied cost items
                       copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqual(newCostItem, RDStore.COST_ITEM_DELETED)
                   }
                   else {
                       newCostItem = new CostItem()
+                      if(params.mode == 'copy')
+                          newCostItem.copyBase = CostItem.get(Long.parseLong(params.costItemId))
                   }
 
-                  newCostItem.owner = result.institution
+                  newCostItem.owner = (Org) result.institution
                   newCostItem.sub = sub
                   newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
                   newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie?.tipp) ?: null
@@ -958,7 +962,6 @@ class FinanceController extends AbstractDebugController {
                   newCostItem.endDate = endDate
                   newCostItem.invoiceDate = invoiceDate
                   newCostItem.financialYear = financialYear
-                  newCostItem.copyBase = params.copyBase ? genericOIDService.resolveOID(params.copyBase) : null
 
                   //Discussion needed, nobody is quite sure of the functionality behind this...
                   //I am, it is completely legacy
@@ -993,21 +996,23 @@ class FinanceController extends AbstractDebugController {
                               String costTitle = cci.costTitle ?: ''
                               String prop
                               if(newCostItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
-                                  prop = 'billingCurrency'
-                                  diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem.costInBillingCurrencyAfterTax]))
+                                  //diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem.costInBillingCurrencyAfterTax]))
+                                  diffs.add([prop:'billingCurrency', msgToken: PendingChangeConfiguration.BILLING_SUM_UPDATED, oldValue: cci.costInBillingCurrency, newValue:newCostItem.costInBillingCurrencyAfterTax])
                               }
                               if(newCostItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
-                                  prop = 'localCurrency'
-                                  diffs.add(message(code:'pendingChange.message_CI02',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInLocalCurrency,newCostItem.costInLocalCurrencyAfterTax]))
+                                  diffs.add([prop:'localCurrency',msgToken:PendingChangeConfiguration.LOCAL_SUM_UPDATED,oldValue: cci.costInLocalCurrency,newValue:newCostItem.costInLocalCurrencyAfterTax])
                               }
                               diffs.each { diff ->
-                                  JSON json = [changeDoc:[OID:"${cci.class.name}:${cci.id}",prop:prop]] as JSON
-                                  String changeDoc = json.toString()
-                                  PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date(), payload: changeDoc)
-                                  change.workaroundForDatamigrate() // ERMS-2184
-
-                                  if(!change.save())
-                                      log.error(change.errors)
+                                  //JSON json = [changeDoc:[OID:"${cci.class.name}:${cci.id}",prop:prop]] as JSON
+                                  //String changeDoc = json.toString()
+                                  //PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date(), payload: changeDoc)
+                                  //change.workaroundForDatamigrate() // ERMS-2184
+                                  try {
+                                      PendingChange.construct([target:cci,owner:cci.owner,prop:diff.prop,oldValue:diff.oldValue,newValue:diff.newValue,msgToken:diff.msgToken,status:RDStore.PENDING_CHANGE_PENDING])
+                                  }
+                                  catch (CreationException e) {
+                                      log.error(e)
+                                  }
                               }
                           }
                    }

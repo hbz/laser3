@@ -110,8 +110,19 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             <div class="field">
                 <label for="summaryOfContent">${message(code: 'renewEntitlementsWithSurvey.filter.summaryOfContent')}</label>
                %{-- <input name="summaryOfContent" id="summaryOfContent" value="${params.summaryOfContent}"/>--}%
-               <g:select class="ui dropdown" name="summaryOfContent" title="${g.message(code: 'renewEntitlementsWithSurvey.filter.summaryOfContent')}"
-                         from="${subjects}" noSelection="${['':'']}" value="${params.summaryOfContent}"/>
+              %{-- <g:select class="ui dropdown" name="summaryOfContent" title="${g.message(code: 'renewEntitlementsWithSurvey.filter.summaryOfContent')}"
+                         from="${subjects}" noSelection="${['':'']}" />--}%
+
+                <select name="summaryOfContents" id="summaryOfContent" multiple="" class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${subjects}" var="subject">
+                        <option <%=(params.list('summaryOfContents').contains(subject)) ? 'selected="selected"' : ''%>
+                        value="${subject}">
+                        ${subject}
+                        </option>
+                    </g:each>
+                </select>
 
 
             </div>

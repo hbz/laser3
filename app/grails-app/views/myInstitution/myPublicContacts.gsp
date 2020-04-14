@@ -12,7 +12,7 @@
     <body>
 
         <semui:breadcrumbs>
-            <g:if test="${institution.id != contextService.getOrg()?.id}">
+            <g:if test="${institution.id != contextService.getOrg().id}">
                 <semui:crumb text="${institution.getDesignation()}" class="active"/>
             </g:if>
         </semui:breadcrumbs>
