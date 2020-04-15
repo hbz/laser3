@@ -12,7 +12,7 @@ class InstitutionsService {
     static final CUSTOM_PROPERTIES_COPY_HARD        = 'CUSTOM_PROPERTIES_COPY_HARD'
     static final CUSTOM_PROPERTIES_ONLY_INHERITED   = 'CUSTOM_PROPERTIES_ONLY_INHERITED'
 
-    def copyLicense(License base, params, Object option) {
+    License copyLicense(License base, params, Object option) {
 
         if (! base) {
             return null

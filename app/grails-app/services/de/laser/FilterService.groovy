@@ -388,13 +388,13 @@ class FilterService {
             params.filterSet = true
         }
 
-        if (params.filterStatus != "" && params.list('filterStatus')) {
+        if (params.filterStatus && params.filterStatus != "" && params.list('filterStatus')) {
             query << " surInfo.status.id in (:filterStatus) "
             queryParams << [filterStatus : params.list('filterStatus').collect { Long.parseLong(it) }]
             params.filterSet = true
         }
 
-        if (params.filterPvd != "" && params.list('filterPvd')) {
+        if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
             query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
             queryParams << [filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
             params.filterSet = true
@@ -607,7 +607,7 @@ class FilterService {
             params.filterSet = true
         }
 
-        if (params.filterPvd != "" && params.list('filterPvd')) {
+        if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
             query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
             queryParams << [filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
             params.filterSet = true

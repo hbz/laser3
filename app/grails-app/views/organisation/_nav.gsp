@@ -7,12 +7,29 @@
         org: orgInstance,
         affiliation: "INST_USER",
         comboPerm: "ORG_CONSORTIUM",
-        comboAffiliation: "INST_EDITOR",
+        comboAffiliation: "INST_USER",
         specRoles: "ROLE_ORG_EDITOR,ROLE_ADMIN"])}" />
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>
-    <semui:subNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}" message="org.nav.ids"/>
+
+    <g:if test="${(orgInstance.sector != RDStore.O_SECTOR_PUBLISHER) && (!departmentalView)}">
+        <g:if test="${inContextOrg}">
+            <semui:securedSubNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}"
+                                     message="org.nav.ids" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
+        </g:if>
+        <g:elseif test="${accessService.checkForeignOrgComboPermAffiliationX([
+                org: orgInstance,
+                comboPerm: "ORG_INST_COLLECTIVE, ORG_CONSORTIUM",
+                comboAffiliation: "INST_USER",
+                specRoles: "ROLE_ORG_EDITOR, ROLE_ADMIN"
+        ])}">
+            <semui:subNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}" message="org.nav.ids"/>
+        </g:elseif>
+        <g:else>
+            <semui:subNavItem message="org.nav.ids" disabled="disabled" />
+        </g:else>
+    </g:if>
     <g:if test="${inContextOrg}">
         <semui:subNavItem controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
     </g:if>
@@ -34,7 +51,7 @@
                 org: orgInstance,
                 affiliation: "INST_USER",
                 comboPerm: "ORG_CONSORTIUM",
-                comboAffiliation: "INST_EDITOR",
+                comboAffiliation: "INST_USER",
                 specRoles: "ROLE_ADMIN"])}">
 
             <semui:subNavItem controller="organisation" action="accessPoints" params="${[id:orgInstance.id]}" message="org.nav.accessPoints"/>

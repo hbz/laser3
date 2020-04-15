@@ -901,6 +901,7 @@ join sub.orgRelations or_sub where
     private def exportcurrentSubscription(List<Subscription> subscriptions, String format,Org contextOrg) {
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = ['Name',
+                       g.message(code: 'globalUID.label'),
                        g.message(code: 'license.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'consortium.label'),
@@ -975,6 +976,7 @@ join sub.orgRelations or_sub where
                 case "xls":
                 case "xlsx":
                     row.add([field: sub.name ?: "", style: 'bold'])
+                    row.add([field: sub.globalUID, style: null])
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
@@ -1006,6 +1008,7 @@ join sub.orgRelations or_sub where
                     break
                 case "csv":
                     row.add(sub.name ? sub.name.replaceAll(',',' ') : "")
+                    row.add(sub.globalUID)
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
@@ -2200,7 +2203,7 @@ AND EXISTS (
 
         // changes
 
-        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,periodInDays:periodInDays,max:result.max,offset:0,pending:true,notifications:true]
+        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:0,pending:true,notifications:true]
 
         result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
@@ -2227,8 +2230,8 @@ AND EXISTS (
         result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
         result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
 
-        def activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
-                " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org) " +
+        List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
+                " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
                 " order by surConfig.surveyInfo.name",
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
@@ -2561,11 +2564,11 @@ AND EXISTS (
         }
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
-        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : null
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : result.surveyInfo.surveyConfigs[0]
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
 
         result.ownerId = result.surveyResults[0]?.owner?.id
 
@@ -2576,7 +2579,7 @@ AND EXISTS (
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -2626,23 +2629,25 @@ AND EXISTS (
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-        result.iesListPriceSum = 0
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
+
+        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscriptionInstance)
+        result.iesListPriceSum = 0.0
         result.ies?.each{
-            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0) : 0)
+            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
         }
 
 
-        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-        result.iesFixListPriceSum = 0
+        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscriptionInstance)
+        result.iesFixListPriceSum = 0.0
         result.iesFix?.each{
-            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0) : 0)
+            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
         }
 
 
         result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
-
-        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
 
         if(result.subscriptionInstance) {
             result.authorizedOrgs = result.user?.authorizedOrgs
@@ -2650,7 +2655,7 @@ AND EXISTS (
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -2710,8 +2715,8 @@ AND EXISTS (
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
             }
         }
-        else{
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, surveyConfig)
+
+            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
 
             boolean allResultHaveValue = true
             //Verbindlich??|
@@ -2740,12 +2745,13 @@ AND EXISTS (
             } else {
                 flash.error = message(code: "surveyResult.finish.error")
             }
-        }
+
 
         redirect(url: request.getHeader('referer'))
     }
 
 
+    @Deprecated
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
@@ -3432,7 +3438,7 @@ AND EXISTS (
             subLinks.put(link.source,link.destination)
         }
         LinkedHashMap<Subscription,List<Org>> providers = [:]
-        OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).each { it ->
+        OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
             List<Org> orgs = providers.get(it.sub)
             if(orgs == null)
                 orgs = [it.org]
@@ -3440,6 +3446,23 @@ AND EXISTS (
             providers.put(it.sub,orgs)
         }
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
+                "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
+                [ctx: result.institution,
+                 roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
+                 email: RDStore.CCT_EMAIL])
+        Map<Org,Set<String>> mailAddresses = [:]
+        persons.each { personRow ->
+            Person person = (Person) personRow[1]
+            Org org = person.roleLinks.find{ p -> p.org != result.institution}.org
+            Set<String> addresses = mailAddresses.get(org)
+            String mailAddress = (String) personRow[0]
+            if(!addresses) {
+                addresses = []
+            }
+            addresses << mailAddress
+            mailAddresses.put(org,addresses)
+        }
 
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
@@ -3464,8 +3487,8 @@ AND EXISTS (
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
             headerRow.setHeightInPoints(16.75f)
-            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
-                           message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
+            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'globalUID.label'),
+                           message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
                            message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
             titles.eachWithIndex{ titleName, int i ->
@@ -3476,8 +3499,8 @@ AND EXISTS (
             Row row
             Cell cell
             int rownum = 1
-            int sumcell = 9
-            int sumTitleCell = 8
+            int sumcell = 11
+            int sumTitleCell = 10
             result.costItems.eachWithIndex { entry, int sidewideNumber ->
                 log.debug("processing entry ${sidewideNumber} ...")
                 CostItem ci = (CostItem) entry[0] ?: new CostItem()
@@ -3496,18 +3519,9 @@ AND EXISTS (
                 if(subscr.sortname) subscrName += subscr.sortname
                 subscrName += "(${subscr.name})"
                 cell.setCellValue(subscrName)
-                //general Contcats
-                List<Person> persons = Person.executeQuery("select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) " +
-                        "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType in (:selectedRoleTypes) ",
-                        [orgs: subscr,
-                         ctx: contextService.getOrg(),
-                         selectedRoleTypes: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS])
-
-                List<String> generalContacts = []
-                if (persons){
-                    generalContacts = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
-                            [persons: persons, contentType: RDStore.CCT_EMAIL])
-                }
+                log.debug("insert general contacts")
+                //general contcats
+                Set<String> generalContacts = mailAddresses.get(subscr)
                 cell = row.createCell(cellnum++)
                 if(generalContacts)
                     cell.setCellValue(generalContacts.join('; '))
@@ -3519,6 +3533,10 @@ AND EXISTS (
                 if(subLinks.getKey(subCons.id))
                     subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
                 cell.setCellValue(subscriptionString)
+                //subscription globalUID
+                log.debug("insert subscription global UID")
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(subCons.globalUID)
                 //license name
                 log.debug("insert license name")
                 cell = row.createCell(cellnum++)
@@ -3528,21 +3546,21 @@ AND EXISTS (
                 log.debug("insert package name")
                 cell = row.createCell(cellnum++)
                 cell.setCellStyle(lineBreaks)
-                String packagesString = ""
+                List<String> packageNames = []
                 subCons.packages.each { subPkg ->
-                    packagesString += "${subPkg.pkg.name}\n"
+                    packageNames << subPkg.pkg.name
                 }
-                cell.setCellValue(packagesString)
+                cell.setCellValue(packageNames.join("\n"))
                 //provider
                 log.debug("insert provider name")
                 cell = row.createCell(cellnum++)
                 cell.setCellStyle(lineBreaks)
-                String providersString = ""
+                List<String> providerNames = []
                 providers.get(subCons).each { p ->
                     log.debug("Getting provider ${p}")
-                    providersString += "${p.name}\n"
+                    providerNames << p.name
                 }
-                cell.setCellValue(providersString)
+                cell.setCellValue(providerNames.join("\n"))
                 //running time from / to
                 log.debug("insert running times")
                 cell = row.createCell(cellnum++)
@@ -3614,7 +3632,7 @@ AND EXISTS (
                     log.error("Null value in column ${i}")
                 }
             }
-            String filename = "${g.message(code:'export.my.consortiaSubscriptions')}_${sdf.format(new Date(System.currentTimeMillis()))}.xlsx"
+            String filename = "${DateUtil.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
             response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
@@ -3628,8 +3646,8 @@ AND EXISTS (
                     result
                 }
                 csv {
-                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
-                                   message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
+                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'myinst.consortiaSubscriptions.subscription'), message(code:'globalUID.label'),
+                                   message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
                                    message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                                    message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
                     List columnData = []
@@ -3652,6 +3670,12 @@ AND EXISTS (
                         if(subscr.sortname) subscrName += subscr.sortname
                         subscrName += "(${subscr.name})"
                         row.add(subscrName.replaceAll(',',' '))
+                        log.debug("insert general contacts")
+                        //general contcats
+                        Set<String> generalContacts = mailAddresses.get(subscr)
+                        if(generalContacts)
+                            row.add(generalContacts.join('; '))
+                        else row.add(' ')
                         //subscription name
                         log.debug("insert subscription name")
                         cellnum++
@@ -3660,6 +3684,10 @@ AND EXISTS (
                         if(subLinks.getKey(subCons.id))
                             subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
                         row.add(subscriptionString.replaceAll(',',' '))
+                        //subscription global uid
+                        log.debug("insert global uid")
+                        cellnum++
+                        row.add(subCons.globalUID)
                         //license name
                         log.debug("insert license name")
                         cellnum++
@@ -3727,9 +3755,9 @@ AND EXISTS (
                     columnData.add([])
                     columnData.add([])
                     row = []
-                    //sumcell = 9
-                    //sumTitleCell = 8
-                    for(int h = 0;h < 8;h++) {
+                    //sumcell = 11
+                    //sumTitleCell = 10
+                    for(int h = 0;h < 10;h++) {
                         row.add(" ")
                     }
                     row.add(message(code:'financials.export.sums'))
@@ -3737,14 +3765,14 @@ AND EXISTS (
                     columnData.add([])
                     result.finances.each { entry ->
                         row = []
-                        for(int h = 0;h < 8;h++) {
+                        for(int h = 0;h < 10;h++) {
                             row.add(" ")
                         }
                         row.add("${message(code:'financials.sum.billing')} ${entry.key}")
                         row.add("${entry.value} ${entry.key}")
                         columnData.add(row)
                     }
-                    String filename = "${g.message(code:'export.my.consortiaSubscriptions')}_${sdf.format(new Date(System.currentTimeMillis()))}.csv"
+                    String filename = "${DateUtil.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code:'export.my.consortiaSubscriptions')}.csv"
                     response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
                     response.contentType = "text/csv"
                     response.outputStream.withWriter { writer ->

@@ -6,7 +6,7 @@
     <g:set var="modalText" value="${message(code: 'financials.addNewCostForAll') + " ("+ surveyOrgList.size()+ ") "}"/>
 </g:if>
 <g:else>
-    <g:set var="modalText" value="${message(code: 'financials.addNewCostFor', args: [surveyOrg?.org?.name])}"/>
+    <g:set var="modalText" value="${message(code: 'financials.addNewCostFor', args: [surveyOrg.org.name])}"/>
 </g:else>
 <g:set var="submitButtonLabel" value="${message(code: 'default.button.create_new.label')}"/>
 <g:set var="org" value="${contextService.getOrg()}"/>
@@ -22,10 +22,10 @@
 
 %>
 
-<semui:modal id="${modalID ?: 'modalSurveyCostItem'}" text="${modalText + (surveyOrg?.surveyConfig?.subscription ? ' ('+ surveyOrg?.surveyConfig?.subscription+ ')' : '')}" msgSave="${submitButtonLabel}">
+<semui:modal id="${modalID ?: 'modalSurveyCostItem'}" text="${modalText + (surveyOrg.surveyConfig.subscription ? ' ('+ surveyOrg.surveyConfig.subscription+ ')' : '')}" msgSave="${submitButtonLabel}">
     <g:form class="ui small form" name="editCost" action="newSurveyCostItem">
 
-        <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+        <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}"/>
         <g:if test="${setting == 'bulkForAll'}">
             <g:hiddenField name="surveyConfig" value="${surveyConfig.class.getName()}:${surveyConfig.id}"/>
             <g:hiddenField name="surveyOrgs" value="${surveyOrgList.join(",")}"/>
@@ -163,7 +163,7 @@
         <div class="one fields">
             <fieldset class="sixteen wide field la-modal-fieldset-no-margin">
                 <div class="field">
-                    <label>${message(code: 'survey.costItemModal.descriptionfor', args:[surveyOrg?.org?.name ?: 'alle'])}</label>
+                    <label>${message(code: 'survey.costItemModal.descriptionfor', args:[surveyOrg.org.name ?: 'alle'])}</label>
                     <textarea name="newDescription" id="newDescription"
                               placeholder="${message(code: 'default.description.label')}">${costItem?.costDescription}</textarea>
                 </div><!-- .field -->
@@ -243,16 +243,7 @@
         $("#editCost").submit(function(e){
             e.preventDefault();
             if($("[name='newCostCurrency']").val() != 0) {
-                var valuesCorrect = checkValues();
-                if(valuesCorrect) {
-                    $("#newCostCurrency").parent(".field").removeClass("error");
-                    if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
-                        alert("${message(code:'financials.newCosts.entitlementError')}");
-                    else $(this).unbind('submit').submit();
-                }
-                else {
-                    alert("${message(code:'financials.newCosts.calculationError')}");
-                }
+                $(this).unbind('submit').submit();
             }
             else {
                 alert("${message(code:'financials.newCosts.noCurrencyPicked')}");

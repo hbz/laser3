@@ -348,6 +348,7 @@ class SubscriptionController extends AbstractDebugController {
         IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
         Long subId = ieCoverage.issueEntitlement.subscription.id
         if(ieCoverage) {
+            PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
             ieCoverage.delete()
             redirect action: 'index', id: subId, params: params
         }
@@ -1117,28 +1118,39 @@ class SubscriptionController extends AbstractDebugController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
-        params.id = params.targetSubscriptionId
-        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
         result.offset = params.offset  ? Integer.parseInt(params.offset) : 0
 
         params.offset = 0
         params.max = 5000
+        params.tab = params.tab ?: 'allIEs'
 
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : Subscription.get(params.id)
+        Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
+        params.id = newSub.id
+        params.sourceSubscriptionId = baseSub.id
 
-        List<IssueEntitlement> sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
+        List<IssueEntitlement> sourceIEs
+
+        if(params.tab == 'allIEs') {
+            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
+        }
+        if(params.tab == 'selectedIEs') {
+            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params+[ieAcceptStatusNotFixed: true])
+        }
         List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
 
-        result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
+        List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
 
-        result.num_ies_rows = sourceIEs.size()
+        result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
+        result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
+        result.countAllIEs = allIEs.size()
+        result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
         result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
         result.targetIEs = targetIEs
         result.newSub = newSub
         result.subscription = baseSub
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.subscriber = result.newSub.getSubscriber()
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
 
@@ -1169,8 +1181,8 @@ class SubscriptionController extends AbstractDebugController {
                     g.message(code:'identifier.label'),
                     g.message(code:'title.dateFirstInPrint.label'),
                     g.message(code:'title.dateFirstOnline.label'),
-                    g.message(code:'tipp.price')
-            ]
+                    g.message(code:'tipp.price')]
+
             List rows = []
             sourceIEs.each { ie ->
                 List row = []
@@ -1422,6 +1434,7 @@ class SubscriptionController extends AbstractDebugController {
                     org.name = subscr.name
                     org.sortname = subscr.sortname
                     org.shortname = subscr.shortname
+                    org.globalUID = subChild.globalUID
                     org.libraryType = subscr.libraryType
                     org.libraryNetwork = subscr.libraryNetwork
                     org.funderType = subscr.funderType
@@ -2012,7 +2025,7 @@ class SubscriptionController extends AbstractDebugController {
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
             result.visibleOrgRelations = []
             result.parentSub.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -2469,7 +2482,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
 
-                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceId(Subscription.class.name,result.subscriptionInstance.id)
+                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.settingKeys)
 
                 members.each { cm ->
 
@@ -2791,7 +2804,7 @@ class SubscriptionController extends AbstractDebugController {
                             }
                         }
                     }
-                    flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [addTitlesCount])
+                    flash.message = message(code: 'subscription.details.addEntitlements.titlesAddToSub', args: [addTitlesCount])
                 }
                 else {
                     log.error('cache error or no titles selected')
@@ -2842,9 +2855,10 @@ class SubscriptionController extends AbstractDebugController {
             if(params.singleTitle) {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 def tipp = ie.tipp
+
                 try {
 
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, true, ie_accept_status)) {
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, (ie.priceItem != null) , ie_accept_status)) {
                           log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
                           flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp?.title.title])
                     }
@@ -2989,9 +3003,10 @@ class SubscriptionController extends AbstractDebugController {
                 IssueEntitlement ie = IssueEntitlement.findById(ieID)
                 def tipp = ie.tipp
 
+
                 if(tipp) {
                     try {
-                        if (subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, true, ie_accept_status)) {
+                        if (subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, (ie.priceItem != null), ie_accept_status)) {
                             log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
                             countIEsToAdd++
                         }
@@ -3730,7 +3745,7 @@ class SubscriptionController extends AbstractDebugController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -4136,7 +4151,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         //OrgRole
                         subMember.orgRelations?.each { or ->
-                            if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (newSubConsortia.orgRelations.size() >= 1)) {
+                            if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (newSubConsortia.orgRelations.size() >= 1)) {
                                 OrgRole newOrgRole = new OrgRole()
                                 InvokerHelper.setProperties(newOrgRole, or.properties)
                                 newOrgRole.sub = newSubscription
@@ -4297,7 +4312,7 @@ class SubscriptionController extends AbstractDebugController {
                             //OrgRole
                             baseSub.orgRelations?.each { or ->
 
-                                if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
+                                if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
                                     OrgRole newOrgRole = new OrgRole()
                                     InvokerHelper.setProperties(newOrgRole, or.properties)
                                     newOrgRole.sub = newSub
@@ -4331,7 +4346,8 @@ class SubscriptionController extends AbstractDebugController {
                                             newOrgAccessPointLink.save(flush: true)
                                         }
                                         pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
-                                            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
+                                            Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
+                                            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
                                             if(newPcc) {
                                                 Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSub.class.name,baseSub.id,PendingChangeConfiguration.settingKeys)
                                                 auditables.each { audit ->
@@ -4421,7 +4437,7 @@ class SubscriptionController extends AbstractDebugController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -4477,8 +4493,8 @@ class SubscriptionController extends AbstractDebugController {
             def sub_type = params.subType
             def sub_form = params.subForm
             def sub_resource = params.subResource
-            def sub_hasPerpetualAccess = params.subHasPerpetualAccess
-            def sub_isPublicForApi = params.subIsPublicForApi
+            def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
+            def sub_isPublicForApi = params.subIsPublicForApi == '1'
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
@@ -4521,7 +4537,7 @@ class SubscriptionController extends AbstractDebugController {
                 //OrgRole
                 baseSub.orgRelations?.each { or ->
 
-                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
+                    if ((or.org?.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
@@ -5147,7 +5163,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.visibleOrgRelations = []
         result.subscriptionInstance.orgRelations?.each { or ->
-            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+            if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                 result.visibleOrgRelations << or
             }
         }
@@ -5230,13 +5246,21 @@ class SubscriptionController extends AbstractDebugController {
                     resource: baseSubscription.resource ?: null,
                     form: baseSubscription.form ?: null,
             )
+            //Copy License
+            if (params.subscription.copyLicense) {
+                newSubscriptionInstance.owner = baseSubscription.owner ?: null
+            }
+            //Copy InstanceOf
+            if (params.subscription.copylinktoSubscription) {
+                newSubscriptionInstance.instanceOf = baseSubscription?.instanceOf ?: null
+            }
 
 
             if (!newSubscriptionInstance.save(flush: true)) {
                 log.error("Problem saving subscription ${newSubscriptionInstance.errors}");
                 return newSubscriptionInstance
             } else {
-                log.debug("Save ok");
+                log.debug("Save ok")
 
                 baseSubscription.documents?.each { dctx ->
 
@@ -5311,7 +5335,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 //Copy References
                 baseSubscription.orgRelations?.each { or ->
-                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (params.subscription.copyLinks)) {
+                    if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (params.subscription.copyLinks)) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSubscriptionInstance
@@ -5333,15 +5357,6 @@ class SubscriptionController extends AbstractDebugController {
                         newSubscriptionPackage.subscription = newSubscriptionInstance
 
                         if(newSubscriptionPackage.save()){
-                            pcc.each { PendingChangeConfiguration config ->
-                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
-                                if(newPcc) {
-                                    Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)
-                                    auditables.each { audit ->
-                                        AuditConfig.addConfig(baseSubscription,audit.referenceField)
-                                    }
-                                }
-                            }
                             pkgOapls.each{ oapl ->
                                 def oaplProperties = oapl.properties
                                 oaplProperties.globalUID = null
@@ -5351,7 +5366,8 @@ class SubscriptionController extends AbstractDebugController {
                                 newOrgAccessPointLink.save()
                             }
                             pcc.each { PendingChangeConfiguration config ->
-                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(config.properties)
+                                Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
+                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
                                 if(newPcc) {
                                     Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)
                                     auditables.each { audit ->
@@ -5362,15 +5378,13 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
                 }
-                //Copy License
-                if (params.subscription.copyLicense) {
-                    newSubscriptionInstance.owner = baseSubscription.owner ?: null
+                //Copy Identifiers
+                if (params.subscription.copyIds) {
+                    baseSubscription.ids?.each { id ->
+                        Identifier.construct([value: id.value, reference: newSubscriptionInstance, namespace: id.ns])
+                    }
                 }
-                //Copy InstanceOf
-                if (params.subscription.copylinktoSubscription) {
-                    newSubscriptionInstance.instanceOf = baseSubscription?.instanceOf ?: null
-                }
-                newSubscriptionInstance.save()
+
 
                 if (params.subscription.copyEntitlements) {
 
@@ -5626,7 +5640,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
-        if(result.subscription.getCollective()?.id == contextService.getOrg()?.id &&
+        if(result.subscription.getCollective()?.id == contextService.getOrg().id &&
                 (result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ||
                 result.subscription.instanceOf?.getConsortia()) &&
                 ! (params.action in ['addMembers', 'processAddMembers',
@@ -5663,8 +5677,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {
-        def titles = [
-                g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label')]
+        def titles = [g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label'),g.message(code:'globalUID.label')]
 
         RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR)
         RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
@@ -5741,6 +5754,9 @@ class SubscriptionController extends AbstractDebugController {
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(org.shortname ?: '')
 
+                    //subscription globalUID
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.globalUID)
 
                     if (addHigherEducationTitles) {
 
@@ -5849,6 +5865,8 @@ class SubscriptionController extends AbstractDebugController {
                     row.add(org.name ? org.name.replaceAll(',','') : '')
                     //Shortname
                     row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
+                    //subscription globalUID
+                    row.add(org.globalUID)
                     if(addHigherEducationTitles) {
                         //libraryType
                         row.add(org.libraryType?.getI10n('value') ?: ' ')

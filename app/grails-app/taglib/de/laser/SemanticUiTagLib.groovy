@@ -1081,9 +1081,18 @@ class SemanticUiTagLib {
         def participant = attrs.participant
         def surveyOwnerView = attrs.surveyOwnerView
 
-        if (surveyConfig?.pickAndChoose) {
+        if (surveyConfig.pickAndChoose) {
             def finishDate = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate
-            if (finishDate) {
+            List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)
+
+            boolean finish = false
+
+            if (surveyResults) {
+                finish = finishDate && surveyResults.finishDate.contains(null)
+            }else {
+                finishDate = finishDate ? true : false
+            }
+            if (finish) {
                 if (surveyOwnerView) {
                     out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
                     out << "data-content='${message(code: "surveyResult.finish.info.consortia")}'>"
@@ -1109,7 +1118,7 @@ class SemanticUiTagLib {
 
             if (surveyResults) {
 
-                if (surveyResults?.finishDate?.contains(null)) {
+                if (surveyResults.finishDate.contains(null)) {
                     if (surveyOwnerView) {
                         out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
                         out << "data-content='${message(code: "surveyResult.noFinish.info.consortia")}'>"
@@ -1151,7 +1160,7 @@ class SemanticUiTagLib {
         def surveyConfig = attrs.surveyConfig
         def participant = attrs.participant
 
-        if (surveyConfig?.pickAndChoose) {
+        if (surveyConfig.pickAndChoose) {
             def finishDate = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate
             if (finishDate) {
                 out << g.formatDate(format: message(code: "default.date.format.notime"), date: finishDate)
@@ -1159,8 +1168,8 @@ class SemanticUiTagLib {
         } else {
             def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)
 
-            if (!surveyResults?.finishDate?.contains(null)) {
-                out << g.formatDate(format: message(code: "default.date.format.notime"), date: surveyResults?.finishDate[0])
+            if (!surveyResults.finishDate.contains(null)) {
+                out << g.formatDate(format: message(code: "default.date.format.notime"), date: surveyResults.finishDate[0])
             }
         }
     }

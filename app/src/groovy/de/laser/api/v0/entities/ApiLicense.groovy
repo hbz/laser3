@@ -30,9 +30,6 @@ class ApiLicense {
             case 'globalUID':
                 result = License.findAllWhere(globalUID: value)
                 break
-//            case 'impId':
-//                result = License.findAllWhere(impId: value)
-//                break
             case 'ns:identifier':
                 result = Identifier.lookupObjectsByIdentifierString(new License(), value)
                 break
@@ -100,9 +97,13 @@ class ApiLicense {
                 ]
         )
 
+        println "${available.size()} available licenses found .."
+
         available.each { lic ->
             result.add(ApiStubReader.requestLicenseStub(lic, context))
         }
+
+        ApiToolkit.cleanUpDebugInfo(result)
 
         return (result ? new JSON(result) : null)
     }

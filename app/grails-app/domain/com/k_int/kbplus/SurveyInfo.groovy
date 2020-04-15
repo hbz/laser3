@@ -70,18 +70,25 @@ class SurveyInfo {
 
     boolean checkOpenSurvey()
     {
-        boolean check = this.surveyConfigs?.size() > 0 ? true : false
+        boolean check = this.surveyConfigs.size() > 0 ? true : false
 
-        this.surveyConfigs?.each {
+        this.surveyConfigs.each {
 
-            if(it?.subscription)
+            if(it.subscription)
             {
-                if(!it.pickAndChoose && !(it?.surveyProperties?.size() > 0)) {
+                if(!it.pickAndChoose && !(it.surveyProperties.size() > 0)) {
                     check = false
                 }
             }
 
-            if(!(it?.orgs.org?.size > 0)){
+            if(!it.subscription)
+            {
+                if(!(it.surveyProperties.size() > 0)) {
+                    check = false
+                }
+            }
+
+            if(!(it.orgs.org.size > 0)){
                 check = false
             }
         }
@@ -124,7 +131,7 @@ class SurveyInfo {
         }
     }
     boolean isEditable() {
-        if(accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_EDITOR','ROLE_ADMIN') && this.owner?.id == contextService.getOrg()?.id)
+        if(accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_EDITOR','ROLE_ADMIN') && this.owner?.id == contextService.getOrg().id)
         {
             return true
         }
@@ -133,7 +140,7 @@ class SurveyInfo {
     }
 
     boolean isCompletedforOwner() {
-        if(this.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED] && this.owner?.id == contextService.getOrg()?.id)
+        if(this.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED] && this.owner?.id == contextService.getOrg().id)
         {
             return true
         }else{

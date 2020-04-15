@@ -16,15 +16,11 @@ import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.HttpResponseException
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.hibernate.SessionFactory
 import org.hibernate.classic.Session
-import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
-import javax.persistence.Transient
 import java.text.SimpleDateFormat
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
@@ -111,7 +107,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             if(recordTimestamp.getTime() > maxTimestamp)
                                 maxTimestamp = recordTimestamp.getTime()
                         }
-                        if(listOAI.resumptionToken.size() > 0) {
+                        if(listOAI.resumptionToken.size() > 0 && listOAI.resumptionToken.text().length() > 0) {
                             resumption = listOAI.resumptionToken
                             log.info("Continue with next iteration, token: ${resumption}")
                             cleanUpGorm()
@@ -237,7 +233,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(result) {
                     //local package exists -> update closure, build up GokbDiffEngine and the horrendous closures
                     log.info("package successfully found, processing LAS:eR id #${result.id}, with GOKb id ${result.gokbId}")
-                    if(packageStatus == RDStore.PACKAGE_STATUS_DELETED) {
+                    if(packageStatus == RDStore.PACKAGE_STATUS_DELETED && result.packageStatus != RDStore.PACKAGE_STATUS_DELETED) {
                         log.info("package #${result.id}, with GOKb id ${result.gokbId} got deleted, mark as deleted all cascaded elements and rapport!")
                         tippsToNotify << [event:"pkgDelete",diffs:[[prop: 'packageStatus', newValue: packageStatus, oldValue: result.packageStatus]],target:result]
                         result.packageStatus = packageStatus
@@ -328,7 +324,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             }
                                             tippsToNotify << [event:'update',target:tippA,diffs:diffs]
                                         }
-                                        //ex updatedTitleAfterPackageReconcile
+                                        /*//ex updatedTitleAfterPackageReconcile
                                         TitleInstance titleInstance = TitleInstance.findByGokbId(tippB.title.gokbId)
                                         //TitleInstance titleInstance = createOrUpdateTitle((String) tippB.title.gokbId)
                                         //createOrUpdatePlatform([name:tippB.platformName,gokbId:tippB.platformUUID,primaryUrl:tippB.primaryUrl],tippA.platform)
@@ -340,7 +336,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         }
                                         else {
                                             throw new SyncException("Title loading failed for ${tippB.title.gokbId}!")
-                                        }
+                                        }*/
                                     }
                                 }
                                 else {
@@ -537,7 +533,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 catch (GroovyCastException e) {
                     log.error("Title type mismatch! This should not be possible! Inform GOKb team! -> ${titleInstance.gokbId} is corrupt!")
-                    SystemEvent.createEvent('GSSS_OAI_ERROR',[titleInstance:titleInstance.gokbId])
+                    SystemEvent.createEvent('GSSS_OAI_ERROR',[titleInstance:titleInstance.gokbId,errorType:"titleTypeMismatch"])
                 }
                 titleInstance.title = titleRecord.name.text()
                 titleInstance.medium = medium
@@ -632,7 +628,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 }
                             }
                             else {
-                                log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id} to GOKb!")
+                                log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id.text()} to GOKb!")
+                                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleHistoryEvent:eventData.@id.text(),errorType:"historyEventWithoutDate"])
                             }
                         }
                     }
@@ -646,7 +643,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 throw new SyncException("ALARM! Title record ${titleUUID} without title type! Unable to process!")
             }
         }
-        else throw new SyncException("Title creation for ${titleUUID} called without record data! PANIC!")
+        else {
+            throw new SyncException("Title creation for ${titleUUID} called without record data! PANIC!")
+        }
     }
 
     /**
@@ -963,16 +962,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             TIPPCoverage tippCov = (TIPPCoverage) covEntry.target
                                             switch(covEntry.event) {
                                                 case 'update': IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                    covEntry.diffs.each { covDiff ->
-                                                        changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
-                                                        changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
-                                                        changeMap.prop = covDiff.prop
-                                                        changeMap.oldValue = ieCov[covDiff.prop]
-                                                        changeMap.newValue = covDiff.newValue
+                                                    if(ieCov) {
+                                                        covEntry.diffs.each { covDiff ->
+                                                            changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
+                                                            changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                            changeMap.prop = covDiff.prop
+                                                            changeMap.oldValue = ieCov[covDiff.prop]
+                                                            changeMap.newValue = covDiff.newValue
+                                                            changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                                                        }
+                                                    }
+                                                    else {
+                                                        changeDesc = PendingChangeConfiguration.NEW_COVERAGE
+                                                        changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
                                                         changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                                     }
                                                     break
-                                                case 'added':
+                                                case 'add':
                                                     changeDesc = PendingChangeConfiguration.NEW_COVERAGE
                                                     changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
                                                     changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))

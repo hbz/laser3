@@ -27,14 +27,14 @@
 
     <div class="la-icon-list">
 
-        <div class="item">
+        %{--<div class="item">
             <i class="grey key icon la-popup-tooltip la-delay"
                data-content="${message(code: 'default.access.label')}"></i>
 
             <div class="content">
                 ${tipp.availabilityStatus?.getI10n('value')}
             </div>
-        </div>
+        </div>--}%
 
         <div class="item">
             <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
@@ -162,11 +162,7 @@
         </div>
         <br>
         <g:if test="${tipp.hostPlatformURL}">
-            <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-            <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
-               data-content="${tipp?.platform.name}"
-               href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
-               target="_blank"><i class="cloud icon"></i></a>
+            <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
         </g:if>
 
         <%--

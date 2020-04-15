@@ -191,6 +191,14 @@
                         </div>
 
                         <div class="field">
+                            <label>${message(code: 'subscription.form.label')}</label>
+                            <laser:select name="form"
+                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
+                                          optionKey="id" optionValue="value" noSelection="${['': '']}"
+                                          value="${['': '']}"/>
+                        </div>
+
+                        <div class="field">
                             <label>${message(code: 'subscription.resource.label')}</label>
                             <laser:select name="resource"
                                           from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
@@ -414,7 +422,7 @@
                                                 <div class="content">
                                                     <g:render template="/templates/links/orgLinksAsList"
                                                               model="${[roleLinks    : sub.orgRelations?.findAll {
-                                                                  !(it.org?.id == contextService.getOrg()?.id) && !(it.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id])
+                                                                  !(it.org?.id == contextService.getOrg().id) && !(it.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id])
                                                               }.sort { it?.org?.sortname },
                                                                         roleObject   : sub,
                                                                         roleRespValue: 'Specific subscription editor',

@@ -2,6 +2,7 @@ package com.k_int.kbplus.filter
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgSettings
+import de.laser.api.v0.ApiManager
 import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.transaction.Transactional
@@ -28,9 +29,10 @@ class ApiFilter extends GenericFilterBean {
         HttpServletResponse response = (HttpServletResponse) servletResponse
 
         // ignore non api calls
-        if (request.getServletPath().startsWith('/api/v')) {
-            // ignore api spec calls
-            if (! (request.getServletPath() =~ /api\/v\d+\/spec/)) {
+        String servletPath = request.getServletPath()
+        if (servletPath.startsWith('/api/v')) {
+            // ignore api meta calls
+            if (! (servletPath.endsWith('/specs.yaml') || servletPath.endsWith('/changelog.md')) ) {
 
                 boolean isAuthorized = false
                 String checksum
@@ -41,6 +43,8 @@ class ApiFilter extends GenericFilterBean {
                 def body = IOUtils.toString(request.getInputStream())
 
                 String authorization = request.getHeader('X-Authorization')
+                boolean debugMode    = request.getHeader('X-Debug') == 'true'
+
                 try {
                     if (authorization) {
                         def p1 = authorization.split(' ')
@@ -65,7 +69,6 @@ class ApiFilter extends GenericFilterBean {
 
                             String apiSecret = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_PASSWORD)?.getValue()
 
-
                             checksum = hmac(
                                         method +    // http-method
                                         path +      // uri
@@ -79,10 +82,12 @@ class ApiFilter extends GenericFilterBean {
                             if (isAuthorized) {
                                 request.setAttribute('authorizedApiOrg', apiOrg)
                                 request.setAttribute('authorizedApiPostBody', body)
+                                request.setAttribute('debugMode', debugMode)
                             }
                         }
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     isAuthorized = false
                 }
 
@@ -90,10 +95,12 @@ class ApiFilter extends GenericFilterBean {
                     //println "VALID authorization: " + authorization
                     request.getRequestDispatcher(path).forward(servletRequest, servletResponse)
                     return
-                } else {
+                }
+                else {
                     //println "INVALID authorization: " + authorization + " < " + checksum
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
                     response.setContentType(Constants.MIME_APPLICATION_JSON)
+                    response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
 
                     def result = new JSON([
                             "message"      : "unauthorized access",
@@ -101,7 +108,6 @@ class ApiFilter extends GenericFilterBean {
                             "path"         : path,
                             "query"        : query,
                             "method"       : method
-                            //"_httpStatus": HttpStatus.UNAUTHORIZED.value()
                     ])
                     response.getWriter().print(result.toString(true))
                     return

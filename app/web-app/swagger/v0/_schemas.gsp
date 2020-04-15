@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory;" %>
+<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
 <%
     def printRefdataEnum = { rdc, pos ->
         String spacer = ''
@@ -610,13 +610,18 @@
     Property:
       type: object
       properties:
-        description: # mapping attr descr
+        scope: # mapping attr descr
           type: string
-<%--        explanation: # mapping attr expl
-          type: string --%>
-        paragraph: # only if license preoperties
+        paragraph:
+          description: Only if scope = "License Property"
           type: string
-        name:
+        token: # mapping attr name
+          type: string
+        type:
+          type: string
+          enum: <% println "[" + PropertyDefinition.validTypes.keySet().collect{"\"${it}\""}.join(', ') + "]" %>
+        refdataCategory:
+          description: Only if type = "Refdata"
           type: string
         note:
           type: string

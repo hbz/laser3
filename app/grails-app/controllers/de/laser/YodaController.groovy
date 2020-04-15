@@ -65,8 +65,138 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def dashboard() {
         Map result = [:]
-
         result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def erms2362() {
+        // List<String> nsList = ['acs', 'ebookcentral', 'emerald', 'herdt', 'mitpress', 'oup']
+
+        Closure pre = { tmp ->
+            "<pre>" + tmp + "</pre>"
+        }
+        Closure code = { tmp ->
+            '<code>' + tmp.join('<br>') + '</code>'
+        }
+        Closure href = { reference ->
+            String link = reference instanceof TitleInstance ? '/title/show/' : (
+                          reference instanceof License ? '/lic/show/' : (
+                          reference instanceof Subscription ? '/subscription/show/' : (
+                          reference instanceof Package ? '/package/show/' : (
+                          reference instanceof Org ? '/org/show/' : (
+                          null
+            )))))
+
+            return link ? (grailsApplication.config.grails.serverURL + link + reference.id) : null
+        }
+
+        String result       = ''
+        String ns_str       = params.ns ?: null
+        String ns_old_str   = ns_str ? 'inid_' + ns_str : null
+
+        long ts = System.currentTimeMillis()
+
+        log.debug('erms2362() processing: ' + ns_old_str + ' <-- ' + ns_str)
+
+        IdentifierNamespace oldNs = IdentifierNamespace.findByNs(ns_old_str)
+        IdentifierNamespace newNs = IdentifierNamespace.findByNs(ns_str)
+
+        if (oldNs && newNs) {
+            List<Identifier> oldIds = Identifier.findAllByNs(oldNs)
+            List matches  = []
+            List orphaned = []
+
+            result += "<h2>NS:${oldNs.id} <strong>${oldNs.ns}</strong> <-- NS:${newNs.id} <strong>${newNs.ns}</strong></h2>"
+            result += pre("${oldIds.size()} identifier/s in old namespace found")
+
+            oldIds.eachWithIndex { old, i ->
+                log.debug('processing (' + (i+1) + ' from ' + oldIds.size() + '): ' + old)
+
+                List<Identifier> newIds = Identifier.findAllWhere([
+                        value: old.value,
+                        ns:   newNs,
+                        lic:  old.lic,
+                        org:  old.org,
+                        pkg:  old.pkg,
+                        sub:  old.sub,
+                        ti:   old.ti,
+                        tipp: old.tipp,
+                        cre:  old.cre
+                ])
+                def reference = old.getReference()
+
+                if (! newIds.isEmpty()) {
+                    matches.add([
+                            oldNs: oldNs,
+                            oldId: old,
+                            newNs: newNs,
+                            newIds: newIds,
+                            link: href(reference)
+                    ])
+                }
+                else {
+                    orphaned.add([
+                            oldNs: oldNs,
+                            oldId: old,
+                            reference: [
+                                    id: reference.id,
+                                    gokbId: reference.hasProperty('gokbId') ? reference.gokbId : null,
+                                    type: reference.getClass()?.canonicalName,
+                                    link: href(reference)
+                            ]
+                    ])
+                }
+            }
+            result += pre("${matches.size()} matched, ${orphaned.size()} orphaned")
+
+            if (! matches.isEmpty()) {
+                String[] m = []
+                matches.each { c ->
+                    String tmp = "[ NS:${c.oldNs.id} <strong>${c.oldNs.ns}</strong> / ID:${c.oldId.id} <strong>${c.oldId.value}</strong> ]"
+                    tmp += " <strong><--</strong> " + (c.newIds.collect{ it ->
+                        "[ NS:${c.newNs.id} <strong>${c.newNs.ns}</strong> / ID:${it.id} <strong>${it.value}</strong> ]"
+                    }).join(", ")
+
+                    if( c.link) {
+                        tmp += " -----> [ <a href='${c.link}' target='_blank'>${c.link.replace(grailsApplication.config.grails.serverURL,'')}</a> ]"
+                    }
+                    m += tmp
+                }
+                result += pre('Matches:')
+                result += code(m)
+            }
+
+            if (! orphaned.isEmpty()) {
+                String[] o = []
+                orphaned.each { c ->
+                    String tmp = "[ NS:${c.oldNs.id} <strong>${c.oldNs.ns}</strong> / ID:${c.oldId.id} <strong>${c.oldId.value}</strong> ]"
+                    tmp += " -----> [ ${c.reference.type}:${c.reference.id} - "
+
+                    if (c.reference.gokbId) {
+                        tmp += "GOKBID:${c.reference.gokbId} - "
+                    }
+                    if (c.reference.link) {
+                        tmp += "<a href='${c.reference.link}' target='_blank'>${c.reference.link.replace(grailsApplication.config.grails.serverURL,'')}</a> ]"
+                    }
+                    o += tmp
+                }
+                result += pre('Orphans:')
+                result += code(o)
+            }
+            result += '<br/><br/>'
+        }
+        else {
+            result += oldNs ? '' : pre('<strong>ERROR</strong>: old namespace <strong>' + ns_old_str + '</strong> not found')
+            result += newNs ? '' : pre('<strong>ERROR</strong>: new namespace <strong>' + ns_str + '</strong> not found')
+        }
+
+        result += code([
+                "# ${grailsApplication.config.grails.serverURL}",
+                "# ${grailsApplication.config.laserSystemId}",
+                "# Processing time: ${System.currentTimeMillis() - ts} ms"
+        ])
+
+        render text: '<!DOCTYPE html><html lang="en"><head><title>' + grailsApplication.config.grails.serverURL + '</title></head><body>' + result + '</body></html>'
     }
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ORG_EDITOR")
@@ -1118,7 +1248,7 @@ class YodaController {
             if (o.setDefaultCustomerType()) { instCount++ }
         }
 
-        flash.message = "Kundentyp wurde für ${consCount} Konsortien und ${instCount} Konsorten gesetzt."
+        flash.message = "Kundentyp wurde für ${consCount} Konsortien und ${instCount} Teilnehmer gesetzt."
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1866,92 +1996,6 @@ class YodaController {
         result
 
         redirect action: 'dashboard'
-    }
-
-    @Secured(['ROLE_YODA'])
-    def importSeriesToEBooks() {
-        Map<String, Object> result = [:]
-
-
-        if(params.kbartPreselect) {
-            CommonsMultipartFile kbartFile = params.kbartPreselect
-            Integer count = 0
-            Integer countChanges = 0
-            InputStream stream = kbartFile.getInputStream()
-            ArrayList<String> rows = stream.text.split('\n')
-            Map<String,Integer> colMap = [publicationTitleCol:-1,zdbCol:-1, onlineIdentifierCol:-1, printIdentifierCol:-1, doiTitleCol:-1, seriesTitleCol:-1]
-            //read off first line of KBART file
-            rows[0].split('\t').eachWithIndex { headerCol, int c ->
-                switch(headerCol.toLowerCase().trim()) {
-                    case "zdb_id": colMap.zdbCol = c
-                        break
-                    case "print_identifier": colMap.printIdentifierCol = c
-                        break
-                    case "online_identifier": colMap.onlineIdentifierCol = c
-                        break
-                    case "publication_title": colMap.publicationTitleCol = c
-                        break
-                    case "series": colMap.seriesTitleCol = c
-                        break
-                    case "doi_identifier": colMap.doiTitleCol = c
-                        break
-                }
-            }
-            //after having read off the header row, pop the first row
-            rows.remove(0)
-            //now, assemble the identifiers available to highlight
-            Map<String,IdentifierNamespace> namespaces = [zdb:IdentifierNamespace.findByNs('zdb'),
-                                                          eissn:IdentifierNamespace.findByNs('eissn'),isbn:IdentifierNamespace.findByNs('isbn'),
-                                                          issn:IdentifierNamespace.findByNs('issn'),pisbn:IdentifierNamespace.findByNs('pisbn'),
-                                                            doi: IdentifierNamespace.findByNs('doi')]
-            rows.eachWithIndex { row, int i ->
-                log.debug("now processing entitlement ${i}")
-                ArrayList<String> cols = row.split('\t')
-                Map idCandidate
-                if(colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
-                    idCandidate = [namespaces:[namespaces.zdb],value:cols[colMap.zdbCol]]
-                }
-                if(colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
-                    idCandidate = [namespaces:[namespaces.eissn,namespaces.isbn],value:cols[colMap.onlineIdentifierCol]]
-                }
-                if(colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
-                    idCandidate = [namespaces:[namespaces.issn,namespaces.pisbn],value:cols[colMap.printIdentifierCol]]
-                }
-                if(colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
-                    idCandidate = [namespaces:[namespaces.doi],value:cols[colMap.doiTitleCol]]
-                }
-                if(((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
-                        ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
-                        ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
-                }
-                else {
-
-                    // TODO [ticket=1789]
-                    //def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
-                    def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
-                    if(tiObj) {
-
-                        tiObj?.each { titleInstance ->
-                                if(titleInstance instanceof BookInstance) {
-                                    count++
-
-                                    if((cols[colMap.seriesTitleCol] != null || cols[colMap.seriesTitleCol] != "") && (titleInstance.summaryOfContent == null || titleInstance.summaryOfContent == "")){
-                                        countChanges++
-                                        titleInstance.summaryOfContent = cols[colMap.seriesTitleCol]
-                                        titleInstance.save(flush: true)
-                                    }
-                                }
-                        }
-                    }
-                }
-            }
-
-            flash.message = "Verbearbeitet: ${count} /Geändert ${countChanges}"
-            println(count)
-            println(countChanges)
-            params.remove("kbartPreselct")
-        }
-
     }
 
 }

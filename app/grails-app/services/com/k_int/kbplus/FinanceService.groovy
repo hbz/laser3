@@ -1265,6 +1265,7 @@ class FinanceService {
                     else {
                         dataToDisplay << 'own'
                         result.showView = 'own'
+                        editable = true
                     }
                 }
                 //case eleven for all subscriptions

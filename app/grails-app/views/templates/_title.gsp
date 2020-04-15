@@ -16,12 +16,14 @@
         </div>
       </div>
     </g:if>
+    <g:if test="${item.tipp.title.editionStatement}">
     <div class="item">
       <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
       <div class="content">
         ${item.tipp.title.editionStatement}
       </div>
     </div>
+    </g:if>
     <div class="item">
       <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
       <div class="content">
@@ -31,7 +33,7 @@
   </g:if>
 </div>
 <g:each in="${item.tipp.title.ids.sort { it.ns.ns }}" var="title_id">
-    <span class="ui small teal image label">
+    <span class="ui small blue image label">
       ${title_id.ns.ns}: <div class="detail">${title_id.value}</div>
     </span>
 </g:each>
@@ -42,14 +44,14 @@
 
 
 <div class="la-icon-list">
-  <g:if test="${item.availabilityStatus?.getI10n('value')}">
+  %{--<g:if test="${item.availabilityStatus?.getI10n('value')}">
     <div class="item">
       <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label')}"></i>
       <div class="content">
         ${item.availabilityStatus?.getI10n('value')}
       </div>
     </div>
-  </g:if>
+  </g:if>--}%
 
   <g:if test="${item.tipp.pkg.id}">
     <div class="item">

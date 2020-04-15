@@ -13,7 +13,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <semui:crumb message="createSubscriptionSurvey.label" class="active"/>
 </semui:breadcrumbs>
@@ -272,8 +272,8 @@
 
 
                         <td class="x">
-                            <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
-                                <g:if test="${!com.k_int.kbplus.SurveyConfig.findBySubscription(s)}">
+                            <g:if test="${editable && accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
+                                <g:if test="${!com.k_int.kbplus.SurveyConfig.findAllBySubscription(s)}">
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
                                             controller="survey" action="addSubtoSubscriptionSurvey"

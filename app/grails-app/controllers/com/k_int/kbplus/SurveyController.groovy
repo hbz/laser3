@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
+import de.laser.PropertyService
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -47,6 +48,7 @@ class SurveyController {
     def escapeService
     def titleStreamService
     def institutionsService
+    PropertyService propertyService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -111,17 +113,15 @@ class SurveyController {
             return
         }else {
             result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
-            result.countSurveyConfigs = getSurveyConfigCounts()
-
             result.filterSet = params.filterSet ? true : false
 
             result
         }
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def workflowsSurveysConsortia() {
         Map<String, Object> result = [:]
@@ -501,7 +501,7 @@ class SurveyController {
         if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
             SurveyConfig surveyConfig = new SurveyConfig(
                     subscription: subscription,
-                    configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
+                    configOrder: surveyInfo.surveyConfigs?.size() ? surveyInfo.surveyConfigs?.size() + 1 : 1,
                     type: 'Subscription',
                     surveyInfo: surveyInfo,
                     subSurveyUseForTransfer: subSurveyUseForTransfer
@@ -512,13 +512,13 @@ class SurveyController {
 
             //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
             if (subSurveyUseForTransfer) {
-                SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                        surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SUR_PROP),
-                        surveyConfig: surveyConfig)
+                    SurveyConfigProperties configProperty = new SurveyConfigProperties(
+                            surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SUR_PROP),
+                            surveyConfig: surveyConfig)
 
-                if (configProperty.save(flush: true)) {
-                    addSubMembers(surveyConfig)
-                }
+                    if (configProperty.save(flush: true)) {
+                        addSubMembers(surveyConfig)
+                    }
                 } else {
                     addSubMembers(surveyConfig)
                 }
@@ -583,7 +583,7 @@ class SurveyController {
         if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
             SurveyConfig surveyConfig = new SurveyConfig(
                     subscription: subscription,
-                    configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
+                    configOrder: surveyInfo.surveyConfigs?.size() ? surveyInfo.surveyConfigs?.size() + 1 : 1,
                     type: 'IssueEntitlementsSurvey',
                     surveyInfo: surveyInfo,
                     subSurveyUseForTransfer: false,
@@ -608,9 +608,9 @@ class SurveyController {
     }
 
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def show() {
         def result = setResultGenericsAndCheckAccess()
@@ -631,7 +631,7 @@ class SurveyController {
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []
                  result.surveyConfig?.subscription?.orgRelations?.each { or ->
-                    if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                         result.visibleOrgRelations << or
                     }
                 }
@@ -696,9 +696,9 @@ class SurveyController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def surveyTitles() {
         def result = setResultGenericsAndCheckAccess()
@@ -738,9 +738,9 @@ class SurveyController {
 
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def surveyConfigDocs() {
         def result = setResultGenericsAndCheckAccess()
@@ -752,9 +752,9 @@ class SurveyController {
 
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def surveyParticipants() {
         def result = setResultGenericsAndCheckAccess()
@@ -777,29 +777,32 @@ class SurveyController {
             fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
         }
         result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+        if(result.surveyConfig.pickAndChoose){
+
+            List orgs = subscriptionService.getValidSurveySubChildOrgs(result.surveyConfig.subscription)
+            result.consortiaMembers = result.consortiaMembers.findAll{ (it in orgs)}
+        }
+
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
         result.editable = (result.surveyInfo && result.surveyInfo.status.id != RDStore.SURVEY_IN_PROCESSING.id) ? false : result.editable
-
-        params.surveyConfigID = params.surveyConfigID ?: result.surveyConfigs[0].id?.toString()
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
         def surveyOrgs = result.surveyConfig.getSurveyOrgsIDs()
 
         result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        params.tab = params.tab ?: (result.surveyConfig.type == 'Subscription' ? 'selectedSubParticipants' : 'selectedParticipants')
+        params.tab = params.tab ?: (result.surveyConfig.type == 'GeneralSurvey' ? 'selectedParticipants' : 'selectedSubParticipants')
 
         result
 
     }
 
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def surveyCostItems() {
         def result = setResultGenericsAndCheckAccess()
@@ -835,7 +838,7 @@ class SurveyController {
         result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         //Only SurveyConfigs with Subscriptions
-        result.surveyConfigs = result.surveyInfo?.surveyConfigs.findAll { it.subscription != null }?.sort {
+        result.surveyConfigs = result.surveyInfo.surveyConfigs.findAll { it.subscription != null }?.sort {
             it?.configOrder
         }
 
@@ -1039,9 +1042,9 @@ class SurveyController {
     }
 
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def surveyEvaluation() {
         def result = setResultGenericsAndCheckAccess()
@@ -1080,9 +1083,9 @@ class SurveyController {
 
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def surveyTitlesEvaluation() {
         def result = setResultGenericsAndCheckAccess()
@@ -1098,6 +1101,12 @@ class SurveyController {
         }
         result.participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig)?.org.flatten().unique { a, b -> a.id <=> b.id }?.sort {
             it?.sortname
+        }
+
+        if(result.surveyConfig.surveyProperties?.size() > 0){
+            result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).sort {
+                it.participant?.sortname
+            }
         }
 
         if ( params.exportXLSX ) {
@@ -1119,9 +1128,9 @@ class SurveyController {
             }
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def showEntitlementsRenew() {
         Map<String, Object> result = [:]
@@ -1132,7 +1141,7 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.editable = result.surveyInfo?.isEditable() ?: false
+        result.editable = result.surveyInfo.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1229,9 +1238,9 @@ class SurveyController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def surveyTitlesSubscriber() {
         Map<String, Object> result = [:]
@@ -1243,7 +1252,7 @@ class SurveyController {
         result.surveyInfo = result.surveyConfig.surveyInfo
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
-        result.editable = result.surveyInfo?.isEditable() ?: false
+        result.editable = result.surveyInfo.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1274,7 +1283,7 @@ class SurveyController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -1299,7 +1308,7 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.editable = result.surveyInfo?.isEditable() ?: false
+        result.editable = result.surveyInfo.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1339,7 +1348,7 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.editable = result.surveyInfo?.isEditable() ?: false
+        result.editable = result.surveyInfo.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1371,7 +1380,7 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.editable = result.surveyInfo?.isEditable() ?: false
+        result.editable = result.surveyInfo.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1392,12 +1401,13 @@ class SurveyController {
 
         flash.message = message(code: 'completeIssueEntitlementsSurvey.forFinishParticipant.info')
 
-        redirect(action: 'surveyTitlesEvaluation', id: result.surveyInfo?.id, params:[surveyConfigID: result.surveyConfig?.id])
+        redirect(action: 'surveyTitlesEvaluation', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig?.id])
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def evaluateIssueEntitlementsSurvey() {
         def result = setResultGenericsAndCheckAccess()
@@ -1422,9 +1432,9 @@ class SurveyController {
 
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def evaluationParticipant() {
         def result = setResultGenericsAndCheckAccess()
@@ -1451,7 +1461,7 @@ class SurveyController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -1464,9 +1474,9 @@ class SurveyController {
 
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")
     })
     def allSurveyProperties() {
         def result = setResultGenericsAndCheckAccess()
@@ -1636,6 +1646,7 @@ class SurveyController {
                 }
 
                 surveyConfig.delete(flush: true)
+
                 //flash.message = g.message(code: "default.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
             }
             catch (DataIntegrityViolationException e) {
@@ -1823,7 +1834,7 @@ class SurveyController {
 
         }
 
-        redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']
+        redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID]
 
     }
 
@@ -1845,7 +1856,7 @@ class SurveyController {
 
             result.surveyConfigs.each { config ->
 
-                if(!config?.pickAndChoose) {
+
                     config.orgs?.org?.each { org ->
 
                             config?.surveyProperties?.each { property ->
@@ -1866,7 +1877,7 @@ class SurveyController {
                                 }
                             }
                         }
-                }
+
             }
 
             result.surveyInfo.status = RDStore.SURVEY_READY
@@ -1921,7 +1932,6 @@ class SurveyController {
             result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
 
             result.surveyConfigs.each { config ->
-                if(!config?.pickAndChoose) {
                         config.orgs?.org?.each { org ->
 
                             config?.surveyProperties?.each { property ->
@@ -1942,7 +1952,7 @@ class SurveyController {
                                 }
                             }
                         }
-                }
+
 
             }
 
@@ -2055,39 +2065,35 @@ class SurveyController {
 
                     SurveyConfig.findAllBySurveyInfo(surveyInfo).each { config ->
 
-                        config.surveyInfo = null
                         DocContext.findAllBySurveyConfig(config).each {
-                            it.delete()
+                            it.delete(flush: true)
                         }
 
                         SurveyConfigProperties.findAllBySurveyConfig(config).each {
-                            it.delete()
+                            it.delete(flush: true)
                         }
 
                         SurveyOrg.findAllBySurveyConfig(config).each { surveyOrg ->
                             CostItem.findAllBySurveyOrg(surveyOrg).each {
-                                it.delete()
+                                it.delete(flush: true)
                             }
 
-                            surveyOrg.delete()
+                            surveyOrg.delete(flush: true)
                         }
 
                         SurveyResult.findAllBySurveyConfig(config) {
-                            it.delete()
+                            it.delete(flush: true)
                         }
 
                         Task.findAllBySurveyConfig(config) {
-                            it.delete()
+                            it.delete(flush: true)
                         }
-                        config.save()
-
                     }
 
-                    surveyInfo.surveyConfigs.clear()
+                    SurveyConfig.executeUpdate("delete from SurveyConfig sc where sc.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
-                    SurveyConfig.findAllBySurveyInfo(surveyInfo).each {it.delete()}
 
-                    surveyInfo.delete()
+                    surveyInfo.delete(flush: true)
                 }
 
                 flash.message = message(code: 'surveyInfo.delete.successfully')
@@ -2623,8 +2629,8 @@ class SurveyController {
             def sub_kind = params.subKind
             def sub_form = params.subForm
             def sub_resource = params.subResource
-            def sub_hasPerpetualAccess = params.subHasPerpetualAccess
-            def sub_isPublicForApi = params.subIsPublicForApi
+            def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
+            def sub_isPublicForApi = params.subIsPublicForApi == '1'
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
@@ -2667,7 +2673,7 @@ class SurveyController {
                 //OrgRole
                 baseSub?.orgRelations?.each { or ->
 
-                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
@@ -3110,8 +3116,8 @@ class SurveyController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def exportSurCostItems() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
@@ -3144,8 +3150,8 @@ class SurveyController {
     }
 
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def copyEmailaddresses() {
         Map<String, Object> result = [:]
         result.modalID = params.targetId
@@ -3296,7 +3302,7 @@ class SurveyController {
 
             surveyOrgsDo?.each { surveyOrg ->
 
-                if (!surveyOrg?.existsMultiYearTerm()) {
+                if (!surveyOrg.existsMultiYearTerm()) {
 
                     if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
                         newCostItem = genericOIDService.resolveOID(params.oldCostItem)
@@ -4088,14 +4094,14 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') && surveyConfig.surveyInfo?.owner?.id == contextService.getOrg()?.id)
+        result.editable = (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') && surveyConfig.surveyInfo?.owner?.id == contextService.getOrg().id)
 
         if (!result.editable) {
             return
         }
 
         def orgs = []
-        def currentMembersSubs = subscriptionService.getCurrentValidSubChilds(surveyConfig.subscription)
+        def currentMembersSubs = subscriptionService.getValidSurveySubChilds(surveyConfig.subscription)
 
         currentMembersSubs.each{ sub ->
             orgs.addAll(sub?.getAllSubscribers())
@@ -4230,9 +4236,9 @@ class SurveyController {
                         value = result?.refValue ? result?.refValue.getI10n('value') : ""
                     }
 
-                    def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)
+                    def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant)
 
-                    if (surveyOrg?.existsMultiYearTerm()) {
+                    if (surveyOrg.existsMultiYearTerm()) {
                         value = g.message(code: "surveyOrg.perennialTerm.available")
                     }
 
@@ -4286,42 +4292,42 @@ class SurveyController {
         renewalResult.orgsContinuetoSubscription.each { participantResult ->
             List row = []
 
-            row.add([field: participantResult?.participant?.sortname ?: '', style: null])
-            row.add([field: participantResult?.participant?.name ?: '', style: null])
-            row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
+            row.add([field: participantResult.participant?.sortname ?: '', style: null])
+            row.add([field: participantResult.participant?.name ?: '', style: null])
+            row.add([field: participantResult.resultOfParticipation?.getResult() ?: '', style: null])
 
-            row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
+            row.add([field: participantResult.resultOfParticipation?.comment ?: '', style: null])
 
 
             def period = ""
             if (renewalResult?.multiYearTermTwoSurvey) {
-                period = participantResult?.newSubPeriodTwoStartDate ? sdf.format(participantResult?.newSubPeriodTwoStartDate) : ""
-                period = participantResult?.newSubPeriodTwoEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
+                period = participantResult.newSubPeriodTwoStartDate ? sdf.format(participantResult.newSubPeriodTwoStartDate) : ""
+                period = participantResult.newSubPeriodTwoEndDate ? period + " - " +sdf.format(participantResult.newSubPeriodTwoEndDate) : ""
             }
 
             if (renewalResult?.multiYearTermThreeSurvey) {
-                period = participantResult?.newSubPeriodThreeStartDate ? sdf.format(participantResult?.newSubPeriodThreeStartDate) : ""
-                period = participantResult?.newSubPeriodThreeEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodThreeEndDate) : ""
+                period = participantResult.newSubPeriodThreeStartDate ? sdf.format(participantResult.newSubPeriodThreeStartDate) : ""
+                period = participantResult.newSubPeriodThreeEndDate ? period + " - " +sdf.format(participantResult.newSubPeriodThreeEndDate) : ""
             }
 
             row.add([field: period ?: '', style: null])
 
             if (renewalResult?.multiYearTermTwoSurvey) {
-                row.add([field: participantResult?.participantPropertyTwoComment ?: '', style: null])
+                row.add([field: participantResult.participantPropertyTwoComment ?: '', style: null])
             }
 
             if (renewalResult?.multiYearTermThreeSurvey) {
-                row.add([field: participantResult?.participantPropertyThreeComment ?: '', style: null])
+                row.add([field: participantResult.participantPropertyThreeComment ?: '', style: null])
             }
 
-            participantResult?.properties.sort { it?.type?.name }.each { participantResultProperty ->
-                row.add([field: participantResultProperty?.getResult() ?: "", style: null])
+            participantResult.properties.sort { it?.type?.name }.each { participantResultProperty ->
+                row.add([field: participantResult.getResult() ?: "", style: null])
 
-                row.add([field: participantResultProperty?.comment ?: "", style: null])
+                row.add([field: participantResult.comment ?: "", style: null])
 
             }
 
-            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant),RDStore.COST_ITEM_DELETED)
+            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult.resultOfParticipation?.surveyConfig, participantResult.participant),RDStore.COST_ITEM_DELETED)
 
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
@@ -4478,7 +4484,7 @@ class SurveyController {
             participantResult?.properties.sort {
                 it?.type?.name
             }.each { participantResultProperty ->
-                row.add([field: participantResultProperty?.getResult() ?: "", style: null])
+                row.add([field: participantresultProperty.getResult() ?: "", style: null])
 
                 row.add([field: participantResultProperty?.comment ?: "", style: null])
 
@@ -4584,25 +4590,25 @@ class SurveyController {
 
                     result.value.sort { it?.type?.name }.each { resultProperty ->
 
-                        def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)
+                        def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(resultProperty.surveyConfig, participant)
 
                         def value = ""
 
-                        if (resultProperty?.type?.type == Integer.toString()) {
-                            value = resultProperty?.intValue ? resultProperty?.intValue.toString() : ""
-                        } else if (resultProperty?.type?.type == String.toString()) {
-                            value = resultProperty?.stringValue ?: ""
-                        } else if (resultProperty?.type?.type == BigDecimal.toString()) {
-                            value = resultProperty?.decValue ? resultProperty?.decValue.toString() : ""
-                        } else if (resultProperty?.type?.type == Date.toString()) {
-                            value = resultProperty?.dateValue ? sdf.format(resultProperty?.dateValue) : ""
-                        } else if (resultProperty?.type?.type == URL.toString()) {
-                            value = resultProperty?.urlValue ? resultProperty?.urlValue.toString() : ""
-                        } else if (resultProperty?.type?.type == RefdataValue.toString()) {
-                            value = resultProperty?.refValue ? resultProperty?.refValue.getI10n('value') : ""
+                        if (resultProperty.type.type == Integer.toString()) {
+                            value = resultProperty.intValue ? resultProperty.intValue.toString() : ""
+                        } else if (resultProperty.type.type == String.toString()) {
+                            value = resultProperty.stringValue ?: ""
+                        } else if (resultProperty.type.type == BigDecimal.toString()) {
+                            value = resultProperty.decValue ? resultProperty.decValue.toString() : ""
+                        } else if (resultProperty.type.type == Date.toString()) {
+                            value = resultProperty.dateValue ? sdf.format(resultProperty.dateValue) : ""
+                        } else if (resultProperty.type.type == URL.toString()) {
+                            value = resultProperty.urlValue ? resultProperty.urlValue.toString() : ""
+                        } else if (resultProperty.type.type == RefdataValue.toString()) {
+                            value = resultProperty.refValue ? resultProperty.refValue.getI10n('value') : ""
                         }
 
-                        if (surveyOrg?.existsMultiYearTerm()) {
+                        if (surveyOrg.existsMultiYearTerm()) {
                             value = g.message(code: "surveyOrg.perennialTerm.available")
                         }
 
@@ -4645,26 +4651,26 @@ class SurveyController {
         surveyOrgs.each { surveyOrg ->
             List row = []
 
-            row.add([field: surveyConfig?.surveyInfo?.name ?: '', style: null])
+            row.add([field: surveyConfig.surveyInfo?.name ?: '', style: null])
 
-            row.add([field: surveyConfig?.getConfigNameShort ?: '', style: null])
+            row.add([field: surveyConfig.getConfigNameShort ?: '', style: null])
 
-            row.add([field: surveyConfig?.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig?.surveyProperty?.type) + ')', style: null])
+            row.add([field: surveyConfig.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig?.surveyProperty?.type) + ')', style: null])
 
-            row.add([field: surveyConfig?.comment ?: '', style: null])
+            row.add([field: surveyConfig.comment ?: '', style: null])
 
-            row.add([field: surveyOrg?.org?.name ?: '', style: null])
+            row.add([field: surveyOrg.org.name ?: '', style: null])
 
-            row.add([field: surveyOrg?.org?.shortname ?: '', style: null])
+            row.add([field: surveyOrg.org.shortname ?: '', style: null])
 
-            row.add([field: surveyOrg?.org?.libraryType?.getI10n('value') ?: '', style: null])
+            row.add([field: surveyOrg.org.libraryType?.getI10n('value') ?: '', style: null])
 
-            row.add([field: surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(surveyOrg?.org)?.name ?: '', style: null])
+            row.add([field: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)?.name ?: '', style: null])
 
 
             def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)
 
-            if (!surveyOrg?.existsMultiYearTerm()) {
+            if (!surveyOrg.existsMultiYearTerm()) {
                 if (costItem) {
                     row.add([field: g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number") + costItem?.billingCurrency?.getI10n('value').split('-').first(), style: null])
                 }

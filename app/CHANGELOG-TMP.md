@@ -2,7 +2,53 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2375    15.04.2020  rc1.3       Anja    Bug         org/show Tab Identifikatoren immer enabled
+2367    14.04.2020  rc1.3       Andreas Feature     Lizenzexport um globale UIDs der Lizenzen erweitert
+
+2365    14.04.2020  rc1.3       Andreas Bug         Konsortialstellen erhalten keine Dublette mehr bei Auswahl eines einzelnen Teilnehmers
+
+1710    09.04.2020  rc1.3       Andreas Feature     Anpassung der PendingChanges für Kosten an neue Struktur
+
+--      09.04.2020  rc1.3       David   Bug         Doppelte Menüeinträge entfernt
+
+2353    09.04.2020  rc1.3       Moe     Bug         Titelauswahlumfrage Bug beim Auswählen von Titel
+
+2356    09.04.2020  rc1.3       Moe     Bug         Bug Umfrage Einzeltitel
+
+2260    09.04.2020  rc1.3       Andreas Bug         Kopieren von Lizenzen funktionierte weiterhin nicht, erneuter Bugfix
+
+#### day of release 1.3
+
+2154    08.04.2020  rc1.3       Andreas Bug         VAT nicht als Kern-ID angezeigt und Kundennummer per Konsortialzugriff löschbar
+
+2351    08.04.2020  rc1.3       David   Bug         Einzigartige Identifikatoren
+
+2336    07.04.2020  rc1.3       Moe     Bug         Umfragenkosten werden nicht angelegt
+
+2350    07.04.2020  rc1.3       David   Bug         Mein Adressbuch: "Kontaktdaten hinzufügen" funktioniert nicht
+
+--      07.04.2020  rc1.3       David   Feature     API (0.90)
+
+2343    06.04.2020  rc1.3       Andreas Bug         Musterdaten für Einrichtungen auf QA überarbeitet
+
+2338    06.04.2020  rc1.3       Moe     Bug         Überarbeitung Titel Umfrage
+
+2341    06.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
+
+2340    06.04.2020  rc1.3       David   Bug         Berechtigungen: Identifikatoren / Kundennummern
+
+2337    06.04.2020  rc1.3       David   Feature     API (0.89): Doku und Ausgabe für Properties aktualisieren
+
+2341    06.04.2020  rc1.3       David   Feature     API (0.88): Changelog anlegen
+
+2339    03.04.2020  rc1.3       Andreas Bug         verschiedene Ansichts- und Darstellungssachen
+
+2335/2184   03.04.2020  rc1.3   Andreas Bug         automatisches Akzeptieren von Änderungen bei Lizenzen und Verträgen korrigiert
+
+--      03.04.2020  rc1.3       David   Feature     "Änderungen automatisch übernehmen?" auf JA bei neuen Teilnehmerverträgen     
+
+2334    03.04.2020  rc1.3       David   Feature     API (0.87): Optionale Ausgabe von Zusatzinformationen (subscriptionList, licenseList)
+
+2154    03.04.2020  rc1.3       Anja    Bug         org/ids Rechte fürs Anzeigen/Editieren
 
 2335    03.04.2020  rc1.3       David   Bug         "Alle Änderungen annehmen" funktioniert nicht
 

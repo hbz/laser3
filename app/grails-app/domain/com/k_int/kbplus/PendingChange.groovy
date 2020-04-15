@@ -176,8 +176,12 @@ class PendingChange {
     }
 
     boolean accept() throws ChangeAcceptException {
-        boolean done = false, broadcastChange = false
-        def target = genericOIDService.resolveOID(oid)
+        boolean done = false
+        def target
+        if(oid)
+            target = genericOIDService.resolveOID(oid)
+        else if(costItem)
+            target = costItem
         def parsedNewValue
         if(targetProperty in DATE_FIELDS)
             parsedNewValue = DateUtil.parseDateGeneric(newValue)
@@ -191,13 +195,6 @@ class PendingChange {
                     TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) target
                     IssueEntitlement newTitle = IssueEntitlement.construct([subscription:subscription,tipp:tipp])
                     if(newTitle) {
-                        if(auditService.getAuditConfig(subscription,msgToken)) {
-                            subscription.derivedSubscriptions.each { Subscription childSub ->
-                                IssueEntitlement newChildTitle = IssueEntitlement.construct([subscription:childSub,tipp:tipp])
-                                if(!newChildTitle)
-                                    throw new ChangeAcceptException("problems when broadcasting new entitlement creation - pending change not accepted: ${newChildTitle.errors}")
-                            }
-                        }
                         done = true
                     }
                     else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${newTitle.errors}")
@@ -210,14 +207,6 @@ class PendingChange {
                     IssueEntitlement targetTitle = (IssueEntitlement) target
                     targetTitle[targetProperty] = parsedNewValue
                     if(targetTitle.save()) {
-                        if(auditService.getAuditConfig(subscription,msgToken)) {
-                            subscription.derivedSubscriptions.each { Subscription childSub ->
-                                IssueEntitlement childTitle = IssueEntitlement.findBySubscriptionAndTipp(childSub,targetTitle.tipp)
-                                childTitle[targetProperty] = parsedNewValue
-                                if(!childTitle.save())
-                                    throw new ChangeAcceptException("problems when broadcasting entitlement update - pending change not accepted: ${childTitle.errors}")
-                            }
-                        }
                         done = true
                     }
                     else throw new ChangeAcceptException("problems when updating entitlement - pending change not accepted: ${targetTitle.errors}")
@@ -230,14 +219,6 @@ class PendingChange {
                     IssueEntitlement targetTitle = (IssueEntitlement) target
                     targetTitle.status = RDStore.TIPP_STATUS_DELETED
                     if(targetTitle.save()) {
-                        if(auditService.getAuditConfig(subscription,msgToken)) {
-                            subscription.derivedSubscriptions.each { Subscription childSub ->
-                                IssueEntitlement childTitle = IssueEntitlement.findBySubscriptionAndTipp(childSub,targetTitle.tipp)
-                                childTitle.status = RDStore.TIPP_STATUS_DELETED
-                                if(!childTitle.save())
-                                    throw new ChangeAcceptException("problems when broadcasting entitlement deletion - pending change not accepted: ${childTitle.errors}")
-                            }
-                        }
                         done = true
                     }
                     else throw new ChangeAcceptException("problems when deleting entitlement - pending change not accepted: ${targetTitle.errors}")
@@ -250,14 +231,6 @@ class PendingChange {
                     IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
                     targetCov[targetProperty] = parsedNewValue
                     if(targetCov.save()) {
-                        if(auditService.getAuditConfig(subscription,msgToken)) {
-                            subscription.derivedSubscriptions.each { Subscription childSub ->
-                                IssueEntitlementCoverage childCov = IssueEntitlementCoverage.executeQuery('select ic from IssueEntitlementCoverage ic where ic.issueEntitlement.tipp = :tipp and ic.issueEntitlement.subscription = :child',[child:childSub,tipp:targetCov.issueEntitlement.tipp])[0]
-                                childCov[targetProperty] = parsedNewValue
-                                if(!childCov.save())
-                                    throw new ChangeAcceptException("problems when broadcasting entitlement coverage update - pending change not accepted: ${childCov.errors}")
-                            }
-                        }
                         done = true
                     }
                     else throw new ChangeAcceptException("problems when updating coverage statement - pending change not accepted: ${targetCov.errors}")
@@ -269,16 +242,19 @@ class PendingChange {
                 if(target instanceof TIPPCoverage) {
                     TIPPCoverage tippCoverage = (TIPPCoverage) target
                     IssueEntitlement owner = IssueEntitlement.findBySubscriptionAndTipp(subscription,tippCoverage.tipp)
-                    IssueEntitlementCoverage ieCov = new IssueEntitlementCoverage([issueEntitlement:owner])
+                    Map<String,Object> configMap = [issueEntitlement:owner,
+                            startDate: tippCoverage.startDate,
+                            startIssue: tippCoverage.startIssue,
+                            startVolume: tippCoverage.startVolume,
+                            endDate: tippCoverage.endDate,
+                            endIssue: tippCoverage.endIssue,
+                            endVolume: tippCoverage.endVolume,
+                            embargo: tippCoverage.embargo,
+                            coverageDepth: tippCoverage.coverageDepth,
+                            coverageNote: tippCoverage.coverageNote,
+                    ]
+                    IssueEntitlementCoverage ieCov = new IssueEntitlementCoverage(configMap)
                     if(ieCov.save()) {
-                        if(auditService.getAuditConfig(subscription, msgToken)) {
-                            subscription.derivedSubscriptions.each { Subscription childSub ->
-                                IssueEntitlement childOwner = IssueEntitlement.findBySubscriptionAndTipp(childSub,tippCoverage.tipp)
-                                IssueEntitlementCoverage childCov = new IssueEntitlementCoverage([issueEntitlement:childOwner])
-                                if(!childCov.save())
-                                    throw new ChangeAcceptException("problems when broadcasting new entitlement creation - pending change not accepted: ${childOwner.errors}")
-                            }
-                        }
                         done = true
                     }
                     else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${ieCov.errors}")
@@ -290,18 +266,31 @@ class PendingChange {
                 if(target instanceof IssueEntitlementCoverage) {
                     IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
                     if(targetCov.delete()) {
-                        if(auditService.getAuditConfig(subscription,msgToken)) {
-                            subscription.derivedSubscriptions.each { Subscription childSub ->
-                                IssueEntitlementCoverage childCov = IssueEntitlementCoverage.executeQuery('select ic from IssueEntitlementCoverage ic where ic.issueEntitlement.tipp = :tipp and ic.issueEntitlement.subscription = :child',[child:childSub,tipp:targetCov.issueEntitlement.tipp])[0]
-                                if(!childCov.delete())
-                                    throw new ChangeAcceptException("problems when broadcasting entitlement coverage update - pending change not accepted: ${childCov.errors}")
-                            }
-                        }
                         done = true
                     }
                     else throw new ChangeAcceptException("problems when deleting coverage statement - pending change not accepted: ${targetCov.errors}")
                 }
                 else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${oid}! Pending change is void!")
+                break
+            //pendingChange.message_CI01 (billingSum)
+            case PendingChangeConfiguration.BILLING_SUM_UPDATED:
+                if(target instanceof CostItem) {
+                    CostItem costItem = (CostItem) target
+                    costItem.costInBillingCurrency = Double.parseDouble(newValue)
+                    if(costItem.save())
+                        done = true
+                    else throw new ChangeAcceptException("problems when updating billing sum - pending change not accepted: ${costItem.errors}")
+                }
+                break
+            //pendingChange.message_CI02 (localSum)
+            case PendingChangeConfiguration.LOCAL_SUM_UPDATED:
+                if(target instanceof CostItem) {
+                    CostItem costItem = (CostItem) target
+                    costItem.costInLocalCurrency = Double.parseDouble(newValue)
+                    if(costItem.save())
+                        done = true
+                    else throw new ChangeAcceptException("problems when updating local sum - pending change not accepted: ${costItem.errors}")
+                }
                 break
         }
         if(done) {

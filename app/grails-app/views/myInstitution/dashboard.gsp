@@ -134,7 +134,7 @@
         <g:if test="${editable}">
             <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'PendingChanges' || US_DASHBOARD_TAB.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
                 <div class="la-float-right">
-                    <g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>
+                    <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
                 </div>
                 <div class="ui internally celled grid">
                     <div class="row">
@@ -155,9 +155,6 @@
                         </div><!-- .column -->
                     </div>
                     <g:each in="${pending}" var="entry">
-                        <%--<div class="row">
-                            ${entry}
-                        </div>--%>
                         <g:set var="row" value="${pendingChangeService.printRow(entry.change)}" />
                         <g:set var="event" value="${row.eventData}"/>
                         <div class="row">
@@ -172,7 +169,7 @@
                                     <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
                                 </g:if>
                                 <g:elseif test="${entry.change.costItem}">
-
+                                    <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.target.sub.id]}">${entry.target.sub.dropdownNamingConvention()}</g:link>
                                 </g:elseif>
                             </div><!-- .column -->
                             <div class="seven wide column">
@@ -194,7 +191,7 @@
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'AcceptedChanges'}" data-tab="acceptedchanges">
             <div class="la-float-right">
-                <g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>
+                <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
             </div>
             <div class="ui internally celled grid">
                 <div class="row">
@@ -229,7 +226,7 @@
                                 <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
                             </g:if>
                             <g:elseif test="${entry.change.costItem}">
-
+                                <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.target.sub.id]}">${entry.target.sub.dropdownNamingConvention()}</g:link>
                             </g:elseif>
                         </div><!-- .column -->
                         <div class="ten wide column">
@@ -384,7 +381,7 @@
                                             </g:if>
                                         </span>
                                     <g:if test="${tskObj.controller.contains('survey')}">
-                                        <g:link controller="${tskObj.controller}" action="show" params="${[id: tskObj.object?.surveyInfo?.id, surveyConfigID:tskObj.object?.id]}">${tskObj.object.getSurveyName()}</g:link>
+                                        <g:link controller="${tskObj.controller}" action="show" params="${[id: tskObj.object?.surveyInfo.id, surveyConfigID:tskObj.object?.id]}">${tskObj.object.getSurveyName()}</g:link>
                                     </g:if>
                                         <g:else>
                                             <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>

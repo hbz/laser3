@@ -142,7 +142,7 @@ class SurveyConfig {
         if (type == 'Subscription') {
             return subscription?.name
         } else {
-            return surveyInfo?.name
+            return surveyInfo.name
         }
     }
 
@@ -151,7 +151,7 @@ class SurveyConfig {
         if (type == 'Subscription' && surveyInfo.isSubscriptionSurvey) {
             return subscription?.name
         } else {
-            return surveyInfo?.name
+            return surveyInfo.name
         }
     }
 
@@ -167,7 +167,7 @@ class SurveyConfig {
                     (subscription?.startDate ? ')' : '')
 
         } else {
-            return surveyInfo?.name
+            return surveyInfo.name
         }
     }
 
@@ -227,10 +227,20 @@ class SurveyConfig {
             int countFinish = 0
             int countNotFinish = 0
 
-            def surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+            boolean noParticipation = false
+            if(subSurveyUseForTransfer){
+                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+            }
 
-            if(surveyResults?.finishDate.contains(null)){
-                return false
+            if(!noParticipation) {
+
+                List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+
+                if (surveyResults?.finishDate.contains(null)) {
+                    return false
+                } else {
+                    return true
+                }
             }else {
                 return true
             }
@@ -243,7 +253,7 @@ class SurveyConfig {
     {
         def next
 
-        for(int i = 0 ; i < this.surveyInfo?.surveyConfigs?.size() ; i++ ) {
+        for(int i = 0 ; i < this.surveyInfo.surveyConfigs?.size() ; i++ ) {
             def curr = this.surveyInfo.surveyConfigs[ i ]
 
             if(curr?.id == this.id)

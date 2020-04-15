@@ -157,7 +157,7 @@ class AccessService {
         if (orgTypes) {
             orgTypes.each { ot ->
                 RefdataValue type = RefdataValue.getByValueAndCategory(ot?.trim(), RDConstants.ORG_TYPE)
-                check2 = check2 || contextService.getOrg()?.getallOrgTypeIds()?.contains(type?.id)
+                check2 = check2 || contextService.getOrg().getallOrgTypeIds()?.contains(type?.id)
             }
         } else {
             check2 = true
@@ -218,7 +218,7 @@ class AccessService {
         rolesToCheck << role
 
         // NEW CONSTRAINT:
-        if (org.id != contextService.getOrg()?.id) {
+        if (org.id != contextService.getOrg().id) {
             return result
         }
 

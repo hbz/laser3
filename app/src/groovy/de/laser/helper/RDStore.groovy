@@ -126,6 +126,7 @@ class RDStore {
     static final SUBSCRIPTION_INTENDED      = getRefdataValue('Intended', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('Status not defined', RDConstants.SUBSCRIPTION_STATUS)
+    static final SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION     = getRefdataValue('Under Process Of Selection', RDConstants.SUBSCRIPTION_STATUS)
 
     static final SURVEY_READY                   = getRefdataValue('Ready', RDConstants.SURVEY_STATUS)
     static final SURVEY_IN_PROCESSING           = getRefdataValue('In Processing', RDConstants.SURVEY_STATUS)

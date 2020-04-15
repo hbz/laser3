@@ -21,16 +21,16 @@
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig?.id}"
+            <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig.id}"
                     params="${[exportKBart: true, participant: participant?.id]}">KBART Export</g:link>
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
-            <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig?.id}"
+            <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig.id}"
                     params="${[exportXLSX: true, participant: participant?.id]}">${message(code: 'default.button.exports.xls')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <semui:actionsDropdown>
-        <g:if test="${surveyOrg?.finishDate && surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+        <g:if test="${surveyOrg.finishDate && surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
             <semui:actionsDropdownItem controller="survey" action="openIssueEntitlementsSurveyAgain"
                                        params="[id: surveyConfig?.id, participant: participant?.id]"
                                        message="openIssueEntitlementsSurveyAgain.label"/>
@@ -52,7 +52,7 @@
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
 <g:message code="issueEntitlementsSurvey.label"/>: <g:link controller="subscription" action="index"
-                                                           id="${subscriptionParticipant?.id}">${surveyConfig?.surveyInfo?.name}</g:link>
+                                                           id="${subscriptionParticipant?.id}">${surveyConfig?.surveyInfo.name}</g:link>
 </h1>
 
 
@@ -139,27 +139,23 @@
                                         id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
                         <g:if test="${tipp.hostPlatformURL}">
-                            <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                            <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
-                               data-content="${tipp?.platform.name}"
-                               href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
-                               target="_blank"><i class="cloud icon"></i></a>
+                            <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                         </g:if>
                         <br>
 
                         <div class="la-icon-list">
-                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp.title.volume}">
                                 <div class="item">
                                     <i class="grey icon la-books la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.volume')}"></i>
 
                                     <div class="content">
-                                        ${tipp?.title?.volume}
+                                        ${tipp.title.volume}
                                     </div>
                                 </div>
                             </g:if>
 
-                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
+                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
                                 <div class="item">
                                     <i class="grey icon user circle la-popup-tooltip la-delay"
                                        data-content="${message(code: 'author.slash.editor')}"></i>
@@ -170,24 +166,24 @@
                                 </div>
                             </g:if>
 
-                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp.title.editionStatement}">
                                 <div class="item">
                                     <i class="grey icon copy la-popup-tooltip la-delay"
                                        data-content="${message(code: 'title.editionStatement.label')}"></i>
 
                                     <div class="content">
-                                        ${tipp?.title?.editionStatement}
+                                        ${tipp.title.editionStatement}
                                     </div>
                                 </div>
                             </g:if>
 
-                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp.title.summaryOfContent}">
                                 <div class="item">
                                     <i class="grey icon list la-popup-tooltip la-delay"
                                        data-content="${message(code: 'title.summaryOfContent.label')}"></i>
 
                                     <div class="content">
-                                        ${tipp?.title?.summaryOfContent}
+                                        ${tipp.title.summaryOfContent}
                                     </div>
                                 </div>
                             </g:if>
@@ -196,19 +192,19 @@
 
                         <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
                             <g:if test="${id.ns.ns == 'originEditUrl'}">
-                            <%--<span class="ui small teal image label">
+                            <%--<span class="ui small blue image label">
                                 ${id.ns.ns}: <div class="detail"><a
                                     href="${id.value}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
                             </div>
                             </span>
-                            <span class="ui small teal image label">
+                            <span class="ui small blue image label">
                                 ${id.ns.ns}: <div class="detail"><a
                                     href="${id.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
                             </div>
                             </span>--%>
                             </g:if>
                             <g:else>
-                                <span class="ui small teal image label">
+                                <span class="ui small blue image label">
                                     ${id.ns.ns}: <div class="detail">${id.value}</div>
                                 </span>
                             </g:else>
