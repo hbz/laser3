@@ -637,17 +637,18 @@
         showRegionsdropdown(params.newValue);
     });
 
+
     function showRegionsdropdown(newValue) {
-        var id = newValue.split(':')[1]
          $("*[id^=regions_]").hide();
-         $("#regions_" + id).show();
-         $("#regions_" + id).editable('setValue', null);
+         if(newValue){
+             var id = newValue.split(':')[1]
+             $("#regions_" + id).editable('setValue', null);
+             $("#regions_" + id).show();
+         }
     };
 
     $(document).ready(function(){
         var country = $("#country").editable('getValue', true);
-        var id = country.split(':')[1]
-        $("*[id^=regions_]").hide();
-        $("#regions_" + id).show();
+        showRegionsdropdown(country);
     });
 </r:script>
