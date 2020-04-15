@@ -4,6 +4,8 @@
 
 2368    15.04.2020  rc1.3       David   Bug         Hotfixkandidat: Nutzer kann fälschlich ohne Org-Bezug anlegen
 
+2373    15.04.2020  rc1.3       Andreas Bug         NullPointerException bei Zusammenstellung der Hauptkontakte für Export behoben
+
 2367    14.04.2020  rc1.3       Andreas Feature     Lizenzexport um globale UIDs der Lizenzen erweitert
 
 2365    14.04.2020  rc1.3       Andreas Bug         Konsortialstellen erhalten keine Dublette mehr bei Auswahl eines einzelnen Teilnehmers
