@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1973    15.04.2020  rc1.3       Anja    Bug         org/show abhängige Region-Dropdowns richtig einblenden/Initialauswahl
+
 2367    14.04.2020  rc1.3       Andreas Feature     Lizenzexport um globale UIDs der Lizenzen erweitert
 
 2365    14.04.2020  rc1.3       Andreas Bug         Konsortialstellen erhalten keine Dublette mehr bei Auswahl eines einzelnen Teilnehmers
