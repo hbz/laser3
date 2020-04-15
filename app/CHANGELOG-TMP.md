@@ -2,6 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2371    15.04.2020  rc1.3       Moe     Bug         Titelauswahlumfrage Bug in der Auswertungssicht
+
+2374    15.04.2020  rc1.3       Moe     Bug         Titelumfrage Excel
+
+2369    15.04.2020  rc1.3       Moe     Bug         Hotfixkandidat: Zahl der Einrichtungen bei /org/listInstitution stimmt nicht	
+
+2377    15.04.2020  rc1.3       Moe     Bug         filter eines konsortialteilnehmers
+
+2366    15.04.2020  rc1.3       Moe     Bug         Cronjob Status der Kindlizenzen Mehrjahreslaufzeit
+
 1973    15.04.2020  rc1.3       Anja    Bug         org/show abhängige Region-Dropdowns richtig einblenden/Initialauswahl
 
 2375    15.04.2020  rc1.3       Anja    Bug         org/show Identifikatorpanel immer enabled

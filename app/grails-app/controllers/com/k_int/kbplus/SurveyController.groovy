@@ -1290,6 +1290,8 @@ class SurveyController {
             result.visibleOrgRelations.sort { it.org.sortname }
         }
 
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig).sort { it.surveyConfig.configOrder }
+
         result
 
     }

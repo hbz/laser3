@@ -698,7 +698,7 @@
                     <g:set var="surveyOrg"
                            value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, institution)}"/>
 
-                    <g:if test="${surveyOrg.existsMultiYearTerm() && surveyResult.surveyConfig.subSurveyUseForTransfer}">
+                    <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
                         <td>
                             <g:message code="surveyOrg.perennialTerm.available"/>
                         </td>

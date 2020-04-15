@@ -105,7 +105,7 @@
     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                       subscriptionInstance: subscriptionInstance,
                                                                       visibleOrgRelations : visibleOrgRelations,
-    ]"/>
+                                                                      surveyResults       : surveyResults        ]"/>
 </div>
 
 <div class="ui stackable grid">
