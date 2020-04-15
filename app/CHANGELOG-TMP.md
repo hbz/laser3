@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2318    15.04.2020  rc1.3       Moe     Bug         Gasco-Monitor: Anbieteranzeige fehlt	
+
 2371    15.04.2020  rc1.3       Moe     Bug         Titelauswahlumfrage Bug in der Auswertungssicht
 
 2374    15.04.2020  rc1.3       Moe     Bug         Titelumfrage Excel
