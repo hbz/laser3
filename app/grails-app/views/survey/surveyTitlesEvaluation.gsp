@@ -14,6 +14,15 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
+    <g:if test="${surveyInfo.status != de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
+    </g:if>
+
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -60,7 +69,7 @@
         </div>
 
         <g:if test="${surveyConfig.surveyProperties?.size() > 0}">
-            <div class="ui bottom attached tab segment active">
+            <div class="ui bottom attached tab segment active" data-tab="surveyConfigsView">
 
                 <g:if test="${surveyConfig}">
 

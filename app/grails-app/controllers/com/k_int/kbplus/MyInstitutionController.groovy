@@ -3441,36 +3441,42 @@ AND EXISTS (
         List bm = du.stopBenchmark()
         result.benchMark = bm
 
-        BidiMap subLinks = new DualHashBidiMap()
-        Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
-            subLinks.put(link.source,link.destination)
-        }
         LinkedHashMap<Subscription,List<Org>> providers = [:]
-        OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
-            List<Org> orgs = providers.get(it.sub)
-            if(orgs == null)
-                orgs = [it.org]
-            else orgs.add(it.org)
-            providers.put(it.sub,orgs)
-        }
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
-                "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
-                [ctx: result.institution,
-                 roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                 email: RDStore.CCT_EMAIL])
         Map<Org,Set<String>> mailAddresses = [:]
-        persons.each { personRow ->
-            Person person = (Person) personRow[1]
-            Org org = person.roleLinks.find{ p -> p.org != result.institution}.org
-            Set<String> addresses = mailAddresses.get(org)
-            String mailAddress = (String) personRow[0]
-            if(!addresses) {
-                addresses = []
+        BidiMap subLinks = new DualHashBidiMap()
+        if(params.format || params.exportXLS) {
+            Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
+                subLinks.put(link.source,link.destination)
             }
-            addresses << mailAddress
-            mailAddresses.put(org,addresses)
+            OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
+                List<Org> orgs = providers.get(it.sub)
+                if(orgs == null)
+                    orgs = [it.org]
+                else orgs.add(it.org)
+                providers.put(it.sub,orgs)
+            }
+            List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
+                    "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
+                    [ctx: result.institution,
+                     roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
+                     email: RDStore.CCT_EMAIL])
+            persons.each { personRow ->
+                Person person = (Person) personRow[1]
+                PersonRole pr = person.roleLinks.find{ p -> p.org != result.institution}
+                if(pr) {
+                    Org org = pr.org
+                    Set<String> addresses = mailAddresses.get(org)
+                    String mailAddress = (String) personRow[0]
+                    if(!addresses) {
+                        addresses = []
+                    }
+                    addresses << mailAddress
+                    mailAddresses.put(org,addresses)
+                }
+            }
         }
+
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
