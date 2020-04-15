@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2375    15.04.2020  rc1.3       Anja    Bug         org/show Tab Identifikatoren immer enabled
+
 2335    03.04.2020  rc1.3       David   Bug         "Alle Änderungen annehmen" funktioniert nicht
 
 2329    03.04.2020  rc1.3       Moe     Bug         Menüleiste "Alle" - "Alle Titel" : Bug      

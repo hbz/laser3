@@ -12,24 +12,7 @@
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>
-    <g:if test="${(orgInstance.sector != RDStore.O_SECTOR_PUBLISHER) && (!departmentalView)}">
-        <g:if test="${inContextOrg}">
-            <semui:securedSubNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}"
-                                     message="org.nav.ids" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
-        </g:if>
-        <g:elseif test="${accessService.checkForeignOrgComboPermAffiliationX([
-                org: orgInstance,
-                comboPerm: "ORG_INST_COLLECTIVE, ORG_CONSORTIUM",
-                comboAffiliation: "INST_ADM",
-                specRoles: "ROLE_ORG_EDITOR, ROLE_ADMIN"
-        ])}">
-            <semui:subNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}" message="org.nav.ids"/>
-        </g:elseif>
-
-        <g:else>
-            <semui:subNavItem message="org.nav.ids" disabled="disabled" />
-        </g:else>
-    </g:if>
+    <semui:subNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}" message="org.nav.ids"/>
     <g:if test="${inContextOrg}">
         <semui:subNavItem controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
     </g:if>
