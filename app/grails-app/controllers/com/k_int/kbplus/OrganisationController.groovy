@@ -1056,7 +1056,16 @@ class OrganisationController extends AbstractDebugController {
         Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:orgInstance])
         availableComboOrgs.add(orgInstance)
         result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
-        result.tableConfig = [editable: result.editable, editor: result.user, editLink: 'userEdit', users: result.users, showAllAffiliations: false, modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA'), availableComboOrgs: availableComboOrgs]
+        result.tableConfig = [
+                editable: result.editable,
+                editor: result.user,
+                editLink: 'userEdit',
+                users: result.users,
+                showAllAffiliations: false,
+                showAffiliationDeleteLink: true,
+                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA'),
+                availableComboOrgs: availableComboOrgs
+        ]
         result.total = result.users.size()
         render view: '/templates/user/_list', model: result
     }
@@ -1151,9 +1160,14 @@ class OrganisationController extends AbstractDebugController {
     def processAffiliation() {
       Map<String, Object> result = [:]
       result.user = User.get(springSecurityService.principal.id)
+
+      // ERMS-2370 -> support multiple assocs
       UserOrg uo = UserOrg.get(params.assoc)
 
-      if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id), [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])) {
+        // ERMS-2370 -> what about ADMIN and YODA?
+      if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id), [
+              RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM
+      ])) {
 
           if (params.cmd == 'approve') {
               uo.status = UserOrg.STATUS_APPROVED
