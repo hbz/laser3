@@ -16,7 +16,9 @@
 
         <semui:debugInfo>
             <div style="padding: 1em 0;">
-                <p>sub.instanceOf: <g:if test="${subscriptionInstance.instanceOf}"> <g:link action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf.name}</g:link></g:if> </p>
+                <p>sub.instanceOf: <g:if test="${subscriptionInstance.instanceOf}"> <g:link action="show" id="${subscriptionInstance. instanceOf.id}">${subscriptionInstance.instanceOf.name}</g:link>
+                    ${subscriptionInstance.instanceOf.getAllocationTerm()}
+                </g:if> </p>
                 <p>sub.administrative: ${subscriptionInstance.administrative}</p>
                 <p>getCalculatedType(): ${subscriptionInstance.getCalculatedType()}</p>
             </div>
