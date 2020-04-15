@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2370    15.04.2020  rc1.3       David   Bug         Hotfixkandidat: "Zugehörigkeit löschen" bei /user/list löscht Zugehörigkeit des falschen Nutzers
+
 2367    14.04.2020  rc1.3       Andreas Feature     Lizenzexport um globale UIDs der Lizenzen erweitert
 
 2365    14.04.2020  rc1.3       Andreas Bug         Konsortialstellen erhalten keine Dublette mehr bei Auswahl eines einzelnen Teilnehmers

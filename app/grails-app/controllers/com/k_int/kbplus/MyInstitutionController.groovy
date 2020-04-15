@@ -2845,7 +2845,15 @@ AND EXISTS (
         result.navConfiguration = [orgInstance: result.institution, inContextOrg: true]
         result.multipleAffiliationsWarning = true
         result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
-        result.tableConfig = [editable:result.editable, editor:result.user, editLink: 'userEdit', users: result.users, showAllAffiliations: false, modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')]
+        result.tableConfig = [
+                editable: result.editable,
+                editor: result.user,
+                editLink: 'userEdit',
+                users: result.users,
+                showAllAffiliations: false,
+                showAffiliationDeleteLink: true,
+                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
+        ]
         result.total = result.users.size()
 
         render view: '/templates/user/_list', model: result
