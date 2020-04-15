@@ -37,7 +37,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
             log.info("Intended subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds1)
 
             if (intendedSubsIds1) {
-                updatedObjs << ["intendedToCurrent (${intendedSubsIds1.size()?:0})" : intendedSubsIds1]
+                updatedObjs << ["intendedToCurrent (${intendedSubsIds1.size()})" : intendedSubsIds1]
 
                 Subscription.executeUpdate(
                         'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
@@ -60,7 +60,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
             log.info("Intended perennial subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds2)
 
             if (intendedSubsIds2) {
-                updatedObjs << ["MultiYear_intendedToCurrent (${intendedSubsIds2.size()?:0})" : intendedSubsIds2]
+                updatedObjs << ["MultiYear_intendedToCurrent (${intendedSubsIds2.size()})" : intendedSubsIds2]
 
                 Subscription.executeUpdate(
                         'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
@@ -81,7 +81,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
             log.info("Intended subscriptions reached start date and end date are now expired (${currentDate}): " + intendedSubsIds3)
 
             if (intendedSubsIds3) {
-                updatedObjs << ["intendedToExpired (${intendedSubsIds3.size()?:0})" : intendedSubsIds3]
+                updatedObjs << ["intendedToExpired (${intendedSubsIds3.size()})" : intendedSubsIds3]
 
                 Subscription.executeUpdate(
                         'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
@@ -102,7 +102,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
             log.info("Intended subscriptions reached start date and end date are now expired pernennial (${currentDate}): " + intendedSubsIds4)
 
             if (intendedSubsIds4) {
-                updatedObjs << ["MultiYear_intendedToExpired (${intendedSubsIds4.size()?:0})" : intendedSubsIds4]
+                updatedObjs << ["MultiYear_intendedToExpired (${intendedSubsIds4.size()})" : intendedSubsIds4]
 
                 Subscription.executeUpdate(
                         'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
@@ -123,7 +123,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
             log.info("Current subscriptions reached end date and are now expired (${currentDate}): " + currentSubsIds)
 
             if (currentSubsIds) {
-                updatedObjs << ["currentToExpired (${currentSubsIds.size()?:0})" : currentSubsIds]
+                updatedObjs << ["currentToExpired (${currentSubsIds.size()})" : currentSubsIds]
 
                 Subscription.executeUpdate(
                         'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
@@ -144,7 +144,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
             log.info("Current subscriptions reached end date and are now expired (${currentDate}): " + currentSubsIds2)
 
             if (currentSubsIds2) {
-                updatedObjs << ["MultiYear_currentPerennialToExpired (${currentSubsIds2.size()?:0})" : currentSubsIds2]
+                updatedObjs << ["MultiYear_currentPerennialToExpired (${currentSubsIds2.size()})" : currentSubsIds2]
 
                 Subscription.executeUpdate(
                         'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
