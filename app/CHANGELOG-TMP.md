@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2371    15.04.2020  rc1.3       Moe     Bug         Titelauswahlumfrage Bug in der Auswertungssicht
+
+2374    15.04.2020  rc1.3       Moe     Bug         Titelumfrage Excel
+
 2369    15.04.2020  rc1.3       Moe     Bug         Hotfixkandidat: Zahl der Einrichtungen bei /org/listInstitution stimmt nicht	
 
 2377    15.04.2020  rc1.3       Moe     Bug         filter eines konsortialteilnehmers
