@@ -12,6 +12,8 @@
 
 2366    15.04.2020  rc1.3       Moe     Bug         Cronjob Status der Kindlizenzen Mehrjahreslaufzeit
 
+1973    15.04.2020  rc1.3       Anja    Bug         org/show abhängige Region-Dropdowns richtig einblenden/Initialauswahl
+
 2375    15.04.2020  rc1.3       Anja    Bug         org/show Identifikatorpanel immer enabled
 
 2368    15.04.2020  rc1.3       David   Bug         Hotfixkandidat: Nutzer kann fälschlich ohne Org-Bezug anlegen
