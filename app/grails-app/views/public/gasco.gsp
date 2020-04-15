@@ -165,7 +165,7 @@
                         </g:each>
                     </td>
                     <td>
-                        <g:each in="${OrgRole.findAllBySubAndRoleType(sub, OR_PROVIDER)}" var="role">
+                        <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_PROVIDER)}" var="role">
                             ${role.org?.name}<br>
                         </g:each>
                     </td>
