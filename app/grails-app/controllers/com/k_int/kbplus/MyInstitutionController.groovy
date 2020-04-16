@@ -3919,7 +3919,8 @@ AND EXISTS (
         Map<String, Object> result = setResultGenerics()
 
         if('add' == params.cmd) {
-            flash.message = addPrivatePropertyDefinition(params)
+            List rl = addPrivatePropertyDefinition(params)
+            flash."${rl[0]}" = rl[1]
         }
 
         else if('delete' == params.cmd) {
@@ -3987,8 +3988,8 @@ AND EXISTS (
      * @return
      */
 
-    private addPrivatePropertyDefinition(params) {
-        log.debug("adding private property definition for institution: " + params)
+    private List addPrivatePropertyDefinition(params) {
+        log.debug("trying to add private property definition for institution: " + params)
 
         def tenant = GrailsHibernateUtil.unwrapIfProxy(contextService.getOrg())
 
@@ -3999,7 +4000,10 @@ AND EXISTS (
                 tenant: tenant,
         )
 
-        if(! privatePropDef){
+        if (privatePropDef) {
+            return ['error', message(code: 'propertyDefinition.name.unique')]
+        }
+        else {
             def rdc
 
             if (params.refdatacategory) {
@@ -4019,16 +4023,16 @@ AND EXISTS (
                             expl_de: params.pd_expl?.trim(),
                             expl_en: params.pd_expl?.trim()
                     ],
-                    tenant      : tenant?.getShortname()
+                    tenant      : tenant?.globalUID
             ]
 
             privatePropDef = PropertyDefinition.construct(map)
 
             if (privatePropDef.save(flush: true)) {
-                return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])
+                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])]
             }
             else {
-                return message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.name])
+                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.name])]
             }
         }
     }

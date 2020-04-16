@@ -563,25 +563,22 @@ class BootStrap {
 
         requiredProps.each { default_prop ->
 
-            Org tenant = default_prop.tenant ? Org.findByShortname(default_prop.tenant) : null
-
             Map<String, Object> map = [
-                    token       : default_prop.name['en'],
-                    category    : default_prop.descr['en'],
-                    type        : default_prop.type,
-                    hardData    : BOOTSTRAP,
-                    rdc         : default_prop.cat,
-                    multiple    : default_prop.multiple,
-                    logic       : default_prop.isUsedForLogic,
-                    tenant      : tenant,
-                    i10n        : [
+                    token   : default_prop.name['en'],
+                    category: default_prop.descr['en'],
+                    type    : default_prop.type,
+                    hardData: BOOTSTRAP,
+                    rdc     : default_prop.cat,
+                    multiple: default_prop.multiple,
+                    logic   : default_prop.isUsedForLogic,
+                    tenant  : default_prop.tenant,
+                    i10n    : [
                             name_de: default_prop.name?.trim(),
                             name_en: default_prop.name?.trim(),
                             expl_de: default_prop.expl?.trim(),
                             expl_en: default_prop.expl?.trim()
                     ]
             ]
-
             PropertyDefinition.construct(map)
         }
     }

@@ -4,6 +4,8 @@
 
 1859    16.04.2020  rc1.3       Anja    Feature     Merkmale verwalten: Spalte Schlüssel entf, Performanceverbesserung
 
+2380    16.04.2020  rc1.3       David   Bug         Private Merkmale werden falsch zugeordnet
+
 2370    15.04.2020  rc1.3       David   Bug         Hotfixkandidat: "Zugehörigkeit löschen" bei /user/list löscht Zugehörigkeit des falschen Nutzers
 
 2318    15.04.2020  rc1.3       Moe     Bug         Gasco-Monitor: Anbieteranzeige fehlt	

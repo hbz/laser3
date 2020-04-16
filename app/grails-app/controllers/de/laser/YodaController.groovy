@@ -240,7 +240,7 @@ class YodaController {
                 category    : PropertyDefinition.SUB_PROP,
                 type        : "class com.k_int.kbplus.RefdataValue",
                 rdc         : RDConstants.Y_N_O,
-                tenant      : contextService.getOrg(),
+                tenant      : contextService.getOrg().globalUID,
                 i10n        : [
                     name_de: "Quellensteuer-Befreiung",
                     name_en: "Quellensteuer-Befreiung",
@@ -254,7 +254,7 @@ class YodaController {
                 category    : PropertyDefinition.ORG_PROP,
                 type        : "class com.k_int.kbplus.RefdataValue",
                 rdc         : RDConstants.Y_N,
-                tenant      : contextService.getOrg(),
+                tenant      : contextService.getOrg().globalUID,
                 i10n        : [
                         name_de: "BGA",
                         name_en: "BGA",
@@ -267,7 +267,7 @@ class YodaController {
                 token       : "EGP Nr.",
                 category    : PropertyDefinition.ORG_PROP,
                 type        : "class java.lang.Integer",
-                tenant      : contextService.getOrg(),
+                tenant      : contextService.getOrg().globalUID,
                 i10n        : [
                         name_de: "EGP Nr.",
                         name_en: "EGP Nr.",
