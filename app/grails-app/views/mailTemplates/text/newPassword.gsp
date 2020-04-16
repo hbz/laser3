@@ -1,10 +1,10 @@
-Sehr geehrte/r ${user.display},
+Guten Tag,
 
-für Sie wurde von einem Administrator ein neues Passwort vergeben:
+für Sie wurde ein neues Passwort vergeben:
 
 ${serverURL}
 
-Kontoname: ${user.username}
+Benutzername: ${user.username}
 
 Passwort: ${newPass}
 
