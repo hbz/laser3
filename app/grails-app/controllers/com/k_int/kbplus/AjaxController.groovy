@@ -1279,7 +1279,7 @@ class AjaxController {
         def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
 
         // TODO ownerClass
-        if (PropertyDefinition.findByNameAndDescrAndTenant(params.cust_prop_name, params.cust_prop_desc, params.ownerId)) {
+        if (PropertyDefinition.findByNameAndDescrAndTenantIsNull(params.cust_prop_name, params.cust_prop_desc)) {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {

@@ -1730,7 +1730,7 @@ class SurveyController {
                     category    : PropertyDefinition.SUR_PROP,
                     type        : params.pd_type,
                     rdc         : rdc?.getDesc(),
-                    tenant      : result.institution.shortname,
+                    tenant      : result.institution.globalUID,
                     i10n        : [
                             name_de: params.pd_name,
                             name_en: params.pd_name,
