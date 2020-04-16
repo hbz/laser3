@@ -98,8 +98,8 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   static constraints = {
     globalUID      (nullable:true, blank:false, unique:true, maxSize:255)
     status         (nullable:true, blank:false)
-    subscription   (nullable:true, blank:false)
-    tipp           (nullable:true, blank:false)
+    subscription   (nullable:false, blank:false)
+    tipp           (nullable:false, blank:false)
     ieReason       (nullable:true, blank:true)
     medium         (nullable:true, blank:true)
     priceItem      (nullable:true, blank:true)
