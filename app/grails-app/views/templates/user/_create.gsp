@@ -42,7 +42,7 @@
                                       optionKey="id"
                                       optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                                       value="${params.org ?: orgInstance?.id}"
-                                      class="ui fluid search dropdown"/>
+                                      class="ui fluid search dropdown la-not-clearable"/>
                         </div>
                         <div class="field">
                             <label for="userRole">${message(code:'user.role')}</label>

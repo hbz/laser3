@@ -838,7 +838,7 @@ class OrganisationService {
                     category    : PropertyDefinition.SUB_PROP,
                     type        : "class com.k_int.kbplus.RefdataValue",
                     rdc         : RDConstants.Y_N_O,
-                    tenant      : current,
+                    tenant      : current.globalUID,
                     i10n        : [
                             name_de: "Quellensteuer-Befreiung",
                             name_en: "Quellensteuer-Befreiung",
@@ -852,7 +852,7 @@ class OrganisationService {
                     category    : PropertyDefinition.ORG_PROP,
                     type        : "class com.k_int.kbplus.RefdataValue",
                     rdc         : RDConstants.Y_N,
-                    tenant      : current,
+                    tenant      : current.globalUID,
                     i10n        : [
                             name_de: "BGA",
                             name_en: "BGA",
@@ -865,7 +865,7 @@ class OrganisationService {
                     token       : "EGP Nr.",
                     category    : PropertyDefinition.ORG_PROP,
                     type        : "class java.lang.Integer",
-                    tenant      : current,
+                    tenant      : current.globalUID,
                     i10n        : [
                             name_de: "EGP Nr.",
                             name_en: "EGP Nr.",

@@ -11,6 +11,7 @@ import de.laser.SystemAnnouncement
 
 //import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
+import de.laser.domain.AbstractI10nTranslatable
 
 //import de.laser.TaskService //unused for quite a long time
 
@@ -2845,7 +2846,15 @@ AND EXISTS (
         result.navConfiguration = [orgInstance: result.institution, inContextOrg: true]
         result.multipleAffiliationsWarning = true
         result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
-        result.tableConfig = [editable:result.editable, editor:result.user, editLink: 'userEdit', users: result.users, showAllAffiliations: false, modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')]
+        result.tableConfig = [
+                editable: result.editable,
+                editor: result.user,
+                editLink: 'userEdit',
+                users: result.users,
+                showAllAffiliations: false,
+                showAffiliationDeleteLink: true,
+                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
+        ]
         result.total = result.users.size()
 
         render view: '/templates/user/_list', model: result
@@ -3433,36 +3442,42 @@ AND EXISTS (
         List bm = du.stopBenchmark()
         result.benchMark = bm
 
-        BidiMap subLinks = new DualHashBidiMap()
-        Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
-            subLinks.put(link.source,link.destination)
-        }
         LinkedHashMap<Subscription,List<Org>> providers = [:]
-        OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
-            List<Org> orgs = providers.get(it.sub)
-            if(orgs == null)
-                orgs = [it.org]
-            else orgs.add(it.org)
-            providers.put(it.sub,orgs)
-        }
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
-                "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
-                [ctx: result.institution,
-                 roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                 email: RDStore.CCT_EMAIL])
         Map<Org,Set<String>> mailAddresses = [:]
-        persons.each { personRow ->
-            Person person = (Person) personRow[1]
-            Org org = person.roleLinks.find{ p -> p.org != result.institution}.org
-            Set<String> addresses = mailAddresses.get(org)
-            String mailAddress = (String) personRow[0]
-            if(!addresses) {
-                addresses = []
+        BidiMap subLinks = new DualHashBidiMap()
+        if(params.format || params.exportXLS) {
+            Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
+                subLinks.put(link.source,link.destination)
             }
-            addresses << mailAddress
-            mailAddresses.put(org,addresses)
+            OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
+                List<Org> orgs = providers.get(it.sub)
+                if(orgs == null)
+                    orgs = [it.org]
+                else orgs.add(it.org)
+                providers.put(it.sub,orgs)
+            }
+            List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
+                    "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
+                    [ctx: result.institution,
+                     roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
+                     email: RDStore.CCT_EMAIL])
+            persons.each { personRow ->
+                Person person = (Person) personRow[1]
+                PersonRole pr = person.roleLinks.find{ p -> p.org != result.institution}
+                if(pr) {
+                    Org org = pr.org
+                    Set<String> addresses = mailAddresses.get(org)
+                    String mailAddress = (String) personRow[0]
+                    if(!addresses) {
+                        addresses = []
+                    }
+                    addresses << mailAddress
+                    mailAddresses.put(org,addresses)
+                }
+            }
         }
+
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
@@ -3646,7 +3661,7 @@ AND EXISTS (
                     result
                 }
                 csv {
-                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'), message(code:'globalUID.label'),
+                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'myinst.consortiaSubscriptions.subscription'), message(code:'globalUID.label'),
                                    message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
                                    message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                                    message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
@@ -3900,22 +3915,23 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    Map<String, Object> managePrivateProperties() {
+    Map<String, Object> managePrivatePropertyDefinitions() {
         Map<String, Object> result = setResultGenerics()
 
         if('add' == params.cmd) {
-            flash.message = addPrivatePropertyDefinition(params)
+            List rl = addPrivatePropertyDefinition(params)
+            flash."${rl[0]}" = rl[1]
         }
+
         else if('delete' == params.cmd) {
             flash.message = deletePrivatePropertyDefinition(params)
         }
-
+        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
-            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
             propDefs[it] = itResult
         }
-
 
         result.propertyDefinitions = propDefs
 
@@ -3923,7 +3939,6 @@ AND EXISTS (
         result.usedPdList = usedPdList
         result.attrMap = attrMap
         //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
-        result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'private'
         result
     }
@@ -3935,9 +3950,10 @@ AND EXISTS (
     Object managePropertyDefinitions() {
         Map<String,Object> result = setResultGenerics()
 
+        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!
             propDefs[it] = itResult
         }
 
@@ -3949,7 +3965,6 @@ AND EXISTS (
         //result.attrMap = attrMap
         //result.usedPdList = usedPdList
 
-        result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'custom'
         render view: 'managePropertyDefinitions', model: result
     }
@@ -3973,8 +3988,8 @@ AND EXISTS (
      * @return
      */
 
-    private addPrivatePropertyDefinition(params) {
-        log.debug("adding private property definition for institution: " + params)
+    private List addPrivatePropertyDefinition(params) {
+        log.debug("trying to add private property definition for institution: " + params)
 
         def tenant = GrailsHibernateUtil.unwrapIfProxy(contextService.getOrg())
 
@@ -3985,7 +4000,10 @@ AND EXISTS (
                 tenant: tenant,
         )
 
-        if(! privatePropDef){
+        if (privatePropDef) {
+            return ['error', message(code: 'propertyDefinition.name.unique')]
+        }
+        else {
             def rdc
 
             if (params.refdatacategory) {
@@ -4005,16 +4023,16 @@ AND EXISTS (
                             expl_de: params.pd_expl?.trim(),
                             expl_en: params.pd_expl?.trim()
                     ],
-                    tenant      : tenant?.getShortname()
+                    tenant      : tenant?.globalUID
             ]
 
             privatePropDef = PropertyDefinition.construct(map)
 
             if (privatePropDef.save(flush: true)) {
-                return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])
+                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])]
             }
             else {
-                return message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.name])
+                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.name])]
             }
         }
     }

@@ -141,7 +141,7 @@
                         <g:set var="surveyOrg"
                                value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty.surveyConfig, participant)}"/>
 
-                        <g:if test="${surveyOrg.existsMultiYearTerm() && resultProperty.surveyConfig.subSurveyUseForTransfer}">
+                        <g:if test="${resultProperty.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
 
                             <g:message code="surveyOrg.perennialTerm.available"/>
 
@@ -281,7 +281,7 @@
                         <g:set var="surveyOrg"
                                value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty.surveyConfig, participant)}"/>
 
-                        <g:if test="${surveyOrg.existsMultiYearTerm() && resultProperty.surveyConfig.subSurveyUseForTransfer}">
+                        <g:if test="${resultProperty.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
 
                             <g:message code="surveyOrg.perennialTerm.available"/>
 
