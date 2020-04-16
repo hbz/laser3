@@ -50,4 +50,13 @@ abstract class AbstractI10nTranslatable {
     def propertyMissing(String name, def value) {
         i10nStorage["${name}"] = value
     }
+
+    /** Suffix for DB Tables. Right now, there are only German and English Columns */
+    static String getLanguageSuffix(){
+        String languageSuffix = 'en'
+        if (LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage()){
+            languageSuffix = 'de'
+        }
+        languageSuffix
+    }
 }
