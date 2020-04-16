@@ -27,11 +27,6 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
     @Transient
-    final static TRUE  = true
-    @Transient
-    final static FALSE = false
-
-    @Transient
     final static CUSTOM_PROPERTY  = "CUSTOM_PROPERTY"
     @Transient
     final static PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
@@ -183,7 +178,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         boolean mandatory   = new Boolean( map.get('mandatory') )
         boolean multiple    = new Boolean( map.get('multiple') )
         boolean logic       = new Boolean( map.get('logic') )
-        Org tenant          = map.get('tenant') ? Org.findByShortname(map.get('tenant')) : null
+        Org tenant          = map.get('tenant') ? Org.findByGlobalUID(map.get('tenant')) : null
         Map i10n            = map.get('i10n')  ?: [
                 name_de: token,
                 name_en: token,
@@ -195,6 +190,10 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
 
         typeIsValid(type)
 
+        if (map.tenant && !tenant) {
+            static_logger.debug('WARNING: tenant not found: ' + map.tenant + ', property "' + token + '" is handled as public')
+        }
+
         PropertyDefinition pd
 
         if (tenant) {
@@ -205,7 +204,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         }
 
         if (! pd) {
-            static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}) @ ${tenant}")
+            static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}), tenant: ${tenant}")
 
             boolean multipleOccurrence = (category == PropertyDefinition.SUR_PROP) ? false : multiple
 
