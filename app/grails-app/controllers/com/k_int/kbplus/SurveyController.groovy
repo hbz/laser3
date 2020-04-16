@@ -1180,7 +1180,10 @@ class SurveyController {
                     g.message(code:'title.dateFirstInPrint.label'),
                     g.message(code:'title.dateFirstOnline.label'),
                     g.message(code:'default.status.label'),
-                    g.message(code:'tipp.price')
+                    g.message(code:'tipp.listPrice'),
+                    g.message(code:'financials.currency'),
+                    g.message(code:'tipp.localPrice'),
+                    g.message(code:'financials.currency')
 
             ]
             List rows = []
@@ -1216,9 +1219,17 @@ class SurveyController {
 
                 row.add([field: ie.acceptStatus?.getI10n('value') ?: '', style:null])
 
-                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, type: 'currency', currencySymbol: ie.priceItem.listCurrency, currencyCode: ie.priceItem.listCurrency) : '', style:null])
-                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, type: 'currency', currencySymbol: ie.priceItem.localCurrency, currencyCode: ie.priceItem?.localCurrency) : '', style:null])
-
+                if(ie.priceItem) {
+                    row.add([field: ie.priceItem.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
+                    row.add([field: ie.priceItem.listCurrency ?: '', style: null])
+                    row.add([field: ie.priceItem.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
+                    row.add([field: ie.priceItem.localCurrency ?: '', style: null])
+                }else{
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                }
 
                 rows.add(row)
             }
@@ -4643,6 +4654,7 @@ class SurveyController {
                        g.message(code: 'org.libraryNetwork.label'),
                        g.message(code: 'surveyProperty.subName'),
                        g.message(code: 'surveyConfigsInfo.newPrice'),
+                       g.message(code: 'financials.currency'),
                        g.message(code: 'surveyConfigsInfo.newPrice.comment')
         ]
 
@@ -4674,10 +4686,12 @@ class SurveyController {
 
             if (!surveyOrg.existsMultiYearTerm()) {
                 if (costItem) {
-                    row.add([field: g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number") + costItem?.billingCurrency?.getI10n('value').split('-').first(), style: null])
+                    row.add([field: g.formatNumber(number: costItem.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number"), style: null])
+                    row.add([field: costItem.billingCurrency?.getI10n('value').split('-').first(), style: null])
                 }
             } else {
                 row.add([field: g.message(code: "surveyOrg.perennialTerm.available"), style: null])
+                row.add([field: '', style: null])
             }
 
             row.add([field: costItem.costDescription ?: '', style: null])
