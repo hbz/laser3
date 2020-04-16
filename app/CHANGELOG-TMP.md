@@ -2,6 +2,32 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1859    16.04.2020  rc1.3       Anja    Feature     Merkmale verwalten: Spalte Schlüssel entf, Performanceverbesserung
+
+2380    16.04.2020  rc1.3       David   Bug         Private Merkmale werden falsch zugeordnet
+
+2370    15.04.2020  rc1.3       David   Bug         Hotfixkandidat: "Zugehörigkeit löschen" bei /user/list löscht Zugehörigkeit des falschen Nutzers
+
+2318    15.04.2020  rc1.3       Moe     Bug         Gasco-Monitor: Anbieteranzeige fehlt	
+
+2371    15.04.2020  rc1.3       Moe     Bug         Titelauswahlumfrage Bug in der Auswertungssicht
+
+2374    15.04.2020  rc1.3       Moe     Bug         Titelumfrage Excel
+
+2369    15.04.2020  rc1.3       Moe     Bug         Hotfixkandidat: Zahl der Einrichtungen bei /org/listInstitution stimmt nicht	
+
+2377    15.04.2020  rc1.3       Moe     Bug         filter eines konsortialteilnehmers
+
+2366    15.04.2020  rc1.3       Moe     Bug         Cronjob Status der Kindlizenzen Mehrjahreslaufzeit
+
+1973    15.04.2020  rc1.3       Anja    Bug         org/show abhängige Region-Dropdowns richtig einblenden/Initialauswahl
+
+2375    15.04.2020  rc1.3       Anja    Bug         org/show Identifikatorpanel immer enabled
+
+2368    15.04.2020  rc1.3       David   Bug         Hotfixkandidat: Nutzer kann fälschlich ohne Org-Bezug anlegen
+
+2373    15.04.2020  rc1.3       Andreas Bug         NullPointerException bei Zusammenstellung der Hauptkontakte für Export behoben
+
 2382    15.04.2020  hbz-dev     Andreas Feature     IssueEntitlement: TIPP und Subscription-Fremdschlüssel sind nicht länger nullable
 
 2190    15.04.2020  hbz-dev     Andreas Feature     Umformulierung der Systemmail zu Passwort vergessen
