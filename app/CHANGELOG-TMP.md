@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2372    16.04.2020  rc1.3       Christian   Bug     Behandlung von verkürzten IPv6 Adressen fehlerhaft
+
 1859    16.04.2020  rc1.3       Anja    Feature     Merkmale verwalten: Spalte Schlüssel entf, Performanceverbesserung
 
 2380    16.04.2020  rc1.3       David   Bug         Private Merkmale werden falsch zugeordnet
