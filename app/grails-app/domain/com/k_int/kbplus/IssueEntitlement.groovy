@@ -6,6 +6,7 @@ import de.laser.domain.PriceItem
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
@@ -98,8 +99,8 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   static constraints = {
     globalUID      (nullable:true, blank:false, unique:true, maxSize:255)
     status         (nullable:true, blank:false)
-    subscription   (nullable:true, blank:false)
-    tipp           (nullable:true, blank:false)
+    subscription   (nullable:false, blank:false)
+    tipp           (nullable:false, blank:false)
     ieReason       (nullable:true, blank:true)
     medium         (nullable:true, blank:true)
     priceItem      (nullable:true, blank:true)
@@ -146,11 +147,21 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   }
 
   Date getDerivedAccessStartDate() {
-    accessStartDate ? accessStartDate : subscription?.startDate
+      if(accessStartDate)
+          accessStartDate
+      else if(subscription.startDate)
+          subscription.startDate
+      else if(tipp.accessStartDate)
+          tipp.accessStartDate
   }
 
   Date getDerivedAccessEndDate() {
-    accessEndDate ? accessEndDate : subscription?.endDate
+      if(accessEndDate)
+          accessEndDate
+      else if(subscription.endDate)
+          subscription.endDate
+      else if(tipp.accessEndDate)
+          tipp.accessEndDate
   }
 
   RefdataValue getAvailabilityStatus() {
@@ -169,23 +180,24 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   }
 
   RefdataValue getAvailabilityStatus(Date as_at) {
-    RefdataValue result
-    // If StartDate <= as_at <= EndDate - Current
-    // if Date < StartDate - Expected
-    // if Date > EndDate - Expired
-    Date ie_access_start_date = getDerivedAccessStartDate()
-    Date ie_access_end_date = getDerivedAccessEndDate()
+      RefdataValue result
+      // If StartDate <= as_at <= EndDate - Current
+      // if Date < StartDate - Expected
+      // if Date > EndDate - Expired
+      Date ie_access_start_date = getDerivedAccessStartDate()
+      Date ie_access_end_date = getDerivedAccessEndDate()
 
-    result = RefdataValue.getByValueAndCategory('Current', RDConstants.IE_ACCESS_STATUS)
+      result = RDStore.IE_ACCESS_CURRENT
 
-    if (ie_access_start_date && as_at < ie_access_start_date ) {
-      result = RefdataValue.getByValueAndCategory('Expected', RDConstants.IE_ACCESS_STATUS)
-    }
-    else if (ie_access_end_date && as_at > ie_access_end_date ) {
-      result = RefdataValue.getByValueAndCategory('Expired', RDConstants.IE_ACCESS_STATUS)
-    }
+      if (ie_access_start_date && as_at < ie_access_start_date ) {
+        result = RefdataValue.getByValueAndCategory('Expected', RDConstants.IE_ACCESS_STATUS)
+      }
+      else if (ie_access_end_date && as_at > ie_access_end_date ) {
+          if(!subscription.hasPerpetualAccess)
+              result = RefdataValue.getByValueAndCategory('Expired', RDConstants.IE_ACCESS_STATUS)
+      }
 
-    result
+      result
   }
 
   /*

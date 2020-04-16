@@ -131,30 +131,13 @@
                 </select>
             </div>
 
-            <div class="field">
-                <label for="filterPvd">${message(code: 'default.all_other.platforms.label')}</label>
-                <select name="filterOtherPlat" multiple="" class="ui search selection fluid dropdown">
-                    <option <%--<%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>--%>
-                            value="">${message(code: 'myinst.currentTitles.all_other_platforms')}</option>
-                    <g:each in="${otherplatforms}" var="op">
 
-                        <%
-                            def platId = op[0].id.toString()
-                            def platName = op[0].name
-                        %>
-                        <option <%=(filterOtherPlat.contains(platId)) ? 'selected' : ''%> value="${platId}"
-                                                                                          title="${platName}">
-                            ${platName}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
         </div>
 
         <div class="two fields">
 
             <div class="field">
-                <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes', default: 'Titles we subscribe to through 2 or more packages')}</label>
+                <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes')}</label>
 
                 <div class="ui checkbox">
                     <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"

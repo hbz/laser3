@@ -277,7 +277,7 @@ class SubscriptionController extends AbstractDebugController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.entitlements)
+            Map<String, List> tableData = exportService.generateTitleExportList(result.entitlements)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -1163,7 +1163,7 @@ class SubscriptionController extends AbstractDebugController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = titleStreamService.generateTitleExportList(sourceIEs)
+            Map<String, List> tableData = exportService.generateTitleExportList(sourceIEs)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -1265,7 +1265,7 @@ class SubscriptionController extends AbstractDebugController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.ies)
+            Map<String, List> tableData = exportService.generateTitleExportList(result.ies)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
