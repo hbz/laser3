@@ -6,8 +6,8 @@
         <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
         <th>${message(code:'default.date.label')}</th>
         <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
-        %{--<th>${message(code:'myinst.dash.due_dates.hide.label')}</th>--}%
-        %{--<th>${message(code:'myinst.dash.due_dates.done.label')}</th>--}%
+        <th>${message(code:'myinst.dash.due_dates.hide.label')}</th>
+        <th>${message(code:'myinst.dash.due_dates.done.label')}</th>
     </tr>
     </thead>
     <tbody>
@@ -139,10 +139,12 @@
                             <i class="icon eye la-js-editmode-icon"></i>
                         </laser:remoteLink>
                     </g:else>
-                    %{--<semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" />--}%
+                </td>
+                <td>
+                    <semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" />
                 </td>
             </g:if>
-                %{--<td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>--}%
+                <td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>
             </tr>
         </g:if>
     </g:each>

@@ -62,36 +62,36 @@
         <br />
     <%-- should be made overridable by pagination setting --%>
     <%
-        def US_DASHBOARD_TAB
+        def us_dashboard_tab
         switch(params.view) {
-            case "announcementsView": US_DASHBOARD_TAB = RefdataValue.getByValueAndCategory('Announcements', RDConstants.USER_SETTING_DASHBOARD_TAB)
+            case "announcementsView": us_dashboard_tab = RefdataValue.getByValueAndCategory('Announcements', RDConstants.USER_SETTING_DASHBOARD_TAB)
             break
-            default: US_DASHBOARD_TAB = user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
+            default: us_dashboard_tab = user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
             break
         }
     %>
     <div class="ui secondary pointing tabular menu">
-        <a class="${US_DASHBOARD_TAB.getValue().value=='Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active item':'item'}" data-tab="duedates">
+        <a class="${us_dashboard_tab.getValue().value=='Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active item':'item'}" data-tab="duedates">
             <i class="checked alarm end icon large"></i>
             ${dueDatesCount}
             ${message(code:'myinst.dash.due_dates.label')}
         </a>
 
         <g:if test="${editable}">
-            <a class="${US_DASHBOARD_TAB.getValue().value == 'PendingChanges' || US_DASHBOARD_TAB.getValue() == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
+            <a class="${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
                 <i class="history icon large"></i>
                 ${pendingCount}
                 ${message(code:'myinst.pendingChanges.label')}
             </a>
         </g:if>
-        <a class="${US_DASHBOARD_TAB.getValue().value == 'AcceptedChanges' || US_DASHBOARD_TAB.getValue() == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
+        <a class="${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
             <i class="bullhorn icon large"></i>
             ${notificationsCount}
             ${message(code:'myinst.acceptedChanges.label')}
         </a>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
-            <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="tasks">
+            <a class="${us_dashboard_tab.getValue().value=='Tasks' || us_dashboard_tab.getValue()=='Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="checked calendar icon large"></i>
                 ${tasksCount}
                 ${message(code:'myinst.dash.task.label')}
@@ -100,21 +100,21 @@
 
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
 
-            <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
+            <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
                 <i class="checked tasks icon large"></i>
                 ${surveys?.size()}
                 ${message(code:'myinst.dash.survey.label')}
             </a>
         </g:if>
 
-        <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
+        <a class="${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
             <i class="warning circle icon large"></i>
             ${systemAnnouncements.size()}
             ${message(code:'announcement.plural')}
         </a>
 
        %{-- <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-            <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="six">
+            <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="six">
                 <i class="checked tasks icon large"></i>
                 ${surveysConsortia?.size()}
                 ${message(code:'myinst.dash.surveyConsortia.label')}
@@ -124,7 +124,7 @@
 
     </div><!-- secondary -->
 
-        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active':''}" data-tab="duedates">
+        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
                 <g:render template="/user/dueDatesView"
                           model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
@@ -132,7 +132,7 @@
         </div>
 
         <g:if test="${editable}">
-            <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'PendingChanges' || US_DASHBOARD_TAB.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
+            <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
                 <div class="la-float-right">
                     <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
                 </div>
@@ -189,7 +189,7 @@
             </div>
         </g:if>
 
-        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'AcceptedChanges'}" data-tab="acceptedchanges">
+        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges'}" data-tab="acceptedchanges">
             <div class="la-float-right">
                 <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
             </div>
@@ -237,7 +237,7 @@
             </div><!-- .grid -->
         </div>
 
-        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
+        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
 
             <g:message code="profile.dashboardSysAnnTimeWindow"
                        args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
@@ -269,7 +269,7 @@
             </div>
         </div>
 
-        <%--<div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
+        <%--<div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
             %{--
             <g:if test="${editable}">
                 <div class="la-float-right">
@@ -322,7 +322,7 @@
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
 
-        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue() == 'Tasks' ? 'active':''}" data-tab="tasks">
+        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Tasks' || us_dashboard_tab.getValue() == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
@@ -402,7 +402,7 @@
         </g:if>
 
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
-            <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
+            <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
                     <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
                 </div>
@@ -412,7 +412,7 @@
 
     %{--<g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
-        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="six" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="six" style="border-top: 1px solid #d4d4d5; ">
             <div>
                 <g:render template="surveysConsortia"/>
             </div>
