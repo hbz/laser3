@@ -19,19 +19,28 @@
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                         params="${params + [format: 'csv']}">
-                    ${message(code: 'default.button.exports.csv')}
+                    <g:message code="default.button.exports.csv"/>
                 </g:link>
             </g:if>
             <g:else>
                 <g:link class="item" action="currentTitles" params="${params + [format: 'csv']}">CSV Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
-    <%--<semui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
-    </semui:exportDropdownItem>
-    <semui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
-    </semui:exportDropdownItem>--%>
+        <semui:exportDropdownItem>
+            <g:if test="${filterSet}">
+                <g:link class="item js-open-confirm-modal"
+                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
+                        params="${params + [exportXLSX: true]}">
+                    <g:message code="default.button.exports.xls"/>
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link class="item" action="currentTitles" params="${params+[exportXLSX: true]}">
+                    <g:message code="default.button.exports.xls"/>
+                </g:link>
+            </g:else>
+        </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
@@ -46,6 +55,12 @@
                         params="${params + [exportKBart: true]}">KBART Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
+    <%--<semui:exportDropdownItem>
+        <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
+    </semui:exportDropdownItem>
+    <semui:exportDropdownItem>
+        <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
+    </semui:exportDropdownItem>--%>
     </semui:exportDropdown>
 </semui:controlButtons>
 
