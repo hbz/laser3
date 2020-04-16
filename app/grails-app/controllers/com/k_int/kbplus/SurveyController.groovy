@@ -1210,19 +1210,19 @@ class SurveyController {
                 }
 
                 //zdb_id
-                row.add(TitleStreamService.joinIdentifiers(ie.tipp.title.ids,'zdb',','))
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'zdb',','), style:null])
                 //zdb_ppn
-                row.add(TitleStreamService.joinIdentifiers(ie.tipp.title.ids,'zdb_ppn',','))
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'zdb_ppn',','), style:null])
                 //DOI
-                row.add(TitleStreamService.joinIdentifiers(ie.tipp.title.ids,'doi',','))
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'doi',','), style:null])
                 //ISSNs
-                row.add(TitleStreamService.joinIdentifiers(ie.tipp.title.ids,'issn',','))
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'issn',','), style:null])
                 //eISSNs
-                row.add(TitleStreamService.joinIdentifiers(ie.tipp.title.ids,'eissn',','))
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'eissn',','), style:null])
                 //pISBNs
-                row.add(TitleStreamService.joinIdentifiers(ie.tipp.title.ids,'pisbn',','))
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'pisbn',','), style:null])
                 //ISBNs
-                row.add(TitleStreamService.joinIdentifiers(ie.tipp.title.ids,'isbn',','))
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'isbn',','), style:null])
 
                 if(ie.tipp.title instanceof BookInstance) {
                     row.add([field: ie.tipp.title.dateFirstInPrint ? g.formatDate(date: ie.tipp.title.dateFirstInPrint, format: message(code: 'default.date.format.notime')) : '', style: null])
@@ -1236,9 +1236,9 @@ class SurveyController {
 
                 if(ie.priceItem) {
                     row.add([field: ie.priceItem.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
-                    row.add([field: ie.priceItem.listCurrency ?: '', style: null])
+                    row.add([field: ie.priceItem.listCurrency?.value ?: '', style: null])
                     row.add([field: ie.priceItem.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
-                    row.add([field: ie.priceItem.localCurrency ?: '', style: null])
+                    row.add([field: ie.priceItem.localCurrency?.value ?: '', style: null])
                 }else{
                     row.add([field: '', style:null])
                     row.add([field: '', style:null])
