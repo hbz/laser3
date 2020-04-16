@@ -1181,7 +1181,10 @@ class SubscriptionController extends AbstractDebugController {
                     g.message(code:'identifier.label'),
                     g.message(code:'title.dateFirstInPrint.label'),
                     g.message(code:'title.dateFirstOnline.label'),
-                    g.message(code:'tipp.price')]
+                    g.message(code:'tipp.listPrice'),
+                    g.message(code:'financials.currency'),
+                    g.message(code:'tipp.localPrice'),
+                    g.message(code:'financials.currency')]
 
             List rows = []
             sourceIEs.each { ie ->
@@ -1214,8 +1217,17 @@ class SubscriptionController extends AbstractDebugController {
                     row.add([field: '', style:null])
                 }
 
-                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, type: 'currency', currencySymbol: ie.priceItem.listCurrency, currencyCode: ie.priceItem.listCurrency) : '', style:null])
-                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, type: 'currency', currencySymbol: ie.priceItem.localCurrency, currencyCode: ie.priceItem.localCurrency) : '', style:null])
+                if(ie.priceItem) {
+                    row.add([field: ie.priceItem.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
+                    row.add([field: ie.priceItem.listCurrency ?: '', style: null])
+                    row.add([field: ie.priceItem.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
+                    row.add([field: ie.priceItem.localCurrency ?: '', style: null])
+                }else{
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                }
 
                 rows.add(row)
             }
@@ -1284,19 +1296,22 @@ class SubscriptionController extends AbstractDebugController {
                     g.message(code:'title.dateFirstInPrint.label'),
                     g.message(code:'title.dateFirstOnline.label'),
                     g.message(code:'default.status.label'),
-                    g.message(code:'tipp.price')
+                    g.message(code:'tipp.listPrice'),
+                    g.message(code:'financials.currency'),
+                    g.message(code:'tipp.localPrice'),
+                    g.message(code:'financials.currency')
 
             ]
             List rows = []
-            result.ies?.each { ie ->
+            result.ies.each { ie ->
                 List row = []
-                row.add([field: ie?.tipp?.title?.title ?: '', style:null])
+                row.add([field: ie.tipp.title.title ?: '', style:null])
 
-                if(ie?.tipp?.title instanceof BookInstance) {
-                    row.add([field: ie?.tipp?.title?.volume ?: '', style: null])
-                    row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
-                    row.add([field: ie?.tipp?.title?.editionStatement ?: '', style: null])
-                    row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style: null])
+                if(ie.tipp.title instanceof BookInstance) {
+                    row.add([field: ie.tipp.title.volume ?: '', style: null])
+                    row.add([field: ie.tipp.title.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
+                    row.add([field: ie.tipp.title.editionStatement ?: '', style: null])
+                    row.add([field: ie.tipp.title.summaryOfContent ?: '', style: null])
                 }else{
                     row.add([field: '', style: null])
                     row.add([field: '', style: null])
@@ -1305,24 +1320,32 @@ class SubscriptionController extends AbstractDebugController {
                 }
 
                 def identifiers = []
-                ie?.tipp?.title?.ids?.sort { it.ns?.ns }?.each{ ident ->
-                    identifiers << "${ident.ns?.ns}: ${ident.value}"
+                ie.tipp.title.ids?.sort { it.ns.ns }.each{ ident ->
+                    identifiers << "${ident.ns.ns}: ${ident.value}"
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 
-                if(ie?.tipp?.title instanceof BookInstance) {
-                    row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')) : '', style: null])
-                    row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')) : '', style: null])
+                if(ie.tipp.title instanceof BookInstance) {
+                    row.add([field: ie.tipp.title.dateFirstInPrint ? g.formatDate(date: ie.tipp.title.dateFirstInPrint, format: message(code: 'default.date.format.notime')) : '', style: null])
+                    row.add([field: ie.tipp.title.dateFirstOnline ? g.formatDate(date: ie.tipp.title.dateFirstOnline, format: message(code: 'default.date.format.notime')) : '', style: null])
                 }else{
                     row.add([field: '', style: null])
                     row.add([field: '', style: null])
                 }
 
-                row.add([field: ie?.acceptStatus?.getI10n('value') ?: '', style:null])
+                row.add([field: ie.acceptStatus?.getI10n('value') ?: '', style:null])
 
-                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
-                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
-
+                if(ie.priceItem) {
+                    row.add([field: ie.priceItem.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
+                    row.add([field: ie.priceItem.listCurrency ?: '', style: null])
+                    row.add([field: ie.priceItem.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
+                    row.add([field: ie.priceItem.localCurrency ?: '', style: null])
+                }else{
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                }
 
                 rows.add(row)
             }
