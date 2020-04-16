@@ -4,6 +4,8 @@
 
 2382    15.04.2020  hbz-dev     Andreas Feature     IssueEntitlement: TIPP und Subscription-Fremdschlüssel sind nicht länger nullable
 
+2190    15.04.2020  hbz-dev     Andreas Feature     Umformulierung der Systemmail zu Passwort vergessen
+
 2253    14.04.2020  hbz-dev     Andreas Feature     Teil eins: Export von Vertragsmerkmalen in eigenen Spalten
 
 2367    14.04.2020  rc1.3       Andreas Feature     Lizenzexport um globale UIDs der Lizenzen erweitert
