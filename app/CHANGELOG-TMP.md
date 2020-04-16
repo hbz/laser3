@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2382    15.04.2020  hbz-dev     Andreas Feature     IssueEntitlement: TIPP und Subscription-Fremdschlüssel sind nicht länger nullable
+
 2190    15.04.2020  hbz-dev     Andreas Feature     Umformulierung der Systemmail zu Passwort vergessen
 
 2253    14.04.2020  hbz-dev     Andreas Feature     Teil eins: Export von Vertragsmerkmalen in eigenen Spalten
