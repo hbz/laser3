@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1859    16.04.2020  rc1.3       Anja    Feature     Merkmale verwalten: Spalte Schlüssel entf, Performanceverbesserung
+
 2370    15.04.2020  rc1.3       David   Bug         Hotfixkandidat: "Zugehörigkeit löschen" bei /user/list löscht Zugehörigkeit des falschen Nutzers
 
 2318    15.04.2020  rc1.3       Moe     Bug         Gasco-Monitor: Anbieteranzeige fehlt	

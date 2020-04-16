@@ -43,24 +43,15 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th>${message(code:'propertyDefinition.key.label')}</th>
-
-                            <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
-                                <g:set var="SUBSTITUTE" value="de" />
-                                <th>${message(code:'default.name.label')}</th>
-                                <th>${message(code:'propertyDefinition.expl.label')}</th>
-                            </g:if>
-                            <g:else>
-                                <g:set var="SUBSTITUTE" value="en" />
-                                <th>${message(code:'default.name.label')}</th>
-                                <th>${message(code:'propertyDefinition.expl.label')}</th>
-                            </g:else>
+                            %{--<th>${message(code:'propertyDefinition.key.label')}</th>--}%
+                            <th>${message(code:'default.name.label')}</th>
+                            <th>${message(code:'propertyDefinition.expl.label')}</th>
                             <th>${message(code:'default.type.label')}</th>
                             <%--<th class="la-action-info">${message(code:'default.actions.label')}</th>--%>
                         </tr>
                         </thead>
                         <tbody>
-                            <g:each in="${entry.value.sort{it."name_${SUBSTITUTE}"?.toLowerCase()}}" var="pd">
+                            <g:each in="${entry.value}" var="pd">
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isHardData}">
@@ -80,17 +71,17 @@
                                             </span>
                                         </g:if>
                                     </td>
-                                    <td>
-                                        <g:if test="${pd.isUsedForLogic}">
-                                            <span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>
-                                        </g:if>
-                                        <g:else>
-                                            ${fieldValue(bean: pd, field: "name")}
-                                        </g:else>
-                                    </td>
+                                    %{--<td>--}%
+                                        %{--<g:if test="${pd.isUsedForLogic}">--}%
+                                            %{--<span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>--}%
+                                        %{--</g:if>--}%
+                                        %{--<g:else>--}%
+                                            %{--${fieldValue(bean: pd, field: "name")}--}%
+                                        %{--</g:else>--}%
+                                    %{--</td>--}%
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="name_${SUBSTITUTE}" />
+                                            <semui:xEditable owner="${pd}" field="name_${languageSuffix}" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('name')}
@@ -98,7 +89,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="expl_${SUBSTITUTE}" type="textarea" />
+                                            <semui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('expl')}
