@@ -212,11 +212,12 @@ class ExportService {
 	}
 
 	/**
-	 * Generates a title stream export list according to the KBart II-standard but enriched with proprietary fields such as ZDB-ID
-	 * The standard is as defined on {@see <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBART definition</a>}
+	 * Generates a title stream export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
+	 * The standard is defined as the reference linked below
 	 *
 	 * @param entitlementData - a {@link Collection} containing the actual data
 	 * @return a {@link Map} containing lists for the title row and the column data
+	 * @see <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBART definition</a>
 	 */
 	Map<String,List> generateTitleExportList(Collection entitlementData) {
 		Map<String,List> export = [titleRow:[
