@@ -4,6 +4,7 @@ import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
+import de.laser.api.v0.ApiBox
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
@@ -12,24 +13,25 @@ import groovy.util.logging.Log4j
 class ApiDoc {
 
     /**
-     * @return Doc | BAD_REQUEST | PRECONDITION_FAILED
+     * @return ApiBox(obj: Doc | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND)
      */
-    static findDocumentBy(String query, String value) {
-        def result
+    static ApiBox findDocumentBy(String query, String value) {
+        ApiBox result = ApiBox.get()
 
         switch(query) {
             case 'id':
-                result = Doc.findAllWhere(id: Long.parseLong(value))
+                result.obj = Doc.findAllWhere(id: Long.parseLong(value))
                 break
             case 'uuid':
-                result = Doc.findAllWhere(uuid: value)
+                result.obj = Doc.findAllWhere(uuid: value)
                 break
             default:
-                return Constants.HTTP_BAD_REQUEST
+                result.status = Constants.HTTP_BAD_REQUEST
                 break
         }
+        result.validatePrecondition_1()
 
-        ApiToolkit.checkPreconditionFailed(result)
+        result
     }
 
     /**
