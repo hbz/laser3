@@ -319,7 +319,7 @@ class SurveyService {
                         }
                     }
 
-                    SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, surveyOrg.org).each { surResult ->
+                    SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, surveyOrg.org).sort{it.type.name}.each { surResult ->
                         row.add([field: surResult.type?.getI10n('name') ?: '', style: null])
                         row.add([field: PropertyDefinition.getLocalizedValue(surResult.type.type) ?: '', style: null])
 
@@ -341,7 +341,7 @@ class SurveyService {
 
                         row.add([field: value ?: '', style: null])
                         row.add([field: surResult.comment ?: '', style: null])
-                        row.add([field: surResult.participantComment ?: '', style: null])
+                        row.add([field: surResult.ownerComment ?: '', style: null])
                         row.add([field: surResult.finishDate ? sdf.format(surResult.finishDate) : '', style: null])
 
 
@@ -400,7 +400,7 @@ class SurveyService {
                 surveyData.add(row2)
 
 
-                SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, contextOrg).each { surResult ->
+                SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, contextOrg).sort{it.type.name}.each { surResult ->
                     List row3 = []
                     row3.add([field: surResult.type?.getI10n('name') ?: '', style: null])
                     row3.add([field: PropertyDefinition.getLocalizedValue(surResult.type.type) ?: '', style: null])
