@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.SurveyConfig;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.SurveyConfig;com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -19,7 +19,7 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:if test="${surveyInfo.status != de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
+    <g:if test="${surveyInfo.status != RDStore.SURVEY_IN_PROCESSING}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
@@ -46,7 +46,7 @@
 
 <br>
 
-<g:if test="${surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
+<g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
     <b>${message(code: 'surveyEvaluation.notOpenSurvey')}</b>
 </g:if>
 <g:else>

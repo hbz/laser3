@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory;" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.SurveyConfig;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -36,7 +36,7 @@
                               value="${params.endDate}" />
         </div>
 
-        <g:if test="${!(com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) && !subscription.getCalculatedSuccessor()}">
+        <g:if test="${!(SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) && !subscription.getCalculatedSuccessor()}">
             <div class="field">
                 <label>${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info')}</label>
                 <div>

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.SurveyConfig;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.SurveyConfig;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 <g:set var="subscriptionService" bean="subscriptionService"/>
 
@@ -14,7 +14,7 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-    <g:if test="${surveyInfo.status != de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
+    <g:if test="${surveyInfo.status != RDStore.SURVEY_IN_PROCESSING}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
@@ -85,7 +85,7 @@
 
                 <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
                         total="${participantsFinish.size()}"/></h2>
-                <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_EVALUATION.id}">
+                <g:if test="${surveyInfo && surveyInfo.status?.id == RDStore.SURVEY_IN_EVALUATION.id}">
                                 <g:link controller="survey" action="completeIssueEntitlementsSurvey" id="${surveyConfig.id}"
                                         class="ui icon button right floated">
                                     <g:message code="completeIssueEntitlementsSurvey.forFinishParticipant.label"/>

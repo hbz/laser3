@@ -439,7 +439,7 @@ ${surveyInfo?.name}
                         <g:each in="${properties}" var="prop" >
                             <div class="item">
                                 <b><g:message code="subscription.${prop.referenceField}.label" /></b>:
-                            <g:if test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof com.k_int.kbplus.RefdataValue}">
+                            <g:if test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof RefdataValue}">
                                 ${parentSuccessorSubscription.getProperty(prop.referenceField).getI10n('value')}
                             </g:if>
                             <g:else>
