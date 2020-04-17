@@ -260,10 +260,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   @Transient
   Org getContentProvider() {
-    Org result
+    Org result = null
 
-    orgs.each { or ->
-      if ( or?.roleType?.value=='Content Provider' )
+    orgs.each { OrgRole or ->
+      if ( or.roleType.id == RDStore.OR_CONTENT_PROVIDER.id )
         result = or.org
     }
     result

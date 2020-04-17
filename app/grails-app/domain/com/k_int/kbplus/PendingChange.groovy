@@ -193,7 +193,7 @@ class PendingChange {
             case PendingChangeConfiguration.NEW_TITLE:
                 if(target instanceof TitleInstancePackagePlatform) {
                     TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) target
-                    IssueEntitlement newTitle = IssueEntitlement.construct([subscription:subscription,tipp:tipp])
+                    IssueEntitlement newTitle = IssueEntitlement.construct([subscription:subscription,tipp:tipp,acceptStatus:RDStore.IE_ACCEPT_STATUS_FIXED])
                     if(newTitle) {
                         done = true
                     }
