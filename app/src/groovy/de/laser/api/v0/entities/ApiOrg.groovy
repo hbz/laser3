@@ -2,6 +2,7 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
+import de.laser.api.v0.ApiBox
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
@@ -15,32 +16,33 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiOrg {
 
     /**
-     * @return Org | BAD_REQUEST | PRECONDITION_FAILED | OBJECT_STATUS_DELETED
+     * @return ApiBox(obj: Org | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      */
     static findOrganisationBy(String query, String value) {
-        def result
+        ApiBox result = ApiBox.get()
 
         switch(query) {
             case 'id':
-                result = Org.findAllWhere(id: Long.parseLong(value))
+                result.obj = Org.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = Org.findAllWhere(globalUID: value)
+                result.obj = Org.findAllWhere(globalUID: value)
                 break
             case 'gokbId':
-                result = Org.findAllWhere(gokbId: value)
+                result.obj = Org.findAllWhere(gokbId: value)
                 break
             case 'ns:identifier':
-                result = Identifier.lookupObjectsByIdentifierString(new Org(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(new Org(), value)
                 break
             default:
-                return Constants.HTTP_BAD_REQUEST
+                result.status = Constants.HTTP_BAD_REQUEST
                 break
         }
-        result = ApiToolkit.checkPreconditionFailed(result)
 
-        if (result instanceof Org && result.status == RDStore.ORG_STATUS_DELETED) {
-            result = Constants.OBJECT_STATUS_DELETED
+        result.validatePrecondition_1()
+
+        if (result.obj instanceof Org) {
+            result.validateDeletedStatus_2(RDStore.ORG_STATUS_DELETED)
         }
         result
     }

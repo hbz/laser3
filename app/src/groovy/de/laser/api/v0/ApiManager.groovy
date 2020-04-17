@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.90'
+    static final VERSION = '0.91'
     static final NOT_SUPPORTED = false
 
     /**
@@ -64,9 +64,10 @@ class ApiManager {
             if (identifierAndTimestamp == Constants.HTTP_BAD_REQUEST) {
                 return Constants.HTTP_BAD_REQUEST
             }
-            result = ApiOrg.findOrganisationBy(identifierAndTimestamp[0].key, identifierAndTimestamp[0].value) // use of http status code
+            ApiBox tmp = ApiOrg.findOrganisationBy(identifierAndTimestamp[0].key, identifierAndTimestamp[0].value)
+            result = (tmp.status != Constants.HTTP_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
+            if (tmp.checkFailureCodes_3()) {
                 if(identifierAndTimestamp[1].key == 'timestamp'){
                     result = ApiCostItem.requestCostItemListWithTimeStamp(result, contextOrg, isInvoiceTool, identifierAndTimestamp[1].value)
                 }
@@ -106,10 +107,11 @@ class ApiManager {
         }
         else if (checkRequest('licenseList', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
 
-            result = ApiOrg.findOrganisationBy(query, value)
+            ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
+            result = (tmp.status != Constants.HTTP_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiLicense.getLicenseList((Org) result, contextOrg)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiLicense.getLicenseList((Org) tmp.obj, contextOrg)
             }
         }
         else if (checkRequest('oaMonitor', ApiReader.SUPPORTED_FORMATS.oaMonitor) == Constants.VALID_REQUEST) {
@@ -117,10 +119,11 @@ class ApiManager {
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
             }
-            result = ApiOrg.findOrganisationBy(query, value)
+            ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
+            result = (tmp.status != Constants.HTTP_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiOAMonitor.requestOrganisation((Org) result, contextOrg)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiOAMonitor.requestOrganisation((Org) tmp.obj, contextOrg)
             }
         }
         else if (checkRequest('oaMonitorList', ApiReader.SUPPORTED_FORMATS.oaMonitorList) == Constants.VALID_REQUEST) {
@@ -133,10 +136,11 @@ class ApiManager {
         }
         else if (checkRequest('organisation', ApiReader.SUPPORTED_FORMATS.organisation) == Constants.VALID_REQUEST) {
 
-            result = ApiOrg.findOrganisationBy(query, value)
+            ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
+            result = (tmp.status != Constants.HTTP_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiOrg.requestOrganisation((Org) result, contextOrg, isInvoiceTool)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiOrg.requestOrganisation((Org) tmp.obj, contextOrg, isInvoiceTool)
             }
         }
         else if (checkRequest('package', ApiReader.SUPPORTED_FORMATS.package) == Constants.VALID_REQUEST) {
@@ -184,10 +188,11 @@ class ApiManager {
         }
         else if (checkRequest('subscriptionList', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {
 
-            result = ApiOrg.findOrganisationBy(query, value)
+            ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
+            result = (tmp.status != Constants.HTTP_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiSubscription.getSubscriptionList((Org) result, contextOrg)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiSubscription.getSubscriptionList((Org) tmp.obj, contextOrg)
             }
         }
         else {
@@ -198,6 +203,7 @@ class ApiManager {
     }
 
     @Deprecated
+    /*
     static write(String obj, JSONObject data, Org contextOrg) {
 
         return // closed ..
@@ -256,6 +262,7 @@ class ApiManager {
         }
         result
     }
+*/
 
     static Map<String, Object> buildResponse(HttpServletRequest request, String obj, String query, String value, String context, Org contextOrg, def result) {
 
