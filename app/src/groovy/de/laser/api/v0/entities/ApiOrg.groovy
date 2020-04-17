@@ -18,7 +18,7 @@ class ApiOrg {
     /**
      * @return ApiBox(obj: Org | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      */
-    static findOrganisationBy(String query, String value) {
+    static ApiBox findOrganisationBy(String query, String value) {
         ApiBox result = ApiBox.get()
 
         switch(query) {
@@ -38,7 +38,6 @@ class ApiOrg {
                 result.status = Constants.HTTP_BAD_REQUEST
                 break
         }
-
         result.validatePrecondition_1()
 
         if (result.obj instanceof Org) {

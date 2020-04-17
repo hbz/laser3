@@ -4,6 +4,7 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
+import de.laser.api.v0.ApiBox
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiStubReader
@@ -18,29 +19,29 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiLicense {
 
     /**
-     * @return License | BAD_REQUEST | PRECONDITION_FAILED
+     * @return ApiBox(obj: License | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND )
      */
-    static findLicenseBy(String query, String value) {
-        def result
+    static ApiBox findLicenseBy(String query, String value) {
+        ApiBox result = ApiBox.get()
 
         switch(query) {
             case 'id':
-                result = License.findAllWhere(id: Long.parseLong(value))
+                result.obj = License.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = License.findAllWhere(globalUID: value)
+                result.obj = License.findAllWhere(globalUID: value)
                 break
             case 'ns:identifier':
-                result = Identifier.lookupObjectsByIdentifierString(new License(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(new License(), value)
                 break
             default:
-                return Constants.HTTP_BAD_REQUEST
+                result.status = Constants.HTTP_BAD_REQUEST
                 break
         }
-        result = ApiToolkit.checkPreconditionFailed(result)
+        result.validatePrecondition_1()
 
-        //if (result instanceof License && result.status == RDStore.LICENSE_DELETED) {
-        //    result = Constants.OBJECT_STATUS_DELETED
+        //if (result.obj instanceof License) {
+        //    result.validateDeletedStatus_2(RDStore.LICENSE_DELETED)
         //}
         result
     }

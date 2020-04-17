@@ -5,9 +5,6 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class Constants {
 
-    static final HTTP_OK                     = "OK" // 200 -> new for ApiBox
-    static final HTTP_NOT_FOUND              = "NOT_FOUND" // 404 -> new for ApiBox
-
     static final HTTP_CREATED                = "CREATED" // 200
     static final HTTP_BAD_REQUEST            = "BAD_REQUEST" // 400
     static final HTTP_FORBIDDEN              = "FORBIDDEN" // 403
@@ -27,5 +24,6 @@ class Constants {
     static final UTF8                        = "UTF-8"
 
     static final VALID_REQUEST               = "VALID_REQUEST"
-    static final OBJECT_STATUS_DELETED       = "OBJECT_STATUS_DELETED"
+    static final OBJECT_NOT_FOUND            = "OBJECT_NOT_FOUND"           // -> new for ApiBox
+    static final OBJECT_STATUS_DELETED       = "OBJECT_STATUS_DELETED"      // -> new for ApiBox
 }

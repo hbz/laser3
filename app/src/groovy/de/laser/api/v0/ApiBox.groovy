@@ -8,7 +8,7 @@ class ApiBox {
     static final List FAILURE_CODES  = [
             Constants.HTTP_BAD_REQUEST,
             Constants.HTTP_PRECONDITION_FAILED,
-            Constants.HTTP_NOT_FOUND,
+            Constants.OBJECT_NOT_FOUND,
             Constants.OBJECT_STATUS_DELETED
     ]
 
@@ -31,7 +31,7 @@ class ApiBox {
             }
         } else {
             obj = null
-            status = Constants.HTTP_NOT_FOUND
+            status = Constants.OBJECT_NOT_FOUND
         }
     }
 

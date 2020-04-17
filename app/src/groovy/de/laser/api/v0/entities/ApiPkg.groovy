@@ -3,6 +3,7 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
+import de.laser.api.v0.ApiBox
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
@@ -17,32 +18,32 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiPkg {
 
     /**
-     * @return Package | BAD_REQUEST | PRECONDITION_FAILED | OBJECT_STATUS_DELETED
+     * @return ApiBox(obj: Package | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      */
-    static findPackageBy(String query, String value) {
-        def result
+    static ApiBox findPackageBy(String query, String value) {
+		ApiBox result = ApiBox.get()
 
         switch(query) {
             case 'id':
-                result = Package.findAllWhere(id: Long.parseLong(value))
+				result.obj = Package.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = Package.findAllWhere(globalUID: value)
+				result.obj = Package.findAllWhere(globalUID: value)
                 break
             case 'gokbId':
-                result = Package.findAllWhere(gokbId: value)
+				result.obj = Package.findAllWhere(gokbId: value)
                 break
             case 'ns:identifier':
-                result = Identifier.lookupObjectsByIdentifierString(new Package(), value)
+				result.obj = Identifier.lookupObjectsByIdentifierString(new Package(), value)
                 break
             default:
-                return Constants.HTTP_BAD_REQUEST
+				result.status = Constants.HTTP_BAD_REQUEST
                 break
         }
-        result = ApiToolkit.checkPreconditionFailed(result)
+		result.validatePrecondition_1()
 
-		if (result instanceof Package && result.packageStatus == RDStore.PACKAGE_STATUS_DELETED) {
-			result = Constants.OBJECT_STATUS_DELETED
+		if (result.obj instanceof Package && result.packageStatus == RDStore.PACKAGE_STATUS_DELETED) {
+			result.status = Constants.OBJECT_STATUS_DELETED
 		}
 		result
     }

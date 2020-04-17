@@ -65,7 +65,7 @@ class ApiManager {
                 return Constants.HTTP_BAD_REQUEST
             }
             ApiBox tmp = ApiOrg.findOrganisationBy(identifierAndTimestamp[0].key, identifierAndTimestamp[0].value)
-            result = (tmp.status != Constants.HTTP_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
                 if(identifierAndTimestamp[1].key == 'timestamp'){
@@ -99,16 +99,17 @@ class ApiManager {
         } */
         else if (checkRequest('license', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
 
-            result = ApiLicense.findLicenseBy(query, value)
+            ApiBox tmp = ApiLicense.findLicenseBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiLicense.requestLicense((License) result, contextOrg)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiLicense.requestLicense((License) tmp.obj, contextOrg)
             }
         }
         else if (checkRequest('licenseList', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
 
             ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
-            result = (tmp.status != Constants.HTTP_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
                 result = ApiLicense.getLicenseList((Org) tmp.obj, contextOrg)
@@ -120,7 +121,7 @@ class ApiManager {
                 return Constants.HTTP_FORBIDDEN
             }
             ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
-            result = (tmp.status != Constants.HTTP_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
                 result = ApiOAMonitor.requestOrganisation((Org) tmp.obj, contextOrg)
@@ -137,7 +138,7 @@ class ApiManager {
         else if (checkRequest('organisation', ApiReader.SUPPORTED_FORMATS.organisation) == Constants.VALID_REQUEST) {
 
             ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
-            result = (tmp.status != Constants.HTTP_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
                 result = ApiOrg.requestOrganisation((Org) tmp.obj, contextOrg, isInvoiceTool)
@@ -145,10 +146,11 @@ class ApiManager {
         }
         else if (checkRequest('package', ApiReader.SUPPORTED_FORMATS.package) == Constants.VALID_REQUEST) {
 
-            result = ApiPkg.findPackageBy(query, value)
+            ApiBox tmp = ApiPkg.findPackageBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiPkg.requestPackage((Package) result, contextOrg)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiPkg.requestPackage((Package) tmp.obj, contextOrg)
             }
         }
         else if (checkRequest('propertyList', ApiReader.SUPPORTED_FORMATS.propertyList) == Constants.VALID_REQUEST) {
@@ -164,10 +166,11 @@ class ApiManager {
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
             }
-            result = ApiPkg.findPackageBy(query, value)
+            ApiBox tmp = ApiPkg.findPackageBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiStatistic.requestPackage((Package) result)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiStatistic.requestPackage((Package) tmp.obj)
             }
         }
         else if (checkRequest('statisticList', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
@@ -189,7 +192,7 @@ class ApiManager {
         else if (checkRequest('subscriptionList', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {
 
             ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
-            result = (tmp.status != Constants.HTTP_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
                 result = ApiSubscription.getSubscriptionList((Org) tmp.obj, contextOrg)
