@@ -2,6 +2,9 @@ package de.uni_freiburg.ub;
 
 import de.uni_freiburg.ub.Exception.InvalidIpAddressException;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class IpAddress implements Comparable<IpAddress>{
 	
 	protected short max_cidr_suffix;
@@ -20,7 +23,7 @@ public class IpAddress implements Comparable<IpAddress>{
 		return new Ipv6Address(highBits, lowBits);
 	}
 
-	public static IpAddress parseIpAddress(String str) throws InvalidIpAddressException { 
+	public static IpAddress parseIpAddress(String str) throws InvalidIpAddressException {
 		// if str contains only dots's we have a possible ipv4 address
 		boolean isPossibleIpv4Addr = str.contains(".") & !str.contains(":");
 
@@ -36,7 +39,7 @@ public class IpAddress implements Comparable<IpAddress>{
 		}
 
 		if (isPossilbeEmbeddedIpv4Addr) {
-			return new Ipv6Address(Long.valueOf("x0FFF"), 0l);
+			return new Ipv6Address(Long.valueOf("x0FFF"), 0l); // this can not work!? TODO check
 		}
 
 		if (isPossilbeIpv6Addr) {
@@ -44,7 +47,7 @@ public class IpAddress implements Comparable<IpAddress>{
 		}
 		
 		throw new InvalidIpAddressException();
-	}	
+	}
 	
 	public IpAddress getUpperLimit(int cidrSuffix) {
 		return this.getUpperLimit(cidrSuffix);
