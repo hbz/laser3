@@ -1618,12 +1618,13 @@ join sub.orgRelations or_sub where
         Map<String,Object> qryParams = [
                 institution: result.institution,
                 deleted: RDStore.TIPP_STATUS_DELETED,
+                current: RDStore.SUBSCRIPTION_CURRENT,
                 orgRoles: orgRoles
         ]
 
         if(checkedDate) {
-            //Set<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where (ie.accessStartDate >= :checkedDate or (ie.accessStartDate is null and (ie.subscription.startDate >= :checkedDate or (ie.subscription.startDate is null and (ie.tipp.accessStartDate >= :checkedDate or ie.tipp.accessStartDate is null))))) and (ie.accessEndDate <= :checkedDate or (ie.accessEndDate > :checkedDate and ie.subscription.hasPerpetualAccess = true) or (ie.accessEndDate is null and (ie.subscription.endDate >= :checkedDate or (ie.subscription.endDate < :checkedDate and ie.subscription.hasPerpetualAccess) or (ie.subscription.endDate is null and (ie.tipp.accessEndDate >= :checkedDate or (ie.tipp.accessEndDate < :checkedDate and ie.subscription.hasPerpetualAccess = true) or ie.tipp.accessEndDate is null)))))',[checkedDate:checkedDate])
-            queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
+            queryFilter << ' ( :checkedDate >= coalesce(ie.accessStartDate,sub.startDate,tipp.accessStartDate)) and ( ( :checkedDate <= coalesce(ie.accessEndDate,sub.endDate,tipp.accessEndDate)) or (sub.hasPerpetualAccess = true))'
+            /*queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
                               '(ie.accessStartDate is null and ' +
                                 '(sub.startDate <= :checkedDate or ' +
                                   '(sub.startDate is null and ' +
@@ -1644,7 +1645,7 @@ join sub.orgRelations or_sub where
                                       ')' +
                                   ')' +
                                 ')' +
-                            ')'
+                            ')'*/
             qryParams.checkedDate = checkedDate
         }
 
@@ -1676,7 +1677,7 @@ join sub.orgRelations or_sub where
             orderByClause = 'order by ti.sortTitle asc'
         }
 
-        String qryString = "select ie from IssueEntitlement ie join ie.tipp tipp join tipp.title ti join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and oo.roleType in :orgRoles and oo.org = :institution "
+        String qryString = "select ie from IssueEntitlement ie join ie.tipp tipp join tipp.title ti join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and sub.status = :current and oo.roleType in :orgRoles and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
         qryString += orderByClause
@@ -1697,7 +1698,6 @@ join sub.orgRelations or_sub where
 		result.benchMark = bm
 
         if(params.exportKBart) {
-            //Set<IssueEntitlement> currentIssueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.title ti join sub.orgRelations oo ')
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream

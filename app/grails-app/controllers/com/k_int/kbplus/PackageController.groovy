@@ -637,7 +637,6 @@ class PackageController extends AbstractDebugController {
         String filename = "${escapeService.escapeString(packageInstance.name)}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
 
         if(params.exportKBart) {
-            //Set<IssueEntitlement> currentIssueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.title ti join sub.orgRelations oo ')
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
@@ -669,7 +668,7 @@ class PackageController extends AbstractDebugController {
                 response.contentType = "text/csv"
 
                 ServletOutputStream out = response.outputStream
-                Map<String,List> tableData = exportService.generateTitleExportKBART(titlesList)
+                Map<String,List> tableData = exportService.generateTitleExportCSV(titlesList)
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
                 }

@@ -3,7 +3,9 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
+import de.laser.domain.AbstractCoverage
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.TIPPCoverage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.apache.poi.POIXMLProperties
@@ -267,39 +269,58 @@ class ExportService {
 		],columnData:[]]
 		List allRows = []
 		entitlementData.each { ieObj ->
-			IssueEntitlement entitlement = (IssueEntitlement) ieObj
-			entitlement.coverages.each { covStmt ->
-				allRows << covStmt
+			def entitlement
+			if(ieObj instanceof IssueEntitlement) {
+				entitlement = (IssueEntitlement) ieObj
 			}
-			if(!entitlement.coverages)
-				allRows << entitlement
+			else if(ieObj instanceof TitleInstancePackagePlatform) {
+				entitlement = (TitleInstancePackagePlatform) ieObj
+			}
+			if(entitlement) {
+				entitlement.coverages.each { AbstractCoverage covStmt ->
+					allRows << covStmt
+				}
+				if(!entitlement.coverages)
+					allRows << entitlement
+			}
 		}
 		//this double strucutre is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
 		allRows.each { rowData ->
 			IssueEntitlement entitlement = null
-			IssueEntitlementCoverage covStmt = null
-			if(rowData instanceof IssueEntitlement)
+			TitleInstancePackagePlatform tipp = null
+			AbstractCoverage covStmt = null
+			if(rowData instanceof IssueEntitlement) {
 				entitlement = (IssueEntitlement) rowData
+				tipp = entitlement.tipp
+			}
 			else if(rowData instanceof IssueEntitlementCoverage) {
 				covStmt = (IssueEntitlementCoverage) rowData
 				entitlement = covStmt.issueEntitlement
+				tipp = covStmt.issueEntitlement.tipp
+			}
+			else if(rowData instanceof TitleInstancePackagePlatform) {
+				tipp = (TitleInstancePackagePlatform) rowData
+			}
+			else if(rowData instanceof TIPPCoverage) {
+				covStmt = (TIPPCoverage) rowData
+				tipp = covStmt.tipp
 			}
 			List row = []
-			log.debug("processing ${entitlement.tipp.title}")
+			log.debug("processing ${tipp.title}")
 			//publication_title
-			row.add("${entitlement.tipp.title.title}")
+			row.add("${tipp.title.title}")
 			log.debug("add main identifiers")
 			//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
-			if(entitlement.tipp.title.getIdentifierValue('pISBN'))
-				row.add(entitlement.tipp.title.getIdentifierValue('pISBN'))
-			else if(entitlement.tipp.title.getIdentifierValue('ISSN'))
-				row.add(entitlement.tipp.title.getIdentifierValue('ISSN'))
+			if(tipp.title.getIdentifierValue('pISBN'))
+				row.add(tipp.title.getIdentifierValue('pISBN'))
+			else if(tipp.title.getIdentifierValue('ISSN'))
+				row.add(tipp.title.getIdentifierValue('ISSN'))
 			else row.add(' ')
 			//online_identifier
-			if(entitlement.tipp.title.getIdentifierValue('ISBN'))
-				row.add(entitlement.tipp.title.getIdentifierValue('ISBN'))
-			else if(entitlement.tipp.title.getIdentifierValue('eISSN'))
-				row.add(entitlement.tipp.title.getIdentifierValue('eISSN'))
+			if(tipp.title.getIdentifierValue('ISBN'))
+				row.add(tipp.title.getIdentifierValue('ISBN'))
+			else if(tipp.title.getIdentifierValue('eISSN'))
+				row.add(tipp.title.getIdentifierValue('eISSN'))
 			else row.add(' ')
 			log.debug("process package start and end")
 			if(covStmt) {
@@ -327,7 +348,7 @@ class ExportService {
 			}
 			log.debug("add title url")
 			//title_url
-			row.add(entitlement.tipp.hostPlatformURL ?: ' ')
+			row.add(tipp.hostPlatformURL ?: ' ')
 			//first_author (no value?)
 			row.add(' ')
 			//title_id (no value?)
@@ -349,7 +370,7 @@ class ExportService {
 			//publisher_name (no value?)
 			row.add(' ')
 			//publication_type
-			switch(entitlement.tipp.title.medium) {
+			switch(tipp.title.medium) {
 				case RDStore.TITLE_TYPE_JOURNAL: row.add('serial')
 					break
 				case RDStore.TITLE_TYPE_EBOOK: row.add('monograph')
@@ -357,8 +378,8 @@ class ExportService {
 				default: row.add(' ')
 					break
 			}
-			if(entitlement.tipp.title instanceof BookInstance) {
-				BookInstance bookInstance = (BookInstance) entitlement.tipp.title
+			if(tipp.title instanceof BookInstance) {
+				BookInstance bookInstance = (BookInstance) tipp.title
 				//date_monograph_published_print (no value unless BookInstance)
 				row.add(bookInstance.dateFirstInPrint ? formatter.format(bookInstance.dateFirstInPrint) : ' ')
 				//date_monograph_published_online (no value unless BookInstance)
@@ -394,27 +415,27 @@ class ExportService {
                     break
             }*/
 			//access_start_date
-			row.add(entitlement.derivedAccessStartDate ? formatter.format(entitlement.derivedAccessStartDate) : ' ')
+			row.add(entitlement?.derivedAccessStartDate ? formatter.format(entitlement.derivedAccessStartDate) : ' ')
 			//access_end_date
-			row.add(entitlement.derivedAccessEndDate ? formatter.format(entitlement.derivedAccessEndDate) : ' ')
+			row.add(entitlement?.derivedAccessEndDate ? formatter.format(entitlement.derivedAccessEndDate) : ' ')
 			log.debug("processing identifiers")
 			//zdb_id
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,IdentifierNamespace.ZDB,','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','))
 			//zdb_ppn
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,IdentifierNamespace.ZDB_PPN,','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,','))
 			//ezb_collection_id
 			row.add(' ')
 			//DOI
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,IdentifierNamespace.DOI,','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,','))
 			//ISSNs
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,IdentifierNamespace.ISSN,','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISSN,','))
 			//eISSNs
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,IdentifierNamespace.EISSN,','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.EISSN,','))
 			//pISBNs
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,IdentifierNamespace.PISBN,','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','))
 			//ISBNs
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,IdentifierNamespace.PISBN,','))
-			if(entitlement.priceItem) {
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','))
+			if(entitlement?.priceItem) {
 				//listprice_value
 				row.add(entitlement.priceItem.listPrice ? entitlement.priceItem.listPrice.setScale(2, RoundingMode.HALF_UP) : ' ')
 				//listprice_currency
