@@ -4,6 +4,8 @@
 
 2399    17.04.2020  rc1.3       Andreas Bug         Plattform-Primary-URL und Anbieter wurden nicht aus der GOKb übernommen
 
+2383    17.04.2020  rc1.3       Moe     Bug         Umfrage Export: Merkmale werden falsch sortiert bei Konsortialstelle
+
 2372    16.04.2020  rc1.3       Christian   Bug     Behandlung von verkürzten IPv6 Adressen fehlerhaft
 
 1859    16.04.2020  rc1.3       Anja    Feature     Merkmale verwalten: Spalte Schlüssel entf, Performanceverbesserung
