@@ -38,7 +38,7 @@
                 </g:each>
             </semui:menuDropdownItems>
 
-            <g:if test="${surveyInfo.type.id == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL.id}">
+            <g:if test="${surveyInfo.type.id == RDStore.SURVEY_TYPE_RENEWAL.id}">
                 <semui:menuDropdownItems actionName="surveyCostItems" message="surveyCostItems.label">
                     <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
                         <semui:menuDropdownItem controller="survey" action="surveyCostItems"
@@ -69,7 +69,7 @@
                               params="${[id: params.id, surveyConfigID: surveyConfig?.id]}"
                               message="surveyParticipants.label"/>
 
-            <g:if test="${surveyInfo.type.id == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL.id}">
+            <g:if test="${surveyInfo.type.id == RDStore.SURVEY_TYPE_RENEWAL.id}">
                 <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyCostItems"
                               params="${[id: params.id, surveyConfigID: surveyConfig?.id]}"
                               message="surveyCostItems.label"/>

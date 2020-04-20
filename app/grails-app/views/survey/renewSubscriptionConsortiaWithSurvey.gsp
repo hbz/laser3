@@ -1,4 +1,4 @@
-<%@ page import="de.laser.AuditConfig;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.AuditConfig;de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory;" %>
 <!doctype html>
 <html>
 <head>
@@ -91,8 +91,8 @@ ${surveyInfo.name}
             <tr>
                 <th>${message(code: 'default.status.label')}</th>
                 <td>
-                <g:set var="rdcSubStatus" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}"/>
-                <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
+                <g:set var="rdcSubStatus" value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}"/>
+                <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
                           optionKey="id"
                           optionValue="${{ it.getI10n('value') }}"
                           name="subStatus"
