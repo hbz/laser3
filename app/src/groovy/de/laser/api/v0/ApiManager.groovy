@@ -35,33 +35,26 @@ class ApiManager {
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
-
-        Closure validateRequest = { endpoint ->
-            println "obj:              " + obj
-            println "format:           " + format
-            println "endpoint:         " + endpoint
-
-            println "HTTP_NOT_IMPLEMENTED: " + (!(obj in ApiReader.SUPPORTED_FORMATS.keySet()))
-            println "HTTP_NOT_ACCEPTABLE:  " + (!(format in ApiReader.SUPPORTED_FORMATS[endpoint]))
-            println "VALID_REQUEST:        " + (endpoint.equalsIgnoreCase(obj))
-
-            if (! (obj in ApiReader.SUPPORTED_FORMATS.keySet())){
-                return Constants.HTTP_NOT_IMPLEMENTED
+        Closure checkValidRequest = { endpoint ->
+            if (! endpoint.equalsIgnoreCase(obj)) {
+                return false
             }
-            else if (! (format in ApiReader.SUPPORTED_FORMATS[endpoint])){
-                return Constants.HTTP_NOT_ACCEPTABLE
-            }
-            else if (endpoint.equalsIgnoreCase(obj)) {
-                return Constants.VALID_REQUEST
-            }
+            result = Constants.VALID_REQUEST
+            return true
         }
 
         Closure checkFailureCodes = { check ->
             return check && !(check.toString() in failureCodes)
         }
 
+        if (! (ApiReader.SUPPORTED_FORMATS.containsKey(obj))){
+            return Constants.HTTP_NOT_IMPLEMENTED
+        }
+        else if (! (format in ApiReader.SUPPORTED_FORMATS[obj])){
+            return Constants.HTTP_NOT_ACCEPTABLE
+        }
 
-        if ((result = validateRequest('costItem')) == Constants.VALID_REQUEST) {
+        if (checkValidRequest('costItem')) {
 
             result = ApiCostItem.findCostItemBy(query, value)
 
@@ -69,7 +62,7 @@ class ApiManager {
                 result = ApiCostItem.requestCostItem((CostItem) result, contextOrg, isInvoiceTool)
             }
         }
-        else if ((result = validateRequest('costItemList')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('costItemList')) {
 
             def identifierAndTimestamp = ApiToolkit.parseTimeLimitedQuery( query, value )
 
@@ -110,7 +103,7 @@ class ApiManager {
                 }
             }
         } */
-        else if ((result = validateRequest('license')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('license')) {
 
             ApiBox tmp = ApiLicense.findLicenseBy(query, value)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
@@ -119,7 +112,7 @@ class ApiManager {
                 result = ApiLicense.requestLicense((License) tmp.obj, contextOrg)
             }
         }
-        else if ((result = validateRequest('licenseList')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('licenseList')) {
 
             ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
@@ -128,7 +121,7 @@ class ApiManager {
                 result = ApiLicense.getLicenseList((Org) tmp.obj, contextOrg)
             }
         }
-        else if ((result = validateRequest('oaMonitor')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('oaMonitor')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -140,7 +133,7 @@ class ApiManager {
                 result = ApiOAMonitor.requestOrganisation((Org) tmp.obj, contextOrg)
             }
         }
-        else if ((result = validateRequest('oaMonitorList')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('oaMonitorList')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -148,7 +141,7 @@ class ApiManager {
 
             result = ApiOAMonitor.getAllOrgs()
         }
-        else if ((result = validateRequest('organisation')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('organisation')) {
 
             ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
@@ -157,7 +150,7 @@ class ApiManager {
                 result = ApiOrg.requestOrganisation((Org) tmp.obj, contextOrg, isInvoiceTool)
             }
         }
-        else if ((result = validateRequest('package')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('package')) {
 
             ApiBox tmp = ApiPkg.findPackageBy(query, value)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
@@ -166,15 +159,15 @@ class ApiManager {
                 result = ApiPkg.requestPackage((Package) tmp.obj, contextOrg)
             }
         }
-        else if ((result = validateRequest('propertyList')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('propertyList')) {
 
 			result = ApiCatalogue.getAllProperties(contextOrg)
         }
-        else if ((result = validateRequest('refdataList')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('refdataList')) {
 
             result = ApiCatalogue.getAllRefdatas()
         }
-        else if ((result = validateRequest('statistic')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('statistic')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -186,7 +179,7 @@ class ApiManager {
                 result = ApiStatistic.requestPackage((Package) tmp.obj)
             }
         }
-        else if ((result = validateRequest('statisticList')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('statisticList')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -194,7 +187,7 @@ class ApiManager {
 
             result = ApiStatistic.getAllPackages()
         }
-        else if ((result = validateRequest('subscription')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('subscription')) {
 
             ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
@@ -203,7 +196,7 @@ class ApiManager {
                 result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool)
             }
         }
-        else if ((result = validateRequest('subscriptionList')) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('subscriptionList')) {
 
             ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove

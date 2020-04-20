@@ -36,6 +36,7 @@ class ApiSubscription {
                 break
             default:
 				result.status = Constants.HTTP_BAD_REQUEST
+				return result
                 break
         }
 		result.validatePrecondition_1()

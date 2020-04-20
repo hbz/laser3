@@ -2,6 +2,11 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.91
+
+- fixed HTTP status codes for erroneous requests
+- internal refactoring
+
 #### 0.90
 
 - added request header `x-debug` for __/oaMonitor__ and __/statistic__
