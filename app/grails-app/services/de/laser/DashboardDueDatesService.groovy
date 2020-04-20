@@ -76,8 +76,8 @@ class DashboardDueDatesService {
         log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase")
 
         List<DashboardDueDate> dashboarEntriesToInsert = []
-        List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
-//        def users = [User.get(6)]
+//        List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
+        List<User> users = [User.get(96)]
         users.each { user ->
             List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
             orgs.each {org ->

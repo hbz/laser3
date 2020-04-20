@@ -6,8 +6,8 @@
         <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
         <th>${message(code:'default.date.label')}</th>
         <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
-        <th>${message(code:'myinst.dash.due_dates.hide.label')}</th>
-        <th>${message(code:'myinst.dash.due_dates.done.label')}</th>
+        <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.hide.label')}</th>
+        <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.done.label')}</th>
     </tr>
     </thead>
     <tbody>
@@ -87,8 +87,7 @@
                         </g:else>
                     </div>
                 </td>
-            <g:if test="${false}">
-                <td>
+                <td style="text-align: center">
                     <g:if test="${false}">
                         <laser:remoteLink class="ui icon  negative button  js-open-confirm-modal"
                                           controller="ajax"
@@ -107,20 +106,19 @@
                         </laser:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
-                        <laser:remoteLink class="ui icon  button"
+                        <laser:remoteLink class="ui icon button"
                                           controller="ajax"
                                           action="showDashboardDueDate"
                                           params=''
                                           id="${dashDueDate?.id}"
                                           data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin wieder auf Ihrem Dashboard anzeigen lassen? "
                                           data-confirm-term-how="ok"
-
                                           data-done=""
                                           data-always="bb8.init('#container-table')"
                                           data-update="container-table"
                                           role="button"
                         >
-                            <i class="icon slash eye la-js-editmode-icon"></i>
+                            <i class="icon bell slash la-js-editmode-icon"></i>
                         </laser:remoteLink>
                     </g:if>
                     <g:else>
@@ -129,22 +127,61 @@
                                           action="hideDashboardDueDate"
                                           params=''
                                           id="${dashDueDate?.id}"
-
-
                                           data-done=""
                                           data-always="bb8.init('#container-table')"
                                           data-update="container-table"
                                           role="button"
                         >
-                            <i class="icon eye la-js-editmode-icon"></i>
+                            <i class="icon bell la-js-editmode-icon"></i>
                         </laser:remoteLink>
                     </g:else>
                 </td>
-                <td>
-                    <semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" />
+                <td style="text-align: center">
+                <g:if test="${dashDueDate?.isDone}">
+                    <laser:remoteLink class="ui green button"
+                                      controller="ajax"
+                                      action="dashboardDueDateSetIsUndone"
+                                      params=''
+                                      id="${dashDueDate?.id}"
+                                      data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin auf NICHT erledigt sezten? "
+                                      data-confirm-term-how="ok"
+                                      data-done=""
+                                      data-always="bb8.init('#container-table')"
+                                      data-update="container-table"
+                                      role="button"
+                    >
+                        <i class="icon check la-js-editmode-icon"></i>
+                        %{--<input type='checkbox' class='chk' name='isDone' id='${com.k_int.kbplus.GenericOIDService.getOID(dashDueDate)+isDone}'--}%
+                               %{--<g:if test='${dashDueDate.isDone}'>checked='checked'</g:if>--}%
+                        %{--/>--}%
+                    </laser:remoteLink>
+                </g:if>
+                <g:else>
+                    <laser:remoteLink class="ui button"
+                                      controller="ajax"
+                                      action="dashboardDueDateSetIsDone"
+                                      params=''
+                                      id="${dashDueDate?.id}"
+                                      data-done=""
+                                      data-always="bb8.init('#container-table')"
+                                      data-update="container-table"
+                                      role="button"
+                    >
+                        <i class="icon check la-js-editmode-icon"></i>
+                        %{--<input type='checkbox' class='chk' name='isDone' id='${com.k_int.kbplus.GenericOIDService.getOID(dashDueDate)+isDone}'--}%
+                               %{--<g:if test='${dashDueDate.isDone}'>checked='checked'</g:if>--}%
+                        %{--/>--}%
+                    </laser:remoteLink>
+                </g:else>
+                    %{--<hr>--}%
+                    %{--<semui:xEditableBoolean owner="${dashDueDate}" field="isDone" />--}%
+                    %{--<div class="ui checkbox">--}%
+                        %{--<input type='checkbox' class='chk' name='isDone' id='${com.k_int.kbplus.GenericOIDService.getOID(dashDueDate)+isDone}'--}%
+                               %{--<g:if test='${dashDueDate.isDone}'>checked='checked'</g:if>--}%
+                            %{--onchange=""--}%
+                        %{--/>--}%
+                    %{--</div>--}%
                 </td>
-            </g:if>
-                <td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>
             </tr>
         </g:if>
     </g:each>
