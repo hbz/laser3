@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants;com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants;com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
 <laser:serviceInjection/>
 <!doctype html>
 <r:require module="datatables" />
@@ -92,7 +92,7 @@
                                 <dd>${packageInstance.packageStatus?.getI10n('value')}</dd>
                             </dl>
                             <dl>
-                                <dt>${message(code: 'package.list_status')}</dt>
+                                <dt>${message(code: 'package.packageListStatus')}</dt>
                                 <dd>
                                     ${packageInstance.packageListStatus}
                                 </dd>
@@ -154,7 +154,7 @@
                                         parent: packageInstance.class.name+':'+packageInstance.id,
                                         property: 'orgs',
                                         recip_prop: 'pkg',
-                                        tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE),
+                                        tmplRole: de.laser.helper.RDStore.OR_CONTENT_PROVIDER,
                                         tmplText:'Anbieter hinzufügen',
                                         tmplID:'ContentProvider',
                                         tmplButtonText: 'Anbieter hinzufügen',

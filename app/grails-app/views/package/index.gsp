@@ -163,7 +163,7 @@
                         <th>${message(code: 'package.listVerifiedDate.label')}</th>
                         <th>${message(code: 'package.scope')}</th>
                         <th>${message(code: 'package.contentType.label')}</th>
-                        <th>${message(code: 'package.list_status')}</th>
+                        <th>${message(code: 'package.packageListStatus')}</th>
                     </tr>
                     </thead>
                     <tbody>
