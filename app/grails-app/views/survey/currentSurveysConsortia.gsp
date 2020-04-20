@@ -184,7 +184,6 @@
                                   property="surInfo.startDate"
                                   title="${message(code: 'default.startDate.label')}"/>
                 <th rowspan="2" scope="col">${message(code: 'surveyInfo.status.label')}</th>
-                <th rowspan="2" scope="col">${message(code: 'surveyInfo.isMandatory.label')}</th>
                 <th rowspan="2" scope="col">${message(code: 'surveyProperty.plural.label')}</th>
 
 
@@ -255,15 +254,14 @@
 
                     <td class="center aligned">
                         ${surveyInfo.status.getI10n('value')}
-                    </td>
 
-                    <td class="center aligned">
                         <g:if test="${surveyInfo.isMandatory}">
-                            <i class='check green icon'></i>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
+                                    <i class="yellow icon exclamation triangle"></i>
+                                </span>
                         </g:if>
-                        <g:else>
-                            <i class='close red icon'></i>
-                        </g:else>
+
                     </td>
 
                     <td class="center aligned">
