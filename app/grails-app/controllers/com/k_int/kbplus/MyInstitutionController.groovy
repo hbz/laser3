@@ -11,6 +11,7 @@ import de.laser.SystemAnnouncement
 
 //import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
+import de.laser.domain.AbstractI10nTranslatable
 
 //import de.laser.TaskService //unused for quite a long time
 
@@ -3914,23 +3915,23 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    Map<String, Object> managePrivateProperties() {
+    Map<String, Object> managePrivatePropertyDefinitions() {
         Map<String, Object> result = setResultGenerics()
 
         if('add' == params.cmd) {
             List rl = addPrivatePropertyDefinition(params)
             flash."${rl[0]}" = rl[1]
         }
+
         else if('delete' == params.cmd) {
             flash.message = deletePrivatePropertyDefinition(params)
         }
-
+        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
-            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
             propDefs[it] = itResult
         }
-
 
         result.propertyDefinitions = propDefs
 
@@ -3938,7 +3939,6 @@ AND EXISTS (
         result.usedPdList = usedPdList
         result.attrMap = attrMap
         //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
-        result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'private'
         result
     }
@@ -3950,9 +3950,10 @@ AND EXISTS (
     Object managePropertyDefinitions() {
         Map<String,Object> result = setResultGenerics()
 
+        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!
             propDefs[it] = itResult
         }
 
@@ -3964,7 +3965,6 @@ AND EXISTS (
         //result.attrMap = attrMap
         //result.usedPdList = usedPdList
 
-        result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'custom'
         render view: 'managePropertyDefinitions', model: result
     }

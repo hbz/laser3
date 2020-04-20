@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.PropertyService
+import de.laser.TitleStreamService
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -1176,11 +1177,20 @@ class SurveyController {
                     g.message(code:'author.slash.editor'),
                     g.message(code:'title.editionStatement.label'),
                     g.message(code:'title.summaryOfContent.label'),
-                    g.message(code:'identifier.label'),
+                    'zdb_id',
+                    'zdb_ppn',
+                    'DOI',
+                    'ISSNs',
+                    'eISSNs',
+                    'pISBNs',
+                    'ISBNs',
                     g.message(code:'title.dateFirstInPrint.label'),
                     g.message(code:'title.dateFirstOnline.label'),
                     g.message(code:'default.status.label'),
-                    g.message(code:'tipp.price')
+                    g.message(code:'tipp.listPrice'),
+                    g.message(code:'financials.currency'),
+                    g.message(code:'tipp.localPrice'),
+                    g.message(code:'financials.currency')
 
             ]
             List rows = []
@@ -1199,12 +1209,20 @@ class SurveyController {
                     row.add([field: '', style:null])
                 }
 
-
-                def identifiers = []
-                ie.tipp.title.ids?.sort { it.ns.ns }.each{ ident ->
-                    identifiers << "${ident.ns.ns}: ${ident.value}"
-                }
-                row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
+                //zdb_id
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'zdb',','), style:null])
+                //zdb_ppn
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'zdb_ppn',','), style:null])
+                //DOI
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'doi',','), style:null])
+                //ISSNs
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'issn',','), style:null])
+                //eISSNs
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'eissn',','), style:null])
+                //pISBNs
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'pisbn',','), style:null])
+                //ISBNs
+                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'isbn',','), style:null])
 
                 if(ie.tipp.title instanceof BookInstance) {
                     row.add([field: ie.tipp.title.dateFirstInPrint ? g.formatDate(date: ie.tipp.title.dateFirstInPrint, format: message(code: 'default.date.format.notime')) : '', style: null])
@@ -1216,9 +1234,17 @@ class SurveyController {
 
                 row.add([field: ie.acceptStatus?.getI10n('value') ?: '', style:null])
 
-                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, type: 'currency', currencySymbol: ie.priceItem.listCurrency, currencyCode: ie.priceItem.listCurrency) : '', style:null])
-                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, type: 'currency', currencySymbol: ie.priceItem.localCurrency, currencyCode: ie.priceItem?.localCurrency) : '', style:null])
-
+                if(ie.priceItem) {
+                    row.add([field: ie.priceItem.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
+                    row.add([field: ie.priceItem.listCurrency?.value ?: '', style: null])
+                    row.add([field: ie.priceItem.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
+                    row.add([field: ie.priceItem.localCurrency?.value ?: '', style: null])
+                }else{
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                    row.add([field: '', style:null])
+                }
 
                 rows.add(row)
             }
@@ -4643,6 +4669,7 @@ class SurveyController {
                        g.message(code: 'org.libraryNetwork.label'),
                        g.message(code: 'surveyProperty.subName'),
                        g.message(code: 'surveyConfigsInfo.newPrice'),
+                       g.message(code: 'financials.currency'),
                        g.message(code: 'surveyConfigsInfo.newPrice.comment')
         ]
 
@@ -4674,10 +4701,12 @@ class SurveyController {
 
             if (!surveyOrg.existsMultiYearTerm()) {
                 if (costItem) {
-                    row.add([field: g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number") + costItem?.billingCurrency?.getI10n('value').split('-').first(), style: null])
+                    row.add([field: g.formatNumber(number: costItem.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number"), style: null])
+                    row.add([field: costItem.billingCurrency?.getI10n('value').split('-').first(), style: null])
                 }
             } else {
                 row.add([field: g.message(code: "surveyOrg.perennialTerm.available"), style: null])
+                row.add([field: '', style: null])
             }
 
             row.add([field: costItem.costDescription ?: '', style: null])

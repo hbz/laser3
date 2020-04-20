@@ -2,7 +2,14 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
 2395    20.04.2020  rc1.3       David   Feature     API 0.91: Umbau der Status-Verarbeitung
+
+2383    17.04.2020  rc1.3       Moe     Bug         Umfrage Export: Merkmale werden falsch sortiert bei Konsortialstelle
+
+2372    16.04.2020  rc1.3       Christian   Bug     Behandlung von verkürzten IPv6 Adressen fehlerhaft
+
+1859    16.04.2020  rc1.3       Anja    Feature     Merkmale verwalten: Spalte Schlüssel entf, Performanceverbesserung
 
 2380    16.04.2020  rc1.3       David   Bug         Private Merkmale werden falsch zugeordnet
 
