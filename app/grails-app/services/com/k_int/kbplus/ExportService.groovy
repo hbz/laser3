@@ -218,11 +218,10 @@ class ExportService {
 
 	/**
 	 * Generates a title stream export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
-	 * The standard is defined as the reference linked below
+	 * The standard is defined here: <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBART definition</a>
 	 *
 	 * @param entitlementData - a {@link Collection} containing the actual data
 	 * @return a {@link Map} containing lists for the title row and the column data
-	 * @see <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBART definition</a>
 	 */
 	Map<String,List> generateTitleExportKBART(Collection entitlementData) {
 		Map<String,List> export = [titleRow:[
@@ -255,7 +254,13 @@ class ExportService {
 				'access_end_date',
 				'zdb_id',
 				'zdb_ppn',
+				'ezb_anchor',
 				'ezb_collection_id',
+				'subscription_isil',
+				'subscription_isci',
+				'package_isil',
+				'package_isci',
+				'package_gokb_uid',
 				'DOI',
 				'ISSNs',
 				'eISSNs',
@@ -423,8 +428,29 @@ class ExportService {
 			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','))
 			//zdb_ppn
 			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,','))
-			//ezb_collection_id
-			row.add(' ')
+			if(entitlement) {
+				//ezb_anchor
+				row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.EZB_ANCHOR,','))
+				//ezb_collection_id
+				row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.EZB_COLLECTION_ID,','))
+				//subscription_isil
+				row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.ISIL_PAKETSIGEL,','))
+				//subscription_isci
+				row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.ISCI,','))
+			}
+			else {
+				//empty values for subscription identifiers
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+			}
+			//package_isil
+			row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.ISIL_PAKETSIGEL,','))
+			//package_isci
+			row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.ISCI,','))
+			//package_gokb_uid
+			row.add(tipp.pkg.gokbId)
 			//DOI
 			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,','))
 			//ISSNs
