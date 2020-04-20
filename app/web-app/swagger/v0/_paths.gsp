@@ -210,7 +210,7 @@
     get:
       tags:
         - Objects
-      summary: Retrieving packge by identifier
+      summary: Retrieving package by identifier
       description: >
         Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
 
@@ -379,10 +379,16 @@
             application/json:
               schema:
                 $ref: "#/components/schemas/PlaceholderObject"
+        400:
+          $ref: "#/components/responses/badRequest"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
           $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but organisation not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
 
 
   /oaMonitorList:
@@ -408,7 +414,9 @@
           $ref: "#/components/responses/notAuthorized"
         403:
           $ref: "#/components/responses/forbidden"
-
+        406:
+          $ref: "#/components/responses/notAcceptable"
+          
 
   /statistic:
 
@@ -432,10 +440,16 @@
             application/json:
               schema:
                 $ref: "#/components/schemas/PlaceholderObject"
+        400:
+          $ref: "#/components/responses/badRequest"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
           $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but package not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
 
 
   /statisticList:
@@ -461,3 +475,5 @@
           $ref: "#/components/responses/notAuthorized"
         403:
           $ref: "#/components/responses/forbidden"
+        406:
+          $ref: "#/components/responses/notAcceptable"
