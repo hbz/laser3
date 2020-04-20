@@ -263,7 +263,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     Org result = null
 
     orgs.each { OrgRole or ->
-      if ( or.roleType.id == RDStore.OR_CONTENT_PROVIDER.id )
+      if ( or.roleType.id in [RDStore.OR_CONTENT_PROVIDER.id,RDStore.OR_PROVIDER.id] )
         result = or.org
     }
     result

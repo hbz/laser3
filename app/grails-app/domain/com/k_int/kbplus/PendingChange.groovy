@@ -29,7 +29,7 @@ class PendingChange {
     @Transient
     final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
     @Transient
-    final static Set<String> REFDATA_FIELDS = ['status']
+    final static Set<String> REFDATA_FIELDS = ['status','packageListStatus','breakable','fixed','consistent','packageStatus','packageScope']
 
     final static PROP_LICENSE       = 'license'
     final static PROP_PKG           = 'pkg'

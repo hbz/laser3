@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2401    20.04.2020  rc1.3       Andreas Bug         Paketeigenschaften in Pending Changes wurden nicht korrekt verarbeitet
+
 2399    17.04.2020  rc1.3       Andreas Bug         Plattform-Primary-URL und Anbieter wurden nicht aus der GOKb übernommen
 
 2383    17.04.2020  rc1.3       Moe     Bug         Umfrage Export: Merkmale werden falsch sortiert bei Konsortialstelle

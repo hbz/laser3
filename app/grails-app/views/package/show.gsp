@@ -92,7 +92,7 @@
                                 <dd>${packageInstance.packageStatus?.getI10n('value')}</dd>
                             </dl>
                             <dl>
-                                <dt>${message(code: 'package.list_status')}</dt>
+                                <dt>${message(code: 'package.packageListStatus')}</dt>
                                 <dd>
                                     ${packageInstance.packageListStatus}
                                 </dd>

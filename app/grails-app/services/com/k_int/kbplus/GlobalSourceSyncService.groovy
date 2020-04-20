@@ -835,7 +835,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
         controlledProperties.each { prop ->
             if(pkgA[prop] != pkgB[prop]) {
-                result.add([prop: prop, newValue: pkgB[prop], oldValue: pkgA[prop]])
+                if(prop in PendingChange.REFDATA_FIELDS)
+                    result.add([prop: prop, newValue: pkgB[prop].id, oldValue: pkgA[prop].id])
+                else result.add([prop: prop, newValue: pkgB[prop], oldValue: pkgA[prop]])
             }
         }
 
@@ -950,15 +952,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
             entry.each { notify ->
                 log.debug(notify)
                 if(notify.event in ['pkgPropUpdate','pkgDelete']) {
-                    String msgToken
-                    if(notify.event == 'pkgPropUpdate')
-                        msgToken = PendingChangeConfiguration.PACKAGE_PROP
-                    else if(notify.event == 'pkgDelete')
-                        msgToken = PendingChangeConfiguration.PACKAGE_DELETED
                     Package target = (Package) notify.target
                     Set<SubscriptionPackage> spConcerned = SubscriptionPackage.findAllByPkg(target)
-                    spConcerned.each { SubscriptionPackage sp ->
-                        changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:"${target.class.name}:${target.id}"],msgToken,SubscriptionPackage.findBySubscriptionAndPkg(sp.subscription,target))
+                    if(notify.event == 'pkgPropUpdate') {
+                        spConcerned.each { SubscriptionPackage sp ->
+                            Map<String,Object> changeMap = [target:sp.subscription, oid:"${target.class.name}:${target.id}"]
+                            notify.diffs.each { diff ->
+                                changeMap.oldValue = diff.oldValue
+                                changeMap.newValue = diff.newValue
+                                changeMap.prop = diff.prop
+                                changeNotificationService.determinePendingChangeBehavior(changeMap,PendingChangeConfiguration.PACKAGE_PROP,sp)
+                            }
+                        }
+                    }
+                    else if(notify.event == 'pkgDelete') {
+                        spConcerned.each { SubscriptionPackage sp ->
+                            changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:"${target.class.name}:${target.id}"],PendingChangeConfiguration.PACKAGE_DELETED,sp)
+                        }
                     }
                 }
                 else {
