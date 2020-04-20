@@ -29,7 +29,7 @@ class PendingChange {
     @Transient
     final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
     @Transient
-    final static Set<String> REFDATA_FIELDS = ['status']
+    final static Set<String> REFDATA_FIELDS = ['status','packageListStatus','breakable','fixed','consistent','packageStatus','packageScope']
 
     final static PROP_LICENSE       = 'license'
     final static PROP_PKG           = 'pkg'
@@ -193,7 +193,7 @@ class PendingChange {
             case PendingChangeConfiguration.NEW_TITLE:
                 if(target instanceof TitleInstancePackagePlatform) {
                     TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) target
-                    IssueEntitlement newTitle = IssueEntitlement.construct([subscription:subscription,tipp:tipp])
+                    IssueEntitlement newTitle = IssueEntitlement.construct([subscription:subscription,tipp:tipp,acceptStatus:RDStore.IE_ACCEPT_STATUS_FIXED])
                     if(newTitle) {
                         done = true
                     }

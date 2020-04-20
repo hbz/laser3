@@ -3,9 +3,11 @@ package com.k_int.kbplus
 import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
+import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
@@ -132,9 +134,27 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTipp(subscription,tipp)
       if(!ie) {
-        ie = new IssueEntitlement(subscription: subscription,tipp: tipp, status:tipp.status)
+        ie = new IssueEntitlement(subscription: subscription,tipp: tipp, status:tipp.status, acceptStatus: configMap.acceptStatus)
       }
-      if(!ie.save())
+      if(ie.save()) {
+        if(tipp.coverages) {
+          tipp.coverages.each { TIPPCoverage tc ->
+            IssueEntitlementCoverage ic = new IssueEntitlementCoverage(issueEntitlement: ie)
+            ic.startDate = tc.startDate
+            ic.startVolume = tc.startVolume
+            ic.startIssue = tc.startIssue
+            ic.endDate = tc.endDate
+            ic.endVolume = tc.endVolume
+            ic.endIssue = tc.endIssue
+            ic.coverageDepth = tc.coverageDepth
+            ic.coverageNote = tc.coverageNote
+            ic.embargo = tc.embargo
+            if(!ic.save())
+              throw new EntitlementCreationException(ic.errors)
+          }
+        }
+      }
+      else
         throw new EntitlementCreationException(ie.errors)
       ie
     }

@@ -24,5 +24,6 @@ class Constants {
     static final UTF8                        = "UTF-8"
 
     static final VALID_REQUEST               = "VALID_REQUEST"
-    static final OBJECT_STATUS_DELETED       = "OBJECT_STATUS_DELETED"
+    static final OBJECT_NOT_FOUND            = "OBJECT_NOT_FOUND"           // -> new for ApiBox
+    static final OBJECT_STATUS_DELETED       = "OBJECT_STATUS_DELETED"      // -> new for ApiBox
 }

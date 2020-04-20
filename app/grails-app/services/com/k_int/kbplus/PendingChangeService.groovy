@@ -541,7 +541,7 @@ class PendingChangeService extends AbstractLockableService {
         String eventIcon, instanceIcon, eventString, pkgLink, pkgName, titleLink, titleName, platformName, platformLink, holdingLink, coverageString
         List<Object> eventData
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        if(change.oid) {
+        if(change.oid && change.targetProperty) {
             if(change.oid.contains(IssueEntitlement.class.name)){
                 IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(change.oid)
                 holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg.id])
