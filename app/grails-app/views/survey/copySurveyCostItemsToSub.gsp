@@ -33,7 +33,7 @@
 <br>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-${surveyInfo?.name}
+${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
@@ -53,10 +53,10 @@ ${surveyInfo?.name}
                 <h3 class="ui header center aligned">
                     <g:if test="${parentSubscription}">
                         <g:link controller="subscription" action="show"
-                                id="${parentSubscription?.id}">${parentSubscription?.dropdownNamingConvention()}</g:link>
+                                id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
                         <br>
                         <g:link controller="subscription" action="members"
-                                id="${parentSubscription?.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
+                                id="${parentSubscription.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
                         <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size() ?: 0}"/>
                     </g:if>
                 </h3>
@@ -67,8 +67,8 @@ ${surveyInfo?.name}
 
 <semui:form>
 
-    <g:form action="proccessCopySurveyCostItemsToSub" controller="survey" id="${surveyInfo?.id}"
-            params="[surveyConfigID: surveyConfig?.id]"
+    <g:form action="proccessCopySurveyCostItemsToSub" controller="survey" id="${surveyInfo.id}"
+            params="[surveyConfigID: surveyConfig.id]"
             method="post" class="ui form ">
 
         <g:set var="sumNewCostItem" value="${0.0}"/>
@@ -116,7 +116,7 @@ ${surveyInfo?.name}
                         </g:if>
                         <g:link controller="myInstitution" action="manageParticipantSurveys"
                                 id="${participant.id}">
-                            ${participant?.sortname}
+                            ${participant.sortname}
                         </g:link>
                         <br>
                         <g:link controller="organisation" action="show"
@@ -147,7 +147,7 @@ ${surveyInfo?.name}
                             (<g:formatNumber number="${participant.surveyCostItem.costInBillingCurrency}" minFractionDigits="2"
                                              maxFractionDigits="2" type="number"/>)
 
-                            ${(participant.surveyCostItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
+                            ${(participant.surveyCostItem.billingCurrency?.getI10n('value')?.split('-')).first()}
 
                             <g:set var="sumSurveyCostItem"
                                    value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrency?:0}"/>
@@ -161,23 +161,23 @@ ${surveyInfo?.name}
                     <td>
                         <g:if test="${participant.newSub}">
                             <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
-                                    var="costItemParticipantSuccessorSub">
+                                    var="costItemParticipantSub">
 
-                                ${costItemParticipantSuccessorSub.costItemElement?.getI10n('value')}<br>
+                                ${costItemParticipantSub.costItemElement?.getI10n('value')}<br>
                                 <b><g:formatNumber
-                                        number="${costItemParticipantSuccessorSub?.costInBillingCurrencyAfterTax}"
+                                        number="${costItemParticipantSub.costInBillingCurrencyAfterTax}"
                                         minFractionDigits="2"
                                         maxFractionDigits="2" type="number"/></b>
 
-                                (<g:formatNumber number="${costItemParticipantSuccessorSub?.costInBillingCurrency}"
+                                (<g:formatNumber number="${costItemParticipantSub.costInBillingCurrency}"
                                                  minFractionDigits="2"
                                                  maxFractionDigits="2" type="number"/>)
 
-                                ${(costItemParticipantSuccessorSub?.billingCurrency?.getI10n('value')?.split('-')).first()}
+                                ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
                                 <g:set var="sumNewCostItem"
-                                       value="${sumNewCostItem + costItemParticipantSuccessorSub?.costInBillingCurrency?:0}"/>
+                                       value="${sumNewCostItem + costItemParticipantSub.costInBillingCurrency?:0}"/>
                                 <g:set var="sumNewCostItemAfterTax"
-                                       value="${sumNewCostItemAfterTax + costItemParticipantSuccessorSub?.costInBillingCurrencyAfterTax?:0}"/>
+                                       value="${sumNewCostItemAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax?:0}"/>
 
 
                             </g:each>
