@@ -2,6 +2,15 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+2362    20.04.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume inid_
+
+2402    20.04.2020  rc1.3       Andreas Bug         Paketeigenschaften in Pending Changes wurden nicht korrekt verarbeitet
+
+2395    20.04.2020  rc1.3       David   Feature     API 0.91: Umbau der Status-Verarbeitung
+
+2399    17.04.2020  rc1.3       Andreas Bug         Plattform-Primary-URL und Anbieter wurden nicht aus der GOKb übernommen
+
 2383    17.04.2020  rc1.3       Moe     Bug         Umfrage Export: Merkmale werden falsch sortiert bei Konsortialstelle
 
 2372    16.04.2020  rc1.3       Christian   Bug     Behandlung von verkürzten IPv6 Adressen fehlerhaft
