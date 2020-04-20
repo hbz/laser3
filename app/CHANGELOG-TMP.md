@@ -2,7 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2401    20.04.2020  rc1.3       Andreas Bug         Paketeigenschaften in Pending Changes wurden nicht korrekt verarbeitet
+2402    20.04.2020  rc1.3       Andreas Bug         Paketeigenschaften in Pending Changes wurden nicht korrekt verarbeitet
 
 2395    20.04.2020  rc1.3       David   Feature     API 0.91: Umbau der Status-Verarbeitung
 
