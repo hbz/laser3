@@ -13,9 +13,11 @@ class ApiReader {
 
     static SUPPORTED_FORMATS = [
             'costItem':             [Constants.MIME_APPLICATION_JSON],
+            'costItemList':         [Constants.MIME_APPLICATION_JSON],
             'document':             [],
             'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
             'license':              [Constants.MIME_APPLICATION_JSON],
+            'licenseList':          [Constants.MIME_APPLICATION_JSON],
             'onixpl':               [Constants.MIME_APPLICATION_XML],
             'oaMonitor':            [Constants.MIME_APPLICATION_JSON],
             'oaMonitorList':        [Constants.MIME_APPLICATION_JSON],
@@ -25,7 +27,8 @@ class ApiReader {
             'refdataList':          [Constants.MIME_APPLICATION_JSON],
             'statistic':            [Constants.MIME_APPLICATION_JSON],
             'statisticList':        [Constants.MIME_APPLICATION_JSON],
-            'subscription':         [Constants.MIME_APPLICATION_JSON]
+            'subscription':         [Constants.MIME_APPLICATION_JSON],
+            'subscriptionList':     [Constants.MIME_APPLICATION_JSON]
     ]
 
     static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'propertyList', 'statisticList']
