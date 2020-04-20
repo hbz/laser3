@@ -106,7 +106,7 @@
 
             <div class="four wide column">
 
-                <g:link onclick="addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
+                <g:link onclick="addForAllSurveyCostItem([${(selectedSubParticipants?.id)+selectedParticipants?.id}])"
                         class="ui icon button right floated trigger-modal">
                     <g:message code="surveyCostItems.createInitialCostItem"/>
                 </g:link>

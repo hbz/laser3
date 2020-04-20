@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDStore" %>
 <div class="ui stackable grid">
     <div class="twelve wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
@@ -236,7 +236,7 @@
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
-                                    <dd>${subscriptionInstance.hasPerpetualAccess ? de.laser.helper.RDStore.YN_YES.getI10n('value') : de.laser.helper.RDStore.YN_NO.getI10n('value')}</dd>
+                                    <dd>${subscriptionInstance.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</dd>
                                     <dd><semui:auditInfo auditable="[subscriptionInstance, 'hasPerpetualAccess']"/></dd>
                                 </dl>
                                 <dl>
@@ -367,7 +367,7 @@
 
         </div>
 
-        <g:if test="${surveyInfo.type.id == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL.id}">
+        <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
             <div class="ui card la-time-card">
 
                 <div class="content">
@@ -389,7 +389,7 @@
                         // ERMS-1521 HOTFIX
                         if (!costItemsSub) {
                             costItemsSub = subscriptionInstance?.costItems?.findAll {
-                                it.costItemElement?.id == com.k_int.kbplus.RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)?.id
+                                it.costItemElement?.id == com.k_int.kbplus.RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)?.id
                             }
                         }
                     %>
@@ -572,9 +572,9 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${editable && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING &&
+                        <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                                 com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
-                                && (de.laser.helper.RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
+                                && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
                                     id="${surveyProperty.id}">
@@ -587,7 +587,7 @@
             </tbody>
             <tfoot>
             <tr>
-                <g:if test="${editable && properties && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
+                <g:if test="${editable && properties && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
                     <td colspan="6">
                         <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
                             <g:hiddenField name="id" value="${surveyInfo.id}"/>
@@ -767,7 +767,7 @@
 <r:script>
                                     $('body #participation').editable({
                                         validate: function (value) {
-                                            if (value == "com.k_int.kbplus.RefdataValue:${de.laser.helper.RDStore.YN_NO.id}") {
+                                            if (value == "com.k_int.kbplus.RefdataValue:${RDStore.YN_NO.id}") {
                                                 var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );
                                                 if (r == false) {
                                                    return "Sie haben die Nicht-Teilnahme an der Lizenz für das nächste Jahr nicht zugestimmt!"

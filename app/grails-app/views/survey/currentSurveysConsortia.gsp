@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem; de.laser.helper.RDConstants;" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -59,7 +59,7 @@
                 <select id="filterStatus" name="filterStatus" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                    <g:each in="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_STATUS)}"
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SURVEY_STATUS)}"
                             var="status">
                         <option <%=(params.list('filterStatus').contains(status.id.toString())) ? 'selected="selected"' : ''%>
                                 value="${status.id}" title="${status.getI10n('value')}">
@@ -110,7 +110,7 @@
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <laser:select class="ui dropdown" name="type"
-                              from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_TYPE)}"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SURVEY_TYPE)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.type}"
@@ -307,7 +307,7 @@
 
 
                     <td class="center aligned">
-                        <g:if test="${surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
+                        <g:if test="${surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose && surveyInfo.type in [RDStore.SURVEY_TYPE_RENEWAL, RDStore.SURVEY_TYPE_SUBSCRIPTION]}">
                             <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                 <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
