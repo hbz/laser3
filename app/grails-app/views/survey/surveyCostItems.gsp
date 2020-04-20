@@ -106,10 +106,19 @@
 
             <div class="four wide column">
 
-                <g:link onclick="addForAllSurveyCostItem([${(selectedSubParticipants?.id)+selectedParticipants?.id}])"
-                        class="ui icon button right floated trigger-modal">
-                    <g:message code="surveyCostItems.createInitialCostItem"/>
-                </g:link>
+                <g:if test="${params.tab == 'selectedSubParticipants'}">
+                    <g:link onclick="addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
+                            class="ui icon button right floated trigger-modal">
+                        <g:message code="surveyCostItems.createInitialCostItem"/>
+                    </g:link>
+                </g:if>
+
+                <g:if test="${params.tab == 'selectedParticipants'}">
+                    <g:link onclick="addForAllSurveyCostItem([${(selectedParticipants?.id)}])"
+                            class="ui icon button right floated trigger-modal">
+                        <g:message code="surveyCostItems.createInitialCostItem"/>
+                    </g:link>
+                </g:if>
             </div>
 
             <br>
