@@ -205,8 +205,8 @@ class SurveyService {
             boolean exportForSurveyOwner = (surveyConfig.surveyInfo.owner.id == contextOrg.id)
 
             if (exportForSurveyOwner) {
-                titles.addAll([messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale()),
-                               messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale())])
+                titles.addAll([messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
+                                messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale())])
                 if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
                     titles.push(messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()))
                 }
@@ -279,8 +279,9 @@ class SurveyService {
                 surveyConfig.orgs.sort{it.org.sortname}.each { surveyOrg ->
                     List row = []
 
-                    row.add([field: surveyOrg.org.name ?: '', style: null])
                     row.add([field: surveyOrg.org.sortname ?: '', style: null])
+                    row.add([field: surveyOrg.org.name ?: '', style: null])
+
                     if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
 
                         subscription = OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription))?.sub ?: null

@@ -301,7 +301,7 @@
 
 
                         <td class="center aligned">
-                            <g:if test="${surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose && surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL}">
+                            <g:if test="${surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose && surveyInfo.type in [RDStore.SURVEY_TYPE_RENEWAL]}">
                                 <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                                     <div class="ui circular ${surveyConfig?.costItemsFinish ? "green" : ""} label">
