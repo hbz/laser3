@@ -146,7 +146,7 @@
                     </g:form>
                 </th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}
                 </th>
@@ -658,7 +658,7 @@
 
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
                 <td class="x">
 
                     <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
@@ -736,7 +736,7 @@
             <g:if test="${tmplShowCheckbox}">
                 <td></td>
             </g:if>
-            <g:each in="${1..(tmplConfigShow?.size()-2)}" var="tmplConfigItem">
+            <g:each in="${1..(tmplConfigShow?.size()- ('surveySubCostItem' in tmplConfigShow ? 2 : 1))}" var="tmplConfigItem">
                     <td></td>
             </g:each>
             <g:if test="${'surveySubCostItem' in tmplConfigShow}">
@@ -798,7 +798,7 @@
     </script>
 
 </g:if>
-<g:if test="${tmplConfigShow?.contains('surveyCostItem') && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
+<g:if test="${tmplConfigShow?.contains('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
     <r:script>
    $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
                     e.preventDefault();

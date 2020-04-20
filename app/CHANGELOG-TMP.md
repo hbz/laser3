@@ -2,6 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2406    20.04.2020  rc1.3       Moe     Feature     Hotfixkandidat: Verbindlichkeit einer Umfrage durch
+
+2404    20.04.2020  rc1.3       Moe     Feature     Umfragekosten auch für normale Lizenzumfrage
 
 2362    20.04.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume inid_
 
