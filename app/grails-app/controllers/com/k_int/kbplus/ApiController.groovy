@@ -401,6 +401,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     }
                 }
             }
+            /*
             else if ('POST' == request.method) {
                 def postBody = request.getAttribute("authorizedApiPostBody")
                 def data = (postBody ? new JSON().parse(postBody) : null)
@@ -412,6 +413,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     result = ApiManager.write((String) obj, data, (User) user, (Org) contextOrg)
                 }
             }
+            */
             else {
                 result = Constants.HTTP_NOT_IMPLEMENTED
             }
