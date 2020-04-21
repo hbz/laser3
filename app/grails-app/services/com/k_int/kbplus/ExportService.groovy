@@ -3,7 +3,9 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
+import de.laser.domain.AbstractCoverage
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.TIPPCoverage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.apache.poi.POIXMLProperties
@@ -16,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFFont
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.w3c.dom.Attr
 import org.w3c.dom.Document
@@ -27,6 +30,7 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 import java.awt.*
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.List
 
@@ -43,8 +47,8 @@ import java.util.List
  */
 class ExportService {
 
-	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd")
-	def messageSource
+	SimpleDateFormat formatter = DateUtil.getSDF_ymd()
+	MessageSource messageSource
 
 	/**
 		new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
@@ -83,10 +87,11 @@ class ExportService {
 		 ]
 	 */
     SXSSFWorkbook generateXLSXWorkbook(Map sheets) {
+		Locale locale = LocaleContextHolder.getLocale()
 		XSSFWorkbook wb = new XSSFWorkbook()
 		POIXMLProperties xmlProps = wb.getProperties()
 		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-		coreProps.setCreator(messageSource.getMessage('laser',null, LocaleContextHolder.getLocale()))
+		coreProps.setCreator(messageSource.getMessage('laser',null, locale))
 		XSSFCellStyle csPositive = wb.createCellStyle()
 		csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
 		csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
@@ -213,13 +218,12 @@ class ExportService {
 
 	/**
 	 * Generates a title stream export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
-	 * The standard is defined as the reference linked below
+	 * The standard is defined here: <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBART definition</a>
 	 *
 	 * @param entitlementData - a {@link Collection} containing the actual data
 	 * @return a {@link Map} containing lists for the title row and the column data
-	 * @see <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBART definition</a>
 	 */
-	Map<String,List> generateTitleExportList(Collection entitlementData) {
+	Map<String,List> generateTitleExportKBART(Collection entitlementData) {
 		Map<String,List> export = [titleRow:[
 				'publication_title',
 				'print_identifier',
@@ -250,47 +254,78 @@ class ExportService {
 				'access_end_date',
 				'zdb_id',
 				'zdb_ppn',
+				'ezb_anchor',
+				'ezb_collection_id',
+				'subscription_isil',
+				'subscription_isci',
+				'package_isil',
+				'package_isci',
+				'package_gokb_uid',
 				'DOI',
 				'ISSNs',
 				'eISSNs',
 				'pISBNs',
-				'ISBNs'
+				'ISBNs',
+				'listprice_value',
+				'listprice_currency',
+				'localprice_value',
+				'localprice_currency',
+				'price_date'
 		],columnData:[]]
 		List allRows = []
 		entitlementData.each { ieObj ->
-			IssueEntitlement entitlement = (IssueEntitlement) ieObj
-			entitlement.coverages.each { covStmt ->
-				allRows << covStmt
+			def entitlement
+			if(ieObj instanceof IssueEntitlement) {
+				entitlement = (IssueEntitlement) ieObj
 			}
-			if(!entitlement.coverages)
-				allRows << entitlement
+			else if(ieObj instanceof TitleInstancePackagePlatform) {
+				entitlement = (TitleInstancePackagePlatform) ieObj
+			}
+			if(entitlement) {
+				entitlement.coverages.each { AbstractCoverage covStmt ->
+					allRows << covStmt
+				}
+				if(!entitlement.coverages)
+					allRows << entitlement
+			}
 		}
 		//this double strucutre is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
 		allRows.each { rowData ->
 			IssueEntitlement entitlement = null
-			IssueEntitlementCoverage covStmt = null
-			if(rowData instanceof IssueEntitlement)
+			TitleInstancePackagePlatform tipp = null
+			AbstractCoverage covStmt = null
+			if(rowData instanceof IssueEntitlement) {
 				entitlement = (IssueEntitlement) rowData
+				tipp = entitlement.tipp
+			}
 			else if(rowData instanceof IssueEntitlementCoverage) {
 				covStmt = (IssueEntitlementCoverage) rowData
 				entitlement = covStmt.issueEntitlement
+				tipp = covStmt.issueEntitlement.tipp
+			}
+			else if(rowData instanceof TitleInstancePackagePlatform) {
+				tipp = (TitleInstancePackagePlatform) rowData
+			}
+			else if(rowData instanceof TIPPCoverage) {
+				covStmt = (TIPPCoverage) rowData
+				tipp = covStmt.tipp
 			}
 			List row = []
-			log.debug("processing ${entitlement.tipp.title}")
+			log.debug("processing ${tipp.title}")
 			//publication_title
-			row.add("${entitlement.tipp.title.title}")
+			row.add("${tipp.title.title}")
 			log.debug("add main identifiers")
 			//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
-			if(entitlement.tipp.title.getIdentifierValue('pISBN'))
-				row.add(entitlement.tipp.title.getIdentifierValue('pISBN'))
-			else if(entitlement.tipp.title.getIdentifierValue('ISSN'))
-				row.add(entitlement.tipp.title.getIdentifierValue('ISSN'))
+			if(tipp.title.getIdentifierValue('pISBN'))
+				row.add(tipp.title.getIdentifierValue('pISBN'))
+			else if(tipp.title.getIdentifierValue('ISSN'))
+				row.add(tipp.title.getIdentifierValue('ISSN'))
 			else row.add(' ')
 			//online_identifier
-			if(entitlement.tipp.title.getIdentifierValue('ISBN'))
-				row.add(entitlement.tipp.title.getIdentifierValue('ISBN'))
-			else if(entitlement.tipp.title.getIdentifierValue('eISSN'))
-				row.add(entitlement.tipp.title.getIdentifierValue('eISSN'))
+			if(tipp.title.getIdentifierValue('ISBN'))
+				row.add(tipp.title.getIdentifierValue('ISBN'))
+			else if(tipp.title.getIdentifierValue('eISSN'))
+				row.add(tipp.title.getIdentifierValue('eISSN'))
 			else row.add(' ')
 			log.debug("process package start and end")
 			if(covStmt) {
@@ -318,7 +353,7 @@ class ExportService {
 			}
 			log.debug("add title url")
 			//title_url
-			row.add(entitlement.tipp.hostPlatformURL ?: ' ')
+			row.add(tipp.hostPlatformURL ?: ' ')
 			//first_author (no value?)
 			row.add(' ')
 			//title_id (no value?)
@@ -340,7 +375,7 @@ class ExportService {
 			//publisher_name (no value?)
 			row.add(' ')
 			//publication_type
-			switch(entitlement.tipp.title.medium) {
+			switch(tipp.title.medium) {
 				case RDStore.TITLE_TYPE_JOURNAL: row.add('serial')
 					break
 				case RDStore.TITLE_TYPE_EBOOK: row.add('monograph')
@@ -348,8 +383,8 @@ class ExportService {
 				default: row.add(' ')
 					break
 			}
-			if(entitlement.tipp.title instanceof BookInstance) {
-				BookInstance bookInstance = (BookInstance) entitlement.tipp.title
+			if(tipp.title instanceof BookInstance) {
+				BookInstance bookInstance = (BookInstance) tipp.title
 				//date_monograph_published_print (no value unless BookInstance)
 				row.add(bookInstance.dateFirstInPrint ? formatter.format(bookInstance.dateFirstInPrint) : ' ')
 				//date_monograph_published_online (no value unless BookInstance)
@@ -385,24 +420,67 @@ class ExportService {
                     break
             }*/
 			//access_start_date
-			row.add(entitlement.derivedAccessStartDate ? formatter.format(entitlement.derivedAccessStartDate) : ' ')
+			row.add(entitlement?.derivedAccessStartDate ? formatter.format(entitlement.derivedAccessStartDate) : ' ')
 			//access_end_date
-			row.add(entitlement.derivedAccessEndDate ? formatter.format(entitlement.derivedAccessEndDate) : ' ')
+			row.add(entitlement?.derivedAccessEndDate ? formatter.format(entitlement.derivedAccessEndDate) : ' ')
 			log.debug("processing identifiers")
 			//zdb_id
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,'zdb',','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','))
 			//zdb_ppn
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,'zdb_ppn',','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,','))
+			if(entitlement) {
+				//ezb_anchor
+				row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.EZB_ANCHOR,','))
+				//ezb_collection_id
+				row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.EZB_COLLECTION_ID,','))
+				//subscription_isil
+				row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.ISIL_PAKETSIGEL,','))
+				//subscription_isci
+				row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.ISCI,','))
+			}
+			else {
+				//empty values for subscription identifiers
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+			}
+			//package_isil
+			row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.ISIL_PAKETSIGEL,','))
+			//package_isci
+			row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.ISCI,','))
+			//package_gokb_uid
+			row.add(tipp.pkg.gokbId)
 			//DOI
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,'doi',','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,','))
 			//ISSNs
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,'issn',','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISSN,','))
 			//eISSNs
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,'eissn',','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.EISSN,','))
 			//pISBNs
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,'pisbn',','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','))
 			//ISBNs
-			row.add(joinIdentifiers(entitlement.tipp.title.ids,'isbn',','))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','))
+			if(entitlement?.priceItem) {
+				//listprice_value
+				row.add(entitlement.priceItem.listPrice ? entitlement.priceItem.listPrice.setScale(2, RoundingMode.HALF_UP) : ' ')
+				//listprice_currency
+				row.add(entitlement.priceItem.listCurrency ? entitlement.priceItem.listCurrency.value : ' ')
+				//localprice_value
+				row.add(entitlement.priceItem.localPrice ? entitlement.priceItem.localPrice.setScale(2, RoundingMode.HALF_UP) : ' ')
+				//localprice_currency
+				row.add(entitlement.priceItem.localCurrency ? entitlement.priceItem.localCurrency.value : ' ')
+				//price_date
+				row.add(entitlement.priceItem.priceDate ? formatter.format(entitlement.priceItem.priceDate) : ' ')
+			}
+			else {
+				//empty values for price item columns
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+			}
 			export.columnData.add(row)
 		}
 		export
@@ -419,6 +497,181 @@ class ExportService {
 		if(values)
 			joined = values.join(separator)
 		joined
+	}
+
+	Map<String,List> generateTitleExportCSV(Collection entitlementData) {
+		Locale locale = LocaleContextHolder.getLocale()
+		Map<String,List> export = [titleRow:[messageSource.getMessage('title',null,locale),
+											 messageSource.getMessage('tipp.volume',null,locale),
+											 messageSource.getMessage('author.slash.editor',null,locale),
+											 messageSource.getMessage('title.editionStatement.label',null,locale),
+											 messageSource.getMessage('title.summaryOfContent.label',null,locale),
+											 'zdb_id',
+											 'zdb_ppn',
+											 'DOI',
+											 'ISSNs',
+											 'eISSNs',
+											 'pISBNs',
+											 'ISBNs',
+											 messageSource.getMessage('title.dateFirstInPrint.label',null,locale),
+											 messageSource.getMessage('title.dateFirstOnline.label',null,locale),
+											 messageSource.getMessage('tipp.listPrice',null,locale),
+											 messageSource.getMessage('financials.currency',null,locale),
+											 messageSource.getMessage('tipp.localPrice',null,locale),
+											 messageSource.getMessage('financials.currency',null,locale)],
+		columnData:[]]
+		List rows = []
+		entitlements.each { entObj ->
+			IssueEntitlement entitlement = null
+			TitleInstancePackagePlatform tipp = null
+			if(entObj instanceof IssueEntitlement) {
+				entitlement = (IssueEntitlement) entObj
+				tipp = entitlement.tipp
+			}
+			else if(entObj instanceof TitleInstancePackagePlatform) {
+				tipp = (TitleInstancePackagePlatform) entObj
+			}
+			List row = []
+			row.add(tipp.title.title ?: ' ')
+			if(tipp.title instanceof BookInstance) {
+				row.add(tipp.title.volume ?: ' ')
+				row.add(tipp.title.getEbookFirstAutorOrFirstEditor() ?: ' ')
+				row.add(tipp.title.editionStatement ?: ' ')
+				row.add(tipp.title.summaryOfContent ?: ' ')
+			}else{
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+			}
+
+			//zdb_id
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,';'))
+			//zdb_ppn
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,';'))
+			//DOI
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,';'))
+			//ISSNs
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISSN,';'))
+			//eISSNs
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.EISSN,';'))
+			//pISBNs
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,';'))
+			//ISBNs
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISBN,';'))
+
+			if(tipp.title instanceof BookInstance) {
+				row.add(tipp.title.dateFirstInPrint ? formatter.format(tipp.title.dateFirstInPrint) : ' ')
+				row.add(tipp.title.dateFirstOnline ? formatter.format(tipp.title.dateFirstOnline) : ' ')
+			}else{
+				row.add(' ')
+				row.add(' ')
+			}
+
+			if(entitlement && entitlement.priceItem) {
+				row.add(entitlement.priceItem.listPrice ? entitlement.priceItem.listPrice.setScale(2,RoundingMode.HALF_UP) : ' ')
+				row.add(entitlement.priceItem.listCurrency ? entitlement.priceItem.listCurrency.value : ' ')
+				row.add(entitlement.priceItem.localPrice ? entitlement.priceItem.localPrice.setScale(2,RoundingMode.HALF_UP) : ' ')
+				row.add(entitlement.priceItem.localCurrency ? entitlement.priceItem.listCurrency.value : ' ')
+			}else{
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+			}
+
+			rows.add(row)
+		}
+		export.rows = rows
+		export
+	}
+
+	Map<String, List> generateTitleExportXLS(Collection entitlements) {
+		Locale locale = LocaleContextHolder.getLocale()
+		Map<String,List> export = [titles:[
+				messageSource.getMessage('title',null,locale),
+				messageSource.getMessage('tipp.volume',null,locale),
+				messageSource.getMessage('author.slash.editor',null,locale),
+				messageSource.getMessage('title.editionStatement.label',null,locale),
+				messageSource.getMessage('title.summaryOfContent.label',null,locale),
+				'zdb_id',
+				'zdb_ppn',
+				'DOI',
+				'ISSNs',
+				'eISSNs',
+				'pISBNs',
+				'ISBNs',
+				messageSource.getMessage('title.dateFirstInPrint.label',null,locale),
+				messageSource.getMessage('title.dateFirstOnline.label',null,locale),
+				messageSource.getMessage('tipp.listPrice',null,locale),
+				messageSource.getMessage('financials.currency',null,locale),
+				messageSource.getMessage('tipp.localPrice',null,locale),
+				messageSource.getMessage('financials.currency',null,locale)]]
+
+		List rows = []
+		entitlements.each { entObj ->
+			IssueEntitlement entitlement = null
+			TitleInstancePackagePlatform tipp = null
+			if(entObj instanceof IssueEntitlement) {
+				entitlement = (IssueEntitlement) entObj
+				tipp = entitlement.tipp
+			}
+			else if(entObj instanceof TitleInstancePackagePlatform) {
+				tipp = (TitleInstancePackagePlatform) entObj
+			}
+			List row = []
+			row.add([field: tipp.title.title ?: '', style:null])
+			if(tipp.title instanceof BookInstance) {
+				row.add([field: tipp.title.volume ?: '', style: null])
+				row.add([field: tipp.title.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
+				row.add([field: tipp.title.editionStatement ?: '', style:null])
+				row.add([field: tipp.title.summaryOfContent ?: '', style:null])
+			}else{
+				row.add([field: '', style:null])
+				row.add([field: '', style:null])
+				row.add([field: '', style:null])
+				row.add([field: '', style:null])
+			}
+
+			//zdb_id
+			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','), style:null])
+			//zdb_ppn
+			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,','), style:null])
+			//DOI
+			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,','), style:null])
+			//ISSNs
+			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISSN,','), style:null])
+			//eISSNs
+			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.EISSN,','), style:null])
+			//pISBNs
+			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','), style:null])
+			//ISBNs
+			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISBN,','), style:null])
+
+			if(tipp.title instanceof BookInstance) {
+				row.add([field: tipp.title.dateFirstInPrint ? formatter.format(tipp.title.dateFirstInPrint) : '', style: null])
+				row.add([field: tipp.title.dateFirstOnline ? formatter.format(tipp.title.dateFirstOnline) : '', style: null])
+			}else{
+				row.add([field: '', style:null])
+				row.add([field: '', style:null])
+			}
+
+			if(entitlement && entitlement.priceItem) {
+				row.add([field: entitlement.priceItem.listPrice ? entitlement.priceItem.listPrice.setScale(2,RoundingMode.HALF_UP) : '', style: null])
+				row.add([field: entitlement.priceItem.listCurrency ? entitlement.priceItem.listCurrency.value : '', style: null])
+				row.add([field: entitlement.priceItem.localPrice ? entitlement.priceItem.localPrice.setScale(2,RoundingMode.HALF_UP) : '', style: null])
+				row.add([field: entitlement.priceItem.localCurrency ? entitlement.priceItem.listCurrency.value : '', style: null])
+			}else{
+				row.add([field: '', style:null])
+				row.add([field: '', style:null])
+				row.add([field: '', style:null])
+				row.add([field: '', style:null])
+			}
+
+			rows.add(row)
+		}
+		export.rows = rows
+		export
 	}
 
 	/* *************
@@ -1292,5 +1545,5 @@ class ExportService {
 			val = val? val.replaceAll('"',"'") :" "
 			return "\"${val}\""
 		}
-	}	
+	}
 }

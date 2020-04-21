@@ -37,6 +37,31 @@ class IdentifierNamespace extends AbstractI10nOverride {
     @Transient
     public static final String VAT        = "VAT"
 
+    //title identifier namespaces
+    @Transient
+    public static final String ZDB        = 'zdb'
+    @Transient
+    public static final String ZDB_PPN    = 'zdb_ppn'
+    @Transient
+    public static final String DOI        = 'doi'
+    @Transient
+    public static final String ISSN       = 'issn'
+    @Transient
+    public static final String EISSN      = 'eissn'
+    @Transient
+    public static final String PISBN      = 'pisbn'
+    @Transient
+    public static final String ISBN       = 'isbn'
+
+    //subscription identifier namespaces
+    @Transient
+    public static final String EZB_ANCHOR = 'EZB anchor'
+    @Transient
+    public static final String EZB_COLLECTION_ID = 'ezb_collection_id'
+    @Transient
+    public static final String ISIL_PAKETSIGEL = 'ISIL_Paketsigel'
+    @Transient
+    public static final String ISCI = 'ISCI'
 
     @Transient
     final static List<String> CORE_ORG_NS = [
