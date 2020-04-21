@@ -289,7 +289,7 @@ class ApiManager {
 
     static Map<String, Object> buildResponse(HttpServletRequest request, String obj, String query, String value, String context, Org contextOrg, def result) {
 
-        def response = [:]
+        Map<String, Object> response = [:]
 
         def trimJson = { map ->
             Map<String, Object> rm = [:]

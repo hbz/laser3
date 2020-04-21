@@ -150,7 +150,77 @@ class ApiOAMonitor {
 
             sub = GrailsHibernateUtil.unwrapIfProxy(sub)
 
-            result = ApiUnsecuredMapReader.getSubscriptionStubMap(sub) // TODO
+            result.globalUID            	= sub.globalUID
+            result.cancellationAllowances 	= sub.cancellationAllowances
+            result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
+            result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
+            result.lastUpdated          	= ApiToolkit.formatInternalDate(sub.lastUpdated)
+            result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
+            result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
+            result.name                 	= sub.name
+            result.noticePeriod         	= sub.noticePeriod
+            result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
+            result.calculatedType           = sub.getCalculatedType()
+
+            // RefdataValues
+
+            result.form                 = sub.form?.value
+            result.isSlaved             = sub.isSlaved ? 'Yes' : 'No'
+            result.isMultiYear          = sub.isMultiYear ? 'Yes' : 'No'
+            result.resource             = sub.resource?.value
+            result.status               = sub.status?.value
+            result.type                 = sub.type?.value
+            result.kind                 = sub.kind?.value
+            result.isPublicForApi 		= sub.isPublicForApi ? 'Yes' : 'No'
+            result.hasPerpetualAccess 	= sub.hasPerpetualAccess ? 'Yes' : 'No'
+
+            // References
+
+            result.instanceOf           = ApiUnsecuredMapReader.getSubscriptionStubMap(sub.instanceOf)
+            //result.documents            = ApiCollectionReader.getDocumentCollection(sub.documents) // com.k_int.kbplus.DocContext
+            //result.derivedSubscriptions = ApiStubReader.getStubCollection(sub.derivedSubscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+            //result.identifiers          = ApiCollectionReader.getIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
+            //result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
+            //result.license              = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
+            //removed: result.license          = ApiCollectionReader.resolveLicense(sub.owner, ApiCollectionReader.IGNORE_ALL, context) // com.k_int.kbplus.License
+
+            //result.organisations        = ApiCollectionReader.resolveOrgLinks(sub.orgRelations, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+
+            //result.predecessor = ApiStubReader.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
+            //result.successor   = ApiStubReader.requestSubscriptionStub(sub.getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
+            //result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+
+            def allOrgRoles = []
+
+            // add derived subscriptions org roles
+            if (sub.derivedSubscriptions) {
+                allOrgRoles = OrgRole.executeQuery(
+                        "select oo from OrgRole oo where oo.sub in (:derived) and oo.roleType in (:roles)",
+                        [derived: sub.derivedSubscriptions, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+                )
+            }
+            allOrgRoles.addAll(sub.orgRelations)
+
+            // TODO:0.93 @ result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+
+            // TODO refactoring with issueEntitlementService
+            //result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
+
+            // Ignored
+
+            //result.packages = exportHelperService.resolvePackagesWithIssueEntitlements(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
+            //result.issueEntitlements = exportHelperService.resolveIssueEntitlements(sub.issueEntitlements, context) // com.k_int.kbplus.IssueEntitlement
+            //result.packages = exportHelperService.resolveSubscriptionPackageStubs(sub.packages, exportHelperService.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+            /*
+            result.persons      = exportHelperService.resolvePrsLinks(
+                    sub.prsLinks,  true, true, context
+            ) // com.k_int.kbplus.PersonRole
+            */
+
+            // TODO: oaMonitor
+            //result.costItems    = ApiCollectionReader.getCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
+
+            ApiToolkit.cleanUp(result, true, true)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
