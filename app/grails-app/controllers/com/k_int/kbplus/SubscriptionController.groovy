@@ -6,7 +6,6 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
-import de.laser.TitleStreamService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PendingChangeConfiguration
@@ -75,7 +74,6 @@ class SubscriptionController extends AbstractDebugController {
     def subscriptionsQueryService
     def subscriptionService
     def comparisonService
-    def titleStreamService
     def escapeService
     def deletionService
     def auditService
@@ -140,10 +138,11 @@ class SubscriptionController extends AbstractDebugController {
 
         result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.getDefaultPageSizeTMP().toInteger())
         result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0
+        boolean filterSet = false
 
         log.debug("max = ${result.max}")
 
-        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
+        RefdataValue pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
         List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status])
 
         if (result.subscriptionInstance?.isSlaved && ! pendingChanges.isEmpty()) {
@@ -169,7 +168,7 @@ class SubscriptionController extends AbstractDebugController {
         String base_qry = null
         Map<String,Object> qry_params = [subscription: result.subscriptionInstance]
 
-        def date_filter
+        Date date_filter
         if (params.asAt && params.asAt.length() > 0) {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             date_filter = sdf.parse(params.asAt)
@@ -179,29 +178,30 @@ class SubscriptionController extends AbstractDebugController {
             date_filter = new Date()
             result.as_at_date = date_filter
         }
-        // We dont want this filter to reach SQL query as it will break it.
-        def core_status_filter = params.sort == 'core_status'
+        // We dont want this filter to reach SQL query as it will break it. TODO: why?
+        boolean core_status_filter = params.sort == 'core_status'
         if (core_status_filter) params.remove('sort')
 
         if (params.filter) {
-            base_qry = " from IssueEntitlement as ie left join ie.coverages ic where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 // qry_params.add(deleted_ie);
-                base_qry += "and (( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                base_qry += "and ( ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.tipp.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null) OR ( ie.subscription.hasPerpetualAccess = true ) ) ) "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
             base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from Identifier ident where ident.ti.id = ie.tipp.title.id and ident.value like :identifier ) ) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
+            filterSet = true
         } else {
-            base_qry = " from IssueEntitlement as ie left join ie.coverages ic where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
-                base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
+                base_qry += " and ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null)  or (ie.subscription.hasPerpetualAccess = true) ) ) "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
@@ -222,6 +222,7 @@ class SubscriptionController extends AbstractDebugController {
         if (params.pkgfilter && (params.pkgfilter != '')) {
             base_qry += " and ie.tipp.pkg.id = :pkgId "
             qry_params.pkgId = Long.parseLong(params.pkgfilter)
+            filterSet = true
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -235,13 +236,12 @@ class SubscriptionController extends AbstractDebugController {
             base_qry += "order by lower(ie.tipp.title.title) asc"
         }
 
+        result.filterSet = filterSet
+
         Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
 
         result.num_sub_rows = entitlements.size()
-
-        if ((params.format == 'html' || params.format == null) && !params.exportKBart) {
-            result.entitlements = entitlements.drop(result.offset).take(result.max)
-        }
+        result.entitlements = entitlements.drop(result.offset).take(result.max)
 
         Set<SubscriptionPackage> deletedSPs = result.subscriptionInstance.packages.findAll {sp -> sp.pkg.packageStatus == PACKAGE_STATUS_DELETED}
 
@@ -263,7 +263,7 @@ class SubscriptionController extends AbstractDebugController {
         exportService.printDuration(verystarttime, "Querying")
 
         log.debug("subscriptionInstance returning... ${result.num_sub_rows} rows ");
-        String filename = "subscription_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
+        String filename = "${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
 
 
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
@@ -278,23 +278,42 @@ class SubscriptionController extends AbstractDebugController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.entitlements)
+            Map<String, List> tableData = exportService.generateTitleExportKBART(entitlements)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
             out.flush()
             out.close()
-        } else {
+        }
+        else if(params.exportXLSX) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            Map<String,List> export = exportService.generateTitleExportXLS(entitlements)
+            Map sheetData = [:]
+            sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        else {
             withFormat {
-                html result
+                html {
+                    result
+                }
                 csv {
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
-                    //exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
+                    Map<String,List> tableData = exportService.generateTitleExportCSV(entitlements)
+                    out.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
+                    }
                     out.close()
                     exportService.printDuration(verystarttime, "Overall Time")
                 }
+                /*
                 json {
                     def starttime = exportService.printStart("Building Map")
                     def map = exportService.getSubscriptionMap(result.subscriptionInstance, result.entitlements)
@@ -324,6 +343,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     exportService.printDuration(verystarttime, "Overall Time")
                 }
+                */
             }
         }
 
@@ -779,13 +799,13 @@ class SubscriptionController extends AbstractDebugController {
     def addEntitlements() {
         log.debug("addEntitlements .. params: ${params}")
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
-        result.preselectValues = params.preselectValues == 'on'
-        result.preselectCoverageDates = params.preselectCoverageDates == 'on'
-        result.uploadPriceInfo = params.uploadPriceInfo == 'on'
+        Map<String,Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
+        result.preselectValues = params.preselectValues == 'on'
+        result.preselectCoverageDates = params.preselectCoverageDates == 'on'
+        result.uploadPriceInfo = params.uploadPriceInfo == 'on'
 
         Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
         Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
@@ -806,8 +826,9 @@ class SubscriptionController extends AbstractDebugController {
 
         log.debug("filter: \"${params.filter}\"");
 
+        List<TitleInstancePackagePlatform> tipps = []
         List errorList = []
-        if (result.subscriptionInstance) {
+            boolean filterSet = false
             EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}", contextService.USER_SCOPE)
             Map<TitleInstance,IssueEntitlement> addedTipps = [:]
             result.subscriptionInstance.issueEntitlements.each { ie ->
@@ -815,7 +836,7 @@ class SubscriptionController extends AbstractDebugController {
                     addedTipps[ie.tipp.title] = ie
             }
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
-            def basequery = null;
+            def basequery = null
             def qry_params = [result.subscriptionInstance, tipp_current, result.subscriptionInstance, ie_current]
 
             if (params.filter) {
@@ -823,6 +844,7 @@ class SubscriptionController extends AbstractDebugController {
                 basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status = ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status = ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select ident from Identifier ident where ident.ti.id = tipp.title.id and ident.value like ? ) ) ) "
                 qry_params.add("%${params.filter.trim().toLowerCase()}%")
                 qry_params.add("%${params.filter}%")
+                filterSet = true
             } else {
                 basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status = ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status = ? ) )"
             }
@@ -832,6 +854,7 @@ class SubscriptionController extends AbstractDebugController {
                 Date d = sdf.parse(params.endsAfter)
                 basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
                 qry_params.add(d)
+                filterSet = true
             }
 
             if (params.startsBefore && params.startsBefore.length() > 0) {
@@ -839,24 +862,27 @@ class SubscriptionController extends AbstractDebugController {
                 Date d = sdf.parse(params.startsBefore)
                 basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
                 qry_params.add(d)
+                filterSet = true
             }
-
 
             if (params.pkgfilter && (params.pkgfilter != '')) {
                 basequery += " and tipp.pkg.gokbId = ? "
                 qry_params.add(params.pkgfilter)
+                filterSet = true
             }
-
 
             if ((params.sort != null) && (params.sort.length() > 0)) {
                 basequery += " order by tipp.${params.sort} ${params.order} "
+                filterSet = true
             } else {
                 basequery += " order by tipp.title.title asc "
             }
 
+            result.filterSet = filterSet
+
             log.debug("Query ${basequery} ${qry_params}");
 
-            List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.executeQuery("select tipp ${basequery}", qry_params)
+            tipps.addAll(TitleInstancePackagePlatform.executeQuery("select tipp ${basequery}", qry_params))
             result.num_tipp_rows = tipps.size()
             result.tipps = tipps.drop(result.offset).take(result.max)
             Map identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
@@ -1095,13 +1121,50 @@ class SubscriptionController extends AbstractDebugController {
                 result.checked = checkedCache.get('checked')
                 result.issueEntitlementOverwrite = checkedCache.get('issueEntitlementCandidates')
             }
-        } else {
-            result.num_sub_rows = 0;
-            result.tipps = []
-        }
+
         if(errorList)
             flash.error = "<pre style='font-family:Lato,Arial,Helvetica,sans-serif;'>"+errorList.join("\n")+"</pre>"
-        result
+        String filename = "${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
+        if(params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String,List> tableData = exportService.generateTitleExportKBART(tipps)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+            }
+            out.flush()
+            out.close()
+        }
+        else if(params.exportXLSX) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            Map<String,List> export = exportService.generateTitleExportXLS(tipps)
+            Map sheetData = [:]
+            sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        withFormat {
+            html {
+                result
+            }
+            csv {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.contentType = "text/csv"
+
+                ServletOutputStream out = response.outputStream
+                Map<String,List> tableData = exportService.generateTitleExportCSV(tipps)
+                out.withWriter { writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
+                }
+                out.flush()
+                out.close()
+            }
+        }
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -1164,7 +1227,7 @@ class SubscriptionController extends AbstractDebugController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = titleStreamService.generateTitleExportList(sourceIEs)
+            Map<String, List> tableData = exportService.generateTitleExportKBART(sourceIEs)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -1173,81 +1236,9 @@ class SubscriptionController extends AbstractDebugController {
         }else if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            List titles = [
-                    g.message(code:'title'),
-                    g.message(code:'tipp.volume'),
-                    g.message(code:'author.slash.editor'),
-                    g.message(code:'title.editionStatement.label'),
-                    g.message(code:'title.summaryOfContent.label'),
-                    'zdb_id',
-                    'zdb_ppn',
-                    'DOI',
-                    'ISSNs',
-                    'eISSNs',
-                    'pISBNs',
-                    'ISBNs',
-                    g.message(code:'title.dateFirstInPrint.label'),
-                    g.message(code:'title.dateFirstOnline.label'),
-                    g.message(code:'tipp.listPrice'),
-                    g.message(code:'financials.currency'),
-                    g.message(code:'tipp.localPrice'),
-                    g.message(code:'financials.currency')]
-
-            List rows = []
-            sourceIEs.each { ie ->
-                List row = []
-                row.add([field: ie.tipp.title.title ?: '', style:null])
-                if(ie.tipp.title instanceof BookInstance) {
-                    row.add([field: ie.tipp.title.volume ?: '', style: null])
-                    row.add([field: ie.tipp.title.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
-                    row.add([field: ie.tipp.title.editionStatement ?: '', style:null])
-                    row.add([field: ie.tipp.title.summaryOfContent ?: '', style:null])
-                }else{
-                    row.add([field: '', style:null])
-                    row.add([field: '', style:null])
-                    row.add([field: '', style:null])
-                    row.add([field: '', style:null])
-                }
-
-                //zdb_id
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'zdb',','), style:null])
-                //zdb_ppn
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'zdb_ppn',','), style:null])
-                //DOI
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'doi',','), style:null])
-                //ISSNs
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'issn',','), style:null])
-                //eISSNs
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'eissn',','), style:null])
-                //pISBNs
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'pisbn',','), style:null])
-                //ISBNs
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'isbn',','), style:null])
-
-                if(ie.tipp.title instanceof BookInstance) {
-                    row.add([field: ie.tipp.title.dateFirstInPrint ? g.formatDate(date: ie.tipp.title.dateFirstInPrint, format: message(code: 'default.date.format.notime')) : '', style: null])
-                    row.add([field: ie.tipp.title.dateFirstOnline ? g.formatDate(date: ie.tipp.title.dateFirstOnline, format: message(code: 'default.date.format.notime')) : '', style: null])
-                }else{
-                    row.add([field: '', style:null])
-                    row.add([field: '', style:null])
-                }
-
-                if(ie.priceItem) {
-                    row.add([field: ie.priceItem.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
-                    row.add([field: ie.priceItem.listCurrency?.value ?: '', style: null])
-                    row.add([field: ie.priceItem.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
-                    row.add([field: ie.priceItem.localCurrency?.value ?: '', style: null])
-                }else{
-                    row.add([field: '', style:null])
-                    row.add([field: '', style:null])
-                    row.add([field: '', style:null])
-                    row.add([field: '', style:null])
-                }
-
-                rows.add(row)
-            }
+            Map<String,List> export = exportService.generateTitleExportXLS(sourceIEs)
             Map sheetData = [:]
-            sheetData[g.message(code:'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow:titles,columnData:rows]
+            sheetData[g.message(code:'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
             workbook.write(response.outputStream)
             response.outputStream.flush()
@@ -1292,7 +1283,7 @@ class SubscriptionController extends AbstractDebugController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.ies)
+            Map<String, List> tableData = exportService.generateTitleExportKBART(result.ies)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -1301,96 +1292,20 @@ class SubscriptionController extends AbstractDebugController {
         }else if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            List titles = [
-                    g.message(code:'title'),
-                    g.message(code:'tipp.volume'),
-                    g.message(code:'author.slash.editor'),
-                    g.message(code:'title.editionStatement.label'),
-                    g.message(code:'title.summaryOfContent.label'),
-                    'zdb_id',
-                    'zdb_ppn',
-                    'DOI',
-                    'ISSNs',
-                    'eISSNs',
-                    'pISBNs',
-                    'ISBNs',
-                    g.message(code:'title.dateFirstInPrint.label'),
-                    g.message(code:'title.dateFirstOnline.label'),
-                    g.message(code:'default.status.label'),
-                    g.message(code:'tipp.listPrice'),
-                    g.message(code:'financials.currency'),
-                    g.message(code:'tipp.localPrice'),
-                    g.message(code:'financials.currency')
-
-            ]
-            List rows = []
-            result.ies.each { ie ->
-                List row = []
-                row.add([field: ie.tipp.title.title ?: '', style:null])
-
-                if(ie.tipp.title instanceof BookInstance) {
-                    row.add([field: ie.tipp.title.volume ?: '', style: null])
-                    row.add([field: ie.tipp.title.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
-                    row.add([field: ie.tipp.title.editionStatement ?: '', style: null])
-                    row.add([field: ie.tipp.title.summaryOfContent ?: '', style: null])
-                }else{
-                    row.add([field: '', style: null])
-                    row.add([field: '', style: null])
-                    row.add([field: '', style: null])
-                    row.add([field: '', style: null])
-                }
-
-                //zdb_id
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'zdb',','), style:null])
-                //zdb_ppn
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'zdb_ppn',','), style:null])
-                //DOI
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'doi',','), style:null])
-                //ISSNs
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'issn',','), style:null])
-                //eISSNs
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'eissn',','), style:null])
-                //pISBNs
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'pisbn',','), style:null])
-                //ISBNs
-                row.add([field: titleStreamService.joinIdentifiers(ie.tipp.title.ids,'isbn',','), style:null])
-
-                if(ie.tipp.title instanceof BookInstance) {
-                    row.add([field: ie.tipp.title.dateFirstInPrint ? g.formatDate(date: ie.tipp.title.dateFirstInPrint, format: message(code: 'default.date.format.notime')) : '', style: null])
-                    row.add([field: ie.tipp.title.dateFirstOnline ? g.formatDate(date: ie.tipp.title.dateFirstOnline, format: message(code: 'default.date.format.notime')) : '', style: null])
-                }else{
-                    row.add([field: '', style: null])
-                    row.add([field: '', style: null])
-                }
-
-                row.add([field: ie.acceptStatus?.getI10n('value') ?: '', style:null])
-
-                if(ie.priceItem) {
-                    row.add([field: ie.priceItem.listPrice ? g.formatNumber(number: ie.priceItem.listPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
-                    row.add([field: ie.priceItem.listCurrency?.value ?: '', style: null])
-                    row.add([field: ie.priceItem.localPrice ? g.formatNumber(number: ie.priceItem.localPrice, minFractionDigits: 2, maxFractionDigits: 2, type: "number") : '', style: null])
-                    row.add([field: ie.priceItem.localCurrency?.value ?: '', style: null])
-                }else{
-                    row.add([field: '', style:null])
-                    row.add([field: '', style:null])
-                    row.add([field: '', style:null])
-                    row.add([field: '', style:null])
-                }
-
-                rows.add(row)
-            }
+            Map<String,List> export = exportService.generateTitleExportXLS(result.ies)
             Map sheetData = [:]
-            sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:titles,columnData:rows]
+            sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
             workbook.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
-            return
         }
         else {
             withFormat {
-                html result
+                html {
+                    result
+                }
             }
         }
     }
