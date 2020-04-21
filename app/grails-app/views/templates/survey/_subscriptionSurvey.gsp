@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
 <div class="ui stackable grid">
     <div class="twelve wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
@@ -389,7 +389,7 @@
                         // ERMS-1521 HOTFIX
                         if (!costItemsSub) {
                             costItemsSub = subscriptionInstance?.costItems?.findAll {
-                                it.costItemElement?.id == com.k_int.kbplus.RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)?.id
+                                it.costItemElement?.id == RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)?.id
                             }
                         }
                     %>
