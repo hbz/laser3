@@ -19,19 +19,28 @@
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                         params="${params + [format: 'csv']}">
-                    ${message(code: 'default.button.exports.csv')}
+                    <g:message code="default.button.exports.csv"/>
                 </g:link>
             </g:if>
             <g:else>
                 <g:link class="item" action="currentTitles" params="${params + [format: 'csv']}">CSV Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
-    <%--<semui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
-    </semui:exportDropdownItem>
-    <semui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
-    </semui:exportDropdownItem>--%>
+        <semui:exportDropdownItem>
+            <g:if test="${filterSet}">
+                <g:link class="item js-open-confirm-modal"
+                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
+                        params="${params + [exportXLSX: true]}">
+                    <g:message code="default.button.exports.xls"/>
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link class="item" action="currentTitles" params="${params+[exportXLSX: true]}">
+                    <g:message code="default.button.exports.xls"/>
+                </g:link>
+            </g:else>
+        </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
@@ -46,6 +55,12 @@
                         params="${params + [exportKBart: true]}">KBART Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
+    <%--<semui:exportDropdownItem>
+        <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
+    </semui:exportDropdownItem>
+    <semui:exportDropdownItem>
+        <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
+    </semui:exportDropdownItem>--%>
     </semui:exportDropdown>
 </semui:controlButtons>
 
@@ -131,10 +146,18 @@
                 </select>
             </div>
 
-            <div class="field">
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}"
+                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                <input type="hidden" name="filterSet" value="true"/>
+                <input type="submit" class="ui secondary button"
+                       value="${message(code: 'default.button.filter.label')}"/>
+            </div>
+
+            <%--<div class="field">
                 <label for="filterPvd">${message(code: 'default.all_other.platforms.label')}</label>
                 <select name="filterOtherPlat" multiple="" class="ui search selection fluid dropdown">
-                    <option <%--<%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>--%>
+                    <option <%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>
                             value="">${message(code: 'myinst.currentTitles.all_other_platforms')}</option>
                     <g:each in="${otherplatforms}" var="op">
 
@@ -148,28 +171,20 @@
                         </option>
                     </g:each>
                 </select>
-            </div>
+            </div>--%>
         </div>
 
-        <div class="two fields">
+        <%--<div class="two fields">
 
-            <div class="field">
-                <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes', default: 'Titles we subscribe to through 2 or more packages')}</label>
+        <%-- class="field">
+            <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes', default: 'Titles we subscribe to through 2 or more packages')}</label>
 
-                <div class="ui checkbox">
-                    <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"
-                           value="${true}" <%=(params.filterMultiIE) ? ' checked="true"' : ''%>/>
-                </div>
-            </div>
-
-            <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="hidden" name="filterSet" value="true"/>
-                <input type="submit" class="ui secondary button"
-                       value="${message(code: 'default.button.filter.label')}"/>
+            <div class="ui checkbox">
+                <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"
+                       value="${true}" <%=(params.filterMultiIE) ? ' checked="true"' : ''%>/>
             </div>
         </div>
+        </div>--%>
 
     </g:form>
 </semui:filter>
