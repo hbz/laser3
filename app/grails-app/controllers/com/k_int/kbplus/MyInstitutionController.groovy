@@ -1677,16 +1677,13 @@ join sub.orgRelations or_sub where
             orderByClause = 'order by ti.sortTitle asc'
         }
 
-        String qryString = "select ie from IssueEntitlement ie join ie.tipp tipp join tipp.title ti join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and sub.status = :current and oo.roleType in :orgRoles and oo.org = :institution "
+        String qryString = "select ie from IssueEntitlement ie join ie.tipp tipp join tipp.title ti join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
         qryString += orderByClause
 
-        Set<IssueEntitlement> unfilteredIssueEntitlements = IssueEntitlement.executeQuery(qryString,qryParams)
-        Set<IssueEntitlement> currentIssueEntitlements
-        if(accessService.checkPerm("ORG_CONSORTIUM"))
-            currentIssueEntitlements = unfilteredIssueEntitlements.findAll { ie -> ie.subscription.instanceOf == null }
-        else currentIssueEntitlements = unfilteredIssueEntitlements
+        //all ideas to move the .unique() into a group by clause are greately appreciated, a half day's attempts were unsuccessful!
+        Set<IssueEntitlement> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString,qryParams).unique { ie -> ie.tipp.title }
         Set<TitleInstance> allTitles = currentIssueEntitlements.collect { IssueEntitlement ie -> ie.tipp.title }
         result.num_ti_rows = allTitles.size()
         result.titles = allTitles.drop(result.offset).take(result.max)

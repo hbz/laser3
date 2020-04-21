@@ -146,10 +146,18 @@
                 </select>
             </div>
 
-            <div class="field">
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}"
+                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                <input type="hidden" name="filterSet" value="true"/>
+                <input type="submit" class="ui secondary button"
+                       value="${message(code: 'default.button.filter.label')}"/>
+            </div>
+
+            <%--<div class="field">
                 <label for="filterPvd">${message(code: 'default.all_other.platforms.label')}</label>
                 <select name="filterOtherPlat" multiple="" class="ui search selection fluid dropdown">
-                    <option <%--<%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>--%>
+                    <option <%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>
                             value="">${message(code: 'myinst.currentTitles.all_other_platforms')}</option>
                     <g:each in="${otherplatforms}" var="op">
 
@@ -163,28 +171,20 @@
                         </option>
                     </g:each>
                 </select>
-            </div>
+            </div>--%>
         </div>
 
-        <div class="two fields">
+        <%--<div class="two fields">
 
-            <div class="field">
-                <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes', default: 'Titles we subscribe to through 2 or more packages')}</label>
+        <%-- class="field">
+            <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes', default: 'Titles we subscribe to through 2 or more packages')}</label>
 
-                <div class="ui checkbox">
-                    <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"
-                           value="${true}" <%=(params.filterMultiIE) ? ' checked="true"' : ''%>/>
-                </div>
-            </div>
-
-            <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="hidden" name="filterSet" value="true"/>
-                <input type="submit" class="ui secondary button"
-                       value="${message(code: 'default.button.filter.label')}"/>
+            <div class="ui checkbox">
+                <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"
+                       value="${true}" <%=(params.filterMultiIE) ? ' checked="true"' : ''%>/>
             </div>
         </div>
+        </div>--%>
 
     </g:form>
 </semui:filter>
