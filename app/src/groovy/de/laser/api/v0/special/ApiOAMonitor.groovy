@@ -13,7 +13,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiOAMonitor {
 
     /**
-     * checks implicit OAMONITOR_SERVER_ACCESS
+     * checks OAMONITOR_SERVER_ACCESS
      */
     static boolean calculateAccess(Org org) {
 
@@ -24,6 +24,35 @@ class ApiOAMonitor {
         else {
             return false
         }
+    }
+
+    /**
+     * checks implicit OAMONITOR_SERVER_ACCESS
+     */
+    static boolean calculateAccess(Subscription sub) {
+
+        boolean hasAccess = false
+
+        if (! sub.isPublicForApi) {
+            hasAccess = false
+        }
+        else {
+            List<Org> orgs = ApiOAMonitor.getAccessibleOrgs()
+
+            if (orgs) {
+                List<OrgRole> valid = OrgRole.executeQuery(
+                        "select oo from OrgRole oo join oo.sub sub join oo.org org " +
+                        "where sub = :sub and org in (:orgs) and oo.roleType in (:roles) ", [
+                            sub  : sub,
+                            orgs : orgs,
+                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                        ]
+                )
+                hasAccess = ! valid.isEmpty()
+            }
+        }
+
+        hasAccess
     }
 
     /**
@@ -105,6 +134,23 @@ class ApiOAMonitor {
             result.subscriptions = getSubscriptionCollection(org)
 
             result = ApiToolkit.cleanUp(result, true, true)
+        }
+
+        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
+    }
+
+    /**
+     * @return JSON | FORBIDDEN
+     */
+    static requestSubscription(Subscription sub, Org context) {
+        Map<String, Object> result = [:]
+
+        boolean hasAccess = calculateAccess(sub)
+        if (hasAccess) {
+
+            sub = GrailsHibernateUtil.unwrapIfProxy(sub)
+
+            result = ApiUnsecuredMapReader.getSubscriptionStubMap(sub) // TODO
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.93
+
+- added new endpoint: __/oaMonitorSubscription__
+
 #### 0.92
 
 - added new HTTP status codes for __/oaMonitor*__ and __/statistic*__

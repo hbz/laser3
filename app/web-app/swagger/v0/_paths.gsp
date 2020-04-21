@@ -416,7 +416,36 @@
           $ref: "#/components/responses/forbidden"
         406:
           $ref: "#/components/responses/notAcceptable"
-          
+
+  /oaMonitorSubscription:
+
+    get:
+      tags:
+        - Datamanager
+      summary:
+      description: >
+        **EXPERIMENTAL AND NOT FULLY IMPLEMENTED; DO NOT USE**
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaceholderObject"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        406:
+          $ref: "#/components/responses/notAcceptable"
 
   /statistic:
 

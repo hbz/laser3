@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.92'
+    static final VERSION = '0.93'
     static final NOT_SUPPORTED = false
 
     /**
@@ -140,6 +140,19 @@ class ApiManager {
             }
 
             result = ApiOAMonitor.getAllOrgs()
+        }
+        else if (checkValidRequest('oaMonitorSubscription')) {
+
+            if (! isDatamanager) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiOAMonitor.requestSubscription((Subscription) tmp.obj, contextOrg)
+            }
         }
         else if (checkValidRequest('organisation')) {
 
