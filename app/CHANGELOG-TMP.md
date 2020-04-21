@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+(2345)  21.04.2020  rc1.3       Andreas Bug         Abfrage zur Massenermittlung von Bestandstitel korrigiert
+
 1142    20.04.2020  rc1.3       Andreas Feature     Zentralisierung von KBART-Exporten sowie Einführung neuer Ausgabepunkte, Erweiterung des Titelexports, Ausgabe um neue Spalten erweitert
 
 2406    20.04.2020  rc1.3       Moe     Feature     Hotfixkandidat: Verbindlichkeit einer Umfrage durch

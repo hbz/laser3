@@ -49,7 +49,6 @@ class ExportService {
 
 	SimpleDateFormat formatter = DateUtil.getSDF_ymd()
 	MessageSource messageSource
-	Locale locale = LocaleContextHolder.getLocale()
 
 	/**
 		new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
@@ -88,6 +87,7 @@ class ExportService {
 		 ]
 	 */
     SXSSFWorkbook generateXLSXWorkbook(Map sheets) {
+		Locale locale = LocaleContextHolder.getLocale()
 		XSSFWorkbook wb = new XSSFWorkbook()
 		POIXMLProperties xmlProps = wb.getProperties()
 		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
@@ -500,6 +500,7 @@ class ExportService {
 	}
 
 	Map<String,List> generateTitleExportCSV(Collection entitlementData) {
+		Locale locale = LocaleContextHolder.getLocale()
 		Map<String,List> export = [titleRow:[messageSource.getMessage('title',null,locale),
 											 messageSource.getMessage('tipp.volume',null,locale),
 											 messageSource.getMessage('author.slash.editor',null,locale),
@@ -519,9 +520,74 @@ class ExportService {
 											 messageSource.getMessage('tipp.localPrice',null,locale),
 											 messageSource.getMessage('financials.currency',null,locale)],
 		columnData:[]]
+		List rows = []
+		entitlements.each { entObj ->
+			IssueEntitlement entitlement = null
+			TitleInstancePackagePlatform tipp = null
+			if(entObj instanceof IssueEntitlement) {
+				entitlement = (IssueEntitlement) entObj
+				tipp = entitlement.tipp
+			}
+			else if(entObj instanceof TitleInstancePackagePlatform) {
+				tipp = (TitleInstancePackagePlatform) entObj
+			}
+			List row = []
+			row.add(tipp.title.title ?: ' ')
+			if(tipp.title instanceof BookInstance) {
+				row.add(tipp.title.volume ?: ' ')
+				row.add(tipp.title.getEbookFirstAutorOrFirstEditor() ?: ' ')
+				row.add(tipp.title.editionStatement ?: ' ')
+				row.add(tipp.title.summaryOfContent ?: ' ')
+			}else{
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+			}
+
+			//zdb_id
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,';'))
+			//zdb_ppn
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,';'))
+			//DOI
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,';'))
+			//ISSNs
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISSN,';'))
+			//eISSNs
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.EISSN,';'))
+			//pISBNs
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,';'))
+			//ISBNs
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISBN,';'))
+
+			if(tipp.title instanceof BookInstance) {
+				row.add(tipp.title.dateFirstInPrint ? formatter.format(tipp.title.dateFirstInPrint) : ' ')
+				row.add(tipp.title.dateFirstOnline ? formatter.format(tipp.title.dateFirstOnline) : ' ')
+			}else{
+				row.add(' ')
+				row.add(' ')
+			}
+
+			if(entitlement && entitlement.priceItem) {
+				row.add(entitlement.priceItem.listPrice ? entitlement.priceItem.listPrice.setScale(2,RoundingMode.HALF_UP) : ' ')
+				row.add(entitlement.priceItem.listCurrency ? entitlement.priceItem.listCurrency.value : ' ')
+				row.add(entitlement.priceItem.localPrice ? entitlement.priceItem.localPrice.setScale(2,RoundingMode.HALF_UP) : ' ')
+				row.add(entitlement.priceItem.localCurrency ? entitlement.priceItem.listCurrency.value : ' ')
+			}else{
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+				row.add(' ')
+			}
+
+			rows.add(row)
+		}
+		export.rows = rows
+		export
 	}
 
 	Map<String, List> generateTitleExportXLS(Collection entitlements) {
+		Locale locale = LocaleContextHolder.getLocale()
 		Map<String,List> export = [titles:[
 				messageSource.getMessage('title',null,locale),
 				messageSource.getMessage('tipp.volume',null,locale),
