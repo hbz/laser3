@@ -1967,7 +1967,13 @@ class SurveyController {
         if (params.selectedOrgs && result.editable) {
 
             params.list('selectedOrgs').each { soId ->
-                if (SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, Org.get(Long.parseLong(soId))).delete(flush: true)) {
+                SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, Org.get(Long.parseLong(soId)))
+
+                CostItem.findAllBySurveyOrg(surveyOrg).each {
+                    it.delete(flush: true)
+                }
+                
+                if (surveyOrg.delete(flush: true)) {
                     //flash.message = g.message(code: "surveyParticipants.delete.successfully")
                 }
             }
