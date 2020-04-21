@@ -2917,29 +2917,39 @@ class SurveyController {
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         boolean isTargetSubChanged = false
-        if (params?.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<SubscriptionPackage> packagesToDelete = params?.list('subscription.deletePackageIds').collect {
+        if (params.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.deletePackages(packagesToDelete, newSub, flash)
             isTargetSubChanged = true
         }
-        if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<SubscriptionPackage> packagesToTake = params?.list('subscription.takePackageIds').collect {
+        if (params.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.copyPackages(packagesToTake, newSub, flash)
             isTargetSubChanged = true
         }
 
-        if (params?.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+        if(params.subscription?.takePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect {
+                genericOIDService.resolveOID(it)
+            }
+            packageSettingsToTake.each { SubscriptionPackage sp ->
+                subscriptionService.copyPendingChangeConfiguration(sp.pendingChangeConfig,SubscriptionPackage.findBySubscriptionAndPkg(newSub,sp.pkg))
+            }
+            isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToDelete = params?.list('subscription.deleteEntitlementIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.deleteEntitlements(entitlementsToDelete, newSub, flash)
             isTargetSubChanged = true
         }
-        if (params?.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect {
                 genericOIDService.resolveOID(it)
             }

@@ -464,6 +464,8 @@ class SubscriptionService {
 
             packagesToDelete.each { subPkg ->
                 OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
+
                 CostItem.findAllBySubPkg(subPkg).each { costItem ->
                     costItem.subPkg = null
                     if(!costItem.sub){
@@ -485,12 +487,12 @@ class SubscriptionService {
             if (targetSub.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }) {
                 Object[] args = [subscriptionPackage.pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
-            } else {
+            }
+            else {
 
                 List<OrgAccessPointLink> pkgOapls = OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
-                Set<PendingChangeConfiguration> pkgPendingChangeConfig = PendingChangeConfiguration.findAllByIdInList(subscriptionPackage.pendingChangeConfig.id)
                 subscriptionPackage.properties.oapls = null
-                subscriptionPackage.properties.pendingChangeConfig = null
+                subscriptionPackage.properties.pendingChangeConfig = null //copied in next step
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                 InvokerHelper.setProperties(newSubscriptionPackage, subscriptionPackage.properties)
                 newSubscriptionPackage.subscription = targetSub
@@ -505,21 +507,23 @@ class SubscriptionService {
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save()
                     }
-                    pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
-                        Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
-                        PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-                        if(newPcc) {
-                            Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(subscriptionPackage.subscription.class.name,subscriptionPackage.subscription.id,PendingChangeConfiguration.settingKeys)
-                            auditables.each { audit ->
-                                AuditConfig.addConfig(targetSub,audit.referenceField)
-                            }
-                        }
-                    }
                 }
             }
         }
     }
 
+    boolean copyPendingChangeConfiguration(Set<PendingChangeConfiguration> configs, SubscriptionPackage target) {
+        configs.each { PendingChangeConfiguration config ->
+            Map<String,Object> configSettings = [subscriptionPackage:target,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
+            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
+            if(newPcc) {
+                Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(config.subscriptionPackage.subscription.class.name,config.subscriptionPackage.subscription.id,PendingChangeConfiguration.settingKeys)
+                auditables.each { audit ->
+                    AuditConfig.addConfig(target.subscription,audit.referenceField)
+                }
+            }
+        }
+    }
 
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
         entitlementsToDelete.each {

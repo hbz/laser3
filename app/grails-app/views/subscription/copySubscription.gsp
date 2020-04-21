@@ -85,11 +85,35 @@
                     <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
                         <g:link controller="package" action="show" target="_blank"
-                                id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                                id="${sp.pkg.id}">${sp.pkg.name}</g:link>
 
                         <g:if test="${sp.pkg?.contentProvider}">
                             (${sp.pkg?.contentProvider?.name})
                         </g:if><br>
+                    </g:each>
+                </td>
+            </tr>
+            <tr>
+                <th><g:checkBox name="subscription.copyPackageSettings" value="${true}" /></th>
+                <th>${message(code:'subscription.copyPackageSettings')}</th>
+                <td>
+                    <g:set var="excludes" value="${[de.laser.domain.PendingChangeConfiguration.PACKAGE_PROP,de.laser.domain.PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                    <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
+                        <b>${message(code: 'subscription.packages.config.header')} - ${sp.pkg.name}:</b>
+                        <ul>
+                            <g:each in="${sp.pendingChangeConfig.sort { it.settingKey }}" var="pcc">
+                                <li>
+                                    <g:message code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
+                                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
+                                        <g:if test="${!(settingKey in excludes)}">
+                                            <g:if test="${auditService.getAuditConfig(subscription,settingKey)}">
+                                                <span data-tooltip="${message(code:'subscription.packages.auditable')}"><i class="ui thumbtack icon"></i></span>
+                                            </g:if>
+                                        </g:if>
+                                    </g:if>
+                                </li>
+                            </g:each>
+                        </ul>
                     </g:each>
                 </td>
             </tr>

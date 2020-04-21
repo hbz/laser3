@@ -5161,6 +5161,16 @@ class SubscriptionController extends AbstractDebugController {
             isTargetSubChanged = true
         }
 
+        if(params.subscription?.takePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect {
+                genericOIDService.resolveOID(it)
+            }
+            packageSettingsToTake.each { SubscriptionPackage sp ->
+                subscriptionService.copyPendingChangeConfiguration(sp.pendingChangeConfig,SubscriptionPackage.findBySubscriptionAndPkg(newSub,sp.pkg))
+            }
+            isTargetSubChanged = true
+        }
+
         if (params.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToDelete = params.list('subscription.deleteEntitlementIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.deleteEntitlements(entitlementsToDelete, newSub, flash)
@@ -5418,13 +5428,15 @@ class SubscriptionController extends AbstractDebugController {
                                 newOrgAccessPointLink.subPkg = newSubscriptionPackage
                                 newOrgAccessPointLink.save()
                             }
-                            pcc.each { PendingChangeConfiguration config ->
-                                Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
-                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-                                if(newPcc) {
-                                    Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)
-                                    auditables.each { audit ->
-                                        AuditConfig.addConfig(newSubscriptionInstance,audit.referenceField)
+                            if(params.subscription.copyPackageSettings) {
+                                pcc.each { PendingChangeConfiguration config ->
+                                    Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
+                                    PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
+                                    if(newPcc) {
+                                        Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)
+                                        auditables.each { audit ->
+                                            AuditConfig.addConfig(newSubscriptionInstance,audit.referenceField)
+                                        }
                                     }
                                 }
                             }
