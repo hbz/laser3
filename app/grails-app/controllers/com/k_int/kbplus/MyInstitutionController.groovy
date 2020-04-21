@@ -1623,7 +1623,7 @@ join sub.orgRelations or_sub where
         ]
 
         if(checkedDate) {
-            queryFilter << ' ( :checkedDate >= coalesce(ie.accessStartDate,sub.startDate,tipp.accessStartDate)) and ( ( :checkedDate <= coalesce(ie.accessEndDate,sub.endDate,tipp.accessEndDate)) or (sub.hasPerpetualAccess = true))'
+            queryFilter << ' ( :checkedDate >= coalesce(ie.accessStartDate,sub.startDate,tipp.accessStartDate) or (ie.accessStartDate is null and sub.startDate is null and tipp.accessStartDate is null) ) and ( :checkedDate <= coalesce(ie.accessEndDate,sub.endDate,tipp.accessEndDate) or (ie.accessEndDate is null and sub.endDate is null and tipp.accessEndDate is null)  or (sub.hasPerpetualAccess = true))'
             /*queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
                               '(ie.accessStartDate is null and ' +
                                 '(sub.startDate <= :checkedDate or ' +
