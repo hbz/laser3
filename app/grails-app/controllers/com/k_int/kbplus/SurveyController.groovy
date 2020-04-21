@@ -3295,7 +3295,7 @@ class SurveyController {
                         break
                 }
             }
-            def cost_item_element_configuration = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
+            def cost_item_element_configuration = params.ciec ? RefdataValue.get(Long.parseLong(params.ciec)) : null
 
             boolean cost_item_isVisibleForSubscriber = false
             // (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
@@ -3554,6 +3554,84 @@ class SurveyController {
 
         flash.message = message(code: 'copySurveyCostItems.copy.success', args: [countNewCostItems])
         redirect(action: 'copySurveyCostItems', id: params.id, params: [surveyConfigID: result.surveyConfig?.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def copySurveyCostItemsToSub() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig.subscription
+        result.parentSubChilds = result.parentSubscription ? subscriptionService.getValidSubChilds(result.parentSubscription) : null
+
+        result.participantsList = []
+
+        result.parentSubChilds.each { sub ->
+            def newMap = [:]
+            def org = sub.getSubscriber()
+            newMap.id = org.id
+            newMap.sortname = org.sortname
+            newMap.name = org.name
+            newMap.newSub = sub
+
+            newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
+            newMap.surveyCostItem =newMap.surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(newMap.surveyOrg,RDStore.COST_ITEM_DELETED) : null
+
+            result.participantsList << newMap
+
+        }
+
+        result.participantsList = result.participantsList.sort{it.sortname}
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def proccessCopySurveyCostItemsToSub() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig.subscription
+
+
+        def countNewCostItems = 0
+        def costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
+        params.list('selectedSurveyCostItem').each { costItemId ->
+
+            def costItem = CostItem.get(costItemId)
+            def participantSub = result.parentSubscription.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
+            def participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costElement, RDStore.COST_ITEM_DELETED)
+            if(costItem && participantSub && !participantSubCostItem){
+
+                def properties = costItem.properties
+                CostItem copyCostItem = new CostItem()
+                InvokerHelper.setProperties(copyCostItem, properties)
+                copyCostItem.globalUID = null
+                copyCostItem.surveyOrg = null
+                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
+                copyCostItem.sub = participantSub
+                if(copyCostItem.save(flush:true)) {
+                    countNewCostItems++
+                }
+
+            }
+
+        }
+
+        flash.message = message(code: 'copySurveyCostItems.copy.success', args: [countNewCostItems])
+        redirect(action: 'copySurveyCostItemsToSub', id: params.id, params: [surveyConfigID: result.surveyConfig?.id])
 
     }
 
