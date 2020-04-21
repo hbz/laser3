@@ -692,6 +692,7 @@ class FilterService {
     Map<String,Object> generateBasePackageQuery(params, qry_params, showDeletedTipps, asAt, forBase) {
         String base_qry
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
+        boolean filterSet = false
         if(forBase == 'Package')
             base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgInstance "
         else if(forBase == 'Platform')
@@ -700,6 +701,7 @@ class FilterService {
         if (params.mode != 'advanced') {
             base_qry += "and tipp.status = :tippStatusCurrent "
             qry_params.tippStatusCurrent = RDStore.TIPP_STATUS_CURRENT
+            filterSet = true
         }
         else if (params.mode == 'advanced' && showDeletedTipps != true) {
             base_qry += "and tipp.status != :tippStatusDeleted "
@@ -710,36 +712,43 @@ class FilterService {
             base_qry += " and ( ( ( :startDate >= coalesce(tipp.accessStartDate, tipp.pkg.startDate) ) or ( tipp.accessEndDate is null ) ) and ( ( :endDate <= tipp.accessEndDate ) or ( tipp.accessEndDate is null ) ) ) "
             qry_params.startDate = asAt
             qry_params.endDate = asAt
+            filterSet = true
         }
 
         if (params.filter) {
             base_qry += " and ( ( genfunc_filter_matcher(tipp.title.title,:title) = true ) or ( exists ( from Identifier ident where ident.ti.id = tipp.title.id and genfunc_filter_matcher(ident.value,:title) = true ) ) )"
             qry_params.title = params.filter
+            filterSet = true
         }
 
         if (params.coverageNoteFilter) {
             base_qry += "and genfunc_filter_matcher(tipp.coverageNote,:coverageNote) = true"
             qry_params.coverageNote = params.coverageNoteFilter
+            filterSet = true
         }
 
         if (params.endsAfter) {
             base_qry += " and tipp.endDate >= :endDate"
             qry_params.endDate = sdf.parse(params.endsAfter)
+            filterSet = true
         }
 
         if (params.startsBefore) {
             base_qry += " and tipp.startDate <= :startDate"
             qry_params.startDate = sdf.parse(params.startsBefore)
+            filterSet = true
         }
 
         if (params.accessStartDate) {
             base_qry += " and tipp.accessStartDate <= :accessStartDate"
             qry_params.accessStartDate = sdf.parse(params.accessStartDate)
+            filterSet = true
         }
 
         if (params.accessEndDate) {
             base_qry += " and tipp.accessEndDate >= :accessEndDate"
             qry_params.accessEndDate = sdf.parse(params.accessEndDate)
+            filterSet = true
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -748,6 +757,6 @@ class FilterService {
             base_qry += " order by lower(tipp.title.title) asc"
         }
 
-        return [base_qry:base_qry,qry_params:qry_params]
+        return [base_qry:base_qry,qry_params:qry_params,filterSet:filterSet]
     }
 }

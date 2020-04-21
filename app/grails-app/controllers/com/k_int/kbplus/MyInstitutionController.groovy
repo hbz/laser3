@@ -19,7 +19,6 @@ import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import groovy.sql.Sql
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.POIXMLProperties
@@ -33,7 +32,6 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.mozilla.universalchardet.UniversalDetector
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -49,7 +47,7 @@ class MyInstitutionController extends AbstractDebugController {
     def userService
     def genericOIDService
     PendingChangeService pendingChangeService
-    def exportService
+    ExportService exportService
     def escapeService
     def institutionsService
     def docstoreService
@@ -59,16 +57,12 @@ class MyInstitutionController extends AbstractDebugController {
     def taskService
     def filterService
     def propertyService
-    def queryService
-    def dashboardDueDatesService
     def subscriptionsQueryService
     def orgTypeService
     def subscriptionService
     def organisationService
-    def titleStreamService
     def financeService
     def surveyService
-    def cacheService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -446,20 +440,21 @@ from License as l where (
 		List bm = du.stopBenchmark()
 		result.benchMark = bm
 
-        String filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
+        SimpleDateFormat sdfNoPoint = DateUtil.getSDF_NoTimeNoPoint()
+        String filename = "${sdfNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code: 'export.my.currentLicenses')}"
+        List titles = [
+                g.message(code:'license.details.reference'),
+                g.message(code:'license.details.linked_subs'),
+                g.message(code:'consortium'),
+                g.message(code:'license.licensor.label'),
+                g.message(code:'license.startDate'),
+                g.message(code:'license.endDate')
+        ]
+        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP],result.institution)
+        titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            List titles = [
-                    g.message(code:'license.details.reference'),
-                    g.message(code:'license.details.linked_subs'),
-                    g.message(code:'consortium'),
-                    g.message(code:'license.licensor.label'),
-                    g.message(code:'license.startDate'),
-                    g.message(code:'license.endDate'),
-                    g.message(code:'license.properties'),
-                    g.message(code:'license.properties.private')+" "+result.institution.name
-            ]
             List rows = []
             totalLicenses.each { licObj ->
                 License license = (License) licObj
@@ -472,7 +467,8 @@ from License as l where (
                 row.add([field:license.licensor ? license.licensor.name : '',style:null])
                 row.add([field:license.startDate ? sdf.format(license.startDate) : '',style:null])
                 row.add([field:license.endDate ? sdf.format(license.endDate) : '',style:null])
-                //TODO [ticket=2248] for 1.4
+                row.addAll(exportService.processPropertyListValues(propertyDefinitions,'xls',license))
+                /*
                 List customProps = license.customProperties.collect { customProp ->
                     if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
                         "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
@@ -487,6 +483,7 @@ from License as l where (
                         "${privateProp.type.getI10n('name')}: ${privateProp.getValue()}"
                 }
                 row.add([field:privateProps.join(", "),style:null])
+                */
                 rows.add(row)
             }
             Map sheetData = [:]
@@ -510,16 +507,6 @@ from License as l where (
                 response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
-                List titles = [
-                        g.message(code:'license.details.reference'),
-                        g.message(code:'license.details.linked_subs'),
-                        g.message(code:'consortium'),
-                        g.message(code:'license.licensor.label'),
-                        g.message(code:'license.startDate'),
-                        g.message(code:'license.endDate'),
-                        g.message(code:'license.properties'),
-                        g.message(code:'license.properties.private')+" "+result.institution.name
-                ]
                 List rows = []
                 totalLicenses.each { licObj ->
                     License license = (License) licObj
@@ -532,6 +519,8 @@ from License as l where (
                     row.add(license.licensor)
                     row.add(license.startDate ? sdf.format(license.startDate) : '')
                     row.add(license.endDate ? sdf.format(license.endDate) : '')
+                    row.addAll(row.addAll(exportService.processPropertyListValues(propertyDefinitions,'csv',license)))
+                    /*
                     List customProps = license.customProperties.collect { customProp ->
                         if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
                             "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
@@ -546,6 +535,7 @@ from License as l where (
                             "${privateProp.type.getI10n('name')}: ${privateProp.getValue()}"
                     }
                     row.add(privateProps.join("; "))
+                    */
                     rows.add(row)
                 }
                 out.withWriter { writer ->
@@ -1575,210 +1565,131 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentTitles() {
-        // define if we're dealing with a HTML request or an Export (i.e. XML or HTML)
-        boolean isHtmlOutput = !params.format || params.format.equals("html")
 
-        def result = setResultGenerics()
+        Map<String,Object> result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
 
-        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
+        Set<RefdataValue> orgRoles = []
 
-        def viableOrgs = []
+        List<String> queryFilter = []
 
-        if(result.availableConsortia){
-            result.availableConsortia.each {
-                viableOrgs.add(it.id)
-            }
+        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+            orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
+        }
+        else {
+            orgRoles << RDStore.OR_SUBSCRIBER
+            orgRoles << RDStore.OR_SUBSCRIBER_CONS
         }
 
-        viableOrgs.add(result.institution.id)
-
-        log.debug("Viable Org-IDs are: ${viableOrgs}, active Inst is: ${result.institution.id}")
-
         // Set Date Restriction
-        def date_restriction = null;
+        Date checkedDate = null
 
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         boolean defaultSet = false
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            date_restriction = sdf.parse(result.validOn)
+            checkedDate = sdf.parse(result.validOn)
             defaultSet = true
-            log.debug("Getting titles as of ${date_restriction} (current)")
+            log.debug("Getting titles as of ${checkedDate} (current)")
         } else if (params.validOn.trim() == '') {
             result.validOn = ""
         } else {
             result.validOn = params.validOn
-            date_restriction = sdf.parse(params.validOn)
-            log.debug("Getting titles as of ${date_restriction} (given)")
+            checkedDate = sdf.parse(params.validOn)
+            log.debug("Getting titles as of ${checkedDate} (given)")
         }
-
-        // Set is_inst_admin
-        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         // Set offset and max
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        def filterSub = params.list("filterSub")
-        if (filterSub.contains("all")) filterSub = null
-        def filterPvd = params.list("filterPvd")
-        if (filterPvd.contains("all")) filterPvd = null
-        def filterHostPlat = params.list("filterHostPlat")
-        if (filterHostPlat.contains("all")) filterHostPlat = null
-        def filterOtherPlat = params.list("filterOtherPlat")
-        if (filterOtherPlat.contains("all")) filterOtherPlat = null
-
-        def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
-        RefdataValue del_ie =  RDStore.TIPP_STATUS_DELETED
-
-        RefdataValue role_sub        = RDStore.OR_SUBSCRIBER
-        RefdataValue role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
-
-        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        def roles = [role_sub.id,role_sub_consortia.id]
-
-        log.debug("viable roles are: ${roles}")
+        List filterSub = params.list("filterSub")
+        if (filterSub == "all")
+            filterSub = null
+        List filterPvd = params.list("filterPvd")
+        if (filterPvd == "all")
+            filterPvd = null
+        List filterHostPlat = params.list("filterHostPlat")
+        if (filterHostPlat == "all")
+            filterHostPlat = null
         log.debug("Using params: ${params}")
 
-        Map<String,Object> qry_params = [
-                institution: result.institution.id,
-                del_ie: del_ie.id,
-                role_sub: role_sub.id,
-                role_sub_cons: role_sub_cons.id,
-                role_cons: role_sub_consortia.id]
+        Map<String,Object> qryParams = [
+                institution: result.institution,
+                deleted: RDStore.TIPP_STATUS_DELETED,
+                current: RDStore.SUBSCRIPTION_CURRENT,
+                orgRoles: orgRoles
+        ]
 
-        String sub_qry = "from issue_entitlement ie INNER JOIN issue_entitlement_coverage iecov on ie.ie_id = iecov.ic_ie_fk " +
-                "INNER JOIN subscription sub on ie.ie_subscription_fk = sub.sub_id INNER JOIN org_role orole on sub.sub_id = orole.or_sub_fk, " +
-                "title_instance_package_platform tipp INNER JOIN title_instance ti on tipp.tipp_ti_fk = ti.ti_id cross join title_instance ti2 "
-
-        if (filterPvd) {
-            sub_qry += "INNER JOIN org_role orgrole on orgrole.or_pkg_fk=tipp.tipp_pkg_fk "
-        }
-        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id  and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
-        sub_qry += "AND orole.or_org_fk = :institution "
-        sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk != :del_ie ) "
-
-        if (date_restriction) {
-            sub_qry += " AND ( "
-            sub_qry += " ( iecov.ic_start_date <= :date_restriction OR (iecov.ic_start_date is null AND (sub.sub_start_date <= :date_restriction OR sub.sub_start_date is null)) )"
-            sub_qry += "    AND "
-            sub_qry += " ( iecov.ic_end_date >= :date_restriction OR (iecov.ic_end_date is null AND (sub.sub_end_date >= :date_restriction OR sub.sub_end_date is null)) )"
-            sub_qry += ") "
-
-            //sub_qry += "( ie.ie_start_date <= :date_restriction OR (ie.ie_start_date is null AND (sub.sub_start_date <= :date_restriction OR sub.sub_start_date is null) ) ) AND "
-            //sub_qry += "( ie.ie_end_date >= :date_restriction OR (ie.ie_end_date is null AND (sub.sub_end_date >= :date_restriction OR sub.sub_end_date is null) ) ) "
-            result.date_restriction = date_restriction
-            qry_params.date_restriction = new Timestamp(date_restriction.getTime())
+        if(checkedDate) {
+            queryFilter << ' ( :checkedDate >= coalesce(ie.accessStartDate,sub.startDate,tipp.accessStartDate)) and ( ( :checkedDate <= coalesce(ie.accessEndDate,sub.endDate,tipp.accessEndDate)) or (sub.hasPerpetualAccess = true))'
+            /*queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
+                              '(ie.accessStartDate is null and ' +
+                                '(sub.startDate <= :checkedDate or ' +
+                                  '(sub.startDate is null and ' +
+                                    '(tipp.accessStartDate <= :checkedDate or tipp.accessStartDate is null)' +
+                                  ')' +
+                                ')' +
+                              ')' +
+                            ') and ' +
+                            '(ie.accessEndDate >= :checkedDate or ' +
+                              '(ie.accessEndDate > :checkedDate and sub.hasPerpetualAccess = true) or ' +
+                                '(ie.accessEndDate is null and ' +
+                                  '(sub.endDate >= :checkedDate or ' +
+                                    '(sub.endDate > :checkedDate and sub.hasPerpetualAccess = true) or ' +
+                                      '(sub.endDate is null and ' +
+                                        '(tipp.accessEndDate >= :checkedDate or ' +
+                                          '(tipp.accessEndDate > :checkedDate and sub.hasPerpetualAccess = true) or ' +
+                                        'tipp.accessEndDate is null)' +
+                                      ')' +
+                                  ')' +
+                                ')' +
+                            ')'*/
+            qryParams.checkedDate = checkedDate
         }
 
         if ((params.filter) && (params.filter.length() > 0)) {
             log.debug("Adding title filter ${params.filter}");
-            sub_qry += " AND genfunc_filter_matcher(ti.ti_title, :titlestr) = true "
-            qry_params.titlestr = params.get('filter').toString()
+            queryFilter << "genfunc_filter_matcher(ti.title, :titlestr) = true "
+            qryParams.titlestr = params.get('filter').toString()
         }
 
         if (filterSub) {
-            sub_qry += " AND sub.sub_id in (" + filterSub.join(", ") + ")"
-        }
-
-        if (filterOtherPlat) {
-            sub_qry += " AND ap.id in (" + filterOtherPlat.join(", ") + ")"
+            queryFilter << "sub in (" + filterSub.join(", ") + ")"
         }
 
         if (filterHostPlat) {
-            sub_qry += " AND tipp.tipp_plat_fk in (" + filterHostPlat.join(", ") + ")"
+            queryFilter << "tipp.platform in (" + filterHostPlat.join(", ") + ")"
         }
 
         if (filterPvd) {
-            def cp = RDStore.OR_CONTENT_PROVIDER
-            sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (" + filterPvd.join(", ") + ")"
-            qry_params.cprole = cp
+            qryParams.cprole = RDStore.OR_CONTENT_PROVIDER
+            queryFilter << "oo.roleType in :cpRole and oo.org IN (" + filterPvd.join(", ") + ")"
         }
 
-        String having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
-        String limits_clause = limits ? " limit :max offset :offset " : ""
+        //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
 
-        def order_by_clause = ''
+        String orderByClause = ''
         if (params.order == 'desc') {
-            order_by_clause = 'order by ti.sort_title desc'
+            orderByClause = 'order by ti.sortTitle desc'
         } else {
-            order_by_clause = 'order by ti.sort_title asc'
+            orderByClause = 'order by ti.sortTitle asc'
         }
 
-        def sql = new Sql(dataSource)
+        String qryString = "select ie from IssueEntitlement ie join ie.tipp tipp join tipp.title ti join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
+        if(queryFilter)
+            qryString += ' and '+queryFilter.join(' and ')
+        qryString += orderByClause
 
-        String queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
-
-        //log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
-
-        if(params.format || params.exportKBart) {
-            //double run until ERMS-1188
-            String filterString = ""
-            Map queryParams = [ieDeleted:RDStore.TIPP_STATUS_DELETED, org:result.institution, orgRoles:[RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]]
-            if (date_restriction) {
-
-                filterString += " AND ( "
-                filterString += " ( iecov.startDate <= :dateRestriction OR (iecov.startDate is null AND (ie.subscription.startDate <= :dateRestriction OR ie.subscription.startDate is null)) )"
-                filterString += "    AND "
-                filterString += " ( iecov.endDate >= :dateRestriction OR (iecov.endDate is null AND (ie.subscription.endDate >= :dateRestriction OR ie.subscription.endDate is null)) )"
-                filterString += ") "
-                //filterString += " and ((ie.startDate <= :dateRestriction or (ie.startDate = null and (ie.subscription.startDate <= :dateRestriction or ie.subscription.startDate = null))) and (ie.endDate >= :dateRestriction or (ie.endDate = null and (ie.subscription.endDate >= :dateRestriction or ie.subscription.endDate = null))))"
-                //queryParams.dateRestriction = date_restriction
-
-                queryParams.dateRestriction = new Timestamp(date_restriction.getTime())
-            }
-
-            if ((params.filter) && (params.filter.length() > 0)) {
-                filterString += " and genfunc_filter_matcher(ie.tipp.title.title, :title) = true "
-                queryParams.title = "${params.filter}"
-            }
-
-            if (filterSub) {
-                List subs = []
-                filterSub.each {fs ->
-                    subs.add(Subscription.get(Long.parseLong((String) fs)))
-                }
-                filterString += " AND sub in (:subs)"
-                queryParams.subs = subs
-            }
-
-            if (filterHostPlat) {
-                List hostPlatforms = []
-                filterHostPlat.each { plat ->
-                    hostPlatforms.add(Platform.get(Long.parseLong((String) plat)))
-                }
-                filterString += " AND ie.tipp.platform in (:hostPlatforms)"
-                queryParams.hostPlatforms = hostPlatforms
-            }
-
-            if (filterPvd) {
-                filterString += " and pkgOrgRoles.roleType in (:contentProvider) "
-                queryParams.contentProvider = filterPvd
-            }
-            //log.debug("select ie from IssueEntitlement ie join ie.coverages iecov join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc")
-            //log.debug(queryParams)
-            result.titles = IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.coverages iecov join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc",queryParams)
-        }
-        else {
-
-            qry_params.max = result.max
-            qry_params.offset = result.offset
-
-            //log.debug( "SELECT ${queryStr} ${order_by_clause} ${limits_clause}" )
-            //log.debug( qry_params )
-
-            result.titles = sql.rows("SELECT ${queryStr} ${order_by_clause} ${limits_clause} ".toString(), qry_params).collect {
-                TitleInstance.get(it.tipp_ti_fk)
-            }
-        }
-        def queryCnt = "SELECT count(*) as count from (SELECT ${queryStr}) as ras".toString()
-        result.num_ti_rows = sql.firstRow(queryCnt,qry_params)['count']
-        result = setFiltersLists(result, date_restriction)
+        //all ideas to move the .unique() into a group by clause are greately appreciated, a half day's attempts were unsuccessful!
+        Set<IssueEntitlement> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString,qryParams).unique { ie -> ie.tipp.title }
+        Set<TitleInstance> allTitles = currentIssueEntitlements.collect { IssueEntitlement ie -> ie.tipp.title }
+        result.num_ti_rows = allTitles.size()
+        result.titles = allTitles.drop(result.offset).take(result.max)
 
         result.filterSet = params.filterSet || defaultSet
-        String filename = "titles_listing_${result.institution.shortcode}"
+        String filename = "${message(code:'export.my.currentTitles')}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
 
 		List bm = du.stopBenchmark()
 		result.benchMark = bm
@@ -1787,12 +1698,24 @@ join sub.orgRelations or_sub where
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = titleStreamService.generateTitleExportList(result.titles)
+            Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
             out.flush()
             out.close()
+        }
+        else if(params.exportXLSX) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            Map<String,List> export = exportService.generateTitleExportXLS(currentIssueEntitlements)
+            Map sheetData = [:]
+            sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
         }
         else {
             withFormat {
@@ -1803,8 +1726,12 @@ join sub.orgRelations or_sub where
                     response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
                     response.contentType = "text/csv"
 
-                    def out = response.outputStream
-                    exportService.StreamOutTitlesCSV(out, result.titles)
+                    ServletOutputStream out = response.outputStream
+                    Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements)
+                    out.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
+                    }
+                    out.flush()
                     out.close()
                 }
                 /*json {
@@ -1816,7 +1743,7 @@ join sub.orgRelations or_sub where
                     response.contentType = "application/json"
 
                     render content
-                }*/
+                }
                 xml {
                     def doc = exportService.buildDocXML("TitleList")
                     exportService.addTitleListXML(doc, doc.getDocumentElement(), result.titles)
@@ -1825,6 +1752,7 @@ join sub.orgRelations or_sub where
                     response.contentType = "text/xml"
                     exportService.streamOutXML(doc, response.outputStream)
                 }
+                */
             }
         }
     }
@@ -1935,6 +1863,7 @@ join sub.orgRelations or_sub where
      * @param date_restriction - 'Subscription valid on' date restriction as a String
      * @return the result Map with the added filter lists
      */
+    @Deprecated
     private setFiltersLists(result, date_restriction) {
         // Query the list of Subscriptions
         def del_ie =  RDStore.TIPP_STATUS_DELETED
@@ -1987,6 +1916,7 @@ ORDER BY ie.tipp.platform.name""", sub_params)
      * @param date_restriction - 'Subscription valid on' date restriction as a String
      * @return a Map containing the base query as a String and a Map containing the parameters to run the query
      */
+    @Deprecated
     private buildCurrentTitlesQuery(institution, date_restriction) {
         def qry_map = [:]
 
