@@ -389,7 +389,7 @@
                         // ERMS-1521 HOTFIX
                         if (!costItemsSub) {
                             costItemsSub = subscriptionInstance?.costItems?.findAll {
-                                it.costItemElement?.id == RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)?.id
+                                it.costItemElement?.id == RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id
                             }
                         }
                     %>
