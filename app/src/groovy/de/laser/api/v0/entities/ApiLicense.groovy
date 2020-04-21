@@ -190,7 +190,7 @@ class ApiLicense {
 
         // Ignored
 
-        //result.packages         = exportHelperService.resolveStubs(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
+        //result.packages         = exportHelperService.getStubCollection(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
         /*result.persons          = exportHelperService.resolvePrsLinks(
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole

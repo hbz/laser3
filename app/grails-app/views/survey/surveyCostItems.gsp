@@ -126,7 +126,7 @@
 
             <semui:filter>
             <g:form action="surveyCostItems" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
             <g:render template="/templates/filter/orgFilter"
             model="[
                               tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],

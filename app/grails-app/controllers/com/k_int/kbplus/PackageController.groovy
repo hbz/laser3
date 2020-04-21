@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import de.laser.EscapeService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -14,8 +15,10 @@ import groovy.util.slurpersupport.GPathResult
 import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
+import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
@@ -38,6 +41,7 @@ class PackageController extends AbstractDebugController {
     def GOKbService
     def globalSourceSyncService
     def filterService
+    EscapeService escapeService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -608,20 +612,21 @@ class PackageController extends AbstractDebugController {
             result.processingpc = true
         }
 
-        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
+        RefdataValue pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
 
         result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, payload", [packageInstance, pending_change_pending_status]);
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().intValue()
         params.max = result.max
-        def paginate_after = params.paginate_after ?: ((2 * result.max) - 1);
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        //def paginate_after = params.paginate_after ?: ((2 * result.max) - 1);
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
-        def qry_params = [pkgInstance: packageInstance]
+        Map<String,Object> qry_params = [pkgInstance: packageInstance]
         Date date_filter = params.mode == 'advanced' ? null : new Date()
 
-        def query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter,"Package")
+        Map<String,Object> query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter,"Package")
+        result.filterSet = query.filterSet
 
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+query.base_qry, query.qry_params)
         result.titlesList = titlesList.drop(result.offset).take(result.max)
@@ -629,8 +634,48 @@ class PackageController extends AbstractDebugController {
 
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
 
+        String filename = "${escapeService.escapeString(packageInstance.name)}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
 
-        result
+        if(params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String,List> tableData = exportService.generateTitleExportKBART(titlesList)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+            }
+            out.flush()
+            out.close()
+        }
+        else if(params.exportXLSX) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            Map<String,List> export = exportService.generateTitleExportXLS(titlesList)
+            Map sheetData = [:]
+            sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        withFormat {
+            html {
+                result
+            }
+            csv {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.contentType = "text/csv"
+
+                ServletOutputStream out = response.outputStream
+                Map<String,List> tableData = exportService.generateTitleExportCSV(titlesList)
+                out.withWriter { writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
+                }
+                out.flush()
+                out.close()
+            }
+        }
     }
 
     @Secured(['ROLE_USER'])
