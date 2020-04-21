@@ -121,33 +121,30 @@ class ApiSubscription {
 		result.cancellationAllowances 	= sub.cancellationAllowances
 		result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
 		result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
-		//result.identifier           	= sub.identifier // TODO: refactor legacy
 		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub.lastUpdated)
 		result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
 		result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
 		result.name                 	= sub.name
 		result.noticePeriod         	= sub.noticePeriod
 		result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
-
-		// erms-888
-		result.calculatedType       = sub.getCalculatedType()
+		result.calculatedType       	= sub.getCalculatedType()
 
 		// RefdataValues
 
-		result.form         = sub.form?.value
-		result.isSlaved     = sub.isSlaved ? 'Yes' : 'No'
-        result.isMultiYear  = sub.isMultiYear ? 'Yes' : 'No'
-		result.resource     = sub.resource?.value
-		result.status       = sub.status?.value
-		result.type         = sub.type?.value
-		result.kind         = sub.kind?.value
+		result.form         		= sub.form?.value
+		result.isSlaved     		= sub.isSlaved ? 'Yes' : 'No'
+        result.isMultiYear  		= sub.isMultiYear ? 'Yes' : 'No'
+		result.resource     		= sub.resource?.value
+		result.status       		= sub.status?.value
+		result.type         		= sub.type?.value
+		result.kind         		= sub.kind?.value
 		result.isPublicForApi 		= sub.isPublicForApi ? 'Yes' : 'No'
 		result.hasPerpetualAccess 	= sub.hasPerpetualAccess ? 'Yes' : 'No'
 
 		// References
 
 		result.documents            = ApiCollectionReader.getDocumentCollection(sub.documents) // com.k_int.kbplus.DocContext
-		//result.derivedSubscriptions = ApiStubReader.resolveStubs(sub.derivedSubscriptions, ApiCollectionReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+		//result.derivedSubscriptions = ApiStubReader.getStubCollection(sub.derivedSubscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
 		result.identifiers          = ApiCollectionReader.getIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
 		result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
 		result.license              = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
