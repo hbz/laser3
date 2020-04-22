@@ -27,7 +27,7 @@
                                        message="openIssueEntitlementsSurveyAgain.label"/>
         </g:if>
 
-        <g:if test="${surveyInfo && surveyInfo.status.id in [de.laser.helper.RDStore.SURVEY_IN_EVALUATION.id, de.laser.helper.RDStore.SURVEY_COMPLETED.id]}">
+        <g:if test="${surveyInfo && surveyInfo.status.id in [de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id, de.laser.helper.RDStore.SURVEY_IN_EVALUATION.id, de.laser.helper.RDStore.SURVEY_COMPLETED.id]}">
             <semui:actionsDropdownItem controller="survey" action="completeIssueEntitlementsSurveyforParticipant"
                                        params="[id: surveyConfig.id, participant: participant.id]"
                                        message="completeIssueEntitlementsSurvey.forParticipant.label"/>

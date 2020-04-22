@@ -137,10 +137,11 @@ class ApiUnsecuredMapReader {
         result.gokbId       = title.gokbId
         result.title        = title.title
         result.normTitle    = title.normTitle
-        result.type         = title.printTitleType()
 
         // References
-        result.identifiers = ApiCollectionReader.getIdentifierCollection(title.ids) // com.k_int.kbplus.Identifier
+
+        result.medium       = title.medium?.value
+        result.identifiers  = ApiCollectionReader.getIdentifierCollection(title.ids) // com.k_int.kbplus.Identifier
 
         ApiToolkit.cleanUp(result, true, true)
     }
