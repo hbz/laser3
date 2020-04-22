@@ -93,14 +93,13 @@ class ApiMapReader {
         result.normTitle        = title.normTitle
         result.keyTitle         = title.keyTitle
         result.sortTitle        = title.sortTitle
-        //result.impId            = title.impId
         result.dateCreated      = title.dateCreated
         result.lastUpdated      = title.lastUpdated
 
         // RefdataValues
 
         result.status       = title.status?.value
-        result.type         = title.type?.value
+        result.medium       = title.medium?.value
 
         // References
 

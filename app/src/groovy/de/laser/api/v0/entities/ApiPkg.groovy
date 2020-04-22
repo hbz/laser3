@@ -43,7 +43,7 @@ class ApiPkg {
         }
 		result.validatePrecondition_1()
 
-		if (result.obj instanceof Package && result.packageStatus == RDStore.PACKAGE_STATUS_DELETED) {
+		if (result.obj instanceof Package && result.obj.packageStatus == RDStore.PACKAGE_STATUS_DELETED) {
 			result.status = Constants.OBJECT_STATUS_DELETED
 		}
 		result
@@ -79,9 +79,6 @@ class ApiPkg {
 		result.cancellationAllowances = pkg.cancellationAllowances
 		result.dateCreated      	= ApiToolkit.formatInternalDate(pkg.dateCreated)
 		result.endDate          	= ApiToolkit.formatInternalDate(pkg.endDate)
-		//result.forumId          	= pkg.forumId
-		//result.identifier       = pkg.identifier - TODO refactoring legacy
-
 		result.lastUpdated      	= ApiToolkit.formatInternalDate(pkg.lastUpdated)
 		result.vendorURL        	= pkg.vendorURL
 		result.startDate        	= ApiToolkit.formatInternalDate(pkg.startDate)
@@ -90,7 +87,7 @@ class ApiPkg {
 		// RefdataValues
 
 		result.packageListStatus 	= pkg.packageListStatus?.value
-		result.packageType      	= pkg.packageType?.value
+		result.contentType      	= pkg.contentType?.value
 		result.packageScope     	= pkg.packageScope?.value
 		result.packageStatus    	= pkg.packageStatus?.value
 		result.breakable        	= pkg.breakable?.value
