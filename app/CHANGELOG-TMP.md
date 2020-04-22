@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2403    22.04.2020  rc1.3       Moe     Bug         Umfrage kopieren
 
 1901    22.04.2020  rc1.3       Andreas Bug         Syncfehler korrigiert - Paketeigenschaften korrekt verarbeitet und Dubletten von Anbieterrollen entfernt
 
