@@ -4190,7 +4190,7 @@ class SurveyController {
             return []
         }
         def tmpQuery = query
-        tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
+        tmpQuery = tmpQuery.replace("o.id IN (:oids)", "o.id IN (:oids) and o.id in (:orgIDs)")
 
         def tmpQueryParams = queryParams
         tmpQueryParams.put("orgIDs", orgIDs)

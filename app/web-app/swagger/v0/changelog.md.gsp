@@ -2,6 +2,13 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.93
+
+- added new attribute: `Package.contentType`
+- added new attribute: `TitleStub.medium`
+- removed attribute: `Package.packageType`
+- removed attribute: `TitleStub.type`
+
 #### 0.92
 
 - added new HTTP status codes for __/oaMonitor*__ and __/statistic*__
