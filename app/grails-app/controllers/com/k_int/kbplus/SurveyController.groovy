@@ -4365,8 +4365,8 @@ class SurveyController {
 
         def tmpQueryParams = queryParams
         tmpQueryParams.put("orgIDs", orgIDs)
-        println(tmpQueryParams)
-        println(tmpQuery)
+        //println(tmpQueryParams)
+        //println(tmpQuery)
 
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
