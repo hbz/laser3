@@ -1,10 +1,10 @@
 <br>
 <semui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <g:render template="/templates/filter/orgFilter"
                   model="[
-                          tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
+                          tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property']],
                           tmplConfigFormFilter: true,
                           useNewLayouter      : true
                   ]"/>
