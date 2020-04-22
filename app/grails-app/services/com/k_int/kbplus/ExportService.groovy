@@ -390,9 +390,9 @@ class ExportService {
 				//date_monograph_published_online (no value unless BookInstance)
 				row.add(bookInstance.dateFirstOnline ? formatter.format(bookInstance.dateFirstOnline) : ' ')
 				//monograph_volume (no value unless BookInstance)
-				row.add(bookInstance.editionNumber ?: ' ')
+				row.add(bookInstance.volume ?: ' ')
 				//monograph_edition (no value unless BookInstance)
-				row.add(bookInstance.editionStatement ?: ' ')
+				row.add(bookInstance.editionNumber ?: ' ')
 				//first_editor (no value unless BookInstance)
 				row.add(bookInstance.firstEditor ?: ' ')
 			}
