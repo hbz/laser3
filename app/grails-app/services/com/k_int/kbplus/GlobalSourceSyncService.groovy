@@ -264,7 +264,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 packageListStatus: packageListStatus,
                                 breakable: breakable,
                                 consistent: consistent,
-                                fixed: fixed
+                                fixed: fixed,
+                                contentType: contentType
                         ]
                         if(platformUUID) {
                             newPackageProps.nominalPlatform = Platform.findByGokbId(platformUUID)
@@ -281,6 +282,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         result.breakable = breakable //needed?
                         result.consistent = consistent //needed?
                         result.fixed = fixed //needed?
+                        result.contentType = contentType
                         if(platformUUID)
                             result.nominalPlatform = newPackageProps.nominalPlatform
                         if(providerUUID) {
@@ -373,7 +375,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             packageListStatus: packageListStatus, //needed?
                             breakable: breakable, //needed?
                             consistent: consistent, //needed?
-                            fixed: fixed //needed?
+                            fixed: fixed, //needed?
+                            contentType: contentType
                     )
                     if(result.save()) {
                         if(providerUUID) {
@@ -810,7 +813,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param pkg - the package to check against
      */
     void createOrUpdatePackageProvider(Org provider, Package pkg) throws SyncException {
-        OrgRole providerRole = OrgRole.findByPkgAndRoleType(pkg,RDStore.OR_PROVIDER)
+        OrgRole providerRole = OrgRole.findByPkgAndRoleTypeInList(pkg,[RDStore.OR_PROVIDER,RDStore.OR_CONTENT_PROVIDER])
         if(providerRole) {
             providerRole.org = provider
         }
@@ -836,7 +839,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         controlledProperties.each { prop ->
             if(pkgA[prop] != pkgB[prop]) {
                 if(prop in PendingChange.REFDATA_FIELDS)
-                    result.add([prop: prop, newValue: pkgB[prop].id, oldValue: pkgA[prop].id])
+                    result.add([prop: prop, newValue: pkgB[prop]?.id, oldValue: pkgA[prop]?.id])
                 else result.add([prop: prop, newValue: pkgB[prop], oldValue: pkgA[prop]])
             }
         }
