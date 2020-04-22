@@ -41,7 +41,7 @@
             <tbody>
             <g:if test="${ ! isRenewSub}">
                 <tr>
-                    <td  name="subscription.takeDates.source">
+                    <td name="subscription.takeDates.source">
                         <div>
                             <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
                             <g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
@@ -78,8 +78,216 @@
                         </g:if>
                     </td>
                 </tr>
+                <tr>
+                    <td name="subscription.takeStatus.source">
+                        <div>
+                            <b><i class="ellipsis vertical icon"></i>${message(code: 'subscription.status.label')}:</b>
+                            ${sourceSubscription.status?.getI10n('value')}
+                        </div>
+                    </td>
+                    <g:if test="${isConsortialSubs}">
+                    %{--SHARE--}%
+                        <td class="center aligned">
+                        </td>
+                    </g:if>
+                %{--AKTIONEN:--}%
+                    <td class="center aligned">
+                        <g:if test="${sourceSubscription?.status}">
+                            <div class="ui checkbox la-toggle-radio la-replace">
+                                <g:checkBox name="subscription.takeStatus" data-action="copy" checked="${true}" />
+                            </div>
+                        </g:if>
+                    </td>
+
+                    <td name="subscription.takeStatus.target">
+                        <div>
+                            <b><i class="ellipsis vertical icon"></i>${message(code: 'subscription.status.label')}:</b>
+                            ${targetSubscription?.status?.getI10n('value')}
+                        </div>
+                    </td>
+
+                    <td>
+                        <g:if test="${targetSubscription?.status}">
+                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                <g:checkBox name="subscription.deleteStatus" data-action="delete" />
+                            </div>
+                        </g:if>
+                    </td>
+                </tr>
             </g:if>
 
+            <tr>
+                <td name="subscription.takeKind.source">
+                    <div>
+                        <b><i class="image outline icon"></i>${message(code: 'subscription.kind.label')}:</b>
+                        ${sourceSubscription.kind?.getI10n('value')}
+                    </div>
+                </td>
+                <g:if test="${isConsortialSubs}">
+                        %{--SHARE--}%
+                        <td class="center aligned">
+                        </td>
+                </g:if>
+                %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <g:if test="${sourceSubscription?.kind}">
+                        <div class="ui checkbox la-toggle-radio la-replace">
+                            <g:checkBox name="subscription.takeKind" data-action="copy" checked="${true}" />
+                        </div>
+                    </g:if>
+                </td>
+
+                <td name="subscription.takeKind.target">
+                    <div>
+                        <b><i class="image outline icon"></i>${message(code: 'subscription.kind.label')}:</b>
+                        ${targetSubscription?.kind?.getI10n('value')}
+                    </div>
+                </td>
+
+                <td>
+                    <g:if test="${targetSubscription?.kind}">
+                        <div class="ui checkbox la-toggle-radio la-noChange">
+                            <g:checkBox name="subscription.deleteKind" data-action="delete" />
+                        </div>
+                    </g:if>
+                </td>
+            </tr>
+            <tr>
+                <td name="subscription.takeForm.source">
+                    <div>
+                        <b><i class="dolly icon"></i>${message(code: 'subscription.form.label')}:</b>
+                        ${sourceSubscription.form?.getI10n('value')}
+                    </div>
+                </td>
+                <g:if test="${isConsortialSubs}">
+                        %{--SHARE--}%
+                        <td class="center aligned">
+                        </td>
+                </g:if>
+                %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <g:if test="${sourceSubscription?.form}">
+                        <div class="ui checkbox la-toggle-radio la-replace">
+                            <g:checkBox name="subscription.takeForm" data-action="copy" checked="${true}" />
+                        </div>
+                    </g:if>
+                </td>
+
+                <td name="subscription.takeForm.target">
+                    <div>
+                        <b><i class="dolly icon"></i>${message(code: 'subscription.form.label')}:</b>
+                        ${targetSubscription?.form?.getI10n('value')}
+                    </div>
+                </td>
+
+                <td>
+                    <g:if test="${targetSubscription?.form}">
+                        <div class="ui checkbox la-toggle-radio la-noChange">
+                            <g:checkBox name="subscription.deleteForm" data-action="delete" />
+                        </div>
+                    </g:if>
+                </td>
+            </tr>
+            <tr>
+                <td name="subscription.takeResource.source">
+                    <div>
+                        <b><i class="box icon"></i>${message(code: 'subscription.resource.label')}:</b>
+                        ${sourceSubscription.resource?.getI10n('value')}
+                    </div>
+                </td>
+                <g:if test="${isConsortialSubs}">
+                        %{--SHARE--}%
+                        <td class="center aligned">
+                        </td>
+                </g:if>
+                %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <g:if test="${sourceSubscription?.resource}">
+                        <div class="ui checkbox la-toggle-radio la-replace">
+                            <g:checkBox name="subscription.takeResource" data-action="copy" checked="${true}" />
+                        </div>
+                    </g:if>
+                </td>
+
+                <td name="subscription.takeResource.target">
+                    <div>
+                        <b><i class="box icon"></i>${message(code: 'subscription.resource.label')}:</b>
+                        ${targetSubscription?.resource?.getI10n('value')}
+                    </div>
+                </td>
+
+                <td>
+                    <g:if test="${targetSubscription?.form}">
+                        <div class="ui checkbox la-toggle-radio la-noChange">
+                            <g:checkBox name="subscription.deleteResource" data-action="delete" />
+                        </div>
+                    </g:if>
+                </td>
+            </tr>
+            <tr>
+                <td name="subscription.takePublicForApi.source">
+                    <div>
+                        <b><i class="shipping fast icon"></i>${message(code: 'subscription.isPublicForApi.label')}:</b>
+                        ${sourceSubscription.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </div>
+                </td>
+                <g:if test="${isConsortialSubs}">
+                        %{--SHARE--}%
+                        <td class="center aligned">
+                        </td>
+                </g:if>
+                %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <div class="ui checkbox la-toggle-radio la-replace">
+                        <g:checkBox name="subscription.takePublicForApi" data-action="copy" checked="${true}" />
+                    </div>
+                </td>
+
+                <td name="subscription.takePublicForApi.target">
+                    <div>
+                        <b><i class="shipping fast icon"></i>${message(code: 'subscription.isPublicForApi.label')}:</b>
+                        ${targetSubscription?.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </div>
+                </td>
+
+                <td>
+                    <div class="ui checkbox la-toggle-radio la-noChange">
+                        <g:checkBox name="subscription.deletePublicForApi" data-action="delete" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td name="subscription.takePerpetualAccess.source">
+                    <div>
+                        <b><i class="flag outline icon"></i>${message(code: 'subscription.hasPerpetualAccess.label')}:</b>
+                        ${sourceSubscription?.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </div>
+                </td>
+                <g:if test="${isConsortialSubs}">
+                        %{--SHARE--}%
+                        <td class="center aligned">
+                        </td>
+                </g:if>
+                %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <div class="ui checkbox la-toggle-radio la-replace">
+                        <g:checkBox name="subscription.takePerpetualAccess" data-action="copy" checked="${true}" />
+                    </div>
+                </td>
+
+                <td name="subscription.takePerpetualAccess.target">
+                    <div>
+                        <b><i class="flag outline icon"></i>${message(code: 'subscription.hasPerpetualAccess.label')}:</b>
+                        ${targetSubscription?.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </div>
+                </td>
+
+                <td>
+                    <div class="ui checkbox la-toggle-radio la-noChange">
+                        <g:checkBox name="subscription.deletePerpetualAccess" data-action="delete" />
+                    </div>
+                </td>
+            </tr>
             <tr>
                 <td  name="subscription.takeOwner.source">
                     <div>
@@ -266,7 +474,7 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(Subscription.get(sourceSubscriptionId), true)}" />
-                    <g:link action="renewalWithSurvey" id="${surveyConfig?.surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
+                    <g:link action="renewalWithSurvey" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button js-click-control">
                         <g:message code="renewalWithSurvey.back"/>
                     </g:link>
                 </div>
@@ -292,6 +500,18 @@
         checkboxes : {
             $takeDates: $('input:checkbox[name="subscription.takeDates"]'),
             $deleteDates: $('input:checkbox[name="subscription.deleteDates"]'),
+            $takeStatus: $('input:checkbox[name="subscription.takeStatus"]'),
+            $deleteStatus: $('input:checkbox[name="subscription.deleteStatus"]'),
+            $takeKind: $('input:checkbox[name="subscription.takeKind"]'),
+            $deleteKind: $('input:checkbox[name="subscription.deleteKind"]'),
+            $takeForm: $('input:checkbox[name="subscription.takeForm"]'),
+            $deleteForm: $('input:checkbox[name="subscription.deleteForm"]'),
+            $takeResource: $('input:checkbox[name="subscription.takeResource"]'),
+            $deleteResource: $('input:checkbox[name="subscription.deleteResource"]'),
+            $takePublicForApi: $('input:checkbox[name="subscription.takePublicForApi"]'),
+            $deletePublicForApi: $('input:checkbox[name="subscription.deletePublicForApi"]'),
+            $takePerpetualAccess: $('input:checkbox[name="subscription.takePerpetualAccess"]'),
+            $deletePerpetualAccess: $('input:checkbox[name="subscription.deletePerpetualAccess"]'),
             $takeOwner: $('input:checkbox[name="subscription.takeOwner"]'),
             $deleteOwner: $('input:checkbox[name="subscription.deleteOwner"]'),
             $takeOrgRelations: $('input:checkbox[name="subscription.takeOrgRelations"]'),
@@ -307,6 +527,54 @@
 
             ref.$deleteDates.change( function(event) {
                 subCopyController.deleteDates(this);
+            }).trigger('change')
+
+            ref.$takeStatus.change( function(event) {
+                subCopyController.takeStatus(this);
+            }).trigger('change')
+
+            ref.$deleteStatus.change( function(event) {
+                subCopyController.deleteStatus(this);
+            }).trigger('change')
+
+            ref.$takeKind.change( function(event) {
+                subCopyController.takeKind(this);
+            }).trigger('change')
+
+            ref.$deleteKind.change( function(event) {
+                subCopyController.deleteKind(this);
+            }).trigger('change')
+
+            ref.$takeForm.change( function(event) {
+                subCopyController.takeForm(this);
+            }).trigger('change')
+
+            ref.$deleteForm.change( function(event) {
+                subCopyController.deleteForm(this);
+            }).trigger('change')
+
+            ref.$takeResource.change( function(event) {
+                subCopyController.takeResource(this);
+            }).trigger('change')
+
+            ref.$deleteResource.change( function(event) {
+                subCopyController.deleteResource(this);
+            }).trigger('change')
+
+            ref.$takePublicForApi.change( function(event) {
+                subCopyController.takePublicForApi(this);
+            }).trigger('change')
+
+            ref.$deletePublicForApi.change( function(event) {
+                subCopyController.deletePublicForApi(this);
+            }).trigger('change')
+
+            ref.$takePerpetualAccess.change( function(event) {
+                subCopyController.takePerpetualAccess(this);
+            }).trigger('change')
+
+            ref.$deletePerpetualAccess.change( function(event) {
+                subCopyController.deletePerpetualAccess(this);
             }).trigger('change')
 
             ref.$takeOwner.change( function(event) {
@@ -343,6 +611,126 @@
             }
             else {
                 $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        takeStatus: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeStatus.source"] div').addClass('willStay');
+                $('.table tr td[name="subscription.takeStatus.target"] div').addClass('willBeReplaced');
+            }
+            else {
+                $('.table tr td[name="subscription.takeStatus.source"] div').removeClass('willStay');
+                $('.table tr td[name="subscription.takeStatus.target"] div').removeClass('willBeReplaced');
+            }
+        },
+
+        deleteStatus: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeStatus.target"] div').addClass('willBeReplacedStrong');
+            }
+            else {
+                $('.table tr td[name="subscription.takeStatus.target"] div').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        takeKind: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeKind.source"] div').addClass('willStay');
+                $('.table tr td[name="subscription.takeKind.target"] div').addClass('willBeReplaced');
+            }
+            else {
+                $('.table tr td[name="subscription.takeKind.source"] div').removeClass('willStay');
+                $('.table tr td[name="subscription.takeKind.target"] div').removeClass('willBeReplaced');
+            }
+        },
+
+        deleteKind: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeKind.target"] div').addClass('willBeReplacedStrong');
+            }
+            else {
+                $('.table tr td[name="subscription.takeKind.target"] div').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        takeForm: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeForm.source"] div').addClass('willStay');
+                $('.table tr td[name="subscription.takeForm.target"] div').addClass('willBeReplaced');
+            }
+            else {
+                $('.table tr td[name="subscription.takeForm.source"] div').removeClass('willStay');
+                $('.table tr td[name="subscription.takeForm.target"] div').removeClass('willBeReplaced');
+            }
+        },
+
+        deleteForm: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeForm.target"] div').addClass('willBeReplacedStrong');
+            }
+            else {
+                $('.table tr td[name="subscription.takeForm.target"] div').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        takeResource: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeResource.source"] div').addClass('willStay');
+                $('.table tr td[name="subscription.takeResource.target"] div').addClass('willBeReplaced');
+            }
+            else {
+                $('.table tr td[name="subscription.takeResource.source"] div').removeClass('willStay');
+                $('.table tr td[name="subscription.takeResource.target"] div').removeClass('willBeReplaced');
+            }
+        },
+
+        deleteResource: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeResource.target"] div').addClass('willBeReplacedStrong');
+            }
+            else {
+                $('.table tr td[name="subscription.takeResource.target"] div').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        takePublicForApi: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takePublicForApi.source"] div').addClass('willStay');
+                $('.table tr td[name="subscription.takePublicForApi.target"] div').addClass('willBeReplaced');
+            }
+            else {
+                $('.table tr td[name="subscription.takePublicForApi.source"] div').removeClass('willStay');
+                $('.table tr td[name="subscription.takePublicForApi.target"] div').removeClass('willBeReplaced');
+            }
+        },
+
+        deletePublicForApi: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takePublicForApi.target"] div').addClass('willBeReplacedStrong');
+            }
+            else {
+                $('.table tr td[name="subscription.takePublicForApi.target"] div').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        takePerpetualAccess: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takePerpetualAccess.source"] div').addClass('willStay');
+                $('.table tr td[name="subscription.takePerpetualAccess.target"] div').addClass('willBeReplaced');
+            }
+            else {
+                $('.table tr td[name="subscription.takePerpetualAccess.source"] div').removeClass('willStay');
+                $('.table tr td[name="subscription.takePerpetualAccess.target"] div').removeClass('willBeReplaced');
+            }
+        },
+
+        deletePerpetualAccess: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takePerpetualAccess.target"] div').addClass('willBeReplacedStrong');
+            }
+            else {
+                $('.table tr td[name="subscription.takePerpetualAccess.target"] div').removeClass('willBeReplacedStrong');
             }
         },
 

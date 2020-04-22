@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2405    22.04.2020  rc1.3       Andreas Feature     Anreicherung der Lizenzkopier- und verlängerungsfunktionen um neue Lizenzattribute sowie Schaltschrank
 
 1901    22.04.2020  rc1.3       Andreas Bug         Syncfehler korrigiert - Paketeigenschaften korrekt verarbeitet und Dubletten von Anbieterrollen entfernt
 

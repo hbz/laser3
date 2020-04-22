@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
+<%@ page import="com.k_int.kbplus.IssueEntitlement; de.laser.domain.PendingChangeConfiguration; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
 <laser:serviceInjection />
 
 <semui:form>
@@ -42,7 +42,7 @@
             </thead>
             <tbody class="top aligned">
             <tr>
-                <g:set var="excludes" value="${[de.laser.domain.PendingChangeConfiguration.PACKAGE_PROP,de.laser.domain.PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
                     <b>${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
@@ -57,7 +57,7 @@
 
                                 <div class="la-copyPack-container la-element">
                                     <ul>
-                                        <g:each in="${sp.pendingChangeConfig}" var="pcc">
+                                        <g:each in="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}" var="pcc">
                                             <li class="la-copyPack-item">
                                                 <g:message code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
                                                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
@@ -102,7 +102,7 @@
                                 <br>
                                 <div class="la-copyPack-container la-element">
                                     <ul>
-                                        <g:each in="${sp.pendingChangeConfig}" var="pcc">
+                                        <g:each in="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}" var="pcc">
                                             <li class="la-copyPack-item">
                                                 <g:message code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
                                                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
@@ -230,9 +230,7 @@
             }).trigger('change')
 
             ref.$deletePackageSettings.change( function(event) {
-                //continue here
-                if(!ref.$deletePackageIds.filter('[data-pkgid="'+$(this).attr('data-pkgid')+'"]').checked)
-                    subCopyController.deletePackageSettings(this);
+                subCopyController.deletePackageSettings(this);
             }).trigger('change')
 
             ref.$takeEntitlementIds.change( function(event) {

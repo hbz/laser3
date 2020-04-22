@@ -43,13 +43,59 @@
 
             <input type="hidden" name="baseSubscription" value="${params.id}"/>
 
-            <tr><th>${message(code:'default.select.label')}</th><th >${message(code:'subscription.property')}</th><th>${message(code:'default.value.label')}</th></tr>
+            <tr>
+                <th>${message(code:'default.select.label')}</th>
+                <th>${message(code:'subscription.property')}</th>
+                <th>${message(code:'default.value.label')}</th>
+            </tr>
             <tr>
                 <th><g:checkBox name="subscription.copyDates" value="${true}" /></th>
                 <th>${message(code:'subscription.copyDates')}</th>
                 <td>
-                    ${message(code:'subscription.copyDates.startDate')}:&nbsp<g:if test="${ ! subscription?.startDate}">-</g:if><g:formatDate date="${subscription?.startDate}" format="${message(code:'default.date.format.notime')}"/> &nbsp
-                    ${message(code:'subscription.copyDates.endDate')}:&nbsp<g:if test="${ ! subscription?.endDate}">-</g:if><g:formatDate date="${subscription?.endDate}" format="${message(code:'default.date.format.notime')}"/>
+                    <b>${message(code:'subscription.copyDates.startDate')}</b>:&nbsp<g:if test="${ ! subscription.startDate}">-</g:if><g:formatDate date="${subscription.startDate}" format="${message(code:'default.date.format.notime')}"/> &nbsp
+                    <b>${message(code:'subscription.copyDates.endDate')}</b>:&nbsp<g:if test="${ ! subscription.endDate}">-</g:if><g:formatDate date="${subscription.endDate}" format="${message(code:'default.date.format.notime')}"/>
+                </td>
+            </tr>
+            <tr>
+                <th><g:checkBox name="subscription.copyStatus" value="${true}" /></th>
+                <th>${message(code:'subscription.copyStatus')}</th>
+                <td>
+                    <b>${message(code:'subscription.status.label')}</b>:&nbsp${subscription.status.getI10n('value')}
+                </td>
+            </tr>
+            <tr>
+                <th><g:checkBox name="subscription.copyKind" value="${true}" /></th>
+                <th>${message(code:'subscription.copyKind')}</th>
+                <td>
+                    <b>${message(code:'subscription.kind.label')}</b>:&nbsp${subscription.kind?.getI10n('value')}
+                </td>
+            </tr>
+            <tr>
+                <th><g:checkBox name="subscription.copyForm" value="${true}" /></th>
+                <th>${message(code:'subscription.copyForm')}</th>
+                <td>
+                    <b>${message(code:'subscription.form.label')}</b>:&nbsp${subscription.form?.getI10n('value')}
+                </td>
+            </tr>
+            <tr>
+                <th><g:checkBox name="subscription.copyResource" value="${true}" /></th>
+                <th>${message(code:'subscription.copyResource')}</th>
+                <td>
+                    <b>${message(code:'subscription.resource.label')}</b>:&nbsp${subscription.resource?.getI10n('value')}
+                </td>
+            </tr>
+            <tr>
+                <th><g:checkBox name="subscription.copyPublicForApi" value="${true}" /></th>
+                <th>${message(code:'subscription.copyPublicForApi')}</th>
+                <td>
+                    <b>${message(code:'subscription.isPublicForApi.label')}</b>:&nbsp${subscription.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                </td>
+            </tr>
+            <tr>
+                <th><g:checkBox name="subscription.copyPerpetualAccess" value="${true}" /></th>
+                <th>${message(code:'subscription.copyPerpetualAccess')}</th>
+                <td>
+                    <b>${message(code:'subscription.hasPerpetualAccess.label')}</b>:&nbsp${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                 </td>
             </tr>
             <tr>

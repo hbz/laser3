@@ -406,6 +406,79 @@ class SubscriptionService {
     }
 
 
+    boolean deleteStatus(Subscription targetSub, def flash) {
+        targetSub.status = SUBSCRIPTION_NO_STATUS
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyStatus(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.status = sourceSub.status ?: null
+        return save(targetSub, flash)
+    }
+
+
+    boolean deleteKind(Subscription targetSub, def flash) {
+        targetSub.kind = null
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyKind(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.kind = sourceSub.kind ?: null
+        return save(targetSub, flash)
+    }
+
+
+    boolean deleteForm(Subscription targetSub, def flash) {
+        targetSub.form = null
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyForm(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.form = sourceSub.form ?: null
+        return save(targetSub, flash)
+    }
+
+
+    boolean deleteResource(Subscription targetSub, def flash) {
+        targetSub.resource = null
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyResource(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.resource = sourceSub.resource ?: null
+        return save(targetSub, flash)
+    }
+
+
+    boolean deletePublicForApi(Subscription targetSub, def flash) {
+        targetSub.isPublicForApi = false
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyPublicForApi(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.isPublicForApi = sourceSub.isPublicForApi
+        return save(targetSub, flash)
+    }
+
+
+    boolean deletePerpetualAccess(Subscription targetSub, def flash) {
+        targetSub.hasPerpetualAccess = false
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyPerpetualAccess(Subscription sourceSub, Subscription targetSub, def flash) {
+        //Vertrag/License
+        targetSub.hasPerpetualAccess = sourceSub.hasPerpetualAccess
+        return save(targetSub, flash)
+    }
+
+
     boolean deleteOwner(Subscription targetSub, def flash) {
         targetSub.owner = null
         return save(targetSub, flash)
@@ -512,7 +585,7 @@ class SubscriptionService {
         }
     }
 
-    boolean copyPendingChangeConfiguration(Set<PendingChangeConfiguration> configs, SubscriptionPackage target) {
+    boolean copyPendingChangeConfiguration(Collection<PendingChangeConfiguration> configs, SubscriptionPackage target) {
         configs.each { PendingChangeConfiguration config ->
             Map<String,Object> configSettings = [subscriptionPackage:target,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
             PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
@@ -790,8 +863,6 @@ class SubscriptionService {
         targetSub.endDate = null
         return save(targetSub, flash)
     }
-
-
 
     boolean copyDates(Subscription sourceSub, Subscription targetSub, def flash) {
         targetSub.setStartDate(sourceSub.getStartDate())
