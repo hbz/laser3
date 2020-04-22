@@ -1,7 +1,7 @@
 
     <nav id="mainMenueTest" class="ui inverted stackable menu" role="menubar" aria-label="${message(code:'aria-label.mainNavigation')}">
-        <div class="ui container" aria-hidden="true">
-            <a href="https://www.w3.org" aria-label="Start" class="header item la-logo-item">
+        <div class="ui container" >
+            <a href="#" aria-label="Start" class="header item la-logo-item">
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </a>
 
@@ -10,17 +10,17 @@
                 <i aria-hidden="true" class="dropdown icon"></i>
 
                 <div class="menu">
-                    <a href="https://www.w3.org" class="item"  role="menuitem">Alle Pakete</a>
+                    <a href="#" class="item"  role="menuitem">Alle Pakete</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem">Alle Titel</a>
+                    <a href="#" class="item" role="menuitem">Alle Titel</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Alle Organisationen</a>
+                    <a href="#" class="item" role="menuitem" >Alle Organisationen</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Alle Einrichtungen</a>
+                    <a href="#" class="item" role="menuitem" >Alle Einrichtungen</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Alle Anbieter & Lieferanten</a>
+                    <a href="#" class="item" role="menuitem" >Alle Anbieter & Lieferanten</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Alle Plattformen</a>
+                    <a href="#" class="item" role="menuitem" >Alle Plattformen</a>
 
                     <div class="divider"></div>
 
@@ -31,11 +31,11 @@
 
                     <div class="divider"></div>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >GASCO-Monitor</a>
+                    <a href="#" class="item" role="menuitem" >GASCO-Monitor</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >GOKB</a>
+                    <a href="#" class="item" role="menuitem" >GOKB</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >YGOR</a>
+                    <a href="#" class="item" role="menuitem" >YGOR</a>
                 </div>
             </div>
 
@@ -45,32 +45,32 @@
 
                 <div class="menu">
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Lizenzen</a>
+                    <a href="#" class="item" role="menuitem" >Meine Lizenzen</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Verträge</a>
+                    <a href="#" class="item" role="menuitem" >Meine Verträge</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Anbieter & Lieferanten</a>
+                    <a href="#" class="item" role="menuitem" >Meine Anbieter & Lieferanten</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Plattformen</a>
+                    <a href="#" class="item" role="menuitem" >Meine Plattformen</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Pakete</a>
+                    <a href="#" class="item" role="menuitem" >Meine Pakete</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Titel</a>
+                    <a href="#" class="item" role="menuitem" >Meine Titel</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Dokumente</a>
-
-                    <div class="divider"></div>
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Umfragen</a>
+                    <a href="#" class="item" role="menuitem" >Meine Dokumente</a>
 
                     <div class="divider"></div>
-
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Teilnehmer</a>
-
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Meine Lizenzen pro Teilnehmer</a>
+                    <a href="#" class="item" role="menuitem" >Meine Umfragen</a>
 
                     <div class="divider"></div>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Neue Lizenz</a>
+                    <a href="#" class="item" role="menuitem" >Meine Teilnehmer</a>
+
+                    <a href="#" class="item" role="menuitem" >Meine Lizenzen pro Teilnehmer</a>
+
+                    <div class="divider"></div>
+
+                    <a href="#" class="item" role="menuitem" >Neue Lizenz</a>
 
                     <div class="item" role="menuitem" >
                         <div class="disabled" data-tooltip="Die Funktion 'Lizenzen vergleichen' ist zur Zeit nicht verfügbar!">
@@ -79,9 +79,9 @@
 
                     <div class="divider"></div>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Neuer Vertrag</a>
+                    <a href="#" class="item" role="menuitem" >Neuer Vertrag</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Verträge vergleichen</a>
+                    <a href="#" class="item" role="menuitem" >Verträge vergleichen</a>
 
                 </div>
             </div>
@@ -91,30 +91,30 @@
                 <i aria-hidden="true" class="dropdown icon"></i>
 
                 <div class="menu">
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Dashboard</a>
+                    <a href="#" class="item" role="menuitem" >Dashboard</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Einrichtungsprofil</a>
+                    <a href="#" class="item" role="menuitem" >Einrichtungsprofil</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Mein Adressbuch</a>
+                    <a href="#" class="item" role="menuitem" >Mein Adressbuch</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Aufgaben</a>
+                    <a href="#" class="item" role="menuitem" >Aufgaben</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Änderungen</a>
+                    <a href="#" class="item" role="menuitem" >Änderungen</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Merkmale verwalten</a>
+                    <a href="#" class="item" role="menuitem" >Merkmale verwalten</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Kostenübersicht</a>
+                    <a href="#" class="item" role="menuitem" >Kostenübersicht</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Budgetverwaltung</a>
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Kostenelemente verwalten</a>
+                    <a href="#" class="item" role="menuitem" >Budgetverwaltung</a>
+                    <a href="#" class="item" role="menuitem" >Kostenelemente verwalten</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Kostenposten hochladen</a>
+                    <a href="#" class="item" role="menuitem" >Kostenposten hochladen</a>
 
                     <div class="divider"></div>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Nutzerverwaltung</a>
+                    <a href="#" class="item" role="menuitem" >Nutzerverwaltung</a>
 
-                    <a href="https://www.w3.org" class="item" role="menuitem" >Historie</a>
+                    <a href="#" class="item" role="menuitem" >Historie</a>
 
                 </div>
             </div>
@@ -130,7 +130,7 @@
                     <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                 </div>
 
-                <a href="https://www.w3.org" class="la-search-advanced la-popup-tooltip la-delay"
+                <a href="#" class="la-search-advanced la-popup-tooltip la-delay"
                    data-content="Erweiterte Suche">
                     <i class="large icons">
                         <i class="search icon"></i>
@@ -144,24 +144,24 @@
 
                     <div class="menu">
 
-                        <a href="https://www.w3.org" class="item" role="menuitem" >DWI -
+                        <a href="#" class="item" role="menuitem" >DWI -
                         Leibniz-Institut f&uuml;r Interaktive Materialien (DWI)</a>
 
-                        <a href="https://www.w3.org" class="item active">hbz
+                        <a href="#" class="item active">hbz
                         Konsortialstelle Digitale Inhalte</a>
 
-                        <a href="https://www.w3.org"
+                        <a href="#"
                            class="item" role="menuitem" >Universit&auml;tsbibliothek der RWTH Aachen</a>
 
                         <div class="divider"></div>
 
-                        <a href="https://www.w3.org" class="item" role="menuitem" >Profil</a>
-                        <a href="https://www.w3.org" class="item" role="menuitem" >Hilfe</a>
-                        <a href="https://www.w3.org" class="item" role="menuitem" >Datenschutzinformationen</a>
+                        <a href="#" class="item" role="menuitem" >Profil</a>
+                        <a href="#" class="item" role="menuitem" >Hilfe</a>
+                        <a href="#" class="item" role="menuitem" >Datenschutzinformationen</a>
 
                         <div class="divider"></div>
 
-                        <a href="https://www.w3.org" class="item" role="menuitem" >Abmelden</a>
+                        <a href="#" class="item" role="menuitem" >Abmelden</a>
                         <div class="divider"></div>
 
                         <div class="header">Version: 1.2.13 – 05.03.2020 10:26</div>
