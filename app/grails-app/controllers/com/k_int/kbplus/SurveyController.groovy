@@ -2866,7 +2866,7 @@ class SurveyController {
                 genericOIDService.resolveOID(it)
             }
             packageSettingsToDelete.each { SubscriptionPackage toDelete ->
-                PendingChangeConfiguration.settingKeys.each { String setting ->
+                PendingChangeConfiguration.SETTING_KEYS.each { String setting ->
                     if(AuditConfig.getConfig(toDelete.subscription,setting))
                         AuditConfig.removeConfig(toDelete.subscription,setting)
                 }

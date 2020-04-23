@@ -590,10 +590,10 @@ class SubscriptionService {
             Map<String,Object> configSettings = [subscriptionPackage:target,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
             PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
             if(newPcc) {
-                Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(config.subscriptionPackage.subscription.class.name,config.subscriptionPackage.subscription.id,PendingChangeConfiguration.settingKeys)
-                auditables.each { audit ->
-                    AuditConfig.addConfig(target.subscription,audit.referenceField)
-                }
+                if(AuditConfig.getConfig(config.subscriptionPackage.subscription,config.settingKey) && !AuditConfig.getConfig(target.subscription,config.settingKey))
+                    AuditConfig.addConfig(target.subscription,config.settingKey)
+                else if(!AuditConfig.getConfig(config.subscriptionPackage.subscription,config.settingKey) && AuditConfig.getConfig(target.subscription,config.settingKey))
+                    AuditConfig.removeConfig(target.subscription,config.settingKey)
             }
         }
     }

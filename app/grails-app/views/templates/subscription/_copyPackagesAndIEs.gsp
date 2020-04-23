@@ -61,8 +61,8 @@
                                             <li class="la-copyPack-item">
                                                 <g:message code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
                                                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
-                                                    <g:if test="${!(settingKey in excludes)}">
-                                                        <g:if test="${auditService.getAuditConfig(subscription,settingKey)}">
+                                                    <g:if test="${!(pcc.settingKey in excludes)}">
+                                                        <g:if test="${auditService.getAuditConfig(sourceSubscription,pcc.settingKey)}">
                                                             <span data-tooltip="${message(code:'subscription.packages.auditable')}"><i class="ui thumbtack icon"></i></span>
                                                         </g:if>
                                                     </g:if>
@@ -106,8 +106,8 @@
                                             <li class="la-copyPack-item">
                                                 <g:message code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
                                                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
-                                                    <g:if test="${!(settingKey in excludes)}">
-                                                        <g:if test="${auditService.getAuditConfig(subscription,settingKey)}">
+                                                    <g:if test="${!(pcc.settingKey in excludes)}">
+                                                        <g:if test="${auditService.getAuditConfig(targetSubscription,pcc.settingKey)}">
                                                             <span data-tooltip="${message(code:'subscription.packages.auditable')}"><i class="ui thumbtack icon"></i></span>
                                                         </g:if>
                                                     </g:if>
