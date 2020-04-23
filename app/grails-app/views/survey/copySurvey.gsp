@@ -427,7 +427,7 @@
                     </tr>
                     </thead>
                     <g:each in="${subscriptions}" var="s" status="i">
-                        <g:if test="${true || !s.instanceOf}">
+                        <g:if test="${!s.instanceOf}">
                             <tr>
                                 <td>
                                     <g:checkBox name="targetSubs" value="${s.id}" checked="false"/>
