@@ -52,7 +52,7 @@
                 <div class="ui divider"></div>
             </g:if>
 
-            <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose
+            <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig.subSurveyUseForTransfer && !surveyConfig.pickAndChoose
                     && surveyInfo.status?.id in [de.laser.helper.RDStore.SURVEY_SURVEY_COMPLETED.id, de.laser.helper.RDStore.SURVEY_IN_EVALUATION.id, de.laser.helper.RDStore.SURVEY_COMPLETED.id]}">
                 <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey"
                                            params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]"

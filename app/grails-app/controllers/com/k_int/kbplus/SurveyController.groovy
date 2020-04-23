@@ -774,7 +774,7 @@ class SurveyController {
         def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
+            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
         }
         result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
@@ -832,7 +832,7 @@ class SurveyController {
         def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
+            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
         }
 
         result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -4251,7 +4251,7 @@ class SurveyController {
             return []
         }
         def tmpQuery = query
-        tmpQuery = tmpQuery.replace("o.id IN (:oids)", "o.id IN (:oids) and o.id in (:orgIDs)")
+        tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
 
         def tmpQueryParams = queryParams
         tmpQueryParams.put("orgIDs", orgIDs)

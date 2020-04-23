@@ -2628,7 +2628,7 @@ AND EXISTS (
                 ie.save(flush: true)
             }
 
-            if(ies.size() > 0) {
+            /*if(ies.size() > 0) {*/
 
                 if (surveyOrg && surveyConfig) {
                     surveyOrg.finishDate = new Date()
@@ -2642,9 +2642,9 @@ AND EXISTS (
                 } else {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                 }
-            }else {
+            /*}else {
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
-            }
+            }*/
         }
 
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
