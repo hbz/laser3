@@ -5113,7 +5113,7 @@ class SurveyController {
         oldSurveyConfig.documents?.each { dctx ->
                 //Copy Docs
                 if (params.copySurvey.copyDocs) {
-                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                         Doc clonedContents = new Doc(
                                 blobContent: dctx.owner.blobContent,
                                 status: dctx.owner.status,
@@ -5141,7 +5141,7 @@ class SurveyController {
                 }
                 //Copy Announcements
                 if (params.copySurvey.copyAnnouncements) {
-                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                         Doc clonedContents = new Doc(
                                 blobContent: dctx.owner.blobContent,
                                 status: dctx.owner.status,
