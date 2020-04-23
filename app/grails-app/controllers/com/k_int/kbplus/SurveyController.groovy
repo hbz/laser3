@@ -28,8 +28,6 @@ import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
-import static de.laser.helper.RDStore.getTIPP_STATUS_DELETED
-
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
