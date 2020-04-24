@@ -194,18 +194,6 @@ class Subscription
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
-    // TODO: implement
-    @Override
-    boolean isTemplate() {
-        return false
-    }
-
-    // TODO: implement
-    @Override
-    boolean hasTemplate() {
-        return false
-    }
-
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
         // needed to differentiate OrgRoles
@@ -302,10 +290,7 @@ class Subscription
     String getCalculatedType() {
         def result = CALCULATED_TYPE_UNKOWN
 
-        if (isTemplate()) {
-            result = CALCULATED_TYPE_TEMPLATE
-        }
-        else if(getCollective() && getConsortia() && instanceOf) {
+        if (getCollective() && getConsortia() && instanceOf) {
             result = CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE
         }
         else if(getCollective() && !getAllSubscribers() && !instanceOf) {
@@ -639,7 +624,7 @@ class Subscription
         groups.each{ it ->
 
             // cons_members
-            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
+            if (this.instanceOf) {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
 
                 // global groups

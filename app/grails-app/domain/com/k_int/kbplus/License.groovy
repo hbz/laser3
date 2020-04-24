@@ -175,16 +175,6 @@ class License
     }
 
     @Override
-    boolean isTemplate() {
-        return (type != null) && (type == RDStore.LICENSE_TYPE_TEMPLATE)
-    }
-
-    @Override
-    boolean hasTemplate() {
-        return instanceOf ? instanceOf.isTemplate() : false
-    }
-
-    @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
         // needed to differentiate OrgRoles
         if (sharedObject instanceof OrgRole) {
@@ -251,17 +241,14 @@ class License
     String getCalculatedType() {
         String result = TemplateSupport.CALCULATED_TYPE_UNKOWN
 
-        if (isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
-        }
-        else if(getLicensingConsortium() && ! getAllLicensee() && ! isTemplate()) {
+        if (getLicensingConsortium() && ! getAllLicensee()) {
             result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
         }
-        else if(getLicensingConsortium() /*&& getAllLicensee()*/ && instanceOf && ! hasTemplate()) {
+        else if (getLicensingConsortium() /*&& getAllLicensee()*/ && instanceOf) {
             // current and deleted member licenses
             result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
         }
-        else if(! getLicensingConsortium() && getAllLicensee() && ! isTemplate()) {
+        else if (! getLicensingConsortium() && getAllLicensee()) {
             result = TemplateSupport.CALCULATED_TYPE_LOCAL
         }
         result
@@ -500,7 +487,7 @@ class License
         groups.each{ it ->
 
             // cons_members
-            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
+            if (this.instanceOf) {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this.instanceOf)
 
                 // global groups

@@ -201,26 +201,9 @@ class CostItem
         super.beforeUpdate()
     }
 
-    @Deprecated
-    @Override
-    boolean isTemplate() {
-        false
-    }
-
-    @Deprecated
-    @Override
-    boolean hasTemplate() {
-        false
-    }
-
     @Override
     String getCalculatedType() {
-        String result = TemplateSupport.CALCULATED_TYPE_UNKOWN
-
-        if (isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
-        }
-        result
+        TemplateSupport.CALCULATED_TYPE_UNKOWN
     }
 
     List<BudgetCode> getBudgetcodes() {

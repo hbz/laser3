@@ -25,16 +25,14 @@
         </semui:controlButtons>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
             <semui:xEditable owner="${license}" field="reference" id="reference"/>
-            <%--<semui:auditButton auditable="[license, 'reference']" />--%>
         </h1>
 
         <g:render template="nav" />
 
         <semui:objectStatus object="${license}" status="${license.status}" />
 
-        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg?.id == license.getLicensingConsortium()?.id)}">
+        <g:if test="${license.instanceOf && (contextOrg?.id == license.getLicensingConsortium()?.id)}">
             <div class="ui negative message">
                 <div class="header"><g:message code="myinst.message.attention" /></div>
                 <p>

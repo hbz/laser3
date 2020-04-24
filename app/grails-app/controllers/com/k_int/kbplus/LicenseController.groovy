@@ -248,13 +248,13 @@ class LicenseController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        if (result.license?.instanceOf?.instanceOf?.isTemplate()) {
-            log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf LParent.instanceOf LTemplate')
-        }
-        else if (result.license?.instanceOf && ! result.license?.instanceOf.isTemplate()) {
-            log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
-        }
-        else {
+        //if (result.license?.instanceOf?.instanceOf?.isTemplate()) {
+        //    log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf LParent.instanceOf LTemplate')
+        //}
+        //else if (result.license?.instanceOf && ! result.license?.instanceOf.isTemplate()) {
+        //    log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
+        //}
+        //else {
             if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
                 RefdataValue comboType
                 Set<RefdataValue> memberOrgRoleTypes
@@ -302,7 +302,7 @@ class LicenseController extends AbstractDebugController {
                         }
                     }
                 }
-            }
+            //}
         }
         result
     }
@@ -852,24 +852,6 @@ from Subscription as s where
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def processNewTemplateLicense() {
-    if ( params.reference && ( ! params.reference.trim().equals('') ) ) {
-
-      def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
-      def license_status_current = RDStore.LICENSE_CURRENT
-      
-      def new_template_license = new License(reference:params.reference,
-                                             type:template_license_type,
-                                             status:license_status_current).save(flush:true);
-      redirect(action:'show', id:new_template_license.id);
-    }
-    else {
-      redirect(action:'create');
-    }
-  }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   def unlinkLicense() {
       log.debug("unlinkLicense :: ${params}")
       License license = License.get(params.license_id);
@@ -1108,13 +1090,12 @@ from Subscription as s where
         result
     }
 
-    def showConsortiaFunctions(def license) {
+    def showConsortiaFunctions(License license) {
 
-        def a = (license.getLicensingConsortium()?.id == contextService.getOrg().id && ! license.isTemplate())
-        def b = ! (license.instanceOf && ! license.hasTemplate())
+        //def a = (license.getLicensingConsortium()?.id == contextService.getOrg().id && ! license.isTemplate())
+        //def b = ! (license.instanceOf && ! license.hasTemplate())
 
-        return a && b
-
+        return (license.getLicensingConsortium()?.id == contextService.getOrg().id)
     }
 
 }

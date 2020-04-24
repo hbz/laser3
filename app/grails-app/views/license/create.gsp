@@ -13,6 +13,7 @@
 
         <p>${message(code:'license.create.note')}</p>
 
+    <%--
         <semui:simpleForm action="processNewTemplateLicense" method="get">
             <div class="field">
                 <label>${message(code:'license.create.ref')}</label>
@@ -22,6 +23,7 @@
                 <input class="ui button js-click-control" type="submit" value="${message(code:'default.button.create.label')}"/>
             </div>
         </semui:simpleForm>
+    --%>
 
   </body>
 </html>
