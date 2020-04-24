@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      24.04.2020  rc1.3       Andreas Bug         keine Anzeige von Kosten auf der Lizenzdetailseite bei abgelaufenen Lizenzen
+
 2403    22.04.2020  rc1.3       Moe     Bug         Umfrage kopieren
 
 2425    22.04.2020  rc1.3       Andreas Bug         Beschränkung auf lokale Lizenz aufgehoben
