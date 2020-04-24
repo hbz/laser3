@@ -22,6 +22,12 @@
         </g:if>
         <g:else>
 
+            <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL}">
+                <semui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
+                                           message="copySurvey.label"/>
+                <div class="ui divider"></div>
+            </g:if>
+
             <g:if test="${surveyInfo && surveyInfo.checkOpenSurvey() && (surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING.id)}">
                 <semui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
                                            message="openSurvey.button"
@@ -128,6 +134,7 @@
                 <semui:actionsDropdownItemDisabled message="survey.copyEmailaddresses.participants"
                                                    tooltip="${message(code: "survey.copyEmailaddresses.NoParticipants.info")}"/>
             </g:else>
+
 
             <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id] && editable}">
                 <div class="ui divider"></div>

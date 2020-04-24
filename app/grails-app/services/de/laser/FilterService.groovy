@@ -337,6 +337,7 @@ class FilterService {
             queryParams << [name:"${params.name}"]
             params.filterSet = true
         }
+
         if(params.status) {
             query << "surInfo.status = :status"
             queryParams << [status: RefdataValue.get(params.status)]
@@ -367,6 +368,12 @@ class FilterService {
                 query << "surInfo.isMandatory = :mandatory"
                 queryParams << [mandatory: false]
             }
+            params.filterSet = true
+        }
+
+        if(params.ids) {
+            query << "surInfo.id in (:ids)"
+            queryParams << [ids: params.list('ids').collect{Long.parseLong(it)}]
             params.filterSet = true
         }
 
