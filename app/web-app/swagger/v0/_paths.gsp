@@ -63,7 +63,7 @@
         403:
           $ref: "#/components/responses/forbidden"
         404:
-          description: Valid request, but owner not found
+          description: Valid request, but owner not found or result is empty
         406:
           $ref: "#/components/responses/notAcceptable"
 
@@ -165,7 +165,7 @@
         403:
           $ref: "#/components/responses/forbidden"
         404:
-          description: Valid request, but owner not found
+          description: Valid request, but owner not found or result is empty
         406:
           $ref: "#/components/responses/notAcceptable"
 
@@ -352,7 +352,7 @@
         403:
           $ref: "#/components/responses/forbidden"
         404:
-          description: Valid request, but owner not found
+          description: Valid request, but owner not found or result is empty
         406:
           $ref: "#/components/responses/notAcceptable"
 
