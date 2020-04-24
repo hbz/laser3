@@ -638,13 +638,13 @@ class SurveyController {
 
                 result.subscription =  result.surveyConfig?.subscription ?: null
 
-                //costs
-                if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL))
-                    params.view = "cons"
-                else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && result.subscription.getConsortia().equals(result.institution))
-                    params.view = "consAtSubscr"
-                else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
-                    params.view = "subscr"
+                //costs dataToDisplay
+               result.dataToDisplay = ['own','cons']
+               result.offsets = [consOffset:0,ownOffset:0]
+               result.sortConfig = [consSort:'sortname',consOrder:'asc',
+                                    ownSort:'ci.costTitle',ownOrder:'asc']
+
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
                 //cost items
                 //params.forExport = true
                 LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
@@ -654,9 +654,6 @@ class SurveyController {
                 }
                 if (costItems.cons) {
                     result.costItemSums.consCosts = costItems.cons.sums
-                }
-                if (costItems.subscr) {
-                    result.costItemSums.subscrCosts = costItems.subscr.sums
                 }
             }
 
@@ -1394,21 +1391,19 @@ class SurveyController {
         }
 
         result.participant = Org.get(params.participant)
-        result.institution = Org.get(params.participant)
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
+        result.subscription =  result.subscriptionInstance ?: null
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig)
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.ownerId = result.surveyResults[0]?.owner?.id
 
-        //result.navigation = surveyService.getParticipantConfigNavigation(result.institution, result.surveyInfo, result.surveyConfig)
-
-        if(result.surveyConfig?.type == 'Subscription') {
+        if(result.surveyConfig.type == 'Subscription') {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
@@ -1417,9 +1412,24 @@ class SurveyController {
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
+
+            //costs dataToDisplay
+            result.dataToDisplay = ['consAtSubscr']
+            result.offsets = [consOffset:0]
+            result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
+
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            //cost items
+            //params.forExport = true
+            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
+            result.costItemSums = [:]
+            if (costItems.cons) {
+                result.costItemSums.consCosts = costItems.cons.sums
+            }
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+        result.institution = result.participant
 
         result
 
