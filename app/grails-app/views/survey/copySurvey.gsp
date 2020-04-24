@@ -453,19 +453,19 @@
                                         <div class="la-flexbox">
                                             <i class="icon balance scale la-list-icon"></i>
                                             <g:link controller="license" action="show"
-                                                    id="${s.owner.id}">${s.owner?.reference ?: message(code: 'missingLicenseReference', default: '** No License Reference Set **')}</g:link>
+                                                    id="${s.owner.id}">${s.owner.reference ?: message(code: 'missingLicenseReference', default: '** No License Reference Set **')}</g:link>
                                         </div>
                                     </g:if>
                                 </td>
                                 <td>
                                 <!-- packages -->
-                                    <g:each in="${s.packages.sort { it?.pkg?.name }}" var="sp" status="ind">
+                                    <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                         <g:if test="${ind < 10}">
                                             <div class="la-flexbox">
                                                 <i class="icon gift la-list-icon"></i>
                                                 <g:link controller="subscription" action="index" id="${s.id}"
-                                                        params="[pkgfilter: sp.pkg?.id]"
-                                                        title="${sp.pkg?.contentProvider?.name}">
+                                                        params="[pkgfilter: sp.pkg.id]"
+                                                        title="${sp.pkg.contentProvider?.name}">
                                                     ${sp.pkg.name}
                                                 </g:link>
                                             </div>
