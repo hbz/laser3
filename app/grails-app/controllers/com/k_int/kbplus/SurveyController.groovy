@@ -1973,7 +1973,7 @@ class SurveyController {
                 CostItem.findAllBySurveyOrg(surveyOrg).each {
                     it.delete(flush: true)
                 }
-                
+
                 if (surveyOrg.delete(flush: true)) {
                     //flash.message = g.message(code: "surveyParticipants.delete.successfully")
                 }
@@ -2516,6 +2516,183 @@ class SurveyController {
         }
 
         result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def copySurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        if(result.surveyInfo.type.id == RDStore.SURVEY_TYPE_INTEREST.id){
+            result.workFlow = '2'
+        }else{
+            if(params.targetSubs){
+                result.workFlow = '2'
+            }else{
+                result.workFlow = '1'
+            }
+        }
+
+        if(result.workFlow == '1') {
+            def date_restriction = null;
+            def sdf = DateUtil.getSDF_NoTime()
+
+            if (params.validOn == null || params.validOn.trim() == '') {
+                result.validOn = ""
+            } else {
+                result.validOn = params.validOn
+                date_restriction = sdf.parse(params.validOn)
+            }
+
+            result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+
+            if (!result.editable) {
+                flash.error = g.message(code: "default.notAutorized.message")
+                redirect(url: request.getHeader('referer'))
+            }
+
+            if (!params.status) {
+                if (params.isSiteReloaded != "yes") {
+                    params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                    result.defaultSet = true
+                } else {
+                    params.status = 'FETCH_ALL'
+                }
+            }
+
+            List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.org)
+
+            result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
+
+            def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+            result.filterSet = tmpQ[2]
+            List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+            //,[max: result.max, offset: result.offset]
+
+            result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+
+            if (params.sort && params.sort.indexOf("§") >= 0) {
+                switch (params.sort) {
+                    case "orgRole§provider":
+                        subscriptions.sort { x, y ->
+                            String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
+                            String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
+                            a.compareToIgnoreCase b
+                        }
+                        if (params.order.equals("desc"))
+                            subscriptions.reverse(true)
+                        break
+                }
+            }
+            result.num_sub_rows = subscriptions.size()
+            result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        }
+        
+        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def addSubMembersToSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        addSubMembers(result.surveyConfig)
+
+        redirect(action: 'surveyParticipants', params: [id: result.surveyInfo.id, surveyConfigID: result.surveyConfig.id, tab: 'selectedSubParticipants'])
+
+    }
+    
+    
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processCopySurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        SurveyInfo baseSurveyInfo = result.surveyInfo
+        SurveyConfig baseSurveyConfig = result.surveyConfig
+
+        if (baseSurveyInfo && baseSurveyConfig) {
+
+            result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
+
+            List newSurveyIds = []
+
+            if(result.targetSubs){
+                result.targetSubs.each { sub ->
+                    SurveyInfo newSurveyInfo = new SurveyInfo(
+                            name: sub.name,
+                            status: RDStore.SURVEY_IN_PROCESSING,
+                            type: baseSurveyInfo.type,
+                            startDate: params.copySurvey.copyDates ? baseSurveyInfo.startDate : null,
+                            endDate: params.copySurvey.copyDates ? baseSurveyInfo.endDate : null,
+                            comment: params.copySurvey.copyComment ? baseSurveyInfo.comment : null,
+                            isMandatory: params.copySurvey.copyMandatory ? baseSurveyInfo.isMandatory : false,
+                            owner: contextService.getOrg()
+                    ).save()
+
+                    SurveyConfig newSurveyConfig = new SurveyConfig(
+                            type: baseSurveyConfig.type,
+                            subscription: sub,
+                            surveyInfo: newSurveyInfo,
+                            comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
+                            url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                            configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
+                    ).save()
+
+                    copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
+
+                    newSurveyIds << newSurveyInfo.id
+
+                }
+
+                redirect controller: 'survey', action: 'currentSurveysConsortia', params: [ids: newSurveyIds]
+            }else{
+                SurveyInfo newSurveyInfo = new SurveyInfo(
+                        name: params.name,
+                        status: RDStore.SURVEY_IN_PROCESSING,
+                        type: baseSurveyInfo.type,
+                        startDate: params.copySurvey.copyDates ? baseSurveyInfo.startDate : null,
+                        endDate: params.copySurvey.copyDates ? baseSurveyInfo.endDate : null,
+                        comment: params.copySurvey.copyComment ? baseSurveyInfo.comment : null,
+                        isMandatory: params.copySurvey.copyMandatory ? baseSurveyInfo.isMandatory : false,
+                        owner: contextService.getOrg()
+                ).save()
+
+                SurveyConfig newSurveyConfig = new SurveyConfig(
+                        type: baseSurveyConfig.type,
+                        surveyInfo: newSurveyInfo,
+                        comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
+                        url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                        configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
+                ).save()
+
+                copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
+
+                redirect controller: 'survey', action: 'show', params: [id: newSurveyInfo.id, surveyConfigID: newSurveyConfig.id]
+            }
+        }
 
     }
 
@@ -4255,6 +4432,8 @@ class SurveyController {
 
         def tmpQueryParams = queryParams
         tmpQueryParams.put("orgIDs", orgIDs)
+        println(tmpQueryParams)
+        println(tmpQuery)
 
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
@@ -4997,6 +5176,98 @@ class SurveyController {
             }
         }else {
             return false
+        }
+    }
+    
+    boolean copySurveyConfigCharacteristic(SurveyConfig oldSurveyConfig, SurveyConfig newSurveyConfig, params){
+
+        oldSurveyConfig.documents?.each { dctx ->
+                //Copy Docs
+                if (params.copySurvey.copyDocs) {
+                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                        Doc clonedContents = new Doc(
+                                blobContent: dctx.owner.blobContent,
+                                status: dctx.owner.status,
+                                type: dctx.owner.type,
+                                content: dctx.owner.content,
+                                uuid: dctx.owner.uuid,
+                                contentType: dctx.owner.contentType,
+                                title: dctx.owner.title,
+                                creator: dctx.owner.creator,
+                                filename: dctx.owner.filename,
+                                mimeType: dctx.owner.mimeType,
+                                user: dctx.owner.user,
+                                migrated: dctx.owner.migrated,
+                                owner: dctx.owner.owner
+                        ).save()
+
+                        DocContext ndc = new DocContext(
+                                owner: clonedContents,
+                                surveyConfig: newSurveyConfig,
+                                domain: dctx.domain,
+                                status: dctx.status,
+                                doctype: dctx.doctype
+                        ).save()
+                    }
+                }
+                //Copy Announcements
+                if (params.copySurvey.copyAnnouncements) {
+                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                        Doc clonedContents = new Doc(
+                                blobContent: dctx.owner.blobContent,
+                                status: dctx.owner.status,
+                                type: dctx.owner.type,
+                                content: dctx.owner.content,
+                                uuid: dctx.owner.uuid,
+                                contentType: dctx.owner.contentType,
+                                title: dctx.owner.title,
+                                creator: dctx.owner.creator,
+                                filename: dctx.owner.filename,
+                                mimeType: dctx.owner.mimeType,
+                                user: dctx.owner.user,
+                                migrated: dctx.owner.migrated
+                        ).save()
+
+                        DocContext ndc = new DocContext(
+                                owner: clonedContents,
+                                surveyConfig: newSurveyConfig,
+                                domain: dctx.domain,
+                                status: dctx.status,
+                                doctype: dctx.doctype
+                        ).save()
+                    }
+                }
+            }
+            //Copy Tasks
+            if (params.copySurvey.copyTasks) {
+
+                Task.findAllBySurveyConfig(oldSurveyConfig).each { task ->
+
+                    Task newTask = new Task()
+                    InvokerHelper.setProperties(newTask, task.properties)
+                    newTask.systemCreateDate = new Date()
+                    newTask.surveyConfig = newSurveyConfig
+                    newTask.save()
+                }
+
+            }
+
+        //Copy Participants
+        if (params.copySurvey.copyParticipants) {
+            oldSurveyConfig.orgs.each { surveyOrg ->
+
+                SurveyOrg newSurveyOrg = new SurveyOrg(surveyConfig: newSurveyConfig, org: surveyOrg.org).save()
+            }
+        }
+
+        //Copy Properties
+        if (params.copySurvey.copySurveyProperties) {
+            oldSurveyConfig.surveyProperties.each { surveyConfigProperty ->
+
+                SurveyConfigProperties configProperty = new SurveyConfigProperties(
+                        surveyProperty: surveyConfigProperty.surveyProperty,
+                        surveyConfig: newSurveyConfig).save()
+            }
         }
     }
 }

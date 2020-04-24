@@ -176,7 +176,7 @@
             </tr>
             </thead>
             <g:each in="${subscriptions}" var="s" status="i">
-                <g:if test="${true || !s.instanceOf}">
+                <g:if test="${!s.instanceOf}">
                     <tr>
                         <td class="center aligned">
                             ${(params.int('offset') ?: 0) + i + 1}
