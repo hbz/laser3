@@ -7,6 +7,9 @@ import javax.persistence.Transient
 class IdentifierNamespace extends AbstractI10nOverride {
 
     @Transient
+    def lastUpdatedService
+
+    @Transient
     public static final String UNKNOWN    = "Unknown"
 
     @Transient
@@ -142,6 +145,11 @@ class IdentifierNamespace extends AbstractI10nOverride {
         lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
     }
+
+    def afterUpdate() {
+        lastUpdatedService.cascadingUpdate(this)
+    }
+
     boolean isCoreOrgNamespace(){
         this.ns in CORE_ORG_NS
     }

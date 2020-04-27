@@ -8,6 +8,9 @@ import javax.persistence.Transient
 
 class Identifier {
 
+    @Transient
+    def lastUpdatedService
+
     static Log static_logger = LogFactory.getLog(Identifier)
 
     IdentifierNamespace ns
@@ -17,6 +20,8 @@ class Identifier {
 
     Date dateCreated
     Date lastUpdated
+
+    Date calculatedLastUpdated
 
     static belongsTo = [
             lic:    License,
@@ -50,6 +55,7 @@ class Identifier {
 		// Nullable is true, because values are already in the database
       	lastUpdated (nullable: true, blank: false)
       	dateCreated (nullable: true, blank: false)
+        calculatedLastUpdated (nullable: true, blank: false)
   	}
 
     static mapping = {
@@ -69,6 +75,7 @@ class Identifier {
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
+        calculatedLastUpdated column: 'id_calc_last_updated'
     }
 
     static Identifier construct(Map<String, Object> map) {
@@ -222,6 +229,9 @@ class Identifier {
           }
       }
   }
+    def afterUpdate() {
+        lastUpdatedService.cascadingUpdate(this)
+    }
 
     @Deprecated
   static Identifier lookupOrCreateCanonicalIdentifier(ns, value) {

@@ -47,6 +47,8 @@ class Subscription
     def propertyService
     @Transient
     def deletionService
+    @Transient
+    def lastUpdatedService
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -82,9 +84,11 @@ class Subscription
   // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
   boolean administrative = false
 
-  String noticePeriod
-  Date dateCreated
-  Date lastUpdated
+    String noticePeriod
+    Date dateCreated
+    Date lastUpdated
+
+    Date calculatedLastUpdated
 
   License owner
   SortedSet issueEntitlements
@@ -142,6 +146,8 @@ class Subscription
         isSlaved        column:'sub_is_slaved'
         hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
         isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
+        calculatedLastUpdated column: 'sub_calc_last_updated'
+
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
         pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
@@ -186,8 +192,13 @@ class Subscription
         isPublicForApi (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
+        calculatedLastUpdated (nullable: true, blank: false)
         isMultiYear(nullable: true, blank: false)
         hasPerpetualAccess(nullable: false, blank: false)
+    }
+
+    def afterUpdate() {
+        lastUpdatedService.cascadingUpdate(this)
     }
 
     def afterDelete() {
