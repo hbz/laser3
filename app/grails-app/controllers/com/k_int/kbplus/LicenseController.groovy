@@ -248,13 +248,6 @@ class LicenseController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        //if (result.license?.instanceOf?.instanceOf?.isTemplate()) {
-        //    log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf LParent.instanceOf LTemplate')
-        //}
-        //else if (result.license?.instanceOf && ! result.license?.instanceOf.isTemplate()) {
-        //    log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
-        //}
-        //else {
             if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
                 RefdataValue comboType
                 Set<RefdataValue> memberOrgRoleTypes
@@ -302,7 +295,6 @@ class LicenseController extends AbstractDebugController {
                         }
                     }
                 }
-            //}
         }
         result
     }
@@ -1091,9 +1083,6 @@ from Subscription as s where
     }
 
     def showConsortiaFunctions(License license) {
-
-        //def a = (license.getLicensingConsortium()?.id == contextService.getOrg().id && ! license.isTemplate())
-        //def b = ! (license.instanceOf && ! license.hasTemplate())
 
         return (license.getLicensingConsortium()?.id == contextService.getOrg().id)
     }

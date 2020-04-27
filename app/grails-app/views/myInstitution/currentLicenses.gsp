@@ -221,7 +221,7 @@
                             </span>
                             <%
                                 boolean isLicTenant = false
-                                if(l.getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL && l.getLicensingConsortium().id == institution.id) {
+                                if(l.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && l.getLicensingConsortium().id == institution.id) {
                                     isLicTenant = true
                                 }
                                 else if(l.getCalculatedType() == CalculatedType.TYPE_LOCAL && orgRoles.get(l) in [RDStore.OR_LICENSEE]) {

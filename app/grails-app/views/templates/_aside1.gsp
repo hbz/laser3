@@ -1,4 +1,4 @@
-<%@page import="de.laser.interfaces.CalculatedType; de.laser.interfaces.CalculatedType; com.k_int.kbplus.*" %>
+<%@page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.*" %>
 <%
     boolean parentAtChild = false
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.interfaces.CalculatedType;" %>
 <g:set var="checkCons" value="${contextOrg?.id == subscriptionInstance.getConsortia()?.id && subscriptionInstance.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]}" />
 <g:set var="checkColl" value="${contextOrg?.id == subscriptionInstance.getCollective()?.id && subscriptionInstance.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]}" />
 

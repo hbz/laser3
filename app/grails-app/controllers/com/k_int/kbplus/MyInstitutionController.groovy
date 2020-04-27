@@ -627,32 +627,7 @@ from License as l where (
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        /* ERMS-2431
-        def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
-        def qparams = [template_license_type]
-
-       // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
-        // (OS License specs)
-        // def qry = "from License as l where ( ( l.type = ? ) OR ( exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) ) OR ( l.isPublic=? ) ) AND l.status.value != 'Deleted'"
-
-        def query = "from License as l where l.type = ? "
-
-        if (params.filter) {
-            query += " and lower(l.reference) like ?"
-            qparams.add("%${params.filter.toLowerCase()}%")
-        }
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            query += " order by l.${params.sort} ${params.order}"
-        } else {
-            query += " order by sortableReference asc"
-        }
-
-        result.numLicenses = License.executeQuery("select l.id ${query}", qparams).size()
-        result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
-        */
-
-        result.licenses = []
+        result.licenses = [] // ERMS-2431
         result.numLicenses = 0
 
         if (params.sub) {
