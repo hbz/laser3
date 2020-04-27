@@ -320,7 +320,7 @@ class FinanceService {
             log.info(queryParams.filterSubStatus)
         }
         //!params.filterSubStatus is insufficient because it checks also the presence of a value - but the absence of a value is a valid setting (= all status except deleted; that is captured by the genericExcludes field)
-        else if(!params.subscription && !params.sub && !params.containsKey('filterSubStatus')) {
+        else if(!params.subscription && !params.sub && !params.id && !params.containsKey('filterSubStatus')) {
             subFilterQuery += " and sub.status = :filterSubStatus "
             queryParams.filterSubStatus = SUBSCRIPTION_CURRENT
             params.filterSubStatus = SUBSCRIPTION_CURRENT.id.toString()
