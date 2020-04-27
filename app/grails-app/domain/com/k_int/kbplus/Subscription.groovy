@@ -288,7 +288,7 @@ class Subscription
 
     @Override
     String getCalculatedType() {
-        def result = TYPE_UNKOWN
+        String result = TYPE_UNKOWN
 
         if (getCollective() && getConsortia() && instanceOf) {
             result = TYPE_PARTICIPATION_AS_COLLECTIVE

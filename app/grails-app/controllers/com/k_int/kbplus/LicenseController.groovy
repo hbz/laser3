@@ -1082,7 +1082,7 @@ from Subscription as s where
         result
     }
 
-    def showConsortiaFunctions(License license) {
+    boolean showConsortiaFunctions(License license) {
 
         return (license.getLicensingConsortium()?.id == contextService.getOrg().id)
     }

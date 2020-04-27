@@ -337,11 +337,11 @@ class MyInstitutionController extends AbstractDebugController {
         RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
         RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
 
-        def base_qry
-        def qry_params
+        String base_qry
+        Map qry_params
 
         @Deprecated
-        def qry = INSTITUTIONAL_LICENSES_QUERY
+        String qry = INSTITUTIONAL_LICENSES_QUERY
 
         result.filterSet = params.filterSet ? true : false
 
