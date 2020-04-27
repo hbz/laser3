@@ -22,6 +22,10 @@
             <g:link class="item" controller="myInstitution" action="currentSurveys"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
         </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="myInstitution" action="currentSurveys"
+                    params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
+        </semui:exportDropdownItem>
     </semui:exportDropdown>
 </semui:controlButtons>
 

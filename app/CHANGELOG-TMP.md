@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2434    27.04.2020  rc1.3       Moe     Feature     Umfrage-Kosten Export in Excel (Teilnehmersicht)
+
 --      24.04.2020  rc1.3       Andreas Bug         keine Anzeige von Kosten auf der Lizenzdetailseite bei abgelaufenen Lizenzen
 
 2438    24.04.2020  rc1.3       Moe     Feature     Umfrage Kosten Anzeigen überarbeiten in Teilnehmersicht
