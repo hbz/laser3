@@ -2505,6 +2505,7 @@ AND EXISTS (
 
         if(result.surveyConfig?.type == 'Subscription') {
             result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+            result.subscription = result.subscriptionInstance
             result.authorizedOrgs = result.user?.authorizedOrgs
             result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
@@ -2515,6 +2516,20 @@ AND EXISTS (
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
+
+            //costs dataToDisplay
+            result.dataToDisplay = ['subscr']
+            result.offsets = [subscrOffset:0]
+            result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
+
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            //cost items
+            //params.forExport = true
+            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
+            result.costItemSums = [:]
+            if (costItems.subscr) {
+                result.costItemSums.subscrCosts = costItems.subscr.costItems
+            }
         }
 
         if ( params.exportXLSX ) {
