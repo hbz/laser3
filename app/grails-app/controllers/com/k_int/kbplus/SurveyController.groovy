@@ -6,8 +6,6 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.PropertyService
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PendingChangeConfiguration
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -27,8 +25,6 @@ import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-
-import static de.laser.helper.RDStore.getTIPP_STATUS_DELETED
 
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -101,17 +97,25 @@ class SurveyController {
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.plural")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
+
+            SXSSFWorkbook wb
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(result.surveys.collect {it[1]}, result.institution)
+            }else{
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.plural")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
+            }
 
             return
         }else {
@@ -642,13 +646,13 @@ class SurveyController {
 
                 result.subscription =  result.surveyConfig?.subscription ?: null
 
-                //costs
-                if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL))
-                    params.view = "cons"
-                else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && result.subscription.getConsortia().equals(result.institution))
-                    params.view = "consAtSubscr"
-                else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
-                    params.view = "subscr"
+                //costs dataToDisplay
+               result.dataToDisplay = ['own','cons']
+               result.offsets = [consOffset:0,ownOffset:0]
+               result.sortConfig = [consSort:'sortname',consOrder:'asc',
+                                    ownSort:'ci.costTitle',ownOrder:'asc']
+
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
                 //cost items
                 //params.forExport = true
                 LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
@@ -658,9 +662,6 @@ class SurveyController {
                 }
                 if (costItems.cons) {
                     result.costItemSums.consCosts = costItems.cons.sums
-                }
-                if (costItems.subscr) {
-                    result.costItemSums.subscrCosts = costItems.subscr.sums
                 }
             }
 
@@ -681,13 +682,25 @@ class SurveyController {
         }
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+
+            SXSSFWorkbook wb
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
+            }else{
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            }
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -1067,13 +1080,24 @@ class SurveyController {
         }
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            SXSSFWorkbook wb
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
+            }else {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            }
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -1398,21 +1422,19 @@ class SurveyController {
         }
 
         result.participant = Org.get(params.participant)
-        result.institution = Org.get(params.participant)
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
+        result.subscription =  result.subscriptionInstance ?: null
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig)
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.ownerId = result.surveyResults[0]?.owner?.id
 
-        //result.navigation = surveyService.getParticipantConfigNavigation(result.institution, result.surveyInfo, result.surveyConfig)
-
-        if(result.surveyConfig?.type == 'Subscription') {
+        if(result.surveyConfig.type == 'Subscription') {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
@@ -1421,9 +1443,24 @@ class SurveyController {
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
+
+            //costs dataToDisplay
+            result.dataToDisplay = ['consAtSubscr']
+            result.offsets = [consOffset:0]
+            result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
+
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            //cost items
+            //params.forExport = true
+            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
+            result.costItemSums = [:]
+            if (costItems.cons) {
+                result.costItemSums.consCosts = costItems.cons.sums
+            }
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+        result.institution = result.participant
 
         result
 
@@ -5117,7 +5154,7 @@ class SurveyController {
         oldSurveyConfig.documents?.each { dctx ->
                 //Copy Docs
                 if (params.copySurvey.copyDocs) {
-                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                         Doc clonedContents = new Doc(
                                 blobContent: dctx.owner.blobContent,
                                 status: dctx.owner.status,
@@ -5145,7 +5182,7 @@ class SurveyController {
                 }
                 //Copy Announcements
                 if (params.copySurvey.copyAnnouncements) {
-                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                         Doc clonedContents = new Doc(
                                 blobContent: dctx.owner.blobContent,
                                 status: dctx.owner.status,

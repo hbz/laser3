@@ -207,7 +207,7 @@ class SurveyService {
             if (exportForSurveyOwner) {
                 titles.addAll([messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
                                 messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale())])
-                if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
+                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
                     titles.push(messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()))
                 }
                 if (surveyConfig.type == 'GeneralSurvey') {
@@ -217,7 +217,7 @@ class SurveyService {
 
                 titles.add(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
 
-                if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
+                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
                     titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()),
@@ -248,7 +248,7 @@ class SurveyService {
             } else {
                 titles.push(messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()))
                 titles.push(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
-                if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
+                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
                     titles.addAll([messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
@@ -282,7 +282,7 @@ class SurveyService {
                     row.add([field: surveyOrg.org.sortname ?: '', style: null])
                     row.add([field: surveyOrg.org.name ?: '', style: null])
 
-                    if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
+                    if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
 
                         subscription = OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription))?.sub ?: null
                         row.add([field: subscription?.name ?: surveyName ?: '', style: null])
@@ -293,7 +293,7 @@ class SurveyService {
                     }
                     row.add([field: surveyConfig.comment ?: '', style: null])
 
-                    if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
+                    if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
                         //Performance lastig providers und agencies
                         row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                         row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
@@ -356,7 +356,7 @@ class SurveyService {
                 row.add([field: surveyConfig.surveyInfo.owner.name ?: '', style: null])
                 row.add([field: surveyConfig.comment ?: '', style: null])
 
-                if (surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose) {
+                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
                     subscription = surveyConfig.subscription.getDerivedSubscriptionBySubscribers(contextOrg) ?: null
                     row.add([field: subscription?.name ?: surveyConfig.getConfigNameShort() ?: "", style: null])
                     row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
@@ -431,6 +431,148 @@ class SurveyService {
                 }
             }
             sheetData.put(escapeService.escapeString(surveyConfig.getConfigNameShort()), [titleRow: titles, columnData: surveyData])
+        }
+
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    def exportSurveyCostItems(List<SurveyConfig> surveyConfigs, Org contextOrg) {
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+
+        Map sheetData = [:]
+
+        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']) {
+            surveyConfigs.each { surveyConfig ->
+                List titles = []
+                List surveyData = []
+
+                titles.addAll([messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale())])
+                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey' ) {
+                    titles.push(messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()))
+                }
+                if (surveyConfig.type == 'GeneralSurvey') {
+                    titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale())])
+                }
+
+                titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale())])
+
+                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey' ) {
+                    titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('financials.costItemElement', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('financials.costInBillingCurrency', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('default.startDate.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('default.endDate.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale())])
+                }
+
+                Subscription subscription
+
+                String surveyName = surveyConfig.getConfigNameShort()
+                surveyConfig.orgs.sort { it.org.sortname }.each { surveyOrg ->
+                    List row = []
+
+                    row.add([field: surveyOrg.org.sortname ?: '', style: null])
+                    row.add([field: surveyOrg.org.name ?: '', style: null])
+
+                    if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+
+                        subscription = OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription))?.sub ?: null
+                        row.add([field: subscription?.name ?: surveyName ?: '', style: null])
+                    }
+                    if (surveyConfig.type == 'GeneralSurvey') {
+                        row.add([field: surveyName ?: '', style: null])
+                    }
+
+                    row.add([field: surveyConfig.url ?: '', style: null])
+
+                    if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+                        row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
+                        row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
+
+                        row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
+
+                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
+
+                        if (surveyCostItem) {
+                            row.add([field: surveyCostItem?.costItemElement?.getI10n('value') ?: '', style: null])
+                            row.add([field: surveyCostItem?.costInBillingCurrency ?: '', style: null])
+                            row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
+                            row.add([field: surveyCostItem?.taxKey ? surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)" : '', style: null])
+                            row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
+                            row.add([field: surveyCostItem?.startDate ?: '', style: null])
+                            row.add([field: surveyCostItem?.endDate ?: '', style: null])
+                            row.add([field: surveyCostItem?.costDescription ?: '', style: null])
+                        }
+                    }
+
+                    surveyData.add(row)
+                    sheetData.put(escapeService.escapeString(surveyConfig.getConfigNameShort()), [titleRow: titles, columnData: surveyData])
+                }
+            }
+        } else {
+            List titles = []
+            List surveyData = []
+
+            titles.addAll([messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyInfo.type.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('financials.costItemElement', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('financials.costInBillingCurrency', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('default.startDate.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('default.endDate.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale())])
+
+
+            surveyConfigs.each { surveyConfig ->
+
+                List row = []
+                Subscription subscription
+
+                String surveyName = surveyConfig.getConfigNameShort()
+
+                row.add([field: surveyConfig.surveyInfo.owner.name ?: '', style: null])
+                row.add([field: surveyConfig.url ?: '', style: null])
+                row.add([field: surveyName ?: '', style: null])
+                row.add([field: surveyConfig.surveyInfo.type?.getI10n('value') ?: '', style: null])
+
+                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+                    subscription = surveyConfig.subscription.getDerivedSubscriptionBySubscribers(contextOrg) ?: null
+                    row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
+                    row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
+
+                    row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
+
+                    CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
+
+                    if (surveyCostItem) {
+                        row.add([field: surveyCostItem?.costItemElement?.getI10n('value') ?: '', style: null])
+                        row.add([field: surveyCostItem?.costInBillingCurrency ?: '', style: null])
+                        row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
+                        row.add([field: surveyCostItem?.taxKey ? surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)" : '', style: null])
+                        row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
+                        row.add([field: surveyCostItem?.startDate ?: '', style: null])
+                        row.add([field: surveyCostItem?.endDate ?: '', style: null])
+                        row.add([field: surveyCostItem?.costDescription ?: '', style: null])
+                    }
+                }
+                surveyData.add(row)
+            }
+
+            sheetData.put(escapeService.escapeString(messageSource.getMessage('survey.exportSurveyCostItems', null, LocaleContextHolder.getLocale())), [titleRow: titles, columnData: surveyData])
+
         }
 
         return exportService.generateXLSXWorkbook(sheetData)

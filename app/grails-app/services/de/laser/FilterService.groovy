@@ -372,7 +372,7 @@ class FilterService {
         }
 
         if(params.ids) {
-            query << "surInfo.id in :ids"
+            query << "surInfo.id in (:ids)"
             queryParams << [ids: params.list('ids').collect{Long.parseLong(it)}]
             params.filterSet = true
         }
