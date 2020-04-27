@@ -935,7 +935,7 @@ class FinanceController extends AbstractDebugController {
                   newCostItem.invoice = invoice
                   //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
                   if(sub)
-                      newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == CalculatedType.CALCULATED_TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
+                      newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
                   else newCostItem.isVisibleForSubscriber = false
                   newCostItem.costItemCategory = cost_item_category
                   newCostItem.costItemElement = cost_item_element

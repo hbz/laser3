@@ -639,11 +639,11 @@ class SurveyController {
                 result.subscription =  result.surveyConfig?.subscription ?: null
 
                 //costs
-                if (result.subscription.getCalculatedType().equals(CalculatedType.CALCULATED_TYPE_CONSORTIAL))
+                if (result.subscription.getCalculatedType().equals(CalculatedType.TYPE_CONSORTIAL))
                     params.view = "cons"
-                else if (result.subscription.getCalculatedType().equals(CalculatedType.CALCULATED_TYPE_PARTICIPATION) && result.subscription.getConsortia().equals(result.institution))
+                else if (result.subscription.getCalculatedType().equals(CalculatedType.TYPE_PARTICIPATION) && result.subscription.getConsortia().equals(result.institution))
                     params.view = "consAtSubscr"
-                else if (result.subscription.getCalculatedType().equals(CalculatedType.CALCULATED_TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
+                else if (result.subscription.getCalculatedType().equals(CalculatedType.TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
                     params.view = "subscr"
                 //cost items
                 //params.forExport = true
@@ -2681,7 +2681,7 @@ class SurveyController {
             result.isRenewSub = params?.isRenewSub
         }
 
-        result.isConsortialSubs = (result.sourceSubscription?.getCalculatedType() == CalculatedType.CALCULATED_TYPE_CONSORTIAL && result.targetSubscription?.getCalculatedType() == CalculatedType.CALCULATED_TYPE_CONSORTIAL) ?: false
+        result.isConsortialSubs = (result.sourceSubscription?.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription?.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
@@ -4023,7 +4023,7 @@ class SurveyController {
                             name: newParentSub.name,
                             startDate: startDate,
                             endDate: endDate,
-                            administrative: newParentSub.getCalculatedType() == CalculatedType.CALCULATED_TYPE_ADMINISTRATIVE,
+                            administrative: newParentSub.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                             manualRenewalDate: newParentSub.manualRenewalDate,
                             identifier: UUID.randomUUID().toString(),
                             instanceOf: newParentSub,

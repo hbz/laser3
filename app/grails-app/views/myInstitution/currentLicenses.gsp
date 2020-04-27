@@ -221,10 +221,10 @@
                             </span>
                             <%
                                 boolean isLicTenant = false
-                                if(l.getCalculatedType() == de.laser.interfaces.CalculatedType.CALCULATED_TYPE_CONSORTIAL && l.getLicensingConsortium().id == institution.id) {
+                                if(l.getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL && l.getLicensingConsortium().id == institution.id) {
                                     isLicTenant = true
                                 }
-                                else if(l.getCalculatedType() == CalculatedType.CALCULATED_TYPE_LOCAL && orgRoles.get(l) in [RDStore.OR_LICENSEE]) {
+                                else if(l.getCalculatedType() == CalculatedType.TYPE_LOCAL && orgRoles.get(l) in [RDStore.OR_LICENSEE]) {
                                     isLicTenant = true
                                 }
                             %>

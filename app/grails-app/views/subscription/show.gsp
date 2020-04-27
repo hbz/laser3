@@ -89,9 +89,9 @@
                             </dl>
 
                             <g:if test="${(subscriptionInstance.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                                    subscriptionInstance.getCalculatedType() == CalculatedType.CALCULATED_TYPE_PARTICIPATION) ||
+                                    subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
                                     (subscriptionInstance.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
-                                    subscriptionInstance.getCalculatedType() == CalculatedType.CALCULATED_TYPE_LOCAL)}">
+                                    subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
                                     <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>

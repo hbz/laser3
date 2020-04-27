@@ -5,9 +5,9 @@
 
     if(instance instanceof Subscription) {
         if(contextService.org.id in [instance.getConsortia()?.id,instance.getCollective()?.id] && instance.instanceOf) {
-            if(contextService.org.id == instance.getConsortia()?.id && instance.getCalculatedType() == CalculatedType.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+            if(contextService.org.id == instance.getConsortia()?.id && instance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
                 parentAtChild = true
-            else if(instance.getCalculatedType() == CalculatedType.CALCULATED_TYPE_PARTICIPATION)
+            else if(instance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }
     }

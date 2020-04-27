@@ -135,21 +135,21 @@
             <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
             %{--<sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">--}%
                 %{--<div class="divider">OLD:</div>--}%
-                %{--<g:if test="${subscriptionInstance.getCalculatedType() == CalculatedType.CALCULATED_TYPE_LOCAL && !previousSubscriptions}">--}%
+                %{--<g:if test="${subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_LOCAL && !previousSubscriptions}">--}%
                     %{--<semui:actionsDropdownItem controller="subscription" action="launchRenewalsProcess"--}%
                                            %{--params="${[id: params.id]}" message="subscription.details.renewals.label"/>--}%
                     %{--<semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"--}%
                                            %{--message="menu.institutions.imp_renew"/>--}%
                 %{--</g:if>--}%
 
-                %{--<g:if test="${subscriptionInstance.getCalculatedType() in [CalculatedType.CALCULATED_TYPE_CONSORTIAL,CalculatedType.CALCULATED_TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && !previousSubscriptions}">--}%
+                %{--<g:if test="${subscriptionInstance.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && !previousSubscriptions}">--}%
                     %{--<semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"--}%
                                                %{--params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>--}%
                 %{--</g:if>--}%
                 %{--<div class="divider"></div>--}%
             %{--</sec:ifAnyGranted>--}%
 
-            <g:if test="${subscriptionInstance.getCalculatedType() in [CalculatedType.CALCULATED_TYPE_CONSORTIAL, CalculatedType.CALCULATED_TYPE_COLLECTIVE, CalculatedType.CALCULATED_TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+            <g:if test="${subscriptionInstance.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
                 <div class="divider"></div>
                 <g:if test="${previousSubscriptions}">
                     <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Consortia"
@@ -160,7 +160,7 @@
                                            params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
                 </g:else>
             </g:if>
-            <g:if test ="${subscriptionInstance.getCalculatedType() == CalculatedType.CALCULATED_TYPE_LOCAL}">
+            <g:if test ="${subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_LOCAL}">
                 <g:if test ="${previousSubscriptions}">
                     <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Local"
                                                        params="${[id: params.id]}" message="subscription.details.renewals.label"/>
@@ -184,7 +184,7 @@
                 <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />
             </g:if>
 
-            <g:if test="${subscriptionInstance.getCalculatedType() in [CalculatedType.CALCULATED_TYPE_CONSORTIAL, CalculatedType.CALCULATED_TYPE_COLLECTIVE, CalculatedType.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+            <g:if test="${subscriptionInstance.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
 
                   <semui:actionsDropdownItem controller="subscription" action="linkLicenseMembers"
                                              params="${[id: params.id]}"

@@ -186,7 +186,7 @@ class License
     }
 
     boolean showUIShareButton() {
-        getCalculatedType() == CalculatedType.CALCULATED_TYPE_CONSORTIAL
+        getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 
     void updateShare(ShareableTrait sharedObject) {
@@ -239,17 +239,17 @@ class License
 
     @Override
     String getCalculatedType() {
-        String result = CalculatedType.CALCULATED_TYPE_UNKOWN
+        String result = CalculatedType.TYPE_UNKOWN
 
         if (getLicensingConsortium() && ! getAllLicensee()) {
-            result = CalculatedType.CALCULATED_TYPE_CONSORTIAL
+            result = CalculatedType.TYPE_CONSORTIAL
         }
         else if (getLicensingConsortium() /*&& getAllLicensee()*/ && instanceOf) {
             // current and deleted member licenses
-            result = CalculatedType.CALCULATED_TYPE_PARTICIPATION
+            result = CalculatedType.TYPE_PARTICIPATION
         }
         else if (! getLicensingConsortium() && getAllLicensee()) {
-            result = CalculatedType.CALCULATED_TYPE_LOCAL
+            result = CalculatedType.TYPE_LOCAL
         }
         result
     }
@@ -802,7 +802,7 @@ AND lower(l.reference) LIKE (:ref)
 
         String result = ''
         result += reference + " - " + statusString + " " + period
-        if (CalculatedType.CALCULATED_TYPE_PARTICIPATION == getCalculatedType()) {
+        if (CalculatedType.TYPE_PARTICIPATION == getCalculatedType()) {
             result += " - " + messageSource.getMessage('license.member', null, LocaleContextHolder.getLocale())
         }
 

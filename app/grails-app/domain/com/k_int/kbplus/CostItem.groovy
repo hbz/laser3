@@ -203,7 +203,7 @@ class CostItem
 
     @Override
     String getCalculatedType() {
-        CalculatedType.CALCULATED_TYPE_UNKOWN
+        CalculatedType.TYPE_UNKOWN
     }
 
     List<BudgetCode> getBudgetcodes() {

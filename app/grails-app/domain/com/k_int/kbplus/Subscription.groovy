@@ -207,7 +207,7 @@ class Subscription
 
     @Override
     boolean showUIShareButton() {
-        getCalculatedType() in [CalculatedType.CALCULATED_TYPE_CONSORTIAL, CalculatedType.CALCULATED_TYPE_COLLECTIVE]
+        getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
     }
 
     @Override
@@ -288,27 +288,27 @@ class Subscription
 
     @Override
     String getCalculatedType() {
-        def result = CALCULATED_TYPE_UNKOWN
+        def result = TYPE_UNKOWN
 
         if (getCollective() && getConsortia() && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE
+            result = TYPE_PARTICIPATION_AS_COLLECTIVE
         }
         else if(getCollective() && !getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_COLLECTIVE
+            result = TYPE_COLLECTIVE
         }
         else if(getConsortia() && !getAllSubscribers() && !instanceOf) {
             if(administrative) {
                 log.debug(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
+                result = TYPE_ADMINISTRATIVE
             }
-            else result = CALCULATED_TYPE_CONSORTIAL
+            else result = TYPE_CONSORTIAL
         }
         else if((getCollective() || getConsortia()) && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION
+            result = TYPE_PARTICIPATION
         }
         // TODO remove type_local
         else if(getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_LOCAL
+            result = TYPE_LOCAL
         }
         result
     }
@@ -316,31 +316,31 @@ class Subscription
     /*
     @Override
     String getCalculatedType() {
-        def result = CALCULATED_TYPE_UNKOWN
+        def result = TYPE_UNKOWN
 
         if (isTemplate()) {
             result = CALCULATED_TYPE_TEMPLATE
         }
         else if(getCollective() && ! getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_COLLECTIVE
+            result = TYPE_COLLECTIVE
         }
         else if(getCollective() && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION
+            result = TYPE_PARTICIPATION
         }
         else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
             if(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
+                result = TYPE_ADMINISTRATIVE
             else
-                result = CALCULATED_TYPE_CONSORTIAL
+                result = TYPE_CONSORTIAL
         }
         else if(getConsortia() && instanceOf) {
             if(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
+                result = TYPE_ADMINISTRATIVE
             else
-                result = CALCULATED_TYPE_PARTICIPATION
+                result = TYPE_PARTICIPATION
         }
         else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
-            result = CALCULATED_TYPE_LOCAL
+            result = TYPE_LOCAL
         }
         result
     }

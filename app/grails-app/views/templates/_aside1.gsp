@@ -5,9 +5,9 @@
     if(ownobj instanceof Subscription) {
         //array is created and should be extended to collective view; not yet done because collective view is not merged yet
         if(contextService.org.id in [ownobj.getConsortia()?.id,ownobj.getCollective()?.id] && ownobj.instanceOf) {
-            if(contextService.org.id == ownobj.getConsortia()?.id && ownobj.getCalculatedType() == CalculatedType.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+            if(contextService.org.id == ownobj.getConsortia()?.id && ownobj.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
                 parentAtChild = true
-            else if(ownobj.getCalculatedType() == CalculatedType.CALCULATED_TYPE_PARTICIPATION)
+            else if(ownobj.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }
     }
