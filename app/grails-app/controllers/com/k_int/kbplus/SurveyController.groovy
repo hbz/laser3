@@ -97,17 +97,25 @@ class SurveyController {
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.plural")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
+
+            SXSSFWorkbook wb
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(result.surveys.collect {it[1]}, result.institution)
+            }else{
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.plural")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
+            }
 
             return
         }else {
@@ -674,13 +682,25 @@ class SurveyController {
         }
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+
+            SXSSFWorkbook wb
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
+            }else{
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            }
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -1060,13 +1080,24 @@ class SurveyController {
         }
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            SXSSFWorkbook wb
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
+            }else {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            }
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()

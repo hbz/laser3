@@ -2450,14 +2450,26 @@ AND EXISTS (
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
         if ( params.exportXLSX ) {
+
+            SXSSFWorkbook wb
             List surveyConfigsforExport = result.surveyResults.collect {it[1]}
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.plural")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(surveyConfigsforExport, result.institution)
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(surveyConfigsforExport, result.institution)
+            }else {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.plural")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys(surveyConfigsforExport, result.institution)
+            }
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
