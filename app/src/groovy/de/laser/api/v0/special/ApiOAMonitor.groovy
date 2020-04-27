@@ -84,7 +84,8 @@ class ApiOAMonitor {
             result << ApiUnsecuredMapReader.getOrganisationStubMap(o)
         }
 
-        return new JSON(result)
+        return result ? new JSON(result) : null
+        //return new JSON(result)
     }
 
     /**

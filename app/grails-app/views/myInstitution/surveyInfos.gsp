@@ -145,6 +145,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
             <g:if test="${surveyInfo && surveyConfig.type == "Subscription"}">
 
                 <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                                                                                  costItemSums        : costItemSums,
                                                                                   subscriptionInstance: subscriptionInstance,
                                                                                   visibleOrgRelations : visibleOrgRelations,
                                                                                   surveyResults       : surveyResults]"/>

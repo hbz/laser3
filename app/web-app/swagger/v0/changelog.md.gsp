@@ -2,6 +2,11 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.94
+
+- changed HTTP status code for __/oaMonitorList__  to `404` if result is empty
+- changed HTTP status code for __/statisticList__ to `404` if result is empty
+
 #### 0.93
 
 - added new attribute: `Package.contentType`

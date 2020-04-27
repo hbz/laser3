@@ -25,6 +25,10 @@
                 <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
             </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id, exportXLSX: true, surveyCostItems: true]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
+            </semui:exportDropdownItem>
         </semui:exportDropdown>
     </g:if>
 
