@@ -1,4 +1,4 @@
-<%@page import="de.laser.interfaces.TemplateSupport" %>
+<%@page import="de.laser.interfaces.CalculatedType" %>
 <g:if test="${data.billingSums}">
     <table class="ui la-table-small la-table-inCard table">
         <thead>
@@ -6,7 +6,7 @@
             <th>${message(code:'financials.sum.billing')}</th>
             <th>${message(code:'financials.billingCurrency')}</th>
             <th>${message(code:'financials.sum.local')}</th>
-            <g:if test="${subscriptionInstance.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL)}">
+            <g:if test="${subscriptionInstance.getCalculatedType().equals(CalculatedType.TYPE_CONSORTIAL)}">
                 <th>${message(code:'financials.sum.billingAfterTax')}</th>
                 <th>${message(code:'financials.billingCurrency')}</th>
                 <th>${message(code:'financials.sum.localAfterTax')}</th>
@@ -18,7 +18,7 @@
         <g:each in="${sums}" var="entry">
             <g:set var="currency" value="${entry.currency}" />
             <tr>
-                <g:if test="${subscriptionInstance.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL)}">
+                <g:if test="${subscriptionInstance.getCalculatedType().equals(CalculatedType.TYPE_CONSORTIAL)}">
                     <td><g:formatNumber number="${entry.billingSum}" type="currency" currencySymbol=""/></td>
                     <td>${entry.currency}</td>
                     <td><g:formatNumber number="${data.localSums.localSum}" type="currency" currencySymbol=""/></td>

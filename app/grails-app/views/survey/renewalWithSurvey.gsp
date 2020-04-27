@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.TemplateSupport; de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue; com.k_int.kbplus.Org; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.Subscription; com.k_int.kbplus.SurveyConfig" %>
+<%@ page import="de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.Org; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.Subscription; com.k_int.kbplus.SurveyConfig" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -1104,7 +1104,7 @@ ${surveyInfo.name}
                 <div class="field">
                     <label><g:message code="myinst.copyLicense"/></label>
                     <g:if test="${parentSuccessorSubscription.owner}">
-                        <g:if test="${parentSuccessorSubscription.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE && institution.id == parentSuccessorSubscription.getCollective().id}">
+                        <g:if test="${parentSuccessorSubscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE && institution.id == parentSuccessorSubscription.getCollective().id}">
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" name="attachToParticipationLic" value="true">
                                 <label><g:message code="myinst.attachToParticipationLic"/></label>

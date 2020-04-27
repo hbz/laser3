@@ -5,7 +5,7 @@ import de.laser.SystemEvent
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 
@@ -311,9 +311,9 @@ class SubscriptionUpdateService extends AbstractLockableService {
             Org documentOwner
             if(dc.subscription) {
                 if(dc.isShared) {
-                    if(dc.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL)
+                    if(dc.subscription.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
                         documentOwner = dc.subscription.getConsortia()
-                    else if(dc.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+                    else if(dc.subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
                         documentOwner = dc.subscription.getCollective()
                 }
                 else
