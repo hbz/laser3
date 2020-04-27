@@ -319,7 +319,7 @@ class Subscription
         def result = TYPE_UNKOWN
 
         if (isTemplate()) {
-            result = CALCULATED_TYPE_TEMPLATE
+            result = TYPE_TEMPLATE
         }
         else if(getCollective() && ! getAllSubscribers() && !instanceOf) {
             result = TYPE_COLLECTIVE
