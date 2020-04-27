@@ -455,18 +455,12 @@ class SurveyService {
                     titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale())])
                 }
 
-                titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
-                               messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale())])
+                titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale())])
 
                 if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey' ) {
                     titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('subscription.packages.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('subscription.kind.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('subscription.form.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('subscription.resource.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.costItemElement', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.costInBillingCurrency', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
@@ -496,22 +490,12 @@ class SurveyService {
                     }
 
                     row.add([field: surveyConfig.url ?: '', style: null])
-                    row.add([field: surveyConfig.comment ?: '', style: null])
 
                     if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
                         row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                         row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
-                        row.add([field: subscription?.owner?.reference ?: '', style: null])
-                        List packageNames = subscription?.packages?.collect {
-                            it.pkg.name
-                        }
-                        row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
-
                         row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
-                        row.add([field: subscription?.kind?.getI10n("value") ?: '', style: null])
-                        row.add([field: subscription?.form?.getI10n("value") ?: '', style: null])
-                        row.add([field: subscription?.resource?.getI10n("value") ?: '', style: null])
 
                         CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
 
@@ -536,18 +520,12 @@ class SurveyService {
             List surveyData = []
 
             titles.addAll([messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.type.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('subscription.packages.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('subscription.kind.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('subscription.form.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('subscription.resource.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('financials.costItemElement', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('financials.costInBillingCurrency', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
@@ -566,7 +544,6 @@ class SurveyService {
                 String surveyName = surveyConfig.getConfigNameShort()
 
                 row.add([field: surveyConfig.surveyInfo.owner.name ?: '', style: null])
-                row.add([field: surveyConfig.comment ?: '', style: null])
                 row.add([field: surveyConfig.url ?: '', style: null])
                 row.add([field: surveyName ?: '', style: null])
                 row.add([field: surveyConfig.surveyInfo.type?.getI10n('value') ?: '', style: null])
@@ -576,15 +553,7 @@ class SurveyService {
                     row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
-                    row.add([field: subscription?.owner?.reference ?: '', style: null])
-                    List packageNames = subscription?.packages?.collect {
-                        it.pkg.name
-                    }
-                    row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
                     row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
-                    row.add([field: subscription?.kind?.getI10n("value") ?: '', style: null])
-                    row.add([field: subscription?.form?.getI10n("value") ?: '', style: null])
-                    row.add([field: subscription?.resource?.getI10n("value") ?: '', style: null])
 
                     CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
 
