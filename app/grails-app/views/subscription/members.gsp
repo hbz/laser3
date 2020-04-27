@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.interfaces.TemplateSupport; com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.kbplus.Subscription" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -220,7 +220,7 @@
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         <g:if test="${sub.isEditableBy(contextService.getUser())}"> <%-- needs to be checked for child subscription because of collective subscriptions! --%>
-                            <g:if test="${sub.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE}">
+                            <g:if test="${sub.getCalculatedType() in [CalculatedType.CALCULATED_TYPE_PARTICIPATION, CalculatedType.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf.getCalculatedType() == CalculatedType.CALCULATED_TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
                                     <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">
                                         <g:link class="ui icon button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">

@@ -1,6 +1,6 @@
 package de.laser.interfaces
 
-interface TemplateSupport {
+interface CalculatedType {
 
     final static CALCULATED_TYPE_LOCAL            = 'Local'
     final static CALCULATED_TYPE_CONSORTIAL       = 'Consortial'

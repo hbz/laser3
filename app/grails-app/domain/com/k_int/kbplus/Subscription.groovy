@@ -11,7 +11,7 @@ import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat
 
 class Subscription
         extends AbstractBaseDomain
-        implements TemplateSupport, Permissions, ShareSupport,
+        implements CalculatedType, Permissions, ShareSupport,
                 AuditableTrait {
 
     // AuditableTrait
@@ -207,7 +207,7 @@ class Subscription
 
     @Override
     boolean showUIShareButton() {
-        getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE]
+        getCalculatedType() in [CalculatedType.CALCULATED_TYPE_CONSORTIAL, CalculatedType.CALCULATED_TYPE_COLLECTIVE]
     }
 
     @Override

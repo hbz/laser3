@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.TemplateSupport" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 
 <!doctype html>

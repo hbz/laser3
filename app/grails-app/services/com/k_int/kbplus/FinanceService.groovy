@@ -22,7 +22,7 @@ import java.time.Year
 
 import static de.laser.helper.RDStore.*
 import static de.laser.helper.RDConstants.*
-import static de.laser.interfaces.TemplateSupport.*
+import static de.laser.interfaces.CalculatedType.*
 
 /**
  * This service will subsequently replace the very complicatedly written methods in the FinanceController class.

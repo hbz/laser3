@@ -464,7 +464,7 @@
                     <td>
                         <g:if test="${s.isMultiYear}">
                             <g:if test="${(s.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                                    s.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION)}">
+                                    s.getCalculatedType() == de.laser.interfaces.CalculatedType.CALCULATED_TYPE_PARTICIPATION)}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
                                     <i class="map orange icon"></i>

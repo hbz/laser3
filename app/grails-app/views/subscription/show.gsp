@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
 <%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole" %>
-<%@ page import="com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
@@ -88,10 +88,10 @@
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
 
-                            <g:if test="${(subscriptionInstance.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                                    subscriptionInstance.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION) ||
-                                    (subscriptionInstance.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_LOCAL &&
-                                    subscriptionInstance.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_LOCAL)}">
+                            <g:if test="${(subscriptionInstance.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
+                                    subscriptionInstance.getCalculatedType() == CalculatedType.CALCULATED_TYPE_PARTICIPATION) ||
+                                    (subscriptionInstance.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
+                                    subscriptionInstance.getCalculatedType() == CalculatedType.CALCULATED_TYPE_LOCAL)}">
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
                                     <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>

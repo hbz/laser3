@@ -1,13 +1,13 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.interfaces.TemplateSupport" %>
+<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
 
     if(instance instanceof Subscription) {
         if(contextService.org.id in [instance.getConsortia()?.id,instance.getCollective()?.id] && instance.instanceOf) {
-            if(contextService.org.id == instance.getConsortia()?.id && instance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+            if(contextService.org.id == instance.getConsortia()?.id && instance.getCalculatedType() == CalculatedType.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
                 parentAtChild = true
-            else if(instance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION)
+            else if(instance.getCalculatedType() == CalculatedType.CALCULATED_TYPE_PARTICIPATION)
                 parentAtChild = true
         }
     }

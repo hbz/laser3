@@ -23,7 +23,7 @@ import de.laser.domain.PendingChangeConfiguration
 import de.laser.exceptions.CleanupException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
@@ -32,7 +32,6 @@ import groovyx.net.http.HTTPBuilder
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
 //@CompileStatic
@@ -485,7 +484,7 @@ class YodaService {
                                 println("associated subscription is not deleted, report ...")
                                 ieDetails.action = "report"
                                 Map<String,Object> report = [subscriber:ie.subscription.getSubscriber().shortname,subscription:ie.subscription.name,title:delTIPP.title.title,package:delTIPP.pkg.name]
-                                if(ie.subscription.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_PARTICIPATION]) {
+                                if(ie.subscription.getCalculatedType() in [CalculatedType.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.CALCULATED_TYPE_PARTICIPATION]) {
                                     report.consortium = ie.subscription.getConsortia().shortname
                                 }
                                 else {
@@ -574,7 +573,7 @@ class YodaService {
                             else {
                                 println("${ie.subscription} is current, check if action needs to be taken ...")
                                 Map<String,Object> report = [subscriber:ie.subscription.getSubscriber().shortname,subscription:ie.subscription.name,title:delTIPP.title.title,package:delTIPP.pkg.name]
-                                if(ie.subscription.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_PARTICIPATION]) {
+                                if(ie.subscription.getCalculatedType() in [CalculatedType.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.CALCULATED_TYPE_PARTICIPATION]) {
                                     report.consortium = ie.subscription.getConsortia().shortname
                                 }
                                 else {

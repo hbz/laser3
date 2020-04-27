@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;de.laser.interfaces.TemplateSupport" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
 <!doctype html>
 <%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
