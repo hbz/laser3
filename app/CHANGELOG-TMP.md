@@ -6,7 +6,7 @@
 
 --      28.04.2020  rc1.3       David   Bug         API 0.95 - /costItem
 
-2448    28.04.2020  rc1.3       Moe     Feature     E-Mail Benachrichtung, wenn ein Teilnehmer abgeschlossen hat an den Umfrage-Ersteller
+2448    28.04.2020  rc1.3       Moe     Feature     E-Mail Benachrichtigung  an den Umfrage-Ersteller, wenn ein Teilnehmer die Umfrage abgeschlossen hat
 
 2434    27.04.2020  rc1.3       Moe     Feature     Umfrage-Kosten Export in Excel (Teilnehmersicht)
 
