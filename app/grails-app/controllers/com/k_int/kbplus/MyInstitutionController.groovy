@@ -2537,7 +2537,7 @@ AND EXISTS (
             result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
             //cost items
             //params.forExport = true
-            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
+            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
             if (costItems.subscr) {
                 result.costItemSums.subscrCosts = costItems.subscr.costItems
@@ -2644,6 +2644,7 @@ AND EXISTS (
 
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
         SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        boolean sendMailToSurveyOwner = false
 
         if(surveyConfig && surveyConfig.pickAndChoose){
 
@@ -2663,8 +2664,7 @@ AND EXISTS (
                         flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                     } else {
                         flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
-
-
+                        sendMailToSurveyOwner = true
                     }
                 } else {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
@@ -2699,10 +2699,15 @@ AND EXISTS (
                     it.finishDate = new Date()
                     it.save()
                 }
+                sendMailToSurveyOwner = true
                 // flash.message = message(code: "surveyResult.finish.info")
             } else {
                 flash.error = message(code: "surveyResult.finish.error")
             }
+
+        if(sendMailToSurveyOwner) {
+            surveyService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
+        }
 
 
         redirect(url: request.getHeader('referer'))

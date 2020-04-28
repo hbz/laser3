@@ -4,11 +4,15 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import grails.plugin.mail.MailService
 import grails.transaction.Transactional
 import grails.util.Holders
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -23,9 +27,15 @@ class SurveyService {
     ExportService exportService
     Locale locale
     EscapeService escapeService
+    MailService mailService
+    GrailsApplication grailsApplication
+
+    SimpleDateFormat formatter = DateUtil.getSDF_dmy()
+    String from
 
     @javax.annotation.PostConstruct
     void init() {
+        from = grailsApplication.config.notifications.email.from
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
     }
@@ -505,8 +515,8 @@ class SurveyService {
                             row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
                             row.add([field: surveyCostItem?.taxKey ? surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)" : '', style: null])
                             row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
-                            row.add([field: surveyCostItem?.startDate ?: '', style: null])
-                            row.add([field: surveyCostItem?.endDate ?: '', style: null])
+                            row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate): '', style: null])
+                            row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate): '', style: null])
                             row.add([field: surveyCostItem?.costDescription ?: '', style: null])
                         }
                     }
@@ -563,8 +573,8 @@ class SurveyService {
                         row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
                         row.add([field: surveyCostItem?.taxKey ? surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)" : '', style: null])
                         row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
-                        row.add([field: surveyCostItem?.startDate ?: '', style: null])
-                        row.add([field: surveyCostItem?.endDate ?: '', style: null])
+                        row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate) : '', style: null])
+                        row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate) : '', style: null])
                         row.add([field: surveyCostItem?.costDescription ?: '', style: null])
                     }
                 }
@@ -576,5 +586,68 @@ class SurveyService {
         }
 
         return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
+
+        if(surveyInfo.owner)
+        {
+            //Only User that approved
+            List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(surveyInfo.owner, 1)
+
+            //Only User with Notification by Email and for Surveys Start
+            userOrgs.each { userOrg ->
+                if(userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
+                        userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                {
+
+                    User user = userOrg.user
+
+                    def emailReceiver = user.getEmail()
+                    def currentServer = grailsApplication.config.getCurrentServer()
+                    def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+                    String mailSubject = subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, locale) +  " (" + participationFinish.name + ")"
+
+                        try {
+                            if (emailReceiver == null || emailReceiver.isEmpty()) {
+                                log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                            } else {
+                                boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                                String ccAddress = null
+                                if (isNotificationCCbyEmail){
+                                    ccAddress = user.getSetting(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                                }
+
+
+                                if (isNotificationCCbyEmail && ccAddress) {
+                                    mailService.sendMail {
+                                        to      emailReceiver
+                                        from    from
+                                        cc      ccAddress
+                                        subject mailSubject
+                                        body    (view: "/mailTemplates/text/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo])
+                                    }
+                                } else {
+                                    mailService.sendMail {
+                                        to      emailReceiver
+                                        from from
+                                        subject mailSubject
+                                        body    (view: "/mailTemplates/text/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo])
+                                    }
+                                }
+
+                                log.debug("emailToSurveyOwnerbyParticipationFinish - finished sendEmail() to " + user.displayName + " (" + user.email + ") " + surveyInfo.owner.name);
+                            }
+                        } catch (Exception e) {
+                            String eMsg = e.message
+
+                            log.error("emailToSurveyOwnerbyParticipationFinish - sendEmail() :: Unable to perform email due to exception ${eMsg}")
+                            SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', ['error': eMsg])
+                        }
+                }
+            }
+
+        }
+
     }
 }
