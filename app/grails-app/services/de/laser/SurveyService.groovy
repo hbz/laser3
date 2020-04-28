@@ -24,6 +24,8 @@ class SurveyService {
     Locale locale
     EscapeService escapeService
 
+    SimpleDateFormat formatter = DateUtil.getSDF_dmy()
+
     @javax.annotation.PostConstruct
     void init() {
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
@@ -505,8 +507,8 @@ class SurveyService {
                             row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
                             row.add([field: surveyCostItem?.taxKey ? surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)" : '', style: null])
                             row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
-                            row.add([field: surveyCostItem?.startDate ?: '', style: null])
-                            row.add([field: surveyCostItem?.endDate ?: '', style: null])
+                            row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate): '', style: null])
+                            row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate): '', style: null])
                             row.add([field: surveyCostItem?.costDescription ?: '', style: null])
                         }
                     }
@@ -563,8 +565,8 @@ class SurveyService {
                         row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
                         row.add([field: surveyCostItem?.taxKey ? surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)" : '', style: null])
                         row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
-                        row.add([field: surveyCostItem?.startDate ?: '', style: null])
-                        row.add([field: surveyCostItem?.endDate ?: '', style: null])
+                        row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate) : '', style: null])
+                        row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate) : '', style: null])
                         row.add([field: surveyCostItem?.costDescription ?: '', style: null])
                     }
                 }
