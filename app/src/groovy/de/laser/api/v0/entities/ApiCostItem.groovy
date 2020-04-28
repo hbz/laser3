@@ -2,6 +2,9 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.CostItem
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Subscription
+import de.laser.api.v0.ApiBox
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiToolkit
@@ -16,41 +19,53 @@ import java.sql.Timestamp
 class ApiCostItem {
 
     /**
-     * @return CostItem | BAD_REQUEST | PRECONDITION_FAILED
+     * @return ApiBox(obj: CostItem | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      */
-    static findCostItemBy(String query, String value) {
-        def result
+    static ApiBox findCostItemBy(String query, String value) {
+        ApiBox result = ApiBox.get()
 
         switch(query) {
             case 'id':
-                result = CostItem.findAllWhere(id: Long.parseLong(value))
+                result.obj = CostItem.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = CostItem.findAllWhere(globalUID: value)
+                result.obj = CostItem.findAllWhere(globalUID: value)
                 break
             default:
-                return Constants.HTTP_BAD_REQUEST
+                result.status = Constants.HTTP_BAD_REQUEST
+                return result
                 break
         }
-        if (result) {
-            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
+        result.validatePrecondition_1()
+
+        if (result.obj instanceof CostItem) {
+            result.validateDeletedStatus_2('costItemStatus', RDStore.COST_ITEM_DELETED)
         }
         result
     }
 
     /**
+     * @return boolean
+     */
+    static boolean calculateAccess(CostItem costItem, Org context) {
+
+        boolean hasAccess = false
+
+        if (costItem.owner?.id == context.id) {
+            hasAccess = true
+        }
+
+        hasAccess
+    }
+    /**
      * @return JSON | FORBIDDEN
      */
-    static requestCostItem(CostItem costItem, Org context, boolean hasAccess){
+    static requestCostItem(CostItem costItem, Org context, boolean isInvoiceTool){
         Map<String, Object> result = [:]
 
-        if (! hasAccess) {
-            if (costItem.owner?.id == context.id) {
-                hasAccess = true
-            }
-        }
+        boolean hasAccess = isInvoiceTool || calculateAccess(costItem, context)
         if (hasAccess) {
-            result = getCostItemMap(costItem, context)
+            result = getCostItemMap(costItem, context, isInvoiceTool)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -59,14 +74,10 @@ class ApiCostItem {
     /**
      * @return JSON | FORBIDDEN
      */
-    static requestCostItemList(Org owner, Org context, boolean hasAccess){
+    static requestCostItemList(Org owner, Org context, boolean isInvoiceTool){
         Collection<Object> result = []
 
-        if (! hasAccess) {
-            if (owner.id == context.id) {
-                hasAccess = true
-            }
-        }
+        boolean hasAccess = isInvoiceTool || (owner.id == context.id)
         if (hasAccess) {
             // TODO
             result = CostItem.findAllByOwnerAndCostItemStatusNotEqual(owner, RDStore.COST_ITEM_DELETED).globalUID
@@ -79,14 +90,10 @@ class ApiCostItem {
     /**
      * @return JSON | FORBIDDEN
      */
-    static requestCostItemListWithTimeStamp(Org owner, Org context, boolean hasAccess, String timestamp){
+    static requestCostItemListWithTimeStamp(Org owner, Org context, String timestamp, boolean isInvoiceTool){
         Collection<Object> result = []
 
-        if (! hasAccess) {
-            if (owner.id == context.id) {
-                hasAccess = true
-            }
-        }
+        boolean hasAccess = isInvoiceTool || (owner.id == context.id)
         if (hasAccess) {
             // TODO
             Timestamp ts= new Timestamp(Long.parseLong(timestamp))
@@ -102,7 +109,8 @@ class ApiCostItem {
     /**
      * @return Map<String, Object>
      */
-    static Map<String, Object> getCostItemMap(CostItem costItem, Org context){
+
+    static Map<String, Object> getCostItemMap(CostItem costItem, Org context, boolean isInvoiceTool){
         Map<String, Object> result = [:]
 
         costItem = GrailsHibernateUtil.unwrapIfProxy(costItem)
@@ -143,7 +151,7 @@ class ApiCostItem {
         // References
 
         result.owner    = ApiUnsecuredMapReader.getOrganisationStubMap(costItem.owner) // com.k_int.kbplus.Org
-        result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
+        result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context, isInvoiceTool) // com.k_int.kbplus.Subscription // RECURSION ???
         //result.subPkg   = ApiStubReader.resolveSubscriptionPackageStub(costItem.subPkg, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
         result.issueEntitlement = ApiIssueEntitlement.getIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
         result.order    = ApiUnsecuredMapReader.getOrderMap(costItem.order) // com.k_int.kbplus.Order

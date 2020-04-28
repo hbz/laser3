@@ -14,7 +14,7 @@ class ApiReader {
     static SUPPORTED_FORMATS = [
             'costItem':                 [Constants.MIME_APPLICATION_JSON],
             'costItemList':             [Constants.MIME_APPLICATION_JSON],
-            'document':                 [],
+            'document':                 [Constants.MIME_ALL],
             'issueEntitlements':        [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
             'license':                  [Constants.MIME_APPLICATION_JSON],
             'licenseList':              [Constants.MIME_APPLICATION_JSON],
