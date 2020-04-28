@@ -88,17 +88,17 @@ class SurveyUpdateService extends AbstractLockableService {
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
-                if(userOrg?.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                        userOrg?.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                if(userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
 
                     def orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
                             "LEFT JOIN s.surveyConfigs surConf " +
                             "LEFT JOIN surConf.orgs surOrg  " +
                             "WHERE surOrg.org IN (:org) " +
-                            "AND s.id IN (:survey)", [org: userOrg?.org, survey: surveys?.id])
+                            "AND s.id IN (:survey)", [org: userOrg.org, survey: surveys?.id])
 
-                    sendEmail(userOrg?.user, userOrg?.org, orgSurveys)
+                    sendEmail(userOrg.user, userOrg.org, orgSurveys)
                 }
             }
 
