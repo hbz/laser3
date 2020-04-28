@@ -110,14 +110,12 @@ class SurveyUpdateService extends AbstractLockableService {
         def emailReceiver = user.getEmail()
         def currentServer = grailsApplication.config.getCurrentServer()
         def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
-        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', null, locale) + " (" + org.name + ")"
+
 
         surveyEntries.each {survey ->
             try {
                 if (emailReceiver == null || emailReceiver.isEmpty()) {
                     log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
-                } else if (surveyEntries == null || surveyEntries.isEmpty()) {
-                    log.debug("The user has no surveys, so no email will be sent (" + user.username + "/"+ org.name + ")");
                 } else {
                     boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
                     String ccAddress = null
@@ -137,7 +135,7 @@ class SurveyUpdateService extends AbstractLockableService {
                     }
 
                     replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
-
+                    String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', [survey.type.getI10n('value')], locale) + " (" + org.name + ")"
 
                     if (isNotificationCCbyEmail && ccAddress) {
                         mailService.sendMail {
