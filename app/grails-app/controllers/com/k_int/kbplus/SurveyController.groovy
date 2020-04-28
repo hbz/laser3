@@ -655,7 +655,7 @@ class SurveyController {
                 result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
                 //cost items
                 //params.forExport = true
-                LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
+                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
                 result.costItemSums = [:]
                 if (costItems.own) {
                     result.costItemSums.ownCosts = costItems.own.sums
@@ -1452,7 +1452,7 @@ class SurveyController {
             result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
             //cost items
             //params.forExport = true
-            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
+            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
             if (costItems.cons) {
                 result.costItemSums.consCosts = costItems.cons.sums

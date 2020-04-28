@@ -2537,7 +2537,7 @@ AND EXISTS (
             result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
             //cost items
             //params.forExport = true
-            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
+            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
             if (costItems.subscr) {
                 result.costItemSums.subscrCosts = costItems.subscr.costItems
