@@ -3,6 +3,7 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
+import com.k_int.kbplus.Subscription
 import de.laser.api.v0.ApiBox
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
@@ -43,8 +44,8 @@ class ApiPkg {
         }
 		result.validatePrecondition_1()
 
-		if (result.obj instanceof Package && result.obj.packageStatus == RDStore.PACKAGE_STATUS_DELETED) {
-			result.status = Constants.OBJECT_STATUS_DELETED
+		if (result.obj instanceof Package) {
+			result.validateDeletedStatus_2('packageStatus', RDStore.PACKAGE_STATUS_DELETED)
 		}
 		result
     }

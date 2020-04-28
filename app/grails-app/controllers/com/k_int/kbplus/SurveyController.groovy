@@ -655,12 +655,12 @@ class SurveyController {
                 result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
                 //cost items
                 //params.forExport = true
-                LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
+                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
                 result.costItemSums = [:]
-                if (costItems.own) {
+                if (costItems?.own) {
                     result.costItemSums.ownCosts = costItems.own.sums
                 }
-                if (costItems.cons) {
+                if (costItems?.cons) {
                     result.costItemSums.consCosts = costItems.cons.sums
                 }
             }
@@ -1452,9 +1452,9 @@ class SurveyController {
             result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
             //cost items
             //params.forExport = true
-            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
+            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
-            if (costItems.cons) {
+            if (costItems?.cons) {
                 result.costItemSums.consCosts = costItems.cons.sums
             }
         }
@@ -4402,8 +4402,8 @@ class SurveyController {
 
         def tmpQueryParams = queryParams
         tmpQueryParams.put("orgIDs", orgIDs)
-        println(tmpQueryParams)
-        println(tmpQuery)
+        //println(tmpQueryParams)
+        //println(tmpQuery)
 
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }

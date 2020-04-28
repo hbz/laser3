@@ -53,6 +53,10 @@ class DateUtil {
         return new SimpleDateFormat('yyyy-MM-dd')
     }
 
+    static SimpleDateFormat getSDF_dmy(){
+        return new SimpleDateFormat('dd.MM.yyyy')
+    }
+
     static Date toDate_NoTime(String value) {
         (Date) getSDF_NoTime()?.parseObject(value)
     }
