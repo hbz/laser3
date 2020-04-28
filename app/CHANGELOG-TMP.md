@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2449    28.04.2020  rc1.3       David   Bug         API 0.96 - /document
+
 --      28.04.2020  rc1.3       David   Bug         API 0.95 - /costItem
 
 2434    27.04.2020  rc1.3       Moe     Feature     Umfrage-Kosten Export in Excel (Teilnehmersicht)

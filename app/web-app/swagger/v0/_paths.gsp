@@ -86,7 +86,7 @@
         200:
           description: OK
           content:
-            application/*:
+            '*/*':
               schema:
                 $ref: "#/components/schemas/PlaceholderBinary"
         400:

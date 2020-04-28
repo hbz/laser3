@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.95'
+    static final VERSION = '0.96'
     static final NOT_SUPPORTED = false
 
     /**
@@ -78,7 +78,7 @@ class ApiManager {
                 }
             }
         }
-        else if ('document'.equalsIgnoreCase(obj)) {
+        else if (checkValidRequest('document')) {
 
             ApiBox tmp = ApiDoc.findDocumentBy(query, value)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
