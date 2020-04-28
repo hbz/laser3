@@ -2539,7 +2539,7 @@ AND EXISTS (
             //params.forExport = true
             LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
-            if (costItems.subscr) {
+            if (costItems?.subscr) {
                 result.costItemSums.subscrCosts = costItems.subscr.costItems
             }
         }
