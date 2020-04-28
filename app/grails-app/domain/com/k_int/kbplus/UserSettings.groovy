@@ -33,6 +33,7 @@ class UserSettings {
         IS_NOTIFICATION_BY_EMAIL                    (RefdataValue, RDConstants.Y_N),
         IS_NOTIFICATION_CC_BY_EMAIL                 (RefdataValue, RDConstants.Y_N),
         IS_NOTIFICATION_FOR_SURVEYS_START           (RefdataValue, RDConstants.Y_N),
+        IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH           (RefdataValue, RDConstants.Y_N),
         IS_NOTIFICATION_FOR_SYSTEM_MESSAGES         (RefdataValue, RDConstants.Y_N),
 
         IS_REMIND_BY_EMAIL                          (RefdataValue, RDConstants.Y_N),

@@ -373,8 +373,11 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                         case Constants.MIME_TEXT_PLAIN:
                             format = Constants.MIME_TEXT_PLAIN
                             break
-                        default:
+                        case Constants.MIME_ALL:
                             format = Constants.MIME_ALL
+                            break
+                        default:
+                            format = 'you_shall_not_pass'
                             break
                     }
 

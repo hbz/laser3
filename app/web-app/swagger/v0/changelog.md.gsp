@@ -2,6 +2,16 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.96
+
+- restricted access to __/document__ (for owners only)
+- changed request header `accept` to `*/*` for __/document__
+- changed HTTP status code for __/document__ to `404` if there are only deleted contexts
+
+#### 0.95
+
+- reworked access to __/costItem__
+
 #### 0.94
 
 - changed HTTP status code for __/oaMonitorList__  to `404` if result is empty
