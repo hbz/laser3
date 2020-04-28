@@ -6,6 +6,7 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 - restricted access to __/document__ (for owners only)
 - changed request header `accept` to `*/*` for __/document__
+- changed HTTP status code for __/document__ to `404` if there are only deleted contexts
 
 #### 0.95
 
