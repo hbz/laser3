@@ -597,11 +597,11 @@ class SurveyService {
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
-                if(userOrg?.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
-                        userOrg?.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                if(userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
+                        userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
 
-                    User user = userOrg?.user
+                    User user = userOrg.user
 
                     def emailReceiver = user.getEmail()
                     def currentServer = grailsApplication.config.getCurrentServer()
