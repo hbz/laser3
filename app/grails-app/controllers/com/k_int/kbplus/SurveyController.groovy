@@ -657,10 +657,10 @@ class SurveyController {
                 //params.forExport = true
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
                 result.costItemSums = [:]
-                if (costItems.own) {
+                if (costItems?.own) {
                     result.costItemSums.ownCosts = costItems.own.sums
                 }
-                if (costItems.cons) {
+                if (costItems?.cons) {
                     result.costItemSums.consCosts = costItems.cons.sums
                 }
             }
@@ -1454,7 +1454,7 @@ class SurveyController {
             //params.forExport = true
             LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
-            if (costItems.cons) {
+            if (costItems?.cons) {
                 result.costItemSums.consCosts = costItems.cons.sums
             }
         }
