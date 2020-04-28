@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.96'
+    static final VERSION = '0.97'
     static final NOT_SUPPORTED = false
 
     /**
@@ -29,7 +29,6 @@ class ApiManager {
     static read(String obj, String query, String value, Org contextOrg, String format) {
         def result
 
-        List failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED, Constants.OBJECT_STATUS_DELETED]
         boolean isDatamanager = ApiToolkit.isDataManager(contextOrg)
         boolean isInvoiceTool = ApiToolkit.isInvoiceTool(contextOrg)
 

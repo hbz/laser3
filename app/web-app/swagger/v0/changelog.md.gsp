@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.97
+
+- TODO
+
 #### 0.96
 
 - restricted access to __/document__ (for owners only)
