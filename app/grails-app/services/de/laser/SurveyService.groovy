@@ -642,7 +642,7 @@ class SurveyService {
                             String eMsg = e.message
 
                             log.error("emailToSurveyOwnerbyParticipationFinish - sendEmail() :: Unable to perform email due to exception ${eMsg}")
-                            SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', ['error': eMsg])
+                            SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', ['error': [user: user, org: participationFinish, survey: surveyInfo]])
                         }
                 }
             }
