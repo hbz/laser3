@@ -42,7 +42,7 @@ class ApiLicense {
         result.validatePrecondition_1()
 
         //if (result.obj instanceof License) {
-        //    result.validateDeletedStatus_2(RDStore.LICENSE_DELETED)
+        //    result.validateDeletedStatus_2('status', RDStore.LICENSE_DELETED)
         //}
         result
     }

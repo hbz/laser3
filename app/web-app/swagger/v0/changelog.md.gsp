@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.95
+
+- reworked access to __/costItem__
+
 #### 0.94
 
 - changed HTTP status code for __/oaMonitorList__  to `404` if result is empty
