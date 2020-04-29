@@ -8,7 +8,6 @@ import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.hibernate.collection.PersistentSet
 
 @Log4j
 class ApiOAMonitor {

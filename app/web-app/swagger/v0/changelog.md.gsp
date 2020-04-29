@@ -6,6 +6,7 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 - added new endpoint: __/oaMonitorSubscription__
 - added new attribute: `OrganisationStub.type`
+- removed unused attribute: `Organisation.roleType`
 
 #### 0.96
 
@@ -61,5 +62,3 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 #### 0.87
 
 - added new request header `x-debug` for __/licenseList__ and __/subscriptionList__
-
-
