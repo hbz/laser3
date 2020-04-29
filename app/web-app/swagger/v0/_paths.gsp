@@ -419,7 +419,7 @@
         406:
           $ref: "#/components/responses/notAcceptable"
 
-<%--
+
   /oaMonitorSubscription:
 
     get:
@@ -449,7 +449,8 @@
           $ref: "#/components/responses/forbidden"
         406:
           $ref: "#/components/responses/notAcceptable"
---%>
+
+
   /statistic:
 
     get:

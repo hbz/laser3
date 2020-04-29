@@ -78,7 +78,6 @@ class ApiStatistic {
         }
 
         return result ? new JSON(result) : null
-        //return new JSON(result)
     }
 
     /**
