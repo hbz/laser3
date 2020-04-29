@@ -12,7 +12,6 @@ class Identifier {
 
     IdentifierNamespace ns
     String value
-    IdentifierGroup ig
     String note = ""
 
     Date dateCreated
@@ -35,8 +34,6 @@ class Identifier {
 			return pattern.matcher(val).matches()
 		  }
 		}
-
-    	ig      (nullable:true, blank:false)
         note    (nullable: true, blank: true)
 
 	  	lic     (nullable:true)
@@ -56,7 +53,6 @@ class Identifier {
        id   column:'id_id'
     value   column:'id_value', index:'id_value_idx'
        ns   column:'id_ns_fk', index:'id_value_idx'
-       ig   column:'id_ig_fk', index:'id_ig_idx'
        note column:'id_note',  type: 'text'
 
        lic  column:'id_lic_fk'

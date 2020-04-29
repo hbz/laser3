@@ -11,6 +11,7 @@ import de.laser.SystemAnnouncement
 
 //import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
+import de.laser.domain.AbstractI10nTranslatable
 
 //import de.laser.TaskService //unused for quite a long time
 
@@ -18,7 +19,6 @@ import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import groovy.sql.Sql
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.POIXMLProperties
@@ -32,7 +32,6 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.mozilla.universalchardet.UniversalDetector
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -337,13 +336,12 @@ class MyInstitutionController extends AbstractDebugController {
         RefdataValue licensee_role           = RDStore.OR_LICENSEE
         RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
         RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
-        RefdataValue template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
 
-        def base_qry
-        def qry_params
+        String base_qry
+        Map qry_params
 
         @Deprecated
-        def qry = INSTITUTIONAL_LICENSES_QUERY
+        String qry = INSTITUTIONAL_LICENSES_QUERY
 
         result.filterSet = params.filterSet ? true : false
 
@@ -361,10 +359,9 @@ class MyInstitutionController extends AbstractDebugController {
             base_qry = """
 from License as l where (
     exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.type != :template )
 )
 """
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, template: template_license_type]
+            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
         }
 
         if (params.orgRole == 'Licensing Consortium') {
@@ -379,11 +376,10 @@ from License as l where (
                     select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
                 )
             )
-        )) 
-    AND ( l.type != :template )
+        ))
 )
 """
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, template:template_license_type]
+            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
         }
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
@@ -631,31 +627,8 @@ from License as l where (
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
-        def qparams = [template_license_type]
-
-       // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
-        // (OS License specs)
-        // def qry = "from License as l where ( ( l.type = ? ) OR ( exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) ) OR ( l.isPublic=? ) ) AND l.status.value != 'Deleted'"
-
-        def query = "from License as l where l.type = ? "
-
-        if (params.filter) {
-            query += " and lower(l.reference) like ?"
-            qparams.add("%${params.filter.toLowerCase()}%")
-        }
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            query += " order by l.${params.sort} ${params.order}"
-        } else {
-            query += " order by sortableReference asc"
-        }
-
-        result.numLicenses = License.executeQuery("select l.id ${query}", qparams).size()
-        result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
-
-        result.licenses = result.licenses
-        result.numLicenses = result.numLicenses
+        result.licenses = [] // ERMS-2431
+        result.numLicenses = 0
 
         if (params.sub) {
             result.sub         = params.sub
@@ -1619,12 +1592,13 @@ join sub.orgRelations or_sub where
         Map<String,Object> qryParams = [
                 institution: result.institution,
                 deleted: RDStore.TIPP_STATUS_DELETED,
+                current: RDStore.SUBSCRIPTION_CURRENT,
                 orgRoles: orgRoles
         ]
 
         if(checkedDate) {
-            //Set<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where (ie.accessStartDate >= :checkedDate or (ie.accessStartDate is null and (ie.subscription.startDate >= :checkedDate or (ie.subscription.startDate is null and (ie.tipp.accessStartDate >= :checkedDate or ie.tipp.accessStartDate is null))))) and (ie.accessEndDate <= :checkedDate or (ie.accessEndDate > :checkedDate and ie.subscription.hasPerpetualAccess = true) or (ie.accessEndDate is null and (ie.subscription.endDate >= :checkedDate or (ie.subscription.endDate < :checkedDate and ie.subscription.hasPerpetualAccess) or (ie.subscription.endDate is null and (ie.tipp.accessEndDate >= :checkedDate or (ie.tipp.accessEndDate < :checkedDate and ie.subscription.hasPerpetualAccess = true) or ie.tipp.accessEndDate is null)))))',[checkedDate:checkedDate])
-            queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
+            queryFilter << ' ( :checkedDate >= coalesce(ie.accessStartDate,sub.startDate,tipp.accessStartDate) or (ie.accessStartDate is null and sub.startDate is null and tipp.accessStartDate is null) ) and ( :checkedDate <= coalesce(ie.accessEndDate,sub.endDate,tipp.accessEndDate) or (ie.accessEndDate is null and sub.endDate is null and tipp.accessEndDate is null)  or (sub.hasPerpetualAccess = true))'
+            /*queryFilter << ' (ie.accessStartDate <= :checkedDate or ' +
                               '(ie.accessStartDate is null and ' +
                                 '(sub.startDate <= :checkedDate or ' +
                                   '(sub.startDate is null and ' +
@@ -1645,7 +1619,7 @@ join sub.orgRelations or_sub where
                                       ')' +
                                   ')' +
                                 ')' +
-                            ')'
+                            ')'*/
             qryParams.checkedDate = checkedDate
         }
 
@@ -1677,12 +1651,14 @@ join sub.orgRelations or_sub where
             orderByClause = 'order by ti.sortTitle asc'
         }
 
-        String qryString = "select distinct ti from IssueEntitlement ie join ie.tipp tipp join tipp.title ti join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and oo.roleType in :orgRoles and oo.org = :institution "
+        String qryString = "select ie from IssueEntitlement ie join ie.tipp tipp join tipp.title ti join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
         qryString += orderByClause
 
-        Set<TitleInstance> allTitles = TitleInstance.executeQuery(qryString,qryParams)
+        //all ideas to move the .unique() into a group by clause are greately appreciated, a half day's attempts were unsuccessful!
+        Set<IssueEntitlement> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString,qryParams).unique { ie -> ie.tipp.title }
+        Set<TitleInstance> allTitles = currentIssueEntitlements.collect { IssueEntitlement ie -> ie.tipp.title }
         result.num_ti_rows = allTitles.size()
         result.titles = allTitles.drop(result.offset).take(result.max)
 
@@ -1696,12 +1672,24 @@ join sub.orgRelations or_sub where
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = exportService.generateTitleExportList(currentIssueEntitlements)
+            Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
             out.flush()
             out.close()
+        }
+        else if(params.exportXLSX) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            Map<String,List> export = exportService.generateTitleExportXLS(currentIssueEntitlements)
+            Map sheetData = [:]
+            sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
         }
         else {
             withFormat {
@@ -1712,8 +1700,12 @@ join sub.orgRelations or_sub where
                     response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
                     response.contentType = "text/csv"
 
-                    def out = response.outputStream
-                    exportService.StreamOutTitlesCSV(out, result.titles)
+                    ServletOutputStream out = response.outputStream
+                    Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements)
+                    out.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
+                    }
+                    out.flush()
                     out.close()
                 }
                 /*json {
@@ -2432,14 +2424,26 @@ AND EXISTS (
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
         if ( params.exportXLSX ) {
+
+            SXSSFWorkbook wb
             List surveyConfigsforExport = result.surveyResults.collect {it[1]}
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.plural")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(surveyConfigsforExport, result.institution)
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(surveyConfigsforExport, result.institution)
+            }else {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.plural")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys(surveyConfigsforExport, result.institution)
+            }
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -2487,6 +2491,7 @@ AND EXISTS (
 
         if(result.surveyConfig?.type == 'Subscription') {
             result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+            result.subscription = result.subscriptionInstance
             result.authorizedOrgs = result.user?.authorizedOrgs
             result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
@@ -2497,6 +2502,20 @@ AND EXISTS (
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
+
+            //costs dataToDisplay
+            result.dataToDisplay = ['subscr']
+            result.offsets = [subscrOffset:0]
+            result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
+
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            //cost items
+            //params.forExport = true
+            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+            result.costItemSums = [:]
+            if (costItems?.subscr) {
+                result.costItemSums.subscrCosts = costItems.subscr.costItems
+            }
         }
 
         if ( params.exportXLSX ) {
@@ -2599,6 +2618,7 @@ AND EXISTS (
 
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
         SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        boolean sendMailToSurveyOwner = false
 
         if(surveyConfig && surveyConfig.pickAndChoose){
 
@@ -2610,7 +2630,7 @@ AND EXISTS (
                 ie.save(flush: true)
             }
 
-            if(ies.size() > 0) {
+            /*if(ies.size() > 0) {*/
 
                 if (surveyOrg && surveyConfig) {
                     surveyOrg.finishDate = new Date()
@@ -2618,15 +2638,14 @@ AND EXISTS (
                         flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                     } else {
                         flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
-
-
+                        sendMailToSurveyOwner = true
                     }
                 } else {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                 }
-            }else {
+            /*}else {
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
-            }
+            }*/
         }
 
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
@@ -2654,10 +2673,15 @@ AND EXISTS (
                     it.finishDate = new Date()
                     it.save()
                 }
+                sendMailToSurveyOwner = true
                 // flash.message = message(code: "surveyResult.finish.info")
             } else {
                 flash.error = message(code: "surveyResult.finish.error")
             }
+
+        if(sendMailToSurveyOwner) {
+            surveyService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
+        }
 
 
         redirect(url: request.getHeader('referer'))
@@ -2758,7 +2782,15 @@ AND EXISTS (
         result.navConfiguration = [orgInstance: result.institution, inContextOrg: true]
         result.multipleAffiliationsWarning = true
         result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
-        result.tableConfig = [editable:result.editable, editor:result.user, editLink: 'userEdit', users: result.users, showAllAffiliations: false, modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')]
+        result.tableConfig = [
+                editable: result.editable,
+                editor: result.user,
+                editLink: 'userEdit',
+                users: result.users,
+                showAllAffiliations: false,
+                showAffiliationDeleteLink: true,
+                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
+        ]
         result.total = result.users.size()
 
         render view: '/templates/user/_list', model: result
@@ -3346,36 +3378,42 @@ AND EXISTS (
         List bm = du.stopBenchmark()
         result.benchMark = bm
 
-        BidiMap subLinks = new DualHashBidiMap()
-        Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
-            subLinks.put(link.source,link.destination)
-        }
         LinkedHashMap<Subscription,List<Org>> providers = [:]
-        OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
-            List<Org> orgs = providers.get(it.sub)
-            if(orgs == null)
-                orgs = [it.org]
-            else orgs.add(it.org)
-            providers.put(it.sub,orgs)
-        }
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
-                "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
-                [ctx: result.institution,
-                 roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                 email: RDStore.CCT_EMAIL])
         Map<Org,Set<String>> mailAddresses = [:]
-        persons.each { personRow ->
-            Person person = (Person) personRow[1]
-            Org org = person.roleLinks.find{ p -> p.org != result.institution}.org
-            Set<String> addresses = mailAddresses.get(org)
-            String mailAddress = (String) personRow[0]
-            if(!addresses) {
-                addresses = []
+        BidiMap subLinks = new DualHashBidiMap()
+        if(params.format || params.exportXLS) {
+            Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
+                subLinks.put(link.source,link.destination)
             }
-            addresses << mailAddress
-            mailAddresses.put(org,addresses)
+            OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
+                List<Org> orgs = providers.get(it.sub)
+                if(orgs == null)
+                    orgs = [it.org]
+                else orgs.add(it.org)
+                providers.put(it.sub,orgs)
+            }
+            List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
+                    "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
+                    [ctx: result.institution,
+                     roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
+                     email: RDStore.CCT_EMAIL])
+            persons.each { personRow ->
+                Person person = (Person) personRow[1]
+                PersonRole pr = person.roleLinks.find{ p -> p.org != result.institution}
+                if(pr) {
+                    Org org = pr.org
+                    Set<String> addresses = mailAddresses.get(org)
+                    String mailAddress = (String) personRow[0]
+                    if(!addresses) {
+                        addresses = []
+                    }
+                    addresses << mailAddress
+                    mailAddresses.put(org,addresses)
+                }
+            }
         }
+
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
@@ -3559,7 +3597,7 @@ AND EXISTS (
                     result
                 }
                 csv {
-                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'), message(code:'globalUID.label'),
+                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'myinst.consortiaSubscriptions.subscription'), message(code:'globalUID.label'),
                                    message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
                                    message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                                    message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
@@ -3813,22 +3851,23 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    Map<String, Object> managePrivateProperties() {
+    Map<String, Object> managePrivatePropertyDefinitions() {
         Map<String, Object> result = setResultGenerics()
 
         if('add' == params.cmd) {
-            flash.message = addPrivatePropertyDefinition(params)
+            List rl = addPrivatePropertyDefinition(params)
+            flash."${rl[0]}" = rl[1]
         }
+
         else if('delete' == params.cmd) {
             flash.message = deletePrivatePropertyDefinition(params)
         }
-
+        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
-            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
             propDefs[it] = itResult
         }
-
 
         result.propertyDefinitions = propDefs
 
@@ -3836,7 +3875,6 @@ AND EXISTS (
         result.usedPdList = usedPdList
         result.attrMap = attrMap
         //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
-        result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'private'
         result
     }
@@ -3848,9 +3886,10 @@ AND EXISTS (
     Object managePropertyDefinitions() {
         Map<String,Object> result = setResultGenerics()
 
+        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!
             propDefs[it] = itResult
         }
 
@@ -3862,7 +3901,6 @@ AND EXISTS (
         //result.attrMap = attrMap
         //result.usedPdList = usedPdList
 
-        result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'custom'
         render view: 'managePropertyDefinitions', model: result
     }
@@ -3886,8 +3924,8 @@ AND EXISTS (
      * @return
      */
 
-    private addPrivatePropertyDefinition(params) {
-        log.debug("adding private property definition for institution: " + params)
+    private List addPrivatePropertyDefinition(params) {
+        log.debug("trying to add private property definition for institution: " + params)
 
         def tenant = GrailsHibernateUtil.unwrapIfProxy(contextService.getOrg())
 
@@ -3898,7 +3936,10 @@ AND EXISTS (
                 tenant: tenant,
         )
 
-        if(! privatePropDef){
+        if (privatePropDef) {
+            return ['error', message(code: 'propertyDefinition.name.unique')]
+        }
+        else {
             def rdc
 
             if (params.refdatacategory) {
@@ -3918,16 +3959,16 @@ AND EXISTS (
                             expl_de: params.pd_expl?.trim(),
                             expl_en: params.pd_expl?.trim()
                     ],
-                    tenant      : tenant?.getShortname()
+                    tenant      : tenant?.globalUID
             ]
 
             privatePropDef = PropertyDefinition.construct(map)
 
             if (privatePropDef.save(flush: true)) {
-                return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])
+                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])]
             }
             else {
-                return message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.name])
+                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.name])]
             }
         }
     }

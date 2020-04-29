@@ -373,8 +373,11 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                         case Constants.MIME_TEXT_PLAIN:
                             format = Constants.MIME_TEXT_PLAIN
                             break
-                        default:
+                        case Constants.MIME_ALL:
                             format = Constants.MIME_ALL
+                            break
+                        default:
+                            format = 'you_shall_not_pass'
                             break
                     }
 
@@ -401,6 +404,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     }
                 }
             }
+            /*
             else if ('POST' == request.method) {
                 def postBody = request.getAttribute("authorizedApiPostBody")
                 def data = (postBody ? new JSON().parse(postBody) : null)
@@ -412,6 +416,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     result = ApiManager.write((String) obj, data, (User) user, (Org) contextOrg)
                 }
             }
+            */
             else {
                 result = Constants.HTTP_NOT_IMPLEMENTED
             }

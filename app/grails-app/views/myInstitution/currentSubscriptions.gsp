@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -270,7 +270,7 @@
             </div>
         </div>
 
-            <g:if test="${accessService.checkPerm("ORG_INST")}">
+            <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
             <div class="field">
                 <fieldset>
                     <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
@@ -463,8 +463,8 @@
                 <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
                     <td>
                         <g:if test="${s.isMultiYear}">
-                            <g:if test="${(s.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                                    s.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION)}">
+                            <g:if test="${(s.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
+                                    s.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
                                     <i class="map orange icon"></i>

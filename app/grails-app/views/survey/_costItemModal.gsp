@@ -22,7 +22,7 @@
 
 %>
 
-<semui:modal id="${modalID ?: 'modalSurveyCostItem'}" text="${modalText + (surveyOrg.surveyConfig.subscription ? ' ('+ surveyOrg.surveyConfig.subscription+ ')' : '')}" msgSave="${submitButtonLabel}">
+<semui:modal id="${modalID ?: 'modalSurveyCostItem'}" text="${modalText + (surveyOrg ? ' ('+ surveyOrg.surveyConfig.subscription+ ')' : '')}" msgSave="${submitButtonLabel}">
     <g:form class="ui small form" name="editCost" action="newSurveyCostItem">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}"/>
@@ -163,7 +163,7 @@
         <div class="one fields">
             <fieldset class="sixteen wide field la-modal-fieldset-no-margin">
                 <div class="field">
-                    <label>${message(code: 'survey.costItemModal.descriptionfor', args:[surveyOrg.org.name ?: 'alle'])}</label>
+                    <label>${message(code: 'survey.costItemModal.descriptionfor', args:[surveyOrg ? surveyOrg.org.name : 'alle'])}</label>
                     <textarea name="newDescription" id="newDescription"
                               placeholder="${message(code: 'default.description.label')}">${costItem?.costDescription}</textarea>
                 </div><!-- .field -->

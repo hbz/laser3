@@ -96,7 +96,15 @@ class UserController extends AbstractDebugController {
         Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:contextService.org])
         availableComboOrgs.add(contextService.org)
         result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user','global']), orgField: true, availableComboOrgs: availableComboOrgs]
-        result.tableConfig = [editable:result.editable, editor: result.editor, editLink: 'edit', users: result.users, showAllAffiliations: true, modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')]
+        result.tableConfig = [
+                editable:result.editable,
+                editor: result.editor,
+                editLink: 'edit',
+                users: result.users,
+                showAllAffiliations: true,
+                showAffiliationDeleteLink: false,
+                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
+        ]
         result.total = result.users.size()
 
         render view: '/templates/user/_list', model: result

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem; com.k_int.kbplus.SurveyConfig;" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -176,7 +176,7 @@
             </tr>
             </thead>
             <g:each in="${subscriptions}" var="s" status="i">
-                <g:if test="${true || !s.instanceOf}">
+                <g:if test="${!s.instanceOf}">
                     <tr>
                         <td class="center aligned">
                             ${(params.int('offset') ?: 0) + i + 1}
@@ -273,7 +273,7 @@
 
                         <td class="x">
                             <g:if test="${editable && accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
-                                <g:if test="${!com.k_int.kbplus.SurveyConfig.findAllBySubscription(s)}">
+                                <g:if test="${!SurveyConfig.findAllBySubscription(s)}">
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
                                             controller="survey" action="addSubtoSubscriptionSurvey"

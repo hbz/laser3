@@ -2,6 +2,76 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2199    28.04.2020  rc1.3       David   Feature     API: Top-Level-Objekte mit Status deleted
+
+2449    28.04.2020  rc1.3       David   Bug         API 0.96 - /document
+
+--      28.04.2020  rc1.3       David   Bug         API 0.95 - /costItem
+
+2448    28.04.2020  rc1.3       Moe     Feature     E-Mail Benachrichtigung  an den Umfrage-Ersteller, wenn ein Teilnehmer die Umfrage abgeschlossen hat
+
+2431    27.04.2020  hbz-dev     David   Feature     Refactoring: Vertragsvorlage entfernen
+
+2434    27.04.2020  rc1.3       Moe     Feature     Umfrage-Kosten Export in Excel (Teilnehmersicht)
+
+--      24.04.2020  rc1.3       Andreas Bug         keine Anzeige von Kosten auf der Lizenzdetailseite bei abgelaufenen Lizenzen
+
+2438    24.04.2020  rc1.3       Moe     Feature     Umfrage Kosten Anzeigen überarbeiten in Teilnehmersicht
+
+2403    22.04.2020  rc1.3       Moe     Bug         Umfrage kopieren
+
+2425    22.04.2020  rc1.3       Andreas Bug         Beschränkung auf lokale Lizenz aufgehoben
+
+1901    22.04.2020  rc1.3       Andreas Bug         Syncfehler korrigiert - Paketeigenschaften korrekt verarbeitet und Dubletten von Anbieterrollen entfernt
+
+2417    22.04.2020  rc1.3       David   Bug         API 0.93 - /package und /subscription werfen Fehler
+
+(2345)  21.04.2020  rc1.3       Andreas Bug         Abfrage zur Massenermittlung von Bestandstitel korrigiert
+
+1142    20.04.2020  rc1.3       Andreas Feature     Zentralisierung von KBART-Exporten sowie Einführung neuer Ausgabepunkte, Erweiterung des Titelexports, Ausgabe um neue Spalten erweitert
+
+2406    20.04.2020  rc1.3       Moe     Feature     Hotfixkandidat: Verbindlichkeit einer Umfrage durch
+
+2404    20.04.2020  rc1.3       Moe     Feature     Umfragekosten auch für normale Lizenzumfrage
+
+2362    20.04.2020  rc1.3       David   Feature     Aufräumen der Identifikatoren-Namensräume inid_
+
+2402    20.04.2020  rc1.3       Andreas Bug         Paketeigenschaften in Pending Changes wurden nicht korrekt verarbeitet
+
+2395    20.04.2020  rc1.3       David   Feature     API 0.91: Umbau der Status-Verarbeitung
+
+2399    17.04.2020  rc1.3       Andreas Bug         Plattform-Primary-URL und Anbieter wurden nicht aus der GOKb übernommen
+
+2383    17.04.2020  rc1.3       Moe     Bug         Umfrage Export: Merkmale werden falsch sortiert bei Konsortialstelle
+
+2372    16.04.2020  rc1.3       Christian   Bug     Behandlung von verkürzten IPv6 Adressen fehlerhaft
+
+1859    16.04.2020  rc1.3       Anja    Feature     Merkmale verwalten: Spalte Schlüssel entf, Performanceverbesserung
+
+2380    16.04.2020  rc1.3       David   Bug         Private Merkmale werden falsch zugeordnet
+
+2370    15.04.2020  rc1.3       David   Bug         Hotfixkandidat: "Zugehörigkeit löschen" bei /user/list löscht Zugehörigkeit des falschen Nutzers
+
+2318    15.04.2020  rc1.3       Moe     Bug         Gasco-Monitor: Anbieteranzeige fehlt	
+
+2371    15.04.2020  rc1.3       Moe     Bug         Titelauswahlumfrage Bug in der Auswertungssicht
+
+2374    15.04.2020  rc1.3       Moe     Bug         Titelumfrage Excel
+
+2369    15.04.2020  rc1.3       Moe     Bug         Hotfixkandidat: Zahl der Einrichtungen bei /org/listInstitution stimmt nicht	
+
+2377    15.04.2020  rc1.3       Moe     Bug         filter eines konsortialteilnehmers
+
+2366    15.04.2020  rc1.3       Moe     Bug         Cronjob Status der Kindlizenzen Mehrjahreslaufzeit
+
+1973    15.04.2020  rc1.3       Anja    Bug         org/show abhängige Region-Dropdowns richtig einblenden/Initialauswahl
+
+2375    15.04.2020  rc1.3       Anja    Bug         org/show Identifikatorpanel immer enabled
+
+2368    15.04.2020  rc1.3       David   Bug         Hotfixkandidat: Nutzer kann fälschlich ohne Org-Bezug anlegen
+
+2373    15.04.2020  rc1.3       Andreas Bug         NullPointerException bei Zusammenstellung der Hauptkontakte für Export behoben
+
 2382    15.04.2020  hbz-dev     Andreas Feature     IssueEntitlement: TIPP und Subscription-Fremdschlüssel sind nicht länger nullable
 
 2190    15.04.2020  hbz-dev     Andreas Feature     Umformulierung der Systemmail zu Passwort vergessen

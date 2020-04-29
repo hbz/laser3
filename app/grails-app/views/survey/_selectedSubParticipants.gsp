@@ -11,12 +11,25 @@
 <h3 class="ui left aligned">${surveyConfig.getConfigNameShort()}</h3>
 </g:else>--}%
 
+<div class="four wide column">
+
+        <g:link action="addSubMembersToSurvey" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]"
+                class="ui icon button right floated">
+            <g:message code="surveyParticipants.addSubMembersToSurvey"/>
+        </g:link>
+    <br>
+    <br>
+
+
+</div>
+
+
 <semui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <g:render template="/templates/filter/orgFilter"
                   model="[
-                          tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
+                          tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property']],
                           tmplConfigFormFilter: true,
                           useNewLayouter      : true
                   ]"/>

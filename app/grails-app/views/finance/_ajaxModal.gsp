@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.TemplateSupport" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">

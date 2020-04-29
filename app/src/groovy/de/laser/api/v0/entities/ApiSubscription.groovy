@@ -4,6 +4,7 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Subscription
+import de.laser.api.v0.ApiBox
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiStubReader
@@ -18,29 +19,30 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiSubscription {
 
     /**
-     * @return Subscription | BAD_REQUEST | PRECONDITION_FAILED | OBJECT_STATUS_DELETED
+     * @return ApiBox(obj: Subscription | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      */
-    static findSubscriptionBy(String query, String value) {
-        def result
+    static ApiBox findSubscriptionBy(String query, String value) {
+		ApiBox result = ApiBox.get()
 
         switch(query) {
             case 'id':
-                result = Subscription.findAllWhere(id: Long.parseLong(value))
+				result.obj = Subscription.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = Subscription.findAllWhere(globalUID: value)
+				result.obj = Subscription.findAllWhere(globalUID: value)
                 break
             case 'ns:identifier':
-                result = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
+				result.obj = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
                 break
             default:
-                return Constants.HTTP_BAD_REQUEST
+				result.status = Constants.HTTP_BAD_REQUEST
+				return result
                 break
         }
-		result = ApiToolkit.checkPreconditionFailed(result)
+		result.validatePrecondition_1()
 
-		if (result instanceof Subscription && result.status == RDStore.SUBSCRIPTION_DELETED) {
-			result = Constants.OBJECT_STATUS_DELETED
+		if (result.obj instanceof Subscription) {
+			result.validateDeletedStatus_2('status', RDStore.SUBSCRIPTION_DELETED)
 		}
 		result
     }
@@ -119,33 +121,30 @@ class ApiSubscription {
 		result.cancellationAllowances 	= sub.cancellationAllowances
 		result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
 		result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
-		//result.identifier           	= sub.identifier // TODO: refactor legacy
 		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub.lastUpdated)
 		result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
 		result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
 		result.name                 	= sub.name
 		result.noticePeriod         	= sub.noticePeriod
 		result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
-
-		// erms-888
-		result.calculatedType       = sub.getCalculatedType()
+		result.calculatedType       	= sub.getCalculatedType()
 
 		// RefdataValues
 
-		result.form         = sub.form?.value
-		result.isSlaved     = sub.isSlaved ? 'Yes' : 'No'
-        result.isMultiYear  = sub.isMultiYear ? 'Yes' : 'No'
-		result.resource     = sub.resource?.value
-		result.status       = sub.status?.value
-		result.type         = sub.type?.value
-		result.kind         = sub.kind?.value
+		result.form         		= sub.form?.value
+		result.isSlaved     		= sub.isSlaved ? 'Yes' : 'No'
+        result.isMultiYear  		= sub.isMultiYear ? 'Yes' : 'No'
+		result.resource     		= sub.resource?.value
+		result.status       		= sub.status?.value
+		result.type         		= sub.type?.value
+		result.kind         		= sub.kind?.value
 		result.isPublicForApi 		= sub.isPublicForApi ? 'Yes' : 'No'
 		result.hasPerpetualAccess 	= sub.hasPerpetualAccess ? 'Yes' : 'No'
 
 		// References
 
 		result.documents            = ApiCollectionReader.getDocumentCollection(sub.documents) // com.k_int.kbplus.DocContext
-		//result.derivedSubscriptions = ApiStubReader.resolveStubs(sub.derivedSubscriptions, ApiCollectionReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+		//result.derivedSubscriptions = ApiStubReader.getStubCollection(sub.derivedSubscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
 		result.identifiers          = ApiCollectionReader.getIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
 		result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
 		result.license              = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License

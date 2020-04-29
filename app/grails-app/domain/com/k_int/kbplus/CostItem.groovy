@@ -4,13 +4,13 @@ import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import javax.persistence.Transient
 import java.time.Year
 
 class CostItem
         extends AbstractBaseDomain
-        implements DeleteFlag, TemplateSupport  {
+        implements DeleteFlag, CalculatedType  {
 
     static enum TAX_TYPES {
         TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),
@@ -201,26 +201,9 @@ class CostItem
         super.beforeUpdate()
     }
 
-    @Deprecated
-    @Override
-    boolean isTemplate() {
-        false
-    }
-
-    @Deprecated
-    @Override
-    boolean hasTemplate() {
-        false
-    }
-
     @Override
     String getCalculatedType() {
-        String result = TemplateSupport.CALCULATED_TYPE_UNKOWN
-
-        if (isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
-        }
-        result
+        CalculatedType.TYPE_UNKOWN
     }
 
     List<BudgetCode> getBudgetcodes() {

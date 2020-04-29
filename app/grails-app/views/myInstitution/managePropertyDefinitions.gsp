@@ -43,24 +43,15 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th>${message(code:'propertyDefinition.key.label')}</th>
-
-                            <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
-                                <g:set var="SUBSTITUTE" value="de" />
-                                <th>${message(code:'default.name.label')}</th>
-                                <th>${message(code:'propertyDefinition.expl.label')}</th>
-                            </g:if>
-                            <g:else>
-                                <g:set var="SUBSTITUTE" value="en" />
-                                <th>${message(code:'default.name.label')}</th>
-                                <th>${message(code:'propertyDefinition.expl.label')}</th>
-                            </g:else>
+                            %{--<th>${message(code:'propertyDefinition.key.label')}</th>--}%
+                            <th>${message(code:'default.name.label')}</th>
+                            <th>${message(code:'propertyDefinition.expl.label')}</th>
                             <th>${message(code:'default.type.label')}</th>
                             <%--<th class="la-action-info">${message(code:'default.actions.label')}</th>--%>
                         </tr>
                         </thead>
                         <tbody>
-                            <g:each in="${entry.value.sort{it."name_${SUBSTITUTE}"?.toLowerCase()}}" var="pd">
+                            <g:each in="${entry.value}" var="pd">
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isHardData}">
@@ -80,17 +71,17 @@
                                             </span>
                                         </g:if>
                                     </td>
-                                    <td>
-                                        <g:if test="${pd.isUsedForLogic}">
-                                            <span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>
-                                        </g:if>
-                                        <g:else>
-                                            ${fieldValue(bean: pd, field: "name")}
-                                        </g:else>
-                                    </td>
+                                    %{--<td>--}%
+                                        %{--<g:if test="${pd.isUsedForLogic}">--}%
+                                            %{--<span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>--}%
+                                        %{--</g:if>--}%
+                                        %{--<g:else>--}%
+                                            %{--${fieldValue(bean: pd, field: "name")}--}%
+                                        %{--</g:else>--}%
+                                    %{--</td>--}%
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="name_${SUBSTITUTE}" />
+                                            <semui:xEditable owner="${pd}" field="name_${languageSuffix}" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('name')}
@@ -98,7 +89,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="expl_${SUBSTITUTE}" type="textarea" />
+                                            <semui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('expl')}
@@ -149,166 +140,5 @@
 			</g:each>
         </div>
 
-        <g:if test="${false}">
-        <semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" isEditModal="isEditModal">
-            <g:form class="ui form" url="[controller: 'admin', action: 'managePropertyDefinitions']">
-                <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
-                <input type="hidden" name="xcgPdFrom" value=""/>
-
-                <p>
-                    <strong>WARNUNG</strong>
-                </p>
-
-                <p>
-                    Alle Vorkommen von <strong class="xcgInfo"></strong> in der Datenbank durch folgende Eigenschaft ersetzen:
-                </p>
-
-                <div class="field">
-                    <label for="xcgPdTo">&nbsp;</label>
-                    <select id="xcgPdTo"></select>
-                </div>
-
-                <p>
-                    Die gesetzten Werte bleiben erhalten!
-                </p>
-
-            </g:form>
-
-            <r:script>
-                        $('button[data-xcg-pd]').on('click', function(){
-
-                            var pd = $(this).attr('data-xcg-pd');
-                            //var type = $(this).attr('data-xcg-type');
-                            //var rdc = $(this).attr('data-xcg-rdc');
-
-                            $('#replacePropertyDefinitionModal .xcgInfo').text($(this).attr('data-xcg-debug'));
-                            $('#replacePropertyDefinitionModal input[name=xcgPdFrom]').attr('value', pd);
-
-                            $.ajax({
-                                url: '<g:createLink controller="ajax" action="propertyAlternativesSearchByOID"/>' + '?oid=' + pd + '&format=json',
-                                success: function (data) {
-                                    var select = '<option></option>';
-                                    for (var index = 0; index < data.length; index++) {
-                                        var option = data[index];
-                                        if (option.value != pd) {
-                                            select += '<option value="' + option.value + '">' + option.text + '</option>';
-                                        }
-                                    }
-                                    select = '<select id="xcgPdTo" name="xcgPdTo" class="ui search selection dropdown">' + select + '</select>';
-
-                                    $('label[for=xcgPdTo]').next().replaceWith(select);
-
-                                    $('#xcgPdTo').dropdown({
-                                        duration: 150,
-                                        transition: 'fade'
-                                    });
-
-                                }, async: false
-                            });
-                        })
-            </r:script>
-
-        </semui:modal>
-
-
-        <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
-
-            <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
-                <input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>
-                <input type="hidden" name="ownerClass" value="${this.class}"/>
-
-				<div class="field">
-                	<label class="property-label">Name</label>
-                	<input type="text" name="cust_prop_name"/>
-                </div>
-
-                <div class="fields">
-                    <div class="field five wide">
-                        <label class="property-label">Context:</label>
-                        <%--<g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" />--%>
-                        <select name="cust_prop_desc" id="cust_prop_desc" class="ui dropdown">
-                            <g:each in="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" var="pd">
-                                <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" default="${pd}"/></option>
-                            </g:each>
-                        </select>
-                    </div>
-                    <div class="field five wide">
-                        <label class="property-label"><g:message code="default.type.label" /></label>
-                        <g:select class="ui dropdown"
-                            from="${PropertyDefinition.validTypes2.entrySet()}"
-                            optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
-                            name="cust_prop_type"
-                            id="cust_prop_modal_select" />
-                    </div>
-                    <div class="field five wide">
-                        <label class="property-label">${message(code:'propertyDefinition.expl.label', default:'Explanation')}</label>
-                        <textarea name="cust_prop_expl" id="eust_prop_expl" class="ui textarea"></textarea>
-                    </div>
-
-                    <div class="field six wide hide" id="cust_prop_ref_data_name">
-                        <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                        <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-                    </div>
-                </div>
-
-                <div class="fields">
-                    <div class="field five wide">
-                        <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}</label>
-                        <g:checkBox type="text" name="cust_prop_multiple_occurence" />
-                    </div>
-                </div>
-
-            </g:form>
-
-        </semui:modal>
-
-		<g:javascript>
-
-			   if( $( "#cust_prop_modal_select option:selected" ).val() == "class com.k_int.kbplus.RefdataValue") {
-					$("#cust_prop_ref_data_name").show();
-			   } else {
-                     $("#cust_prop_ref_data_name").hide();
-                }
-
-			$('#cust_prop_modal_select').change(function() {
-				var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-				if( selectedText == "class com.k_int.kbplus.RefdataValue") {
-					$("#cust_prop_ref_data_name").show();
-				}else{
-					$("#cust_prop_ref_data_name").hide();
-				}
-			});
-
-			$("#cust_prop_refdatacatsearch").select2({
-				placeholder: "Kategorie eintippen...",
-                minimumInputLength: 1,
-
-                formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
-                },
-                formatNoMatches: function() {
-                    return "${message(code:'select2.noMatchesFound')}";
-                },
-                formatSearching:  function() {
-                    return "${message(code:'select2.formatSearching')}";
-                },
-				ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-					url: '${createLink(controller:'ajax', action:'lookup')}',
-					dataType: 'json',
-					data: function (term, page) {
-						return {
-							q: term, // search term
-							page_limit: 10,
-							baseClass:'com.k_int.kbplus.RefdataCategory'
-						};
-					},
-					results: function (data, page) {
-						return {results: data.values};
-					}
-				}
-			});
-
-		</g:javascript>
-        </g:if>
 	</body>
 </html>

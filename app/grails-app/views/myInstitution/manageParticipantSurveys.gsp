@@ -243,7 +243,7 @@
                         </g:if>
 
                         <g:if test="${surveyConfig.pickAndChoose}">
-                            <g:link controller="survey" action="showEntitlementsRenew"
+                            <g:link controller="survey" action="surveyTitlesSubscriber"
                                     id="${surveyConfig?.id}" params="[participant: participant?.id]"
                                     class="ui icon button"><i
                                     class="write icon"></i>
