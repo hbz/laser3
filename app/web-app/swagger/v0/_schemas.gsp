@@ -427,7 +427,6 @@
           enum:
             [""]
         type:
-          #deprecated: true
           type: string
           description: Mapping RefdataCategory "OrgType"
           enum: <% printRefdataEnum('OrgType', 12) %>
@@ -1107,6 +1106,10 @@
           type: array
           items:
             $ref: "#/components/schemas/Identifier"
+        type:
+          type: string
+          description: Mapping RefdataCategory "OrgType"
+          enum: <% printRefdataEnum('OrgType', 12) %>
 
 
     LicenseStub:

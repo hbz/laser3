@@ -62,6 +62,7 @@ class ApiUnsecuredMapReader {
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
+        result.type        = org.orgType?.collect{ it.value }
 
         ApiToolkit.cleanUp(result, true, true)
     }
