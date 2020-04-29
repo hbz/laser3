@@ -6,7 +6,7 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.DashboardDueDate
+import de.laser.DashboardDueDatesService
 import de.laser.SystemAnnouncement
 
 //import de.laser.TaskService //unused for quite a long time
@@ -2139,9 +2139,8 @@ AND EXISTS (
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
 
-//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
+        result.dueDates = de.laser.DashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                 " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
@@ -3367,14 +3366,16 @@ AND EXISTS (
         Map<Org,Set<String>> mailAddresses = [:]
         persons.each { personRow ->
             Person person = (Person) personRow[1]
-            Org org = person.roleLinks.find{ p -> p.org != result.institution}.org
-            Set<String> addresses = mailAddresses.get(org)
-            String mailAddress = (String) personRow[0]
-            if(!addresses) {
-                addresses = []
+            Org org = person.roleLinks.find{ p -> p.org != result.institution}?.org
+            if (org) {
+                Set<String> addresses = mailAddresses.get(org)
+                String mailAddress = (String) personRow[0]
+                if(!addresses) {
+                    addresses = []
+                }
+                addresses << mailAddress
+                mailAddresses.put(org,addresses)
             }
-            addresses << mailAddress
-            mailAddresses.put(org,addresses)
         }
 
         if(params.exportXLS) {

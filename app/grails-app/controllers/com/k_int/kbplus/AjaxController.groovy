@@ -8,6 +8,8 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.DashboardDueDate
+import de.laser.DashboardDueDatesService
+import de.laser.DueDateObject
 import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.SystemProfiler
@@ -1905,6 +1907,7 @@ class AjaxController {
         def result = [:]
         result.user = contextService.user
         result.institution = contextService.org
+        flash.error = ''
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.org.name} pages. Please request access on the profile page"
@@ -1913,7 +1916,7 @@ class AjaxController {
         }
 
         if (params.id) {
-            DashboardDueDate dueDate = DashboardDueDate.get(params.id)
+            DashboardDueDate dueDate = genericOIDService.resolveOID(params.id)
             if (dueDate){
                 dueDate.isHidden = isHidden
                 dueDate.save(flush: true)
@@ -1933,9 +1936,8 @@ class AjaxController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.dashboardDueDatesOffset = result.offset
 
-//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
+        result.dueDates = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
@@ -1957,25 +1959,26 @@ class AjaxController {
         def result = [:]
         result.user = contextService.user
         result.institution = contextService.org
+        flash.error = ''
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.org.name} pages. Please request access on the profile page"
             response.sendError(401)
-            return;
+            return
         }
 
 
-        if (params.id) {
-            DashboardDueDate dueDate = DashboardDueDate.get(params.id)
-            if (dueDate){
-                Object dueDateObj = genericOIDService.resolveOID(dueDate.oid)
-                if (dueDateObj instanceof Task){
-                    Task dueTask = (Task)dueDateObj
+        if (params.owner) {
+            DueDateObject dueDateObject = genericOIDService.resolveOID(params.owner)
+            if (dueDateObject){
+                Object obj = genericOIDService.resolveOID(dueDateObject.oid)
+                if (obj instanceof Task && isDone){
+                    Task dueTask = (Task)obj
                     dueTask.setStatus(RDStore.TASK_STATUS_DONE)
                     dueTask.save()
                 }
-                dueDate.isDone = isDone
-                dueDate.save()
+                dueDateObject.isDone = isDone
+                dueDateObject.save()
             } else {
                 if (isDone)   flash.error += message(code:'dashboardDueDate.err.toSetDone.doesNotExist')
                 else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
@@ -1992,12 +1995,10 @@ class AjaxController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.dashboardDueDatesOffset = result.offset
 
-//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
+        result.dueDates = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
-
     }
 
     /*
