@@ -22,7 +22,7 @@ import java.time.Year
 
 import static de.laser.helper.RDStore.*
 import static de.laser.helper.RDConstants.*
-import static de.laser.interfaces.TemplateSupport.*
+import static de.laser.interfaces.CalculatedType.*
 
 /**
  * This service will subsequently replace the very complicatedly written methods in the FinanceController class.
@@ -320,7 +320,7 @@ class FinanceService {
             log.info(queryParams.filterSubStatus)
         }
         //!params.filterSubStatus is insufficient because it checks also the presence of a value - but the absence of a value is a valid setting (= all status except deleted; that is captured by the genericExcludes field)
-        else if(!params.subscription && !params.sub && !params.containsKey('filterSubStatus')) {
+        else if(!params.subscription && !params.sub && !params.id && !params.containsKey('filterSubStatus')) {
             subFilterQuery += " and sub.status = :filterSubStatus "
             queryParams.filterSubStatus = SUBSCRIPTION_CURRENT
             params.filterSubStatus = SUBSCRIPTION_CURRENT.id.toString()
@@ -1194,7 +1194,7 @@ class FinanceService {
                     //cases five to nine: subscription has a parent
                     if(result.subscription.instanceOf) {
                         //case five, six, eight and nine: child of local subscription or of consortial subscription, department level
-                        if(result.subscription.getCalculatedType() == CALCULATED_TYPE_PARTICIPATION){
+                        if(result.subscription.getCalculatedType() == TYPE_PARTICIPATION){
                             //cases six and nine: department subscription preview
                             if(params.orgBasicMemberView) {
                                 dataToDisplay << 'subscr'
@@ -1211,7 +1211,7 @@ class FinanceService {
                             }
                         }
                         //case seven: child of consortial subscription, collective level
-                        else if(result.subscription.getCalculatedType() == CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE){
+                        else if(result.subscription.getCalculatedType() == TYPE_PARTICIPATION_AS_COLLECTIVE){
                             dataToDisplay.addAll(['own','subscr','coll'])
                             result.showView = 'subscr'
                             result.showCollectiveFunctions = true

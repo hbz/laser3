@@ -146,6 +146,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
         titleNodes.each { title ->
             titlesToUpdate << title.'@uuid'.text()
         }
+        List providerNodes = oaiBranch.'**'.findAll { node ->
+            node.name() == "nominalProvider"
+        }
+        Set<String> providersToUpdate = []
+        providerNodes.each { provider ->
+            providersToUpdate << provider.'@uuid'.text()
+        }
         List platformNodes = oaiBranch.'**'.findAll { node ->
             node.name() in ["nominalPlatform","platform"]
         }
@@ -153,13 +160,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         platformNodes.each { platform ->
             if (!platformsToUpdate.find { plat -> plat.platformUUID == platform.'@uuid'.text() })
                 platformsToUpdate << [gokbId: platform.'@uuid'.text(), name: platform.name.text(), primaryUrl: platform.primaryUrl.text()]
-        }
-        List providerNodes = oaiBranch.'**'.findAll { node ->
-            node.name() == "nominalProvider"
-        }
-        Set<String> providersToUpdate = []
-        providerNodes.each { provider ->
-            providersToUpdate << provider.'@uuid'.text()
         }
         titlesToUpdate.each { titleUUID ->
             //that may destruct debugging ...
@@ -171,10 +171,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 SystemEvent.createEvent('GSSS_OAI_ERROR',[titleRecordKey:titleUUID])
             }
         }
-        platformsToUpdate.each { Map<String,String> platformParams ->
-            createOrUpdatePlatform(platformParams)
-            cleanUpGorm()
-        }
         providersToUpdate.each { providerUUID ->
             try {
                 createOrUpdateProvider(providerUUID)
@@ -182,6 +178,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             catch (SyncException e) {
                 SystemEvent.createEvent('GSSS_OAI_ERROR',[providerRecordKey:providerUUID])
+            }
+        }
+        platformsToUpdate.each { Map<String,String> platformParams ->
+            try {
+                createOrUpdatePlatform(platformParams)
+                cleanUpGorm()
+            }
+            catch (SyncException e) {
+                SystemEvent.createEvent('GSSS_OAI_ERROR',[platformRecordKey:platformParams.gokbId])
             }
         }
     }
@@ -219,7 +224,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         if(packageData.nominalPlatform) {
             platformUUID = (String) packageData.nominalPlatform.'@uuid'.text()
-
         }
         //ex packageConv, processing TIPPs - conversion necessary because package may be not existent in LAS:eR; then, no comparison is needed any more
         List<Map<String,Object>> tipps = []
@@ -260,10 +264,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 packageListStatus: packageListStatus,
                                 breakable: breakable,
                                 consistent: consistent,
-                                fixed: fixed
+                                fixed: fixed,
+                                contentType: contentType
                         ]
                         if(platformUUID) {
                             newPackageProps.nominalPlatform = Platform.findByGokbId(platformUUID)
+                        }
+                        if(providerUUID) {
+                            newPackageProps.contentProvider = Org.findByGokbId(providerUUID)
                         }
                         Set<Map<String,Object>> pkgPropDiffs = getPkgPropDiff(result,newPackageProps)
                         result.name = packageName
@@ -274,8 +282,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         result.breakable = breakable //needed?
                         result.consistent = consistent //needed?
                         result.fixed = fixed //needed?
+                        result.contentType = contentType
                         if(platformUUID)
-                            result.nominalPlatform = Platform.findByGokbId(platformUUID)
+                            result.nominalPlatform = newPackageProps.nominalPlatform
+                        if(providerUUID) {
+                            createOrUpdatePackageProvider(newPackageProps.contentProvider,result)
+                        }
                         if(result.save()) {
                             if(pkgPropDiffs)
                                 tippsToNotify << [event:"pkgPropUpdate",diffs:pkgPropDiffs,target:result]
@@ -363,7 +375,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             packageListStatus: packageListStatus, //needed?
                             breakable: breakable, //needed?
                             consistent: consistent, //needed?
-                            fixed: fixed //needed?
+                            fixed: fixed, //needed?
+                            contentType: contentType
                     )
                     if(result.save()) {
                         if(providerUUID) {
@@ -539,6 +552,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 titleInstance.medium = medium
                 titleInstance.status = status
                 if(titleInstance.save()) {
+                    OrgRole.executeUpdate('delete from OrgRole oo where oo.title = :titleInstance',[titleInstance: titleInstance])
                     if(titleRecord.publishers) {
                         titleRecord.publishers.publisher.each { pubData ->
                             Map<String,Object> publisherParams = [
@@ -720,7 +734,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 providerRecord.providedPlatforms.platform.each { plat ->
                     //ex setOrUpdateProviderPlattform()
                     log.info("checking provider with uuid ${providerUUID}")
-                    createOrUpdatePlatform([gokbId: plat.'@uuid'.text(), name: plat.name.text(), primaryUrl: plat.primaryUrl.text()])
+                    createOrUpdatePlatform([gokbId: plat.'@uuid'.text(), name: plat.name.text(), primaryUrl: plat.primaryUrl.text(), platformProvider:providerUUID])
                     Platform platform = Platform.findByGokbId(plat.'@uuid'.text())
                     if(platform.org != provider) {
                         platform.org = provider
@@ -786,6 +800,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         platform.normname = platformParams.name.trim().toLowerCase()
         if(platformParams.primaryUrl)
             platform.primaryUrl = new URL(platformParams.primaryUrl)
+        if(platformParams.platformProvider)
+            platform.org = Org.findByGokbId(platformParams.platformProvider)
         if(!platform.save()) {
             throw new SyncException("Error on saving platform: ${platform.errors}")
         }
@@ -797,12 +813,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param pkg - the package to check against
      */
     void createOrUpdatePackageProvider(Org provider, Package pkg) throws SyncException {
-        List<OrgRole> providerRoleCheck = OrgRole.executeQuery("select oo from OrgRole oo where oo.org = :provider and oo.pkg = :pkg",[provider:provider,pkg:pkg])
-        if(!providerRoleCheck) {
-            OrgRole providerRole = new OrgRole(org:provider,pkg:pkg,roleType: RDStore.OT_PROVIDER, isShared: false)
-            if(!providerRole.save()) {
-                throw new SyncException("Error on saving org role: ${providerRole.errors}")
-            }
+        OrgRole providerRole = OrgRole.findByPkgAndRoleTypeInList(pkg,[RDStore.OR_PROVIDER,RDStore.OR_CONTENT_PROVIDER])
+        if(providerRole) {
+            providerRole.org = provider
+        }
+        else {
+            providerRole = new OrgRole(org:provider,pkg:pkg,roleType: RDStore.OR_PROVIDER, isShared: false)
+        }
+        if(!providerRole.save()) {
+            throw new SyncException("Error on saving org role: ${providerRole.errors}")
         }
     }
 
@@ -819,12 +838,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
         controlledProperties.each { prop ->
             if(pkgA[prop] != pkgB[prop]) {
-                result.add([prop: prop, newValue: pkgB[prop], oldValue: pkgA[prop]])
+                if(prop in PendingChange.REFDATA_FIELDS)
+                    result.add([prop: prop, newValue: pkgB[prop]?.id, oldValue: pkgA[prop]?.id])
+                else result.add([prop: prop, newValue: pkgB[prop], oldValue: pkgA[prop]])
             }
         }
 
         if(pkgA.nominalPlatform != pkgB.nominalPlatform) {
             result.add([prop: 'nominalPlatform', newValue: pkgB.nominalPlatform?.name, oldValue: pkgA.nominalPlatform?.name])
+        }
+
+        if(pkgA.contentProvider != pkgB.contentProvider) {
+            result.add([prop: 'nominalProvider', newValue: pkgB.contentProvider?.name, oldValue: pkgA.contentProvider?.name])
         }
 
         result
@@ -930,15 +955,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
             entry.each { notify ->
                 log.debug(notify)
                 if(notify.event in ['pkgPropUpdate','pkgDelete']) {
-                    String msgToken
-                    if(notify.event == 'pkgPropUpdate')
-                        msgToken = PendingChangeConfiguration.PACKAGE_PROP
-                    else if(notify.event == 'pkgDelete')
-                        msgToken = PendingChangeConfiguration.PACKAGE_DELETED
                     Package target = (Package) notify.target
-                    Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target])
-                    ieConcerned.each { ie ->
-                        changeNotificationService.determinePendingChangeBehavior([target:ie.subscription,oid:"${target.class.name}:${target.id}"],msgToken,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target))
+                    Set<SubscriptionPackage> spConcerned = SubscriptionPackage.findAllByPkg(target)
+                    if(notify.event == 'pkgPropUpdate') {
+                        spConcerned.each { SubscriptionPackage sp ->
+                            Map<String,Object> changeMap = [target:sp.subscription, oid:"${target.class.name}:${target.id}"]
+                            notify.diffs.each { diff ->
+                                changeMap.oldValue = diff.oldValue
+                                changeMap.newValue = diff.newValue
+                                changeMap.prop = diff.prop
+                                changeNotificationService.determinePendingChangeBehavior(changeMap,PendingChangeConfiguration.PACKAGE_PROP,sp)
+                            }
+                        }
+                    }
+                    else if(notify.event == 'pkgDelete') {
+                        spConcerned.each { SubscriptionPackage sp ->
+                            changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:"${target.class.name}:${target.id}"],PendingChangeConfiguration.PACKAGE_DELETED,sp)
+                        }
                     }
                 }
                 else {

@@ -4,32 +4,50 @@ import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
+import de.laser.api.v0.ApiBox
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
+import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 
 @Log4j
 class ApiDoc {
 
     /**
-     * @return Doc | BAD_REQUEST | PRECONDITION_FAILED
+     * @return ApiBox(obj: Doc | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND)
      */
-    static findDocumentBy(String query, String value) {
-        def result
+    static ApiBox findDocumentBy(String query, String value) {
+        ApiBox result = ApiBox.get()
 
         switch(query) {
             case 'id':
-                result = Doc.findAllWhere(id: Long.parseLong(value))
+                result.obj = Doc.findAllWhere(id: Long.parseLong(value))
                 break
             case 'uuid':
-                result = Doc.findAllWhere(uuid: value)
+                result.obj = Doc.findAllWhere(uuid: value)
                 break
             default:
-                return Constants.HTTP_BAD_REQUEST
+                result.status = Constants.HTTP_BAD_REQUEST
+                return result
                 break
         }
+        result.validatePrecondition_1()
 
-        ApiToolkit.checkPreconditionFailed(result)
+        if (result.obj) {
+            List<DocContext> contexts = DocContext.findAllByOwner(result.obj)
+            int delCount = 0
+
+            contexts.each { dc ->
+                if (dc.status == RDStore.DOC_CTX_STATUS_DELETED) {
+                    delCount++
+                }
+            }
+            if (delCount == contexts.size()) {
+                result.status = Constants.OBJECT_STATUS_DELETED
+            }
+        }
+
+        result
     }
 
     /**
@@ -37,34 +55,7 @@ class ApiDoc {
      */
     static requestDocument(Doc doc, Org context){
 
-        boolean hasAccess = false
-
-        DocContext.findAllByOwner(doc).each{ dc ->
-            if(dc.license) {
-                dc.getLicense().getOrgLinks().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-            if(dc.pkg) {
-                dc.getPkg().getOrgs().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-            if(dc.subscription) {
-                dc.getSubscription().getOrgRelations().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-        }
+        boolean hasAccess = (doc.owner?.id == context.id)
 
         return (hasAccess ? doc : Constants.HTTP_FORBIDDEN)
     }

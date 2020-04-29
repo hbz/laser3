@@ -89,7 +89,7 @@
                                           onchange="submit()"
                             />
                             <div class="ui bulleted list">
-                                <g:each in="${ipv6Ranges}" var="ipv4Range">
+                                <g:each in="${ipv6Ranges}" var="ipv6Range">
                                     <div class="item" >${ipv6Range}</div>
                                 </g:each>
                             </div>

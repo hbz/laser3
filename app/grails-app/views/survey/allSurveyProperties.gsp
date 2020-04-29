@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SurveyConfig" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -77,7 +77,7 @@
             <tr>
                 <g:if test="${addSurveyConfigs}">
                     <td>
-                        <g:if test="${com.k_int.kbplus.SurveyConfig.findBySurveyInfoAndSurveyProperty(surveyInfo, property)}">
+                        <g:if test="${SurveyConfig.findBySurveyInfoAndSurveyProperty(surveyInfo, property)}">
                             <i class="check circle icon green"></i>
                         </g:if>
                         <g:else>
@@ -109,10 +109,10 @@
 
                 </td>
                 <td>
-                    ${com.k_int.properties.PropertyDefinition.getLocalizedValue(property.type)}
+                    ${PropertyDefinition.getLocalizedValue(property.type)}
                     <g:if test="${property.type == 'class com.k_int.kbplus.RefdataValue'}">
                         <g:set var="refdataValues" value="${[]}"/>
-                        <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(property.refdataCategory)}"
+                        <g:each in="${RefdataCategory.getAllRefdataValues(property.refdataCategory)}"
                                 var="refdataValue">
                             <g:set var="refdataValues"
                                    value="${refdataValues + refdataValue?.getI10n('value')}"/>

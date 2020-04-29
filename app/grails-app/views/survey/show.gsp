@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.SurveyResult;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -17,6 +18,10 @@
         <semui:exportDropdownItem>
             <g:link class="item" controller="survey" action="show"
                     params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="survey" action="show"
+                    params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <g:render template="actions"/>
@@ -102,14 +107,14 @@
                     </div>
                 </div>
             </div>
-            <g:if test="${surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_TITLE_SELECTION}">
+            <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">
                 <g:set var="finish"
-                       value="${com.k_int.kbplus.SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(surveyConfig).size()}"/>
+                       value="${SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(surveyConfig).size()}"/>
                 <g:set var="total"
-                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
+                       value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                 <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
-                <g:if test="${finishProcess > 0 || surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+                <g:if test="${finishProcess > 0 || surveyInfo.status?.id == RDStore.SURVEY_SURVEY_STARTED.id}">
                     <div class="ui card">
 
                         <div class="content">
@@ -132,12 +137,12 @@
             </g:if>
             <g:else>
                 <g:set var="finish"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
+                       value="${SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
                 <g:set var="total"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig).size()}"/>
+                       value="${SurveyResult.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                 <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
-                <g:if test="${finishProcess > 0 || surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+                <g:if test="${finishProcess > 0 || surveyInfo.status?.id == RDStore.SURVEY_SURVEY_STARTED.id}">
                     <div class="ui card">
 
                         <div class="content">

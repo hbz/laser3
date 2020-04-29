@@ -161,7 +161,7 @@
                     <td>
                         ${surveyProperty?.surveyProperty?.getI10n('name')}
 
-                        <g:if test="${surveyProperty?.surveyProperty?.tenant?.id == institution?.id}">
+                        <g:if test="${surveyProperty?.surveyProperty?.tenant?.id == contextService.getOrg().id}">
                             <i class='shield alternate icon'></i>
                         </g:if>
 
@@ -340,7 +340,7 @@
                         </g:elseif>
                         <g:elseif test="${surveyResult?.type?.type == com.k_int.kbplus.RefdataValue.toString()}">
 
-                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.owner?.id != institution?.id}">
+                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.owner?.id != contextService.getOrg().id}">
                                 <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
                                                         id="participation"
                                                         config="${surveyResult.type?.refdataCategory}"/>

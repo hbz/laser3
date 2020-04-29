@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.TemplateSupport; de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyOrg" %>
+<%@ page import="de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.Org; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.Subscription; com.k_int.kbplus.SurveyConfig" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -98,7 +98,7 @@ ${surveyInfo.name}
     <br>
 
     <g:set var="consortiaSubscriptions"
-           value="${com.k_int.kbplus.Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
+           value="$Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
     <g:set var="surveyParticipants" value="${surveyConfig.orgs?.size()}"/>
     <g:set var="totalOrgs"
            value="${(orgsContinuetoSubscription?.size() ?: 0) + (newOrgsContinuetoSubscription?.size() ?: 0) + (orgsWithMultiYearTermSub?.size() ?: 0) + (orgsLateCommers?.size() ?: 0) + (orgsWithTermination?.size() ?: 0) + (orgsWithoutResult?.size() ?: 0) + (orgsWithParticipationInParentSuccessor?.size() ?: 0)}"/>
@@ -187,7 +187,7 @@ ${surveyInfo.name}
                                 </span>
                             </g:if>
 
-                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
@@ -395,7 +395,7 @@ ${surveyInfo.name}
                                 </span>
                             </g:if>
 
-                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
@@ -703,7 +703,7 @@ ${surveyInfo.name}
                                 </span>
                             </g:if>
 
-                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
@@ -867,7 +867,7 @@ ${surveyInfo.name}
                                 </span>
                             </g:if>
 
-                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
@@ -987,7 +987,7 @@ ${surveyInfo.name}
                         <g:each in="${properties}" var="prop" >
                             <div class="item">
                                 <b><g:message code="subscription.${prop.referenceField}.label" /></b>:
-                            <g:if test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof com.k_int.kbplus.RefdataValue}">
+                            <g:if test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof RefdataValue}">
                                 ${parentSuccessorSubscription.getProperty(prop.referenceField).getI10n('value')}
                             </g:if>
                             <g:else>
@@ -1104,7 +1104,7 @@ ${surveyInfo.name}
                 <div class="field">
                     <label><g:message code="myinst.copyLicense"/></label>
                     <g:if test="${parentSuccessorSubscription.owner}">
-                        <g:if test="${parentSuccessorSubscription.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE && institution.id == parentSuccessorSubscription.getCollective().id}">
+                        <g:if test="${parentSuccessorSubscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE && institution.id == parentSuccessorSubscription.getCollective().id}">
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" name="attachToParticipationLic" value="true">
                                 <label><g:message code="myinst.attachToParticipationLic"/></label>

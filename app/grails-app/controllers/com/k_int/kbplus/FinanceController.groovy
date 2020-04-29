@@ -9,13 +9,11 @@ import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
-import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonBuilder
-import org.apache.commons.lang.StringUtils
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -937,7 +935,7 @@ class FinanceController extends AbstractDebugController {
                   newCostItem.invoice = invoice
                   //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
                   if(sub)
-                      newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
+                      newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
                   else newCostItem.isVisibleForSubscriber = false
                   newCostItem.costItemCategory = cost_item_category
                   newCostItem.costItemElement = cost_item_element

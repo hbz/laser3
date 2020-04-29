@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.TemplateSupport;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
@@ -221,10 +221,10 @@
                             </span>
                             <%
                                 boolean isLicTenant = false
-                                if(l.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL && l.getLicensingConsortium().id == institution.id) {
+                                if(l.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && l.getLicensingConsortium().id == institution.id) {
                                     isLicTenant = true
                                 }
-                                else if(l.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL && orgRoles.get(l) in [RDStore.OR_LICENSEE]) {
+                                else if(l.getCalculatedType() == CalculatedType.TYPE_LOCAL && orgRoles.get(l) in [RDStore.OR_LICENSEE]) {
                                     isLicTenant = true
                                 }
                             %>

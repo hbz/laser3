@@ -11,7 +11,7 @@ import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat
 
 class Subscription
         extends AbstractBaseDomain
-        implements TemplateSupport, Permissions, ShareSupport,
+        implements CalculatedType, Permissions, ShareSupport,
                 AuditableTrait {
 
     // AuditableTrait
@@ -194,18 +194,6 @@ class Subscription
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
-    // TODO: implement
-    @Override
-    boolean isTemplate() {
-        return false
-    }
-
-    // TODO: implement
-    @Override
-    boolean hasTemplate() {
-        return false
-    }
-
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
         // needed to differentiate OrgRoles
@@ -219,7 +207,7 @@ class Subscription
 
     @Override
     boolean showUIShareButton() {
-        getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE]
+        getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
     }
 
     @Override
@@ -300,30 +288,27 @@ class Subscription
 
     @Override
     String getCalculatedType() {
-        def result = CALCULATED_TYPE_UNKOWN
+        String result = TYPE_UNKOWN
 
-        if (isTemplate()) {
-            result = CALCULATED_TYPE_TEMPLATE
-        }
-        else if(getCollective() && getConsortia() && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE
+        if (getCollective() && getConsortia() && instanceOf) {
+            result = TYPE_PARTICIPATION_AS_COLLECTIVE
         }
         else if(getCollective() && !getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_COLLECTIVE
+            result = TYPE_COLLECTIVE
         }
         else if(getConsortia() && !getAllSubscribers() && !instanceOf) {
             if(administrative) {
                 log.debug(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
+                result = TYPE_ADMINISTRATIVE
             }
-            else result = CALCULATED_TYPE_CONSORTIAL
+            else result = TYPE_CONSORTIAL
         }
         else if((getCollective() || getConsortia()) && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION
+            result = TYPE_PARTICIPATION
         }
         // TODO remove type_local
         else if(getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_LOCAL
+            result = TYPE_LOCAL
         }
         result
     }
@@ -331,31 +316,31 @@ class Subscription
     /*
     @Override
     String getCalculatedType() {
-        def result = CALCULATED_TYPE_UNKOWN
+        def result = TYPE_UNKOWN
 
         if (isTemplate()) {
-            result = CALCULATED_TYPE_TEMPLATE
+            result = TYPE_TEMPLATE
         }
         else if(getCollective() && ! getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_COLLECTIVE
+            result = TYPE_COLLECTIVE
         }
         else if(getCollective() && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION
+            result = TYPE_PARTICIPATION
         }
         else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
             if(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
+                result = TYPE_ADMINISTRATIVE
             else
-                result = CALCULATED_TYPE_CONSORTIAL
+                result = TYPE_CONSORTIAL
         }
         else if(getConsortia() && instanceOf) {
             if(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
+                result = TYPE_ADMINISTRATIVE
             else
-                result = CALCULATED_TYPE_PARTICIPATION
+                result = TYPE_PARTICIPATION
         }
         else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
-            result = CALCULATED_TYPE_LOCAL
+            result = TYPE_LOCAL
         }
         result
     }
@@ -639,7 +624,7 @@ class Subscription
         groups.each{ it ->
 
             // cons_members
-            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
+            if (this.instanceOf) {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
 
                 // global groups

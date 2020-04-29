@@ -190,7 +190,7 @@ class SurveyConfig {
     //Überprüft nur ob bearbeitet ist oder nicht, aber nicht ob abgeschickt wurde
     def checkResultsEditByOrg(Org org) {
 
-        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {
+        if (this.subSurveyUseForTransfer && SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {
             return ALL_RESULTS_PROCESSED_BY_ORG
         } else {
 
@@ -220,7 +220,9 @@ class SurveyConfig {
 
     boolean isResultsSetFinishByOrg(Org org) {
 
-        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {
+        SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(this, org)
+
+        if (this.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()) {
             return true
         } else {
 
@@ -228,22 +230,27 @@ class SurveyConfig {
             int countNotFinish = 0
 
             boolean noParticipation = false
-            if(subSurveyUseForTransfer){
+            if(subSurveyUseForTransfer) {
                 noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
             }
 
-            if(!noParticipation) {
+                if (!noParticipation) {
 
-                List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+                    List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
-                if (surveyResults?.finishDate.contains(null)) {
-                    return false
+
+                    if (surveyResults?.finishDate.contains(null)) {
+                        return false
+                    } else {
+                        if (pickAndChoose && surveyOrg.finishDate == null){
+                            return false
+                        }else {
+                            return true
+                        }
+                    }
                 } else {
                     return true
                 }
-            }else {
-                return true
-            }
         }
 
 

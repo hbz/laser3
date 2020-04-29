@@ -12,20 +12,24 @@ import groovy.util.logging.Log4j
 class ApiReader {
 
     static SUPPORTED_FORMATS = [
-            'costItem':             [Constants.MIME_APPLICATION_JSON],
-            'document':             [],
-            'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
-            'license':              [Constants.MIME_APPLICATION_JSON],
-            'onixpl':               [Constants.MIME_APPLICATION_XML],
-            'oaMonitor':            [Constants.MIME_APPLICATION_JSON],
-            'oaMonitorList':        [Constants.MIME_APPLICATION_JSON],
-            'organisation':         [Constants.MIME_APPLICATION_JSON],
-            'package':              [Constants.MIME_APPLICATION_JSON],
-            'propertyList':         [Constants.MIME_APPLICATION_JSON],
-            'refdataList':          [Constants.MIME_APPLICATION_JSON],
-            'statistic':            [Constants.MIME_APPLICATION_JSON],
-            'statisticList':        [Constants.MIME_APPLICATION_JSON],
-            'subscription':         [Constants.MIME_APPLICATION_JSON]
+            'costItem':                 [Constants.MIME_APPLICATION_JSON],
+            'costItemList':             [Constants.MIME_APPLICATION_JSON],
+            'document':                 [Constants.MIME_ALL],
+            'issueEntitlements':        [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
+            'license':                  [Constants.MIME_APPLICATION_JSON],
+            'licenseList':              [Constants.MIME_APPLICATION_JSON],
+            'onixpl':                   [Constants.MIME_APPLICATION_XML],
+            'oaMonitor':                [Constants.MIME_APPLICATION_JSON],
+            'oaMonitorList':            [Constants.MIME_APPLICATION_JSON],
+            //'oaMonitorSubscription':    [Constants.MIME_APPLICATION_JSON],
+            'organisation':             [Constants.MIME_APPLICATION_JSON],
+            'package':                  [Constants.MIME_APPLICATION_JSON],
+            'propertyList':             [Constants.MIME_APPLICATION_JSON],
+            'refdataList':              [Constants.MIME_APPLICATION_JSON],
+            'statistic':                [Constants.MIME_APPLICATION_JSON],
+            'statisticList':            [Constants.MIME_APPLICATION_JSON],
+            'subscription':             [Constants.MIME_APPLICATION_JSON],
+            'subscriptionList':         [Constants.MIME_APPLICATION_JSON]
     ]
 
     static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'propertyList', 'statisticList']

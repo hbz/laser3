@@ -29,13 +29,6 @@
         <div class="ui info message">
             ${message(code:'propertyDefinition.private.info')}
         </div>
-        <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
-            <g:set var="SUBSTITUTE" value="de" />
-        </g:if>
-        <g:else>
-            <g:set var="SUBSTITUTE" value="en" />
-        </g:else>
-
         <div class="ui styled fluid accordion">
             <g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
@@ -43,12 +36,12 @@
                     <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
                 </div>
                 <div class="content">
-                    <g:form class="ui form" action="managePrivateProperties" method="post">
+                    <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
                         <table class="ui celled la-table la-table-small table">
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>${message(code:'propertyDefinition.key.label')}</th>
+                                    %{--<th>${message(code:'propertyDefinition.key.label')}</th>--}%
                                     <th>${message(code:'default.name.label')}</th>
                                     <th>${message(code:'propertyDefinition.expl.label')}</th>
                                     <th>${message(code:'default.type.label')}</th>
@@ -59,7 +52,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <g:each in="${entry.value.sort{it."name_${SUBSTITUTE}"?.toLowerCase()}}" var="pd">
+                                <g:each in="${entry.value}" var="pd">
                                     <tr>
                                         <td>
                                             <g:if test="${pd.isHardData}">
@@ -79,19 +72,19 @@
                                                 </span>
                                             </g:if>
                                         </td>
+                                        %{--<td>--}%
+                                            %{--<g:if test="${pd.isUsedForLogic}">--}%
+                                                %{--<span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>--}%
+                                            %{--</g:if>--}%
+                                            %{--<g:else>--}%
+                                                %{--${fieldValue(bean: pd, field: "name")}--}%
+                                            %{--</g:else>--}%
+                                        %{--</td>--}%
                                         <td>
-                                            <g:if test="${pd.isUsedForLogic}">
-                                                <span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>
-                                            </g:if>
-                                            <g:else>
-                                                ${fieldValue(bean: pd, field: "name")}
-                                            </g:else>
+                                            <semui:xEditable owner="${pd}" field="name_${languageSuffix}" />
                                         </td>
                                         <td>
-                                            <semui:xEditable owner="${pd}" field="name_${SUBSTITUTE}" />
-                                        </td>
-                                        <td>
-                                            <semui:xEditable owner="${pd}" field="expl_${SUBSTITUTE}" type="textarea" />
+                                            <semui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
                                         </td>
                                         <td>
                                             ${PropertyDefinition.getLocalizedValue(pd?.type)}
@@ -112,7 +105,7 @@
                                         <g:if test="${editable}">
                                             <td class="x">
                                                 <g:if test="${pd.countUsages()==0}">
-                                                    <g:link action="managePrivateProperties"
+                                                    <g:link action="managePrivatePropertyDefinitions"
                                                             params="[cmd:'delete', deleteIds: pd?.id]"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name")])}"
                                                             data-confirm-term-how="delete"
@@ -136,7 +129,7 @@
 
     <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
-        <g:form class="ui form" action="managePrivateProperties" >
+        <g:form class="ui form" action="managePrivatePropertyDefinitions" >
             <g:field type="hidden" name="cmd" value="add" />
 
             <div class="field">

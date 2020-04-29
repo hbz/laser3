@@ -12,17 +12,18 @@ import de.laser.DashboardDueDatesService
 import de.laser.DueDateObject
 import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
+import de.laser.domain.I10nTranslation
 import de.laser.domain.SystemProfiler
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
+import org.springframework.web.servlet.support.RequestContextUtils
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
-import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
@@ -445,7 +446,9 @@ class AjaxController {
     render result as JSON
   }
 
+  @Deprecated
   def refdataSearch() {
+      // TODO: refactoring - only used by /templates/_orgLinksModal.gsp
 
     //log.debug("refdataSearch params: ${params}");
     
@@ -704,30 +707,31 @@ class AjaxController {
         }
     }
 
-    @Deprecated
-  def sel2RefdataSearch() {
+    def sel2RefdataSearch() {
 
-    log.debug("sel2RefdataSearch params: ${params}");
+        log.debug("sel2RefdataSearch params: ${params}");
     
-    def result = []
-    //we call toString in case we got a GString
-    def config = refdata_config.get(params.id?.toString())
+        List result = []
+        Map<String, Object> config = refdata_config.get(params.id?.toString()) //we call toString in case we got a GString
+        boolean defaultOrder = true
 
-    if ( config == null ) {
-      // If we werent able to locate a specific config override, assume the ID is just a refdata key
-      config = [
-        domain:'RefdataValue',
-        countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
-        rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
-        qryParams:[],
-        cols:['value'],
-        format:'simple'
-      ]
-    }
+        if (config == null) {
+            String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+            defaultOrder = false
+            // If we werent able to locate a specific config override, assume the ID is just a refdata key
+            config = [
+                domain      :'RefdataValue',
+                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}' order by rdv.value_${locale}",
+                qryParams   :[],
+                cols        :['value'],
+                format      :'simple'
+            ]
+        }
 
     if ( config ) {
 
-      def query_params = []
+      List query_params = []
       config.qryParams.each { qp ->
         if ( qp?.clos) {
           query_params.add(qp.clos(params[qp.param]?:''));
@@ -781,8 +785,8 @@ class AjaxController {
     else {
       log.error("No config for refdata search ${params.id}");
     }
-      if(result)
-      {
+
+      if (result && defaultOrder) {
           result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
       }
 
@@ -1281,7 +1285,7 @@ class AjaxController {
         def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
 
         // TODO ownerClass
-        if (PropertyDefinition.findByNameAndDescrAndTenant(params.cust_prop_name, params.cust_prop_desc, params.ownerId)) {
+        if (PropertyDefinition.findByNameAndDescrAndTenantIsNull(params.cust_prop_name, params.cust_prop_desc)) {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {

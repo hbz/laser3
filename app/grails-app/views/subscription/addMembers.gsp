@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.TemplateSupport" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -83,7 +83,7 @@
                 <div class="field">
                     <label><g:message code="myinst.copyLicense"/></label>
                     <g:if test="${subscriptionInstance.owner}">
-                        <g:if test="${subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE && institution.id == subscriptionInstance.getCollective().id}">
+                        <g:if test="${subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE && institution.id == subscriptionInstance.getCollective().id}">
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" name="attachToParticipationLic" value="true">
                                 <label><g:message code="myinst.attachToParticipationLic"/></label>

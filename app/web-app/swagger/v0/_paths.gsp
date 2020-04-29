@@ -63,7 +63,7 @@
         403:
           $ref: "#/components/responses/forbidden"
         404:
-          description: Valid request, but owner not found
+          description: Valid request, but owner not found or result is empty
         406:
           $ref: "#/components/responses/notAcceptable"
 
@@ -86,7 +86,7 @@
         200:
           description: OK
           content:
-            application/*:
+            '*/*':
               schema:
                 $ref: "#/components/schemas/PlaceholderBinary"
         400:
@@ -165,7 +165,7 @@
         403:
           $ref: "#/components/responses/forbidden"
         404:
-          description: Valid request, but owner not found
+          description: Valid request, but owner not found or result is empty
         406:
           $ref: "#/components/responses/notAcceptable"
 
@@ -210,7 +210,7 @@
     get:
       tags:
         - Objects
-      summary: Retrieving packge by identifier
+      summary: Retrieving a single package
       description: >
         Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
 
@@ -352,7 +352,7 @@
         403:
           $ref: "#/components/responses/forbidden"
         404:
-          description: Valid request, but owner not found
+          description: Valid request, but owner not found or result is empty
         406:
           $ref: "#/components/responses/notAcceptable"
 
@@ -362,9 +362,9 @@
     get:
       tags:
         - Datamanager
-      summary:
+      summary: Retrieving an organisation with more information
       description: >
-        **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
+        **EXPERIMENTAL**
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -379,10 +379,16 @@
             application/json:
               schema:
                 $ref: "#/components/schemas/PlaceholderObject"
+        400:
+          $ref: "#/components/responses/badRequest"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
           $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but organisation not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
 
 
   /oaMonitorList:
@@ -390,9 +396,9 @@
     get:
       tags:
         - Datamanager
-      summary:
+      summary: Retrieving a list of appropriate organisations
       description: >
-        **EXPERIMENTAL**
+        Retrieving a list of organisations that have granted the data exchange
 
       parameters:
         - $ref: "#/components/parameters/authorization"
@@ -408,16 +414,50 @@
           $ref: "#/components/responses/notAuthorized"
         403:
           $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but no appropriate organisations found
+        406:
+          $ref: "#/components/responses/notAcceptable"
 
-
-  /statistic:
+<%--
+  /oaMonitorSubscription:
 
     get:
       tags:
         - Datamanager
       summary:
       description: >
-        **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
+        **EXPERIMENTAL AND NOT FULLY IMPLEMENTED; DO NOT USE**
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaceholderObject"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        406:
+          $ref: "#/components/responses/notAcceptable"
+--%>
+  /statistic:
+
+    get:
+      tags:
+        - Datamanager
+      summary: Retrieving a package with more information
+      description: >
+        **EXPERIMENTAL**
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -432,10 +472,16 @@
             application/json:
               schema:
                 $ref: "#/components/schemas/PlaceholderObject"
+        400:
+          $ref: "#/components/responses/badRequest"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
           $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but package not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
 
 
   /statisticList:
@@ -443,9 +489,9 @@
     get:
       tags:
         - Datamanager
-      summary:
+      summary: Retrieving a list of appropriate packages
       description: >
-        **EXPERIMENTAL**
+        Retrieving a list of packages related to organisations that have granted the data exchange
 
       parameters:
         - $ref: "#/components/parameters/authorization"
@@ -461,3 +507,7 @@
           $ref: "#/components/responses/notAuthorized"
         403:
           $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but no appropriate packages found
+        406:
+          $ref: "#/components/responses/notAcceptable"

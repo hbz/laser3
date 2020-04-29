@@ -498,11 +498,10 @@
             type: string
             description: Mapping RefdataCategory "${RDConstants.PACKAGE_STATUS}"
             enum: <% printRefdataEnum(RDConstants.PACKAGE_STATUS, 12) %>
-          packageType:
+          contentType:
             type: string
-            description: Mapping RefdataCategory
-            enum:
-              [""]
+            description: Mapping RefdataCategory "${RDConstants.PACKAGE_CONTENT_TYPE}"
+            enum: <% printRefdataEnum(RDConstants.PACKAGE_CONTENT_TYPE, 12) %>
 <%--     persons: # mapping attr prsLinks
            type: array
            items:
@@ -1224,6 +1223,10 @@
             $ref: "#/components/schemas/Identifier"
         title:
           type: string
+        medium:
+          type: string
+          description: Mapping RefdataCategory "${RDConstants.TITLE_MEDIUM}"
+          enum: <% printRefdataEnum(RDConstants.TITLE_MEDIUM, 12) %>
         normTitle:
           type: string
 

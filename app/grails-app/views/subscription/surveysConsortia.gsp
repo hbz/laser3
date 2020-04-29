@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.interfaces.TemplateSupport" %>
+<%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -137,7 +137,7 @@
 
 
                 <td class="center aligned">
-                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
+                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose && surveyInfo.type in [RDStore.SURVEY_TYPE_RENEWAL, RDStore.SURVEY_TYPE_SUBSCRIPTION]}">
                         <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                             <div class="ui circular ${surveyConfig?.costItemsFinish ? "green" : ""} label">

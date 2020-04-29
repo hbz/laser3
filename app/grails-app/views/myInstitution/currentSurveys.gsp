@@ -22,6 +22,10 @@
             <g:link class="item" controller="myInstitution" action="currentSurveys"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
         </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="myInstitution" action="currentSurveys"
+                    params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
+        </semui:exportDropdownItem>
     </semui:exportDropdown>
 </semui:controlButtons>
 
@@ -194,7 +198,7 @@
                               title="${message(code: 'default.endDate.label')}"/>
             <g:sortableColumn params="${params}" property="surInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
-            <th><g:message code="surveyInfo.isMandatory.label"/></th>
+
             <th><g:message code="surveyInfo.finished"/></th>
 
 
@@ -240,6 +244,13 @@
                 </td>
                 <td>
                     ${surveyInfo.type.getI10n('value')}
+
+                    <g:if test="${surveyInfo.isMandatory}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
+                            <i class="yellow icon exclamation triangle"></i>
+                        </span>
+                    </g:if>
                 </td>
                 <td>
                     <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
@@ -251,14 +262,6 @@
 
                 </td>
 
-                <td class="center aligned">
-                    <g:if test="${surveyInfo.isMandatory}">
-                        <i class='check big green icon'></i>
-                    </g:if>
-                    <g:else>
-                        <i class='close big red icon'></i>
-                    </g:else>
-                </td>
 
                 <td class="center aligned">
 

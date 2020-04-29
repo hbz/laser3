@@ -1,13 +1,13 @@
-<%@page import="de.laser.interfaces.TemplateSupport; com.k_int.kbplus.*" %>
+<%@page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.*" %>
 <%
     boolean parentAtChild = false
 
     if(ownobj instanceof Subscription) {
         //array is created and should be extended to collective view; not yet done because collective view is not merged yet
         if(contextService.org.id in [ownobj.getConsortia()?.id,ownobj.getCollective()?.id] && ownobj.instanceOf) {
-            if(contextService.org.id == ownobj.getConsortia()?.id && ownobj.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+            if(contextService.org.id == ownobj.getConsortia()?.id && ownobj.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
                 parentAtChild = true
-            else if(ownobj.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION)
+            else if(ownobj.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }
     }

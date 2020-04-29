@@ -21,13 +21,13 @@
 
 <semui:controlButtons>
     <semui:actionsDropdown>
-        <g:if test="${surveyOrg.finishDate && surveyInfo && surveyInfo.status.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+        <g:if test="${surveyOrg.finishDate && surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id}">
             <semui:actionsDropdownItem controller="survey" action="openIssueEntitlementsSurveyAgain"
                                        params="[id: surveyConfig.id, participant: participant.id]"
                                        message="openIssueEntitlementsSurveyAgain.label"/>
         </g:if>
 
-        <g:if test="${surveyInfo && surveyInfo.status.id in [de.laser.helper.RDStore.SURVEY_IN_EVALUATION.id, de.laser.helper.RDStore.SURVEY_COMPLETED.id]}">
+        <g:if test="${surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id]}">
             <semui:actionsDropdownItem controller="survey" action="completeIssueEntitlementsSurveyforParticipant"
                                        params="[id: surveyConfig.id, participant: participant.id]"
                                        message="completeIssueEntitlementsSurvey.forParticipant.label"/>
@@ -105,7 +105,7 @@
     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                       subscriptionInstance: subscriptionInstance,
                                                                       visibleOrgRelations : visibleOrgRelations,
-    ]"/>
+                                                                      surveyResults       : surveyResults        ]"/>
 </div>
 
 <div class="ui stackable grid">

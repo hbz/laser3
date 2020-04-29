@@ -77,12 +77,12 @@
         </g:form>
     </semui:form>
 
+<%-- TODO remove ERMS-2431
 <hr>
 
 <h3>${message(code: 'license.copy')}</h3>
 
 <g:if test="${numLicenses > 0 || (params.filter)}">
-
     <semui:filter>
         <g:form action="emptyLicense" params="${params}" method="get" class="ui form">
             <div class="fields">
@@ -167,7 +167,7 @@
 </g:if><g:else>
     <br><b>${message(code: 'license.template.empty')}</b>
 </g:else>
-
+--%>
 
 <r:script>
     $('.license-results input[type="radio"]').click(function () {

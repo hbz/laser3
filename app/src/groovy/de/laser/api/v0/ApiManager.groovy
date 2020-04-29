@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.90'
+    static final VERSION = '0.96'
     static final NOT_SUPPORTED = false
 
     /**
@@ -35,52 +35,56 @@ class ApiManager {
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
-        Closure checkRequest = { endpoint, supportedFormats ->
+        Closure checkValidRequest = { endpoint ->
             if (! endpoint.equalsIgnoreCase(obj)) {
-                return Constants.HTTP_NOT_IMPLEMENTED
+                return false
             }
-            else if (! format in ApiReader.SUPPORTED_FORMATS){
-                return Constants.HTTP_NOT_ACCEPTABLE
-            }
-            return Constants.VALID_REQUEST
+            result = Constants.VALID_REQUEST
+            return true
         }
 
-        Closure checkFailureCodes = { check ->
-            return check && !(check.toString() in failureCodes)
+        if (! (ApiReader.SUPPORTED_FORMATS.containsKey(obj))){
+            return Constants.HTTP_NOT_IMPLEMENTED
+        }
+        else if (! (format in ApiReader.SUPPORTED_FORMATS[obj])){
+            return Constants.HTTP_NOT_ACCEPTABLE
         }
 
-        if (checkRequest('costItem', ApiReader.SUPPORTED_FORMATS.costItem) == Constants.VALID_REQUEST) {
+        if (checkValidRequest('costItem')) {
 
-            result = ApiCostItem.findCostItemBy(query, value)
+            ApiBox tmp = ApiCostItem.findCostItemBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiCostItem.requestCostItem((CostItem) result, contextOrg, isInvoiceTool)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiCostItem.requestCostItem((CostItem) tmp.obj, contextOrg, isInvoiceTool)
             }
         }
-        else if (checkRequest('costItemList', ApiReader.SUPPORTED_FORMATS.costItem) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('costItemList')) {
 
             def identifierAndTimestamp = ApiToolkit.parseTimeLimitedQuery( query, value )
 
             if (identifierAndTimestamp == Constants.HTTP_BAD_REQUEST) {
                 return Constants.HTTP_BAD_REQUEST
             }
-            result = ApiOrg.findOrganisationBy(identifierAndTimestamp[0].key, identifierAndTimestamp[0].value) // use of http status code
+            ApiBox tmp = ApiOrg.findOrganisationBy(identifierAndTimestamp[0].key, identifierAndTimestamp[0].value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
+            if (tmp.checkFailureCodes_3()) {
                 if(identifierAndTimestamp[1].key == 'timestamp'){
-                    result = ApiCostItem.requestCostItemListWithTimeStamp(result, contextOrg, isInvoiceTool, identifierAndTimestamp[1].value)
+                    result = ApiCostItem.requestCostItemListWithTimeStamp((Org) tmp.obj, contextOrg, identifierAndTimestamp[1].value, isInvoiceTool)
                 }
                 else {
-                    result = ApiCostItem.requestCostItemList(result, contextOrg, isInvoiceTool)
+                    result = ApiCostItem.requestCostItemList((Org) tmp.obj, contextOrg, isInvoiceTool)
                 }
             }
         }
-        else if ('document'.equalsIgnoreCase(obj)) {
+        else if (checkValidRequest('document')) {
 
-            result = ApiDoc.findDocumentBy(query, value)
+            ApiBox tmp = ApiDoc.findDocumentBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiDoc.requestDocument((Doc) result, contextOrg)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiDoc.requestDocument((Doc) tmp.obj, contextOrg)
             }
         }
         /* else if (NOT_SUPPORTED && 'issueEntitlements'.equalsIgnoreCase(obj)) {
@@ -96,34 +100,37 @@ class ApiManager {
                 }
             }
         } */
-        else if (checkRequest('license', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('license')) {
 
-            result = ApiLicense.findLicenseBy(query, value)
+            ApiBox tmp = ApiLicense.findLicenseBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiLicense.requestLicense((License) result, contextOrg)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiLicense.requestLicense((License) tmp.obj, contextOrg)
             }
         }
-        else if (checkRequest('licenseList', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('licenseList')) {
 
-            result = ApiOrg.findOrganisationBy(query, value)
+            ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiLicense.getLicenseList((Org) result, contextOrg)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiLicense.getLicenseList((Org) tmp.obj, contextOrg)
             }
         }
-        else if (checkRequest('oaMonitor', ApiReader.SUPPORTED_FORMATS.oaMonitor) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('oaMonitor')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
             }
-            result = ApiOrg.findOrganisationBy(query, value)
+            ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiOAMonitor.requestOrganisation((Org) result, contextOrg)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiOAMonitor.requestOrganisation((Org) tmp.obj, contextOrg)
             }
         }
-        else if (checkRequest('oaMonitorList', ApiReader.SUPPORTED_FORMATS.oaMonitorList) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('oaMonitorList')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -131,42 +138,58 @@ class ApiManager {
 
             result = ApiOAMonitor.getAllOrgs()
         }
-        else if (checkRequest('organisation', ApiReader.SUPPORTED_FORMATS.organisation) == Constants.VALID_REQUEST) {
-
-            result = ApiOrg.findOrganisationBy(query, value)
-
-            if (checkFailureCodes(result)) {
-                result = ApiOrg.requestOrganisation((Org) result, contextOrg, isInvoiceTool)
-            }
-        }
-        else if (checkRequest('package', ApiReader.SUPPORTED_FORMATS.package) == Constants.VALID_REQUEST) {
-
-            result = ApiPkg.findPackageBy(query, value)
-
-            if (checkFailureCodes(result)) {
-                result = ApiPkg.requestPackage((Package) result, contextOrg)
-            }
-        }
-        else if (checkRequest('propertyList', ApiReader.SUPPORTED_FORMATS.propertyList) == Constants.VALID_REQUEST) {
-
-			result = ApiCatalogue.getAllProperties(contextOrg)
-        }
-        else if (checkRequest('refdataList', ApiReader.SUPPORTED_FORMATS.refdataList) == Constants.VALID_REQUEST) {
-
-            result = ApiCatalogue.getAllRefdatas()
-        }
-        else if (checkRequest('statistic', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('oaMonitorSubscription')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
             }
-            result = ApiPkg.findPackageBy(query, value)
 
-            if (checkFailureCodes(result)) {
-                result = ApiStatistic.requestPackage((Package) result)
+            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiOAMonitor.requestSubscription((Subscription) tmp.obj, contextOrg)
             }
         }
-        else if (checkRequest('statisticList', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('organisation')) {
+
+            ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiOrg.requestOrganisation((Org) tmp.obj, contextOrg, isInvoiceTool)
+            }
+        }
+        else if (checkValidRequest('package')) {
+
+            ApiBox tmp = ApiPkg.findPackageBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiPkg.requestPackage((Package) tmp.obj, contextOrg)
+            }
+        }
+        else if (checkValidRequest('propertyList')) {
+
+			result = ApiCatalogue.getAllProperties(contextOrg)
+        }
+        else if (checkValidRequest('refdataList')) {
+
+            result = ApiCatalogue.getAllRefdatas()
+        }
+        else if (checkValidRequest('statistic')) {
+
+            if (! isDatamanager) {
+                return Constants.HTTP_FORBIDDEN
+            }
+            ApiBox tmp = ApiPkg.findPackageBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiStatistic.requestPackage((Package) tmp.obj)
+            }
+        }
+        else if (checkValidRequest('statisticList')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -174,20 +197,22 @@ class ApiManager {
 
             result = ApiStatistic.getAllPackages()
         }
-        else if (checkRequest('subscription', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('subscription')) {
 
-            result = ApiSubscription.findSubscriptionBy(query, value)
+            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiSubscription.requestSubscription((Subscription) result, contextOrg, isInvoiceTool)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool)
             }
         }
-        else if (checkRequest('subscriptionList', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {
+        else if (checkValidRequest('subscriptionList')) {
 
-            result = ApiOrg.findOrganisationBy(query, value)
+            ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiSubscription.getSubscriptionList((Org) result, contextOrg)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiSubscription.getSubscriptionList((Org) tmp.obj, contextOrg)
             }
         }
         else {
@@ -197,7 +222,8 @@ class ApiManager {
         result
     }
 
-    @Deprecated
+    //@Deprecated
+    /*
     static write(String obj, JSONObject data, Org contextOrg) {
 
         return // closed ..
@@ -256,10 +282,11 @@ class ApiManager {
         }
         result
     }
+*/
 
     static Map<String, Object> buildResponse(HttpServletRequest request, String obj, String query, String value, String context, Org contextOrg, def result) {
 
-        def response = [:]
+        Map<String, Object> response = [:]
 
         def trimJson = { map ->
             Map<String, Object> rm = [:]

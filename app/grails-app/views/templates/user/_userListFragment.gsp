@@ -39,7 +39,7 @@
                 <td>${us.email}</td>
                 <td>
                     <g:each in="${us.getAuthorizedAffiliations()}" var="affi">
-                        <g:set var="uoId" value="${affi.id}"/>
+                        <g:set var="uoId" value="${affi.id}"/><%-- ERMS-2370 fix this for count>1 --%>
                         <g:if test="${showAllAffiliations}">
                             ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
                         </g:if>
@@ -75,6 +75,8 @@
                 <td class="x">
                     <g:if test="${editable && (instAdmService.isUserEditableForInstAdm(us, editor) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                         <g:link controller="${controllerName}" action="${editLink}" id="${us.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                        <g:if test="${showAffiliationDeleteLink}">
+
                         <g:if test="${!instAdmService.isUserLastInstAdminForOrg(us, orgInstance) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                             <g:link class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [us.displayName,us.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name ])}"
@@ -94,6 +96,7 @@
                             </span>
                         </g:else>
 
+                        </g:if>
                     </g:if>
                 </td>
             </tr>

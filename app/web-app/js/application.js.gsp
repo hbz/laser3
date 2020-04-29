@@ -499,9 +499,12 @@ r2d2 = {
             clearable: true
         });
 
-        $(ctxSel + ' .ui.search.dropdown').dropdown({
+        $(ctxSel + ' .ui.search.dropdown:not(.la-not-clearable)').dropdown({ // default behaviour
             fullTextSearch: 'exact',
             clearable: true
+        });
+        $(ctxSel + ' .ui.search.dropdown.la-not-clearable').dropdown({
+            fullTextSearch: 'exact'
         });
 
         // dropdowns escape

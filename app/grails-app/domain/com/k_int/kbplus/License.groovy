@@ -12,7 +12,7 @@ import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import org.springframework.context.i18n.LocaleContextHolder
@@ -23,7 +23,7 @@ import java.text.SimpleDateFormat
 
 class License
         extends AbstractBaseDomain
-        implements TemplateSupport, Permissions, ShareSupport, Comparable<License>,
+        implements CalculatedType, Permissions, ShareSupport, Comparable<License>,
                 AuditableTrait {
 
     @Transient
@@ -175,16 +175,6 @@ class License
     }
 
     @Override
-    boolean isTemplate() {
-        return (type != null) && (type == RDStore.LICENSE_TYPE_TEMPLATE)
-    }
-
-    @Override
-    boolean hasTemplate() {
-        return instanceOf ? instanceOf.isTemplate() : false
-    }
-
-    @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
         // needed to differentiate OrgRoles
         if (sharedObject instanceof OrgRole) {
@@ -196,7 +186,7 @@ class License
     }
 
     boolean showUIShareButton() {
-        getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 
     void updateShare(ShareableTrait sharedObject) {
@@ -249,20 +239,17 @@ class License
 
     @Override
     String getCalculatedType() {
-        String result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+        String result = CalculatedType.TYPE_UNKOWN
 
-        if (isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        if (getLicensingConsortium() && ! getAllLicensee()) {
+            result = CalculatedType.TYPE_CONSORTIAL
         }
-        else if(getLicensingConsortium() && ! getAllLicensee() && ! isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
-        }
-        else if(getLicensingConsortium() /*&& getAllLicensee()*/ && instanceOf && ! hasTemplate()) {
+        else if (getLicensingConsortium() /*&& getAllLicensee()*/ && instanceOf) {
             // current and deleted member licenses
-            result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
+            result = CalculatedType.TYPE_PARTICIPATION
         }
-        else if(! getLicensingConsortium() && getAllLicensee() && ! isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_LOCAL
+        else if (! getLicensingConsortium() && getAllLicensee()) {
+            result = CalculatedType.TYPE_LOCAL
         }
         result
     }
@@ -500,7 +487,7 @@ class License
         groups.each{ it ->
 
             // cons_members
-            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
+            if (this.instanceOf) {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this.instanceOf)
 
                 // global groups
@@ -815,7 +802,7 @@ AND lower(l.reference) LIKE (:ref)
 
         String result = ''
         result += reference + " - " + statusString + " " + period
-        if (TemplateSupport.CALCULATED_TYPE_PARTICIPATION == getCalculatedType()) {
+        if (CalculatedType.TYPE_PARTICIPATION == getCalculatedType()) {
             result += " - " + messageSource.getMessage('license.member', null, LocaleContextHolder.getLocale())
         }
 

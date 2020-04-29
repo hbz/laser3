@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
 <%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole" %>
-<%@ page import="com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
@@ -16,7 +16,9 @@
 
         <semui:debugInfo>
             <div style="padding: 1em 0;">
-                <p>sub.instanceOf: <g:if test="${subscriptionInstance.instanceOf}"> <g:link action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf.name}</g:link></g:if> </p>
+                <p>sub.instanceOf: <g:if test="${subscriptionInstance.instanceOf}"> <g:link action="show" id="${subscriptionInstance. instanceOf.id}">${subscriptionInstance.instanceOf.name}</g:link>
+                    ${subscriptionInstance.instanceOf.getAllocationTerm()}
+                </g:if> </p>
                 <p>sub.administrative: ${subscriptionInstance.administrative}</p>
                 <p>getCalculatedType(): ${subscriptionInstance.getCalculatedType()}</p>
             </div>
@@ -86,10 +88,10 @@
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
 
-                            <g:if test="${(subscriptionInstance.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                                    subscriptionInstance.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION) ||
-                                    (subscriptionInstance.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_LOCAL &&
-                                    subscriptionInstance.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_LOCAL)}">
+                            <g:if test="${(subscriptionInstance.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
+                                    subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
+                                    (subscriptionInstance.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
+                                    subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
                                     <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
@@ -169,16 +171,12 @@
                                 <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isPublicForApi" /></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isPublicForApi']"/></dd>
                             </dl>
-                            <g:if test="${subscriptionInstance.getCalculatedType() in [de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_CONSORTIAL,
-                                                                                       de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_COLLECTIVE,
-                                                                                       de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION,
-                                                                                       de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]}">
-                                <dl>
-                                    <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
-                                    <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="hasPerpetualAccess" /></dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'hasPerpetualAccess']"/></dd>
-                                </dl>
-                            </g:if>
+
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
+                                <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="hasPerpetualAccess" /></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'hasPerpetualAccess']"/></dd>
+                            </dl>
 
                         </div>
                     </div>
