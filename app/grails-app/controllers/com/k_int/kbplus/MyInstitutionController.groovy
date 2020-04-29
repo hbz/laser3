@@ -3410,36 +3410,6 @@ AND EXISTS (
                     mailAddresses.put(org,addresses)
                 }
             }
-        Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
-            subLinks.put(link.source,link.destination)
-        }
-        LinkedHashMap<Subscription,List<Org>> providers = [:]
-        OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
-            List<Org> orgs = providers.get(it.sub)
-            if(orgs == null)
-                orgs = [it.org]
-            else orgs.add(it.org)
-            providers.put(it.sub,orgs)
-        }
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
-                "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
-                [ctx: result.institution,
-                 roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                 email: RDStore.CCT_EMAIL])
-        Map<Org,Set<String>> mailAddresses = [:]
-        persons.each { personRow ->
-            Person person = (Person) personRow[1]
-            Org org = person.roleLinks.find{ p -> p.org != result.institution}?.org
-            if (org) {
-                Set<String> addresses = mailAddresses.get(org)
-                String mailAddress = (String) personRow[0]
-                if(!addresses) {
-                    addresses = []
-                }
-                addresses << mailAddress
-                mailAddresses.put(org,addresses)
-            }
         }
 
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -3763,7 +3733,6 @@ AND EXISTS (
                 }
             }
     }
-
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
     def manageParticipantSurveys() {

@@ -10,11 +10,10 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.SqlDateUtils
 import groovy.util.logging.Log4j
 
-import static com.k_int.kbplus.UserSettings.getDEFAULT_REMINDER_PERIOD
+import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 
 @Log4j
 class DashboardDueDate {
-//    static fetchMode = [dueDateObject: 'eager']
     User responsibleUser
     Org  responsibleOrg
     boolean isHidden = false
@@ -33,6 +32,21 @@ class DashboardDueDate {
                 isDone,
                 isHidden
         )
+    }
+
+    void update(messageSource, obj){
+        Date now = new Date()
+        this.version = this.version +1
+        this.lastUpdated = now
+        this.dueDateObject.version = this.dueDateObject.version +1
+        this.dueDateObject.lastUpdated = now
+        this.dueDateObject.attribute_value_de = getAttributeValue(messageSource, obj, responsibleUser,
+                Locale.GERMAN)
+        this.dueDateObject.attribute_value_en = getAttributeValue(messageSource, obj, responsibleUser,
+                Locale.ENGLISH)
+        this.dueDateObject.date = getDate(obj, responsibleUser)
+        this.dueDateObject.save()
+        this.save()
     }
 
     static Date getDate(obj, user){

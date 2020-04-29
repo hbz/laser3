@@ -4,6 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
+import de.laser.domain.AbstractI10nTranslatable
 import grails.plugin.mail.MailService
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -15,6 +16,7 @@ class DashboardDueDatesService {
     QueryService queryService
     MailService mailService
     GrailsApplication grailsApplication
+    GenericOIDService genericOIDService
     def messageSource
     Locale locale
     String from
@@ -74,15 +76,15 @@ class DashboardDueDatesService {
         log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase")
 
         List<DashboardDueDate> dashboarEntriesToInsert = []
-//        List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
-        List<User> users = [User.get(96)]
+        List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
+//        List<User> users = [User.get(96)]
         users.each { user ->
             List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
             orgs.each {org ->
                 List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
                 dueObjects.each { obj ->
                     String attributeName = DashboardDueDate.getAttributeName(obj, user)
-                    String oid = GenericOIDService.getOID(obj)
+                    String oid = genericOIDService.getOID(obj)
                     DashboardDueDate das = DashboardDueDate.executeQuery(
                             """select das from DashboardDueDate as das join das.dueDateObject ddo 
                             where das.responsibleUser = :user and das.responsibleOrg = :org and ddo.attribute_name = :attribute_name and ddo.oid = :oid
@@ -93,13 +95,8 @@ class DashboardDueDatesService {
                              oid: oid
                             ])[0]
 
-                    if (das){//update TODO
-                        das.lastUpdated = now
-                        das.version = das.version + 1
-                        das.dueDateObject.lastUpdated = now
-                        das.dueDateObject.version = das.dueDateObject.version +1
-                        das.dueDateObject.save()
-                        das.save()
+                    if (das){//update
+                        das.update(messageSource, obj)
                         log.debug("DashboardDueDatesService UPDATE: " + das);
                     } else {//insert
                         das = new DashboardDueDate(messageSource, obj, user, org, false, false)
@@ -169,43 +166,36 @@ class DashboardDueDatesService {
         def currentServer = grailsApplication.config.getCurrentServer()
         String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
         String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, locale) + " (" + org.name + ")"
-        try {
-            if (emailReceiver == null || emailReceiver.isEmpty()) {
-                log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);
-            } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
-                log.debug("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
-            } else {
-                boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, YN_NO)?.rdValue == YN_YES
-                String ccAddress = null
-                if (isRemindCCbyEmail){
-                    ccAddress = user.getSetting(UserSettings.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
-                }
-                if (isRemindCCbyEmail && ccAddress) {
-                    mailService.sendMail {
-                        to      emailReceiver
-                        from    from
-                        cc      ccAddress
-                        replyTo replyTo
-                        subject mailSubject
-                        body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
-                    }
-                } else {
-                    mailService.sendMail {
-                        to      emailReceiver
-                        from    from
-                        replyTo replyTo
-                        subject mailSubject
-                        body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
-                    }
-                }
-
-                log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
+        if (emailReceiver == null || emailReceiver.isEmpty()) {
+            log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);
+        } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
+            log.debug("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
+        } else {
+            boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, YN_NO)?.rdValue == YN_YES
+            String ccAddress = null
+            if (isRemindCCbyEmail){
+                ccAddress = user.getSetting(UserSettings.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
             }
-        } catch (Exception e) {
-            String eMsg = e.message
-            log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${eMsg}")
-            SystemEvent.createEvent('DBDD_SERVICE_ERROR_3', ['error': eMsg])
-//            flash.error += messageSource.getMessage('menu.admin.sendEmailsForDueDates.error', null, locale)
+            if (isRemindCCbyEmail && ccAddress) {
+                mailService.sendMail {
+                    to      emailReceiver
+                    from    from
+                    cc      ccAddress
+                    replyTo replyTo
+                    subject mailSubject
+                    body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates:
+                                                                                            dashboardEntries])
+                }
+            } else {
+                mailService.sendMail {
+                    to      emailReceiver
+                    from    from
+                    replyTo replyTo
+                    subject mailSubject
+                    body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
+                }
+            }
+            log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
         }
     }
     static List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone) {
@@ -227,5 +217,6 @@ class DashboardDueDatesService {
 
         liste
     }
+
 }
 
