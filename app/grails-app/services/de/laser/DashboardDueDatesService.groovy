@@ -183,7 +183,7 @@ class DashboardDueDatesService {
                     cc      ccAddress
                     replyTo replyTo
                     subject mailSubject
-                    body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates:
+                    body    (view: "/mailTemplates/text/dashboardDueDates", model: [user: user, org: org, dueDates:
                                                                                             dashboardEntries])
                 }
             } else {
@@ -192,7 +192,8 @@ class DashboardDueDatesService {
                     from    from
                     replyTo replyTo
                     subject mailSubject
-                    body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
+                    body    (view: "/mailTemplates/text/dashboardDueDates", model: [user: user, org: org, dueDates:
+                            dashboardEntries])
                 }
             }
             log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
