@@ -23,7 +23,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="${title}" class="active"/>
+    <semui:crumb text="${title}" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
