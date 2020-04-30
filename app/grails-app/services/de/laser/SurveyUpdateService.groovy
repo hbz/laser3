@@ -135,7 +135,8 @@ class SurveyUpdateService extends AbstractLockableService {
                     }
 
                     replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
-                    String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', [survey.type.getI10n('value')], locale) + " (" + org.name + ")"
+                    Object[] args = ["${survey.type.getI10n('value')}"]
+                    String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, locale) + " (" + org.name + ")"
 
                     if (isNotificationCCbyEmail && ccAddress) {
                         mailService.sendMail {
@@ -162,7 +163,7 @@ class SurveyUpdateService extends AbstractLockableService {
                 String eMsg = e.message
 
                 log.error("SurveyUpdateService - sendEmail() :: Unable to perform email due to exception ${eMsg}")
-                SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', ['error': eMsg])
+                SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user, org: org, survey: survey])
             }
         }
     }

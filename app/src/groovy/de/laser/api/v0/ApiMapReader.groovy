@@ -82,39 +82,6 @@ class ApiMapReader {
     /*
 
     // not used ??
-    def resolveTitle(TitleInstance title) {
-        Map<String, Object> result = [:]
-        if (!title) {
-            return null
-        }
-
-        result.id               = title.id
-        result.title            = title.title
-        result.normTitle        = title.normTitle
-        result.keyTitle         = title.keyTitle
-        result.sortTitle        = title.sortTitle
-        result.dateCreated      = title.dateCreated
-        result.lastUpdated      = title.lastUpdated
-
-        // RefdataValues
-
-        result.status       = title.status?.value
-        result.medium       = title.medium?.value
-
-        // References
-
-        result.identifiers  = resolveIdentifiers(title.ids) // com.k_int.kbplus.IdentifierOccurrence
-
-        // TODO
-        //tipps:  TitleInstancePackagePlatform,
-        //orgs:   OrgRole,
-        //historyEvents: TitleHistoryEventParticipant,
-        //prsLinks: PersonRole
-
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-
-    // not used ??
     def resolveLink(Link link) {
         Map<String, Object> result = [:]
         if (!link) {
