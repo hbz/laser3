@@ -15,14 +15,26 @@ import grails.transaction.Transactional
 class LastUpdatedService {
 
     def grailsApplication
-    def sessionFactory
+
+    def setCalculatedLastUpdateWithoutSave(Object obj) {
+        log.debug ('setCalculatedLastUpdateWithoutSave() for ' + obj)
+        log.debug ('dirtyPropertyNames: ' + obj.dirtyPropertyNames)
+
+        log.debug('lastUpdated: ' + obj.lastUpdated)
+        log.debug('calculatedLastUpdated: ' + obj.calculatedLastUpdated)
+
+        if (!obj.calculatedLastUpdated || obj.lastUpdated > obj.calculatedLastUpdated) {
+            log.debug('--> updated')
+            obj.calculatedLastUpdated = obj.lastUpdated
+        }
+    }
 
     def cascadingUpdate(Identifier obj) {
         log.debug ('cascadingUpdate() for ' + obj)
 
         obj.sub.each { ref ->
             log.debug('setting ' + ref.calculatedLastUpdated + ' to ' + obj.lastUpdated + ' for ' + ref)
-            ref.calculatedLastUpdated = obj.lastUpdated
+            //ref.calculatedLastUpdated = obj.lastUpdated
             //ref.save()
         }
 //        lic:    License,
@@ -36,17 +48,21 @@ class LastUpdatedService {
 
     def cascadingUpdate(IdentifierNamespace obj) {
         log.debug ('cascadingUpdate() for ' + obj)
+        List<Identifier> list = Identifier.findAllByNs(obj)
 
         Identifier.executeUpdate("update Identifier i set i.calculatedLastUpdated = :lu where i.ns = :ns", [
                 lu: obj.lastUpdated,
                 ns: obj
         ])
 
-//        Identifier.findAllByNs(obj).each{ ref ->
-//            log.debug('setting ' + ref.calculatedLastUpdated + ' to ' + obj.lastUpdated + ' for ' + ref)
-//            ref.calculatedLastUpdated = obj.lastUpdated
-//            ref.save()
-//        }
+        //List<Identifier> list = Identifier.findAllByNs(obj)
+        list.each{ ref ->
+            def x = Identifier.get(ref.id)
+            log.debug('setting ' + x.calculatedLastUpdated + ' to ' + obj.lastUpdated + ' for ' + x)
+            x.note = 'test'
+            x.save()
+        }
+        print list
     }
 
     def cascadingUpdate(Subscription obj) {

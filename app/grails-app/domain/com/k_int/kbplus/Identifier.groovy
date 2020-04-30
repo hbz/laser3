@@ -19,7 +19,6 @@ class Identifier {
 
     Date dateCreated
     Date lastUpdated
-
     Date calculatedLastUpdated
 
     static belongsTo = [
@@ -207,8 +206,12 @@ class Identifier {
         null
     }
 
-  def beforeUpdate() {
-    value = value?.trim()
+    def beforeInsert() {
+        static_logger.debug("beforeInsert")
+    }
+    def beforeUpdate() {
+        static_logger.debug("beforeUpdate")
+        value = value?.trim()
       // TODO [ticket=1789]
       //boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
       //if(forOrg) {
@@ -224,9 +227,19 @@ class Identifier {
               }
           }
       }
-  }
+    }
+    def beforeDelete() {
+        static_logger.debug("beforeDelete")
+    }
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+    }
     def afterUpdate() {
+        static_logger.debug("afterUpdate")
         lastUpdatedService.cascadingUpdate(this)
+    }
+    def afterDelete() {
+        static_logger.debug("afterDelete")
     }
 
     @Deprecated

@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractI10nOverride
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
@@ -8,6 +10,8 @@ class IdentifierNamespace extends AbstractI10nOverride {
 
     @Transient
     def lastUpdatedService
+
+    static Log static_logger = LogFactory.getLog(IdentifierNamespace)
 
     @Transient
     public static final String UNKNOWN    = "Unknown"
@@ -104,6 +108,7 @@ class IdentifierNamespace extends AbstractI10nOverride {
 
     Date dateCreated
     Date lastUpdated
+    Date calculatedLastUpdated
 
     static mapping = {
         id              column:'idns_id'
@@ -122,8 +127,9 @@ class IdentifierNamespace extends AbstractI10nOverride {
         isHidden        column:'idns_is_hidden'
         isUnique        column:'idns_is_unique'
 
-        lastUpdated column: 'idns_last_updated'
         dateCreated column: 'idns_date_created'
+        lastUpdated column: 'idns_last_updated'
+        calculatedLastUpdated column: 'idns_calc_last_updated'
     }
 
     static constraints = {
@@ -142,12 +148,32 @@ class IdentifierNamespace extends AbstractI10nOverride {
         isHidden        (nullable:false, blank:false)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true, blank: false)
+        calculatedLastUpdated (nullable: true, blank: false)
     }
 
+    def beforeInsert() {
+        static_logger.debug("beforeInsert")
+        // lastUpdated is null
+    }
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+        lastUpdatedService.setCalculatedLastUpdateWithoutSave(this)
+    }
+    def beforeUpdate() {
+        static_logger.debug("beforeUpdate")
+        lastUpdatedService.setCalculatedLastUpdateWithoutSave(this)
+    }
     def afterUpdate() {
-        lastUpdatedService.cascadingUpdate(this)
+        static_logger.debug("afterUpdate")
+        //lastUpdatedService.cascadingUpdate(this)
+    }
+    def beforeDelete() {
+        static_logger.debug("beforeDelete")
+    }
+    def afterDelete() {
+        static_logger.debug("afterDelete")
     }
 
     boolean isCoreOrgNamespace(){
