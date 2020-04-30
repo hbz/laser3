@@ -45,10 +45,10 @@ where
     due_date_object.ddo_attribute_name = ddd.das_attribute_name;
 
 -- Überprüfung der Daten:
-select das_ddobj_fk, ddo_id, das_attribute_name, ddo_attribute_name, das_oid, ddo_oid
-from dashboard_due_date, due_date_object
-where ddo_oid = das_oid and
-      ddo_attribute_name = das_attribute_name;
+-- select das_ddobj_fk, ddo_id, das_attribute_name, ddo_attribute_name, das_oid, ddo_oid
+-- from dashboard_due_date, due_date_object
+-- where ddo_oid = das_oid and
+--       ddo_attribute_name = das_attribute_name;
 
 ALTER TABLE dashboard_due_date DROP COLUMN das_attribute_name;
 ALTER TABLE dashboard_due_date DROP COLUMN das_attribute_value_de;
