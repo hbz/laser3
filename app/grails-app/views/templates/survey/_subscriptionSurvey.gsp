@@ -903,8 +903,9 @@
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">
-                                <g:set var="refdataValues"
-                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                <g:if test="${refdataValue.getI10n('value')}">
+                                    <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                </g:if>
                             </g:each>
                             <br>
                             (${refdataValues.join('/')})
