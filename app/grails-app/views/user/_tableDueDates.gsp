@@ -52,7 +52,8 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof SurveyInfo}">
                             <i class="icon chart pie la-list-icon"></i>
-                            <g:link controller="myInstitution" action="surveyInfos" id="${obj.id}">${obj.name}</g:link>
+                            <g:link controller="myInstitution" action="currentSurveys"
+                                    params="${[name: '"'+obj.name+'"']}">${obj.name}</g:link>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
                             <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="Aufgabe">

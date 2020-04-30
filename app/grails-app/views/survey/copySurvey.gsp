@@ -50,7 +50,7 @@
                 <div class="ui ordered list">
                     <g:each in="${targetSubs}" var="sub" status="i">
                         <input type="hidden" name="targetSubs" value="${sub.id}"/>
-                        <g:link controller="subscription" class="item" action="surveys" id="${sub.id}">
+                        <g:link controller="subscription" class="item" action="surveysConsortia" id="${sub.id}">
                             ${sub.dropdownNamingConvention()}
                         </g:link>
                     </g:each>
