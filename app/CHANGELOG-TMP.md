@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2452    30.04.2020  rc1.3       Moe     Bug         Umfrage Bugs
+
 2199    28.04.2020  rc1.3       David   Feature     API: Top-Level-Objekte mit Status deleted
 
 2449    28.04.2020  rc1.3       David   Bug         API 0.96 - /document

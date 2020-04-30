@@ -245,22 +245,6 @@ class ApiCollectionReader {
     }
 
     /**
-     * @param list
-     * @param ignoreRelation
-     * @param com.k_int.kbplus.Org context
-     * @return
-
-    def resolveIssueEntitlements(def list, def ignoreRelation, Org context) {
-        def result = []
-        if(list) {
-            list.each { it -> // com.k_int.kbplus.IssueEntitlement
-                result << resolveIssueEntitlement(it, ignoreRelation, context)
-            }
-        }
-        result
-    }
-*/
-    /**
      *
      * @param list
      * @param com.k_int.kbplus.Org context
@@ -317,26 +301,6 @@ class ApiCollectionReader {
         }
         result
     }
-
-    /**
-     * Access rights due wrapping object
-     */
-    /*
-    static Collection<Object> getPlatformTippCollection(Collection<PlatformTIPP> list) {
-        Collection<Object> result = []
-
-        list.each { it -> // com.k_int.kbplus.PlatformTIPP
-            Map<String, Object> tmp = [:]
-
-            tmp.titleUrl    = it.titleUrl
-            tmp.rel         = it.rel
-
-            result << tmp
-        }
-
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-    */
 
     static Collection<Object> getPrivatePropertyCollection(Collection list, Org context) {
         Collection<Object> result = []
