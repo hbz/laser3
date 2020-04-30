@@ -1,4 +1,4 @@
-<%@ page import="de.laser.DueDateObject; org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-table">
     <thead>
@@ -13,7 +13,7 @@
     <tbody>
     ${dashDueDate}
     <g:each in="${dueDates}" var="dashDueDate">
-        <g:set var="obj" value="${dashDueDate? genericOIDService.resolveOID(org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil.unwrapIfProxy(dashDueDate.dueDateObject).oid) : null}"/>
+        <g:set var="obj" value="${dashDueDate? genericOIDService.resolveOID(dashDueDate.dueDateObject.oid) : null}"/>
         <g:if test="${obj}">
             <tr>
                 <td>
@@ -93,7 +93,7 @@
                                           controller="ajax"
                                           action="deleteDashboardDueDate_does_not_exist_yet"
                                           params=''
-                                          id="${com.k_int.kbplus.GenericOIDService.getOID(dashDueDate)}"
+                                          id="${genericOIDService.getOID(dashDueDate)}"
                                           data-confirm-tokenMsg="Möchten Sie wirklich diesen fälligen Termin aus dem System löschen?"
                                           data-confirm-term-how="ok"
 
@@ -151,7 +151,7 @@
                                       role="button"
                     >
                         <i class="icon check la-js-editmode-icon"></i>
-                        %{--<input type='checkbox' class='chk' name='isDone' id='${com.k_int.kbplus.GenericOIDService.getOID(dashDueDate)+isDone}'--}%
+                        %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate)+isDone}'--}%
                                %{--<g:if test='${dashDueDate.isDone}'>checked='checked'</g:if>--}%
                         %{--/>--}%
                     </laser:remoteLink>
@@ -168,7 +168,7 @@
                                       role="button"
                     >
                         <i class="icon check la-js-editmode-icon"></i>
-                        %{--<input type='checkbox' class='chk' name='isDone' id='${com.k_int.kbplus.GenericOIDService.getOID(dashDueDate.dueDateObject)+isDone}'--}%
+                        %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate.dueDateObject)+isDone}'--}%
                                %{--<g:if test='${dashDueDate.dueDateObject.isDone}'>checked='checked'</g:if>--}%
                         %{--/>--}%
                     </laser:remoteLink>
@@ -176,7 +176,7 @@
                     %{--<hr>--}%
                     %{--<semui:xEditableBoolean owner="${dashDueDate.dueDateObject}" field="isDone" />--}%
                     %{--<div class="ui checkbox">--}%
-                        %{--<input type='checkbox' class='chk' name='isDone' id='${com.k_int.kbplus.GenericOIDService.getOID(dashDueDate.dueDateObject)+isDone}'--}%
+                        %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate.dueDateObject)+isDone}'--}%
                                %{--<g:if test='${dashDueDate.dueDateObject.isDone}'>checked='checked'</g:if>--}%
                             %{--onchange=""--}%
                         %{--/>--}%
