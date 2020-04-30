@@ -15,7 +15,6 @@ alter table issue_entitlement alter column ie_subscription_fk set not null;
 
 -- 2020-04-20
 -- ERMS-1914
--- create table fehlt noch
 
 insert into due_date_object (
     ddo_version,
@@ -57,6 +56,4 @@ ALTER TABLE dashboard_due_date DROP COLUMN das_attribute_value_en;
 ALTER TABLE dashboard_due_date DROP COLUMN das_date;
 ALTER TABLE dashboard_due_date DROP COLUMN das_is_done;
 ALTER TABLE dashboard_due_date DROP COLUMN das_oid;
--- ALTER TABLE dashboard_due_date DROP COLUMN das_responsible_org_fk;
--- ALTER TABLE dashboard_due_date DROP COLUMN das_responsible_user_fk;
 
