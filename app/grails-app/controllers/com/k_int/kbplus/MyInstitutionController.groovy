@@ -779,7 +779,7 @@ join sub.orgRelations or_sub where
 
         def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM_SURVEY' || authority == 'ORG_CONSORTIUM' }
         result.allConsortia = Org.executeQuery(
-                """select o from Org o, OrgSettings os_ct, OrgSettings os_gs, where 
+                """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
                         os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) 
                         order by lower(o.name)""",
