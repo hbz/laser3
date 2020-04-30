@@ -31,7 +31,7 @@
 
 
 <br>
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label')}
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${institution.name} - ${message(code: 'currentSurveys.label')}
 <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
 </h1>
 
@@ -224,22 +224,26 @@
                 </td>
                 <td>
                     <div class="la-flexbox">
-                        <g:if test="${surveyConfig?.subSurveyUseForTransfer}">
+                        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyConfig.subSurveyUseForTransfer.label.info2")}">
                                 <i class="yellow icon envelope large "></i>
                             </span>
                         </g:if>
 
-                            <g:if test="${surveyInfo.isSubscriptionSurvey}">
-                                <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
-                                         class="ui ">
-                                    ${surveyConfig?.getSurveyName()}
+
+                        <g:if test="${surveyConfig.pickAndChoose}">
+                                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
+                                        params="${[targetSubscriptionId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui">
+                                    ${surveyConfig.getSurveyName()}
                                 </g:link>
-                            </g:if>
-                            <g:else>
-                                ${surveyConfig?.getSurveyName()}
-                            </g:else>
+                        </g:if>
+                        <g:else>
+                                <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
+                                        class="ui">
+                                    ${surveyConfig.getSurveyName()}
+                                </g:link>
+                        </g:else>
                     </div>
                 </td>
                 <td>
@@ -280,8 +284,8 @@
                         <g:if test="${surveyConfig.pickAndChoose}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
-                                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig?.id}"
-                                        params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui icon button">
+                                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
+                                        params="${[targetSubscriptionId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui icon button">
                                     <i class="write icon"></i>
                                 </g:link>
                             </span>

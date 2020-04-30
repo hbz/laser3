@@ -607,8 +607,8 @@ String period
                                         <i class="circular icon inverted blue chart pie"></i>
                                     </span>
 
-                                    <g:link controller="myInstitution" action="surveyInfos"
-                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+                                    <g:link controller="myInstitution" action="currentSurveys"
+                                            params="${[name: '"'+hit.getSourceAsMap().name+'"']}">${hit.getSourceAsMap().name}</g:link>
 
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
