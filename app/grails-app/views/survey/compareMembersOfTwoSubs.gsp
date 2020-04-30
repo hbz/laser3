@@ -556,7 +556,7 @@ ${surveyInfo?.name}
                 <div class="field">
                     <label><g:message code="myinst.copyLicense"/></label>
                     <g:if test="${parentSuccessorSubscription.owner}">
-                        <g:if test="${parentSuccessorSubscription.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE && institution.id == parentSuccessorSubscription.getCollective().id}">
+                        <g:if test="${parentSuccessorSubscription.getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE && institution.id == parentSuccessorSubscription.getCollective().id}">
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" name="attachToParticipationLic" value="true">
                                 <label><g:message code="myinst.attachToParticipationLic"/></label>

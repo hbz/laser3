@@ -26,7 +26,6 @@ import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.SimpleDateFormat
@@ -1349,7 +1348,7 @@ class AdminController extends AbstractDebugController {
 
 
                     subscriberRoles.each{ role ->
-                        if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
+                        if (role.sub.getCalculatedType() == Subscription.TYPE_LOCAL) {
                             role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
                             role.save()
 
@@ -1362,7 +1361,7 @@ class AdminController extends AbstractDebugController {
 
                     }*/
                     conSubscriberRoles.each { role ->
-                        if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                        if (role.sub.getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
                             OrgRole newRole = new OrgRole(
                                     org: role.org,
                                     sub: role.sub,

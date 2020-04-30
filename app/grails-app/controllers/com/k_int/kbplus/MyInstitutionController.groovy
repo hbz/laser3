@@ -336,13 +336,12 @@ class MyInstitutionController extends AbstractDebugController {
         RefdataValue licensee_role           = RDStore.OR_LICENSEE
         RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
         RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
-        RefdataValue template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
 
-        def base_qry
-        def qry_params
+        String base_qry
+        Map qry_params
 
         @Deprecated
-        def qry = INSTITUTIONAL_LICENSES_QUERY
+        String qry = INSTITUTIONAL_LICENSES_QUERY
 
         result.filterSet = params.filterSet ? true : false
 
@@ -360,10 +359,9 @@ class MyInstitutionController extends AbstractDebugController {
             base_qry = """
 from License as l where (
     exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.type != :template )
 )
 """
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, template: template_license_type]
+            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
         }
 
         if (params.orgRole == 'Licensing Consortium') {
@@ -378,11 +376,10 @@ from License as l where (
                     select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
                 )
             )
-        )) 
-    AND ( l.type != :template )
+        ))
 )
 """
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, template:template_license_type]
+            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
         }
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
@@ -630,31 +627,8 @@ from License as l where (
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
-        def qparams = [template_license_type]
-
-       // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
-        // (OS License specs)
-        // def qry = "from License as l where ( ( l.type = ? ) OR ( exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) ) OR ( l.isPublic=? ) ) AND l.status.value != 'Deleted'"
-
-        def query = "from License as l where l.type = ? "
-
-        if (params.filter) {
-            query += " and lower(l.reference) like ?"
-            qparams.add("%${params.filter.toLowerCase()}%")
-        }
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            query += " order by l.${params.sort} ${params.order}"
-        } else {
-            query += " order by sortableReference asc"
-        }
-
-        result.numLicenses = License.executeQuery("select l.id ${query}", qparams).size()
-        result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
-
-        result.licenses = result.licenses
-        result.numLicenses = result.numLicenses
+        result.licenses = [] // ERMS-2431
+        result.numLicenses = 0
 
         if (params.sub) {
             result.sub         = params.sub
@@ -2450,14 +2424,26 @@ AND EXISTS (
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
         if ( params.exportXLSX ) {
+
+            SXSSFWorkbook wb
             List surveyConfigsforExport = result.surveyResults.collect {it[1]}
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.plural")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(surveyConfigsforExport, result.institution)
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(surveyConfigsforExport, result.institution)
+            }else {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.plural")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys(surveyConfigsforExport, result.institution)
+            }
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -2505,6 +2491,7 @@ AND EXISTS (
 
         if(result.surveyConfig?.type == 'Subscription') {
             result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+            result.subscription = result.subscriptionInstance
             result.authorizedOrgs = result.user?.authorizedOrgs
             result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
@@ -2515,6 +2502,20 @@ AND EXISTS (
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
+
+            //costs dataToDisplay
+            result.dataToDisplay = ['subscr']
+            result.offsets = [subscrOffset:0]
+            result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
+
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            //cost items
+            //params.forExport = true
+            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+            result.costItemSums = [:]
+            if (costItems?.subscr) {
+                result.costItemSums.subscrCosts = costItems.subscr.costItems
+            }
         }
 
         if ( params.exportXLSX ) {
@@ -2617,6 +2618,7 @@ AND EXISTS (
 
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
         SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        boolean sendMailToSurveyOwner = false
 
         if(surveyConfig && surveyConfig.pickAndChoose){
 
@@ -2636,8 +2638,7 @@ AND EXISTS (
                         flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                     } else {
                         flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
-
-
+                        sendMailToSurveyOwner = true
                     }
                 } else {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
@@ -2672,10 +2673,15 @@ AND EXISTS (
                     it.finishDate = new Date()
                     it.save()
                 }
+                sendMailToSurveyOwner = true
                 // flash.message = message(code: "surveyResult.finish.info")
             } else {
                 flash.error = message(code: "surveyResult.finish.error")
             }
+
+        if(sendMailToSurveyOwner) {
+            surveyService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
+        }
 
 
         redirect(url: request.getHeader('referer'))

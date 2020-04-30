@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.93'
+    static final VERSION = '0.96'
     static final NOT_SUPPORTED = false
 
     /**
@@ -43,10 +43,6 @@ class ApiManager {
             return true
         }
 
-        Closure checkFailureCodes = { check ->
-            return check && !(check.toString() in failureCodes)
-        }
-
         if (! (ApiReader.SUPPORTED_FORMATS.containsKey(obj))){
             return Constants.HTTP_NOT_IMPLEMENTED
         }
@@ -56,10 +52,11 @@ class ApiManager {
 
         if (checkValidRequest('costItem')) {
 
-            result = ApiCostItem.findCostItemBy(query, value)
+            ApiBox tmp = ApiCostItem.findCostItemBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            if (checkFailureCodes(result)) {
-                result = ApiCostItem.requestCostItem((CostItem) result, contextOrg, isInvoiceTool)
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiCostItem.requestCostItem((CostItem) tmp.obj, contextOrg, isInvoiceTool)
             }
         }
         else if (checkValidRequest('costItemList')) {
@@ -74,14 +71,14 @@ class ApiManager {
 
             if (tmp.checkFailureCodes_3()) {
                 if(identifierAndTimestamp[1].key == 'timestamp'){
-                    result = ApiCostItem.requestCostItemListWithTimeStamp((Org) tmp.obj, contextOrg, isInvoiceTool, identifierAndTimestamp[1].value)
+                    result = ApiCostItem.requestCostItemListWithTimeStamp((Org) tmp.obj, contextOrg, identifierAndTimestamp[1].value, isInvoiceTool)
                 }
                 else {
                     result = ApiCostItem.requestCostItemList((Org) tmp.obj, contextOrg, isInvoiceTool)
                 }
             }
         }
-        else if ('document'.equalsIgnoreCase(obj)) {
+        else if (checkValidRequest('document')) {
 
             ApiBox tmp = ApiDoc.findDocumentBy(query, value)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove

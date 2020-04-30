@@ -5,7 +5,7 @@ import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 import static com.k_int.kbplus.UserSettings.KEYS.*
@@ -32,7 +32,7 @@ class QueryService {
             def manualCancellationDateFrom = (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? today : null
             def manualCancellationDateTo =   (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD) : null
             getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo).each{
-                boolean isConsortialOrCollective = it.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
+                boolean isConsortialOrCollective = it.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]
                 if ( ! isConsortialOrCollective ) {
                     dueObjects << it
                 }
@@ -60,7 +60,7 @@ class QueryService {
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==YN_YES) {
             getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)).each{
 
-                boolean isConsortialOrCollective = it.owner.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
+                boolean isConsortialOrCollective = it.owner.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]
                 if ( ! isConsortialOrCollective ) {
                     dueObjects << it
                 }
@@ -81,7 +81,7 @@ class QueryService {
         if (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP)==YN_YES) {
             getDueSubscriptionCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP)).each{
 
-                boolean isConsortialOrCollective = it.owner.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
+                boolean isConsortialOrCollective = it.owner.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]
 
                 if ( ! isConsortialOrCollective ) {
                     dueObjects << it
@@ -179,7 +179,6 @@ class QueryService {
     }
 
     private Map<String, Object> getMyLicensesQuery(Org institution){
-        def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
         Map<String, Object> result = [:]
         def base_qry
         def qry_params
@@ -190,10 +189,9 @@ class QueryService {
             base_qry = """
 from License as l where (
     exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.type != :template )
 )
 """
-            qry_params = [roleType1:OR_LICENSEE, roleType2:OR_LICENSEE_CONS, lic_org:institution, template: template_license_type]
+            qry_params = [roleType1:OR_LICENSEE, roleType2:OR_LICENSEE_CONS, lic_org:institution]
         }
 
         if (isLicensingConsortium) {
@@ -206,11 +204,10 @@ from License as l where (
                     select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
                 )
             )
-        )) 
-    AND ( l.type != :template )
+        ))
 )
 """
-            qry_params = [roleTypeC:OR_LICENSING_CONSORTIUM, roleTypeL:OR_LICENSEE_CONS, lic_org:institution, template:template_license_type]
+            qry_params = [roleTypeC:OR_LICENSING_CONSORTIUM, roleTypeL:OR_LICENSEE_CONS, lic_org:institution]
         }
 
         result.query = "select l ${base_qry}"
