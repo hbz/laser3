@@ -20,7 +20,7 @@
                     <g:if test="${obj instanceof AbstractProperty}">
                         <i class="icon tags la-list-icon"></i>
                     </g:if>
-                ${dashDueDate.id} &nbsp
+                %{--${dashDueDate.id} &nbsp--}%
                     <g:if test="${Locale.GERMAN.getLanguage() == org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}">
                         ${dashDueDate.dueDateObject.attribute_value_de}
                     </g:if>
@@ -60,7 +60,6 @@
                                 <i class="icon checked calendar la-list-icon"></i>
                             </span>
                             <a href="#" class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
-                            &nbsp; (Status: ${obj.status?.getI10n("value")})
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractProperty}">
                             <g:if test="${obj.owner instanceof Person}">

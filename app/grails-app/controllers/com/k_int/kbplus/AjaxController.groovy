@@ -1919,18 +1919,18 @@ class AjaxController {
             return;
         }
 
-        if (params.id) {
-            DashboardDueDate dueDate = genericOIDService.resolveOID(params.id)
+        if (params.owner) {
+            DashboardDueDate dueDate = genericOIDService.resolveOID(params.owner)
             if (dueDate){
                 dueDate.isHidden = isHidden
                 dueDate.save(flush: true)
             } else {
-                if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
-                else            flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+                if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+                else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
             }
         } else {
-            if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
-            else            flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+            if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+            else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
         }
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
