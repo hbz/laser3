@@ -10,24 +10,24 @@ class CascadingUpdateService {
 
     def grailsApplication
 
-    def cascadingUpdate(IdentifierNamespace obj, Date clu) {
-        logDebug(obj, clu)
+    def update(IdentifierNamespace obj, Date clu) {
+        toLog(obj, clu)
 
-        IdentifierNamespace.executeUpdate("update IdentifierNamespace ns set ns.cascadingLastUpdated = :clu where ns = :obj", [
+        IdentifierNamespace.executeUpdate("update IdentifierNamespace ns set ns.lastUpdatedCascading = :clu where ns = :obj", [
                 clu: clu, obj: obj
         ])
 
-        Identifier.findAllByNs(obj).each{ i -> cascadingUpdate(i, clu) }
+        Identifier.findAllByNs(obj).each{ i -> update(i, clu) }
     }
 
-    def cascadingUpdate(Identifier obj, Date clu) {
-        logDebug(obj, clu)
+    def update(Identifier obj, Date clu) {
+        toLog(obj, clu)
 
-        Identifier.executeUpdate("update Identifier i set i.cascadingLastUpdated = :clu where i = :obj", [
+        Identifier.executeUpdate("update Identifier i set i.lastUpdatedCascading = :clu where i = :obj", [
                 clu: clu, obj: obj
         ])
 
-        if (obj.sub) { cascadingUpdate(obj.sub, clu) }
+        if (obj.sub) { update(obj.sub, clu) }
 
 //        lic:    License,
 //        org:    Org,
@@ -37,15 +37,15 @@ class CascadingUpdateService {
 //        cre:    Creator
     }
 
-    def cascadingUpdate(Subscription obj, Date clu) {
-        logDebug(obj, clu)
+    def update(Subscription obj, Date clu) {
+        toLog(obj, clu)
 
-        Subscription.executeUpdate("update Subscription sub set sub.cascadingLastUpdated = :clu where sub = :obj", [
+        Subscription.executeUpdate("update Subscription sub set sub.lastUpdatedCascading = :clu where sub = :obj", [
                 clu: clu, obj: obj
         ])
     }
 
-    private void logDebug(Object obj, Date clu) {
+    private void toLog(Object obj, Date clu) {
         log.debug ('cascadingUpdate for ' + obj + ' = ' + obj.cascadingLastUpdated + ' <- ' + clu)
     }
 }

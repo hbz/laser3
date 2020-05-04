@@ -20,7 +20,7 @@ class Identifier implements CalculatedLastUpdate {
 
     Date dateCreated
     Date lastUpdated
-    Date cascadingLastUpdated
+    Date lastUpdatedCascading
 
     static belongsTo = [
             lic:    License,
@@ -50,9 +50,9 @@ class Identifier implements CalculatedLastUpdate {
 	  	cre     (nullable:true)
 
 		// Nullable is true, because values are already in the database
-      	lastUpdated (nullable: true, blank: false)
-      	dateCreated (nullable: true, blank: false)
-        cascadingLastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true, blank: false)
+        lastUpdatedCascading (nullable: true, blank: false)
   	}
 
     static mapping = {
@@ -71,7 +71,7 @@ class Identifier implements CalculatedLastUpdate {
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
-        cascadingLastUpdated column: 'id_cascading_last_updated'
+        lastUpdatedCascading column: 'id_cascading_last_updated'
     }
 
     static Identifier construct(Map<String, Object> map) {
@@ -209,24 +209,21 @@ class Identifier implements CalculatedLastUpdate {
 
     def afterInsert() {
         static_logger.debug("afterInsert")
-        cascadingUpdateService.cascadingUpdate(this, dateCreated)
+        cascadingUpdateService.update(this, dateCreated)
     }
     def afterUpdate() {
         static_logger.debug("afterUpdate")
-        cascadingUpdateService.cascadingUpdate(this, lastUpdated)
+        cascadingUpdateService.update(this, lastUpdated)
     }
     def afterDelete() {
         static_logger.debug("afterDelete")
-        cascadingUpdateService.cascadingUpdate(this, new Date())
+        cascadingUpdateService.update(this, new Date())
     }
 
     Date getCalculatedLastUpdate() {
-        (cascadingLastUpdated != null && cascadingLastUpdated > lastUpdated) ? cascadingLastUpdated : lastUpdated
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
-    def beforeInsert() {
-        static_logger.debug("beforeInsert")
-    }
     def beforeUpdate() {
         static_logger.debug("beforeUpdate")
         value = value?.trim()

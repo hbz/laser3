@@ -109,7 +109,7 @@ class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLast
 
     Date dateCreated
     Date lastUpdated
-    Date cascadingLastUpdated
+    Date lastUpdatedCascading
 
     static mapping = {
         id              column:'idns_id'
@@ -130,7 +130,7 @@ class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLast
 
         dateCreated column: 'idns_date_created'
         lastUpdated column: 'idns_last_updated'
-        cascadingLastUpdated column: 'idns_cascading_last_updated'
+        lastUpdatedCascading column: 'idns_cascading_last_updated'
     }
 
     static constraints = {
@@ -151,24 +151,24 @@ class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLast
         // Nullable is true, because values are already in the database
         dateCreated (nullable: true, blank: false)
         lastUpdated (nullable: true, blank: false)
-        cascadingLastUpdated (nullable: true, blank: false)
+        lastUpdatedCascading (nullable: true, blank: false)
     }
 
     def afterInsert() {
         static_logger.debug("afterInsert")
-        cascadingUpdateService.cascadingUpdate(this, dateCreated)
+        cascadingUpdateService.update(this, dateCreated)
     }
     def afterUpdate() {
         static_logger.debug("afterUpdate")
-        cascadingUpdateService.cascadingUpdate(this, lastUpdated)
+        cascadingUpdateService.update(this, lastUpdated)
     }
     def afterDelete() {
         static_logger.debug("afterDelete")
-        cascadingUpdateService.cascadingUpdate(this, new Date())
+        cascadingUpdateService.update(this, new Date())
     }
 
     Date getCalculatedLastUpdate() {
-        (cascadingLastUpdated != null && cascadingLastUpdated > lastUpdated) ? cascadingLastUpdated : lastUpdated
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     boolean isCoreOrgNamespace(){

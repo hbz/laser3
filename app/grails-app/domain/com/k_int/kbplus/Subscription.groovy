@@ -92,7 +92,7 @@ class Subscription
 
     Date dateCreated
     Date lastUpdated
-    Date cascadingLastUpdated
+    Date lastUpdatedCascading
 
   License owner
   SortedSet issueEntitlements
@@ -150,7 +150,7 @@ class Subscription
         isSlaved        column:'sub_is_slaved'
         hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
         isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
-        cascadingLastUpdated column: 'sub_cascading_last_updated'
+        lastUpdatedCascading column: 'sub_cascading_last_updated'
 
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
@@ -196,7 +196,7 @@ class Subscription
         isPublicForApi (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
-        cascadingLastUpdated (nullable: true, blank: false)
+        lastUpdatedCascading (nullable: true, blank: false)
         isMultiYear(nullable: true, blank: false)
         hasPerpetualAccess(nullable: false, blank: false)
     }
@@ -215,7 +215,7 @@ class Subscription
     }
 
     Date getCalculatedLastUpdate() {
-        (cascadingLastUpdated != null && cascadingLastUpdated > lastUpdated) ? cascadingLastUpdated : lastUpdated
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     @Override
