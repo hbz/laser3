@@ -1,15 +1,14 @@
 package de.laser
 
+import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
-import de.laser.helper.SqlDateUtils
+import de.laser.domain.AbstractI10nTranslatable
 import grails.plugin.mail.MailService
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
-import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 import static de.laser.helper.RDStore.*
 
 class DashboardDueDatesService {
@@ -17,6 +16,7 @@ class DashboardDueDatesService {
     QueryService queryService
     MailService mailService
     GrailsApplication grailsApplication
+    GenericOIDService genericOIDService
     def messageSource
     Locale locale
     String from
@@ -34,9 +34,9 @@ class DashboardDueDatesService {
     }
 
     boolean takeCareOfDueDates(boolean isUpdateDashboardTableInDatabase, boolean isSendEmailsForDueDatesOfAllUsers, def flash) {
-        if (flash == null) flash = new HashMap<>()
-        if (flash.message == null) flash.put('message', '')
-        if (flash.error == null)   flash.put('error', '')
+        if (flash == null) flash = [:]
+        flash.message = ''
+        flash.error = ''
 
         if ( update_running ) {
                 log.info("Existing DashboardDueDatesService takeCareOfDueDates - one already running");
@@ -77,24 +77,33 @@ class DashboardDueDatesService {
 
         List<DashboardDueDate> dashboarEntriesToInsert = []
         List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
-//        def users = [User.get(6)]
+//        List<User> users = [User.get(96)]
         users.each { user ->
             List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
             orgs.each {org ->
                 List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
                 dueObjects.each { obj ->
-                    if (obj instanceof Subscription) {
-                        int reminderPeriodForManualCancellationDate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD).value ?: 1
-                        if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriodForManualCancellationDate)) {
-                            dashboarEntriesToInsert.add(new DashboardDueDate(messageSource, obj, true, user, org, false, false))
-                        }
-                        int reminderPeriodForSubsEnddate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD).value ?: 1
-                        if (obj.endDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.endDate, reminderPeriodForSubsEnddate)) {
-                            dashboarEntriesToInsert.add(new DashboardDueDate(messageSource, obj, false, user, org, false, false))
-                        }
-                    } else {
-                        dashboarEntriesToInsert.add(new DashboardDueDate(messageSource, obj, user, org, false, false))
+                    String attributeName = DashboardDueDate.getAttributeName(obj, user)
+                    String oid = genericOIDService.getOID(obj)
+                    DashboardDueDate das = DashboardDueDate.executeQuery(
+                            """select das from DashboardDueDate as das join das.dueDateObject ddo 
+                            where das.responsibleUser = :user and das.responsibleOrg = :org and ddo.attribute_name = :attribute_name and ddo.oid = :oid
+                            order by ddo.date""",
+                            [user: user,
+                             org: org,
+                             attribute_name: attributeName,
+                             oid: oid
+                            ])[0]
+
+                    if (das){//update
+                        das.update(messageSource, obj)
+                        log.debug("DashboardDueDatesService UPDATE: " + das);
+                    } else {//insert
+                        das = new DashboardDueDate(messageSource, obj, user, org, false, false)
+                        das.save()
+                        log.debug("DashboardDueDatesService UPDATE: " + das);
                     }
+
                 }
             }
         }
@@ -103,45 +112,8 @@ class DashboardDueDatesService {
             SystemEvent.createEvent('DBDD_SERVICE_START_TRANSACTION', ['count': dashboarEntriesToInsert.size])
 
             try {
-
-                dashboarEntriesToInsert.each { DashboardDueDate newDueDate ->
-                    //update
-                    int anzUpdates = DashboardDueDate.executeUpdate("""UPDATE DashboardDueDate 
-                        SET version = ((select version from DashboardDueDate WHERE attribute_name = :attribute_name 
-                        AND oid = :oid 
-                        AND responsibleOrg = :org 
-                        AND responsibleUser = :user ) + 1), 
-                        date = :date, 
-                        lastUpdated = :now, 
-                        attribute_value_de = :attribute_value_de, 
-                        attribute_value_en = :attribute_value_en
-                        WHERE attribute_name = :attribute_name 
-                        AND oid = :oid 
-                        AND responsibleOrg = :org 
-                        AND responsibleUser = :user""",
-                            [
-                                    date: newDueDate.date,
-                                    now: now,
-                                    attribute_value_de: newDueDate.attribute_value_de,
-                                    attribute_value_en: newDueDate.attribute_value_en,
-                                    attribute_name: newDueDate.attribute_name,
-                                    oid: newDueDate.oid,
-                                    org: newDueDate.responsibleOrg,
-                                    user: newDueDate.responsibleUser
-                            ])
-
-                    if (anzUpdates == 1) {
-                        log.debug("DashboardDueDatesService UPDATE: " + newDueDate);
-                    //insert if not exist
-                    } else if (anzUpdates < 1){
-                        newDueDate.save(flush: true)
-                        log.debug("DashboardDueDatesService INSERT: " + newDueDate);
-                    } else if (anzUpdates > 1){
-                        log.error("DashboardDueDate Error: Update "+anzUpdates+" records! It should be 0 or 1 record! "+ newDueDate.toString())
-                    }
-                }
                 // delete (not-inserted and non-updated entries, they are obsolet)
-                int anzDeletes = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now and isDone = false and isHidden = false", [now: now])
+                int anzDeletes = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now and isHidden = false", [now: now])
                 log.debug("DashboardDueDatesService DELETES: " + anzDeletes);
 
                 log.debug("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size)
@@ -175,7 +147,7 @@ class DashboardDueDatesService {
                 if (userWantsEmailReminder) {
                     List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
                     orgs.each { org ->
-                        def dashboardEntries = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsDoneAndIsHidden(user, org, false, false, [sort: "date", order: "asc"])
+                        List<DashboardDueDate> dashboardEntries = DashboardDueDatesService.getDashboardDueDates(user, org, false, false)
                         sendEmail(user, org, dashboardEntries)
                     }
                 }
@@ -194,44 +166,58 @@ class DashboardDueDatesService {
         def currentServer = grailsApplication.config.getCurrentServer()
         String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
         String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, locale) + " (" + org.name + ")"
-        try {
-            if (emailReceiver == null || emailReceiver.isEmpty()) {
-                log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);
-            } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
-                log.debug("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
-            } else {
-                boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, YN_NO)?.rdValue == YN_YES
-                String ccAddress = null
-                if (isRemindCCbyEmail){
-                    ccAddress = user.getSetting(UserSettings.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
-                }
-                if (isRemindCCbyEmail && ccAddress) {
-                    mailService.sendMail {
-                        to      emailReceiver
-                        from    from
-                        cc      ccAddress
-                        replyTo replyTo
-                        subject mailSubject
-                        body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
-                    }
-                } else {
-                    mailService.sendMail {
-                        to      emailReceiver
-                        from    from
-                        replyTo replyTo
-                        subject mailSubject
-                        body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
-                    }
-                }
-
-                log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
+        if (emailReceiver == null || emailReceiver.isEmpty()) {
+            log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);
+        } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
+            log.debug("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
+        } else {
+            boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, YN_NO)?.rdValue == YN_YES
+            String ccAddress = null
+            if (isRemindCCbyEmail){
+                ccAddress = user.getSetting(UserSettings.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
             }
-        } catch (Exception e) {
-            String eMsg = e.message
-
-            log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${eMsg}")
-            SystemEvent.createEvent('DBDD_SERVICE_ERROR_3', ['error': eMsg])
+            if (isRemindCCbyEmail && ccAddress) {
+                mailService.sendMail {
+                    to      emailReceiver
+                    from    from
+                    cc      ccAddress
+                    replyTo replyTo
+                    subject mailSubject
+                    body    (view: "/mailTemplates/text/dashboardDueDates", model: [user: user, org: org, dueDates:
+                                                                                            dashboardEntries])
+                }
+            } else {
+                mailService.sendMail {
+                    to      emailReceiver
+                    from    from
+                    replyTo replyTo
+                    subject mailSubject
+                    body    (view: "/mailTemplates/text/dashboardDueDates", model: [user: user, org: org, dueDates:
+                            dashboardEntries])
+                }
+            }
+            log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
         }
     }
+    static List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone) {
+        List liste = DashboardDueDate.executeQuery(
+                """select das from DashboardDueDate as das 
+                        join das.dueDateObject ddo 
+                        where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone
+                        order by ddo.date""",
+                [user: user, org: org, isHidden: isHidden, isDone: isDone])
+        liste
+    }
+
+    static List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone, max, offset){
+        List liste = DashboardDueDate.executeQuery(
+                """select das from DashboardDueDate as das join das.dueDateObject ddo 
+                where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone
+                order by ddo.date""",
+                [user: user, org: org, isHidden: isHidden, isDone: isDone], [max: max, offset: offset])
+
+        liste
+    }
+
 }
 

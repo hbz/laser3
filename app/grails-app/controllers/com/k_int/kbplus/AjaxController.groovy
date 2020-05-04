@@ -8,6 +8,8 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.DashboardDueDate
+import de.laser.DashboardDueDatesService
+import de.laser.DueDateObject
 import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
@@ -1909,6 +1911,7 @@ class AjaxController {
         def result = [:]
         result.user = contextService.user
         result.institution = contextService.org
+        flash.error = ''
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.org.name} pages. Please request access on the profile page"
@@ -1916,18 +1919,18 @@ class AjaxController {
             return;
         }
 
-        if (params.id) {
-            DashboardDueDate dueDate = DashboardDueDate.get(params.id)
+        if (params.owner) {
+            DashboardDueDate dueDate = genericOIDService.resolveOID(params.owner)
             if (dueDate){
                 dueDate.isHidden = isHidden
                 dueDate.save(flush: true)
             } else {
-                if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
-                else            flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+                if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+                else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
             }
         } else {
-            if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
-            else            flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+            if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+            else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
         }
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
@@ -1937,12 +1940,69 @@ class AjaxController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.dashboardDueDatesOffset = result.offset
 
-//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
+        result.dueDates = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
+    }
 
+    @Secured(['ROLE_USER'])
+    def dashboardDueDateSetIsDone() {
+       setDashboardDueDateIsDone(true)
+    }
+
+    @Secured(['ROLE_USER'])
+    def dashboardDueDateSetIsUndone() {
+       setDashboardDueDateIsDone(false)
+    }
+
+    @Secured(['ROLE_USER'])
+    private setDashboardDueDateIsDone(boolean isDone){
+        log.debug("Done/Undone Dashboard DueDate - isDone="+isDone)
+
+        def result = [:]
+        result.user = contextService.user
+        result.institution = contextService.org
+        flash.error = ''
+
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = "You do not have permission to access ${contextService.org.name} pages. Please request access on the profile page"
+            response.sendError(401)
+            return
+        }
+
+
+        if (params.owner) {
+            DueDateObject dueDateObject = genericOIDService.resolveOID(params.owner)
+            if (dueDateObject){
+                Object obj = genericOIDService.resolveOID(dueDateObject.oid)
+                if (obj instanceof Task && isDone){
+                    Task dueTask = (Task)obj
+                    dueTask.setStatus(RDStore.TASK_STATUS_DONE)
+                    dueTask.save()
+                }
+                dueDateObject.isDone = isDone
+                dueDateObject.save()
+            } else {
+                if (isDone)   flash.error += message(code:'dashboardDueDate.err.toSetDone.doesNotExist')
+                else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
+            }
+        } else {
+            if (isDone)   flash.error += message(code:'dashboardDueDate.err.toSetDone.doesNotExist')
+            else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
+        }
+
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.dashboardDueDatesOffset = result.offset
+
+        result.dueDates = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+
+        render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
 
     /*
@@ -2546,8 +2606,13 @@ class AjaxController {
         def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
         result.params = params
         result.taskInstance = Task.get(params.id)
+        if (result.taskInstance){
+            render template:"../templates/tasks/modal_edit", model: result
+//        } else {
+//            flash.error = "Diese Aufgabe existiert nicht (mehr)."
+//            redirect(url: request.getHeader('referer'))
+        }
 
-        render template:"../templates/tasks/modal_edit", model: result
     }
 
     @Secured(['ROLE_USER'])

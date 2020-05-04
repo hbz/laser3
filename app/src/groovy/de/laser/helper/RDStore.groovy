@@ -189,6 +189,8 @@ class RDStore {
     static final YNO_NO         = getRefdataValue('No', RDConstants.Y_N_O)
     static final YNO_OTHER      = getRefdataValue('Other', RDConstants.Y_N_O)
 
+    static final LANGUAGE_DE      = getRefdataValue('de', RDConstants.LANGUAGE)
+
     //Properties
 
     static final SURVEY_PROPERTY_PARTICIPATION = getSurveyProperty('Participation')

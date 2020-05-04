@@ -6,6 +6,8 @@ import de.laser.helper.RDStore
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.sql.Ref
+
 @Transactional
 class TaskService {
 
