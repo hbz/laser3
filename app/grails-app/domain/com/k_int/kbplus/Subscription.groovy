@@ -9,7 +9,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.CalculatedLastUpdate
+import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat
 
 class Subscription
         extends AbstractBaseDomain
-        implements CalculatedType, CalculatedLastUpdate, Permissions, ShareSupport, AuditableTrait {
+        implements CalculatedType, CalculatedLastUpdated, Permissions, ShareSupport, AuditableTrait {
 
     // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
@@ -150,7 +150,7 @@ class Subscription
         isSlaved        column:'sub_is_slaved'
         hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
         isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
-        lastUpdatedCascading column: 'sub_cascading_last_updated'
+        lastUpdatedCascading column: 'sub_last_updated_cascading'
 
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
@@ -214,7 +214,7 @@ class Subscription
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
-    Date getCalculatedLastUpdate() {
+    Date getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 

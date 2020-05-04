@@ -1,13 +1,13 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractI10nOverride
-import de.laser.interfaces.CalculatedLastUpdate
+import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
-class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLastUpdate {
+class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLastUpdated {
 
     @Transient
     def cascadingUpdateService
@@ -130,7 +130,7 @@ class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLast
 
         dateCreated column: 'idns_date_created'
         lastUpdated column: 'idns_last_updated'
-        lastUpdatedCascading column: 'idns_cascading_last_updated'
+        lastUpdatedCascading column: 'idns_last_updated_cascading'
     }
 
     static constraints = {
@@ -167,7 +167,7 @@ class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLast
         cascadingUpdateService.update(this, new Date())
     }
 
-    Date getCalculatedLastUpdate() {
+    Date getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 

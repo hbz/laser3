@@ -10,7 +10,7 @@ class CascadingUpdateService {
 
     def grailsApplication
 
-    def update(IdentifierNamespace obj, Date luc) {
+    void update(IdentifierNamespace obj, Date luc) {
         toLog(obj, luc)
 
         IdentifierNamespace.executeUpdate("update IdentifierNamespace ns set ns.lastUpdatedCascading = :luc where ns = :obj", [
@@ -20,7 +20,7 @@ class CascadingUpdateService {
         Identifier.findAllByNs(obj).each{ i -> update(i, luc) }
     }
 
-    def update(Identifier obj, Date luc) {
+    void update(Identifier obj, Date luc) {
         toLog(obj, luc)
 
         Identifier.executeUpdate("update Identifier i set i.lastUpdatedCascading = :luc where i = :obj", [
@@ -37,7 +37,7 @@ class CascadingUpdateService {
 //        cre:    Creator
     }
 
-    def update(Subscription obj, Date luc) {
+    void update(Subscription obj, Date luc) {
         toLog(obj, luc)
 
         Subscription.executeUpdate("update Subscription sub set sub.lastUpdatedCascading = :luc where sub = :obj", [
@@ -46,6 +46,6 @@ class CascadingUpdateService {
     }
 
     private void toLog(Object obj, Date luc) {
-        log.debug ('cascadingUpdate for ' + obj + ' = [' + obj.cascadingLastUpdated + '] <- [' + luc + ']')
+        log.debug ('cascadingUpdate for ' + obj + '   [' + obj.lastUpdatedCascading + '] <- [' + luc + ']')
     }
 }

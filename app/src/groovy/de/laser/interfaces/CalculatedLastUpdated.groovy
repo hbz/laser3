@@ -1,12 +1,12 @@
 package de.laser.interfaces
 
-interface CalculatedLastUpdate {
+interface CalculatedLastUpdated {
 
-    Date cascadingLastUpdated
+    Date lastUpdatedCascading
 
     def afterInsert()
     def afterUpdate()
     def afterDelete()
 
-    Date getCalculatedLastUpdate()
+    Date getCalculatedLastUpdated()
 }

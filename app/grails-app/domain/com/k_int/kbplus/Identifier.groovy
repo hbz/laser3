@@ -1,13 +1,13 @@
 package com.k_int.kbplus
 
 import de.laser.helper.FactoryResult
-import de.laser.interfaces.CalculatedLastUpdate
+import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
-class Identifier implements CalculatedLastUpdate {
+class Identifier implements CalculatedLastUpdated {
 
     @Transient
     def cascadingUpdateService
@@ -71,7 +71,7 @@ class Identifier implements CalculatedLastUpdate {
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
-        lastUpdatedCascading column: 'id_cascading_last_updated'
+        lastUpdatedCascading column: 'id_last_updated_cascading'
     }
 
     static Identifier construct(Map<String, Object> map) {
@@ -220,7 +220,7 @@ class Identifier implements CalculatedLastUpdate {
         cascadingUpdateService.update(this, new Date())
     }
 
-    Date getCalculatedLastUpdate() {
+    Date getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
