@@ -512,6 +512,8 @@ class ExportService {
 											 messageSource.getMessage('author.slash.editor',null,locale),
 											 messageSource.getMessage('title.editionStatement.label',null,locale),
 											 messageSource.getMessage('title.summaryOfContent.label',null,locale),
+											 messageSource.getMessage('title.seriesName.label',null,locale),
+											 messageSource.getMessage('title.subjectReference.label',null,locale),
 											 'zdb_id',
 											 'zdb_ppn',
 											 'DOI',
@@ -550,6 +552,8 @@ class ExportService {
 				row.add(' ')
 				row.add(' ')
 			}
+			row.add(tipp.title.seriesName ?: ' ')
+			row.add(tipp.title.subjectReference ?: ' ')
 
 			//zdb_id
 			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,';'))
@@ -600,6 +604,8 @@ class ExportService {
 				messageSource.getMessage('author.slash.editor',null,locale),
 				messageSource.getMessage('title.editionStatement.label',null,locale),
 				messageSource.getMessage('title.summaryOfContent.label',null,locale),
+				messageSource.getMessage('title.seriesName.label',null,locale),
+				messageSource.getMessage('title.subjectReference.label',null,locale),
 				'zdb_id',
 				'zdb_ppn',
 				'DOI',
@@ -638,6 +644,8 @@ class ExportService {
 				row.add([field: '', style:null])
 				row.add([field: '', style:null])
 			}
+			row.add(tipp.title.seriesName ?: ' ')
+			row.add(tipp.title.subjectReference ?: ' ')
 
 			//zdb_id
 			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','), style:null])

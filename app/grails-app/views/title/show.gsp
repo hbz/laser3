@@ -85,12 +85,29 @@
                         </g:if>
                         <g:if test="${ti.summaryOfContent}">
                         <div class="item">
-                            <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
+                            <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
                             <div class="content">
                                 ${ti.summaryOfContent}
                             </div>
                         </div>
                         </g:if>
+                        <g:if test="${ti.seriesName}">
+                            <div class="item">
+                                <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
+                                <div class="content">
+                                    ${ti.seriesName}
+                                </div>
+                            </div>
+                        </g:if>
+                        <g:if test="${ti.subjectReference}">
+                            <div class="item">
+                                <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
+                                <div class="content">
+                                    ${ti.subjectReference}
+                                </div>
+                            </div>
+                        </g:if>
+
                         <div class="item">
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>

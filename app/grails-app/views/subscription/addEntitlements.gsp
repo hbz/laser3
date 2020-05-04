@@ -243,6 +243,24 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 </g:if>
             </g:if>
 
+                <g:if test="${tipp.title.seriesName}">
+                    <div class="item">
+                        <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
+                        <div class="content">
+                            ${tipp.title.seriesName}
+                        </div>
+                    </div>
+                </g:if>
+
+                <g:if test="${tipp.title.subjectReference}">
+                    <div class="item">
+                        <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
+                        <div class="content">
+                            ${tipp.title.subjectReference}
+                        </div>
+                    </div>
+                </g:if>
+
             <g:if test="${tipp.hostPlatformURL}">
                 <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
             </g:if>
