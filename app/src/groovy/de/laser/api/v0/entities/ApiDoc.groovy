@@ -7,6 +7,7 @@ import com.k_int.kbplus.Org
 import de.laser.api.v0.ApiBox
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
+import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -32,6 +33,20 @@ class ApiDoc {
         }
         result.validatePrecondition_1()
 
+        if (result.obj) {
+            List<DocContext> contexts = DocContext.findAllByOwner(result.obj)
+            int delCount = 0
+
+            contexts.each { dc ->
+                if (dc.status == RDStore.DOC_CTX_STATUS_DELETED) {
+                    delCount++
+                }
+            }
+            if (delCount == contexts.size()) {
+                result.status = Constants.OBJECT_STATUS_DELETED
+            }
+        }
+
         result
     }
 
@@ -40,34 +55,7 @@ class ApiDoc {
      */
     static requestDocument(Doc doc, Org context){
 
-        boolean hasAccess = false
-
-        DocContext.findAllByOwner(doc).each{ dc ->
-            if(dc.license) {
-                dc.getLicense().getOrgLinks().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-            if(dc.pkg) {
-                dc.getPkg().getOrgs().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-            if(dc.subscription) {
-                dc.getSubscription().getOrgRelations().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-        }
+        boolean hasAccess = (doc.owner?.id == context.id)
 
         return (hasAccess ? doc : Constants.HTTP_FORBIDDEN)
     }

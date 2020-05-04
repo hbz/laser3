@@ -50,7 +50,7 @@
                 <div class="ui ordered list">
                     <g:each in="${targetSubs}" var="sub" status="i">
                         <input type="hidden" name="targetSubs" value="${sub.id}"/>
-                        <g:link controller="subscription" class="item" action="surveys" id="${sub.id}">
+                        <g:link controller="subscription" class="item" action="surveysConsortia" id="${sub.id}">
                             ${sub.dropdownNamingConvention()}
                         </g:link>
                     </g:each>
@@ -162,8 +162,9 @@
                                         <g:set var="refdataValues" value="${[]}"/>
                                         <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
                                                 var="refdataValue">
-                                            <g:set var="refdataValues"
-                                                   value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                            <g:if test="${refdataValue.getI10n('value')}">
+                                                <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                            </g:if>
                                         </g:each>
                                         <br>
                                         (${refdataValues.join('/')})

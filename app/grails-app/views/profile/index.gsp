@@ -1,6 +1,7 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.auth.Role; com.k_int.kbplus.auth.UserOrg; com.k_int.kbplus.UserSettings" %>
 <%@ page import="static de.laser.helper.RDStore.*;de.laser.helper.RDConstants" %>
 <%@ page import="static com.k_int.kbplus.UserSettings.KEYS.*" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
 <head>
@@ -433,6 +434,17 @@
                         </td>
                         <td>${message(code: 'profile.notification.for.SurveysStart')}</td>
                     </tr>
+                    <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                    <tr>
+                        <td>
+                            <div class="ui checkbox">
+                                <g:set var="isNotificationForSurveysParticipationFinish" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, YN_NO).rdValue==YN_YES}"/>
+                                <input type="checkbox" name="isNotificationForSurveysParticipationFinish" class="hidden" value="Y" ${isNotificationForSurveysParticipationFinish?'checked':''}/>
+                            </div>
+                        </td>
+                        <td>${message(code: 'profile.notification.for.SurveysParticipationFinish')}</td>
+                    </tr>
+                    </g:if>
                     <tr>
                         <td>
                             <div class="ui checkbox">

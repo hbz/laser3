@@ -85,7 +85,6 @@ class ApiOAMonitor {
         }
 
         return result ? new JSON(result) : null
-        //return new JSON(result)
     }
 
     /**
@@ -185,13 +184,11 @@ class ApiOAMonitor {
             //result.license              = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
             //removed: result.license          = ApiCollectionReader.resolveLicense(sub.owner, ApiCollectionReader.IGNORE_ALL, context) // com.k_int.kbplus.License
 
-            //result.organisations        = ApiCollectionReader.resolveOrgLinks(sub.orgRelations, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
-
             //result.predecessor = ApiStubReader.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
             //result.successor   = ApiStubReader.requestSubscriptionStub(sub.getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
-            //result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+            result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
-            def allOrgRoles = []
+            List<OrgRole> allOrgRoles = []
 
             // add derived subscriptions org roles
             if (sub.derivedSubscriptions) {
@@ -202,21 +199,9 @@ class ApiOAMonitor {
             }
             allOrgRoles.addAll(sub.orgRelations)
 
-            // TODO:0.93 @ result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+            result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 
-            // TODO refactoring with issueEntitlementService
-            //result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
-
-            // Ignored
-
-            //result.packages = exportHelperService.resolvePackagesWithIssueEntitlements(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
-            //result.issueEntitlements = exportHelperService.resolveIssueEntitlements(sub.issueEntitlements, context) // com.k_int.kbplus.IssueEntitlement
-            //result.packages = exportHelperService.resolveSubscriptionPackageStubs(sub.packages, exportHelperService.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
-            /*
-            result.persons      = exportHelperService.resolvePrsLinks(
-                    sub.prsLinks,  true, true, context
-            ) // com.k_int.kbplus.PersonRole
-            */
+            result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages)
 
             // TODO: oaMonitor
             //result.costItems    = ApiCollectionReader.getCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
@@ -238,8 +223,10 @@ class ApiOAMonitor {
         Collection<Object> result = []
 
         List<Subscription> tmp = OrgRole.executeQuery(
-                'select distinct(oo.sub) from OrgRole oo where oo.roleType in (:roleTypes)',
-                [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+                'select distinct(oo.sub) from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)', [
+                        org: org,
+                        roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                ]
         )
         log.debug ("found ${tmp.size()} subscriptions .. processing")
 
@@ -252,5 +239,31 @@ class ApiOAMonitor {
         }
 
         ApiToolkit.cleanUp(result, true, true)
+    }
+
+    static Collection<Object> getPackageCollectionWithTitleStubMaps(Collection<SubscriptionPackage> list) {
+        Collection<Object> result = []
+
+        list.each { subPkg ->
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // com.k_int.kbplus.Package
+
+            pkg.organisations = ApiCollectionReader.getOrgLinkCollection(subPkg.pkg.orgs, ApiReader.IGNORE_PACKAGE, null) // com.k_int.kbplus.OrgRole
+            result << pkg
+
+            List tmp = []
+            List<TitleInstance> tiList = TitleInstance.executeQuery(
+                    'select title from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg join tipp.title title' +
+                            ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status != :statusIe',
+                    [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: RDStore.TIPP_STATUS_DELETED]
+            )
+
+            tiList.each{ ti ->
+                tmp << ApiUnsecuredMapReader.getTitleStubMap(ti)
+            }
+
+            pkg.titles = ApiToolkit.cleanUp(tmp, true, true)
+        }
+
+        return ApiToolkit.cleanUp(result, true, false)
     }
 }

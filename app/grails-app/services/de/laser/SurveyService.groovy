@@ -4,11 +4,15 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import grails.plugin.mail.MailService
 import grails.transaction.Transactional
 import grails.util.Holders
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -23,9 +27,15 @@ class SurveyService {
     ExportService exportService
     Locale locale
     EscapeService escapeService
+    MailService mailService
+    GrailsApplication grailsApplication
+
+    SimpleDateFormat formatter = DateUtil.getSDF_dmy()
+    String from
 
     @javax.annotation.PostConstruct
     void init() {
+        from = grailsApplication.config.notifications.email.from
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
     }
@@ -284,7 +294,8 @@ class SurveyService {
 
                     if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
 
-                        subscription = OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription))?.sub ?: null
+                        OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
+                        subscription =  orgRole ? orgRole.sub : null
                         row.add([field: subscription?.name ?: surveyName ?: '', style: null])
                     }
                     if (surveyConfig.type == 'GeneralSurvey') {
@@ -482,7 +493,8 @@ class SurveyService {
 
                     if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
 
-                        subscription = OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription))?.sub ?: null
+                        OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
+                        subscription =  orgRole ? orgRole.sub : null
                         row.add([field: subscription?.name ?: surveyName ?: '', style: null])
                     }
                     if (surveyConfig.type == 'GeneralSurvey') {
@@ -505,8 +517,8 @@ class SurveyService {
                             row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
                             row.add([field: surveyCostItem?.taxKey ? surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)" : '', style: null])
                             row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
-                            row.add([field: surveyCostItem?.startDate ?: '', style: null])
-                            row.add([field: surveyCostItem?.endDate ?: '', style: null])
+                            row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate): '', style: null])
+                            row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate): '', style: null])
                             row.add([field: surveyCostItem?.costDescription ?: '', style: null])
                         }
                     }
@@ -563,8 +575,8 @@ class SurveyService {
                         row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
                         row.add([field: surveyCostItem?.taxKey ? surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)" : '', style: null])
                         row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
-                        row.add([field: surveyCostItem?.startDate ?: '', style: null])
-                        row.add([field: surveyCostItem?.endDate ?: '', style: null])
+                        row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate) : '', style: null])
+                        row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate) : '', style: null])
                         row.add([field: surveyCostItem?.costDescription ?: '', style: null])
                     }
                 }
@@ -574,6 +586,198 @@ class SurveyService {
             sheetData.put(escapeService.escapeString(messageSource.getMessage('survey.exportSurveyCostItems', null, LocaleContextHolder.getLocale())), [titleRow: titles, columnData: surveyData])
 
         }
+
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
+
+        if(surveyInfo.owner)
+        {
+            //Only User that approved
+            List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(surveyInfo.owner, 1)
+
+            //Only User with Notification by Email and for Surveys Start
+            userOrgs.each { userOrg ->
+                if(userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
+                        userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                {
+
+                    User user = userOrg.user
+
+                    def emailReceiver = user.getEmail()
+                    def currentServer = grailsApplication.config.getCurrentServer()
+                    def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+                    String mailSubject = subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, locale) +  " (" + participationFinish.sortname + ")"
+
+                        try {
+                            if (emailReceiver == null || emailReceiver.isEmpty()) {
+                                log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                            } else {
+                                boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                                String ccAddress = null
+                                if (isNotificationCCbyEmail){
+                                    ccAddress = user.getSetting(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                                }
+
+                                List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+
+                                if (isNotificationCCbyEmail && ccAddress) {
+                                    mailService.sendMail {
+                                        to      emailReceiver
+                                        from    from
+                                        cc      ccAddress
+                                        subject mailSubject
+                                        html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                                    }
+                                } else {
+                                    mailService.sendMail {
+                                        to      emailReceiver
+                                        from from
+                                        subject mailSubject
+                                        html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                                    }
+                                }
+
+                                log.debug("emailToSurveyOwnerbyParticipationFinish - finished sendEmail() to " + user.displayName + " (" + user.email + ") " + surveyInfo.owner.name);
+                            }
+                        } catch (Exception e) {
+                            String eMsg = e.message
+
+                            log.error("emailToSurveyOwnerbyParticipationFinish - sendEmail() :: Unable to perform email due to exception ${eMsg}")
+                            SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user, org: participationFinish, survey: surveyInfo])
+                        }
+                }
+            }
+
+        }
+
+    }
+
+    def exportSurveysOfParticipant(List surveyConfigs, Org participant) {
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+
+        Map sheetData = [:]
+            List titles = []
+            List surveyData = []
+
+            titles.addAll([messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('subscription.packages.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('subscription.kind.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('subscription.form.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('subscription.resource.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('subscription.isPublicForApi.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('subscription.hasPerpetualAccess.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfigsInfo.newPrice', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyProperty.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('default.type.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyResult.commentOnlyForOwner', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale())])
+
+            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(participant, surveyConfigs)
+            surveyResults.each { surveyResult ->
+
+                    Subscription subscription
+                    String surveyName = surveyResult.surveyConfig.getConfigNameShort()
+                        List row = []
+
+                        row.add([field: surveyResult.participant.sortname ?: '', style: null])
+                        row.add([field: surveyResult.participant.name ?: '', style: null])
+
+                        if (surveyResult.surveyConfig.type == 'Subscription' || surveyResult.surveyConfig.type == 'IssueEntitlementsSurvey') {
+
+                            OrgRole orgRole = Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(participant, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription)) : null
+                            subscription =  orgRole ? orgRole.sub : null
+                            row.add([field: subscription?.name ?: surveyName ?: '', style: null])
+                        }
+                        if (surveyResult.surveyConfig.type == 'GeneralSurvey') {
+                            row.add([field: surveyName ?: '', style: null])
+
+                        }
+                        row.add([field: surveyResult.surveyConfig.url ?: '', style: null])
+                        row.add([field: surveyResult.surveyConfig.comment ?: '', style: null])
+
+                        if (surveyResult.surveyConfig.type == 'Subscription' || surveyResult.surveyConfig.type == 'IssueEntitlementsSurvey') {
+                            //Performance lastig providers und agencies
+                            row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
+                            row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
+
+                            row.add([field: subscription?.owner?.reference ?: '', style: null])
+                            List packageNames = subscription?.packages?.collect {
+                                it.pkg.name
+                            }
+                            row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
+
+                            row.add([field: subscription?.status?.getI10n("value") ?: '', style: null])
+                            row.add([field: subscription?.kind?.getI10n("value") ?: '', style: null])
+                            row.add([field: subscription?.form?.getI10n("value") ?: '', style: null])
+                            row.add([field: subscription?.resource?.getI10n("value") ?: '', style: null])
+                            row.add([field: subscription?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                            row.add([field: subscription?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+
+                                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, participant), RDStore.COST_ITEM_DELETED)
+
+                                row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
+                                row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
+                                row.add([field: surveyCostItem?.costDescription ?: '', style: null])
+
+                        }else {
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                        }
+
+                            row.add([field: surveyResult.type?.getI10n('name') ?: '', style: null])
+                            row.add([field: PropertyDefinition.getLocalizedValue(surveyResult.type.type) ?: '', style: null])
+
+                            String value = ""
+
+                            if (surveyResult.type.type == Integer.toString()) {
+                                value = surveyResult?.intValue ? surveyResult.intValue.toString() : ""
+                            } else if (surveyResult.type.type == String.toString()) {
+                                value = surveyResult.stringValue ?: ""
+                            } else if (surveyResult.type.type == BigDecimal.toString()) {
+                                value = surveyResult.decValue ? surveyResult.decValue.toString() : ""
+                            } else if (surveyResult.type.type == Date.toString()) {
+                                value = surveyResult.dateValue ? sdf.format(surveyResult.dateValue) : ""
+                            } else if (surveyResult.type.type == URL.toString()) {
+                                value = surveyResult.urlValue ? surveyResult.urlValue.toString() : ""
+                            } else if (surveyResult.type.type == RefdataValue.toString()) {
+                                value = surveyResult.refValue ? surveyResult.refValue.getI10n('value') : ""
+                            }
+
+                            row.add([field: value ?: '', style: null])
+                            row.add([field: surveyResult.comment ?: '', style: null])
+                            row.add([field: surveyResult.ownerComment ?: '', style: null])
+                            row.add([field: surveyResult.finishDate ? sdf.format(surveyResult.finishDate) : '', style: null])
+
+
+
+                        surveyData.add(row)
+
+
+                sheetData.put(escapeService.escapeString(messageSource.getMessage('surveyInfo.members', null, LocaleContextHolder.getLocale())), [titleRow: titles, columnData: surveyData])
+            }
+
 
         return exportService.generateXLSXWorkbook(sheetData)
     }

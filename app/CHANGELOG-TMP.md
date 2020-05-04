@@ -2,6 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2452    30.04.2020  rc1.3       Moe     Bug         Umfrage Bugs
+
+2199    28.04.2020  rc1.3       David   Feature     API: Top-Level-Objekte mit Status deleted
+
+2449    28.04.2020  rc1.3       David   Bug         API 0.96 - /document
+
+--      28.04.2020  rc1.3       David   Bug         API 0.95 - /costItem
+
+2448    28.04.2020  rc1.3       Moe     Feature     E-Mail Benachrichtigung  an den Umfrage-Ersteller, wenn ein Teilnehmer die Umfrage abgeschlossen hat
+
 2431    27.04.2020  hbz-dev     David   Feature     Refactoring: Vertragsvorlage entfernen
 
 2434    27.04.2020  rc1.3       Moe     Feature     Umfrage-Kosten Export in Excel (Teilnehmersicht)
