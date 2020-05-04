@@ -1,10 +1,18 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractI10nOverride
+import de.laser.interfaces.CalculatedLastUpdated
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
-class IdentifierNamespace extends AbstractI10nOverride {
+class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLastUpdated {
+
+    @Transient
+    def cascadingUpdateService
+
+    static Log static_logger = LogFactory.getLog(IdentifierNamespace)
 
     @Transient
     public static final String UNKNOWN    = "Unknown"
@@ -101,6 +109,7 @@ class IdentifierNamespace extends AbstractI10nOverride {
 
     Date dateCreated
     Date lastUpdated
+    Date lastUpdatedCascading
 
     static mapping = {
         id              column:'idns_id'
@@ -119,8 +128,9 @@ class IdentifierNamespace extends AbstractI10nOverride {
         isHidden        column:'idns_is_hidden'
         isUnique        column:'idns_is_unique'
 
-        lastUpdated column: 'idns_last_updated'
         dateCreated column: 'idns_date_created'
+        lastUpdated column: 'idns_last_updated'
+        lastUpdatedCascading column: 'idns_last_updated_cascading'
     }
 
     static constraints = {
@@ -139,9 +149,28 @@ class IdentifierNamespace extends AbstractI10nOverride {
         isHidden        (nullable:false, blank:false)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true, blank: false)
+        lastUpdatedCascading (nullable: true, blank: false)
     }
+
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+        cascadingUpdateService.update(this, dateCreated)
+    }
+    def afterUpdate() {
+        static_logger.debug("afterUpdate")
+        cascadingUpdateService.update(this, lastUpdated)
+    }
+    def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+    }
+
+    Date getCalculatedLastUpdated() {
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
+    }
+
     boolean isCoreOrgNamespace(){
         this.ns in CORE_ORG_NS
     }
