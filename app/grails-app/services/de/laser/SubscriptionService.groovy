@@ -150,14 +150,13 @@ class SubscriptionService {
     }
 
     List getValidSubChilds(Subscription subscription) {
-        def validSubChilds = Subscription.findAllByInstanceOf(subscription)
-        validSubChilds = validSubChilds?.sort { a, b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
-            //continue here: we have some persisting errors when copying members from one subscription into another
+        List<Subscription> validSubChildren = Subscription.findAllByInstanceOf(subscription)
+        validSubChildren = validSubChildren?.sort { Subscription a, Subscription b ->
+            Org sa = a.getSubscriber()
+            Org sb = b.getSubscriber()
             (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
         }
-        validSubChilds
+        validSubChildren
     }
 
     List getCurrentValidSubChilds(Subscription subscription) {
@@ -671,15 +670,15 @@ class SubscriptionService {
                             endDate: subMember.isMultiYear ? subMember.endDate : targetSub.endDate,
                             manualRenewalDate: subMember.manualRenewalDate,
                             /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
-                            identifier: java.util.UUID.randomUUID().toString(),
-                            instanceOf: targetSub?.id,
+                            identifier: UUID.randomUUID().toString(),
+                            instanceOf: targetSub,
                             //previousSubscription: subMember?.id,
                             isSlaved: subMember.isSlaved,
-                            owner: targetSub.owner?.id ? subMember.owner?.id : null,
+                            owner: targetSub.owner ? subMember.owner : null,
                             resource: targetSub.resource ?: null,
                             form: targetSub.form ?: null
                     )
-                    newSubscription.save()
+                    newSubscription.save(flush:true)
                     //ERMS-892: insert preceding relation in new data model
                     if (subMember) {
                         Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
@@ -767,6 +766,7 @@ class SubscriptionService {
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.sub = newSubscription
                             newOrgRole.save(flush:true)
+                            log.debug("new org role set: ${newOrgRole.sub} for ${newOrgRole.org.sortname}")
                         }
                     }
 
@@ -988,7 +988,7 @@ class SubscriptionService {
     }
 
     private boolean save(obj, flash){
-        if (obj.save()){
+        if (obj.save(flush:true)){
             log.debug("Save ${obj} ok")
             return true
         } else {

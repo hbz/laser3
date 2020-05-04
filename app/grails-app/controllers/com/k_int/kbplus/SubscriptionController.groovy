@@ -4645,25 +4645,25 @@ class SubscriptionController extends AbstractDebugController {
 
         switch (params.workFlowPart) {
             case WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copySubElements_DatesOwnerRelations();
+                result << copySubElements_DatesOwnerRelations()
                 if (params.isRenewSub){
                     params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << loadDataFor_PackagesEntitlements()
                 } else {
                     result << loadDataFor_DatesOwnerRelations()
                 }
-                break;
+                break
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
-                result << copySubElements_PackagesEntitlements();
+                result << copySubElements_PackagesEntitlements()
                 if (params.isRenewSub){
                     params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     result << loadDataFor_DocsAnnouncementsTasks()
                 } else {
                     result << loadDataFor_PackagesEntitlements()
                 }
-                break;
+                break
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copySubElements_DocsAnnouncementsTasks();
+                result << copySubElements_DocsAnnouncementsTasks()
                 if (params.isRenewSub){
                     if (result.isSubscriberVisible){
                         params.workFlowPart = WORKFLOW_SUBSCRIBER
@@ -4675,18 +4675,18 @@ class SubscriptionController extends AbstractDebugController {
                 } else {
                     result << loadDataFor_DocsAnnouncementsTasks()
                 }
-                break;
+                break
             case WORKFLOW_SUBSCRIBER:
-                result << copySubElements_Subscriber();
+                result << copySubElements_Subscriber()
                 if (params.isRenewSub) {
                     params.workFlowPart = WORKFLOW_PROPERTIES
                     result << loadDataFor_Properties()
                 } else {
                     result << loadDataFor_Subscriber()
                 }
-                break;
+                break
             case WORKFLOW_PROPERTIES:
-                result << copySubElements_Properties();
+                result << copySubElements_Properties()
                 if (params.isRenewSub && params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
@@ -4694,18 +4694,18 @@ class SubscriptionController extends AbstractDebugController {
                 } else {
                     result << loadDataFor_Properties()
                 }
-                break;
+                break
             case WORKFLOW_END:
-                result << copySubElements_Properties();
+                result << copySubElements_Properties()
                 if (params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
                     redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
                 }
-                break;
+                break
             default:
                 result << loadDataFor_DatesOwnerRelations()
-                break;
+                break
         }
 
         if (params.targetSubscriptionId) {
@@ -5037,6 +5037,7 @@ class SubscriptionController extends AbstractDebugController {
             List<Subscription> toCopySubs = params.list('subscription.copySubscriber').collect { genericOIDService.resolveOID(it) }
             subscriptionService.copySubscriber(toCopySubs, newSub, flash)
         }
+        globalSourceSyncService.cleanUpGorm()
 
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
