@@ -54,7 +54,7 @@ class FinanceService {
             Subscription sub = (Subscription) configMap.subscription
             Org org = (Org) configMap.institution
             Map<String,Object> filterQuery = processFilterParams(params)
-            EhcacheWrapper cache = cacheService.getTTL300Cache('/finance/filter/')
+            EhcacheWrapper cache = cacheService.getTTL300Cache("/finance/filter/${contextService.user.id}")
             if(params.reset || params.submit)
                 cache.put('cachedFilter',filterQuery)
             else if(cache && cache.get('cachedFilter'))
@@ -161,7 +161,7 @@ class FinanceService {
      */
     Map<String,Object> getCostItems(GrailsParameterMap params, Map configMap) throws FinancialDataException {
         Map<String,Object> filterQuery = processFilterParams(params)
-        EhcacheWrapper cache = cacheService.getTTL300Cache('/finance/filter/')
+        EhcacheWrapper cache = cacheService.getTTL300Cache("/finance/filter/${contextService.user.id}")
         if(params.reset || params.submit)
             cache.put('cachedFilter',filterQuery)
         else if(cache && cache.get('cachedFilter'))
@@ -323,7 +323,6 @@ class FinanceService {
         else if(!params.subscription && !params.sub && !params.id && !params.containsKey('filterSubStatus')) {
             subFilterQuery += " and sub.status = :filterSubStatus "
             queryParams.filterSubStatus = SUBSCRIPTION_CURRENT
-            params.filterSubStatus = SUBSCRIPTION_CURRENT.id.toString()
         }
         //cost item filter settings
         //cost item title
