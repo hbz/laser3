@@ -38,7 +38,6 @@ class FinanceService {
     AccessService accessService
     EscapeService escapeService
     SpringSecurityService springSecurityService
-    CacheService cacheService
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
     Map<String,RefdataValue> genericExcludeParams = [deleted:COST_ITEM_DELETED]
 
@@ -54,7 +53,7 @@ class FinanceService {
             Subscription sub = (Subscription) configMap.subscription
             Org org = (Org) configMap.institution
             Map<String,Object> filterQuery = processFilterParams(params)
-            EhcacheWrapper cache = cacheService.getTTL300Cache("/finance/filter/${contextService.user.id}")
+            EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
             if(params.reset || params.submit)
                 cache.put('cachedFilter',filterQuery)
             else if(cache && cache.get('cachedFilter'))
@@ -161,7 +160,7 @@ class FinanceService {
      */
     Map<String,Object> getCostItems(GrailsParameterMap params, Map configMap) throws FinancialDataException {
         Map<String,Object> filterQuery = processFilterParams(params)
-        EhcacheWrapper cache = cacheService.getTTL300Cache("/finance/filter/${contextService.user.id}")
+        EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
         if(params.reset || params.submit)
             cache.put('cachedFilter',filterQuery)
         else if(cache && cache.get('cachedFilter'))
