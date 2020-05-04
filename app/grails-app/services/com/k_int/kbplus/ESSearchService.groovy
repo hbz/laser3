@@ -41,7 +41,7 @@ class ESSearchService{
    Map esSettings =  ESWrapperService.getESSettings()
 
     try {
-      if ( (params.q && params.q.length() > 0) || params.rectype || params.showAllTitles) {
+      if ( (params.q && params.q.length() > 0) || params.rectype) {
   
         params.max = Math.min(params.max ? params.int('max') : 15, 10000)
         params.offset = params.offset ? params.int('offset') : 0
