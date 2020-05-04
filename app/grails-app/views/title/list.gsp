@@ -11,7 +11,7 @@
     </semui:breadcrumbs>
     <br>
     <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.public.all_titles')}
-      <semui:totalNumber total="${resultsTotal}"/>
+      <semui:totalNumber total="${resultsTotal >= 10000 ? '10000+' : resultsTotal}"/>
     </h1>
 
     <g:render template="/templates/filter/javascript" />

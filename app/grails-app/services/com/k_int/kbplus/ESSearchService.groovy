@@ -41,7 +41,7 @@ class ESSearchService{
    Map esSettings =  ESWrapperService.getESSettings()
 
     try {
-      if ( (params.q && params.q.length() > 0) || params.rectype) {
+      if ( (params.q && params.q.length() > 0) || params.rectype || params.showAllTitles) {
   
         params.max = Math.min(params.max ? params.int('max') : 15, 10000)
         params.offset = params.offset ? params.int('offset') : 0
@@ -264,6 +264,10 @@ class ESSearchService{
     if(!params.showDeleted)
     {
       sw.write(  " AND ( NOT status:\"Deleted\" )")
+    }
+
+    if(params.showAllTitles) {
+      sw.write(  " AND ((rectype: \"EBookInstance\") OR (rectype: \"JournalInstance\") OR (rectype: \"BookInstance\") OR (rectype: \"TitleInstance\") OR (rectype: \"DatabaseInstance\")) ")
     }
 
     def result = sw.toString();
