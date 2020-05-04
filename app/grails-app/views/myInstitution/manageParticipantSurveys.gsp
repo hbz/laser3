@@ -11,9 +11,17 @@
 <body>
 
 <semui:breadcrumbs>
-
     <semui:crumb message="manageParticipantSurveys.header" class="active"/>
 </semui:breadcrumbs>
+<semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="myInstitution" action="manageParticipantSurveys"
+                    params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
+</semui:controlButtons>
+
 <br>
 <h1 class="ui left floated aligned icon header la-clear-before">
     <semui:headerIcon/>${message(code: 'manageParticipantSurveys.header')}
@@ -167,7 +175,6 @@
                                   title="${message(code: 'surveyInfo.type.label')}"/>
                 <g:sortableColumn params="${params}" property="surveyInfo.endDate"
                                   title="${message(code: 'default.endDate.label')}"/>
-                <th>${message(code: 'surveyProperty.plural.label')}</th>
                 <th><g:message code="surveyInfo.finished"/></th>
                 <g:if test="${params.tab == 'finish'}">
                     <th><g:message code="surveyInfo.finishedDate"/></th>
@@ -207,20 +214,6 @@
                     </td>
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
-                    </td>
-
-                    <td class="center aligned">
-
-                        <g:if test="${surveyConfig}">
-                            <g:if test="${surveyConfig?.type == 'Subscription'}">
-                                <g:link controller="survey" action="show" id="${surveyInfo.id}"
-                                        params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                    <div class="ui circular label">
-                                        ${surveyConfig?.surveyProperties?.size() ?: 0}
-                                    </div>
-                                </g:link>
-                            </g:if>
-                        </g:if>
                     </td>
 
                     <td class="center aligned">

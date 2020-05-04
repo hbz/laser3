@@ -305,6 +305,8 @@ class ProfileController {
         changeValue(user.getSetting(IS_NOTIFICATION_FOR_SURVEYS_START, YN_NO),    params.isNotificationForSurveysStart?:"N",     'profile.updateProfile.updated.surveysStart')
         changeValue(user.getSetting(IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, YN_NO),    params.isNotificationForSystemMessages?:"N",     'profile.updateProfile.updated.systemMessages')
 
+        changeValue(user.getSetting(IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, YN_NO),    params.isNotificationForSurveysParticipationFinish?:"N",     'profile.updateProfile.updated.surveysParticipationFinish')
+
         user.save();
 
         redirect(action: "index")

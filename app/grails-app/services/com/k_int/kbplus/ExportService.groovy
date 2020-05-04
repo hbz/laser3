@@ -108,11 +108,17 @@ class ExportService {
 		Map workbookStyles = ['positive':csPositive,'neutral':csNeutral,'negative':csNegative,'bold':bold]
 		SXSSFWorkbook output = new SXSSFWorkbook(wb,50,true)
 		output.setCompressTempFiles(true)
-		sheets.entrySet().each { sheetData ->
+		sheets.entrySet().eachWithIndex { sheetData, index ->
 			try {
-				def title = sheetData.key
+				String title = sheetData.key
 				List titleRow = (List) sheetData.value.titleRow
 				List columnData = (List) sheetData.value.columnData
+
+				if (title.length() > 31) {
+					title = title.substring(0, 31-3);
+					title = title + "_${index+1}"
+				}
+
 				Sheet sheet = output.createSheet(title)
 				sheet.setAutobreaks(true)
 				int rownum = 0
