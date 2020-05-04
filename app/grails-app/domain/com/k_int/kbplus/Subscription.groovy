@@ -9,12 +9,15 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.CalculatedLastUpdate
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -22,12 +25,13 @@ import java.text.SimpleDateFormat
 
 class Subscription
         extends AbstractBaseDomain
-        implements CalculatedType, Permissions, ShareSupport,
-                AuditableTrait {
+        implements CalculatedType, CalculatedLastUpdate, Permissions, ShareSupport, AuditableTrait {
 
     // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
+
+    static Log static_logger = LogFactory.getLog(Subscription)
 
     @Transient
     def grailsApplication
@@ -48,7 +52,7 @@ class Subscription
     @Transient
     def deletionService
     @Transient
-    def lastUpdatedService
+    def cascadingUpdateService
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -85,10 +89,10 @@ class Subscription
   boolean administrative = false
 
     String noticePeriod
+
     Date dateCreated
     Date lastUpdated
-
-    Date calculatedLastUpdated
+    Date cascadingLastUpdated
 
   License owner
   SortedSet issueEntitlements
@@ -146,7 +150,7 @@ class Subscription
         isSlaved        column:'sub_is_slaved'
         hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
         isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
-        calculatedLastUpdated column: 'sub_calc_last_updated'
+        cascadingLastUpdated column: 'sub_cascading_last_updated'
 
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
@@ -192,17 +196,26 @@ class Subscription
         isPublicForApi (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
-        calculatedLastUpdated (nullable: true, blank: false)
+        cascadingLastUpdated (nullable: true, blank: false)
         isMultiYear(nullable: true, blank: false)
         hasPerpetualAccess(nullable: false, blank: false)
     }
 
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+    }
+
     def afterUpdate() {
-        lastUpdatedService.cascadingUpdate(this)
+        static_logger.debug("afterUpdate")
     }
 
     def afterDelete() {
+        static_logger.debug("afterDelete")
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+
+    Date getCalculatedLastUpdate() {
+        (cascadingLastUpdated != null && cascadingLastUpdated > lastUpdated) ? cascadingLastUpdated : lastUpdated
     }
 
     @Override

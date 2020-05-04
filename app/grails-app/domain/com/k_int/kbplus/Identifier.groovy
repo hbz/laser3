@@ -1,15 +1,16 @@
 package com.k_int.kbplus
 
 import de.laser.helper.FactoryResult
+import de.laser.interfaces.CalculatedLastUpdate
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
-class Identifier {
+class Identifier implements CalculatedLastUpdate {
 
     @Transient
-    def lastUpdatedService
+    def cascadingUpdateService
 
     static Log static_logger = LogFactory.getLog(Identifier)
 
@@ -19,7 +20,7 @@ class Identifier {
 
     Date dateCreated
     Date lastUpdated
-    Date calculatedLastUpdated
+    Date cascadingLastUpdated
 
     static belongsTo = [
             lic:    License,
@@ -51,7 +52,7 @@ class Identifier {
 		// Nullable is true, because values are already in the database
       	lastUpdated (nullable: true, blank: false)
       	dateCreated (nullable: true, blank: false)
-        calculatedLastUpdated (nullable: true, blank: false)
+        cascadingLastUpdated (nullable: true, blank: false)
   	}
 
     static mapping = {
@@ -70,7 +71,7 @@ class Identifier {
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
-        calculatedLastUpdated column: 'id_calc_last_updated'
+        cascadingLastUpdated column: 'id_cascading_last_updated'
     }
 
     static Identifier construct(Map<String, Object> map) {
@@ -206,6 +207,23 @@ class Identifier {
         null
     }
 
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+        cascadingUpdateService.cascadingUpdate(this, dateCreated)
+    }
+    def afterUpdate() {
+        static_logger.debug("afterUpdate")
+        cascadingUpdateService.cascadingUpdate(this, lastUpdated)
+    }
+    def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.cascadingUpdate(this, new Date())
+    }
+
+    Date getCalculatedLastUpdate() {
+        (cascadingLastUpdated != null && cascadingLastUpdated > lastUpdated) ? cascadingLastUpdated : lastUpdated
+    }
+
     def beforeInsert() {
         static_logger.debug("beforeInsert")
     }
@@ -227,19 +245,6 @@ class Identifier {
               }
           }
       }
-    }
-    def beforeDelete() {
-        static_logger.debug("beforeDelete")
-    }
-    def afterInsert() {
-        static_logger.debug("afterInsert")
-    }
-    def afterUpdate() {
-        static_logger.debug("afterUpdate")
-        lastUpdatedService.cascadingUpdate(this)
-    }
-    def afterDelete() {
-        static_logger.debug("afterDelete")
     }
 
     @Deprecated
