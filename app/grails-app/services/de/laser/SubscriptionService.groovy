@@ -154,6 +154,7 @@ class SubscriptionService {
         validSubChilds = validSubChilds?.sort { a, b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()
+            //continue here: we have some persisting errors when copying members from one subscription into another
             (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
         }
         validSubChilds
@@ -642,22 +643,14 @@ class SubscriptionService {
 
 
     void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
+        List<Subscription> targetChildSubs = getValidSubChilds(targetSub)
         subscriptionToTake.each { subMember ->
             //Gibt es mich schon in der Ziellizenz?
-            def found = null
-            getValidSubChilds(targetSub).each{
-                it.getAllSubscribers().each {ts ->
-                    subMember.getAllSubscribers().each { subM ->
-                        if (subM.id == ts.id){
-                            found = ts
-                        }
-                    }
-                }
-            }
+            Org found = targetChildSubs?.find { targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
 
             if (found) {
                 // mich gibts schon! Fehlermeldung ausgeben!
-                Object[] args = [found.sortname ?: found.sortname]
+                Object[] args = [found.sortname ?: found.name]
                 flash.error += messageSource.getMessage('subscription.err.subscriberAlreadyExistsInTargetSub', args, locale)
 //                diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem
             } else {
@@ -686,7 +679,7 @@ class SubscriptionService {
                             resource: targetSub.resource ?: null,
                             form: targetSub.form ?: null
                     )
-                    newSubscription.save(flush: true)
+                    newSubscription.save()
                     //ERMS-892: insert preceding relation in new data model
                     if (subMember) {
                         Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
@@ -700,7 +693,7 @@ class SubscriptionService {
                         for (prop in subMember.customProperties) {
                             def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                             copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.save(flush: true)
+                            copiedProp.save()
                             //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                         }
                     }
@@ -713,7 +706,7 @@ class SubscriptionService {
                             if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
                                 def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
-                                copiedProp.save(flush: true)
+                                copiedProp.save()
                                 //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                             }
                         }
@@ -737,7 +730,7 @@ class SubscriptionService {
                                     OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                     InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                     newOrgAccessPointLink.subPkg = newSubscriptionPackage
-                                    newOrgAccessPointLink.save(flush: true)
+                                    newOrgAccessPointLink.save()
                                 }
                             }
                         }
@@ -760,7 +753,7 @@ class SubscriptionService {
                                         IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
                                         InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                                         newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
-                                        newIssueEntitlementCoverage.save(flush: true)
+                                        newIssueEntitlementCoverage.save()
                                     }
                                 }
                             }
@@ -769,11 +762,11 @@ class SubscriptionService {
 
                     //OrgRole
                     subMember.orgRelations?.each { or ->
-                        if ((or.org?.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]) || (targetSub.orgRelations.size() >= 1)) {
+                        if ((or.org.id == contextService.getOrg().id) || (or.roleType in [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_CONS_HIDDEN, OR_SUBSCRIPTION_COLLECTIVE]) || (targetSub.orgRelations.size() >= 1)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.sub = newSubscription
-                            newOrgRole.save(flush: true)
+                            newOrgRole.save(flush:true)
                         }
                     }
 
@@ -783,7 +776,7 @@ class SubscriptionService {
                             PersonRole newPersonRole = new PersonRole()
                             InvokerHelper.setProperties(newPersonRole, prsLink.properties)
                             newPersonRole.sub = newSubscription
-                            newPersonRole.save(flush: true)
+                            newPersonRole.save()
                         }
                     }
 //                }
