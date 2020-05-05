@@ -59,7 +59,7 @@
                                       from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                                       optionKey="id"
                                       optionValue="value"
-                                      value="${filerPresets?.filterSubStatus}"
+                                      value="${filterPresets?.filterSubStatus?.id}"
                                       noSelection="${['' : message(code:'default.select.all.label')]}"
                             onchange="setupDropdowns()"
                         />

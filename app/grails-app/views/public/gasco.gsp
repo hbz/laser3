@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition;de.laser.helper.RDConstants;" %>
 
 <!doctype html>
 <html>
@@ -28,7 +28,12 @@
                             <legend>${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
                             <div class="inline fields la-filter-inline">
 
-                                <g:each in="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
+                                <%
+                                    List subkinds = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
+                                    subkinds -= RDStore.SUBSCRIPTION_KIND_LOCAL
+                                %>
+
+                                <g:each in="${subkinds}" var="subKind">
 
                                         <g:if test="${subKind.value == 'National Licence'}">
                                             <div class="inline field js-nationallicence">
