@@ -580,6 +580,35 @@ class Subscription
     super.beforeInsert()
   }
 
+    void setOwner(License owner) {
+        Org subscr = getSubscriber()
+        Map<String,Object> licParams = [lic:this.owner,subscriber:subscr]
+        if(owner == null) {
+            Set<Subscription> linkedSubs = executeQuery('select oo.sub from OrgRole oo where oo.sub.owner = :lic and oo.org = :subscriber',licParams)
+            if(!linkedSubs) {
+                log.info("no more license <-> subscription links between org -> removing licensee role")
+                OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams)
+            }
+        }
+        else {
+            RefdataValue licRole
+            if(getCalculatedType() in [TYPE_PARTICIPATION,TYPE_PARTICIPATION_AS_COLLECTIVE])
+                licRole = RDStore.OR_LICENSEE_CONS
+            else if(getCalculatedType() in [TYPE_COLLECTIVE,TYPE_LOCAL])
+                licRole = RDStore.OR_LICENSEE
+            else if(getCalculatedType() in [TYPE_CONSORTIAL])
+                licRole = RDStore.OR_LICENSING_CONSORTIUM
+            if(licRole) {
+                OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(owner,subscr,licRole)
+                if(!orgLicRole){
+                    orgLicRole = new OrgRole(lic: owner,org: subscr,roleType: licRole)
+                    orgLicRole.save()
+                }
+            }
+        }
+        this.owner = owner
+    }
+
     @Transient
     def notifyDependencies_trait(changeDocument) {
         log.debug("notifyDependencies_trait(${changeDocument})")
