@@ -69,34 +69,12 @@ class OrganisationController extends AbstractDebugController {
 
         Map result = [
                 user:           user,
-                orgInstance:    org//,
-//                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
-//                inContextOrg:   inContextOrg
+                orgInstance:    org,
+                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
+                inContextOrg:   inContextOrg,
+                isComboRelated: isComboRelated
         ]
-//        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
-//        result.isComboRelated = isComboRelated
-
-//		if (params.deleteCI) {
-//			CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
-//			if (ci && ci.owner == org) {
-//				ci.delete()
-//			}
-//		}
-//        if (params.addCIPlatform) {
-//            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
-//            if (plt) {
-//                CustomerIdentifier ci = new CustomerIdentifier(
-//                        customer: org,
-//                        platform: plt,
-//                        value: params.addCIValue?.trim(),
-//                        note: params.addCINote?.trim(),
-//                        owner: contextService.getOrg(),
-//                        isPublic: true,
-//                        type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
-//                )
-//                ci.save()
-//            }
-//        }
+        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
 
         // adding default settings
         organisationService.initMandatorySettings(org)
@@ -126,7 +104,6 @@ class OrganisationController extends AbstractDebugController {
             result.settings.addAll(allSettings.findAll { it.key in ownerSet })
             result.settings.addAll(allSettings.findAll { it.key in accessSet })
             result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
         }
         else if (inContextOrg) {
             log.debug( 'settings for own org')
@@ -135,19 +112,13 @@ class OrganisationController extends AbstractDebugController {
             if (org.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
             }
             else if (['ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
             }
             else if (['FAKE'].contains(org.getCustomerType())) {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
             }
-        }
-        else if (isComboRelated){
-            log.debug( 'settings for combo related org: consortia or collective')
-            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
         }
 
 //        result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')

@@ -31,8 +31,8 @@ public class FactoryResult {
 
         Object[] args = [result?.ns?.ns, result?.value]
 
-        flash.message = (flash.message != null)  ?: ""
-        flash.error   = (flash.error != null)    ?: ""
+        flash.message = flash.message != null  ? flash.message : ""
+        flash.error   = flash.error != null    ? flash.error : ""
 
         status.each {
             switch (it) {
