@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2461    05.05.2020  rc1.3       David   Bug         INST_ADMIN hat keine Bearbeitungsrechte für Org-Einstellungen
+
 2453    04.05.2020  rc1.3       Moe     Bug         Alle Titel - falsche Verknüpfungen
 
 2457    04.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Serverfehler Wechsel zur Umfrage Workflow-Sicht

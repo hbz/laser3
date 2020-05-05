@@ -1,5 +1,5 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.OrgSettings; com.k_int.properties.PropertyDefinition" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.OrgSettings; com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.auth.Role" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -54,7 +54,7 @@
 
                                     $('body #oamonitor_server_access').editable({
                                         validate: function (value) {
-                                            if (value == "com.k_int.kbplus.RefdataValue:${de.laser.helper.RDStore.YN_YES.id}") {
+                                            if (value == "com.k_int.kbplus.RefdataValue:${RDStore.YN_YES.id}") {
                                                 var r = confirm("Mit der Auswahl der Option >>Datenweitergabe an OA-Monitor<< stimmen Sie der Weitergabe der Lizenz- und Kostendaten Ihrer Einrichtung an den OA-Monitor\n- https://open-access-monitor.de -\n zu.\n\n" +
                                                   "Der OA-Monitor wahrt die Vertraulichkeit dieser Informationen und veröffentlicht im frei zugänglichen Bereich nur aggregierte Subskriptionskosten, aus denen nicht auf eine einzelne Einrichtung geschlossen werden kann.\n\n" +
                                                    "Die Einrichtungen selbst haben nach erfolgter Autorisierung im OA-Monitor die Möglichkeit, die eigenen Ausgaben und zugehörige Auswertungen detailliert einzusehen.\n\n" +
@@ -83,7 +83,7 @@
                                         <td>
                                             ${message(code:"org.setting.${os.key}", default: "${os.key}")}
 
-                                            <g:if test="${'OAMONITOR_SERVER_ACCESS'.equals(os.key.toString())}">
+                                            <g:if test="${OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
                                                     <i class="question circle icon"></i>
                                                 </span>
@@ -91,38 +91,44 @@
                                         </td>
                                         <td>
 
-                                            <g:if test="${(inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) && os.key in OrgSettings.getEditableSettings()}">
-                                            <%-- Refdata YN --%>
-                                                <g:if test="${os?.key?.rdc==de.laser.helper.RDConstants.Y_N}">
-                                                <%-- Validation through user is necessary --%>
-                                                    <g:if test="${'OAMONITOR_SERVER_ACCESS'.equals(os.key.toString())}">
-                                                        <semui:xEditableRefData owner="${os}" field="rdValue" id="oamonitor_server_access" config="${os.key.rdc}" />
-                                                    </g:if>
-                                                <%-- Other Refdata YN --%>
-                                                    <g:else>
-                                                        <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
-                                                    </g:else>
+                                            <g:if test="${editable && os.key in OrgSettings.getEditableSettings()}">
+
+                                                <g:if test="${OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
+                                                    <semui:xEditableRefData owner="${os}" field="rdValue" id="oamonitor_server_access" config="${os.key.rdc}" />
                                                 </g:if>
+                                                <g:elseif test="${os.key.rdc == RDConstants.Y_N}">
+                                                    <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
+                                                </g:elseif>
+                                                <g:elseif test="${os.roleValue}">
+                                                    ${os.getValue().getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
+                                                </g:elseif>
                                                 <g:else>
-                                                    <g:if test="${os.key.type=='class com.k_int.kbplus.auth.Role'}">
-                                                        ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
-                                                    </g:if>
-                                                    <g:else>
-                                                        <semui:xEditable owner="${os}" field="strValue" />
-                                                    </g:else>
+                                                    <semui:xEditable owner="${os}" field="strValue" />
                                                 </g:else>
+
                                             </g:if>
                                             <g:else>
-                                                <g:if test="${os.rdValue}">
-                                                    ${os.getValue()?.getI10n('value')}
+
+                                                <g:if test="${OrgSettings.KEYS.GASCO_ENTRY == os.key}">
+                                                    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                                        <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
+                                                    </g:if>
+                                                    <g:else>
+                                                        ${os.getValue().getI10n('value')}
+                                                    </g:else>
                                                 </g:if>
+                                                <g:elseif test="${os.rdValue}">
+                                                    ${os.getValue().getI10n('value')}
+                                                </g:elseif>
                                                 <g:elseif test="${os.roleValue}">
-                                                    ${os.getValue()?.getI10n('authority')}
+                                                    ${os.getValue().getI10n('authority')}
                                                 </g:elseif>
                                                 <g:else>
                                                     ${os.getValue()}
                                                 </g:else>
+
                                             </g:else>
+
                                         </td>
                                     </tr>
                                 </g:each>
@@ -153,114 +159,6 @@
                                     c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
                                 });
                     </r:script>
-
-
-                    %{--<div class="ui card la-dl-no-table la-js-hideable">--}%
-                        %{--<div class="content">--}%
-                            %{--<h5 class="ui header">--}%
-                                %{--${message(code:'org.customerIdentifier.plural')}--}%
-                            %{--</h5>--}%
-
-                            %{--<table class="ui la-table table">--}%
-                                %{--<thead>--}%
-                                    %{--<tr>--}%
-                                        %{--<th>${message(code:'default.provider.label')} : ${message(code:'platform.label')}</th>--}%
-                                        %{--<th>${message(code:'org.customerIdentifier')}</th>--}%
-                                        %{--<th>${message(code:'default.note.label')}</th>--}%
-                                        %{--<th>${message(code:'default.isPublic.label')}</th>--}%
-                                        %{--<th></th>--}%
-                                    %{--</tr>--}%
-                                %{--</thead>--}%
-                                %{--<tbody>--}%
-                                    %{--<g:each in="${customerIdentifier}" var="ci">--}%
-                                        %{--<g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">--}%
-                                            %{--<tr>--}%
-                                                %{--<td>--}%
-                                                    %{--${ci.getProvider()} : ${ci.platform}--}%
-                                                %{--</td>--}%
-                                                %{--<g:if test="${(editable && ci.owner.id == contextService.getOrg().id) || (isComboRelated && ci.owner.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">--}%
-                                                    %{--<td>--}%
-                                                        %{--<semui:xEditable owner="${ci}" field="value" overwriteEditable="true" />--}%
-                                                    %{--</td>--}%
-                                                    %{--<td>--}%
-                                                        %{--<semui:xEditable owner="${ci}" field="note" overwriteEditable="true" />--}%
-                                                    %{--</td>--}%
-                                                    %{--<td>--}%
-                                                        %{--<semui:xEditableBoolean owner="${ci}" field="isPublic" overwriteEditable="true" />--}%
-                                                    %{--</td>--}%
-                                                    %{--<td>--}%
-                                                        %{--<g:link controller="organisation" action="settings" id="${orgInstance.id}"--}%
-                                                            %{--params="${[deleteCI:ci.class.name + ':' + ci.id]}"--}%
-                                                            %{--class="ui button icon red"><i class="trash alternate icon"></i></g:link>--}%
-                                                    %{--</td>--}%
-                                                %{--</g:if>--}%
-                                                %{--<g:else>--}%
-                                                    %{--<td>--}%
-                                                        %{--${ci.value}--}%
-                                                    %{--</td>--}%
-                                                    %{--<td>--}%
-                                                        %{--${ci.note}--}%
-                                                    %{--</td>--}%
-                                                    %{--<td>--}%
-                                                        %{--${ci.isPublic ? message(code:'refdata.Yes') : message(code:'refdata.No')}--}%
-                                                    %{--</td>--}%
-                                                    %{--<td></td>--}%
-                                                %{--</g:else>--}%
-                                            %{--</tr>--}%
-                                        %{--</g:if>--}%
-                                    %{--</g:each>--}%
-                                %{--</tbody>--}%
-                                %{--<g:if test="${isComboRelated || editable || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">--}%
-                                %{--<tfoot>--}%
-                                    %{--<tr>--}%
-                                        %{--<td colspan="4">--}%
-                                            %{--<g:form class="ui form" controller="organisation" action="settings" id="${orgInstance.id}">--}%
-                                                %{--<div class="ui grid">--}%
-                                                    %{--<%----}%
-                                                    %{--<g:select id="addCIProvider" name="addCIProvider" class="ui dropdown selection"--}%
-                                                              %{--from="${formAllProviders}"--}%
-                                                              %{--optionKey="${{'com.k_int.kbplus.Org:' + it.id}}" optionValue="${{'(' + it.sortname +') ' + it.name}}" />--}%
-                                                    %{----%>--}%
-
-                                                    %{--<div class="six wide column">--}%
-                                                        %{--<div class="field">--}%
-                                                            %{--<label for="addCIPlatform">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</label>--}%
-                                                            %{--<g:select id="addCIPlatform" name="addCIPlatform" class="ui dropdown fluid search selection"--}%
-                                                                      %{--from="${allPlatforms}"--}%
-                                                                      %{--optionKey="${{'com.k_int.kbplus.Platform:' + it.id}}"--}%
-                                                                      %{--optionValue="${{ it.org.name + (it.org.sortname ? " (${it.org.sortname})" : '') + ' : ' + it.name}}" />--}%
-                                                        %{--</div>--}%
-                                                    %{--</div>--}%
-
-                                                    %{--<div class="four wide column">--}%
-                                                        %{--<div class="field">--}%
-                                                            %{--<label for="addCIValue">${message(code:'org.customerIdentifier')}</label>--}%
-                                                            %{--<input type="text" id="addCIValue" name="addCIValue" value=""/>--}%
-                                                        %{--</div>--}%
-                                                    %{--</div>--}%
-
-                                                    %{--<div class="four wide column">--}%
-                                                        %{--<div class="field">--}%
-                                                            %{--<label for="addCINote">${message(code:'default.note.label')}</label>--}%
-                                                            %{--<input type="text" id="addCINote" name="addCINote" value=""/>--}%
-                                                        %{--</div>--}%
-                                                    %{--</div>--}%
-
-                                                    %{--<div class="two wide column">--}%
-                                                        %{--<div class="field">--}%
-                                                            %{--<label>&nbsp;</label>--}%
-                                                            %{--<input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />--}%
-                                                        %{--</div>--}%
-                                                    %{--</div>--}%
-                                                %{--</div>--}%
-                                            %{--</g:form>--}%
-                                        %{--</td>--}%
-                                    %{--</tr>--}%
-                                %{--</tfoot>--}%
-                                %{--</g:if>--}%
-                            %{--</table>--}%
-                        %{--</div>--}%
-                    %{--</div>--}%
 
                 </div><!-- .la-inline-lists -->
 
