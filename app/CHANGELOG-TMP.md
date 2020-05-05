@@ -4,6 +4,8 @@
 
 2461    05.05.2020  rc1.3       David   Bug         INST_ADMIN hat keine Bearbeitungsrechte für Org-Einstellungen
 
+2454    05.05.2020  rc1.3       Moe     Bug         GASCO-Monitor "Lokale Lizenz"
+
 2453    04.05.2020  rc1.3       Moe     Bug         Alle Titel - falsche Verknüpfungen
 
 2457    04.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Serverfehler Wechsel zur Umfrage Workflow-Sicht
