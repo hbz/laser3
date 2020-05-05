@@ -119,7 +119,7 @@
 
                             </div>
 
-                            <g:each in="${tipp.title.ids?.sort { it?.ns?.ns }}" var="id">
+                            <g:each in="${tipp.title.ids?.sort { it.ns.ns }}" var="id">
                                 <span class="ui small image label">
                                     ${id.ns.ns}: <div class="detail">${id.value}</div>
                                 </span>

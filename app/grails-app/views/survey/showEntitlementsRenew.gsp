@@ -208,7 +208,7 @@
 
                         </div>
 
-                        <g:each in="${tipp.title.ids?.sort { it?.ns?.ns }}" var="id">
+                        <g:each in="${tipp.title.ids?.sort { it.ns.ns }}" var="id">
                             <g:if test="${id.ns.ns == 'originEditUrl'}">
                             <%--<span class="ui small blue image label">
                                 ${id.ns.ns}: <div class="detail"><a

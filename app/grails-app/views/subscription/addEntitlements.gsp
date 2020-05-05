@@ -265,7 +265,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
             </g:if>
             <br>
-            <g:each in="${tipp.title.ids?.sort { it?.ns?.ns }}" var="id">
+            <g:each in="${tipp.title.ids?.sort { it.ns.ns }}" var="id">
                 <span class="ui small blue image label">
                     ${id.ns.ns}: <div class="detail">${id.value}</div>
                 </span>
