@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} : Import Series to EBooks</title>
+    <title>${message(code: 'laser')} : Titles Enrichment</title>
 </head>
 
 <body>
@@ -13,7 +13,7 @@
 </semui:breadcrumbs>
 
 <br>
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>Import Series to EBooks</h1>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>Title Enrichment</h1>
 
 <br>
 <br>
@@ -22,7 +22,7 @@
 <semui:messages data="${flash}"/>
 
 <br>
-<g:form class="ui form" controller="admin" action="importSeriesToEBooks" params="" method="post"
+<g:form class="ui form" controller="admin" action="titleEnrichment" params="" method="post"
         enctype="multipart/form-data">
     <div class="two fields">
         <div class="field">

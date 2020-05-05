@@ -140,7 +140,7 @@
                                 <g:message code="default.identifiers.label"/>
                             </dt>
                             <dd>
-                                <g:each in="${subscriptionInstance?.ids?.sort { it?.ns?.ns }}"
+                                <g:each in="${subscriptionInstance?.ids?.sort { it.ns.ns }}"
                                         var="id">
                                     <span class="ui small blue image label">
                                         ${id.ns.ns}: <div class="detail">${id.value}</div>

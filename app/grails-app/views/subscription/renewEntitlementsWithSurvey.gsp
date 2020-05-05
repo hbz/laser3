@@ -109,24 +109,34 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             </div>
 
             <div class="field">
-                <label for="summaryOfContent">${message(code: 'renewEntitlementsWithSurvey.filter.summaryOfContent')}</label>
+                <label for="seriesNames">${message(code: 'renewEntitlementsWithSurvey.filter.series_names')}</label>
+                <input name="seriesNames" id="seriesNames" value="${params.series_names}"/>
+            </div>
+
+            <div class="field">
+                <label for="subject_reference">${message(code: 'renewEntitlementsWithSurvey.filter.subject_reference')}</label>
                %{-- <input name="summaryOfContent" id="summaryOfContent" value="${params.summaryOfContent}"/>--}%
               %{-- <g:select class="ui dropdown" name="summaryOfContent" title="${g.message(code: 'renewEntitlementsWithSurvey.filter.summaryOfContent')}"
                          from="${subjects}" noSelection="${['':'']}" />--}%
 
-                <select name="summaryOfContents" id="summaryOfContent" multiple="" class="ui search selection dropdown">
+                <select name="subject_references" id="subject_reference" multiple="" class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${subjects}" var="subject">
-                        <option <%=(params.list('summaryOfContents').contains(subject)) ? 'selected="selected"' : ''%>
+                        <option <%=(params.list('subject_references').contains(subject)) ? 'selected="selected"' : ''%>
                         value="${subject}">
                         ${subject}
                         </option>
                     </g:each>
                 </select>
+            </div>
+        </div>
+        <div class="two fields">
 
+            <div class="field">
 
             </div>
+
             <div class="field la-field-right-aligned">
                 <g:link action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"

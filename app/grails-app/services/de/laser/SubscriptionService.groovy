@@ -281,9 +281,14 @@ class SubscriptionService {
                 qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
             }
 
-            if (params.summaryOfContents && params.summaryOfContents != "" && params.list('summaryOfContents')) {
-                base_qry += " and lower(ie.tipp.title.summaryOfContent) in (:summaryOfContents)"
-                qry_params.summaryOfContents = params.list('summaryOfContents').collect { ""+it.toLowerCase()+"" }
+            if(params.seriesNames) {
+                base_qry += " and lower(ie.tipp.title.seriesName) like :seriesNames "
+                qry_params.seriesNames = "%${params.seriesNames.trim().toLowerCase()}%"
+            }
+
+            if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
+                base_qry += " and lower(ie.tipp.title.subjectReference) in (:subject_references)"
+                qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
             }
 
             if(params.ebookFirstAutorOrFirstEditor) {
@@ -362,16 +367,11 @@ class SubscriptionService {
     }
 
     Set<String> getSubjects(List titleIDs) {
-        //println(titleIDs)
         Set<String> subjects = []
 
         if(titleIDs){
-            subjects = BookInstance.executeQuery("select distinct(summaryOfContent) from BookInstance where summaryOfContent is not null and id in (:titleIDs)", [titleIDs: titleIDs])
-            //println("Moe!")
-            //println(BookInstance.executeQuery("select bk.summaryOfContent from BookInstance as bk where bk.id in (15415, 15368, 15838)"))
+            subjects = TitleInstance.executeQuery("select distinct(subjectReference) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by subjectReference", [titleIDs: titleIDs])
         }
-
-        //println(subjects)
         subjects
 
     }

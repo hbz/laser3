@@ -337,7 +337,7 @@
                                     <g:link class="item" role="menuitem" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="titlesImport">${message(code:'menu.admin.bulkOps.titlesImport')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="admin" action="importSeriesToEBooks">Import Series to EBooks</g:link>
+                                    <g:link class="item" role="menuitem" controller="admin" action="titleEnrichment">Title Enrichment</g:link>
                                 </div>
                             </div>
                             <div class="divider"></div>

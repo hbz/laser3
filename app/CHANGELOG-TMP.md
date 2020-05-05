@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2344    04.05.2020  hbz-dev     Moe     Feature     Erweiterung der Klasse Titles um Fächergruppe und Reihe
+
 2452    30.04.2020  rc1.3       Moe     Bug         Umfrage Bugs
 
 2199    28.04.2020  rc1.3       David   Feature     API: Top-Level-Objekte mit Status deleted
