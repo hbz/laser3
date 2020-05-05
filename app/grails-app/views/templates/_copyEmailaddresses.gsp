@@ -66,7 +66,7 @@
             $(href + '.ui.modal').modal({
                 onVisible: function() {
                     updateTextArea();
-                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
+                    // $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
                 autofocus: false,

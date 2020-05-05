@@ -405,12 +405,12 @@ class Subscription
     Org coll
     
     orgRelations.each { or ->
-      if ( or?.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id] )
+      if ( or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id] )
         result = or.org
         
-      if ( or?.roleType?.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
+      if ( or.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
         cons = or.org
-      else if(or?.roleType?.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)
+      else if(or.roleType.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)
         coll = or.org
     }
     

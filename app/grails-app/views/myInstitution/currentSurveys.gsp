@@ -179,7 +179,10 @@
                         params="${[id: params.id, tab: 'finish']}" text="abgeschlossen" tab="finish"
                         counts="${countSurveys?.finish}"/>
         <semui:tabsItem controller="myInstitution" action="currentSurveys" class="ui red" countsClass="red"
-                        params="${[id: params.id, tab: 'notFinish']}" text="vorsorgliche Kündigungen" tab="notFinish"
+                        params="${[id: params.id, tab: 'termination']}" text="vorsorgliche Kündigungen" tab="termination"
+                        counts="${countSurveys?.termination}"/>
+        <semui:tabsItem controller="myInstitution" action="currentSurveys" class="ui orange" countsClass="orange"
+                        params="${[id: params.id, tab: 'notFinish']}" text="nicht abgeschlossen" tab="notFinish"
                         counts="${countSurveys?.notFinish}"/>
 
     </semui:tabs>

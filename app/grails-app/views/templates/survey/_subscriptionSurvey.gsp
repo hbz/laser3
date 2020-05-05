@@ -949,7 +949,7 @@
                             </g:elseif>
                             <g:elseif test="${surveyResult.type.type == com.k_int.kbplus.RefdataValue.toString()}">
 
-                                <g:if test="${surveyResult.type.name in ["Participation"] && surveyResult.owner?.id != contextService.getOrg().id}">
+                                <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type.name in ["Participation"] && surveyResult.owner?.id != contextService.getOrg().id}">
                                     <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
                                                             id="participation"
                                                             config="${surveyResult.type.refdataCategory}"/>
@@ -981,7 +981,8 @@
 </g:if>
 
 <r:script>
-                                    $('body #participation').editable({
+                                    $('body #
+                                    ').editable({
                                         validate: function (value) {
                                             if (value == "com.k_int.kbplus.RefdataValue:${RDStore.YN_NO.id}") {
                                                 var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );

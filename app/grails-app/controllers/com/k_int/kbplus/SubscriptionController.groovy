@@ -2450,7 +2450,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
 
-                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.settingKeys)
+                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
 
                 members.each { cm ->
 
@@ -3450,7 +3450,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         log.debug("Received params: ${params}")
         SubscriptionPackage subscriptionPackage = SubscriptionPackage.get(params.subscriptionPackage)
-        PendingChangeConfiguration.settingKeys.each { String settingKey ->
+        PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
             Map<String,Object> configMap = [subscriptionPackage:subscriptionPackage,settingKey:settingKey,withNotification:false]
             boolean auditable = false
             //Set because we have up to three keys in params with the settingKey
@@ -4317,7 +4317,7 @@ class SubscriptionController extends AbstractDebugController {
                                             Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
                                             PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
                                             if(newPcc) {
-                                                Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSub.class.name,baseSub.id,PendingChangeConfiguration.settingKeys)
+                                                Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSub.class.name,baseSub.id,PendingChangeConfiguration.SETTING_KEYS)
                                                 auditables.each { audit ->
                                                     AuditConfig.addConfig(newSub,audit.referenceField)
                                                 }
@@ -4455,12 +4455,13 @@ class SubscriptionController extends AbstractDebugController {
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
-            def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
-            def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
-            def sub_status = params.subStatus
+            def sub_startDate = params.subscription.start_date ? parseDate(params.subscription.start_date, possible_date_formats) : null
+            def sub_endDate = params.subscription.end_date ? parseDate(params.subscription.end_date, possible_date_formats) : null
+            def sub_status = params.subStatus ?: RDStore.SUBSCRIPTION_NO_STATUS
             def sub_type = params.subType
-            def sub_form = params.subForm
-            def sub_resource = params.subResource
+            def sub_kind = params.subKind ?: null
+            def sub_form = params.subForm ?: null
+            def sub_resource = params.subResource ?: null
             def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
             def sub_isPublicForApi = params.subIsPublicForApi == '1'
             def old_subOID = params.subscription.old_subid
@@ -4478,6 +4479,7 @@ class SubscriptionController extends AbstractDebugController {
                     identifier: java.util.UUID.randomUUID().toString(),
                     isSlaved: baseSub?.isSlaved,
                     type: sub_type,
+                    kind: sub_kind,
                     status: sub_status,
                     resource: sub_resource,
                     form: sub_form,
@@ -4643,25 +4645,25 @@ class SubscriptionController extends AbstractDebugController {
 
         switch (params.workFlowPart) {
             case WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copySubElements_DatesOwnerRelations();
+                result << copySubElements_DatesOwnerRelations()
                 if (params.isRenewSub){
                     params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << loadDataFor_PackagesEntitlements()
                 } else {
                     result << loadDataFor_DatesOwnerRelations()
                 }
-                break;
+                break
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
-                result << copySubElements_PackagesEntitlements();
+                result << copySubElements_PackagesEntitlements()
                 if (params.isRenewSub){
                     params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     result << loadDataFor_DocsAnnouncementsTasks()
                 } else {
                     result << loadDataFor_PackagesEntitlements()
                 }
-                break;
+                break
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copySubElements_DocsAnnouncementsTasks();
+                result << copySubElements_DocsAnnouncementsTasks()
                 if (params.isRenewSub){
                     if (result.isSubscriberVisible){
                         params.workFlowPart = WORKFLOW_SUBSCRIBER
@@ -4673,18 +4675,18 @@ class SubscriptionController extends AbstractDebugController {
                 } else {
                     result << loadDataFor_DocsAnnouncementsTasks()
                 }
-                break;
+                break
             case WORKFLOW_SUBSCRIBER:
-                result << copySubElements_Subscriber();
+                result << copySubElements_Subscriber()
                 if (params.isRenewSub) {
                     params.workFlowPart = WORKFLOW_PROPERTIES
                     result << loadDataFor_Properties()
                 } else {
                     result << loadDataFor_Subscriber()
                 }
-                break;
+                break
             case WORKFLOW_PROPERTIES:
-                result << copySubElements_Properties();
+                result << copySubElements_Properties()
                 if (params.isRenewSub && params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
@@ -4692,18 +4694,18 @@ class SubscriptionController extends AbstractDebugController {
                 } else {
                     result << loadDataFor_Properties()
                 }
-                break;
+                break
             case WORKFLOW_END:
-                result << copySubElements_Properties();
+                result << copySubElements_Properties()
                 if (params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
                     redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
                 }
-                break;
+                break
             default:
                 result << loadDataFor_DatesOwnerRelations()
-                break;
+                break
         }
 
         if (params.targetSubscriptionId) {
@@ -4777,38 +4779,86 @@ class SubscriptionController extends AbstractDebugController {
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
-        boolean isTargetSubChanged = false
+        //boolean isTargetSubChanged = false
         if (params.subscription?.deleteDates && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteDates(newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }else if (params.subscription?.takeDates && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.copyDates(baseSub, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteStatus && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteStatus(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeStatus && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyStatus(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteKind && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteKind(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeKind && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyKind(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteForm && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteForm(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeForm && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyForm(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteResource && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteResource(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeResource && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyResource(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deletePublicForApi && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deletePublicForApi(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takePublicForApi && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyPublicForApi(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deletePerpetualAccess && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deletePerpetualAccess(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takePerpetualAccess && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyPerpetualAccess(baseSub, newSub, flash)
+            //isTargetSubChanged = true
         }
 
         if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteOwner(newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.copyOwner(baseSub, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }
 
         if (params.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
             List<OrgRole> toDeleteOrgRelations = params.list('subscription.deleteOrgRelations').collect { genericOIDService.resolveOID(it) }
             subscriptionService.deleteOrgRelations(toDeleteOrgRelations, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }
         if (params.subscription?.takeOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
             List<OrgRole> toCopyOrgRelations = params.list('subscription.takeOrgRelations').collect { genericOIDService.resolveOID(it) }
             subscriptionService.copyOrgRelations(toCopyOrgRelations, baseSub, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
 
             List<OrgRole> toggleShareOrgRoles = params.list('toggleShareOrgRoles').collect {
                 genericOIDService.resolveOID(it)
             }
 
-            newSub = newSub.refresh()
+            //newSub = newSub.refresh()
             newSub.orgRelations.each {newSubOrgRole ->
 
                 if(newSubOrgRole.org in toggleShareOrgRoles.org)
@@ -4825,19 +4875,19 @@ class SubscriptionController extends AbstractDebugController {
             def toDeleteIdentifiers =  []
             params.list('subscription.deleteIdentifierIds').each{ identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
             subscriptionService.deleteIdentifiers(toDeleteIdentifiers, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }
 
         if (params.subscription?.takeIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyIdentifiers =  []
             params.list('subscription.takeIdentifierIds').each{ identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
             subscriptionService.copyIdentifiers(baseSub, toCopyIdentifiers, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }
 
-        if (isTargetSubChanged) {
+        /*if (isTargetSubChanged) {
             newSub = newSub.refresh()
-        }
+        }*/
         result.subscription = baseSub
         result.newSub = newSub
         result.targetSubscription = newSub
@@ -4987,6 +5037,7 @@ class SubscriptionController extends AbstractDebugController {
             List<Subscription> toCopySubs = params.list('subscription.copySubscriber').collect { genericOIDService.resolveOID(it) }
             subscriptionService.copySubscriber(toCopySubs, newSub, flash)
         }
+        globalSourceSyncService.cleanUpGorm()
 
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
@@ -5073,6 +5124,30 @@ class SubscriptionController extends AbstractDebugController {
         if (params.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.copyPackages(packagesToTake, newSub, flash)
+            isTargetSubChanged = true
+        }
+
+        if(params.subscription?.deletePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packageSettingsToDelete = params.list('subscription.deletePackageSettings').collect {
+                genericOIDService.resolveOID(it)
+            }
+            packageSettingsToDelete.each { SubscriptionPackage toDelete ->
+                PendingChangeConfiguration.SETTING_KEYS.each { String setting ->
+                    if(AuditConfig.getConfig(toDelete.subscription,setting))
+                        AuditConfig.removeConfig(toDelete.subscription,setting)
+                }
+                PendingChangeConfiguration.executeUpdate('delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage = :sp',[sp:toDelete])
+            }
+            isTargetSubChanged = true
+        }
+        if(params.subscription?.takePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect {
+                genericOIDService.resolveOID(it)
+            }
+            packageSettingsToTake.each { SubscriptionPackage sp ->
+                //explicit loading of service needed because lazy initialisation gives null
+                subscriptionService.copyPendingChangeConfiguration(PendingChangeConfiguration.findAllBySubscriptionPackage(sp),SubscriptionPackage.findBySubscriptionAndPkg(newSub,sp.pkg))
+            }
             isTargetSubChanged = true
         }
 
@@ -5204,15 +5279,15 @@ class SubscriptionController extends AbstractDebugController {
 
             def newSubscriptionInstance = new Subscription(
                     name: sub_name,
-                    status: baseSubscription.status,
+                    status: params.subscription.copyStatus ? baseSubscription.status : SUBSCRIPTION_NO_STATUS,
                     type: baseSubscription.type,
-                    kind: baseSubscription.kind,
+                    kind: params.subscription.copyKind ? baseSubscription.kind : null,
                     identifier: java.util.UUID.randomUUID().toString(),
                     isSlaved: baseSubscription.isSlaved,
-                    startDate: params.subscription.copyDates ? baseSubscription?.startDate : null,
-                    endDate: params.subscription.copyDates ? baseSubscription?.endDate : null,
-                    resource: baseSubscription.resource ?: null,
-                    form: baseSubscription.form ?: null,
+                    startDate: params.subscription.copyDates ? baseSubscription.startDate : null,
+                    endDate: params.subscription.copyDates ? baseSubscription.endDate : null,
+                    resource: params.subscription.resource ? baseSubscription.resource : null,
+                    form: params.subscription.form ? baseSubscription.form : null,
             )
             //Copy License
             if (params.subscription.copyLicense) {
@@ -5333,13 +5408,15 @@ class SubscriptionController extends AbstractDebugController {
                                 newOrgAccessPointLink.subPkg = newSubscriptionPackage
                                 newOrgAccessPointLink.save()
                             }
-                            pcc.each { PendingChangeConfiguration config ->
-                                Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
-                                PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-                                if(newPcc) {
-                                    Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.settingKeys)
-                                    auditables.each { audit ->
-                                        AuditConfig.addConfig(newSubscriptionInstance,audit.referenceField)
+                            if(params.subscription.copyPackageSettings) {
+                                pcc.each { PendingChangeConfiguration config ->
+                                    Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
+                                    PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
+                                    if(newPcc) {
+                                        Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSubscription.class.name,baseSubscription.id,PendingChangeConfiguration.SETTING_KEYS)
+                                        auditables.each { audit ->
+                                            AuditConfig.addConfig(newSubscriptionInstance,audit.referenceField)
+                                        }
                                     }
                                 }
                             }
