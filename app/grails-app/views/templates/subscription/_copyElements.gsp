@@ -19,7 +19,7 @@
             <thead>
                 <tr>
                     <th class="six wide">
-                        <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                        <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription.id}">${sourceSubscription.dropdownNamingConvention()}</g:link></g:if>
                     </th>
                     <g:if test="${isConsortialSubs}">
                                 %{--th SHARE--}%
@@ -44,8 +44,8 @@
                     <td name="subscription.takeDates.source">
                         <div>
                             <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
-                            <g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-                            ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
+                            <g:formatDate date="${sourceSubscription.startDate}" format="${message(code: 'default.date.format.notime')}"/>
+                            ${sourceSubscription.endDate ? (' - ' + formatDate(date: sourceSubscription.endDate, format: message(code: 'default.date.format.notime'))) : ''}
                         </div>
                     </td>
                     <g:if test="${isConsortialSubs}">
@@ -55,7 +55,7 @@
                     </g:if>
                     %{--AKTIONEN:--}%
                     <td class="center aligned">
-                        <g:if test="${sourceSubscription?.startDate || sourceSubscription?.endDate}">
+                        <g:if test="${sourceSubscription.startDate || sourceSubscription.endDate}">
                             <div class="ui checkbox la-toggle-radio la-replace">
                                 <g:checkBox name="subscription.takeDates" data-action="copy" checked="${true}" />
                             </div>
@@ -82,7 +82,7 @@
                     <td name="subscription.takeStatus.source">
                         <div>
                             <b><i class="ellipsis vertical icon"></i>${message(code: 'subscription.status.label')}:</b>
-                            ${sourceSubscription.status?.getI10n('value')}
+                            ${sourceSubscription.status.getI10n('value')}
                         </div>
                     </td>
                     <g:if test="${isConsortialSubs}">
@@ -92,7 +92,7 @@
                     </g:if>
                 %{--AKTIONEN:--}%
                     <td class="center aligned">
-                        <g:if test="${sourceSubscription?.status}">
+                        <g:if test="${sourceSubscription.status}">
                             <div class="ui checkbox la-toggle-radio la-replace">
                                 <g:checkBox name="subscription.takeStatus" data-action="copy" checked="${true}" />
                             </div>
@@ -130,7 +130,7 @@
                 </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
-                    <g:if test="${sourceSubscription?.kind}">
+                    <g:if test="${sourceSubscription.kind}">
                         <div class="ui checkbox la-toggle-radio la-replace">
                             <g:checkBox name="subscription.takeKind" data-action="copy" checked="${true}" />
                         </div>
@@ -166,7 +166,7 @@
                 </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
-                    <g:if test="${sourceSubscription?.form}">
+                    <g:if test="${sourceSubscription.form}">
                         <div class="ui checkbox la-toggle-radio la-replace">
                             <g:checkBox name="subscription.takeForm" data-action="copy" checked="${true}" />
                         </div>
@@ -202,7 +202,7 @@
                 </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
-                    <g:if test="${sourceSubscription?.resource}">
+                    <g:if test="${sourceSubscription.resource}">
                         <div class="ui checkbox la-toggle-radio la-replace">
                             <g:checkBox name="subscription.takeResource" data-action="copy" checked="${true}" />
                         </div>
@@ -260,7 +260,7 @@
                 <td name="subscription.takePerpetualAccess.source">
                     <div>
                         <b><i class="flag outline icon"></i>${message(code: 'subscription.hasPerpetualAccess.label')}:</b>
-                        ${sourceSubscription?.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        ${sourceSubscription.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                     </div>
                 </td>
                 <g:if test="${isConsortialSubs}">
@@ -292,7 +292,7 @@
                 <td  name="subscription.takeOwner.source">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
-                        <g:if test="${sourceSubscription?.owner}">
+                        <g:if test="${sourceSubscription.owner}">
                             <g:link controller="license" action="show" target="_blank" id="${sourceSubscription.owner.id}">
                                 ${sourceSubscription.owner}
                             </g:link>
@@ -306,7 +306,7 @@
                 </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
-                    <g:if test="${sourceSubscription?.owner}">
+                    <g:if test="${sourceSubscription.owner}">
                         <div class="ui checkbox la-toggle-radio la-replace">
                             <g:checkBox name="subscription.takeOwner" data-action="copy" checked="${true}" />
                         </div>
