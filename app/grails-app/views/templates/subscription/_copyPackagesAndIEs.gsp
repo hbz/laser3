@@ -45,14 +45,14 @@
                 <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
                     <b>${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
-                    <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
+                    <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>
                                     <i class="gift icon"></i>
-                                    <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
-                                    <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
-                                    <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
+                                    <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                                    <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
+                                    <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
                                 </label>
 
                                 <div class="la-copyPack-container la-element">
@@ -92,13 +92,13 @@
                 <td name="subscription.takePackages.target">
                     <b>${message(code: 'subscription.packages.label')}: ${targetSubscription?.packages?.size()}</b>
 
-                    <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
+                    <g:each in="${targetSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-copyPack-item">
                                 <i class="gift icon"></i>
-                                <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
-                                <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
-                                <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
+                                <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                                <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
+                                <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
                                 <br>
                                 <div class="la-copyPack-container la-element">
                                     <ul>
