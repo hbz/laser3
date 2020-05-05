@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2453    04.05.2020  rc1.3       Moe     Bug         Alle Titel - falsche Verknüpfungen
+
+2457    04.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Serverfehler Wechsel zur Umfrage Workflow-Sicht
+
 2376    04.05.2020  rc1.3       Andreas Bug         Vorbelegung des Filters in der Finanzübersicht war inkorrekt dargestellt
 
 2452    30.04.2020  rc1.3       Moe     Bug         Umfrage Bugs
