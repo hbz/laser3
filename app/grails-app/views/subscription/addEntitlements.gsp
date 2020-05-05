@@ -198,12 +198,12 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             <strong><g:link controller="title" action="show"
                             id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
-            <g:if test="${tipp?.title instanceof BookInstance && tipp.title.volume}">
+            <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
                 (${message(code: 'title.volume.label')} ${tipp.title.volume})
             </g:if>
 
-            <g:if test="${tipp?.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
-                <br><b>${tipp?.title?.getEbookFirstAutorOrFirstEditor()}</b>
+            <g:if test="${tipp.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
+                <br><b>${tipp.title.getEbookFirstAutorOrFirstEditor()}</b>
             </g:if>
 
             <br>
@@ -231,12 +231,12 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 </g:each>
             <br>
 
-            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
-                <g:if test="${tipp?.title?.editionStatement}">
+            <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance}">
+                <g:if test="${tipp.title.editionStatement}">
                 <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp.title.editionStatement}
                 </div>
                 </g:if>
-                <g:if test="${tipp?.title?.summaryOfContent}">
+                <g:if test="${tipp.title.summaryOfContent}">
                 <div class="item">
                      ${tipp.title.summaryOfContent}
                 </div>
@@ -265,7 +265,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
             </g:if>
             <br>
-            <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
+            <g:each in="${tipp.title.ids?.sort { it?.ns?.ns }}" var="id">
                 <span class="ui small blue image label">
                     ${id.ns.ns}: <div class="detail">${id.value}</div>
                 </span>
@@ -315,18 +315,18 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         </td>
 
             <td>
-                <g:if test="${tipp?.title instanceof BookInstance}">
+                <g:if test="${tipp.title instanceof BookInstance}">
                     <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                    %{-- <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstInPrint.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
-                    <%--${tipp?.title?.dateFirstInPrint}--%>--}%
+                    <%--${tipp.title.dateFirstInPrint}--%>--}%
                     <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${tipp?.title?.dateFirstInPrint}"/>
+                                  date="${tipp.title.dateFirstInPrint}"/>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                     %{--<semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstOnline.label')}" name="ieAccessEnd" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstOnline : tipp.title?.dateFirstOnline}"/>
-                    <%--${tipp?.title?.dateFirstOnline}--%>--}%
+                    <%--${tipp.title.dateFirstOnline}--%>--}%
                     <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${tipp?.title?.dateFirstOnline}"/>
+                                  date="${tipp.title.dateFirstOnline}"/>
                 </g:if>
                 <g:else>
                     <%-- The check if preselectCoverageStatements is set is done server-side; this is implicitely done when checking if the issueEntitlementOverwrite map has the coverage statement list.
