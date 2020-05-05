@@ -25,12 +25,31 @@
     </div>
     </g:if>
     <div class="item">
-      <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
+      <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
       <div class="content">
         ${item.tipp.title.summaryOfContent}
       </div>
     </div>
   </g:if>
+
+  <g:if test="${item.tipp.title.seriesName}">
+    <div class="item">
+      <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
+      <div class="content">
+        ${item.tipp.title.seriesName}
+      </div>
+    </div>
+  </g:if>
+
+  <g:if test="${item.tipp.title.subjectReference}">
+    <div class="item">
+      <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
+      <div class="content">
+        ${item.tipp.title.subjectReference}
+      </div>
+    </div>
+  </g:if>
+
 </div>
 <g:each in="${item.tipp.title.ids.sort { it.ns.ns }}" var="title_id">
     <span class="ui small blue image label">

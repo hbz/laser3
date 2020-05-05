@@ -3337,7 +3337,7 @@ class SurveyController {
             result.orgList = Org.findAllByIdInList(idList)
         }
 
-        render(template: "/survey/copyEmailaddresses", model: result)
+        render(template: "/templates/copyEmailaddresses", model: result)
     }
 
 

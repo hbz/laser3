@@ -262,11 +262,11 @@
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie?.tipp?.title?.dateFirstInPrint}"/>
+                                                      date="${ie.tipp.title.dateFirstInPrint}"/>
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie?.tipp?.title?.dateFirstOnline}"/>
+                                                      date="${ie.tipp.title.dateFirstOnline}"/>
 
                                     </g:if>
                                     <g:elseif test="${ie.tipp.title instanceof com.k_int.kbplus.JournalInstance}">
