@@ -1,5 +1,5 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.OrgSettings; com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.auth.Role" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.OrgSettings; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -96,11 +96,11 @@
                                                 <g:if test="${OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
                                                     <semui:xEditableRefData owner="${os}" field="rdValue" id="oamonitor_server_access" config="${os.key.rdc}" />
                                                 </g:if>
-                                                <g:elseif test="${os.key.rdc == RDConstants.Y_N}">
+                                                <g:elseif test="${os.key.type == RefdataValue}">
                                                     <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
                                                 </g:elseif>
-                                                <g:elseif test="${os.roleValue}">
-                                                    ${os.getValue().getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
+                                                <g:elseif test="${os.key.type == Role}">
+                                                    ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
                                                 </g:elseif>
                                                 <g:else>
                                                     <semui:xEditable owner="${os}" field="strValue" />
@@ -114,14 +114,14 @@
                                                         <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
                                                     </g:if>
                                                     <g:else>
-                                                        ${os.getValue().getI10n('value')}
+                                                        ${os.getValue()?.getI10n('value')}
                                                     </g:else>
                                                 </g:if>
-                                                <g:elseif test="${os.rdValue}">
-                                                    ${os.getValue().getI10n('value')}
+                                                <g:elseif test="${os.key.type == RefdataValue}">
+                                                    ${os.getValue()?.getI10n('value')}
                                                 </g:elseif>
-                                                <g:elseif test="${os.roleValue}">
-                                                    ${os.getValue().getI10n('authority')}
+                                                <g:elseif test="${os.key.type == Role}">
+                                                    ${os.getValue()?.getI10n('authority')}
                                                 </g:elseif>
                                                 <g:else>
                                                     ${os.getValue()}
