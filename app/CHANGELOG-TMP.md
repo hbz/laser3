@@ -4,6 +4,8 @@
 
 2461    05.05.2020  rc1.3       David   Bug         INST_ADMIN hat keine Bearbeitungsrechte für Org-Einstellungen
 
+2363    05.05.2020  rc1.3       Moe     Bug         Umfrage: Vorsorgliche Kündigung bei Teilnehmer nochmal überarbeiten
+
 2454    05.05.2020  rc1.3       Moe     Bug         GASCO-Monitor "Lokale Lizenz"
 
 2453    04.05.2020  rc1.3       Moe     Bug         Alle Titel - falsche Verknüpfungen
