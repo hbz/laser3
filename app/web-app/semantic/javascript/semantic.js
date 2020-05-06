@@ -6037,6 +6037,7 @@ $.fn.dropdown = function(parameters) {
           firstUnfiltered: function() {
             module.verbose('Selecting first non-filtered element');
             module.remove.selectedItem();
+            module.remove.ariaSelected();
             $item
               .not(selector.unselectable)
               .not(selector.addition + selector.hidden)
@@ -7819,6 +7820,7 @@ $.fn.dropdown = function(parameters) {
               else {
                 module.remove.activeItem();
                 module.remove.selectedItem();
+                module.remove.ariaSelected()
               }
             }
           },
@@ -7938,6 +7940,7 @@ $.fn.dropdown = function(parameters) {
           else {
             module.remove.activeItem();
             module.remove.selectedItem();
+            module.remove.ariaSelected();
           }
           module.set.placeholderText();
           module.clearValue();
@@ -8000,6 +8003,11 @@ $.fn.dropdown = function(parameters) {
             console.log("aria-activedescendant WIRD GESETZT");
             console.log(selectedItemID);
             $search.attr('aria-activedescendant', selectedItemID)
+          },
+          ariaSelected : function (selectedItem) {
+            console.log("aria-selected WIRD GESETZT");
+            console.log(selectedItem);
+            $(selectedItem).attr('aria-selected', 'true')
           },
           filtered: function() {
             var
@@ -8318,9 +8326,11 @@ $.fn.dropdown = function(parameters) {
             if(module.is.single()) {
               module.remove.activeItem();
               module.remove.selectedItem();
+              module.remove.ariaSelected();
             }
             else if(settings.useLabels) {
               module.remove.selectedItem();
+              module.remove.ariaSelected();
             }
             // select each item
             $selectedItem
@@ -8364,6 +8374,7 @@ $.fn.dropdown = function(parameters) {
                   }
                   module.set.text(selectedText);
                   module.set.activedescendant($selectedItem[0].id);
+                  module.set.ariaSelected($selectedItem);
                   module.set.value(selectedValue, selectedText, $selected);
                   $selected
                     .addClass(className.active)
@@ -8577,6 +8588,11 @@ $.fn.dropdown = function(parameters) {
         },
 
         remove: {
+          activedescendant: function(selectedItemID){
+            console.log("aria-activedescendant WIRD ENTFERNT");
+            console.log(selectedItemID);
+            $search.removeAttr('aria-activedescendant', selectedItemID)
+          },
           active: function() {
             $module.removeClass(className.active);
           },
@@ -8703,6 +8719,11 @@ $.fn.dropdown = function(parameters) {
           },
           selectedItem: function() {
             $item.removeClass(className.selected);
+          },
+          ariaSelected: function() {
+            console.log("aria-selected WIRD ENTFERNT");
+            console.log($item);
+            $item.removeAttr('aria-selected');
           },
           value: function(removedValue, removedText, $removedItem) {
             var
