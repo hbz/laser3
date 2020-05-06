@@ -2395,6 +2395,8 @@ class AjaxController {
                 } else if (showPrivateContactEmails){
                     query += "and (p.isPublic = false and p.tenant = :ctx) "
                     queryParams << [ctx: contextService.org]
+                } else {
+                    return [] as JSON
                 }
             }
 

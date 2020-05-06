@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.PropertyService
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -3064,29 +3065,51 @@ class SurveyController {
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         boolean isTargetSubChanged = false
-        if (params?.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<SubscriptionPackage> packagesToDelete = params?.list('subscription.deletePackageIds').collect {
+        if (params.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.deletePackages(packagesToDelete, newSub, flash)
             isTargetSubChanged = true
         }
-        if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<SubscriptionPackage> packagesToTake = params?.list('subscription.takePackageIds').collect {
+        if (params.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.copyPackages(packagesToTake, newSub, flash)
             isTargetSubChanged = true
         }
+        if(params.subscription?.deletePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packageSettingsToDelete = params.list('subscription.deletePackageSettings').collect {
+                genericOIDService.resolveOID(it)
+            }
+            packageSettingsToDelete.each { SubscriptionPackage toDelete ->
+                PendingChangeConfiguration.SETTING_KEYS.each { String setting ->
+                    if(AuditConfig.getConfig(toDelete.subscription,setting))
+                        AuditConfig.removeConfig(toDelete.subscription,setting)
+                }
+                PendingChangeConfiguration.executeUpdate('delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage = :sp',[sp:toDelete])
+            }
+            isTargetSubChanged = true
+        }
+        if(params.subscription?.takePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect {
+                genericOIDService.resolveOID(it)
+            }
+            packageSettingsToTake.each { SubscriptionPackage sp ->
+                subscriptionService.copyPendingChangeConfiguration(PendingChangeConfiguration.findAllBySubscriptionPackage(sp),SubscriptionPackage.findBySubscriptionAndPkg(newSub,sp.pkg))
+            }
+            isTargetSubChanged = true
+        }
 
-        if (params?.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToDelete = params?.list('subscription.deleteEntitlementIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.deleteEntitlements(entitlementsToDelete, newSub, flash)
             isTargetSubChanged = true
         }
-        if (params?.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect {
                 genericOIDService.resolveOID(it)
             }
@@ -3118,21 +3141,69 @@ class SurveyController {
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
-        boolean isTargetSubChanged = false
+        //boolean isTargetSubChanged = false
         if (params?.subscription?.deleteDates && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteDates(newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         } else if (params?.subscription?.takeDates && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.copyDates(baseSub, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteStatus && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteStatus(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeStatus && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyStatus(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteKind && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteKind(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeKind && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyKind(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteForm && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteForm(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeForm && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyForm(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteResource && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteResource(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeResource && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyResource(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deletePublicForApi && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deletePublicForApi(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takePublicForApi && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyPublicForApi(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deletePerpetualAccess && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deletePerpetualAccess(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takePerpetualAccess && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyPerpetualAccess(baseSub, newSub, flash)
+            //isTargetSubChanged = true
         }
 
         if (params?.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteOwner(newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         } else if (params?.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.copyOwner(baseSub, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }
 
         if (params?.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -3140,14 +3211,14 @@ class SurveyController {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.deleteOrgRelations(toDeleteOrgRelations, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }
         if (params?.subscription?.takeOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
             List<OrgRole> toCopyOrgRelations = params.list('subscription.takeOrgRelations').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.copyOrgRelations(toCopyOrgRelations, baseSub, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
 
             List<OrgRole> toggleShareOrgRoles = params.list('toggleShareOrgRoles').collect {
                 genericOIDService.resolveOID(it)
@@ -3166,9 +3237,9 @@ class SurveyController {
             }
         }
 
-        if (isTargetSubChanged) {
+        /*if (isTargetSubChanged) {
             newSub = newSub.refresh()
-        }
+        }*/
         result.subscription = baseSub
         result.newSub = newSub
         result.targetSubscription = newSub

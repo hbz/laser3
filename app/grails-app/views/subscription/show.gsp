@@ -344,7 +344,7 @@
                                               </g:if>
                                           </dl>
                                           <g:set var="excludes" value="${[de.laser.domain.PendingChangeConfiguration.PACKAGE_PROP,de.laser.domain.PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                                          <g:each in="${de.laser.domain.PendingChangeConfiguration.settingKeys}" var="settingKey">
+                                          <g:each in="${de.laser.domain.PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                                               <dl>
                                                   <dt class="control-label">
                                                       <g:message code="subscription.packages.${settingKey}"/>

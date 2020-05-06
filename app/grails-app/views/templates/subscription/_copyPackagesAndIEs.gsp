@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
+<%@ page import="com.k_int.kbplus.IssueEntitlement; de.laser.domain.PendingChangeConfiguration; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
 <laser:serviceInjection />
 
 <semui:form>
@@ -42,19 +42,39 @@
             </thead>
             <tbody class="top aligned">
             <tr>
+                <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
                     <b>${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
-                    <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
+                    <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
-                                    <label>
-                                        <i class="gift icon"></i>
-                                        <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
-                                        <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
-                                        <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
-                                    </label>
-                            </div>
+                                <label>
+                                    <i class="gift icon"></i>
+                                    <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                                    <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
+                                    <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
+                                </label>
 
+                                <div class="la-copyPack-container la-element">
+                                    <ul>
+                                        <g:each in="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}" var="pcc">
+                                            <li class="la-copyPack-item">
+                                                <g:message code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
+                                                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
+                                                    <g:if test="${!(pcc.settingKey in excludes)}">
+                                                        <g:if test="${auditService.getAuditConfig(sourceSubscription,pcc.settingKey)}">
+                                                            <span data-tooltip="${message(code:'subscription.packages.auditable')}"><i class="ui thumbtack icon"></i></span>
+                                                        </g:if>
+                                                    </g:if>
+                                                </g:if>
+                                            </li>
+                                        </g:each>
+                                    </ul>
+                                    <div class="ui checkbox la-toggle-radio la-replace">
+                                        <g:checkBox name="subscription.takePackageSettings" value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}" data-action="copy" checked="${true}"/>
+                                    </div>
+                                </div>
+                            </div>
                             %{--COPY:--}%
 
                             <div data-pkgoid="${genericOIDService.getOID(sp)}">
@@ -72,14 +92,36 @@
                 <td name="subscription.takePackages.target">
                     <b>${message(code: 'subscription.packages.label')}: ${targetSubscription?.packages?.size()}</b>
 
-                    <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
+                    <g:each in="${targetSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-copyPack-item">
                                 <i class="gift icon"></i>
-                                <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
-                                <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
-                                <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
+                                <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                                <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
+                                <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
                                 <br>
+                                <div class="la-copyPack-container la-element">
+                                    <ul>
+                                        <g:each in="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}" var="pcc">
+                                            <li class="la-copyPack-item">
+                                                <g:message code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
+                                                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
+                                                    <g:if test="${!(pcc.settingKey in excludes)}">
+                                                        <g:if test="${auditService.getAuditConfig(targetSubscription,pcc.settingKey)}">
+                                                            <span data-tooltip="${message(code:'subscription.packages.auditable')}"><i class="ui thumbtack icon"></i></span>
+                                                        </g:if>
+                                                    </g:if>
+                                                </g:if>
+                                            </li>
+                                        </g:each>
+                                    </ul>
+                                    <g:if test="${sp.pendingChangeConfig}">
+                                        <div class="ui checkbox la-toggle-radio la-noChange">
+                                            <g:checkBox name="subscription.deletePackageSettings" value="${genericOIDService.getOID(sp)}" data-pkgid="${genericOIDService.getOID(sp.pkg)}" data-action="delete" checked="${false}"/>
+                                        </div>
+                                    </g:if>
+                                </div>
+
                             </div>
 
                             %{--DELETE--}%
@@ -165,7 +207,9 @@
 
         checkboxes : {
             $takePackageIds: $('input[name="subscription.takePackageIds"]'),
+            $takePackageSettings: $('input[name="subscription.takePackageSettings"]'),
             $deletePackageIds:  $('input[name="subscription.deletePackageIds"]'),
+            $deletePackageSettings:  $('input[name="subscription.deletePackageSettings"]'),
             $takeEntitlementIds: $('input[name="subscription.takeEntitlementIds"]'),
             $deleteEntitlementIds: $('input[name="subscription.deleteEntitlementIds"]')
         },
@@ -177,8 +221,16 @@
                 subCopyController.takePackageIds(this);
             }).trigger('change')
 
+            ref.$takePackageSettings.change( function(event) {
+                subCopyController.takePackageSettings(this);
+            }).trigger('change')
+
             ref.$deletePackageIds.change( function(event) {
                 subCopyController.deletePackageIds(this);
+            }).trigger('change')
+
+            ref.$deletePackageSettings.change( function(event) {
+                subCopyController.deletePackageSettings(this);
             }).trigger('change')
 
             ref.$takeEntitlementIds.change( function(event) {
@@ -206,6 +258,7 @@
         deletePackageIds: function(elem) {
             var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
             //var pkgOid = $(elem).attr('data-pkgoid'); // dk
+            $('[name="subscription.deletePackageSettings"]').filter('[data-pkgoid="' + pkgOid + '"]').change();
             if (elem.checked) {
                 $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
                 $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
@@ -213,6 +266,30 @@
             else {
                 $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
                 $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        takePackageSettings: function(elem) {
+            var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
+            //var pkgOid = $(elem).attr('data-pkgoid'); // dk
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
+                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
+            }
+            else {
+                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').removeClass('willStay');
+                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').removeClass('willStay');
+            }
+        },
+
+        deletePackageSettings: function(elem) {
+            var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
+            //var pkgOid = $(elem).attr('data-pkgoid'); // dk
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"] div.la-copyPack-container').addClass('willBeReplacedStrong');
+            }
+            else {
+                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"] div.la-copyPack-container').removeClass('willBeReplacedStrong');
             }
         },
 
