@@ -77,7 +77,6 @@ class RDStore {
     static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION     = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
     static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION   = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
 
-    static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', RDConstants.LICENSE_TYPE)
     static final LICENSE_TYPE_ACTUAL        = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
 
     static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
@@ -151,6 +150,7 @@ class RDStore {
     static final SUBSCRIPTION_KIND_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_KIND)
     static final SUBSCRIPTION_KIND_ALLIANCE   		= getRefdataValue('Alliance Licence', RDConstants.SUBSCRIPTION_KIND)
     static final SUBSCRIPTION_KIND_NATIONAL   		= getRefdataValue('National Licence', RDConstants.SUBSCRIPTION_KIND)
+    static final SUBSCRIPTION_KIND_LOCAL            = getRefdataValue('Local Licence', RDConstants.SUBSCRIPTION_KIND)
 
     static final TASK_STATUS_OPEN       = getRefdataValue('Open', RDConstants.TASK_STATUS)
     static final TASK_STATUS_DONE       = getRefdataValue('Done', RDConstants.TASK_STATUS)
@@ -189,6 +189,8 @@ class RDStore {
     static final YNO_YES        = getRefdataValue('Yes', RDConstants.Y_N_O)
     static final YNO_NO         = getRefdataValue('No', RDConstants.Y_N_O)
     static final YNO_OTHER      = getRefdataValue('Other', RDConstants.Y_N_O)
+
+    static final LANGUAGE_DE      = getRefdataValue('de', RDConstants.LANGUAGE)
 
     //Properties
 

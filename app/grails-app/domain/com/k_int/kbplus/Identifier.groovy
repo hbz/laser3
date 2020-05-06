@@ -1,22 +1,26 @@
 package com.k_int.kbplus
 
 import de.laser.helper.FactoryResult
+import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
-class Identifier {
+class Identifier implements CalculatedLastUpdated {
+
+    @Transient
+    def cascadingUpdateService
 
     static Log static_logger = LogFactory.getLog(Identifier)
 
     IdentifierNamespace ns
     String value
-    IdentifierGroup ig
     String note = ""
 
     Date dateCreated
     Date lastUpdated
+    Date lastUpdatedCascading
 
     static belongsTo = [
             lic:    License,
@@ -35,8 +39,6 @@ class Identifier {
 			return pattern.matcher(val).matches()
 		  }
 		}
-
-    	ig      (nullable:true, blank:false)
         note    (nullable: true, blank: true)
 
 	  	lic     (nullable:true)
@@ -48,15 +50,15 @@ class Identifier {
 	  	cre     (nullable:true)
 
 		// Nullable is true, because values are already in the database
-      	lastUpdated (nullable: true, blank: false)
-      	dateCreated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true, blank: false)
+        lastUpdatedCascading (nullable: true, blank: false)
   	}
 
     static mapping = {
        id   column:'id_id'
     value   column:'id_value', index:'id_value_idx'
        ns   column:'id_ns_fk', index:'id_value_idx'
-       ig   column:'id_ig_fk', index:'id_ig_idx'
        note column:'id_note',  type: 'text'
 
        lic  column:'id_lic_fk'
@@ -69,6 +71,7 @@ class Identifier {
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
+        lastUpdatedCascading column: 'id_last_updated_cascading'
     }
 
     static Identifier construct(Map<String, Object> map) {
@@ -204,8 +207,44 @@ class Identifier {
         null
     }
 
-  def beforeUpdate() {
-    value = value?.trim()
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+
+        // -- moved from def afterInsert = { .. }
+        if (this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
+            if (this.value == IdentifierNamespace.UNKNOWN) {
+                this.value = ''
+                this.save()
+            }
+        }
+
+        if (this.ns?.ns == IdentifierNamespace.ISIL) {
+            if( (this.value != IdentifierNamespace.UNKNOWN) &&
+                    ((!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')))
+            {
+                this.value = 'DE-'+this.value.trim()
+            }
+        }
+        // -- moved from def afterInsert = { .. }
+
+        cascadingUpdateService.update(this, dateCreated)
+    }
+    def afterUpdate() {
+        static_logger.debug("afterUpdate")
+        cascadingUpdateService.update(this, lastUpdated)
+    }
+    def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+    }
+
+    Date getCalculatedLastUpdated() {
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
+    }
+
+    def beforeUpdate() {
+        static_logger.debug("beforeUpdate")
+        value = value?.trim()
       // TODO [ticket=1789]
       //boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
       //if(forOrg) {
@@ -221,7 +260,7 @@ class Identifier {
               }
           }
       }
-  }
+    }
 
     @Deprecated
   static Identifier lookupOrCreateCanonicalIdentifier(ns, value) {
@@ -336,6 +375,7 @@ class Identifier {
         result
     }
 
+    /*
     @Transient
     def afterInsert = {
         if(this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
@@ -353,5 +393,5 @@ class Identifier {
                 this.value = 'DE-'+this.value.trim()
             }
         }
-    }
+    } */
 }

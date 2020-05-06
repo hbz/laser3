@@ -63,7 +63,7 @@
                             </g:if>
                             <br>
                             <div class="la-icon-list">
-                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp.title.volume}">
+                                <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.volume}">
                                     <div class="item">
                                         <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
                                         <div class="content">
@@ -72,16 +72,16 @@
                                     </div>
                                 </g:if>
 
-                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
+                                <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
                                     <div class="item">
                                         <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
                                         <div class="content">
-                                            ${tipp?.title.getEbookFirstAutorOrFirstEditor()}
+                                            ${tipp.title.getEbookFirstAutorOrFirstEditor()}
                                         </div>
                                     </div>
                                 </g:if>
 
-                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp.title.editionStatement}">
+                                <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.editionStatement}">
                                     <div class="item">
                                         <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
                                         <div class="content">
@@ -90,18 +90,36 @@
                                     </div>
                                 </g:if>
 
-                                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp.title.summaryOfContent}">
+                                <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.summaryOfContent}">
                                     <div class="item">
-                                        <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
+                                        <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
                                         <div class="content">
                                             ${tipp.title.summaryOfContent}
                                         </div>
                                     </div>
                                 </g:if>
 
+                                <g:if test="${tipp.title.seriesName}">
+                                    <div class="item">
+                                        <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
+                                        <div class="content">
+                                            ${tipp.title.seriesName}
+                                        </div>
+                                    </div>
+                                </g:if>
+
+                                <g:if test="${tipp.title.subjectReference}">
+                                    <div class="item">
+                                        <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
+                                        <div class="content">
+                                            ${tipp.title.subjectReference}
+                                        </div>
+                                    </div>
+                                </g:if>
+
                             </div>
 
-                            <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
+                            <g:each in="${tipp.title.ids?.sort { it.ns.ns }}" var="id">
                                 <span class="ui small image label">
                                     ${id.ns.ns}: <div class="detail">${id.value}</div>
                                 </span>

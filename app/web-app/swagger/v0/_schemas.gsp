@@ -404,12 +404,6 @@
           type: array
           items:
             $ref: "#/components/schemas/Property"
-        roleType:
-          type: array
-          items:
-            type: string
-          description: Mapping RefdataCategory "${RDConstants.ORG_TYPE}"
-          enum: <% printRefdataEnum(RDConstants.ORG_TYPE, 12) %>
         scope:
           type: string
         sector:
@@ -427,10 +421,11 @@
           enum:
             [""]
         type:
-          #deprecated: true
-          type: string
-          description: Mapping RefdataCategory "OrgType"
-          enum: <% printRefdataEnum('OrgType', 12) %>
+          type: array
+          items:
+            type: string
+          description: Mapping RefdataCategory "${RDConstants.ORG_TYPE}"
+          enum: <% printRefdataEnum(RDConstants.ORG_TYPE, 12) %>
 
     Package:
       allOf:
@@ -1107,6 +1102,12 @@
           type: array
           items:
             $ref: "#/components/schemas/Identifier"
+        type:
+          type: array
+          items:
+            type: string
+          description: Mapping RefdataCategory "${RDConstants.ORG_TYPE}"
+          enum: <% printRefdataEnum(RDConstants.ORG_TYPE, 12) %>
 
 
     LicenseStub:

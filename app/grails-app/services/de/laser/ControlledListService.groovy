@@ -3,7 +3,7 @@ package de.laser
 import com.k_int.kbplus.*
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -113,18 +113,18 @@ class ControlledListService {
             Subscription s = (Subscription) row[0]
 
             switch (params.ltype) {
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
-                    if (s.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION,TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]){
+                case CalculatedType.TYPE_PARTICIPATION:
+                    if (s.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]){
                         if(org in s.orgRelations.collect { or -> or.org })
                             result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
                     }
                     break
-                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
-                    if (s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL)
+                case CalculatedType.TYPE_CONSORTIAL:
+                    if (s.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
                         result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
                     break
-                case TemplateSupport.CALCULATED_TYPE_COLLECTIVE:
-                    if (s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_COLLECTIVE)
+                case CalculatedType.TYPE_COLLECTIVE:
+                    if (s.getCalculatedType() == CalculatedType.TYPE_COLLECTIVE)
                         result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
                     break
                 default:
@@ -348,7 +348,7 @@ class ControlledListService {
                 Subscription subscription = (Subscription) it[0]
                 /*
                 String tenant
-                if(subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
+                if(subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
                     try {
                         tenant = " - ${subscription.getAllSubscribers().get(0).sortname}"
                     }

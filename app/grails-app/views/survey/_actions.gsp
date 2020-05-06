@@ -22,6 +22,12 @@
         </g:if>
         <g:else>
 
+            <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL}">
+                <semui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
+                                           message="copySurvey.label"/>
+                <div class="ui divider"></div>
+            </g:if>
+
             <g:if test="${surveyInfo && surveyInfo.checkOpenSurvey() && (surveyInfo.status?.id == RDStore.SURVEY_IN_PROCESSING.id)}">
                 <semui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
                                            message="openSurvey.button"
@@ -52,7 +58,7 @@
                 <div class="ui divider"></div>
             </g:if>
 
-            <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose
+            <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig.subSurveyUseForTransfer && !surveyConfig.pickAndChoose
                     && surveyInfo.status?.id in [RDStore.SURVEY_SURVEY_COMPLETED.id, RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id]}">
                 <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey"
                                            params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]"
@@ -121,7 +127,7 @@
                 <g:set var="orgs"
                        value="${Org.findAllByIdInList(surveyConfig.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort { it.sortname }}"/>
 
-                <g:render template="copyEmailaddresses"
+                <g:render template="/templates/copyEmailaddresses"
                           model="[modalID: 'copyEmailaddresses_static', orgList: orgs ?: null]"/>
             </g:if>
             <g:else>

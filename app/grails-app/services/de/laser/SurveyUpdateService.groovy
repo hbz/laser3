@@ -88,17 +88,17 @@ class SurveyUpdateService extends AbstractLockableService {
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
-                if(userOrg?.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                        userOrg?.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                if(userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
 
                     def orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
                             "LEFT JOIN s.surveyConfigs surConf " +
                             "LEFT JOIN surConf.orgs surOrg  " +
                             "WHERE surOrg.org IN (:org) " +
-                            "AND s.id IN (:survey)", [org: userOrg?.org, survey: surveys?.id])
+                            "AND s.id IN (:survey)", [org: userOrg.org, survey: surveys?.id])
 
-                    sendEmail(userOrg?.user, userOrg?.org, orgSurveys)
+                    sendEmail(userOrg.user, userOrg.org, orgSurveys)
                 }
             }
 
@@ -110,14 +110,12 @@ class SurveyUpdateService extends AbstractLockableService {
         def emailReceiver = user.getEmail()
         def currentServer = grailsApplication.config.getCurrentServer()
         def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
-        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', null, locale) + " (" + org.name + ")"
+
 
         surveyEntries.each {survey ->
             try {
                 if (emailReceiver == null || emailReceiver.isEmpty()) {
                     log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
-                } else if (surveyEntries == null || surveyEntries.isEmpty()) {
-                    log.debug("The user has no surveys, so no email will be sent (" + user.username + "/"+ org.name + ")");
                 } else {
                     boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
                     String ccAddress = null
@@ -137,7 +135,8 @@ class SurveyUpdateService extends AbstractLockableService {
                     }
 
                     replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
-
+                    Object[] args = ["${survey.type.getI10n('value')}"]
+                    String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, locale) + " (" + org.name + ")"
 
                     if (isNotificationCCbyEmail && ccAddress) {
                         mailService.sendMail {
@@ -164,7 +163,7 @@ class SurveyUpdateService extends AbstractLockableService {
                 String eMsg = e.message
 
                 log.error("SurveyUpdateService - sendEmail() :: Unable to perform email due to exception ${eMsg}")
-                SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', ['error': eMsg])
+                SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user, org: org, survey: survey])
             }
         }
     }

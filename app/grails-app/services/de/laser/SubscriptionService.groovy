@@ -150,13 +150,13 @@ class SubscriptionService {
     }
 
     List getValidSubChilds(Subscription subscription) {
-        def validSubChilds = Subscription.findAllByInstanceOf(subscription)
-        validSubChilds = validSubChilds?.sort { a, b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
+        List<Subscription> validSubChildren = Subscription.findAllByInstanceOf(subscription)
+        validSubChildren = validSubChildren?.sort { Subscription a, Subscription b ->
+            Org sa = a.getSubscriber()
+            Org sb = b.getSubscriber()
             (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
         }
-        validSubChilds
+        validSubChildren
     }
 
     List getCurrentValidSubChilds(Subscription subscription) {
@@ -281,9 +281,14 @@ class SubscriptionService {
                 qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
             }
 
-            if (params.summaryOfContents && params.summaryOfContents != "" && params.list('summaryOfContents')) {
-                base_qry += " and lower(ie.tipp.title.summaryOfContent) in (:summaryOfContents)"
-                qry_params.summaryOfContents = params.list('summaryOfContents').collect { ""+it.toLowerCase()+"" }
+            if(params.seriesNames) {
+                base_qry += " and lower(ie.tipp.title.seriesName) like :seriesNames "
+                qry_params.seriesNames = "%${params.seriesNames.trim().toLowerCase()}%"
+            }
+
+            if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
+                base_qry += " and lower(ie.tipp.title.subjectReference) in (:subject_references)"
+                qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
             }
 
             if(params.ebookFirstAutorOrFirstEditor) {
@@ -362,16 +367,11 @@ class SubscriptionService {
     }
 
     Set<String> getSubjects(List titleIDs) {
-        //println(titleIDs)
         Set<String> subjects = []
 
         if(titleIDs){
-            subjects = BookInstance.executeQuery("select distinct(summaryOfContent) from BookInstance where summaryOfContent is not null and id in (:titleIDs)", [titleIDs: titleIDs])
-            //println("Moe!")
-            //println(BookInstance.executeQuery("select bk.summaryOfContent from BookInstance as bk where bk.id in (15415, 15368, 15838)"))
+            subjects = TitleInstance.executeQuery("select distinct(subjectReference) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by subjectReference", [titleIDs: titleIDs])
         }
-
-        //println(subjects)
         subjects
 
     }
@@ -403,6 +403,79 @@ class SubscriptionService {
             }
         }
         visibleOrgRelations.sort { it.org?.name.toLowerCase() }
+    }
+
+
+    boolean deleteStatus(Subscription targetSub, def flash) {
+        targetSub.status = SUBSCRIPTION_NO_STATUS
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyStatus(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.status = sourceSub.status ?: null
+        return save(targetSub, flash)
+    }
+
+
+    boolean deleteKind(Subscription targetSub, def flash) {
+        targetSub.kind = null
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyKind(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.kind = sourceSub.kind ?: null
+        return save(targetSub, flash)
+    }
+
+
+    boolean deleteForm(Subscription targetSub, def flash) {
+        targetSub.form = null
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyForm(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.form = sourceSub.form ?: null
+        return save(targetSub, flash)
+    }
+
+
+    boolean deleteResource(Subscription targetSub, def flash) {
+        targetSub.resource = null
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyResource(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.resource = sourceSub.resource ?: null
+        return save(targetSub, flash)
+    }
+
+
+    boolean deletePublicForApi(Subscription targetSub, def flash) {
+        targetSub.isPublicForApi = false
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyPublicForApi(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.isPublicForApi = sourceSub.isPublicForApi
+        return save(targetSub, flash)
+    }
+
+
+    boolean deletePerpetualAccess(Subscription targetSub, def flash) {
+        targetSub.hasPerpetualAccess = false
+        return save(targetSub, flash)
+    }
+
+
+    boolean copyPerpetualAccess(Subscription sourceSub, Subscription targetSub, def flash) {
+        //Vertrag/License
+        targetSub.hasPerpetualAccess = sourceSub.hasPerpetualAccess
+        return save(targetSub, flash)
     }
 
 
@@ -464,6 +537,8 @@ class SubscriptionService {
 
             packagesToDelete.each { subPkg ->
                 OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
+
                 CostItem.findAllBySubPkg(subPkg).each { costItem ->
                     costItem.subPkg = null
                     if(!costItem.sub){
@@ -485,12 +560,12 @@ class SubscriptionService {
             if (targetSub.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }) {
                 Object[] args = [subscriptionPackage.pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
-            } else {
+            }
+            else {
 
                 List<OrgAccessPointLink> pkgOapls = OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
-                Set<PendingChangeConfiguration> pkgPendingChangeConfig = PendingChangeConfiguration.findAllByIdInList(subscriptionPackage.pendingChangeConfig.id)
                 subscriptionPackage.properties.oapls = null
-                subscriptionPackage.properties.pendingChangeConfig = null
+                subscriptionPackage.properties.pendingChangeConfig = null //copied in next step
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                 InvokerHelper.setProperties(newSubscriptionPackage, subscriptionPackage.properties)
                 newSubscriptionPackage.subscription = targetSub
@@ -505,21 +580,23 @@ class SubscriptionService {
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save()
                     }
-                    pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
-                        Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
-                        PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-                        if(newPcc) {
-                            Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(subscriptionPackage.subscription.class.name,subscriptionPackage.subscription.id,PendingChangeConfiguration.settingKeys)
-                            auditables.each { audit ->
-                                AuditConfig.addConfig(targetSub,audit.referenceField)
-                            }
-                        }
-                    }
                 }
             }
         }
     }
 
+    boolean copyPendingChangeConfiguration(Collection<PendingChangeConfiguration> configs, SubscriptionPackage target) {
+        configs.each { PendingChangeConfiguration config ->
+            Map<String,Object> configSettings = [subscriptionPackage:target,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
+            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
+            if(newPcc) {
+                if(AuditConfig.getConfig(config.subscriptionPackage.subscription,config.settingKey) && !AuditConfig.getConfig(target.subscription,config.settingKey))
+                    AuditConfig.addConfig(target.subscription,config.settingKey)
+                else if(!AuditConfig.getConfig(config.subscriptionPackage.subscription,config.settingKey) && AuditConfig.getConfig(target.subscription,config.settingKey))
+                    AuditConfig.removeConfig(target.subscription,config.settingKey)
+            }
+        }
+    }
 
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
         entitlementsToDelete.each {
@@ -565,22 +642,14 @@ class SubscriptionService {
 
 
     void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
+        List<Subscription> targetChildSubs = getValidSubChilds(targetSub)
         subscriptionToTake.each { subMember ->
             //Gibt es mich schon in der Ziellizenz?
-            def found = null
-            getValidSubChilds(targetSub).each{
-                it.getAllSubscribers().each {ts ->
-                    subMember.getAllSubscribers().each { subM ->
-                        if (subM.id == ts.id){
-                            found = ts
-                        }
-                    }
-                }
-            }
+            Org found = targetChildSubs?.find { targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
 
             if (found) {
                 // mich gibts schon! Fehlermeldung ausgeben!
-                Object[] args = [found.sortname ?: found.sortname]
+                Object[] args = [found.sortname ?: found.name]
                 flash.error += messageSource.getMessage('subscription.err.subscriberAlreadyExistsInTargetSub', args, locale)
 //                diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem
             } else {
@@ -601,15 +670,15 @@ class SubscriptionService {
                             endDate: subMember.isMultiYear ? subMember.endDate : targetSub.endDate,
                             manualRenewalDate: subMember.manualRenewalDate,
                             /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
-                            identifier: java.util.UUID.randomUUID().toString(),
-                            instanceOf: targetSub?.id,
+                            identifier: UUID.randomUUID().toString(),
+                            instanceOf: targetSub,
                             //previousSubscription: subMember?.id,
                             isSlaved: subMember.isSlaved,
-                            owner: targetSub.owner?.id ? subMember.owner?.id : null,
+                            owner: targetSub.owner ? subMember.owner : null,
                             resource: targetSub.resource ?: null,
                             form: targetSub.form ?: null
                     )
-                    newSubscription.save(flush: true)
+                    newSubscription.save(flush:true)
                     //ERMS-892: insert preceding relation in new data model
                     if (subMember) {
                         Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
@@ -623,7 +692,7 @@ class SubscriptionService {
                         for (prop in subMember.customProperties) {
                             def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                             copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.save(flush: true)
+                            copiedProp.save()
                             //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                         }
                     }
@@ -636,7 +705,7 @@ class SubscriptionService {
                             if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
                                 def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
-                                copiedProp.save(flush: true)
+                                copiedProp.save()
                                 //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                             }
                         }
@@ -660,7 +729,7 @@ class SubscriptionService {
                                     OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                     InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                     newOrgAccessPointLink.subPkg = newSubscriptionPackage
-                                    newOrgAccessPointLink.save(flush: true)
+                                    newOrgAccessPointLink.save()
                                 }
                             }
                         }
@@ -683,7 +752,7 @@ class SubscriptionService {
                                         IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
                                         InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                                         newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
-                                        newIssueEntitlementCoverage.save(flush: true)
+                                        newIssueEntitlementCoverage.save()
                                     }
                                 }
                             }
@@ -692,11 +761,12 @@ class SubscriptionService {
 
                     //OrgRole
                     subMember.orgRelations?.each { or ->
-                        if ((or.org?.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]) || (targetSub.orgRelations.size() >= 1)) {
+                        if ((or.org.id == contextService.getOrg().id) || (or.roleType in [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_CONS_HIDDEN, OR_SUBSCRIPTION_COLLECTIVE]) || (targetSub.orgRelations.size() >= 1)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.sub = newSubscription
-                            newOrgRole.save(flush: true)
+                            newOrgRole.save(flush:true)
+                            log.debug("new org role set: ${newOrgRole.sub} for ${newOrgRole.org.sortname}")
                         }
                     }
 
@@ -706,7 +776,7 @@ class SubscriptionService {
                             PersonRole newPersonRole = new PersonRole()
                             InvokerHelper.setProperties(newPersonRole, prsLink.properties)
                             newPersonRole.sub = newSubscription
-                            newPersonRole.save(flush: true)
+                            newPersonRole.save()
                         }
                     }
 //                }
@@ -786,8 +856,6 @@ class SubscriptionService {
         targetSub.endDate = null
         return save(targetSub, flash)
     }
-
-
 
     boolean copyDates(Subscription sourceSub, Subscription targetSub, def flash) {
         targetSub.setStartDate(sourceSub.getStartDate())
@@ -920,7 +988,7 @@ class SubscriptionService {
     }
 
     private boolean save(obj, flash){
-        if (obj.save()){
+        if (obj.save(flush:true)){
             log.debug("Save ${obj} ok")
             return true
         } else {

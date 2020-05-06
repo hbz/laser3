@@ -50,11 +50,13 @@ class AuditConfig {
 
     static void addConfig(Object obj, String field) {
         if (obj) {
-            new AuditConfig(
+            AuditConfig config = new AuditConfig(
                     referenceId: obj.getId(),
                     referenceClass: obj.getClass().name,
                     referenceField: field
-            ).save(flush: true)
+            )
+            if(!config.save(flush: true))
+                log.error(config.errors)
         }
     }
 

@@ -36,6 +36,9 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
   String gokbId
   //URL originEditUrl
 
+  String seriesName
+  String subjectReference
+
   @RefdataAnnotation(cat = RDConstants.TITLE_STATUS)
   RefdataValue status
 
@@ -71,6 +74,8 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
         normTitle column:'ti_norm_title', type:'text'
          keyTitle column:'ti_key_title', type:'text'
           version column:'ti_version'
+      seriesName  column:'ti_series_name', type:'text'
+      subjectReference column:'ti_subject_reference', type:'text'
            gokbId column:'ti_gokb_id', index:'ti_gokb_id_idx'
     //originEditUrl column:'ti_origin_edit_url'
            status column:'ti_status_rv_fk'
@@ -97,6 +102,8 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
         keyTitle(nullable:true, blank:false,maxSize:2048)
         creators(nullable:true, blank:false)
         gokbId (nullable:false, blank:false, unique: true, maxSize:511)
+        seriesName(nullable:true, blank:false)
+        subjectReference(nullable:true, blank:false)
         //originEditUrl(nullable:true, blank:false)
     }
 

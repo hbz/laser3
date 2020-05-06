@@ -108,11 +108,17 @@ class ExportService {
 		Map workbookStyles = ['positive':csPositive,'neutral':csNeutral,'negative':csNegative,'bold':bold]
 		SXSSFWorkbook output = new SXSSFWorkbook(wb,50,true)
 		output.setCompressTempFiles(true)
-		sheets.entrySet().each { sheetData ->
+		sheets.entrySet().eachWithIndex { sheetData, index ->
 			try {
-				def title = sheetData.key
+				String title = sheetData.key
 				List titleRow = (List) sheetData.value.titleRow
 				List columnData = (List) sheetData.value.columnData
+
+				if (title.length() > 31) {
+					title = title.substring(0, 31-3);
+					title = title + "_${index+1}"
+				}
+
 				Sheet sheet = output.createSheet(title)
 				sheet.setAutobreaks(true)
 				int rownum = 0
@@ -506,6 +512,8 @@ class ExportService {
 											 messageSource.getMessage('author.slash.editor',null,locale),
 											 messageSource.getMessage('title.editionStatement.label',null,locale),
 											 messageSource.getMessage('title.summaryOfContent.label',null,locale),
+											 messageSource.getMessage('title.seriesName.label',null,locale),
+											 messageSource.getMessage('title.subjectReference.label',null,locale),
 											 'zdb_id',
 											 'zdb_ppn',
 											 'DOI',
@@ -544,6 +552,8 @@ class ExportService {
 				row.add(' ')
 				row.add(' ')
 			}
+			row.add(tipp.title.seriesName ?: ' ')
+			row.add(tipp.title.subjectReference ?: ' ')
 
 			//zdb_id
 			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,';'))
@@ -594,6 +604,8 @@ class ExportService {
 				messageSource.getMessage('author.slash.editor',null,locale),
 				messageSource.getMessage('title.editionStatement.label',null,locale),
 				messageSource.getMessage('title.summaryOfContent.label',null,locale),
+				messageSource.getMessage('title.seriesName.label',null,locale),
+				messageSource.getMessage('title.subjectReference.label',null,locale),
 				'zdb_id',
 				'zdb_ppn',
 				'DOI',
@@ -632,6 +644,8 @@ class ExportService {
 				row.add([field: '', style:null])
 				row.add([field: '', style:null])
 			}
+			row.add(tipp.title.seriesName ?: ' ')
+			row.add(tipp.title.subjectReference ?: ' ')
 
 			//zdb_id
 			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','), style:null])

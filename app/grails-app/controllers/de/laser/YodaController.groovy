@@ -6,7 +6,6 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
-import de.laser.SystemEvent
 import de.laser.domain.ActivityProfiler
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DateUtil
@@ -23,7 +22,6 @@ import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
-import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.lang.reflect.Method
@@ -825,7 +823,7 @@ class YodaController {
                 Subscription sub = so[0]
                 OrgRole role 	 = so[1]
 
-				if (sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
+				if (sub.getCalculatedType() == Subscription.TYPE_LOCAL) {
 					role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
 					role.save()
 
@@ -841,7 +839,7 @@ class YodaController {
                 Subscription sub = so[0]
                 OrgRole role 	 = so[1]
 
-                if (sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                if (sub.getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
                     OrgRole newRole = new OrgRole(
                             org: role.org,
                             sub: sub,

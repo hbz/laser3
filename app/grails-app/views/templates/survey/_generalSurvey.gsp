@@ -161,7 +161,7 @@
                     <td>
                         ${surveyProperty?.surveyProperty?.getI10n('name')}
 
-                        <g:if test="${surveyProperty?.surveyProperty?.tenant?.id == institution?.id}">
+                        <g:if test="${surveyProperty?.surveyProperty?.tenant?.id == contextService.getOrg().id}">
                             <i class='shield alternate icon'></i>
                         </g:if>
 
@@ -186,8 +186,9 @@
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyProperty?.surveyProperty.refdataCategory)}"
                                     var="refdataValue">
-                                <g:set var="refdataValues"
-                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                <g:if test="${refdataValue.getI10n('value')}">
+                                    <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                </g:if>
                             </g:each>
                             <br>
                             (${refdataValues.join('/')})
@@ -340,7 +341,7 @@
                         </g:elseif>
                         <g:elseif test="${surveyResult?.type?.type == com.k_int.kbplus.RefdataValue.toString()}">
 
-                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.owner?.id != institution?.id}">
+                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.owner?.id != contextService.getOrg().id}">
                                 <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
                                                         id="participation"
                                                         config="${surveyResult.type?.refdataCategory}"/>

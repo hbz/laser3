@@ -77,7 +77,7 @@ class ApiStatistic {
             result << ApiUnsecuredMapReader.getPackageStubMap(p)
         }
 
-        return new JSON(result)
+        return result ? new JSON(result) : null
     }
 
     /**

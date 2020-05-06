@@ -71,6 +71,7 @@
             <g:if test="${surveyConfig.type == "Subscription"}">
 
                 <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                                                                                  costItemSums        : costItemSums,
                                                                                   subscriptionInstance: subscriptionInstance,
                                                                                   visibleOrgRelations : visibleOrgRelations,
                                                                                   surveyResults       : surveyResults]"/>

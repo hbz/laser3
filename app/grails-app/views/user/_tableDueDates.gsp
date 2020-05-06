@@ -1,4 +1,4 @@
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-table">
     <thead>
@@ -6,13 +6,14 @@
         <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
         <th>${message(code:'default.date.label')}</th>
         <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
-        %{--<th>${message(code:'myinst.dash.due_dates.hide.label')}</th>--}%
-        %{--<th>${message(code:'myinst.dash.due_dates.done.label')}</th>--}%
+        <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.hide.label')}</th>
+        <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.done.label')}</th>
     </tr>
     </thead>
     <tbody>
+    ${dashDueDate}
     <g:each in="${dueDates}" var="dashDueDate">
-        <g:set var="obj" value="${dashDueDate? genericOIDService.resolveOID(dashDueDate.oid) : null}"/>
+        <g:set var="obj" value="${dashDueDate? genericOIDService.resolveOID(dashDueDate.dueDateObject.oid) : null}"/>
         <g:if test="${obj}">
             <tr>
                 <td>
@@ -21,20 +22,20 @@
                     </g:if>
                 %{--${dashDueDate.id} &nbsp--}%
                     <g:if test="${Locale.GERMAN.getLanguage() == org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}">
-                        ${dashDueDate.attribute_value_de}
+                        ${dashDueDate.dueDateObject.attribute_value_de}
                     </g:if>
                     <g:else>
-                        ${dashDueDate.attribute_value_en}
+                        ${dashDueDate.dueDateObject.attribute_value_en}
                     </g:else>
                 </td>
                 <td>
-                    <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.date}"/>
-                    <g:if test="${SqlDateUtils.isToday(dashDueDate.date)}">
+                    <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
+                    <g:if test="${SqlDateUtils.isToday(dashDueDate.dueDateObject.date)}">
                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
                             <i class="icon yellow exclamation"></i>
                         </span>
                     </g:if>
-                    <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.date)}">
+                    <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date)}">
                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
                             <i class="icon red exclamation"></i>
                         </span>
@@ -52,14 +53,14 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof SurveyInfo}">
                             <i class="icon chart pie la-list-icon"></i>
-                            <g:link controller="myInstitution" action="surveyInfos" id="${obj.id}">${obj.name}</g:link>
+                            <g:link controller="myInstitution" action="currentSurveys"
+                                    params="${[name: '"'+obj.name+'"']}">${obj.name}</g:link>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
                             <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="Aufgabe">
                                 <i class="icon checked calendar la-list-icon"></i>
                             </span>
                             <a href="#" class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
-                            &nbsp; (Status: ${obj.status?.getI10n("value")})
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractProperty}">
                             <g:if test="${obj.owner instanceof Person}">
@@ -87,14 +88,13 @@
                         </g:else>
                     </div>
                 </td>
-            <g:if test="${false}">
-                <td>
+                <td style="text-align: center">
                     <g:if test="${false}">
                         <laser:remoteLink class="ui icon  negative button  js-open-confirm-modal"
                                           controller="ajax"
                                           action="deleteDashboardDueDate_does_not_exist_yet"
                                           params=''
-                                          id="${dashDueDate?.id}"
+                                          id="${genericOIDService.getOID(dashDueDate)}"
                                           data-confirm-tokenMsg="Möchten Sie wirklich diesen fälligen Termin aus dem System löschen?"
                                           data-confirm-term-how="ok"
 
@@ -107,42 +107,82 @@
                         </laser:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
-                        <laser:remoteLink class="ui icon  button"
+                        <laser:remoteLink class="ui icon button"
                                           controller="ajax"
                                           action="showDashboardDueDate"
-                                          params=''
-                                          id="${dashDueDate?.id}"
+                                          params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
+                                          id="${dashDueDate.id}"
                                           data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin wieder auf Ihrem Dashboard anzeigen lassen? "
                                           data-confirm-term-how="ok"
-
                                           data-done=""
                                           data-always="bb8.init('#container-table')"
                                           data-update="container-table"
                                           role="button"
                         >
-                            <i class="icon slash eye la-js-editmode-icon"></i>
+                            <i class="icon bell slash la-js-editmode-icon"></i>
                         </laser:remoteLink>
                     </g:if>
                     <g:else>
                         <laser:remoteLink class="ui icon green button"
                                           controller="ajax"
                                           action="hideDashboardDueDate"
-                                          params=''
-                                          id="${dashDueDate?.id}"
-
-
+                                          params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
+                                          id="${dashDueDate.id}"
                                           data-done=""
                                           data-always="bb8.init('#container-table')"
                                           data-update="container-table"
                                           role="button"
                         >
-                            <i class="icon eye la-js-editmode-icon"></i>
+                            <i class="icon bell la-js-editmode-icon"></i>
                         </laser:remoteLink>
                     </g:else>
-                    %{--<semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" />--}%
                 </td>
-            </g:if>
-                %{--<td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>--}%
+                <td style="text-align: center">
+                <g:if test="${dashDueDate?.dueDateObject.isDone}">
+                    <laser:remoteLink class="ui green button"
+                                      controller="ajax"
+                                      action="dashboardDueDateSetIsUndone"
+                                      params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
+                                      id="${dashDueDate.dueDateObject.id}"
+                                      data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin auf NICHT erledigt sezten? "
+                                      data-confirm-term-how="ok"
+                                      data-done=""
+                                      data-always="bb8.init('#container-table')"
+                                      data-update="container-table"
+                                      role="button"
+                    >
+                        <i class="icon check la-js-editmode-icon"></i>
+                        %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate)+isDone}'--}%
+                               %{--<g:if test='${dashDueDate.isDone}'>checked='checked'</g:if>--}%
+                        %{--/>--}%
+                    </laser:remoteLink>
+                </g:if>
+                <g:else>
+                    <laser:remoteLink class="ui button"
+                                      controller="ajax"
+                                      action="dashboardDueDateSetIsDone"
+                                      params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
+                                      id="${dashDueDate.dueDateObject.id}"
+                                      data-done=""
+                                      data-always="bb8.init('#container-table')"
+                                      data-update="container-table"
+                                      role="button"
+                    >
+                        <i class="icon check la-js-editmode-icon"></i>
+                        %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate.dueDateObject)+isDone}'--}%
+                               %{--<g:if test='${dashDueDate.dueDateObject.isDone}'>checked='checked'</g:if>--}%
+                        %{--/>--}%
+                    </laser:remoteLink>
+                </g:else>
+                    %{--<hr>--}%
+                    %{--<semui:xEditableBoolean owner="${dashDueDate.dueDateObject}" field="isDone" />--}%
+                    %{--<div class="ui checkbox">--}%
+                        %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate.dueDateObject)+isDone}'--}%
+                               %{--<g:if test='${dashDueDate.dueDateObject.isDone}'>checked='checked'</g:if>--}%
+                            %{--onchange=""--}%
+                        %{--/>--}%
+                    %{--</div>--}%
+                </td>
             </tr>
         </g:if>
     </g:each>

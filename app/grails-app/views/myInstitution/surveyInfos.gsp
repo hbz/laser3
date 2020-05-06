@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
     <semui:crumb
-            message="${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')}"
+            text="${surveyInfo.type.getI10n('value')}"
             class="active"/>
 </semui:breadcrumbs>
 
@@ -30,7 +30,7 @@
 
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')} - ${surveyInfo.name}
+${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 %{--<g:if test="${surveyInfo.startDate || surveyInfo.endDate}">
 (<g:formatDate formatName="default.date.format.notime"
@@ -145,6 +145,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
             <g:if test="${surveyInfo && surveyConfig.type == "Subscription"}">
 
                 <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                                                                                  costItemSums        : costItemSums,
                                                                                   subscriptionInstance: subscriptionInstance,
                                                                                   visibleOrgRelations : visibleOrgRelations,
                                                                                   surveyResults       : surveyResults]"/>

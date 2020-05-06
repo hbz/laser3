@@ -6,7 +6,7 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.DashboardDueDate
+import de.laser.DashboardDueDatesService
 import de.laser.SystemAnnouncement
 
 //import de.laser.TaskService //unused for quite a long time
@@ -336,13 +336,12 @@ class MyInstitutionController extends AbstractDebugController {
         RefdataValue licensee_role           = RDStore.OR_LICENSEE
         RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
         RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
-        RefdataValue template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
 
-        def base_qry
-        def qry_params
+        String base_qry
+        Map qry_params
 
         @Deprecated
-        def qry = INSTITUTIONAL_LICENSES_QUERY
+        String qry = INSTITUTIONAL_LICENSES_QUERY
 
         result.filterSet = params.filterSet ? true : false
 
@@ -360,10 +359,9 @@ class MyInstitutionController extends AbstractDebugController {
             base_qry = """
 from License as l where (
     exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.type != :template )
 )
 """
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, template: template_license_type]
+            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
         }
 
         if (params.orgRole == 'Licensing Consortium') {
@@ -378,11 +376,10 @@ from License as l where (
                     select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
                 )
             )
-        )) 
-    AND ( l.type != :template )
+        ))
 )
 """
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, template:template_license_type]
+            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
         }
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
@@ -630,31 +627,8 @@ from License as l where (
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
-        def qparams = [template_license_type]
-
-       // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
-        // (OS License specs)
-        // def qry = "from License as l where ( ( l.type = ? ) OR ( exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) ) OR ( l.isPublic=? ) ) AND l.status.value != 'Deleted'"
-
-        def query = "from License as l where l.type = ? "
-
-        if (params.filter) {
-            query += " and lower(l.reference) like ?"
-            qparams.add("%${params.filter.toLowerCase()}%")
-        }
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            query += " order by l.${params.sort} ${params.order}"
-        } else {
-            query += " order by sortableReference asc"
-        }
-
-        result.numLicenses = License.executeQuery("select l.id ${query}", qparams).size()
-        result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
-
-        result.licenses = result.licenses
-        result.numLicenses = result.numLicenses
+        result.licenses = [] // ERMS-2431
+        result.numLicenses = 0
 
         if (params.sub) {
             result.sub         = params.sub
@@ -779,7 +753,8 @@ join sub.orgRelations or_sub where
 
         def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM_SURVEY' || authority == 'ORG_CONSORTIUM' }
         result.allConsortia = Org.executeQuery(
-                """select o from Org o, OrgSettings os_ct where 
+                """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
+                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
                         os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) 
                         order by lower(o.name)""",
                 [roles: consRoles]
@@ -2157,9 +2132,8 @@ AND EXISTS (
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
 
-//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
+        result.dueDates = de.laser.DashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                 " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
@@ -2450,14 +2424,26 @@ AND EXISTS (
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
         if ( params.exportXLSX ) {
+
+            SXSSFWorkbook wb
             List surveyConfigsforExport = result.surveyResults.collect {it[1]}
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.plural")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(surveyConfigsforExport, result.institution)
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(surveyConfigsforExport, result.institution)
+            }else {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.plural")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys(surveyConfigsforExport, result.institution)
+            }
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -2505,6 +2491,7 @@ AND EXISTS (
 
         if(result.surveyConfig?.type == 'Subscription') {
             result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+            result.subscription = result.subscriptionInstance
             result.authorizedOrgs = result.user?.authorizedOrgs
             result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
@@ -2515,6 +2502,20 @@ AND EXISTS (
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
+
+            //costs dataToDisplay
+            result.dataToDisplay = ['subscr']
+            result.offsets = [subscrOffset:0]
+            result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
+
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            //cost items
+            //params.forExport = true
+            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+            result.costItemSums = [:]
+            if (costItems?.subscr) {
+                result.costItemSums.subscrCosts = costItems.subscr.costItems
+            }
         }
 
         if ( params.exportXLSX ) {
@@ -2617,6 +2618,7 @@ AND EXISTS (
 
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
         SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        boolean sendMailToSurveyOwner = false
 
         if(surveyConfig && surveyConfig.pickAndChoose){
 
@@ -2628,7 +2630,7 @@ AND EXISTS (
                 ie.save(flush: true)
             }
 
-            if(ies.size() > 0) {
+            /*if(ies.size() > 0) {*/
 
                 if (surveyOrg && surveyConfig) {
                     surveyOrg.finishDate = new Date()
@@ -2636,15 +2638,14 @@ AND EXISTS (
                         flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                     } else {
                         flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
-
-
+                        sendMailToSurveyOwner = true
                     }
                 } else {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                 }
-            }else {
+            /*}else {
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
-            }
+            }*/
         }
 
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
@@ -2672,10 +2673,15 @@ AND EXISTS (
                     it.finishDate = new Date()
                     it.save()
                 }
+                sendMailToSurveyOwner = true
                 // flash.message = message(code: "surveyResult.finish.info")
             } else {
                 flash.error = message(code: "surveyResult.finish.error")
             }
+
+        if(sendMailToSurveyOwner) {
+            surveyService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
+        }
 
 
         redirect(url: request.getHeader('referer'))
@@ -3728,7 +3734,6 @@ AND EXISTS (
                 }
             }
     }
-
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
     def manageParticipantSurveys() {
@@ -3751,10 +3756,30 @@ AND EXISTS (
         def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.participant)
 
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
-        result.surveyResults = result.surveyResults.groupBy {it.id[1]}
-        result.countSurveys = getSurveyParticipantCounts_New(result.participant)
 
-        result
+        if ( params.exportXLSX ) {
+
+            SXSSFWorkbook wb
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.plural")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) surveyService.exportSurveysOfParticipant(result.surveyResults.collect{it[1]}, result.participant)
+
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
+            return
+        }else {
+            result.surveyResults = result.surveyResults.groupBy {it.id[1]}
+            result.countSurveys = getSurveyParticipantCounts_New(result.participant)
+
+            result
+        }
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
@@ -4120,10 +4145,8 @@ AND EXISTS (
         result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
                 [participant: participant]).groupBy {it.id[1]}.size()
 
-        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status = :status or surResult.surveyConfig.surveyInfo.status = :status2 or surResult.surveyConfig.surveyInfo.status = :status3)",
-                [status: RDStore.SURVEY_SURVEY_COMPLETED,
-                 status2: RDStore.SURVEY_IN_EVALUATION,
-                 status3: RDStore.SURVEY_COMPLETED,
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
+                [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
                  participant: participant]).groupBy {it.id[1]}.size()
 
 
@@ -4133,25 +4156,53 @@ AND EXISTS (
     private def getSurveyParticipantCounts_New(Org participant){
         Map<String, Object> result = [:]
 
-        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
-                "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org))",
-                [status: RDStore.SURVEY_SURVEY_STARTED,
-                 org : participant]).groupBy {it?.id[1]}.size()
+        Org contextOrg = contextService.getOrg()
+        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']) {
+            result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
+                    "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org)) and surInfo.owner = :owner",
+                    [status: RDStore.SURVEY_SURVEY_STARTED,
+                     org   : participant,
+                     owner : contextOrg]).groupBy { it.id[1] }.size()
 
 
-        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null))",
-               [status: RDStore.SURVEY_SURVEY_STARTED,
-                org: participant]).groupBy {it?.id[1]}.size()
+            result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null)) and surInfo.owner = :owner",
+                    [status: RDStore.SURVEY_SURVEY_STARTED,
+                     org   : participant,
+                     owner : contextOrg]).groupBy { it.id[1] }.size()
 
-        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is not null) " +
-                "or exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is not null and surConfig.pickAndChoose = true)",
-                [org: participant]).groupBy {it?.id[1]}.size()
+            result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is not null) " +
+                    "or exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is not null and surConfig.pickAndChoose = true) and surInfo.owner = :owner",
+                    [org  : participant,
+                     owner: contextOrg]).groupBy { it.id[1] }.size()
 
-        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where ((surInfo.status = :status or surInfo.status = :status2 or surInfo.status = :status3) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null))",
-                [status: RDStore.SURVEY_SURVEY_COMPLETED,
-                 status2: RDStore.SURVEY_IN_EVALUATION,
-                 status3: RDStore.SURVEY_COMPLETED,
-                 org : participant]).groupBy {it?.id[1]}.size()
+            result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where (surInfo.status in (:status) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null)) and surInfo.owner = :owner",
+                    [status : [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
+                     org    : participant,
+                     owner  : contextOrg]).groupBy { it.id[1] }.size()
+        }else {
+
+            result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
+                    "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org))",
+                    [status: RDStore.SURVEY_SURVEY_STARTED,
+                     org   : participant]).groupBy { it.id[1] }.size()
+
+
+            result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null))",
+                    [status: RDStore.SURVEY_SURVEY_STARTED,
+                     org   : participant]).groupBy { it.id[1] }.size()
+
+            result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is not null) " +
+                    "or exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is not null and surConfig.pickAndChoose = true)",
+                    [org: participant]).groupBy { it.id[1] }.size()
+
+            result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surConfig.subSurveyUseForTransfer = false and (surInfo.status in (:status) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null))",
+                    [status : [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
+                     org    : participant]).groupBy { it.id[1] }.size()
+
+            result.termination = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surConfig.subSurveyUseForTransfer = true and (surInfo.status in (:status) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null))",
+                    [status : [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
+                     org    : participant]).groupBy { it.id[1] }.size()
+        }
 
 
         return result

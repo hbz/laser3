@@ -2,6 +2,45 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2462    05.05.2020  rc1.3       Moe     Bug         Umfrage: Bestätigung bei "Nein" muss differenziert werden
+
+2461    05.05.2020  rc1.3       David   Bug         INST_ADMIN hat keine Bearbeitungsrechte für Org-Einstellungen
+
+2363    05.05.2020  rc1.3       Moe     Bug         Umfrage: Vorsorgliche Kündigung bei Teilnehmer nochmal überarbeiten
+
+2454    05.05.2020  rc1.3       Moe     Bug         GASCO-Monitor "Lokale Lizenz"
+
+2453    04.05.2020  rc1.3       Moe     Bug         Alle Titel - falsche Verknüpfungen
+
+2457    04.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Serverfehler Wechsel zur Umfrage Workflow-Sicht
+
+2376    04.05.2020  rc1.3       Andreas Bug         Vorbelegung des Filters in der Finanzübersicht war inkorrekt dargestellt
+
+2344    04.05.2020  hbz-dev     Moe     Feature     Erweiterung der Klasse Titles um Fächergruppe und Reihe
+
+2452    30.04.2020  rc1.3       Moe     Bug         Umfrage Bugs
+
+2199    28.04.2020  rc1.3       David   Feature     API: Top-Level-Objekte mit Status deleted
+
+2449    28.04.2020  rc1.3       David   Bug         API 0.96 - /document
+
+--      28.04.2020  rc1.3       David   Bug         API 0.95 - /costItem
+
+2448    28.04.2020  rc1.3       Moe     Feature     E-Mail Benachrichtigung  an den Umfrage-Ersteller, wenn ein Teilnehmer die Umfrage abgeschlossen hat
+
+2431    27.04.2020  hbz-dev     David   Feature     Refactoring: Vertragsvorlage entfernen
+
+2434    27.04.2020  rc1.3       Moe     Feature     Umfrage-Kosten Export in Excel (Teilnehmersicht)
+
+--      24.04.2020  rc1.3       Andreas Bug         keine Anzeige von Kosten auf der Lizenzdetailseite bei abgelaufenen Lizenzen
+
+2438    24.04.2020  rc1.3       Moe     Feature     Umfrage Kosten Anzeigen überarbeiten in Teilnehmersicht
+
+2403    22.04.2020  rc1.3       Moe     Bug         Umfrage kopieren
+
+2425    22.04.2020  rc1.3       Andreas Bug         Beschränkung auf lokale Lizenz aufgehoben
+
+2405    22.04.2020  rc1.3       Andreas Feature     Anreicherung der Lizenzkopier- und verlängerungsfunktionen um neue Lizenzattribute sowie Schaltschrank
 
 1901    22.04.2020  rc1.3       Andreas Bug         Syncfehler korrigiert - Paketeigenschaften korrekt verarbeitet und Dubletten von Anbieterrollen entfernt
 

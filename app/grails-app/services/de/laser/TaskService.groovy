@@ -6,6 +6,8 @@ import de.laser.helper.RDStore
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.sql.Ref
+
 @Transactional
 class TaskService {
 
@@ -413,8 +415,8 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
             def optionKey = it[0]
             String optionValue = it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')'
             boolean isLicensingConsortium = 'Licensing Consortium' == it[5]?.value
-            boolean hasTemplate2 = (it[6] != null) && (it[6] == RDStore.LICENSE_TYPE_TEMPLATE)
-            if (isLicensingConsortium && ! hasTemplate2) {
+
+            if (isLicensingConsortium) {
                 optionValue += member
             }
             return [optionKey: optionKey, optionValue: optionValue]

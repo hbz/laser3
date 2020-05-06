@@ -26,7 +26,6 @@ import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.SimpleDateFormat
@@ -1349,7 +1348,7 @@ class AdminController extends AbstractDebugController {
 
 
                     subscriberRoles.each{ role ->
-                        if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
+                        if (role.sub.getCalculatedType() == Subscription.TYPE_LOCAL) {
                             role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
                             role.save()
 
@@ -1362,7 +1361,7 @@ class AdminController extends AbstractDebugController {
 
                     }*/
                     conSubscriberRoles.each { role ->
-                        if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                        if (role.sub.getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
                             OrgRole newRole = new OrgRole(
                                     org: role.org,
                                     sub: role.sub,
@@ -1679,7 +1678,7 @@ class AdminController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def importSeriesToEBooks() {
+    def titleEnrichment() {
         Map<String, Object> result = [:]
 
 
@@ -1701,7 +1700,11 @@ class AdminController extends AbstractDebugController {
                         break
                     case "publication_title": colMap.publicationTitleCol = c
                         break
-                    case "series": colMap.seriesTitleCol = c
+                    case "series_name": colMap.seriesNameTitleCol = c
+                        break
+                    case "subject_reference": colMap.subjectReferenceTitleCol = c
+                        break
+                    case "summary_of_content": colMap.summaryOfContentTitleCol = c
                         break
                     case "doi_identifier": colMap.doiTitleCol = c
                         break
@@ -1742,15 +1745,26 @@ class AdminController extends AbstractDebugController {
                     if(tiObj) {
 
                         tiObj.each { titleInstance ->
+                            count++
                             if(titleInstance instanceof BookInstance) {
-                                count++
-
-                                if((cols[colMap.seriesTitleCol] != null || cols[colMap.seriesTitleCol] != "") && (cols[colMap.seriesTitleCol].trim() != titleInstance.summaryOfContent) ){
+                                if(colMap.summaryOfContentTitleCol && (cols[colMap.summaryOfContentTitleCol] != null || cols[colMap.summaryOfContentTitleCol] != "") && (cols[colMap.summaryOfContentTitleCol].trim() != titleInstance.summaryOfContent) ){
                                     countChanges++
-                                    titleInstance.summaryOfContent = cols[colMap.seriesTitleCol].trim()
+                                    titleInstance.summaryOfContent = cols[colMap.summaryOfContentTitleCol].trim()
                                     titleInstance.save(flush: true)
                                 }
                             }
+
+                                if(colMap.seriesNameTitleCol && (cols[colMap.seriesNameTitleCol] != null || cols[colMap.seriesNameTitleCol] != "") && (cols[colMap.seriesNameTitleCol].trim() != titleInstance.seriesName) ){
+                                    countChanges++
+                                    titleInstance.seriesName = cols[colMap.seriesNameTitleCol].trim()
+                                    titleInstance.save(flush: true)
+                                }
+
+                                if(colMap.subjectReferenceTitleCol && (cols[colMap.subjectReferenceTitleCol] != null || cols[colMap.subjectReferenceTitleCol] != "") && (cols[colMap.subjectReferenceTitleCol].trim() != titleInstance.subjectReference) ){
+                                    countChanges++
+                                    titleInstance.subjectReference = cols[colMap.subjectReferenceTitleCol].trim()
+                                    titleInstance.save(flush: true)
+                                }
                         }
                     }
                 }

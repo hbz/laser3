@@ -28,8 +28,9 @@
            }}"/>
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasAccess}">
-        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess?.participant?.id})"
-                class="ui icon button right floated trigger-modal">
+        <g:link data-orgIdList="${(surveyParticipantsHasAccess?.participant?.id).join(',')}"
+                    data-targetId="copyEmailaddresses_ajaxModal44"
+                    class="ui icon button right floated trigger-modal">
             <g:message
                     code="survey.copyEmailaddresses.participantsHasAccess"/>
         </g:link>
@@ -159,8 +160,9 @@
 
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasNotAccess}">
-        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess?.participant?.id})"
-                class="ui icon button right floated trigger-modal">
+        <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.participant?.id).join(',')}"
+                    data-targetId="copyEmailaddresses_ajaxModal55"
+                    class="ui icon button right floated trigger-modal">
             <g:message
                     code="survey.copyEmailaddresses.participantsHasNoAccess"/>
         </g:link>
@@ -249,38 +251,3 @@
     </table>
 </semui:form>
 
-
-<g:javascript>
-
-var isClicked = false;
-
-function copyEmailAdresses(orgListIDs) {
-            event.preventDefault();
-            $.ajax({
-                url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
-                                data: {
-                                    orgListIDs: orgListIDs.join(','),
-                                }
-            }).done( function(data) {
-                $('.ui.dimmer.modals > #copyEmailaddresses_ajaxModal').remove();
-                $('#dynamicModalContainer').empty().html(data);
-
-                $('#dynamicModalContainer .ui.modal').modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#copyEmailaddresses_ajaxModal');
-                        r2d2.initDynamicXEditableStuff('#copyEmailaddresses_ajaxModal');
-                    }
-                    ,
-                    detachable: true,
-                    autofocus: false,
-                    closable: false,
-                    transition: 'scale',
-                    onApprove : function() {
-                        $(this).find('.ui.form').submit();
-                        return false;
-                    }
-                }).modal('show');
-            })
-        };
-
-</g:javascript>

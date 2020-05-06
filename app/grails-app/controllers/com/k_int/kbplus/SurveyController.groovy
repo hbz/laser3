@@ -6,12 +6,13 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.PropertyService
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -97,17 +98,25 @@ class SurveyController {
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.plural")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
+
+            SXSSFWorkbook wb
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(result.surveys.collect {it[1]}, result.institution)
+            }else{
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.plural")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
+            }
 
             return
         }else {
@@ -638,25 +647,22 @@ class SurveyController {
 
                 result.subscription =  result.surveyConfig?.subscription ?: null
 
-                //costs
-                if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL))
-                    params.view = "cons"
-                else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && result.subscription.getConsortia().equals(result.institution))
-                    params.view = "consAtSubscr"
-                else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
-                    params.view = "subscr"
+                //costs dataToDisplay
+               result.dataToDisplay = ['own','cons']
+               result.offsets = [consOffset:0,ownOffset:0]
+               result.sortConfig = [consSort:'sortname',consOrder:'asc',
+                                    ownSort:'ci.costTitle',ownOrder:'asc']
+
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
                 //cost items
                 //params.forExport = true
-                LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
+                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
                 result.costItemSums = [:]
-                if (costItems.own) {
+                if (costItems?.own) {
                     result.costItemSums.ownCosts = costItems.own.sums
                 }
-                if (costItems.cons) {
+                if (costItems?.cons) {
                     result.costItemSums.consCosts = costItems.cons.sums
-                }
-                if (costItems.subscr) {
-                    result.costItemSums.subscrCosts = costItems.subscr.sums
                 }
             }
 
@@ -677,13 +683,25 @@ class SurveyController {
         }
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+
+            SXSSFWorkbook wb
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
+            }else{
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            }
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -773,7 +791,7 @@ class SurveyController {
         def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
+            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
         }
         result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
@@ -831,7 +849,7 @@ class SurveyController {
         def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
+            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
         }
 
         result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -1063,13 +1081,24 @@ class SurveyController {
         }
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            SXSSFWorkbook wb
+            if ( params.surveyCostItems ) {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
+            }else {
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String filename = "${datetoday}_" + g.message(code: "survey.label")
+                //if(wb instanceof XSSFWorkbook) file += "x";
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
+            }
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -1394,21 +1423,19 @@ class SurveyController {
         }
 
         result.participant = Org.get(params.participant)
-        result.institution = Org.get(params.participant)
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
+        result.subscription =  result.subscriptionInstance ?: null
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig)
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.ownerId = result.surveyResults[0]?.owner?.id
 
-        //result.navigation = surveyService.getParticipantConfigNavigation(result.institution, result.surveyInfo, result.surveyConfig)
-
-        if(result.surveyConfig?.type == 'Subscription') {
+        if(result.surveyConfig.type == 'Subscription') {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
@@ -1417,9 +1444,24 @@ class SurveyController {
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
+
+            //costs dataToDisplay
+            result.dataToDisplay = ['consAtSubscr']
+            result.offsets = [consOffset:0]
+            result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
+
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            //cost items
+            //params.forExport = true
+            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+            result.costItemSums = [:]
+            if (costItems?.cons) {
+                result.costItemSums.consCosts = costItems.cons.sums
+            }
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+        result.institution = result.participant
 
         result
 
@@ -1972,7 +2014,7 @@ class SurveyController {
                 CostItem.findAllBySurveyOrg(surveyOrg).each {
                     it.delete(flush: true)
                 }
-                
+
                 if (surveyOrg.delete(flush: true)) {
                     //flash.message = g.message(code: "surveyParticipants.delete.successfully")
                 }
@@ -2522,6 +2564,183 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
+    def copySurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        if(result.surveyInfo.type.id == RDStore.SURVEY_TYPE_INTEREST.id){
+            result.workFlow = '2'
+        }else{
+            if(params.targetSubs){
+                result.workFlow = '2'
+            }else{
+                result.workFlow = '1'
+            }
+        }
+
+        if(result.workFlow == '1') {
+            def date_restriction = null;
+            def sdf = DateUtil.getSDF_NoTime()
+
+            if (params.validOn == null || params.validOn.trim() == '') {
+                result.validOn = ""
+            } else {
+                result.validOn = params.validOn
+                date_restriction = sdf.parse(params.validOn)
+            }
+
+            result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+
+            if (!result.editable) {
+                flash.error = g.message(code: "default.notAutorized.message")
+                redirect(url: request.getHeader('referer'))
+            }
+
+            if (!params.status) {
+                if (params.isSiteReloaded != "yes") {
+                    params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                    result.defaultSet = true
+                } else {
+                    params.status = 'FETCH_ALL'
+                }
+            }
+
+            List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.org)
+
+            result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
+
+            def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+            result.filterSet = tmpQ[2]
+            List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+            //,[max: result.max, offset: result.offset]
+
+            result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+
+            if (params.sort && params.sort.indexOf("§") >= 0) {
+                switch (params.sort) {
+                    case "orgRole§provider":
+                        subscriptions.sort { x, y ->
+                            String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
+                            String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
+                            a.compareToIgnoreCase b
+                        }
+                        if (params.order.equals("desc"))
+                            subscriptions.reverse(true)
+                        break
+                }
+            }
+            result.num_sub_rows = subscriptions.size()
+            result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        }
+        
+        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def addSubMembersToSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        addSubMembers(result.surveyConfig)
+
+        redirect(action: 'surveyParticipants', params: [id: result.surveyInfo.id, surveyConfigID: result.surveyConfig.id, tab: 'selectedSubParticipants'])
+
+    }
+    
+    
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processCopySurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        SurveyInfo baseSurveyInfo = result.surveyInfo
+        SurveyConfig baseSurveyConfig = result.surveyConfig
+
+        if (baseSurveyInfo && baseSurveyConfig) {
+
+            result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
+
+            List newSurveyIds = []
+
+            if(result.targetSubs){
+                result.targetSubs.each { sub ->
+                    SurveyInfo newSurveyInfo = new SurveyInfo(
+                            name: sub.name,
+                            status: RDStore.SURVEY_IN_PROCESSING,
+                            type: baseSurveyInfo.type,
+                            startDate: params.copySurvey.copyDates ? baseSurveyInfo.startDate : null,
+                            endDate: params.copySurvey.copyDates ? baseSurveyInfo.endDate : null,
+                            comment: params.copySurvey.copyComment ? baseSurveyInfo.comment : null,
+                            isMandatory: params.copySurvey.copyMandatory ? baseSurveyInfo.isMandatory : false,
+                            owner: contextService.getOrg()
+                    ).save()
+
+                    SurveyConfig newSurveyConfig = new SurveyConfig(
+                            type: baseSurveyConfig.type,
+                            subscription: sub,
+                            surveyInfo: newSurveyInfo,
+                            comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
+                            url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                            configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
+                    ).save()
+
+                    copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
+
+                    newSurveyIds << newSurveyInfo.id
+
+                }
+
+                redirect controller: 'survey', action: 'currentSurveysConsortia', params: [ids: newSurveyIds]
+            }else{
+                SurveyInfo newSurveyInfo = new SurveyInfo(
+                        name: params.name,
+                        status: RDStore.SURVEY_IN_PROCESSING,
+                        type: baseSurveyInfo.type,
+                        startDate: params.copySurvey.copyDates ? baseSurveyInfo.startDate : null,
+                        endDate: params.copySurvey.copyDates ? baseSurveyInfo.endDate : null,
+                        comment: params.copySurvey.copyComment ? baseSurveyInfo.comment : null,
+                        isMandatory: params.copySurvey.copyMandatory ? baseSurveyInfo.isMandatory : false,
+                        owner: contextService.getOrg()
+                ).save()
+
+                SurveyConfig newSurveyConfig = new SurveyConfig(
+                        type: baseSurveyConfig.type,
+                        surveyInfo: newSurveyInfo,
+                        comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
+                        url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                        configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
+                ).save()
+
+                copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
+
+                redirect controller: 'survey', action: 'show', params: [id: newSurveyInfo.id, surveyConfigID: newSurveyConfig.id]
+            }
+        }
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def renewSubscriptionConsortiaWithSurvey() {
 
         def result = setResultGenericsAndCheckAccess()
@@ -2681,7 +2900,7 @@ class SurveyController {
             result.isRenewSub = params?.isRenewSub
         }
 
-        result.isConsortialSubs = (result.sourceSubscription?.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL && result.targetSubscription?.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL) ?: false
+        result.isConsortialSubs = (result.sourceSubscription?.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription?.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
@@ -2846,29 +3065,51 @@ class SurveyController {
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         boolean isTargetSubChanged = false
-        if (params?.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<SubscriptionPackage> packagesToDelete = params?.list('subscription.deletePackageIds').collect {
+        if (params.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.deletePackages(packagesToDelete, newSub, flash)
             isTargetSubChanged = true
         }
-        if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<SubscriptionPackage> packagesToTake = params?.list('subscription.takePackageIds').collect {
+        if (params.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.copyPackages(packagesToTake, newSub, flash)
             isTargetSubChanged = true
         }
+        if(params.subscription?.deletePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packageSettingsToDelete = params.list('subscription.deletePackageSettings').collect {
+                genericOIDService.resolveOID(it)
+            }
+            packageSettingsToDelete.each { SubscriptionPackage toDelete ->
+                PendingChangeConfiguration.SETTING_KEYS.each { String setting ->
+                    if(AuditConfig.getConfig(toDelete.subscription,setting))
+                        AuditConfig.removeConfig(toDelete.subscription,setting)
+                }
+                PendingChangeConfiguration.executeUpdate('delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage = :sp',[sp:toDelete])
+            }
+            isTargetSubChanged = true
+        }
+        if(params.subscription?.takePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect {
+                genericOIDService.resolveOID(it)
+            }
+            packageSettingsToTake.each { SubscriptionPackage sp ->
+                subscriptionService.copyPendingChangeConfiguration(PendingChangeConfiguration.findAllBySubscriptionPackage(sp),SubscriptionPackage.findBySubscriptionAndPkg(newSub,sp.pkg))
+            }
+            isTargetSubChanged = true
+        }
 
-        if (params?.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToDelete = params?.list('subscription.deleteEntitlementIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.deleteEntitlements(entitlementsToDelete, newSub, flash)
             isTargetSubChanged = true
         }
-        if (params?.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect {
                 genericOIDService.resolveOID(it)
             }
@@ -2900,21 +3141,69 @@ class SurveyController {
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
-        boolean isTargetSubChanged = false
+        //boolean isTargetSubChanged = false
         if (params?.subscription?.deleteDates && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteDates(newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         } else if (params?.subscription?.takeDates && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.copyDates(baseSub, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteStatus && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteStatus(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeStatus && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyStatus(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteKind && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteKind(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeKind && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyKind(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteForm && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteForm(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeForm && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyForm(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deleteResource && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteResource(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takeResource && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyResource(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deletePublicForApi && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deletePublicForApi(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takePublicForApi && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyPublicForApi(baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.deletePerpetualAccess && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deletePerpetualAccess(newSub, flash)
+            //isTargetSubChanged = true
+        }else if (params.subscription?.takePerpetualAccess && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyPerpetualAccess(baseSub, newSub, flash)
+            //isTargetSubChanged = true
         }
 
         if (params?.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteOwner(newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         } else if (params?.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.copyOwner(baseSub, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }
 
         if (params?.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -2922,14 +3211,14 @@ class SurveyController {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.deleteOrgRelations(toDeleteOrgRelations, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }
         if (params?.subscription?.takeOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
             List<OrgRole> toCopyOrgRelations = params.list('subscription.takeOrgRelations').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.copyOrgRelations(toCopyOrgRelations, baseSub, newSub, flash)
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
 
             List<OrgRole> toggleShareOrgRoles = params.list('toggleShareOrgRoles').collect {
                 genericOIDService.resolveOID(it)
@@ -2948,9 +3237,9 @@ class SurveyController {
             }
         }
 
-        if (isTargetSubChanged) {
+        /*if (isTargetSubChanged) {
             newSub = newSub.refresh()
-        }
+        }*/
         result.subscription = baseSub
         result.newSub = newSub
         result.targetSubscription = newSub
@@ -3119,7 +3408,7 @@ class SurveyController {
             result.orgList = Org.findAllByIdInList(idList)
         }
 
-        render(template: "/survey/copyEmailaddresses", model: result)
+        render(template: "/templates/copyEmailaddresses", model: result)
     }
 
 
@@ -4023,7 +4312,7 @@ class SurveyController {
                             name: newParentSub.name,
                             startDate: startDate,
                             endDate: endDate,
-                            administrative: newParentSub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE,
+                            administrative: newParentSub.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                             manualRenewalDate: newParentSub.manualRenewalDate,
                             identifier: UUID.randomUUID().toString(),
                             instanceOf: newParentSub,
@@ -4180,10 +4469,12 @@ class SurveyController {
             return []
         }
         def tmpQuery = query
-        tmpQuery = tmpQuery.replace("o.id IN (:oids)", "o.id IN (:oids) and o.id in (:orgIDs)")
+        tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
 
         def tmpQueryParams = queryParams
         tmpQueryParams.put("orgIDs", orgIDs)
+        //println(tmpQueryParams)
+        //println(tmpQuery)
 
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
@@ -4926,6 +5217,98 @@ class SurveyController {
             }
         }else {
             return false
+        }
+    }
+    
+    boolean copySurveyConfigCharacteristic(SurveyConfig oldSurveyConfig, SurveyConfig newSurveyConfig, params){
+
+        oldSurveyConfig.documents?.each { dctx ->
+                //Copy Docs
+                if (params.copySurvey.copyDocs) {
+                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                        Doc clonedContents = new Doc(
+                                blobContent: dctx.owner.blobContent,
+                                status: dctx.owner.status,
+                                type: dctx.owner.type,
+                                content: dctx.owner.content,
+                                uuid: dctx.owner.uuid,
+                                contentType: dctx.owner.contentType,
+                                title: dctx.owner.title,
+                                creator: dctx.owner.creator,
+                                filename: dctx.owner.filename,
+                                mimeType: dctx.owner.mimeType,
+                                user: dctx.owner.user,
+                                migrated: dctx.owner.migrated,
+                                owner: dctx.owner.owner
+                        ).save()
+
+                        DocContext ndc = new DocContext(
+                                owner: clonedContents,
+                                surveyConfig: newSurveyConfig,
+                                domain: dctx.domain,
+                                status: dctx.status,
+                                doctype: dctx.doctype
+                        ).save()
+                    }
+                }
+                //Copy Announcements
+                if (params.copySurvey.copyAnnouncements) {
+                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                        Doc clonedContents = new Doc(
+                                blobContent: dctx.owner.blobContent,
+                                status: dctx.owner.status,
+                                type: dctx.owner.type,
+                                content: dctx.owner.content,
+                                uuid: dctx.owner.uuid,
+                                contentType: dctx.owner.contentType,
+                                title: dctx.owner.title,
+                                creator: dctx.owner.creator,
+                                filename: dctx.owner.filename,
+                                mimeType: dctx.owner.mimeType,
+                                user: dctx.owner.user,
+                                migrated: dctx.owner.migrated
+                        ).save()
+
+                        DocContext ndc = new DocContext(
+                                owner: clonedContents,
+                                surveyConfig: newSurveyConfig,
+                                domain: dctx.domain,
+                                status: dctx.status,
+                                doctype: dctx.doctype
+                        ).save()
+                    }
+                }
+            }
+            //Copy Tasks
+            if (params.copySurvey.copyTasks) {
+
+                Task.findAllBySurveyConfig(oldSurveyConfig).each { task ->
+
+                    Task newTask = new Task()
+                    InvokerHelper.setProperties(newTask, task.properties)
+                    newTask.systemCreateDate = new Date()
+                    newTask.surveyConfig = newSurveyConfig
+                    newTask.save()
+                }
+
+            }
+
+        //Copy Participants
+        if (params.copySurvey.copyParticipants) {
+            oldSurveyConfig.orgs.each { surveyOrg ->
+
+                SurveyOrg newSurveyOrg = new SurveyOrg(surveyConfig: newSurveyConfig, org: surveyOrg.org).save()
+            }
+        }
+
+        //Copy Properties
+        if (params.copySurvey.copySurveyProperties) {
+            oldSurveyConfig.surveyProperties.each { surveyConfigProperty ->
+
+                SurveyConfigProperties configProperty = new SurveyConfigProperties(
+                        surveyProperty: surveyConfigProperty.surveyProperty,
+                        surveyConfig: newSurveyConfig).save()
+            }
         }
     }
 }

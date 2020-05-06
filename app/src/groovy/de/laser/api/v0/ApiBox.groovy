@@ -35,8 +35,8 @@ class ApiBox {
         }
     }
 
-    void validateDeletedStatus_2(RefdataValue rdvDeleted) {
-        if (obj.status == rdvDeleted) {
+    void validateDeletedStatus_2(String attribute, RefdataValue rdvDeleted) {
+        if (obj.getProperty(attribute) == rdvDeleted) {
             status = Constants.OBJECT_STATUS_DELETED
         }
     }

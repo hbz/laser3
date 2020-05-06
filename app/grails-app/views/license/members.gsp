@@ -16,7 +16,6 @@
     </semui:controlButtons>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
 
@@ -61,12 +60,12 @@
                             , ${orgRole?.roleType.getI10n('value')} <br />
                         </g:elseif>
 
-                        <g:if test="${license.isTemplate() && orgRole?.roleType.id in [RDStore.OR_LICENSING_CONSORTIUM.id]}">
+                        <%-- <g:if test="${license.isTemplate() && orgRole?.roleType.id in [RDStore.OR_LICENSING_CONSORTIUM.id]}">
                             <g:link controller="organisation" action="show" id="${orgRole?.org.id}">
                                 ${orgRole?.org.getDesignation()}
                             </g:link>
                             , ${orgRole?.roleType.getI10n('value')} <br />
-                        </g:if>
+                        </g:if> --%>
                     </g:each>
                 </td>
                 <td>
