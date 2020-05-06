@@ -1051,6 +1051,13 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def checkLicenseSubscriptionLinks() {
+        flash.message = "Überprüfung Lizenzen <-> Verträge <-> Teilnehmer läuft ..."
+        yodaService.checkLicenseSubscriptionLinks()
+        redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
     def startDateCheck(){
         if(subscriptionUpdateService.startDateCheck())
             flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."

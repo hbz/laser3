@@ -39,6 +39,7 @@ class LicenseController extends AbstractDebugController {
     def filterService
     def orgTypeService
     def deletionService
+    def subscriptionService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -62,7 +63,7 @@ class LicenseController extends AbstractDebugController {
         def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
         String filename = "license_${escapeService.escapeString(license_reference_str)}"
-        result.onixplLicense = result.license.onixplLicense;
+        //result.onixplLicense = result.license.onixplLicense
 
         // ---- pendingChanges : start
 
@@ -419,13 +420,15 @@ from Subscription as s where
   def linkToSubscription(){
     log.debug("linkToSubscription :: ${params}")
     if(params.subscription && params.license){
-      Subscription sub = genericOIDService.resolveOID(params.subscription)
-      License owner = License.get(params.license)
+        Subscription sub = genericOIDService.resolveOID(params.subscription)
+        License owner = License.get(params.license)
+        subscriptionService.setOrgLicRole(sub,sub.owner,owner)
+        /*
         // owner.addToSubscriptions(sub) // GORM problem
         // owner.save()
         sub.setOwner(owner)
         sub.save()
-
+         */
     }
     redirect controller:'license', action:'show', params: [id:params.license]
 
@@ -436,11 +439,12 @@ from Subscription as s where
     def unlinkSubscription(){
         log.debug("unlinkSubscription :: ${params}")
         if(params.subscription && params.license){
-            def sub = Subscription.get(params.subscription)
-            if (sub.owner == License.get(params.license)) {
+            Subscription sub = Subscription.get(params.subscription)
+            subscriptionService.setOrgLicRole(sub,null)
+            /*if (sub.owner == lic) {
                 sub.owner = null
                 sub.save()
-            }
+            }*/
         }
         redirect controller:'license', action:'show', params: [id:params.license]
     }
@@ -842,6 +846,8 @@ from Subscription as s where
     result
   }
 
+    /*
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   def unlinkLicense() {
@@ -881,6 +887,7 @@ from Subscription as s where
       }
       redirect(action: 'show', id: license.id);
   }
+     */
 
     def copyLicense()
     {

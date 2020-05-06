@@ -28,7 +28,7 @@ class OnixplLicenseController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def notes() {
-        log.debug("license id:${params.id}");
+        com.k_int.kbplus.OnixplLicenseController.log.debug("license id:${params.id}");
         User user = User.get(springSecurityService.principal.id)
         def onixplLicense = OnixplLicense.get(params.id)
 //        if ( ! onixplLicense.hasPerm("view",user) ) {
@@ -40,7 +40,7 @@ class OnixplLicenseController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def documents() {
-        log.debug("license id:${params.id}");
+        com.k_int.kbplus.OnixplLicenseController.log.debug("license id:${params.id}");
         User user = User.get(springSecurityService.principal.id)
         def onixplLicense = OnixplLicense.get(params.id)
 //        if ( ! onixplLicense.hasPerm("view",user) ) {
@@ -52,7 +52,7 @@ class OnixplLicenseController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def history() {
-        log.debug("license id:${params.id}");
+        com.k_int.kbplus.OnixplLicenseController.log.debug("license id:${params.id}");
         User user = User.get(springSecurityService.principal.id)
         def onixplLicense = OnixplLicense.get(params.id)
 

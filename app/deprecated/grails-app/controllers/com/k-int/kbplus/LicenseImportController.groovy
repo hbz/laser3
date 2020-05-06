@@ -47,7 +47,7 @@ class LicenseImportController extends AbstractDebugController {
 
     // Find a license if id specified
     if (params.license_id) {
-      log.debug("Import requested with license id ${params.license_id}")
+      com.k_int.kbplus.LicenseImportController.log.debug("Import requested with license id ${params.license_id}")
       result.license_id = params.license_id
       result.license    = License.findById(params.license_id)
     }
@@ -92,7 +92,7 @@ class LicenseImportController extends AbstractDebugController {
         // Read file if one is being offered for upload, and check if it matches
         // an existing OPL
         if (offered_multipart_file) {
-          log.debug("Request to upload ONIX-PL file type: ${offered_multipart_file.contentType}" + " filename ${offered_multipart_file.originalFilename}");
+          com.k_int.kbplus.LicenseImportController.log.debug("Request to upload ONIX-PL file type: ${offered_multipart_file.contentType}" + " filename ${offered_multipart_file.originalFilename}");
 
           // 1. Read the file and parse it as XML - Extract properties and set them on the onix_parse_result map
           def onix_parse_result = readOnixMultipartFile(offered_multipart_file)
@@ -107,7 +107,7 @@ class LicenseImportController extends AbstractDebugController {
           result.putAll(onix_parse_result)
 
           result.validationResult.messages.add("Document validated: ${offered_multipart_file.originalFilename}")
-          log.debug("Passed first phase validation")
+          com.k_int.kbplus.LicenseImportController.log.debug("Passed first phase validation")
 
           // If the specified license does not already have an OPL associated,
           // check for existing OPLs that appear to match.
@@ -116,7 +116,7 @@ class LicenseImportController extends AbstractDebugController {
             // Save the upload to a temp file if the license matches an existing one
             def existingOpl = checkForExistingOpl(result.accepted_file, result.license)
             if (existingOpl) {
-              log.debug("Found existing opl "+existingOpl)
+              com.k_int.kbplus.LicenseImportController.log.debug("Found existing opl "+existingOpl)
               // Create a temp file to hold the uploaded file, which will be
               // automatically deleted when JVM exits
               File tmp = File.createTempFile("opl_upload", ".xml")
@@ -145,7 +145,7 @@ class LicenseImportController extends AbstractDebugController {
     // Redirect to some ONIX-PL display page
     //log.debug("Redirecting...");
     //redirect controller: 'license', action:'onixpl', id:params.licid, fragment:params.fragment
-    log.debug("Returning result ${result}")
+    com.k_int.kbplus.LicenseImportController.log.debug("Returning result ${result}")
     result
   }
 
@@ -160,7 +160,7 @@ class LicenseImportController extends AbstractDebugController {
    */
 
     private def readOnixMultipartFile(file) throws SAXException, IOException {
-    log.debug("Reading uploaded ONIX-PL file ${file?.originalFilename} " +
+    com.k_int.kbplus.LicenseImportController.log.debug("Reading uploaded ONIX-PL file ${file?.originalFilename} " +
         "of type ${file?.contentType}")
     def onix_parse_result = [:]
     // Verify the character set of the offered ONIX-PL file, and read the title
@@ -190,12 +190,12 @@ class LicenseImportController extends AbstractDebugController {
    */
 
     private def checkForExistingOpl(acceptedFile, license) {
-    log.debug("Checking for existing OPL for acceptedFile ${acceptedFile} and license ${license}")
+    com.k_int.kbplus.LicenseImportController.log.debug("Checking for existing OPL for acceptedFile ${acceptedFile} and license ${license}")
     //def existingOpl = license?.onixplLicense
     def existingOpl
     if (!existingOpl) {
       def fileDesc = acceptedFile?.description
-      log.debug("Finding OPL by title '${fileDesc}'")
+      com.k_int.kbplus.LicenseImportController.log.debug("Finding OPL by title '${fileDesc}'")
       existingOpl = OnixplLicense.findByTitle(fileDesc)
       // TODO Offer a selection? Do we really want multiple OPLs with same title?
       //existingOpls = OnixplLicense.findAllByTitle(fileDesc)
@@ -227,7 +227,7 @@ class LicenseImportController extends AbstractDebugController {
         // Use specified license if there is one
         license = upload.license
 
-    log.debug("replaceOplRecord: ${replaceOplRecord} createNewDocument: ${createNewDocument} createNewLicense: ${createNewLicense} upload.replace_opl: ${upload.replace_opl} license: ${upload.license!=null}")
+    com.k_int.kbplus.LicenseImportController.log.debug("replaceOplRecord: ${replaceOplRecord} createNewDocument: ${createNewDocument} createNewLicense: ${createNewLicense} upload.replace_opl: ${upload.replace_opl} license: ${upload.license!=null}")
     importResult.replace = replaceOplRecord
     RefdataValue currentStatus = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
     RefdataValue templateType  = RefdataValue.getByValueAndCategory('Template', RDConstants.LICENSE_TYPE)
@@ -245,11 +245,11 @@ class LicenseImportController extends AbstractDebugController {
       // Save it
       if (!license.save(flush: true)) {
         license.errors.each {
-          log.error("License error:" + it);
+          com.k_int.kbplus.LicenseImportController.log.error("License error:" + it);
         }
       }
       //log.debug("Created template KB+ license for '${upload.description}': ${license}")
-      log.debug("Created template KB+ license ${license}")
+      com.k_int.kbplus.LicenseImportController.log.debug("Created template KB+ license ${license}")
     }
 
     RefdataValue doctype = RefdataValue.getByValueAndCategory(DOCTYPE, RDConstants.DOCUMENT_TYPE)
@@ -291,7 +291,7 @@ class LicenseImportController extends AbstractDebugController {
       doc_content.save()
     }
 
-    log.debug("${createNewDocument?'Created new':'Updated'} document ${doc_content}")
+    com.k_int.kbplus.LicenseImportController.log.debug("${createNewDocument?'Created new':'Updated'} document ${doc_content}")
     // Record a doc context if there is a new document or a new license.
     // We don't want duplicate doc_contexts.
     if (createNewDocument || createNewLicense) {
@@ -300,7 +300,7 @@ class LicenseImportController extends AbstractDebugController {
           owner:   doc_content,
           doctype: doctype
       ).save(flush:true)
-      log.debug("Created new document context ${doc_context}")
+      com.k_int.kbplus.LicenseImportController.log.debug("Created new document context ${doc_context}")
     }
 
     // Create an OnixplLicense and update the KB+ License
@@ -321,12 +321,12 @@ class LicenseImportController extends AbstractDebugController {
       }
       opl = recordOnixplLicense(doc_content, opl_title)
     }
-    log.debug("${replaceOplRecord?'Updated':'Created new'} ONIX-PL License ${opl}")
+    com.k_int.kbplus.LicenseImportController.log.debug("${replaceOplRecord?'Updated':'Created new'} ONIX-PL License ${opl}")
     // If a single license is specified, link it to the OPL
     if (license) {
       license.onixplLicense = opl
       license.save(flush:true)
-      log.debug("Linked OPL ${opl.id} to LIC ${license.id}")
+      com.k_int.kbplus.LicenseImportController.log.debug("Linked OPL ${opl.id} to LIC ${license.id}")
     }
     importResult.license = license
     importResult.onixpl_license = opl
@@ -361,7 +361,7 @@ class LicenseImportController extends AbstractDebugController {
       opl.save(flush:true, failOnError: true);
       //log.debug("Created ONIX-PL License ${opl}");
     } catch (Exception e) {
-      log.debug("Exception saving ONIX-PL License");
+      com.k_int.kbplus.LicenseImportController.log.debug("Exception saving ONIX-PL License");
       e.printStackTrace();
     }
     return opl;
