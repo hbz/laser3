@@ -6006,6 +6006,8 @@ $.fn.dropdown = function(parameters) {
           menu: function() {
             $menu = $('<div />')
               .addClass(className.menu)
+                .attr('id','listBox')
+
               .appendTo($module)
             ;
           },
@@ -6090,6 +6092,8 @@ $.fn.dropdown = function(parameters) {
               $search = $('<input />')
                 .addClass(className.search)
                 .prop('autocomplete', 'off')
+                  .attr('aria-autocomplete','both')
+                  .attr('aria-controls','listBox')
                 .insertBefore($text)
               ;
             }
@@ -6124,6 +6128,11 @@ $.fn.dropdown = function(parameters) {
                 .attr('class', $input.attr('class') )
                 .addClass(className.selection)
                 .addClass(className.dropdown)
+                  .attr('role', 'combobox') //a11y
+                  .attr('aria-haspopup','listbox') //a11y
+                  .attr('aria-owns','listBox') //a11y
+                  .attr('id','test') //a11y
+
                 .html( templates.dropdown(selectValues) )
                 .insertBefore($input)
               ;
@@ -7584,6 +7593,7 @@ $.fn.dropdown = function(parameters) {
             }
           },
           choiceValue: function($choice, choiceText) {
+
             choiceText = choiceText || module.get.choiceText($choice);
             if(!$choice) {
               return false;
@@ -7790,6 +7800,7 @@ $.fn.dropdown = function(parameters) {
             else {
               module.debug('Restoring default text', defaultText);
               module.set.text(defaultText);
+              module.set.activedescendant();
             }
           },
           placeholderText: function() {
@@ -7985,6 +7996,11 @@ $.fn.dropdown = function(parameters) {
         },
 
         set: {
+          activedescendant: function(selectedItemID){
+            console.log("aria-activedescendant WIRD GESETZT");
+            console.log(selectedItemID);
+            $search.attr('aria-activedescendant', selectedItemID)
+          },
           filtered: function() {
             var
               isMultiple       = module.is.multiple(),
@@ -8145,7 +8161,7 @@ $.fn.dropdown = function(parameters) {
             module.set.activeItem($item);
             module.set.selected(value, $item);
             module.set.text(text);
-          },
+            },
           selectedLetter: function(letter) {
             var
               $selectedItem         = $item.filter('.' + className.selected),
@@ -8276,6 +8292,7 @@ $.fn.dropdown = function(parameters) {
           },
           visible: function() {
             $module.addClass(className.visible);
+            $module.attr("aria-expanded","true"); // a11y
           },
           exactly: function(value, $selectedItem) {
             module.debug('Setting selected to exact values');
@@ -8346,6 +8363,7 @@ $.fn.dropdown = function(parameters) {
                     module.save.remoteData(selectedText, selectedValue);
                   }
                   module.set.text(selectedText);
+                  module.set.activedescendant($selectedItem[0].id);
                   module.set.value(selectedValue, selectedText, $selected);
                   $selected
                     .addClass(className.active)
@@ -8584,6 +8602,7 @@ $.fn.dropdown = function(parameters) {
           },
           visible: function() {
             $module.removeClass(className.visible);
+            $module.attr("aria-expanded","false"); // a11y
           },
           activeItem: function() {
             $item.removeClass(className.active);
@@ -9663,13 +9682,13 @@ $.fn.dropdown.settings.templates = {
       html += '<div class="default text">' + placeholder + '</div>';
     }
     else {
-      html += '<div class="text"></div>';
+      html += '<div class="text" ></div>';
     }
-    html += '<div class="menu">';
+    html += '<div class="menu" id="listBox">';
     $.each(select.values, function(index, option) {
       html += (option.disabled)
-        ? '<div class="disabled item" data-value="' + option.value + '">' + option.name + '</div>'
-        : '<div class="item" data-value="' + option.value + '">' + option.name + '</div>'
+        ? '<div id="' + option.value + '" class="disabled item" data-value="' + option.value + '">' + option.name + '</div>'
+        : '<div id="' + option.value + '"  class="item" role="option" data-value="' + option.value + '">' + option.name + '</div>'
       ;
     });
     html += '</div>';
@@ -9700,7 +9719,7 @@ $.fn.dropdown.settings.templates = {
 
   // generates label for multiselect
   label: function(value, text) {
-    return text + '<i aria-hidden="true" class="delete icon"></i>';
+    return text + '<i aria-hidden="true" class="delete icon" ></i>';
   },
 
 
