@@ -25,7 +25,7 @@ class OnixplLicenseCompareController extends AbstractDebugController {
   @Secured(['ROLE_USER'])
   def matrix() {
     
-    com.k_int.kbplus.OnixplLicenseCompareController.log.debug("matrix:: selectedLicenses:${params.selectedLicenses}")
+    log.debug("matrix:: selectedLicenses:${params.selectedLicenses}")
     // All licenses need to be compared.
     boolean allLicenses = false
 

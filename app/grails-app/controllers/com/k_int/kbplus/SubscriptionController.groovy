@@ -1649,8 +1649,8 @@ class SubscriptionController extends AbstractDebugController {
                 //keep it, I need to ask Daniel for that
                 //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
                 //subChild.owner.orgLinks.remove(toDelete)
-                subChild.owner = null
-                if (subChild.save()) {
+                //subChild.owner = null
+                if (subscriptionService.setOrgLicRole(subChild,null)) {
                     //toDelete.delete()
                     removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }

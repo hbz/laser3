@@ -1199,45 +1199,45 @@ class SubscriptionService {
 
     boolean setOrgLicRole(Subscription sub, License newOwner) {
         boolean success = false
-        //continue here: collect all modifications of subscription.owner and centralise them into this method
-        Org subscr = sub.getSubscriber()
-        if(newOwner == null) {
-            Map<String,Object> licParams = [lic:sub.owner,subscriber:subscr]
-            Set<Subscription> linkedSubs = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.owner = :lic and oo.org = :subscriber',licParams)
-            if(!linkedSubs) {
-                log.info("no more license <-> subscription links between org -> removing licensee role")
-                if(OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams))
-                    success = true
-            }
-        }
-        else if(newOwner != null) {
-            RefdataValue licRole
-            if(sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
-                licRole = OR_LICENSEE_CONS
-            else if(sub.getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE,CalculatedType.TYPE_LOCAL])
-                licRole = OR_LICENSEE
-            else if(sub.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-                licRole = OR_LICENSING_CONSORTIUM
-            if(licRole) {
-                OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newOwner,subscr,licRole)
-                if(!orgLicRole){
-                    orgLicRole = OrgRole.findByLicAndOrgAndRoleType(sub.owner,subscr,licRole)
-                    if(orgLicRole) {
-                        orgLicRole.lic = newOwner
-                    }
-                    else {
-                        orgLicRole = new OrgRole(lic: newOwner,org: subscr,roleType: licRole)
-                    }
-                    if(orgLicRole.save())
+        if(sub.owner != newOwner) {
+            Org subscr = sub.getSubscriber()
+            if(newOwner == null) {
+                Map<String,Object> licParams = [lic:sub.owner,subscriber:subscr]
+                Set<Subscription> linkedSubs = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.owner = :lic and oo.org = :subscriber and oo.roleType in (:roleTypes)',licParams+[roleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN,OR_SUBSCRIBER_COLLECTIVE]])
+                //size == 1 is correct because this is the last subscription to be linked for that org
+                if(linkedSubs.size() == 1) {
+                    log.info("no more license <-> subscription links between org -> removing licensee role")
+                    if(OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams))
                         success = true
                 }
             }
-        }
-        if(sub.owner != newOwner) {
+            else if(newOwner != null) {
+                RefdataValue licRole
+                if(sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
+                    licRole = OR_LICENSEE_CONS
+                else if(sub.getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE,CalculatedType.TYPE_LOCAL])
+                    licRole = OR_LICENSEE
+                else if(sub.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+                    licRole = OR_LICENSING_CONSORTIUM
+                if(licRole) {
+                    OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newOwner,subscr,licRole)
+                    if(!orgLicRole){
+                        orgLicRole = OrgRole.findByLicAndOrgAndRoleType(sub.owner,subscr,licRole)
+                        if(orgLicRole) {
+                            orgLicRole.lic = newOwner
+                        }
+                        else {
+                            orgLicRole = new OrgRole(lic: newOwner,org: subscr,roleType: licRole)
+                        }
+                        if(orgLicRole.save())
+                            success = true
+                    }
+                }
+            }
             sub.owner = newOwner
             success && sub.save()
         }
-        else true
+        else success
     }
 
     Map subscriptionImport(CommonsMultipartFile tsvFile) {

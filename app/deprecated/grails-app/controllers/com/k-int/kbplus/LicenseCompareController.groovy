@@ -108,7 +108,7 @@ class LicenseCompareController extends AbstractDebugController {
                   }
                 }
                 catch (ClassCastException e) {
-                  com.k_int.kbplus.LicenseCompareController.log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
+                  log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
                   e.printStackTrace()
                 }
                 break
@@ -121,7 +121,7 @@ class LicenseCompareController extends AbstractDebugController {
                   }
                 }
                 catch (ClassCastException e) {
-                  com.k_int.kbplus.LicenseCompareController.log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
+                  log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
                   e.printStackTrace()
                 }
                 break

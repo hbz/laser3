@@ -422,7 +422,7 @@ from Subscription as s where
     if(params.subscription && params.license){
         Subscription sub = genericOIDService.resolveOID(params.subscription)
         License owner = License.get(params.license)
-        subscriptionService.setOrgLicRole(sub,sub.owner,owner)
+        subscriptionService.setOrgLicRole(sub,owner)
         /*
         // owner.addToSubscriptions(sub) // GORM problem
         // owner.save()
