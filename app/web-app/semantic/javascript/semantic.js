@@ -8165,13 +8165,6 @@ $.fn.dropdown = function(parameters) {
               }
             }
           },
-          valueInputField: function (value) {
-/*            console.log("VALUE DES INPUTFELDES WIRD GESETZT");
-            console.log(value);
-            console.log($input);
-              $input.val(value);*/
-
-          },
           selectedItem: function($item) {
             var
               value      = module.get.choiceValue($item),
