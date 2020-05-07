@@ -2391,12 +2391,12 @@ $.fn.dropdown = function(parameters) {
                 if(settings.preserveHTML) {
                   console.log("html wird gesetzt in set.text")
                   $text.html(text);
-                  $('#test input').val('Teste');
+                  $('#test input').val(text);
                 }
                 else {
                   console.log("tex wird gesetzt set.text")
                   $text.text(text);
-                  $('#test input').val('Teste2');
+                  $('#test input').val(text);
                 }
               }
             }
@@ -2919,7 +2919,7 @@ $.fn.dropdown = function(parameters) {
           searchTerm: function() {
             console.log('Cleared search term')
             module.verbose('Cleared search term');
-            $search.val('');
+            //$search.val('');
             module.set.filtered();
           },
           userAddition: function() {
