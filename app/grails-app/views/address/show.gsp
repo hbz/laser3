@@ -80,8 +80,9 @@
 							<dt><g:message code="address.city.label" /></dt>
 							<dd><semui:xEditable owner="${addressInstance}" field="city" /></dd>
 
-							<dt><g:message code="address.state.label" /></dt>
-							<dd><semui:xEditableRefData owner="${addressInstance}" field="state" config="${RDConstants.FEDERAL_STATE}" /></dd>
+							<dt><g:message code="address.region.label" /></dt>
+							<dd><semui:xEditableRefData owner="${addressInstance}" field="region" config="${[RDConstants.REGIONS_DE, RDConstants.REGIONS_AT,
+                                                                                                            RDConstants.REGIONS_CH]}" /></dd>
 
 							<dt><g:message code="address.country.label" /></dt>
 							<dd><semui:xEditableRefData owner="${addressInstance}" field="country" config="${RDConstants.COUNTRY}" /></dd>

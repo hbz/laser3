@@ -1406,7 +1406,7 @@ class SubscriptionController extends AbstractDebugController {
                     org.libraryType = subscr.libraryType
                     org.libraryNetwork = subscr.libraryNetwork
                     org.funderType = subscr.funderType
-                    org.federalState = subscr.federalState
+                    org.region = subscr.region
                     org.country = subscr.country
                     org.startDate = subChild.startDate ? subChild.startDate.format(g.message(code:'default.date.format.notime')) : ''
                     org.endDate = subChild.endDate ? subChild.endDate.format(g.message(code:'default.date.format.notime')) : ''
@@ -5655,7 +5655,7 @@ class SubscriptionController extends AbstractDebugController {
             titles.add(g.message(code: 'org.libraryType.label'))
             titles.add(g.message(code: 'org.libraryNetwork.label'))
             titles.add(g.message(code: 'org.funderType.label'))
-            titles.add(g.message(code: 'org.federalState.label'))
+            titles.add(g.message(code: 'org.region.label'))
             titles.add(g.message(code: 'org.country.label'))
         }
 
@@ -5740,9 +5740,9 @@ class SubscriptionController extends AbstractDebugController {
                         cell = row.createCell(cellnum++)
                         cell.setCellValue(org.funderType?.getI10n('value') ?: ' ')
 
-                        //federalState
+                        //region
                         cell = row.createCell(cellnum++)
-                        cell.setCellValue(org.federalState?.getI10n('value') ?: ' ')
+                        cell.setCellValue(org.region?.getI10n('value') ?: ' ')
 
                         //country
                         cell = row.createCell(cellnum++)
@@ -5842,8 +5842,8 @@ class SubscriptionController extends AbstractDebugController {
                         row.add(org.libraryNetwork?.getI10n('value') ?: ' ')
                         //funderType
                         row.add(org.funderType?.getI10n('value') ?: ' ')
-                        //federalState
-                        row.add(org.federalState?.getI10n('value') ?: ' ')
+                        //region
+                        row.add(org.region?.getI10n('value') ?: ' ')
                         //country
                         row.add(org.country?.getI10n('value') ?: ' ')
                     }

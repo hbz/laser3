@@ -82,7 +82,7 @@
             <%
                 List<List<String>> tmplConfigShow
                 if(accessService.checkPerm("ORG_CONSORTIUM"))
-                    tmplConfigShow = [['name', 'identifier', 'libraryType'], ['federalState', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
+                    tmplConfigShow = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
                 else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
                     tmplConfigShow = [['name', 'identifier'], ['property']]
             %>

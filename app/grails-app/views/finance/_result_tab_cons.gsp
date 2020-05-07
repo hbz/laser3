@@ -13,7 +13,7 @@
         jsonSource << [
                 "name": "${or.org.sortname}",
                 "type": "${or.org.orgType}",
-                "federal": "${or.org.federalState}",
+                "federal": "${or.org.region}",
                 "cost": "${ci.costInLocalCurrency}"
         ]
     }

@@ -53,9 +53,9 @@ class FilterService {
             queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
         }
 
-        if (params.federalState?.length() > 0) {
-            query << "o.federalState.id = :federalState"
-             queryParams << [federalState : Long.parseLong(params.federalState)]
+        if (params.region?.length() > 0) {
+            query << "o.region.id = :region"
+             queryParams << [region : Long.parseLong(params.region)]
         }
         if (params.libraryNetwork?.length() > 0) {
             query << "o.libraryNetwork.id = :libraryNetwork"
@@ -122,9 +122,9 @@ class FilterService {
             query << "o.sector.id = :orgSector"
              queryParams << [orgSector : Long.parseLong(params.orgSector)]
         }
-        if (params.federalState?.length() > 0) {
-            query << "o.federalState.id = :federalState"
-             queryParams << [federalState : Long.parseLong(params.federalState)]
+        if (params.region?.length() > 0) {
+            query << "o.region.id = :region"
+             queryParams << [region : Long.parseLong(params.region)]
         }
         if (params.libraryNetwork?.length() > 0) {
             query << "o.libraryNetwork.id = :libraryNetwork"

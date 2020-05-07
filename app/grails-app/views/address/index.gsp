@@ -32,7 +32,7 @@
 					
 						<g:sortableColumn property="city" title="${message(code: 'address.city.label')}" />
 					
-						<g:sortableColumn property="state" title="${message(code: 'address.state.label')}" />
+						<g:sortableColumn property="region" title="${message(code: 'address.region.label')}" />
 					
 					</tr>
 				</thead>

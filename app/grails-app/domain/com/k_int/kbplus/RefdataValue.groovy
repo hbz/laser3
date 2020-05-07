@@ -165,6 +165,18 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
         null
     }
 
+    static RefdataValue getByCategoriesDescAndI10nValueDe(String[] categoryNames, String value) {
+        List<RefdataValue> data = RefdataValue.executeQuery(
+                "select rdv from RefdataValue as rdv, RefdataCategory as rdc "
+                    + " where rdv.owner = rdc and rdc.desc in (:cat) and rdv.value_de = :value_de"
+                    , [categories: categoryNames, value_de: value] )
+
+        if (data.size() > 0) {
+            return data[0]
+        }
+        null
+    }
+
     int compareTo(RefdataValue rdv) {
 
         def a = rdv.order  ?: 0
