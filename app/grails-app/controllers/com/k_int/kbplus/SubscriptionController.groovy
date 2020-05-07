@@ -4848,13 +4848,13 @@ class SubscriptionController extends AbstractDebugController {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
             if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
-            isTargetSubChanged = true
+            //isTargetSubChanged = true
         }
 
         if (params.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {

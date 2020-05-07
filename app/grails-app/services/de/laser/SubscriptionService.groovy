@@ -1223,7 +1223,7 @@ class SubscriptionService {
                     OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newOwner,subscr,licRole)
                     if(!orgLicRole){
                         orgLicRole = OrgRole.findByLicAndOrgAndRoleType(sub.owner,subscr,licRole)
-                        if(orgLicRole) {
+                        if(orgLicRole && orgLicRole.lic != newOwner) {
                             orgLicRole.lic = newOwner
                         }
                         else {

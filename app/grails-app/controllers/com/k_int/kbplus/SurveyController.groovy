@@ -3198,12 +3198,16 @@ class SurveyController {
             //isTargetSubChanged = true
         }
 
-        if (params?.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.deleteOwner(newSub, flash)
-            //isTargetSubChanged = true
-        } else if (params?.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.copyOwner(baseSub, newSub, flash)
-            //isTargetSubChanged = true
+        if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
+            if(!subscriptionService.setOrgLicRole(newSub, null)) {
+                Object[] args = [newSub]
+                flash.error += message(code:'default.save.error.message',args:args)
+            }
+        } else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
+            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
+                Object[] args = [newSub]
+                flash.error += message(code:'default.save.error.message',args:args)
+            }
         }
 
         if (params?.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
