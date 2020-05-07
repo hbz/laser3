@@ -6093,8 +6093,8 @@ $.fn.dropdown = function(parameters) {
               $search = $('<input />')
                 .addClass(className.search)
                 .prop('autocomplete', 'off')
-                  .attr('aria-autocomplete','both')
-                  .attr('aria-controls','listBox')
+                  .attr('aria-autocomplete','both') // a11y
+                  .attr('aria-controls','listBox') // a11y
                 .insertBefore($text)
               ;
             }
@@ -7454,6 +7454,7 @@ $.fn.dropdown = function(parameters) {
             return $.trim($search.val());
           },
           searchWidth: function(value) {
+            console.log('bin in SEarchWidth')
             value = (value !== undefined)
               ? value
               : $search.val()
@@ -7523,6 +7524,7 @@ $.fn.dropdown = function(parameters) {
             }
           },
           value: function() {
+            console.log('Bin in value')
             var
               value = ($input.length > 0)
                 ? $input.val()
@@ -8000,13 +8002,13 @@ $.fn.dropdown = function(parameters) {
 
         set: {
           activedescendant: function(selectedItemID){
-            console.log("aria-activedescendant WIRD GESETZT");
-            console.log(selectedItemID);
+            // console.log("aria-activedescendant WIRD GESETZT");
+            // console.log(selectedItemID);
             $search.attr('aria-activedescendant', selectedItemID)
           },
           ariaSelected : function (selectedItem) {
-            console.log("aria-selected WIRD GESETZT");
-            console.log(selectedItem);
+            // console.log("aria-selected WIRD GESETZT");
+            // console.log(selectedItem);
             $(selectedItem).attr('aria-selected', 'true')
           },
           filtered: function() {
@@ -8048,6 +8050,7 @@ $.fn.dropdown = function(parameters) {
           },
           tabbable: function() {
             if( module.is.searchSelection() ) {
+              console.log('Added tabindex to searchable dropdown')
               module.debug('Added tabindex to searchable dropdown');
               $search
                 .val('')
@@ -8085,6 +8088,7 @@ $.fn.dropdown = function(parameters) {
             var
               length = module.get.query().length
             ;
+            console.log('Bin in partialSearch')
             $search.val( text.substr(0, length));
           },
           scrollPosition: function($item, forceScroll) {
@@ -8149,13 +8153,24 @@ $.fn.dropdown = function(parameters) {
                   .removeClass(className.filtered)
                 ;
                 if(settings.preserveHTML) {
+                  console.log("html wird gesetzt in set.text")
                   $text.html(text);
+                  $('#test input').val('Teste');
                 }
                 else {
+                  console.log("tex wird gesetzt set.text")
                   $text.text(text);
+                  $('#test input').val('Teste2');
                 }
               }
             }
+          },
+          valueInputField: function (value) {
+/*            console.log("VALUE DES INPUTFELDES WIRD GESETZT");
+            console.log(value);
+            console.log($input);
+              $input.val(value);*/
+
           },
           selectedItem: function($item) {
             var
@@ -8168,6 +8183,7 @@ $.fn.dropdown = function(parameters) {
             module.set.partialSearch(searchText);
             module.set.activeItem($item);
             module.set.selected(value, $item);
+            module.set.text(text);
             module.set.text(text);
             },
           selectedLetter: function(letter) {
@@ -8234,6 +8250,7 @@ $.fn.dropdown = function(parameters) {
             $element.addClass(className.leftward);
           },
           value: function(value, text, $selected) {
+            console.log("set.value wird ausgeführt");
             var
               escapedValue = module.escape.value(value),
               hasInput     = ($input.length > 0),
@@ -8257,9 +8274,8 @@ $.fn.dropdown = function(parameters) {
               }
               module.debug('Updating input value', escapedValue, currentValue);
               internalChange = true;
-              $input
-                .val(escapedValue)
-              ;
+              console.log("set.value wird ausgeführt UND   $input.val(escapedValue");
+              $input.val(escapedValue);
               if(settings.fireOnInit === false && module.is.initialLoad()) {
                 module.debug('Input native change event ignored on initial load');
               }
@@ -8589,8 +8605,8 @@ $.fn.dropdown = function(parameters) {
 
         remove: {
           activedescendant: function(selectedItemID){
-            console.log("aria-activedescendant WIRD ENTFERNT");
-            console.log(selectedItemID);
+            // console.log("aria-activedescendant WIRD ENTFERNT");
+            // console.log(selectedItemID);
             $search.removeAttr('aria-activedescendant', selectedItemID)
           },
           active: function() {
@@ -8665,6 +8681,7 @@ $.fn.dropdown = function(parameters) {
             $search.css('width', '');
           },
           searchTerm: function() {
+            console.log('Cleared search term')
             module.verbose('Cleared search term');
             $search.val('');
             module.set.filtered();
@@ -8721,8 +8738,8 @@ $.fn.dropdown = function(parameters) {
             $item.removeClass(className.selected);
           },
           ariaSelected: function() {
-            console.log("aria-selected WIRD ENTFERNT");
-            console.log($item);
+            // console.log("aria-selected WIRD ENTFERNT");
+            // console.log($item);
             $item.removeAttr('aria-selected');
           },
           value: function(removedValue, removedText, $removedItem) {

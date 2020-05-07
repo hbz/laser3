@@ -49,7 +49,7 @@ modules = {
     semanticUI {
         dependsOn 'base'
 
-        resource url:'semantic/javascript/semantic.min.js'         // new stuff
+        resource url:'semantic/javascript/semantic.js'         // new stuff
         resource url:'semantic/laser/semantic.min.css', attrs: [media: 'screen,print']       // new stuff
 
     }
