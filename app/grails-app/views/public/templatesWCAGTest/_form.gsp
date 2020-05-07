@@ -108,11 +108,7 @@
             showOnFocus: false,
             clearable: false
         });*/
-$('.dropdown')
-  .dropdown({
-    action: 'combo'
-  })
-;
+
         function chooseRequiredDropdown(opt) {
             $(document).ready(function () {
                 $('#create_task')
