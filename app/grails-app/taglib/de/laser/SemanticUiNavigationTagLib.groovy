@@ -24,7 +24,9 @@ class SemanticUiNavigationTagLib {
 
         out <<   '<nav class="ui breadcrumb" aria-label="Sie sind hier:">'
         out <<     crumb([controller: 'home', ariaLabel:'Home', text:'<i class="home icon"></i>'])
-        out <<     body()
+        out <<      '<div class="active section" aria-current="location">'
+        out <<          body()
+        out <<      '</div>'
         out <<   '</nav>'
     }
 
