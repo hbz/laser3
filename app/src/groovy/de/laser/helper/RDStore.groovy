@@ -151,6 +151,7 @@ class RDStore {
     static final SUBSCRIPTION_KIND_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_KIND)
     static final SUBSCRIPTION_KIND_ALLIANCE   		= getRefdataValue('Alliance Licence', RDConstants.SUBSCRIPTION_KIND)
     static final SUBSCRIPTION_KIND_NATIONAL   		= getRefdataValue('National Licence', RDConstants.SUBSCRIPTION_KIND)
+    static final SUBSCRIPTION_KIND_LOCAL            = getRefdataValue('Local Licence', RDConstants.SUBSCRIPTION_KIND)
 
     static final TASK_STATUS_OPEN       = getRefdataValue('Open', RDConstants.TASK_STATUS)
     static final TASK_STATUS_DONE       = getRefdataValue('Done', RDConstants.TASK_STATUS)

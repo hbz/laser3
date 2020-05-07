@@ -266,6 +266,10 @@ class ESSearchService{
       sw.write(  " AND ( NOT status:\"Deleted\" )")
     }
 
+    if(params.showAllTitles) {
+      sw.write(  " AND ((rectype: \"EBookInstance\") OR (rectype: \"JournalInstance\") OR (rectype: \"BookInstance\") OR (rectype: \"TitleInstance\") OR (rectype: \"DatabaseInstance\")) ")
+    }
+
     def result = sw.toString();
     result;
   }

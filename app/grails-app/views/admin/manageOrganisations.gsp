@@ -164,7 +164,7 @@
                     </td>
 
                     <td class="x">
-                        <g:if test="${org.hasPerm('org_consortium')}">
+                        <g:if test="${org.hasPerm('ORG_CONSORTIUM')}">
                             <button type="button" class="ui icon button la-popup-tooltip la-delay"
                                     data-gascoTarget="${Org.class.name}:${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"

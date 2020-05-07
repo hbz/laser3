@@ -4,6 +4,20 @@
 
 2407    07.05.2020  rc1.3       Anja    Bug         Migration von federal.state nach regions
 
+2462    05.05.2020  rc1.3       Moe     Bug         Umfrage: Bestätigung bei "Nein" muss differenziert werden
+
+2461    05.05.2020  rc1.3       David   Bug         INST_ADMIN hat keine Bearbeitungsrechte für Org-Einstellungen
+
+2363    05.05.2020  rc1.3       Moe     Bug         Umfrage: Vorsorgliche Kündigung bei Teilnehmer nochmal überarbeiten
+
+2454    05.05.2020  rc1.3       Moe     Bug         GASCO-Monitor "Lokale Lizenz"
+
+2453    04.05.2020  rc1.3       Moe     Bug         Alle Titel - falsche Verknüpfungen
+
+2457    04.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Serverfehler Wechsel zur Umfrage Workflow-Sicht
+
+2376    04.05.2020  rc1.3       Andreas Bug         Vorbelegung des Filters in der Finanzübersicht war inkorrekt dargestellt
+
 2452    30.04.2020  rc1.3       Moe     Bug         Umfrage Bugs
 
 2199    28.04.2020  rc1.3       David   Feature     API: Top-Level-Objekte mit Status deleted
@@ -23,6 +37,8 @@
 2403    22.04.2020  rc1.3       Moe     Bug         Umfrage kopieren
 
 2425    22.04.2020  rc1.3       Andreas Bug         Beschränkung auf lokale Lizenz aufgehoben
+
+2405    22.04.2020  rc1.3       Andreas Feature     Anreicherung der Lizenzkopier- und verlängerungsfunktionen um neue Lizenzattribute sowie Schaltschrank
 
 1901    22.04.2020  rc1.3       Andreas Bug         Syncfehler korrigiert - Paketeigenschaften korrekt verarbeitet und Dubletten von Anbieterrollen entfernt
 

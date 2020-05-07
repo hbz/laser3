@@ -16,7 +16,6 @@ class SurveyUpdateService extends AbstractLockableService {
     def grailsApplication
     def mailService
     def messageSource
-    Locale locale
     String from
     String replyTo
 
@@ -26,7 +25,6 @@ class SurveyUpdateService extends AbstractLockableService {
         from = grailsApplication.config.notifications.email.from
         //replyTo = grailsApplication.config.notifications.email.replyTo
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         log.debug("Initialised SurveyUpdateService...")
     }
 
@@ -136,6 +134,7 @@ class SurveyUpdateService extends AbstractLockableService {
 
                     replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
                     Object[] args = ["${survey.type.getI10n('value')}"]
+                    Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
                     String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, locale) + " (" + org.name + ")"
 
                     if (isNotificationCCbyEmail && ccAddress) {
