@@ -883,10 +883,12 @@ class YodaService {
                         subscribers.each { Org subscriber ->
                             OrgRole oo = new OrgRole(org:subscriber,lic:lic,roleType:RDStore.OR_LICENSEE_CONS)
                             log.debug("creating new org role: ${oo}")
-                            oo.save()
+                            if(!oo.save())
+                                log.error(oo.errors)
                         }
                     }
                 }
+                status.flush()
             }
             catch (Exception e) {
                 e.printStackTrace()
@@ -908,15 +910,17 @@ class YodaService {
                             if(subscription) {
                                 log.debug("located matching subscription: ${subscription}")
                                 subscription.owner = lic
-                                subscription.save() //flush:true needed because of list processing
+                                subscription.save(flush:true) // needed because of list processing
                             }
                             else {
                                 log.debug("no current member subscription located for licensee ${licensee} and ${lic}, deleting orphaned licensee role")
-                                OrgRole.executeUpdate('delete from OrgRole oo where oo.lic = :lic and oo.org = :org and oo.roleType = :roleType',[lic:lic,org:licensee,roleType:RDStore.OR_LICENSEE_CONS])
+                                if(!OrgRole.executeUpdate('delete from OrgRole oo where oo.lic = :lic and oo.org = :org and oo.roleType = :roleType',[lic:lic,org:licensee,roleType:RDStore.OR_LICENSEE_CONS]))
+                                    log.error("an error occurred on deleting!")
                             }
                         }
                     }
                 }
+                status.flush()
             }
             catch (Exception e) {
                 e.printStackTrace()
@@ -929,7 +933,7 @@ class YodaService {
     Map<String,Map<License,Set<Org>>> collectData() {
         Map<License,Set<Org>> subscribersCons = [:], licenseesCons = [:]
         Set<OrgRole> subscriberRoleSet = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub.owner != null and oo.roleType in (:subscrRoles)',[subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]),
-                     licenseeRoleSet = OrgRole.findAllByLicIsNotNullAndRoleType(RDStore.OR_LICENSEE_CONS)
+                     licenseeRoleSet = OrgRole.executeQuery('select oo from OrgRole oo where oo.lic != null and oo.lic.instanceOf != null and oo.roleType = :roleType',[roleType:RDStore.OR_LICENSEE_CONS])
         subscriberRoleSet.each { OrgRole oo ->
             Set<Org> subscribers = subscribersCons.get(oo.sub.owner)
             if(!subscribers)

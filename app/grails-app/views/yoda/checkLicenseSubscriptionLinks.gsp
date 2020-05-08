@@ -18,9 +18,9 @@
             <thead>
                 <tr>
                     <th colspan="2"><g:link class="ui negative button js-open-confirm-modal"
-                                            data-confirm-tokenMsg="${message(code: "confirm.dialogtriggerCleanup")}"
+                                            data-confirm-tokenMsg="${message(code: "confirmation.content.synchronizeLicenseSubscriptionLinks")}"
                                             data-confirm-term-how="clearUp"
-                                            data-confirm-id="clearUp" name="triggerUpdate" action="synchronizeSubscriptionLicenseOrgLinks">Synchronisation auslösen</g:link></th>
+                                            data-confirm-id="clearUp" name="triggerUpdate" action="synchronizeSubscriptionLicenseOrgLinks">Trigger synchronization</g:link></th>
                 </tr>
             </thead>
             <tbody>
