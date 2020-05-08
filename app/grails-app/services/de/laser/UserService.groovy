@@ -37,8 +37,13 @@ class UserService {
             }
         }
 
+        user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_YES)
+        user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE, RDStore.YN_YES)
+        user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, UserSettings.DEFAULT_REMINDER_PERIOD)
+
         user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_YES)
         user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, RDStore.YN_YES)
+        user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, RDStore.YN_YES)
     }
 
     Set<User> getUserSet(Map params) {

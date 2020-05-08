@@ -2403,6 +2403,10 @@ class AjaxController {
             if (selectedRoleTypes) {
                 query += "and pr.functionType in (:selectedRoleTypes) "
                 queryParams << [selectedRoleTypes: selectedRoleTypes]
+//                selectedRoleTypes.eachWithIndex{ it, index ->
+//                    query += "and pr.functionType = :r${index} "
+//                    queryParams << ["r${index}": it]
+//                }
             }
 
             List<Person> persons = Person.executeQuery(query, queryParams)

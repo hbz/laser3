@@ -30,7 +30,7 @@ class ApiCollectionReader {
             tmp.lastUpdated     = ApiToolkit.formatInternalDate(it.lastUpdated)
 
             // RefdataValues
-            tmp.state       = it.state?.value
+            tmp.region       = it.region?.value
             tmp.country     = it.country?.value
             tmp.type        = it.type?.value
 

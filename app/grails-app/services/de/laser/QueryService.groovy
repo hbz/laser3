@@ -48,11 +48,20 @@ class QueryService {
                                   endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_TASKS)]]) )
         }
 
-        if (contextUser.getSettingsValue(IS_REMIND_FOR_SURVEYS_ENDDATE)==YN_YES) {
+        if (contextUser.getSettingsValue(IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE)==YN_YES) {
 
-            dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(sr.surveyConfig.surveyInfo) FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status ",
+            dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(sr.surveyConfig.surveyInfo) FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status AND surInfo.isMandatory = false",
                     [org: contextOrg,
-                     endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_ENDDATE),
+                     endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE),
+                     status: RDStore.SURVEY_SURVEY_STARTED]))
+
+        }
+
+        if (contextUser.getSettingsValue(IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE)==YN_YES) {
+
+            dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(sr.surveyConfig.surveyInfo) FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status AND surInfo.isMandatory = true",
+                    [org: contextOrg,
+                     endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE),
                      status: RDStore.SURVEY_SURVEY_STARTED]))
 
         }

@@ -88,8 +88,8 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
                 <th>${message(code: 'org.sector.label')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('federalState')}">
-                <th>${message(code: 'org.federalState.label')}</th>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
+                <th>${message(code: 'org.region.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('libraryNetwork')}">
                 <th class="la-th-wrap la-hyphenation">${message(code: 'org.libraryNetworkTableHead.label')}</th>
@@ -488,8 +488,8 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
                 <td>${org.sector?.getI10n('value')}</td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('federalState')}">
-                <td>${org.federalState?.getI10n('value')}</td>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
+                <td>${org.region?.getI10n('value')}</td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('libraryNetwork')}">
                 <td>${org.libraryNetwork?.getI10n('value')}</td>

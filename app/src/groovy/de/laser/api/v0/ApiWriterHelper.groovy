@@ -34,7 +34,7 @@ class ApiWriterHelper {
                     pob: it.pob,
                     zipcode: it.zipcode,
                     city: it.city,
-                    state: it.state,
+                    region: it.region,
                     country: it.country
             )
 
