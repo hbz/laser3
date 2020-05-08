@@ -17428,6 +17428,15 @@ dt {
 dd {
   margin-left: 10px;
 }
+
+.ui.breadcrumb ul {
+  display: inline;
+  padding: 0;
+}
+
+.ui.breadcrumb ul li {
+  display: inline;
+}
 /*!
  * # Semantic UI 2.3.1 - Loader
  * http://github.com/semantic-org/semantic-ui/
