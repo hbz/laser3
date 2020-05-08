@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
@@ -38,6 +39,7 @@ class CostItem
     SurveyOrg surveyOrg // NOT set if sub (exclusive)
     Order order
     Invoice invoice
+    IssueEntitlementGroup issueEntitlementGroup
 
     Boolean isVisibleForSubscriber = false
 
@@ -117,6 +119,7 @@ class CostItem
         surveyOrg       column: 'ci_surorg_fk'
         order           column: 'ci_ord_fk'
         invoice         column: 'ci_inv_fk'
+        issueEntitlementGroup column: 'ci_ie_group_fk'
         costItemStatus  column: 'ci_status_rv_fk'
         billingCurrency column: 'ci_billing_currency_rv_fk'
         costDescription column: 'ci_cost_description', type:'text'
@@ -148,6 +151,7 @@ class CostItem
         owner(nullable: false, blank: false)
         type(nullable: true, blank: false)
         sub(nullable: true, blank: false)
+        issueEntitlementGroup(nullable: true, blank: false)
         subPkg(nullable: true, blank: false, validator: { val, obj ->
             if (obj.subPkg) {
                 if (obj.subPkg.subscription.id != obj.sub.id) return ['subscriptionPackageMismatch']

@@ -98,7 +98,7 @@ ${surveyInfo.name}
     <br>
 
     <g:set var="consortiaSubscriptions"
-           value="$Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
+           value="${Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
     <g:set var="surveyParticipants" value="${surveyConfig.orgs?.size()}"/>
     <g:set var="totalOrgs"
            value="${(orgsContinuetoSubscription?.size() ?: 0) + (newOrgsContinuetoSubscription?.size() ?: 0) + (orgsWithMultiYearTermSub?.size() ?: 0) + (orgsLateCommers?.size() ?: 0) + (orgsWithTermination?.size() ?: 0) + (orgsWithoutResult?.size() ?: 0) + (orgsWithParticipationInParentSuccessor?.size() ?: 0)}"/>
