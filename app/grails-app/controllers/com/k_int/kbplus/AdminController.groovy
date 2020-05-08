@@ -841,10 +841,10 @@ class AdminController extends AbstractDebugController {
                                                 rdv(o.country.value)
                                             }
                                         }
-                                        federalState {
-                                            if(o.federalState) {
-                                                rdc(o.federalState.owner.desc)
-                                                rdv(o.federalState.value)
+                                        region {
+                                            if(o.region) {
+                                                rdc(o.region.owner.desc)
+                                                rdv(o.region.value)
                                             }
                                         }
                                         libraryNetwork {

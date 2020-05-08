@@ -79,7 +79,7 @@ class OrganisationService {
             titles.add(messageSource.getMessage('org.libraryType.label',null,LocaleContextHolder.getLocale()))
             titles.add(messageSource.getMessage('org.libraryNetwork.label',null,LocaleContextHolder.getLocale()))
             titles.add(messageSource.getMessage('org.funderType.label',null,LocaleContextHolder.getLocale()))
-            titles.add(messageSource.getMessage('org.federalState.label',null,LocaleContextHolder.getLocale()))
+            titles.add(messageSource.getMessage('org.region.label',null,LocaleContextHolder.getLocale()))
             titles.add(messageSource.getMessage('org.country.label',null,LocaleContextHolder.getLocale()))
         }
         RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
@@ -141,8 +141,8 @@ class OrganisationService {
                         row.add([field: org.libraryNetwork?.getI10n('value') ?: ' ',style: null])
                         //funderType
                         row.add([field: org.funderType?.getI10n('value') ?: ' ',style: null])
-                        //federalState
-                        row.add([field: org.federalState?.getI10n('value') ?: ' ',style: null])
+                        //region
+                        row.add([field: org.region?.getI10n('value') ?: ' ',style: null])
                         //country
                         row.add([field: org.country?.getI10n('value') ?: ' ',style: null])
                     }
@@ -184,8 +184,8 @@ class OrganisationService {
                         row.add(org.libraryNetwork?.getI10n('value') ?: ' ')
                         //funderType
                         row.add(org.funderType?.getI10n('value') ?: ' ')
-                        //federalState
-                        row.add(org.federalState?.getI10n('value') ?: ' ')
+                        //region
+                        row.add(org.region?.getI10n('value') ?: ' ')
                         //country
                         row.add(org.country?.getI10n('value') ?: ' ')
                     }
@@ -991,7 +991,7 @@ class OrganisationService {
                     url: 'www.mustereinichtung.de', urlGov: 'www.muster_uni.de', status: RDStore.O_STATUS_CURRENT,
                     libraryType: RefdataValue.getByValueAndCategory('Universität', RDConstants.LIBRARY_TYPE),
                     libraryNetwork: RefdataValue.getByValueAndCategory('No Network', RDConstants.LIBRARY_NETWORK),
-                    federalState: current.federalState ,country: current.country,
+                    region: current.region ,country: current.country,
                     orgType: [RDStore.OT_INSTITUTION],
                     sector: RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR))
             if(!modelMember.save()) {
@@ -1010,7 +1010,8 @@ class OrganisationService {
                                          street_2:'1',
                                          zipcode:'55555',
                                          city:'Musterhausen',
-                                         state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants.FEDERAL_STATE),
+                                         region:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',
+                                                 RDConstants.REGIONS_DE),
                                          country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
                                          org:modelMember]
             Map postalAddressMap = [type:RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE),
@@ -1020,7 +1021,8 @@ class OrganisationService {
                                     street_2:'1',
                                     zipcode:'55555',
                                     city:'Musterhausen',
-                                    state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants.FEDERAL_STATE),
+                                    region:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants
+                                            .REGIONS_DE),
                                     country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
                                     org:modelMember]
             Set<Map> addresses = [legalPatronAddressMap,postalAddressMap]
@@ -1179,7 +1181,8 @@ class OrganisationService {
                                                        street_2:'1',
                                                        zipcode:'11111',
                                                        city:'Bremen',
-                                                       state:RefdataValue.getByValueAndCategory('Bremen',RDConstants.FEDERAL_STATE),
+                                                       region:RefdataValue.getByValueAndCategory('Bremen',RDConstants
+                                                               .REGIONS_DE),
                                                        country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY)]],
                                             personRoles: [[org:member5Bremen,
                                                            functionType: RefdataValue.getByValueAndCategory('Functional Contact Postal Address',RDConstants.PERSON_FUNCTION)]]]

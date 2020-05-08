@@ -60,7 +60,8 @@
             <g:form action="list" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier', 'type'], ['federalState', 'libraryNetwork', 'sector', 'libraryType']],
+                                  tmplConfigShow: [['name', 'identifier', 'type'], ['region', 'libraryNetwork',
+                                                                                    'sector', 'libraryType']],
                                   tmplConfigFormFilter: true,
                                   useNewLayouter: true
                           ]"/>
@@ -70,7 +71,8 @@
         <g:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'wibid', 'isil', 'type', 'sector', 'federalState', 'libraryNetwork', 'libraryType']
+                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'wibid', 'isil', 'type', 'sector', 'region',
+                                       'libraryNetwork', 'libraryType']
               ]"/>
 
         <semui:paginate total="${orgListTotal}" params="${params}" />
