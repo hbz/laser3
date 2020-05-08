@@ -170,7 +170,7 @@ class ApiService {
                     normString("${tmp1.street2}"),
                     normString("${inst.zip}"),
                     normString("${inst.city}"),
-                    RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.FEDERAL_STATE, inst.county?.text()),
+                    RefdataValue.getByCategoriesDescAndI10nValueDe([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH], inst.county?.text()),
                     RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COUNTRY, inst.country?.text()),
                     normString("${inst.pob}"),
                     normString("${inst.pobZipcode}"),
@@ -476,9 +476,9 @@ class ApiService {
                         //log.debug("country: ${RefdataValue.getByValueAndCategory(orgData.countryElem.rdv.text(),orgData.countryElem.rdc.text())}")
                         org.country = RefdataValue.getByValueAndCategory(orgData.countryElem.rdv.text(), orgData.countryElem.rdc.text())
                     }
-                    if (orgData.federalState.rdv.size() && orgData.federalState.rdc.size()) {
-                        //log.debug("federalState: ${RefdataValue.getByValueAndCategory(orgData.federalState.rdv.text(),orgData.federalState.rdc.text())}")
-                        org.federalState = RefdataValue.getByValueAndCategory(orgData.federalState.rdv.text(), orgData.federalState.rdc.text())
+                    if (orgData.region.rdv.size() && orgData.region.rdc.size()) {
+                        //log.debug("region: ${RefdataValue.getByValueAndCategory(orgData.region.rdv.text(),orgData.region.rdc.text())}")
+                        org.region = RefdataValue.getByValueAndCategory(orgData.region.rdv.text(), orgData.region.rdc.text())
                     }
                     if (orgData.libraryType.rdv.size() && orgData.libraryType.rdc.size()) {
                         //log.debug("libraryType: ${RefdataValue.getByValueAndCategory(orgData.libraryType.rdv.text(),orgData.libraryType.rdc.text())}")
@@ -593,9 +593,9 @@ class ApiService {
                         //log.debug("country: ${RefdataValue.getByValueAndCategory(orgData.countryElem.rdv.text(),orgData.countryElem.rdc.text())}")
                         org.country = RefdataValue.getByValueAndCategory(orgData.countryElem.rdv.text(), orgData.countryElem.rdc.text())
                     }
-                    if ((orgData.federalState.rdv.size() && orgData.federalState.rdc.size()) && org.federalState?.value != orgData.federalState.rdv.text()) {
-                        //log.debug("federalState: ${RefdataValue.getByValueAndCategory(orgData.federalState.rdv.text(),orgData.federalState.rdc.text())}")
-                        org.federalState = RefdataValue.getByValueAndCategory(orgData.federalState.rdv.text(), orgData.federalState.rdc.text())
+                    if ((orgData.region.rdv.size() && orgData.region.rdc.size()) && org.region?.value != orgData.region.rdv.text()) {
+                        //log.debug("region: ${RefdataValue.getByValueAndCategory(orgData.region.rdv.text(),orgData.region.rdc.text())}")
+                        org.region = RefdataValue.getByValueAndCategory(orgData.region.rdv.text(), orgData.region.rdc.text())
                     }
                     if ((orgData.libraryType.rdv.size() && orgData.libraryType.rdc.size()) && org.libraryType?.value != orgData.libraryType.rdv.text()) {
                         //log.debug("libraryType: ${RefdataValue.getByValueAndCategory(orgData.libraryType.rdv.text(),orgData.libraryType.rdc.text())}")
@@ -899,9 +899,11 @@ class ApiService {
                         //log.debug("pobCity: ${addressData.pobCity.text()}")
                         address.pobCity = addressData.pobCity.text()
                     }
-                    if (addressData.state.rdv.text() && addressData.state.rdc.text()) {
-                        //log.debug("state: ${RefdataValue.getByValueAndCategory(addressData.state.rdv.text(),addressData.state.rdc.text())}")
-                        address.state = RefdataValue.getByValueAndCategory(addressData.state.rdv.text(), addressData.state.rdc.text())
+                    if (addressData.region.rdv.text() && addressData.region.rdc.text()) {
+                        //log.debug("state: ${RefdataValue.getByValueAndCategory(addressData.region.rdv.text(),
+                        // addressData.region.rdc.text())}")
+                        address.region = RefdataValue.getByValueAndCategory(addressData.region.rdv.text(), addressData
+                                .region.rdc.text())
                     }
                     if (addressData.countryElem.rdv.text() && addressData.countryElem.rdc.text()) {
                         //log.debug("country: ${RefdataValue.getByValueAndCategory(addressData.countryElem.rdv.text(),addressData.countryElem.rdc.text())}")
