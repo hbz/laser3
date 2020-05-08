@@ -1051,10 +1051,16 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def checkLicenseSubscriptionLinks() {
+    Map<String,Object> checkLicenseSubscriptionLinks() {
         flash.message = "Überprüfung Lizenzen <-> Verträge <-> Teilnehmer läuft ..."
         yodaService.checkLicenseSubscriptionLinks()
-        redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def synchronizeSubscriptionLicenseOrgLinks() {
+        flash.message = "Synchronisiere Lizenz-Vertrag-Einrichtung-Verknüpfungen ..."
+        yodaService.synchronizeSubscriptionLicenseOrgLinks()
+        redirect controller: 'home', action: 'index'
     }
 
     @Secured(['ROLE_YODA'])
