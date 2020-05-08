@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2463    07.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: utb-Umfrage Auswertungssicht
+
+2468    07.05.2020  rc1.3       Moe     Bug         Erinnerungsmails für Umfrage Ende anpassen
+
 2462    05.05.2020  rc1.3       Moe     Bug         Umfrage: Bestätigung bei "Nein" muss differenziert werden
 
 2461    05.05.2020  rc1.3       David   Bug         INST_ADMIN hat keine Bearbeitungsrechte für Org-Einstellungen
