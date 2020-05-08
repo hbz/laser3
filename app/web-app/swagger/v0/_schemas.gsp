@@ -53,7 +53,7 @@
           type: string
         additionSecond:
           type: string
-        state:
+        region:
           type: string
           description: Mapping RefdataCategory "${RDConstants.REGIONS_DE}", "${RDConstants.REGIONS_AT}" and "${RDConstants.REGIONS_CH}"
           enum: <% printRefdataEnum([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH], 12) %>
@@ -381,10 +381,10 @@
           type: string
           description: Mapping RefdataCategory "${RDConstants.COUNTRY}"
           enum: <% printRefdataEnum(RDConstants.COUNTRY, 12) %>
-region:
-  type: string
-  description: Mapping RefdataCategory "${RDConstants.REGIONS_DE}", "${RDConstants.REGIONS_AT}" and "${RDConstants.REGIONS_CH}"
-  enum: <% printRefdataEnum('Region', 12) %>
+        region:
+          type: string
+          description: Mapping RefdataCategory "${RDConstants.REGIONS_DE}", "${RDConstants.REGIONS_AT}" and "${RDConstants.REGIONS_CH}"
+          enum: <% printRefdataEnum([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH], 12) %>
 <%--    fteStudents:
           type: integer
         fteStaff:
