@@ -229,7 +229,8 @@ class ProfileController {
     changeValue(user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionNoticeperiod, 'profile.updateProfile.updated.remindPeriodForSubscriptionNoticeperiod')
     changeValue(user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD),        params.remindPeriodForSubscriptionEnddate,      'profile.updateProfile.updated.remindPeriodForSubscriptionEnddate')
     changeValue(user.getSetting(REMIND_PERIOD_FOR_TASKS, DEFAULT_REMINDER_PERIOD),                        params.remindPeriodForTasks,                    'profile.updateProfile.updated.remindPeriodForTasks')
-    changeValue(user.getSetting(REMIND_PERIOD_FOR_SURVEYS_ENDDATE, DEFAULT_REMINDER_PERIOD),              params.remindPeriodForSurveysEndDate,           'profile.updateProfile.updated.remindPeriodForSurveyEndDate')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, DEFAULT_REMINDER_PERIOD),params.remindPeriodForSurveysEndDate,           'profile.updateProfile.updated.remindPeriodForSurveyEndDate')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, DEFAULT_REMINDER_PERIOD),    params.remindPeriodForSurveysMandatoryEndDate, 'profile.updateProfile.updated.remindPeriodForSurveyMandatoryEndDate')
 
     //Error: Emailreminder without Emailaddress
     if ( (! user.email) && params.isRemindByEmail) {
@@ -264,7 +265,8 @@ class ProfileController {
     changeValue(user.getSetting(IS_REMIND_FOR_ORG_PRIVATE_PROP, YN_NO),              params.isOrgPrivateProp?:"N",                'profile.updateProfile.updated.org.privateProperty')
     changeValue(user.getSetting(IS_REMIND_FOR_PERSON_PRIVATE_PROP, YN_NO),           params.isPersonPrivateProp?:"N",             'profile.updateProfile.updated.person.privateProperty')
     changeValue(user.getSetting(IS_REMIND_FOR_TASKS, YN_NO),                         params.isTasks?:"N",                         'profile.updateProfile.updated.tasks')
-    changeValue(user.getSetting(IS_REMIND_FOR_SURVEYS_ENDDATE, YN_NO),               params.isSurveysEndDate?:"N",      'profile.updateProfile.updated.surveysEndDate')
+    changeValue(user.getSetting(IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, YN_NO), params.isSurveysNotMandatoryEndDate?:"N",      'profile.updateProfile.updated.surveysEndDate')
+    changeValue(user.getSetting(IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE, YN_NO),     params.isSurveysMandatoryEndDate?:"N",      'profile.updateProfile.updated.surveysMandatoryEndDate')
 
     user.save();
 
@@ -324,7 +326,8 @@ class ProfileController {
                 REMIND_PERIOD_FOR_ORG_CUSTOM_PROP == userSetting.key ||
                 REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP == userSetting.key ||
                 REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP == userSetting.key ||
-                REMIND_PERIOD_FOR_SURVEYS_ENDDATE == userSetting.key
+                REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE == userSetting.key ||
+                REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE == userSetting.key
         ) {
             if ( ! newValue) {
                 flash.error += (message(args: userSetting.key, code: 'profile.updateProfile.updated.error.dashboardReminderPeriod') + "<br/>")

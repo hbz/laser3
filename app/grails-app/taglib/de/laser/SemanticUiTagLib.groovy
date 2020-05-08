@@ -1088,9 +1088,9 @@ class SemanticUiTagLib {
             boolean finish = false
 
             if (surveyResults) {
-                finish = finishDate && surveyResults.finishDate.contains(null)
+                finish = (finishDate && surveyResults.finishDate.contains(null)) || (finishDate ? true : false)
             }else {
-                finishDate = finishDate ? true : false
+                finish = finishDate ? true : false
             }
             if (finish) {
                 if (surveyOwnerView) {
