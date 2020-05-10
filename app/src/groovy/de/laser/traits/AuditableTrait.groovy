@@ -7,6 +7,7 @@ import com.k_int.kbplus.abstract_domain.CustomProperty
 
 import javax.persistence.Transient
 
+@Deprecated
 trait AuditableTrait {
 
     /**

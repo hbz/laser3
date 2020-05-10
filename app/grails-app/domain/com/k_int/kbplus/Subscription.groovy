@@ -14,7 +14,6 @@ import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
-import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
 import org.apache.commons.logging.Log
@@ -53,6 +52,8 @@ class Subscription
     def deletionService
     @Transient
     def cascadingUpdateService
+    @Transient
+    def auditService
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -215,7 +216,10 @@ class Subscription
     }
 
     @Transient
-    def onChange = { oldMap, newMap -> static_logger.debug("onChange ${this}") }
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChange(this, oldMap, newMap)
+    }
 
     Date getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
@@ -578,10 +582,10 @@ class Subscription
         return false
     }
 
-  @Override
-  def beforeInsert() {
-    super.beforeInsert()
-  }
+    @Override
+    def beforeInsert() {
+        super.beforeInsert()
+    }
 
     @Transient
     def notifyDependencies_trait(changeDocument) {

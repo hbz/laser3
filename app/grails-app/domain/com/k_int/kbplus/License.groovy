@@ -14,7 +14,6 @@ import de.laser.interfaces.AuditableSupport
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
-import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -44,6 +43,8 @@ class License
     def propertyService
     @Transient
     def deletionService
+    @Transient
+    def auditService
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
     static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type', 'isPublicForApi' ]
@@ -174,7 +175,10 @@ class License
     }
 
     @Transient
-    def onChange = { oldMap, newMap -> log.debug("onChange ${this}") }
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChange(this, oldMap, newMap)
+    }
 
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {

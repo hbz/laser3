@@ -4,7 +4,6 @@ import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.interfaces.AuditableSupport
-import de.laser.traits.AuditableTrait
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 
@@ -22,6 +21,8 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
     def pendingChangeService
     @Transient
     def deletionService
+    @Transient
+    def auditService
 
     static auditable = true
     static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
@@ -60,24 +61,15 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
     }
 
     @Transient
-    def onChange = { oldMap, newMap -> log.debug("onChange ${this}") }
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChange(this, oldMap, newMap)
+    }
 
     @Transient
     def onDelete = { oldMap ->
         log.debug("onDelete ${this}")
-
-        //def oid = "${this.owner.class.name}:${this.owner.id}"
-        String oid = "${this.class.name}:${this.id}"
-        Map<String, Object> changeDoc = [
-                          OID: oid,
-                          event:'SubscriptionCustomProperty.deleted',
-                          prop: "${this.type.name}",
-                          old: "",
-                          new: "property removed",
-                          name: this.type.name
-        ]
-
-        changeNotificationService.fireEvent(changeDoc)
+        auditService.onDelete(this, oldMap)
     }
 
     def notifyDependencies_trait(changeDocument) {
