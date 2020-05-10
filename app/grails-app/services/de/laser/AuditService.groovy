@@ -1,7 +1,6 @@
 package de.laser
 
-
-import de.laser.traits.AuditableTrait
+import de.laser.interfaces.AuditableSupport
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 //@CompileStatic
@@ -10,7 +9,7 @@ class AuditService {
     GrailsApplication grailsApplication
 
 
-    def getWatchedProperties(AuditableTrait auditable) {
+    def getWatchedProperties(AuditableSupport auditable) {
         def result = []
 
         if (getAuditConfig(auditable, AuditConfig.COMPLETE_OBJECT)) {
@@ -29,11 +28,11 @@ class AuditService {
         result
     }
 
-    AuditConfig getAuditConfig(AuditableTrait auditable) {
+    AuditConfig getAuditConfig(AuditableSupport auditable) {
         AuditConfig.getConfig(auditable)
     }
 
-    AuditConfig getAuditConfig(AuditableTrait auditable, String field) {
+    AuditConfig getAuditConfig(AuditableSupport auditable, String field) {
         AuditConfig.getConfig(auditable, field)
     }
 }

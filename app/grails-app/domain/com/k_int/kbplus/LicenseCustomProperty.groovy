@@ -3,12 +3,13 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
+import de.laser.interfaces.AuditableSupport
 import de.laser.traits.AuditableTrait
 import grails.converters.JSON
 
 import javax.persistence.Transient
 
-class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
+class LicenseCustomProperty extends CustomProperty implements AuditableSupport {
 
     @Transient
     def genericOIDService
@@ -23,7 +24,6 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
     @Transient
     def deletionService
 
-    // AuditableTrait
     static auditable = true
     static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
@@ -72,8 +72,11 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
     }
 
     @Transient
+    def onChange = { oldMap, newMap -> log.debug("onChange ${this}") }
+
+    @Transient
     def onDelete = { oldMap ->
-        log.debug("onDelete LicenseCustomProperty")
+        log.debug("onDelete ${this}")
 
         //def oid = "${this.owner.class.name}:${this.owner.id}"
         def oid = "${this.class.name}:${this.id}"

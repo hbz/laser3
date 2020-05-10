@@ -1,9 +1,12 @@
 package de.laser.domain
 
 import com.k_int.kbplus.TitleInstancePackagePlatform
+import de.laser.interfaces.AuditableSupport
 import de.laser.traits.AuditableTrait
 
-class TIPPCoverage extends AbstractCoverage implements AuditableTrait {
+import javax.persistence.Transient
+
+class TIPPCoverage extends AbstractCoverage implements AuditableSupport {
 
     Date dateCreated
     Date lastUpdated
@@ -42,4 +45,6 @@ class TIPPCoverage extends AbstractCoverage implements AuditableTrait {
         sort startDate: 'asc', startVolume: 'asc', startIssue: 'asc', endDate: 'asc', endVolume: 'asc', endIssue: 'asc'
     }
 
+    @Transient
+    def onChange = { oldMap, newMap -> log.debug("onChange ${this}") }
 }

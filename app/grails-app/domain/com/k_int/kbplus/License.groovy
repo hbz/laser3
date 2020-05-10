@@ -10,6 +10,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.AuditableSupport
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
@@ -23,8 +24,7 @@ import java.text.SimpleDateFormat
 
 class License
         extends AbstractBaseDomain
-        implements CalculatedType, Permissions, ShareSupport, Comparable<License>,
-                AuditableTrait {
+        implements CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
 
     @Transient
     def grailsApplication
@@ -45,7 +45,6 @@ class License
     @Transient
     def deletionService
 
-    // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
     static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type', 'isPublicForApi' ]
 
@@ -173,6 +172,9 @@ class License
     def afterDelete() {
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
+
+    @Transient
+    def onChange = { oldMap, newMap -> log.debug("onChange ${this}") }
 
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
