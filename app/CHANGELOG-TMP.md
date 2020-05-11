@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2470    11.05.2020  rc1.3       Moe     Bug         Globale Suche berücksichtigt Berechtigung für Umfragen nicht
+
 2407    07.05.2020  rc1.3       Anja    Bug         Migration von federal.state nach regions
 
 2463    07.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: utb-Umfrage Auswertungssicht
