@@ -36,7 +36,7 @@
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow      : [['name'], ['federalState', 'libraryNetwork', 'libraryType']],
+                              tmplConfigShow      : [['name'], ['region', 'libraryNetwork', 'libraryType']],
                               tmplConfigFormFilter: true,
                               useNewLayouter      : true
                       ]"/>
@@ -51,7 +51,8 @@
                           tmplDisableOrgIds: members_disabled,
                           subInstance      : subscriptionInstance,
                           tmplShowCheckbox : true,
-                          tmplConfigShow   : ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                          tmplConfigShow   : ['sortname', 'name', 'wibid', 'isil', 'region',
+                                              'libraryNetwork', 'libraryType']
                   ]"/>
 
         <g:if test="${members}">

@@ -2,6 +2,13 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.98
+
+- added new attribute: `Address.region`
+- added new attribute: `Org.region`
+- removed attribute: `Address.state`
+- removed attribute: `Org.federalState`
+
 #### 0.97
 
 - added new endpoint: __/oaMonitorSubscription__

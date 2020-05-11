@@ -43,12 +43,14 @@
                     <g:textField id="street_2_${modalId}" name="street_2" value="${addressInstance?.street_2}"/>
                 </div>
 
-                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'state', 'error')}">
-                    <label for="state_${modalId}">
-                        <g:message code="address.state.label" />
+                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'region',
+                        'error')}">
+                    <label for="region_${modalId}">
+                        <g:message code="address.region.label" />
                     </label>
-                    <laser:select class="ui dropdown" id="state_${modalId}" name="state.id"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.FEDERAL_STATE)}"
+                    <laser:select class="ui dropdown" id="region_${modalId}" name="region.id"
+                                  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT,
+                                                                               RDConstants.REGIONS_CH])}"
                                   optionKey="id"
                                   optionValue="value"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>

@@ -9,11 +9,11 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.AuditableSupport
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
-import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
 import org.apache.commons.logging.Log
@@ -25,9 +25,8 @@ import java.text.SimpleDateFormat
 
 class Subscription
         extends AbstractBaseDomain
-        implements CalculatedType, CalculatedLastUpdated, Permissions, ShareSupport, AuditableTrait {
+        implements CalculatedType, CalculatedLastUpdated, Permissions, AuditableSupport, ShareSupport {
 
-    // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
@@ -53,6 +52,11 @@ class Subscription
     def deletionService
     @Transient
     def cascadingUpdateService
+    @Transient
+    def subscriptionService
+    @Transient
+    def auditService
+
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -203,6 +207,8 @@ class Subscription
 
     def afterInsert() {
         static_logger.debug("afterInsert")
+        if(owner != null)
+            subscriptionService.setOrgLicRole(this,owner)
     }
 
     def afterUpdate() {
@@ -212,6 +218,12 @@ class Subscription
     def afterDelete() {
         static_logger.debug("afterDelete")
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+
+    @Transient
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChange(this, oldMap, newMap)
     }
 
     Date getCalculatedLastUpdated() {
@@ -436,7 +448,7 @@ class Subscription
     Org getProvider() {
         Org result
         orgRelations.each { or ->
-            if ( or?.roleType?.value=='Content Provider' )
+            if ( or.roleType.value=='Content Provider' )
                 result = or.org
             }
         result
@@ -445,7 +457,7 @@ class Subscription
     Org getConsortia() {
         Org result
         orgRelations.each { or ->
-            if ( or?.roleType?.value=='Subscription Consortia' )
+            if ( or.roleType.value=='Subscription Consortia' )
                 result = or.org
             }
         result
@@ -575,10 +587,10 @@ class Subscription
         return false
     }
 
-  @Override
-  def beforeInsert() {
-    super.beforeInsert()
-  }
+    @Override
+    def beforeInsert() {
+        super.beforeInsert()
+    }
 
     @Transient
     def notifyDependencies_trait(changeDocument) {

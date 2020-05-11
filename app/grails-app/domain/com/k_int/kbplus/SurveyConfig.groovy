@@ -238,13 +238,19 @@ class SurveyConfig {
 
                     List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
+                    if (pickAndChoose) {
+                        boolean finish = false
 
-                    if (surveyResults?.finishDate.contains(null)) {
-                        return false
-                    } else {
-                        if (pickAndChoose && surveyOrg.finishDate == null){
+                        if (surveyResults) {
+                            finish = (surveyOrg.finishDate && surveyResults.finishDate.contains(null)) || surveyOrg.finishDate
+                        } else {
+                            finish = surveyOrg.finishDate ? true : false
+                        }
+                        return finish
+                    }else{
+                        if (surveyResults?.finishDate.contains(null)) {
                             return false
-                        }else {
+                        } else {
                             return true
                         }
                     }

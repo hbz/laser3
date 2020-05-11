@@ -76,9 +76,6 @@ class Org
     @RefdataAnnotation(cat = '?')
     RefdataValue region
 
-    @RefdataAnnotation(cat = RDConstants.FEDERAL_STATE)
-    RefdataValue federalState
-
     @RefdataAnnotation(cat = RDConstants.LIBRARY_NETWORK)
     RefdataValue libraryNetwork
 
@@ -156,7 +153,6 @@ class Org
         membership          column:'org_membership'
            country          column:'org_country_rv_fk'
             region          column:'org_region_rv_fk'
-      federalState          column:'org_federal_state_rv_fk'
     libraryNetwork          column:'org_library_network_rv_fk'
         funderType          column:'org_funder_type_rv_fk'
      funderHskType          column:'org_funder_hsk_type_rv_fk'
@@ -215,7 +211,6 @@ class Org
 //                      return false
 //                  }
 //              })
-        federalState(nullable:true, blank:true)
       libraryNetwork(nullable:true, blank:true)
           funderType(nullable:true, blank:true)
        funderHskType(nullable:true, blank:true)

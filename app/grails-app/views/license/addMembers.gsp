@@ -70,7 +70,7 @@
                 <input type="hidden" name="shortcode" value="${institution.shortcode}"/>
                 <g:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name'], ['federalState', 'libraryNetwork', 'libraryType']],
+                                  tmplConfigShow: [['name'], ['region', 'libraryNetwork', 'libraryType']],
                                   tmplConfigFormFilter: true,
                                   useNewLayouter: true
                           ]"/>
@@ -87,7 +87,8 @@
                               tmplDisableOrgIds: members_disabled,
                               subInstance: subscriptionInstance,
                               tmplShowCheckbox: true,
-                              tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                              tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'region',
+                                               'libraryNetwork', 'libraryType']
                           ]"/>
 
                 <div class="ui two fields">

@@ -1051,6 +1051,13 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def checkLicenseSubscriptionLinks() {
+        flash.message = "Überprüfung Lizenzen <-> Verträge <-> Teilnehmer läuft ..."
+        yodaService.checkLicenseSubscriptionLinks()
+        redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
     def startDateCheck(){
         if(subscriptionUpdateService.startDateCheck())
             flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
@@ -1228,10 +1235,10 @@ class YodaController {
                                             rdv(o.country.value)
                                         }
                                     }
-                                    federalState {
-                                        if(o.federalState) {
-                                            rdc(o.federalState.owner.desc)
-                                            rdv(o.federalState.value)
+                                    region {
+                                        if(o.region) {
+                                            rdc(o.region.owner.desc)
+                                            rdv(o.region.value)
                                         }
                                     }
                                     libraryNetwork {
@@ -1537,10 +1544,10 @@ class YodaController {
                                 pob(a.pob)
                                 pobZipcode(a.pobZipcode)
                                 pobCity(a.pobCity)
-                                if(a.state) {
-                                    state {
-                                        rdc(a.state.owner.desc)
-                                        rdv(a.state.value)
+                                if(a.region) {
+                                    region {
+                                        rdc(a.region.owner.desc)
+                                        rdv(a.region.value)
                                     }
                                 }
                                 if(a.country) {

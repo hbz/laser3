@@ -22,7 +22,8 @@
         <g:form action="manageOrganisations" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier', 'type'], ['federalState', 'libraryNetwork', 'sector', 'libraryType']],
+                              tmplConfigShow: [['name', 'identifier', 'type'], ['region', 'libraryNetwork', 'sector',
+                                                                                'libraryType']],
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>

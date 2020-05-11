@@ -37,7 +37,7 @@ class InstitutionsService {
                 type: license_type,
                 noticePeriod: base.noticePeriod,
                 licenseUrl: base.licenseUrl,
-                onixplLicense: base.onixplLicense,
+                //onixplLicense: base.onixplLicense,
                 startDate: base.startDate,
                 endDate: base.endDate,
 
@@ -177,7 +177,7 @@ class InstitutionsService {
                 type: license_type,
                 noticePeriod: baseLicense?.noticePeriod,
                 licenseUrl: baseLicense?.licenseUrl,
-                onixplLicense: baseLicense?.onixplLicense,
+                //onixplLicense: baseLicense?.onixplLicense,
                 startDate: baseLicense?.startDate,
                 endDate: baseLicense?.endDate,
 

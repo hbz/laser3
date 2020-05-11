@@ -10,10 +10,10 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.AuditableSupport
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
-import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -23,8 +23,7 @@ import java.text.SimpleDateFormat
 
 class License
         extends AbstractBaseDomain
-        implements CalculatedType, Permissions, ShareSupport, Comparable<License>,
-                AuditableTrait {
+        implements CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
 
     @Transient
     def grailsApplication
@@ -44,8 +43,9 @@ class License
     def propertyService
     @Transient
     def deletionService
+    @Transient
+    def auditService
 
-    // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
     static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type', 'isPublicForApi' ]
 
@@ -72,14 +72,14 @@ class License
   String licenseType
   //String licenseStatus
 
-    long lastmod
+  long lastmod
     Date startDate
     Date endDate
 
     Date dateCreated
     Date lastUpdated
 
-  static hasOne = [onixplLicense: OnixplLicense]
+//  static hasOne = [onixplLicense: OnixplLicense]
 
   static hasMany = [
           ids: Identifier,
@@ -125,7 +125,7 @@ class License
           //licenseStatus column:'lic_license_status_str'
                 lastmod column:'lic_lastmod'
               documents sort:'owner.id', order:'desc', batchSize: 10
-          onixplLicense column: 'lic_opl_fk'
+//          onixplLicense column: 'lic_opl_fk'
         licenseCategory column: 'lic_category_rdv_fk'
               startDate column: 'lic_start_date',   index: 'lic_dates_idx'
                 endDate column: 'lic_end_date',     index: 'lic_dates_idx'
@@ -155,7 +155,7 @@ class License
         licenseType(nullable:true, blank:true)
         //licenseStatus(nullable:true, blank:true)
         lastmod(nullable:true, blank:true)
-        onixplLicense(nullable: true, blank: true)
+        //onixplLicense(nullable: true, blank: true)
         licenseCategory(nullable: true, blank: true)
         startDate(nullable: true, blank: false, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
@@ -172,6 +172,12 @@ class License
 
     def afterDelete() {
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+
+    @Transient
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChange(this, oldMap, newMap)
     }
 
     @Override
