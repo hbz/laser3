@@ -189,7 +189,7 @@ class ESSearchService{
         if ( params[mapping.key].class == java.util.ArrayList) {
           if(sw.toString()) sw.write(" AND ");
           sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" ) " +
-                  "AND ( NOT rectype:\"ParticipantSurvey\" ) AND ( NOT rectype:\"Survey\" ) " +
+                  "AND ( NOT rectype:\"SurveyOrg\" ) AND ( NOT rectype:\"SurveyConfig\" ) " +
                   "AND ( NOT rectype:\"Task\" ) AND ( NOT rectype:\"Note\" ) AND ( NOT rectype:\"Document\" ) " +
                   "AND ( NOT rectype:\"IssueEntitlement\" )" +
                   "AND ( NOT rectype:\"SubscriptionCustomProperty\" ) AND ( NOT rectype:\"SubscriptionPrivateProperty\" ) " +
