@@ -2,7 +2,7 @@ package de.laser.api.v0
 
 
 import com.k_int.kbplus.License
-import com.k_int.kbplus.OnixplLicense
+//import com.k_int.kbplus.OnixplLicense
 import com.k_int.kbplus.Org
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.helper.Constants
@@ -70,6 +70,7 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return Map | Constants.HTTP_FORBIDDEN
      */
+    /*
     static requestOnixplLicense(OnixplLicense opl, License lic, Org context) {
         Map<String, Object> result = [:]
         boolean hasAccess = false
@@ -100,5 +101,5 @@ class ApiReader {
         }
 
         return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
-    }
+    }*/
 }

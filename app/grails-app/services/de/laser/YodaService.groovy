@@ -4,6 +4,8 @@ import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.CreatorTitle
 import com.k_int.kbplus.Fact
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgAccessPointLink
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
@@ -11,6 +13,7 @@ import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleHistoryEventParticipant
 import com.k_int.kbplus.TitleInstance
@@ -846,4 +849,22 @@ class YodaService {
         Platform.executeUpdate('delete from Platform plat where plat.globalUID in :toDelete',[toDelete:toDelete])
     }
 
+    void checkLicenseSubscriptionLinks() {
+        Set<OrgRole> orgLicRoles = OrgRole.findAllByLicIsNotNullAndRoleType(RDStore.OR_LICENSEE_CONS)
+        Set<License> orgLicLinks = orgLicRoles.collect { OrgRole oo -> oo.lic }
+        Set<OrgRole> subLicRoles = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub.owner != null and oo.roleType in (:subscriberCons)',[subscriberCons:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+        Set<License> subLicLinks = subLicRoles.collect { OrgRole oo -> oo.sub.owner }
+        //part A: check if there are orphaned license org roles ...
+        orgLicRoles.each { OrgRole olr ->
+            if(!subLicLinks.contains(olr.lic)) {
+                log.info("${olr.lic.reference} is orphaned for ${olr.org.name}")
+            }
+        }
+        //part B: check if there are orphaned subscription owner links ...
+        subLicRoles.each { OrgRole osr ->
+            if(!orgLicLinks.contains(osr.sub.owner)) {
+                log.info("${osr.sub.owner.reference} has no org <-> license linking for ${osr.org.name}")
+            }
+        }
+    }
 }

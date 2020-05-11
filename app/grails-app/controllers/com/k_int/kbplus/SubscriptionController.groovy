@@ -1573,11 +1573,11 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        RefdataValue licenseeRoleType = OR_LICENSEE_CONS
+        /*RefdataValue licenseeRoleType = OR_LICENSEE_CONS
         if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
             licenseeRoleType = OR_LICENSEE_COLL
 
-        result.parentLicense = result.parentSub.owner
+        result.parentLicense = result.parentSub.owner*/
 
         Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
@@ -1588,23 +1588,29 @@ class SubscriptionController extends AbstractDebugController {
             if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
                 if(params.processOption == 'linkLicense') {
                     License newLicense = License.get(params.license_All)
-                    if (subChild.owner != newLicense) {
+                    /*if (subChild.owner != newLicense) {
                         subChild.owner = newLicense
                         if (subChild.save()) {
-                            OrgRole licenseeRole = new OrgRole(org: subChild.getSubscriber(), lic: newLicense, roleType: licenseeRoleType)
-                            if (licenseeRole.save())
-                                changeAccepted << "${subChild.name} (${message(code: 'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                            //OrgRole licenseeRole = new OrgRole(org: subChild.getSubscriber(), lic: newLicense, roleType: licenseeRoleType)
+                            //if (licenseeRole.save())
+
                         }
-                    }
+                    }*/
+                    if(subscriptionService.setOrgLicRole(subChild,newLicense))
+                        changeAccepted << "${subChild.name} (${message(code: 'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
                 else if(params.processOption == 'unlinkLicense') {
-                    OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
-                    subChild.owner.orgLinks.remove(toDelete)
+                    //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
+                    //subChild.owner.orgLinks.remove(toDelete)
+                    /*
                     subChild.owner = null
+                    subChild.save()
                     if (subChild.save()) {
-                        toDelete.delete()
-                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                        //toDelete.delete()
                     }
+                    */
+                    if(subscriptionService.setOrgLicRole(subChild,null))
+                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
             }
         }
@@ -1641,11 +1647,11 @@ class SubscriptionController extends AbstractDebugController {
         validSubChilds.each { subChild ->
             if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
                 //keep it, I need to ask Daniel for that
-                OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
-                subChild.owner.orgLinks.remove(toDelete)
-                subChild.owner = null
-                if (subChild.save()) {
-                    toDelete.delete()
+                //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
+                //subChild.owner.orgLinks.remove(toDelete)
+                //subChild.owner = null
+                if (subscriptionService.setOrgLicRole(subChild,null)) {
+                    //toDelete.delete()
                     removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
             }
@@ -4266,21 +4272,22 @@ class SubscriptionController extends AbstractDebugController {
                                 form: baseSub.form ?: null
                         )
 
-                        if (params.subscription.takeLinks) {
-                            //License
-                            newSub.owner = baseSub.owner ?: null
-                        }
-
                         if (!newSub.save(flush: true)) {
-                            log.error("Problem saving subscription ${newSub.errors}");
+                            log.error("Problem saving subscription ${newSub.errors}")
                             return newSub
                         } else {
-                            log.debug("Save ok");
+                            log.debug("Save ok")
+
+                            if (params.subscription.takeLinks) {
+                                //License
+                                if(baseSub.owner)
+                                    subscriptionService.setOrgLicRole(newSub,baseSub.owner)
+                            }
                             //Copy References
                             //OrgRole
                             baseSub.orgRelations?.each { or ->
 
-                                if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
+                                if ((or.org.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
                                     OrgRole newOrgRole = new OrgRole()
                                     InvokerHelper.setProperties(newOrgRole, or.properties)
                                     newOrgRole.sub = newSub
@@ -4837,10 +4844,16 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.deleteOwner(newSub, flash)
+            if(!subscriptionService.setOrgLicRole(newSub, null)) {
+                Object[] args = [newSub]
+                flash.error += message(code:'default.save.error.message',args:args)
+            }
             //isTargetSubChanged = true
         }else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.copyOwner(baseSub, newSub, flash)
+            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
+                Object[] args = [newSub]
+                flash.error += message(code:'default.save.error.message',args:args)
+            }
             //isTargetSubChanged = true
         }
 
@@ -5515,7 +5528,7 @@ class SubscriptionController extends AbstractDebugController {
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
                 if(sub.type == SUBSCRIPTION_TYPE_ADMINISTRATIVE)
                     sub.administrative = true
-                sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
+                //sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
                 sub.instanceOf = entry.instanceOf ? genericOIDService.resolveOID(entry.instanceOf) : null
                 Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
                 Org provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
@@ -5543,6 +5556,10 @@ class SubscriptionController extends AbstractDebugController {
                                 parentRoleType = OR_SUBSCRIBER
                             }
                             break
+                    }
+                    if(entry.owner) {
+                        License owner = genericOIDService.resolveOID(entry.owner)
+                        subscriptionService.setOrgLicRole(sub,owner)
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
                     if(!parentRole.save()) {

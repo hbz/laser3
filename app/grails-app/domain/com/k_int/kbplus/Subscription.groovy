@@ -53,7 +53,10 @@ class Subscription
     @Transient
     def cascadingUpdateService
     @Transient
+    def subscriptionService
+    @Transient
     def auditService
+
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -204,6 +207,8 @@ class Subscription
 
     def afterInsert() {
         static_logger.debug("afterInsert")
+        if(owner != null)
+            subscriptionService.setOrgLicRole(this,owner)
     }
 
     def afterUpdate() {
@@ -443,7 +448,7 @@ class Subscription
     Org getProvider() {
         Org result
         orgRelations.each { or ->
-            if ( or?.roleType?.value=='Content Provider' )
+            if ( or.roleType.value=='Content Provider' )
                 result = or.org
             }
         result
@@ -452,7 +457,7 @@ class Subscription
     Org getConsortia() {
         Org result
         orgRelations.each { or ->
-            if ( or?.roleType?.value=='Subscription Consortia' )
+            if ( or.roleType.value=='Subscription Consortia' )
                 result = or.org
             }
         result

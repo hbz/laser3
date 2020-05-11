@@ -317,7 +317,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                               accessStartDate:tipp.accessStartDate,
                                               accessEndDate:tipp.accessEndDate,
                                               acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED)
-              if(new_ie.save()) {
+              if(new_ie.save(flush:true)) {
                   tipp.coverages.each { covStmt ->
                       IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
                               startDate:covStmt.startDate,
@@ -331,7 +331,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                               coverageNote:covStmt.coverageNote,
                               issueEntitlement: new_ie
                       )
-                      ieCoverage.save()
+                      ieCoverage.save(flush:true)
                   }
               }
           }
