@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2473    11.05.2020  hbz-dev     David   Feature     Löschen von Organisationen - Kaskadierendes Löschen von Profiler-Einträgen
+
 2472    11.05.2020  hbz-dev     David   Feature     Refactoring: AuditableTrait auflösen
 
 2407    07.05.2020  rc1.3       Anja    Bug         Migration von federal.state nach regions
