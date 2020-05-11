@@ -129,6 +129,15 @@ class RefdataCategory extends AbstractI10nOverride {
               "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) = ? order by rdv.${i10value}"
               , ["${category_name}".toLowerCase()] )
   }
+  static List<RefdataValue> getAllRefdataValues(List category_names) {
+      String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
+      List<String> lowerCategoryName = category_names.collect {it.toLowerCase()}
+
+      RefdataValue.executeQuery(
+              "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) " +
+                      "in (:categories) order by rdv.${i10value}"
+              , [categories: lowerCategoryName] )
+  }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {
         List<RefdataValue> refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDescIlike(category_name),sort)

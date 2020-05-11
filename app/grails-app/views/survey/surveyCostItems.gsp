@@ -129,7 +129,7 @@
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
             <g:render template="/templates/filter/orgFilter"
             model="[
-                              tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property']],
+                              tmplConfigShow      : [['name', 'libraryType'], ['region', 'libraryNetwork', 'property']],
                               tmplConfigFormFilter: true,
                               useNewLayouter      : true
                       ]"/>

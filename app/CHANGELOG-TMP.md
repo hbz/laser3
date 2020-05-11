@@ -2,6 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2473    11.05.2020  hbz-dev     David   Feature     Löschen von Organisationen - Kaskadierendes Löschen von Profiler-Einträgen
+
+2472    11.05.2020  hbz-dev     David   Feature     Refactoring: AuditableTrait auflösen
+
+2407    07.05.2020  rc1.3       Anja    Bug         Migration von federal.state nach regions
+
+2463    07.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: utb-Umfrage Auswertungssicht
+
+2468    07.05.2020  rc1.3       Moe     Bug         Erinnerungsmails für Umfrage Ende anpassen
+
 2444    06.05.2020  hbz-dev     Andreas Feature     Zentralisierung aller Änderungen der Lizenz-Vertrag-Verknüpfung
 
 2462    05.05.2020  rc1.3       Moe     Bug         Umfrage: Bestätigung bei "Nein" muss differenziert werden

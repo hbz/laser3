@@ -275,9 +275,9 @@
                                     &nbsp
                                 </dd>
                                 <dt>
-                                    <g:message code="org.regions.label" />
+                                    <g:message code="org.region.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.regions.expl')}">
+                                          data-content="${message(code: 'org.region.expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </dt>
