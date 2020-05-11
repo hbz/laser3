@@ -148,7 +148,7 @@ class AdminController extends AbstractDebugController {
 
         List<String> jobList = [
                 'DocContext',
-                ['GlobalRecordInfo', 'globalRecordInfoStatus'],
+                //['GlobalRecordInfo', 'globalRecordInfoStatus'],
                 'IssueEntitlement',
                 'License',
                 'Org',
@@ -585,6 +585,98 @@ class AdminController extends AbstractDebugController {
 
         result.importIds = dataConsistencyService.checkImportIds()
         result.titles    = dataConsistencyService.checkTitles()
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def fileConsistency() {
+        Map<String, Object> result = [:]
+
+        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+        Closure fileCheck = { Doc doc ->
+
+            try {
+                File test = new File("${result.filePath}/${doc.uuid}")
+                if (test.exists() && test.isFile()) {
+                    return true
+                }
+            }
+            catch (Exception e) {
+                return false
+            }
+        }
+
+        // files
+
+        result.listOfFiles = []
+        result.listOfFilesMatchingDocs = []
+        result.listOfFilesNotMatchingDocs = []
+
+        try {
+            File folder = new File("${result.filePath}")
+
+            if (folder.exists()) {
+                result.listOfFiles = folder.listFiles().collect{it.getName()}
+
+                result.listOfFilesMatchingDocs = Doc.executeQuery(
+                        'select doc from Doc doc where doc.contentType = :ct and doc.uuid in (:files)',
+                        [ct: Doc.CONTENT_TYPE_BLOB, files: result.listOfFiles]
+                )
+                List<String> matches = result.listOfFilesMatchingDocs.collect{ it.uuid }
+                result.listOfFiles.each { ff ->
+                    if (! matches.contains(ff)) {
+                        result.listOfFilesNotMatchingDocs << ff
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+
+        }
+
+        // docs
+
+        result.listOfDocs = Doc.executeQuery(
+                'select doc from Doc doc where doc.contentType = :ct order by doc.id',
+                [ct: Doc.CONTENT_TYPE_BLOB]
+        )
+        result.listOfDocsNotMatchingFiles = []
+
+        result.listOfDocs.each{ doc ->
+            if (! fileCheck(doc)) {
+                result.listOfDocsNotMatchingFiles << doc
+            }
+        }
+
+        // docs in use
+
+        result.listOfDocsInUse = Doc.executeQuery(
+                'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id',
+                [ct: Doc.CONTENT_TYPE_BLOB]
+        )
+        result.listOfDocsInUseNotMatchingFiles = []
+
+        result.listOfDocsInUse.each{ doc ->
+            if (! fileCheck(doc)) {
+                result.listOfDocsInUseNotMatchingFiles << doc
+            }
+        }
+
+        // doc contexts
+
+        result.numberOfDocContextsInUse = DocContext.executeQuery(
+                'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and (dc.status is null or dc.status != :del)',
+                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+        ).size()
+
+        result.numberOfDocContextsDeleted = DocContext.executeQuery(
+                'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and dc.status = :del',
+                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+        ).size()
+
+
 
         result
     }
