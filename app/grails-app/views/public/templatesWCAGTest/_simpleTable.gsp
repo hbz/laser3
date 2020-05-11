@@ -29,14 +29,14 @@
         <td class="center aligned">
             1
         </td>
-        <td>
+        <th scope="row" class="la-no-uppercase">
             <a href="/laser/subscription/show/15963" class="la-main-object">
 
                 Academic Search Complete / ASC
 
             </a>
 
-        </td>
+        </th>
         <td>
             <!-- packages -->
 
@@ -77,7 +77,7 @@
         <td class="center aligned">
             2
         </td>
-        <td>
+        <th scope="row" class="la-no-uppercase">
             <a href="/laser/subscription/show/9545" class="la-main-object">
 
                 Academic Search Premier / ASP
@@ -89,7 +89,7 @@
                 <a href="/laser/lic/show/26">EBSCO Rahmenvertrag</a>
             </div>
 
-        </td>
+        </th>
         <td>
             <!-- packages -->
 
@@ -133,7 +133,7 @@
         <td class="center aligned">
             3
         </td>
-        <td>
+        <th scope="row" class="la-no-uppercase">
             <a href="/laser/subscription/show/11635" class="la-main-object">
 
                 Academic Search Ultimate / ASU
@@ -145,7 +145,7 @@
                 <a href="/laser/lic/show/26">EBSCO Rahmenvertrag</a>
             </div>
 
-        </td>
+        </th>
         <td>
             <!-- packages -->
 
@@ -189,7 +189,7 @@
         <td class="center aligned">
             4
         </td>
-        <td>
+        <th>
             <a href="/laser/subscription/show/11636" class="la-main-object">
 
                 Allgemeines K&uuml;nstlerlexikon Online / AKL
@@ -201,7 +201,7 @@
                 <a href="/laser/lic/show/30">de Gruyter Rahmenvertrag</a>
             </div>
 
-        </td>
+        </th>
         <td>
             <!-- packages -->
 
@@ -245,7 +245,7 @@
         <td class="center aligned">
             5
         </td>
-        <td>
+        <th scope="row" class="la-no-uppercase">
             <a href="/laser/subscription/show/11605" class="la-main-object">
 
                 All You Can Read
@@ -257,7 +257,7 @@
                 <a href="/laser/lic/show/54">Herdt Lizenzvertrag</a>
             </div>
 
-        </td>
+        </th>
         <td>
             <!-- packages -->
 
@@ -301,7 +301,7 @@
         <td class="center aligned">
             6
         </td>
-        <td>
+        <th scope="row" class="la-no-uppercase">
             <a href="/laser/subscription/show/12686" class="la-main-object">
 
                 Ann&eacute;e philologique, L&acute; / Aph
@@ -313,7 +313,7 @@
                 <a href="/laser/lic/show/52">Brepols Rahmenvertrag</a>
             </div>
 
-        </td>
+        </th>
         <td>
             <!-- packages -->
 
@@ -357,7 +357,7 @@
         <td class="center aligned">
             7
         </td>
-        <td>
+        <th scope="row" class="la-no-uppercase">
             <a href="/laser/subscription/show/9798" class="la-main-object">
 
                 Annual Bibliography of English Language / ABELL
@@ -369,7 +369,7 @@
                 <a href="/laser/lic/show/41">ProQuest Rahmenvertrag</a>
             </div>
 
-        </td>
+        </th>
         <td>
             <!-- packages -->
 
@@ -413,7 +413,7 @@
         <td class="center aligned">
             8
         </td>
-        <td>
+        <th scope="row" class="la-no-uppercase">
             <a href="/laser/subscription/show/11936" class="la-main-object">
 
                 Art Full Text
@@ -425,7 +425,7 @@
                 <a href="/laser/lic/show/26">EBSCO Rahmenvertrag</a>
             </div>
 
-        </td>
+        </th>
         <td>
             <!-- packages -->
 
@@ -469,7 +469,7 @@
         <td class="center aligned">
             9
         </td>
-        <td>
+        <th scope="row" class="la-no-uppercase">
             <a href="/laser/subscription/show/11659" class="la-main-object">
 
                 Beck Hochschulmodul
@@ -481,7 +481,7 @@
                 <a href="/laser/lic/show/101">Beck Lizenzvertrag</a>
             </div>
 
-        </td>
+        </th>
         <td>
             <!-- packages -->
 
@@ -525,7 +525,7 @@
         <td class="center aligned">
             10
         </td>
-        <td>
+        <th scope="row" class="la-no-uppercase">
             <a href="/laser/subscription/show/15385" class="la-main-object">
 
                 Bibliotheca Teubneriana Latina / BTL
@@ -537,7 +537,7 @@
                 <a href="/laser/lic/show/30">de Gruyter Rahmenvertrag</a>
             </div>
 
-        </td>
+        </th>
         <td>
             <!-- packages -->
 

@@ -28097,7 +28097,8 @@ Floated Menu / Item
   background: #F2F2F2;
 }
 
-.ui.table tr td {
+.ui.table tr td,
+.ui.table tr .la-no-uppercase {
   padding: 20px 0;
 }
 
@@ -28107,12 +28108,9 @@ Floated Menu / Item
   padding-right: 0.9rem;
 }
 
-.ui.table tr th {
+.ui.table tr th:not(.la-no-uppercase) {
   color: #515151;
   font-size: 0.8rem;
-}
-
-.ui.table tr th:not(.la-no-uppercase) {
   text-transform: uppercase;
 }
 
@@ -28121,7 +28119,7 @@ Floated Menu / Item
   color: #515151;
 }
 
-.ui.table tr th:not(.sortable) a {
+th .ui.table tr:not(.sortable) .ui.table tr:not(.la-no-uppercase) a {
   text-decoration: underline;
 }
 
@@ -28143,7 +28141,8 @@ Floated Menu / Item
   border-top: none;
 }
 
-.ui.la-table.table tr td {
+.ui.la-table.table tr td,
+.ui.la-table.table tr .no-upper-case {
   border-top: 7px solid #F4F8F9;
 }
 
