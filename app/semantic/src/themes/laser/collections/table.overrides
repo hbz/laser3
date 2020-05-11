@@ -53,24 +53,15 @@
       padding-left:0.9rem;
       padding-right:0.9rem;
     }
-    th{
-    &:not(.la-no-uppercase){
-      color: #515151;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      }
-      a{
-        //display: inline-block;
-        //padding: 0.5rem 0;
-        cursor: pointer;
+    th {
+      &:not(.la-no-uppercase) {
         color: #515151;
-      }
-    }
-    th
-    &:not(.sortable)
-    &:not(.la-no-uppercase){
-      a {
-        text-decoration: underline;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        a {
+          cursor: pointer;
+          color: #515151;
+        }
       }
     }
   }
@@ -79,13 +70,7 @@
      la-table
 ---------------*/
 .ui.la-table.table{
-
   background-color: white;
-  tr {
-    td {
-      //background-color: white;
-    }
-  }
 }
 .metaboxContent .ui.la-table.table{
   border-collapse: separate;
@@ -97,7 +82,7 @@
   border-top:none;
 }
 .ui.la-table.table tr td,
-.ui.la-table.table tr .no-upper-case{
+.ui.la-table.table tr th.la-no-uppercase{
   border-top:7px solid #F4F8F9;
 }
 /*--------------

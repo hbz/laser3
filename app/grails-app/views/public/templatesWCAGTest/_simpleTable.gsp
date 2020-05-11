@@ -189,7 +189,7 @@
         <td class="center aligned">
             4
         </td>
-        <th>
+        <th scope="row" class="la-no-uppercase">
             <a href="/laser/subscription/show/11636" class="la-main-object">
 
                 Allgemeines K&uuml;nstlerlexikon Online / AKL

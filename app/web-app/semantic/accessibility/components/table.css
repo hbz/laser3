@@ -1183,12 +1183,9 @@
   font-size: 0.8rem;
   text-transform: uppercase;
 }
-.ui.table tr th a {
+.ui.table tr th:not(.la-no-uppercase) a {
   cursor: pointer;
   color: #515151;
-}
-th .ui.table tr:not(.sortable) .ui.table tr:not(.la-no-uppercase) a {
-  text-decoration: underline;
 }
 
 /*--------------
@@ -1207,7 +1204,7 @@ th .ui.table tr:not(.sortable) .ui.table tr:not(.la-no-uppercase) a {
   border-top: none;
 }
 .ui.la-table.table tr td,
-.ui.la-table.table tr .no-upper-case {
+.ui.la-table.table tr th.la-no-uppercase {
   border-top: 7px solid #F4F8F9;
 }
 
