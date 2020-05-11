@@ -853,19 +853,21 @@ class YodaService {
         Map<License,Set<Org>> subscribersWithoutLicenseeRole = [:], licenseesWithoutSubscriptionOwnership = [:]
         Map<String,Map<License,Set<Org>>> data = collectData()
         data.subscribersCons.each { License lic, Set<Org> subscribers ->
-            if(data.licenseesCons.get(lic))
+            if(data.licenseesCons.get(lic)) {
                 subscribers.removeAll(data.licenseesCons.get(lic))
-            if(subscribers) {
+            }
+            if (subscribers) {
                 log.debug("for license ${lic}, we have subscribers without org role: ${subscribers}")
-                subscribersWithoutLicenseeRole.put(lic,subscribers)
+                subscribersWithoutLicenseeRole.put(lic, subscribers)
             }
         }
         data.licenseesCons.each { License lic, Set<Org> licensees ->
-            if(data.subscribersCons.get(lic))
+            if(data.subscribersCons.get(lic)) {
                 licensees.removeAll(data.subscribersCons.get(lic))
-            if(licensees) {
+            }
+            if (licensees) {
                 log.debug("for license ${lic}, we have licensees without subscription linking: ${licensees}")
-                licenseesWithoutSubscriptionOwnership.put(lic,licensees)
+                licenseesWithoutSubscriptionOwnership.put(lic, licensees)
             }
         }
         [subscribersWithoutLicenseeRole:subscribersWithoutLicenseeRole,licenseesWithoutSubscriptionOwnership:licenseesWithoutSubscriptionOwnership]
