@@ -25,10 +25,10 @@
                 <br />
                 ${address?.zipcode} ${address?.city}
 
-                <g:if test="${address?.state || address?.country}">
+                <g:if test="${address?.region || address?.country}">
                     <br />
-                    ${address?.state?.getI10n('value')}
-                    <g:if test="${address?.state && address?.country}">, </g:if>
+                    ${address?.region?.getI10n('value')}
+                    <g:if test="${address?.region && address?.country}">, </g:if>
                     ${address?.country?.getI10n('value')}
                 </g:if>
 

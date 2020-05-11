@@ -31,7 +31,7 @@
 						
 							<g:sortableColumn property="city" title="${message(code: 'address.city.label')}" />
 						
-							<g:sortableColumn property="state" title="${message(code: 'address.state.label')}" />
+							<g:sortableColumn property="region" title="${message(code: 'address.region.label')}" />
 							
 							<th class="header"><g:message code="address.prs.label" /></th>
 						
@@ -56,7 +56,7 @@
 						
 							<td>${fieldValue(bean: addressInstance, field: "city")}</td>
 						
-							<td>${fieldValue(bean: addressInstance, field: "state")}</td>
+							<td>${fieldValue(bean: addressInstance, field: "region")}</td>
 							
 							<td>${fieldValue(bean: addressInstance, field: "prs")}</td>
 						

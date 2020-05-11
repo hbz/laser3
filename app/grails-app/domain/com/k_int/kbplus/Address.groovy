@@ -20,8 +20,8 @@ class Address {
     Date dateCreated
     Date lastUpdated
 
-    @RefdataAnnotation(cat = RDConstants.FEDERAL_STATE)
-    RefdataValue state
+    @RefdataAnnotation(cat = '?')
+    RefdataValue region
 
     @RefdataAnnotation(cat = RDConstants.COUNTRY)
     RefdataValue country
@@ -47,7 +47,7 @@ class Address {
         pobCity      column:'adr_pob_city'
         zipcode  column:'adr_zipcode'
         city     column:'adr_city'
-        state    column:'adr_state_rv_fk'
+        region    column:'adr_region_rv_fk'
         country  column:'adr_country_rv_fk'
         name     column:'adr_name'
         additionFirst   column:'adr_addition_first'
@@ -69,7 +69,7 @@ class Address {
         pobCity     (nullable:true,  blank:false)
         zipcode  (nullable:true, blank:false)
         city     (nullable:true, blank:false)
-        state    (nullable:true,  blank:false)
+        region    (nullable:true,  blank:false)
         country  (nullable:true,  blank:false)
         name            (nullable:true,  blank:false)
         additionFirst   (nullable:true,  blank:false)
@@ -98,7 +98,7 @@ class Address {
             street2,
             zipcode,
             city,
-            state,
+            region,
             country,
             postbox,
             pobZipcode,
@@ -114,7 +114,7 @@ class Address {
                 street_2: street2 ?: null,
                 zipcode:  zipcode ?: null,
                 city:     city ?: null,
-                state:    state ?: null,
+                region:    region ?: null,
                 country:  country ?: null,
                 pob:            postbox ?: null,
                 pobZipcode:     pobZipcode ?: null,
@@ -136,7 +136,7 @@ class Address {
             street2,
             zipcode,
             city,
-            state,
+            region,
             country,
             postbox,
             pobZipcode,
@@ -152,7 +152,8 @@ class Address {
             type = RefdataValue.getByValue("Job-related")
         }
 
-        Address check = Address.lookup(name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation)
+        Address check = Address.lookup(name, street1, street2, zipcode, city, region, country, postbox, pobZipcode,
+                pobCity, type, person, organisation)
         if (check) {
             result = check
             info += " > ignored; duplicate found"
@@ -164,7 +165,7 @@ class Address {
                 street_2: street2,
                 zipcode:  zipcode,
                 city:     city,
-                state:    state,
+                region:   region,
                 country:  country,
                 pob:      postbox,
                 pobZipcode: pobZipcode,

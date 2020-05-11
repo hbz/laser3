@@ -76,7 +76,7 @@ class ApiOrg {
         result.scope        = org.scope
         result.shortname    = org.shortname
         result.sortname     = org.sortname
-        result.federalState = org.federalState?.value
+        result.region       = org.region?.value
         result.country      = org.country?.value
         result.libraryType  = org.libraryType?.value
         result.lastUpdated  = ApiToolkit.formatInternalDate(org.lastUpdated)

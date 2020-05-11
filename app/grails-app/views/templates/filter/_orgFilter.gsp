@@ -78,14 +78,16 @@
                 </div>
             </g:if>
 
-            <g:if test="${field.equalsIgnoreCase('federalState')}">
+            <g:if test="${field.equalsIgnoreCase('region')}">
                 <div class="field">
-                    <label for="federalState">${message(code: 'org.federalState.label')}</label>
-                    <laser:select class="ui dropdown" id="federalState" name="federalState"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.FEDERAL_STATE)}"
+                    <label for="region">${message(code: 'org.region.label')}</label>
+                    <laser:select class="ui dropdown" id="region" name="region"
+                                  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,
+                                                                               RDConstants.REGIONS_AT,
+                                                                               RDConstants.REGIONS_CH])}"
                                   optionKey="id"
                                   optionValue="value"
-                                  value="${params.federalState}"
+                                  value="${params.region}"
                                   noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
@@ -181,8 +183,8 @@
 <g:if test="${! allFields.contains('sector') && params.orgSector}">
     <input type="hidden" name="orgSector" value="${params.orgSector}" />
 </g:if>
-<g:if test="${! allFields.contains('federalState') && params.federalState}">
-    <input type="hidden" name="federalState" value="${params.federalState}" />
+<g:if test="${! allFields.contains('region') && params.region}">
+    <input type="hidden" name="region" value="${params.region}" />
 </g:if>
 <g:if test="${! allFields.contains('libraryNetwork') && params.libraryNetwork}">
     <input type="hidden" name="libraryNetwork" value="${params.libraryNetwork}" />

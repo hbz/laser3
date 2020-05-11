@@ -39,7 +39,6 @@ class RDConstants {
 
     public static final String FACT_METRIC            = 'fact.metric'
     public static final String FACT_TYPE              = 'fact.type'
-    public static final String FEDERAL_STATE          = 'federal.state'
     public static final String FUNDER_TYPE            = 'funder.type'
     public static final String FUNDER_HSK_TYPE        = 'funder.hsk.type'
 
