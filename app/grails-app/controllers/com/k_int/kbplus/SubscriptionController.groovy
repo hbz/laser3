@@ -8,6 +8,7 @@ import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.IssueEntitlementGroup
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.exceptions.CreationException
@@ -1165,6 +1166,42 @@ class SubscriptionController extends AbstractDebugController {
                 out.close()
             }
         }
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def createEntitlementGroup() {
+        log.debug("createEntitlementGroup .. params: ${params}")
+
+        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result
+
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def processCreateEntitlementGroup() {
+        log.debug("processCreateEntitlementGroup .. params: ${params}")
+
+        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+
+        IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(
+                name: params.name,
+                description: params.description ?: null,
+                sub: result.subscriptionInstance
+        ).save()
+
+
+        redirect action: 'index', id: params.id
+
     }
 
     @Secured(['ROLE_ADMIN'])

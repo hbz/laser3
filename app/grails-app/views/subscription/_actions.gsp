@@ -106,6 +106,7 @@
                 <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscriptionInstance.packages}">
                     <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+                    <semui:actionsDropdownItem controller="subscription" action="createEntitlementGroup" params="${[id:params.id]}" message="subscription.details.createEntitlementGroup.label" />
                 </g:if>
                 <g:else>
                     <semui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.noPackagesYetAdded')}"/>

@@ -33,7 +33,7 @@ class IssueEntitlementGroup {
         lastUpdated column: 'ig_last_updated'
 
         name        column: 'ig_name'
-        description column: 'ig_description'
+        description column: 'ig_description', type: 'text'
 
         sub         column: 'ig_sub_fk'
 

@@ -14,7 +14,7 @@ databaseChangeLog = {
 				constraints(nullable: "false")
 			}
 
-			column(name: "ig_description", type: "varchar(255)")
+			column(name: "ig_description", type: "text")
 
 			column(name: "ig_last_updated", type: "timestamp") {
 				constraints(nullable: "false")
