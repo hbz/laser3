@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      12.05.2020  hbz-dev     David   Feature     API 0.99
+
+2476    12.05.2020  hbz-dev     David   Feature     Übersichtsseite: Dokumente
+
 2473    11.05.2020  hbz-dev     David   Feature     Löschen von Organisationen - Kaskadierendes Löschen von Profiler-Einträgen
 
 2472    11.05.2020  hbz-dev     David   Feature     Refactoring: AuditableTrait auflösen
