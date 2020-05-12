@@ -7,6 +7,7 @@ import de.laser.domain.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
 import grails.converters.JSON
@@ -17,20 +18,18 @@ import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class Package
-        extends AbstractBaseDomain
-        /*implements ShareSupport*/ {
+class Package extends AbstractBaseDomain implements CalculatedLastUpdated {
+        //implements ShareSupport {
 
-    // TODO AuditTrail
-  static auditable = [ignore:['version','lastUpdated','pendingChanges']]
-    // ??? org.quartz.JobExecutionException: groovy.lang.MissingPropertyException: No such property: auditable for class: com.k_int.kbplus.Package
+    static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
+    static Log static_logger = LogFactory.getLog(Package)
 
-  static Log static_logger = LogFactory.getLog(Package)
-
-  @Transient
-  def grailsApplication
-  @Transient
-  def deletionService
+    @Transient
+    def grailsApplication
+    @Transient
+    def deletionService
+    @Transient
+    def cascadingUpdateService
 
   //String identifier
   String name
@@ -68,12 +67,14 @@ class Package
     Platform nominalPlatform
     Date startDate
     Date endDate
-    Date dateCreated
-    Date lastUpdated
     License license
     String forumId
     Set pendingChanges
     Boolean autoAccept = false
+
+    Date dateCreated
+    Date lastUpdated
+    Date lastUpdatedCascading
 
 static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     orgs:      OrgRole,
@@ -122,6 +123,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             pendingChanges sort:'ts', order: 'asc', batchSize: 10
 
             listVerifiedDate column: 'pkg_list_verified_date'
+        lastUpdatedCascading column: 'pkg_last_updated_cascading'
 
             orgs            batchSize: 10
             prsLinks        batchSize: 10
@@ -151,10 +153,28 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
       listVerifiedDate(nullable:true, blank:false)
+      lastUpdatedCascading (nullable: true, blank: false)
   }
 
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+        cascadingUpdateService.update(this, dateCreated)
+    }
+
+    def afterUpdate() {
+        static_logger.debug("afterUpdate")
+        cascadingUpdateService.update(this, lastUpdated)
+    }
+
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         //deletionService.deleteDocumentFromIndex(this.globalUID) ES not connected, reactivate as soon as ES works again
+    }
+
+    Date getCalculatedLastUpdated() {
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     boolean checkSharePreconditions(ShareableTrait sharedObject) {

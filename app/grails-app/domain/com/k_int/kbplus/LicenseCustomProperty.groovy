@@ -75,13 +75,13 @@ class LicenseCustomProperty extends CustomProperty implements AuditableSupport {
     @Transient
     def onChange = { oldMap, newMap ->
         log.debug("onChange ${this}")
-        auditService.onChange(this, oldMap, newMap)
+        auditService.onChangeHandler(this, oldMap, newMap)
     }
 
     @Transient
     def onDelete = { oldMap ->
         log.debug("onDelete ${this}")
-        auditService.onDelete(this, oldMap)
+        auditService.onDeleteHandler(this, oldMap)
     }
 
     def notifyDependencies_trait(changeDocument) {

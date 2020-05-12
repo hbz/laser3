@@ -46,7 +46,7 @@ class AuditService {
     }
 
     @Transient
-    def onDelete(AuditableSupport obj, def oldMap) {
+    def onDeleteHandler(AuditableSupport obj, def oldMap) {
         log.debug("onDelete() ${obj}")
 
         String oid = "${obj.class.name}:${obj.id}"
@@ -77,12 +77,12 @@ class AuditService {
     }
 
     @Transient
-    def onSave(AuditableSupport obj) {
+    def onSaveHandler(AuditableSupport obj) {
         log.debug("onSave() ${obj}")
     }
 
     @Transient
-    def onChange(AuditableSupport obj, def oldMap, def newMap) {
+    def onChangeHandler(AuditableSupport obj, def oldMap, def newMap) {
 
         log.debug("onChange() ${obj} : ${oldMap} => ${newMap}")
 

@@ -4,10 +4,20 @@ import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.CalculatedLastUpdated
 import groovy.util.logging.Log4j
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+
+import javax.persistence.Transient
 
 @Log4j
-class Person extends AbstractBaseDomain {
+class Person extends AbstractBaseDomain implements CalculatedLastUpdated {
+
+    static Log static_logger = LogFactory.getLog(Person)
+
+    @Transient
+    def cascadingUpdateService
 
     String       title
     String       first_name
@@ -29,6 +39,7 @@ class Person extends AbstractBaseDomain {
 
     Date dateCreated
     Date lastUpdated
+    Date lastUpdatedCascading
 
     static mapping = {
         cache  true
@@ -52,6 +63,7 @@ class Person extends AbstractBaseDomain {
 
         dateCreated column: 'prs_date_created'
         lastUpdated column: 'prs_last_updated'
+        lastUpdatedCascading column: 'prs_last_updated_cascading'
     }
     
     static mappedBy = [
@@ -83,6 +95,7 @@ class Person extends AbstractBaseDomain {
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
+        lastUpdatedCascading (nullable: true, blank: false)
     }
     
     static List<RefdataValue> getAllRefdataValues(String category) {
@@ -92,6 +105,25 @@ class Person extends AbstractBaseDomain {
     @Override
     String toString() {
         ((title ?: '') + ' ' + (last_name ?: ' ') + (first_name ? ', ' + first_name : '') + ' ' + (middle_name ?: '')).trim()
+    }
+
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+        cascadingUpdateService.update(this, dateCreated)
+    }
+
+    def afterUpdate() {
+        static_logger.debug("afterUpdate")
+        cascadingUpdateService.update(this, lastUpdated)
+    }
+
+    def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+    }
+
+    Date getCalculatedLastUpdated() {
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     /*

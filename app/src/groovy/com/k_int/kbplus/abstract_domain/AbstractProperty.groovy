@@ -32,19 +32,13 @@ abstract class AbstractProperty implements Serializable {
     }
 
     @Transient
-    def getValueType(){
-        if(stringValue)
-            return "stringValue"
-        if(intValue)
-            return "intValue"
-        if(decValue)
-            return "decValue"
-        if(refValue)
-            return "refValue"
-        if(dateValue)
-            return "dateValue"
-        if(urlValue)
-            return "urlValue"
+    String getValueType(){
+        if (stringValue) { return "stringValue" }
+        if (intValue)    { return "intValue" }
+        if (decValue)    { return "decValue" }
+        if (refValue)    { return "refValue" }
+        if (dateValue)   { return "dateValue" }
+        if (urlValue)    { return "urlValue" }
     }
 
     String getValue() {
@@ -53,24 +47,19 @@ abstract class AbstractProperty implements Serializable {
 
     @Override
     String toString(){
-        if(stringValue)
-            return stringValue
-        if(intValue != null)
-            return intValue.toString()
-        if(decValue != null)
-            return decValue.toString()
-        if(refValue)
-            return refValue.toString()
-        if(dateValue)
-            return dateValue.getDateString()
-        if(urlValue)
-            return urlValue.toString()
+        if (stringValue)      { return stringValue }
+        if (intValue != null) { return intValue.toString() }
+        if (decValue != null) { return decValue.toString() }
+        if (refValue)         { return refValue.toString() }
+        if (dateValue)        { return dateValue.getDateString() }
+        if (urlValue)         { return urlValue.toString() }
     }
 
     def copyInto(AbstractProperty newProp){
         if (type != newProp.type) {
             throw new IllegalArgumentException("AbstractProperty.copyInto nicht möglich, weil die Typen nicht übereinstimmen.")
-        } else {
+        }
+        else {
             newProp.stringValue = stringValue
             newProp.intValue = intValue
             newProp.decValue = decValue

@@ -27,7 +27,7 @@ class Subscription
         extends AbstractBaseDomain
         implements CalculatedType, CalculatedLastUpdated, Permissions, AuditableSupport, ShareSupport {
 
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
     static Log static_logger = LogFactory.getLog(Subscription)
@@ -207,23 +207,28 @@ class Subscription
 
     def afterInsert() {
         static_logger.debug("afterInsert")
+        cascadingUpdateService.update(this, dateCreated)
+
         if(owner != null)
             subscriptionService.setOrgLicRole(this,owner)
     }
 
     def afterUpdate() {
         static_logger.debug("afterUpdate")
+        cascadingUpdateService.update(this, lastUpdated)
     }
 
     def afterDelete() {
         static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
     @Transient
     def onChange = { oldMap, newMap ->
         log.debug("onChange ${this}")
-        auditService.onChange(this, oldMap, newMap)
+        auditService.onChangeHandler(this, oldMap, newMap)
     }
 
     Date getCalculatedLastUpdated() {

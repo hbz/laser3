@@ -12,10 +12,12 @@ import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.DeleteFlag
 
 import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
+import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -25,7 +27,9 @@ import java.text.SimpleDateFormat
 @Log4j
 class Org
         extends AbstractBaseDomain
-        implements DeleteFlag {
+        implements CalculatedLastUpdated, DeleteFlag {
+
+    static Log static_logger = LogFactory.getLog(Org)
 
     @Transient
     def sessionFactory // TODO: ugliest HOTFIX ever
@@ -38,6 +42,8 @@ class Org
 	def propertyService
     @Transient
     def deletionService
+    @Transient
+    def cascadingUpdateService
 
     String name
     String shortname
@@ -55,11 +61,14 @@ class Org
     String comment
     String ipRange
     String scope
-    Date dateCreated
-    Date lastUpdated
+
     Org createdBy
     Org legallyObligedBy
     String categoryId
+
+    Date dateCreated
+    Date lastUpdated
+    Date lastUpdatedCascading
 
     @RefdataAnnotation(cat = RDConstants.ORG_SECTOR)
     RefdataValue sector
@@ -164,6 +173,7 @@ class Org
         createdBy           column:'org_created_by_fk'
         legallyObligedBy    column:'org_legally_obliged_by_fk'
     costConfigurationPreset column:'org_config_preset_rv_fk'
+       lastUpdatedCascading column:'org_last_updated_cascading'
 
         orgType             joinTable: [
                 name:   'org_type',
@@ -222,6 +232,7 @@ class Org
       costConfigurationPreset(nullable:true, blank:false)
              orgType(nullable:true, blank:true)
              gokbId (nullable:true, blank:true)
+        lastUpdatedCascading (nullable: true, blank: false)
     }
 
     /*
@@ -238,8 +249,25 @@ class Org
     }
     */
 
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+        cascadingUpdateService.update(this, dateCreated)
+    }
+
+    def afterUpdate() {
+        static_logger.debug("afterUpdate")
+        cascadingUpdateService.update(this, lastUpdated)
+    }
+
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+
+    Date getCalculatedLastUpdated() {
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     @Override
