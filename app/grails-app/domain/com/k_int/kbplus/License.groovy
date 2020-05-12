@@ -793,7 +793,7 @@ AND lower(l.reference) LIKE (:ref)
                 endDate: endDate,
                 dateCreated: dateCreated,
                 lastUpdated: lastUpdated,
-                onixplLicense: onixplLicense // fk
+                //onixplLicense: onixplLicense // fk
         )
 
         copy

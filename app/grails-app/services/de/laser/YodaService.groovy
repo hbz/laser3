@@ -849,22 +849,108 @@ class YodaService {
         Platform.executeUpdate('delete from Platform plat where plat.globalUID in :toDelete',[toDelete:toDelete])
     }
 
-    void checkLicenseSubscriptionLinks() {
-        Set<OrgRole> orgLicRoles = OrgRole.findAllByLicIsNotNullAndRoleType(RDStore.OR_LICENSEE_CONS)
-        Set<License> orgLicLinks = orgLicRoles.collect { OrgRole oo -> oo.lic }
-        Set<OrgRole> subLicRoles = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub.owner != null and oo.roleType in (:subscriberCons)',[subscriberCons:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
-        Set<License> subLicLinks = subLicRoles.collect { OrgRole oo -> oo.sub.owner }
-        //part A: check if there are orphaned license org roles ...
-        orgLicRoles.each { OrgRole olr ->
-            if(!subLicLinks.contains(olr.lic)) {
-                log.info("${olr.lic.reference} is orphaned for ${olr.org.name}")
+    Map<String,Object> checkLicenseSubscriptionLinks() {
+        Map<License,Set<Org>> subscribersWithoutLicenseeRole = [:], licenseesWithoutSubscriptionOwnership = [:]
+        Map<String,Map<License,Set<Org>>> data = collectData()
+        data.subscribersCons.each { License lic, Set<Org> subscribers ->
+            if(data.licenseesCons.get(lic)) {
+                subscribers.removeAll(data.licenseesCons.get(lic))
+            }
+            if (subscribers) {
+                log.debug("for license ${lic}, we have subscribers without org role: ${subscribers}")
+                subscribersWithoutLicenseeRole.put(lic, subscribers)
             }
         }
-        //part B: check if there are orphaned subscription owner links ...
-        subLicRoles.each { OrgRole osr ->
-            if(!orgLicLinks.contains(osr.sub.owner)) {
-                log.info("${osr.sub.owner.reference} has no org <-> license linking for ${osr.org.name}")
+        data.licenseesCons.each { License lic, Set<Org> licensees ->
+            if(data.subscribersCons.get(lic)) {
+                licensees.removeAll(data.subscribersCons.get(lic))
+            }
+            if (licensees) {
+                log.debug("for license ${lic}, we have licensees without subscription linking: ${licensees}")
+                licenseesWithoutSubscriptionOwnership.put(lic, licensees)
             }
         }
+        [subscribersWithoutLicenseeRole:subscribersWithoutLicenseeRole,licenseesWithoutSubscriptionOwnership:licenseesWithoutSubscriptionOwnership]
     }
+
+    void synchronizeSubscriptionLicenseOrgLinks() {
+        Map<String,Map<License,Set<Org>>> data = collectData()
+        OrgRole.withTransaction { TransactionStatus status ->
+            try {
+                data.subscribersCons.each { License lic, Set<Org> subscribers ->
+                    if(data.licenseesCons.get(lic))
+                        subscribers.removeAll(data.licenseesCons.get(lic))
+                    if(subscribers) {
+                        log.debug("for license ${lic}, we have subscribers without org role: ${subscribers}")
+                        subscribers.each { Org subscriber ->
+                            OrgRole oo = new OrgRole(org:subscriber,lic:lic,roleType:RDStore.OR_LICENSEE_CONS)
+                            log.debug("creating new org role: ${oo}")
+                            if(!oo.save())
+                                log.error(oo.errors)
+                        }
+                    }
+                }
+                status.flush()
+            }
+            catch (Exception e) {
+                e.printStackTrace()
+                status.setRollbackOnly()
+            }
+        }
+        Subscription.withTransaction { TransactionStatus status ->
+            try {
+                data.licenseesCons.each { License lic, Set<Org> licensees ->
+                    if(data.subscribersCons.get(lic))
+                        licensees.removeAll(data.subscribersCons.get(lic))
+                    if(licensees) {
+                        log.debug("for license ${lic}, we have licensees without subscription linking: ${licensees}")
+                        Set<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf.owner = :lic and oo.sub.owner is null',[lic:lic.instanceOf])
+                        licensees.each { Org licensee ->
+                            Subscription subscription = subscriptions.find { s ->
+                                s.getSubscriber() == licensee && s.status == RDStore.SUBSCRIPTION_CURRENT
+                            }
+                            if(subscription) {
+                                log.debug("located matching subscription: ${subscription}")
+                                subscription.owner = lic
+                                subscription.save(flush:true) // needed because of list processing
+                            }
+                            else {
+                                log.debug("no current member subscription located for licensee ${licensee} and ${lic}, deleting orphaned licensee role")
+                                if(!OrgRole.executeUpdate('delete from OrgRole oo where oo.lic = :lic and oo.org = :org and oo.roleType = :roleType',[lic:lic,org:licensee,roleType:RDStore.OR_LICENSEE_CONS]))
+                                    log.error("an error occurred on deleting!")
+                            }
+                        }
+                    }
+                }
+                status.flush()
+            }
+            catch (Exception e) {
+                e.printStackTrace()
+                status.setRollbackOnly()
+            }
+        }
+
+    }
+
+    Map<String,Map<License,Set<Org>>> collectData() {
+        Map<License,Set<Org>> subscribersCons = [:], licenseesCons = [:]
+        Set<OrgRole> subscriberRoleSet = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub.owner != null and oo.roleType in (:subscrRoles)',[subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]),
+                     licenseeRoleSet = OrgRole.executeQuery('select oo from OrgRole oo where oo.lic != null and oo.lic.instanceOf != null and oo.roleType = :roleType',[roleType:RDStore.OR_LICENSEE_CONS])
+        subscriberRoleSet.each { OrgRole oo ->
+            Set<Org> subscribers = subscribersCons.get(oo.sub.owner)
+            if(!subscribers)
+                subscribers = []
+            subscribers << oo.org
+            subscribersCons.put(oo.sub.owner,subscribers)
+        }
+        licenseeRoleSet.each { OrgRole oo ->
+            Set<Org> licensees = licenseesCons.get(oo.lic)
+            if(!licensees)
+                licensees = []
+            licensees << oo.org
+            licenseesCons.put(oo.lic,licensees)
+        }
+        [subscribersCons:subscribersCons,licenseesCons:licenseesCons]
+    }
+
 }

@@ -46,12 +46,12 @@
                             id="${issueEntitlementInstance.subscription.owner.id}">${issueEntitlementInstance.subscription.owner.reference}</g:link></dd>
 
             </g:if>
-            <g:if test="${issueEntitlementInstance.subscription.owner?.onixplLicense}">
+            <%--<g:if test="${issueEntitlementInstance.subscription.owner?.onixplLicense}">
                 <dt><g:message code="onixplLicense.license.label"/></dt>
 
                 <dd><g:link controller="onixplLicense" action="index"
                             id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title}</g:link></dd>
-            </g:if>
+            </g:if>--%>
 
             <g:if test="${issueEntitlementInstance.tipp}">
                 <dt><g:message code="title.label" default="Title"/></dt>
