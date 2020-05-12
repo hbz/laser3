@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AuditConfig
 import de.laser.SubscriptionService
@@ -46,7 +45,7 @@ class PendingChangeService extends AbstractLockableService {
 
     final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
 
-    boolean performMultipleAcceptsForJob(List<PendingChange> subscriptionChanges, List<PendingChange> licenseChanges) {
+    /*boolean performMultipleAcceptsForJob(List<PendingChange> subscriptionChanges, List<PendingChange> licenseChanges) {
         log.debug('performMultipleAcceptsFromJob()')
 
         if (!running) {
@@ -65,7 +64,7 @@ class PendingChangeService extends AbstractLockableService {
         else {
             return false
         }
-    }
+    }*/
 
     @Deprecated
     boolean performAccept(PendingChange pendingChange) {
@@ -411,7 +410,7 @@ class PendingChangeService extends AbstractLockableService {
                         }
 
                         log.debug("Setting value for ${changeDoc.name}.${changeDoc.prop} to ${changeDoc.new}")
-                        targetProperty.save()
+                        targetProperty.save(flush:true)
                     }
                     else {
                         log.error("ChangeDoc event '${changeDoc.event}'' not recognized.")
