@@ -466,14 +466,14 @@ class DataloadService {
 
             result._id = surOrg.getClass().getSimpleName().toLowerCase()+":"+surOrg.id
             result.priority = 60
-            result.dbId = surOrg.id
+            result.dbId = surOrg.surveyConfig.id
             result.name = surOrg.surveyConfig.getSurveyName()
             result.status= surOrg.surveyConfig.surveyInfo.status?.value
             result.statusId= surOrg.surveyConfig.surveyInfo.status?.id
             result.visible = 'Private'
             result.rectype = surOrg.getClass().getSimpleName()
 
-            result.availableToOrgs = (surOrg.surveyConfig.surveyInfo.status.value != RDStore.SURVEY_IN_PROCESSING.value) ? [surOrg.org.id] : []
+            result.availableToOrgs = (surOrg.surveyConfig.surveyInfo.status.value != RDStore.SURVEY_IN_PROCESSING.value) ? [surOrg.org.id] : [0]
 
             result.endDate = surOrg.surveyConfig.surveyInfo.endDate
             result.startDate = surOrg.surveyConfig.surveyInfo.startDate
@@ -505,7 +505,7 @@ class DataloadService {
             result.visible = 'Private'
             result.rectype = task.getClass().getSimpleName()
 
-            result.availableToOrgs = [task.responsibleOrg?.id]
+            result.availableToOrgs = [task.responsibleOrg?.id ?: 0]
             result.availableToUser = [task.responsibleUser?.id]
 
             result.description = task.description
