@@ -207,46 +207,6 @@
                                     </g:if>
                                 %{--</dd>--}%
                             %{--</dl>--}%
-                            <%--
-                            <dl>
-
-                                <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
-                                <dd>
-                                    <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
-                                        <g:each in="${license.pkgs.sort{it.name}}" var="pkg">
-                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
-                                        </g:each>
-                                    </g:if>
-                                    <g:else>
-                                        ${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}
-                                    </g:else>
-                                </dd>
-                            </dl>
-                            --%>
-                            <dl>
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
-
-                                    <dt class="control-label">${message(code:'license.ONIX-PL-License')}</dt>
-                                    <dd>
-                                        <g:if test="${license.onixplLicense}">
-                                            <g:link controller="onixplLicense" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
-                                            <g:if test="${editable}">
-
-                                                <div class="ui mini icon buttons">
-                                                    <g:link class="ui button" controller="license" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
-                                                        <i class="unlink icon"> </i>${message(code:'default.button.unlink.label')}
-                                                    </g:link>
-                                                </div>
-
-                                            </g:if>
-                                        </g:if>
-                                        <g:else>
-                                            <g:link class="ui positive button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
-                                        </g:else>
-                                    </dd>
-
-                                </sec:ifAnyGranted>
-                            </dl>
                         </div>
                     </div>
                     <div class="ui card">

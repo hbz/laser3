@@ -86,7 +86,7 @@ class AuditService {
 
         log.debug("onChange() ${obj} : ${oldMap} => ${newMap}")
 
-        if((obj instanceof Subscription && !obj.instanceOf) || !(obj instanceof Subscription)) {
+        if(obj.instanceOf == null) {
             List<String> gwp = getWatchedProperties(obj)
 
             log.debug("found watched properties: ${gwp}")

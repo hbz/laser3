@@ -314,8 +314,8 @@
           format: date-time
         licenseType:
           type: string
-        onixplLicense:
-          $ref: "#/components/schemas/OnixplLicense"
+<%--        onixplLicense:
+          $ref: "#/components/schemas/OnixplLicense"--%>
         organisations: # mapping attr orgRelations
           type: array
           items:
@@ -336,7 +336,7 @@
           items:
             $ref: "#/components/schemas/SubscriptionStub"
 
-
+<%--
     OnixplLicense:
       type: object
       properties:
@@ -347,6 +347,7 @@
           format: date-time
         title:
           type: string
+          --%>
 
 
     Order:

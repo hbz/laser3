@@ -177,7 +177,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableSupport {
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
-                            pc.delete(flush: true)
+                            pc.delete()
                         }
                     }
                 }
