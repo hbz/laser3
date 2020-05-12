@@ -98,19 +98,21 @@
                     <b>${message(code:'subscription.hasPerpetualAccess.label')}</b>:&nbsp${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                 </td>
             </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copylinktoSubscription" value="${true}" /></th>
-                <th>${message(code:'subscription.copylinktoSubscription')}</th>
-                <td>
-                    <b>${message(code:'subscription.linktoSubscription')}:</b>
-                    <g:if test="${subscription.instanceOf}">
-                        <g:link controller="subscription" action="show" target="_blank" id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
-                    </g:if>
-                    <g:else>
-                        ${message(code:'subscription.linktoSubscriptionEmpty')}
-                    </g:else>
-                </td>
-            </tr>
+            <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+                <tr>
+                    <th><g:checkBox name="subscription.copylinktoSubscription" value="${true}" /></th>
+                    <th>${message(code:'subscription.copylinktoSubscription')}</th>
+                    <td>
+                        <b>${message(code:'subscription.linktoSubscription')}:</b>
+                        <g:if test="${subscription.instanceOf}">
+                            <g:link controller="subscription" action="show" target="_blank" id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
+                        </g:if>
+                        <g:else>
+                            ${message(code:'subscription.linktoSubscriptionEmpty')}
+                        </g:else>
+                    </td>
+                </tr>
+            </g:if>
             <tr>
                 <th><g:checkBox name="subscription.copyLicense" value="${true}" /></th>
                 <th>${message(code:'subscription.copyLicense')}</th>

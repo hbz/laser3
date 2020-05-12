@@ -189,7 +189,7 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermTypeAffiliation("ORG_CONSORTIUM", "Consortium", "INST_USER")
     })
     Map listInstitution() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         params.orgType   = OT_INSTITUTION.id.toString()
         params.orgSector = O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
@@ -636,21 +636,23 @@ class OrganisationController extends AbstractDebugController {
         DebugUtil du = new DebugUtil()
         du.setBenchmark('this-n-that')
 
-        Map result = setResultGenericsAndCheckAccess(params)
-        if(!result) {
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        if (! result) {
             response.sendError(401)
+            return
+        }
+        if (! result.orgInstance) {
+            redirect action: 'list'
             return
         }
 
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
 
-        du.setBenchmark('orgRoles')
+        du.setBenchmark('orgRoles & editable')
 
-        du.setBenchmark('editable')
-
-        def orgSector = O_SECTOR_PUBLISHER
-        def orgType = OT_PROVIDER
+        RefdataValue orgSector = O_SECTOR_PUBLISHER
+        RefdataValue orgType = OT_PROVIDER
 
         //IF ORG is a Provider
         if(result.orgInstance.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
@@ -741,7 +743,7 @@ class OrganisationController extends AbstractDebugController {
         DebugUtil du = new DebugUtil()
         du.setBenchmark('this-n-that')
 
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -876,7 +878,7 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def documents() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -887,7 +889,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -1052,7 +1054,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def userCreate() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         result.availableOrgs = Org.get(params.id)
         result.availableOrgRoles = Role.findAllByRoleType('user')
         result.editor = result.user
@@ -1181,7 +1183,7 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -1219,7 +1221,7 @@ class OrganisationController extends AbstractDebugController {
                 ])
     })
     def readerNumber() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -1245,7 +1247,7 @@ class OrganisationController extends AbstractDebugController {
         ])
     })
     def accessPoints() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -1379,11 +1381,12 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    private Map setResultGenericsAndCheckAccess(params) {
+    private Map<String, Object> setResultGenericsAndCheckAccess(params) {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
-        Map result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN'),inContextOrg:true,institutionalView:false,departmentalView:false]
-        if(params.id) {
+        Map<String, Object> result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN'),inContextOrg:true,institutionalView:false,departmentalView:false]
+
+        if (params.id) {
             result.orgInstance = Org.get(params.id)
             result.inContextOrg = result.orgInstance?.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
@@ -1413,7 +1416,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR")
     @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ORG_EDITOR") })
     def toggleCombo() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return

@@ -35,6 +35,8 @@ class OrganisationService {
     def grailsApplication
     def instAdmService
     def userService
+    def subscriptionService
+    def globalSourceSyncService
     List<String> errors = []
 
     void initMandatorySettings(Org org) {
@@ -753,6 +755,7 @@ class OrganisationService {
                 subToModify.save(flush:true) //needed because of list processing
             }
         }
+        //globalSourceSyncService.cleanUpGorm()
         log.info("creating links between consortia member subscriptions ...")
         Map dateALinking = [linkType: RDStore.LINKTYPE_FOLLOWS,objectType:Subscription.class.name,source:Subscription.findByIdentifier(currentDatenAChildIdentifier).id,destination:Subscription.findByIdentifier(testDatenAChildIdentifier).id,owner:current]
         Map journalPaketLinking = [linkType: RDStore.LINKTYPE_FOLLOWS,objectType:Subscription.class.name,source:Subscription.findByIdentifier(currentJournalPaketIdentifier).id,destination:Subscription.findByIdentifier(expiredJournalPaketIdentifier).id,owner:current]
@@ -822,7 +825,7 @@ class OrganisationService {
             linkSubscriptionsToLicense(cl.baseLicense,cl.ownedSubscriptions,current)
         }
         licWithoutBaseSet.each { lwob ->
-            if(!License.findByReference(lwob.mainParams.reference))
+            if(!License.executeQuery('select oo.lic from OrgRole oo where oo.lic.reference = :licName and oo.org = :ctx',[licName:lwob.mainParams.reference,ctx:current]))
                 createObject('License',(Map) lwob,consortium,current)
         }
         return true
@@ -981,11 +984,11 @@ class OrganisationService {
                 }
             }
         }
+        Object[] argv0 = [current.name]
+        Object[] argv1 = [current.shortname]
         Org modelMember = Org.findByName(messageSource.getMessage('org.setup.modelOrgName',argv0,LocaleContextHolder.getLocale()))
         if(!modelMember) {
             log.info("creating model member org ...")
-            Object[] argv0 = [current.name]
-            Object[] argv1 = [current.shortname]
             modelMember = new Org(name: messageSource.getMessage('org.setup.modelOrgName',argv0,LocaleContextHolder.getLocale()),
                     sortname: messageSource.getMessage('org.setup.modelOrgSortname',argv1,LocaleContextHolder.getLocale()),
                     url: 'www.mustereinichtung.de', urlGov: 'www.muster_uni.de', status: RDStore.O_STATUS_CURRENT,
@@ -2028,9 +2031,12 @@ class OrganisationService {
                 setupLinking([owner:current,source:source.id,destination:destination.id,objectType:Subscription.class.name,linkType:RDStore.LINKTYPE_FOLLOWS])
             source.derivedSubscriptions.each { childSub ->
                 Org childSubscriber = childSub.orgRelations.find { it.roleType == RDStore.OR_SUBSCRIBER_CONS }.org
-                Subscription childPair = destination.derivedSubscriptions.find { it.orgRelations.find { it.org == childSubscriber } }
-                if(!Links.findBySourceAndDestination(childSub.id,childPair.id))
-                    setupLinking([owner:current,source:childSub.id,destination:childPair.id,objectType:Subscription.class.name,linkType:RDStore.LINKTYPE_FOLLOWS])
+                Set<Subscription> childPairs = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :destination and oo.org = :member',[destination:destination,member:childSubscriber])
+                if(childPairs) {
+                    Subscription childPair = childPairs.first()
+                    if(!Links.findBySourceAndDestination(childSub.id,childPair.id))
+                        setupLinking([owner:current,source:childSub.id,destination:childPair.id,objectType:Subscription.class.name,linkType:RDStore.LINKTYPE_FOLLOWS])
+                }
             }
         }
     }
@@ -2061,10 +2067,12 @@ class OrganisationService {
                         if(member)
                             memberRole = new OrgRole(org:member,sub:obj,roleType:RDStore.OR_SUBSCRIBER_CONS)
                         consRole = new OrgRole(org:consortium,sub:obj,roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA)
+                        obj.orgRelations = [memberRole,consRole]
                         obj.isSlaved = true
                         break
                     case RDStore.SUBSCRIPTION_TYPE_LOCAL:
                         memberRole = new OrgRole(org:member,sub:obj,roleType:RDStore.OR_SUBSCRIBER)
+                        obj.orgRelations = [memberRole]
                         break
                 }
                 break
@@ -2072,10 +2080,12 @@ class OrganisationService {
                 if(member) {
                     //this is the local counterpart for the consortial member license org role setup at the end of setupBasicTestData()
                     memberRole = new OrgRole(org:member,lic:obj,roleType:RDStore.OR_LICENSEE)
+                    //obj.orgLinks = [memberRole]
                 }
                 else if(consortium) {
                     //this is the org role setup for consortia
                     consRole = new OrgRole(org:consortium,lic:obj,roleType:RDStore.OR_LICENSING_CONSORTIUM)
+                    //obj.orgLinks = [consRole]
                 }
                 break
             case 'Person': obj = new Person(params.mainParams)
@@ -2244,14 +2254,14 @@ class OrganisationService {
                                     if(!consSub.save())
                                         throw new CreationException(consSub.errors)
                                     memberRole = new OrgRole(org:subMember,sub:consSub,roleType:RDStore.OR_SUBSCRIBER_CONS)
-                                    OrgRole memberLicenseRole = new OrgRole(org:subMember,lic:entry.subOwner,roleType: RDStore.OR_LICENSEE_CONS)
+                                    //OrgRole memberLicenseRole = new OrgRole(org:subMember,lic:entry.subOwner,roleType: RDStore.OR_LICENSEE_CONS)
                                     consRole = new OrgRole(org:consortium,sub:consSub,roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA)
                                     if(!memberRole.save()) {
                                         throw new CreationException(memberRole.errors)
                                     }
-                                    if(!memberLicenseRole.save()) {
+                                    /*if(!memberLicenseRole.save()) {
                                         throw new CreationException(memberLicenseRole.errors)
-                                    }
+                                    }*/
                                     if(!consRole.save()) {
                                         throw new CreationException(consRole.errors)
                                     }
@@ -2432,6 +2442,8 @@ class OrganisationService {
             if(!subInstance) {
                 throw new CreationException("Wrong subscription key inserted: ${subIdentifier}")
             }
+            subscriptionService.setOrgLicRole(subInstance,owner)
+            /*
             subInstance.owner = owner
             if(member) {
                 //this is the consortial complimentary part for the license org role processing switch in createObject
@@ -2443,6 +2455,7 @@ class OrganisationService {
             }
             if(!subInstance.save(flush: true))
                 throw new CreationException(subInstance.errors)
+             */
         }
     }
 
