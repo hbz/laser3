@@ -18,7 +18,7 @@
 <div class="ui grid">
     <div class="sixtenn wide column">
 
-        <h3 class="ui headerline">Filesystem</h3>
+        <h3 class="ui headerline"><i class="ui hdd icon"></i> Dateien</h3>
 
         <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
             <thead>
@@ -35,19 +35,19 @@
                     <td>${listOfFiles.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-ok">- entspr. Dateiobjekt in der Datenbank existiert</td>
+                    <td class="table-td-ok">entspr. Dateiobjekte in der Datenbank existieren</td>
                     <td class="table-td-ok"></td>
                     <td class="table-td-ok">${listOfFilesMatchingDocs.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-error">- entspr. Dateiobjekt in der Datenbank existiert nicht</td>
+                    <td class="table-td-error">entspr. Dateiobjekte in der Datenbank existieren nicht</td>
                     <td class="table-td-error">${listOfFilesNotMatchingDocs.join(', ')}</td>
                     <td class="table-td-error">${listOfFilesNotMatchingDocs.size()}</td>
                 </tr>
             </tbody>
         </table>
 
-        <h3 class="ui headerline">Tabelle Doc</h3>
+        <h3 class="ui headerline"><i class="ui database icon"></i> Objekte: Doc</h3>
 
          <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
             <thead>
@@ -64,12 +64,12 @@
                     <td>${listOfDocs.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-ok">- entspr. Datei existiert</td>
+                    <td class="table-td-ok">entspr. Dateien existieren</td>
                     <td class="table-td-ok"></td>
                     <td class="table-td-ok">${listOfDocs.size() - listOfDocsNotMatchingFiles.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-error">- entsprechende Datei existiert nicht</td>
+                    <td class="table-td-error">entsprechende Dateien existieren nicht</td>
                     <td class="table-td-error">${listOfDocsNotMatchingFiles.collect{ it.id }.join(', ')}</td>
                     <td class="table-td-error">${listOfDocsNotMatchingFiles.size()}</td>
                 </tr>
@@ -80,19 +80,19 @@
                     <td>${listOfDocsInUse.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-ok">- entspr. Datei existiert</td>
+                    <td class="table-td-ok">entspr. Dateien existieren</td>
                     <td class="table-td-ok"></td>
                     <td class="table-td-ok">${listOfDocsInUse.size() - listOfDocsInUseNotMatchingFiles.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-error">- entspr. Datei existiert nicht</td>
+                    <td class="table-td-error">entspr. Dateien existieren nicht</td>
                     <td class="table-td-error">${listOfDocsInUseNotMatchingFiles.collect{ it.id }.join(', ')}</td>
                     <td class="table-td-error">${listOfDocsInUseNotMatchingFiles.size()}</td>
                 </tr>
             </tbody>
          </table>
 
-        <h3 class="ui headerline">Tabelle DocContext</h3>
+        <h3 class="ui headerline"><i class="ui database icon"></i> Objekte: DocContext</h3>
 
         <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
             <thead>
@@ -115,7 +115,6 @@
                 </tr>
             </tbody>
          </table>
-
 
     </div>
 </div>

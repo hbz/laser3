@@ -625,6 +625,7 @@ class AdminController extends AbstractDebugController {
                         [ct: Doc.CONTENT_TYPE_BLOB, files: result.listOfFiles]
                 )
                 List<String> matches = result.listOfFilesMatchingDocs.collect{ it.uuid }
+
                 result.listOfFiles.each { ff ->
                     if (! matches.contains(ff)) {
                         result.listOfFilesNotMatchingDocs << ff
@@ -632,9 +633,7 @@ class AdminController extends AbstractDebugController {
                 }
             }
         }
-        catch (Exception e) {
-
-        }
+        catch (Exception e) {}
 
         // docs
 
@@ -675,8 +674,6 @@ class AdminController extends AbstractDebugController {
                 'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and dc.status = :del',
                 [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
         ).size()
-
-
 
         result
     }
