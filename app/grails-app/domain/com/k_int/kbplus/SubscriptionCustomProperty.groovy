@@ -3,13 +3,13 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
-import de.laser.traits.AuditableTrait
+import de.laser.interfaces.AuditableSupport
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 
 import javax.persistence.Transient
 
-class SubscriptionCustomProperty extends CustomProperty implements AuditableTrait {
+class SubscriptionCustomProperty extends CustomProperty implements AuditableSupport {
 
     @Transient
     def genericOIDService
@@ -21,8 +21,9 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
     def pendingChangeService
     @Transient
     def deletionService
+    @Transient
+    def auditService
 
-    // AuditableTrait
     static auditable = true
     static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
@@ -60,21 +61,15 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
     }
 
     @Transient
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChange(this, oldMap, newMap)
+    }
+
+    @Transient
     def onDelete = { oldMap ->
-        log.debug("onDelete SubscriptionCustomProperty")
-
-        //def oid = "${this.owner.class.name}:${this.owner.id}"
-        String oid = "${this.class.name}:${this.id}"
-        Map<String, Object> changeDoc = [
-                          OID: oid,
-                          event:'SubscriptionCustomProperty.deleted',
-                          prop: "${this.type.name}",
-                          old: "",
-                          new: "property removed",
-                          name: this.type.name
-        ]
-
-        changeNotificationService.fireEvent(changeDoc)
+        log.debug("onDelete ${this}")
+        auditService.onDelete(this, oldMap)
     }
 
     def notifyDependencies_trait(changeDocument) {

@@ -520,7 +520,7 @@ class DeletionService {
         result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
         result.info << ['Aufgaben (responsibility)', tasksResp, FLAG_BLOCKER]
         result.info << ['SystemMessages', systemMessages, FLAG_BLOCKER]
-        result.info << ['SystemProfilers', systemProfilers, FLAG_BLOCKER]
+        result.info << ['SystemProfilers', systemProfilers]
 
         result.info << ['Facts', facts, FLAG_BLOCKER]
         result.info << ['ReaderNumbers', readerNumbers, FLAG_BLOCKER]
@@ -602,6 +602,8 @@ class DeletionService {
                     }
                     customProperties.each { tmp -> tmp.delete() }
 
+                    // systemProfilers
+                    systemProfilers.each { tmp -> tmp.delete() }
 
                     //tipsProviders.each { tmp ->
                     //    tmp.provider = replacement
