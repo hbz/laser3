@@ -422,6 +422,7 @@
                                     <g:link class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
+                                    <g:link class="item" role="menuitem" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</g:link>
                                 </div>
                             </div>
 
