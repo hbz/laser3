@@ -14,9 +14,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
 
     static Log static_logger = LogFactory.getLog(SurveyResult)
 
-    @Transient
-    def cascadingUpdateService
-
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
@@ -68,21 +65,17 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         endDate column: 'surre_end_date'
         finishDate column: 'surre_finish_date'
 
-
         owner column: 'surre_owner_fk'
         participant column: 'surre_participant_fk'
 
         type column: 'surre_type_fk'
         surveyConfig column: 'surre_survey_config_fk'
 
-
         comment column: 'surre_comment'
         participantComment column: 'surre_participant_comment'
         ownerComment column: 'surre_owner_comment'
 
         isRequired column: 'surre_is_required'
-
-
     }
 
     boolean isResultProcessed()

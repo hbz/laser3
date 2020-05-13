@@ -27,8 +27,6 @@ class Package extends AbstractBaseDomainWithCalculatedLastUpdated {
     def grailsApplication
     @Transient
     def deletionService
-    @Transient
-    def cascadingUpdateService
 
   //String identifier
   String name

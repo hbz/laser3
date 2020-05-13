@@ -6,14 +6,15 @@ import de.laser.helper.DateUtil
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.springframework.beans.factory.annotation.Autowired
 
 import javax.persistence.Transient
 
 abstract class AbstractPropertyWithCalculatedLastUpdated
         implements CalculatedLastUpdated, Serializable {
 
-    @Transient
-    def cascadingUpdateService
+    @Autowired
+    def cascadingUpdateService // DO NOT OVERRIDE IN SUB CLASSES
 
     static Log static_logger = LogFactory.getLog(AbstractPropertyWithCalculatedLastUpdated)
 

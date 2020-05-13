@@ -8,6 +8,7 @@ import com.k_int.kbplus.Package
 import com.k_int.kbplus.Person
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SurveyResult
 import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
@@ -116,6 +117,14 @@ class CascadingUpdateService {
         log(obj, luc)
 
         Subscription.executeUpdate("update Subscription sub set sub.lastUpdatedCascading = :luc where sub = :obj", [
+                luc: luc, obj: obj
+        ])
+    }
+
+    void update(SurveyResult obj, Date luc) {
+        log(obj, luc)
+
+        SurveyResult.executeUpdate("update SurveyResult sr set sr.lastUpdatedCascading = :luc where sr = :obj", [
                 luc: luc, obj: obj
         ])
     }

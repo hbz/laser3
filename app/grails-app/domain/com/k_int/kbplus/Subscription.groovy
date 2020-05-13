@@ -50,8 +50,6 @@ class Subscription
     @Transient
     def deletionService
     @Transient
-    def cascadingUpdateService
-    @Transient
     def subscriptionService
     @Transient
     def auditService

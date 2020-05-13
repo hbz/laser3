@@ -41,8 +41,6 @@ class Org
 	def propertyService
     @Transient
     def deletionService
-    @Transient
-    def cascadingUpdateService
 
     String name
     String shortname

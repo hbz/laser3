@@ -20,8 +20,6 @@ class TitleInstance extends AbstractBaseDomainWithCalculatedLastUpdated {
     def grailsApplication
     @Transient
     def deletionService
-    @Transient
-    def cascadingUpdateService
 
     // AuditableTrait
     //static auditable = true

@@ -48,8 +48,6 @@ class License
     @Transient
     def deletionService
     @Transient
-    def cascadingUpdateService
-    @Transient
     def auditService
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]

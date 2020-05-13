@@ -3,6 +3,7 @@ package de.laser.domain
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.springframework.beans.factory.annotation.Autowired
 
 import javax.persistence.Transient
 
@@ -21,16 +22,12 @@ abstract class AbstractBaseDomainWithCalculatedLastUpdated
         extends AbstractBaseDomain
         implements CalculatedLastUpdated {
 
-    @Transient
-    def cascadingUpdateService
+    @Autowired
+    def cascadingUpdateService // DO NOT OVERRIDE IN SUB CLASSES
 
     static Log static_logger = LogFactory.getLog(AbstractBaseDomainWithCalculatedLastUpdated)
 
-    String globalUID                // AbstractBaseDomain
-
-    Date dateCreated                // domain class
-    Date lastUpdated                // domain class
-    Date lastUpdatedCascading       // CalculatedLastUpdated
+    String globalUID // from AbstractBaseDomain
 
     def setGlobalUID() {
         if (! globalUID) {

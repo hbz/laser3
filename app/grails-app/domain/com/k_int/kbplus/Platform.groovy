@@ -20,8 +20,6 @@ class Platform extends AbstractBaseDomainWithCalculatedLastUpdated {
   def propertyService
   @Transient
   def deletionService
-  @Transient
-  def cascadingUpdateService
 
   static Log static_logger = LogFactory.getLog(Platform)
 

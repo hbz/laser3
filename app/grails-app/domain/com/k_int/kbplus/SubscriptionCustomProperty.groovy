@@ -25,7 +25,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
     def auditService
 
     static auditable = true
-    static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+    static controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']
 
     PropertyDefinition type
     Subscription owner

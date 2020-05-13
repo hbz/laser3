@@ -15,9 +15,6 @@ class Person extends AbstractBaseDomainWithCalculatedLastUpdated {
 
     static Log static_logger = LogFactory.getLog(Person)
 
-    @Transient
-    def cascadingUpdateService
-
     String       title
     String       first_name
     String       middle_name
