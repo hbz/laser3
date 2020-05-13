@@ -853,21 +853,25 @@ class YodaService {
         Map<License,Set<Org>> subscribersWithoutLicenseeRole = [:], licenseesWithoutSubscriptionOwnership = [:]
         Map<String,Map<License,Set<Org>>> data = collectData()
         data.subscribersCons.each { License lic, Set<Org> subscribers ->
+            Set<Org> delta = []
+            delta.addAll(subscribers)
             if(data.licenseesCons.get(lic)) {
-                subscribers.removeAll(data.licenseesCons.get(lic))
+                delta.removeAll(data.licenseesCons.get(lic))
             }
-            if (subscribers) {
-                log.debug("for license ${lic}, we have subscribers without org role: ${subscribers}")
-                subscribersWithoutLicenseeRole.put(lic, subscribers)
+            if (delta) {
+                log.debug("for license ${lic}, we have subscribers without org role: ${delta}")
+                subscribersWithoutLicenseeRole.put(lic, delta)
             }
         }
         data.licenseesCons.each { License lic, Set<Org> licensees ->
+            Set<Org> delta = []
+            delta.addAll(licensees)
             if(data.subscribersCons.get(lic)) {
-                licensees.removeAll(data.subscribersCons.get(lic))
+                delta.removeAll(data.subscribersCons.get(lic))
             }
-            if (licensees) {
-                log.debug("for license ${lic}, we have licensees without subscription linking: ${licensees}")
-                licenseesWithoutSubscriptionOwnership.put(lic, licensees)
+            if (delta) {
+                log.debug("for license ${lic}, we have licensees without subscription linking: ${delta}")
+                licenseesWithoutSubscriptionOwnership.put(lic, delta)
             }
         }
         [subscribersWithoutLicenseeRole:subscribersWithoutLicenseeRole,licenseesWithoutSubscriptionOwnership:licenseesWithoutSubscriptionOwnership]
@@ -878,10 +882,20 @@ class YodaService {
         OrgRole.withTransaction { TransactionStatus status ->
             try {
                 data.subscribersCons.each { License lic, Set<Org> subscribers ->
+                    Set<Org> delta = []
+                    delta.addAll(subscribers)
                     if(data.licenseesCons.get(lic))
-                        subscribers.removeAll(data.licenseesCons.get(lic))
-                    if(subscribers) {
-                        log.debug("for license ${lic}, we have subscribers without org role: ${subscribers}")
+                        delta.removeAll(data.licenseesCons.get(lic))
+                    if(delta) {
+                        log.debug("for license ${lic}, we have subscribers without org role: ${delta}")
+                        delta.each { Org subscriber ->
+                            OrgRole oo = new OrgRole(org:subscriber,lic:lic,roleType:RDStore.OR_LICENSEE_CONS)
+                            log.debug("creating new org role: ${oo}")
+                            if(!oo.save())
+                                log.error(oo.errors)
+                        }
+                    }
+                    else {
                         subscribers.each { Org subscriber ->
                             OrgRole oo = new OrgRole(org:subscriber,lic:lic,roleType:RDStore.OR_LICENSEE_CONS)
                             log.debug("creating new org role: ${oo}")
@@ -900,25 +914,39 @@ class YodaService {
         Subscription.withTransaction { TransactionStatus status ->
             try {
                 data.licenseesCons.each { License lic, Set<Org> licensees ->
+                    Set<Org> delta = []
+                    delta.addAll(licensees)
                     if(data.subscribersCons.get(lic))
-                        licensees.removeAll(data.subscribersCons.get(lic))
-                    if(licensees) {
-                        log.debug("for license ${lic}, we have licensees without subscription linking: ${licensees}")
-                        Set<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf.owner = :lic and oo.sub.owner is null',[lic:lic.instanceOf])
+                        delta.removeAll(data.subscribersCons.get(lic))
+                    if(delta) {
+                        log.debug("for license ${lic}, we have licensees without subscription linking: ${delta}")
+                        Set<Subscription> parentSubscriptions = Subscription.findAllByOwner(lic.instanceOf)
+                        delta.each { Org licensee ->
+                            if(parentSubscriptions) {
+                                Set<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.owner = null and oo.sub.instanceOf in (:parentSubs) and oo.org = :subscr',[parentSubs:parentSubscriptions,subscr:licensee])
+                                if(subscriptions) {
+                                    log.debug("located matching subscription set: ${subscriptions}")
+                                    Subscription.executeUpdate('update Subscription s set s.owner = :lic where s in (:subscriptions)',[lic:lic,subscriptions:subscriptions])
+                                }
+                                else {
+                                    log.debug("no member subscription located for licensee ${licensee} and ${lic}, deleting orphaned licensee role")
+                                    if(!OrgRole.executeUpdate('delete from OrgRole oo where oo.lic = :lic and oo.org = :org and oo.roleType = :roleType',[lic:lic,org:licensee,roleType:RDStore.OR_LICENSEE_CONS]))
+                                        log.error("an error occurred on deleting!")
+                                }
+                            }
+                            /*
+                            continue here: the parent subscriptions and parent licenses need to be checked:
+                            The Johns Hopkins University Press # Project Muse Journals # Consortium Licensing Agreement # Konsortialvertrag (Teilnehmervertrag), we have licensees without subscription linking: [Universitätsbibliothek Bamberg, Barenboim-Said Akademie Berlin, Freie Universität Berlin Universitätsbibliothek, Staatsbibliothek zu Berlin - Stiftung Preußischer Kulturbesitz, Universitätsbibliothek der Ruhr-Universität Bochum, Deutsches Institut für Entwicklungspolitik, Universitäts- und Landesbibliothek Bonn, Staats- und Universitätsbibliothek Bremen, Universitätsbibliothek Duisburg-Essen, Universitäts- und Landesbibliothek Düsseldorf, Universitätsbibliothek Giessen, Georg-August-Universität Göttingen   Niedersächsische Staats- u. Universitätsbibliothek, Universitätsbibliothek der Fernuniversität in Hagen, Staats- und Universitätsbibliothek Hamburg, Gottfried Wilhelm Leibniz Bibliothek - Niedersächsische Landesbibliothek, Technische Informationsbibliothek (TIB), Universitätsbibliothek Heidelberg, Universitäts- und Stadtbibliothek Köln, Universität Konstanz, Kommunikations-, Informations-, Medienzentrum (KIM) IT- und Bibliotheksdienste, Universitätsbibliothek Leipzig, Universitätsbibliothek Mainz, Universitätsbibliothek Marburg, Universitäts- und Landesbibliothek Münster, BIS - Bibliotheks- und Informationssystem der Universität Oldenburg, Universitätsbibliothek Paderborn, Universitätsbibliothek Potsdam, Universitätsbibliothek  Siegen, Universitätsbibliothek Tübingen]
+                            Verlag Vittorio Klostermann GmbH # Klapp-Online Bibliographie der französischen Literaturwissenschaft # Lizenzvertrag # Konsortialvertrag (Teilnehmervertrag), we have licensees without subscription linking: [Universitätsbibliothek der RWTH Aachen, Universitätsbibliothek Augsburg, Universitätsbibliothek Bamberg, Universitätsbibliothek Bayreuth, Freie Universität Berlin Universitätsbibliothek, Humboldt-Universität zu Berlin - Universitätsbibliothek, Universitätsbibliothek Bielefeld, Universitätsbibliothek der Ruhr-Universität Bochum, Universitäts- und Landesbibliothek Bonn, Sächsische Landesbibliothek - Staats- und Universitätsbibliothek Dresden (SLUB), Universitätsbibliothek Duisburg-Essen, Universitäts- und Landesbibliothek Düsseldorf, Universitätsbibliothek Eichstätt-Ingolstadt, Zentrale Hochschulbibliothek Flensburg, Universitätsbibliothek Johann Christian Senckenberg Frankfurt, Albert-Ludwigs-Universität Freiburg, Universitätsbibliothek, Universitätsbibliothek Giessen, Georg-August-Universität Göttingen   Niedersächsische Staats- u. Universitätsbibliothek, Martin-Luther-Universität Halle-Wittenberg Universitäts- und Landesbibliothek Sachsen-Anhalt, Staats- und Universitätsbibliothek Hamburg, Universitätsbibliothek Heidelberg, Thüringer Universitäts- und Landesbibliothek Jena, Badische Landesbibliothek Karlsruhe, Universitätsbibliothek Kassel, Universitätsbibliothek Kiel, Universitätsbibliothek Koblenz-Landau, Universitäts- und Stadtbibliothek Köln, Universität Konstanz, Kommunikations-, Informations-, Medienzentrum (KIM) IT- und Bibliotheksdienste, Universitätsbibliothek Mainz, Universitätsbibliothek Mannheim, Universitätsbibliothek Marburg, Universitätsbibliothek der LMU München, Universitäts- und Landesbibliothek Münster, Universitätsbibliothek Osnabrück, Universitätsbibliothek Paderborn, Universitätsbibliothek Passau, Universitätsbibliothek  Regensburg, Universitätsbibliothek Rostock, Saarländische Universitäts- und Landesbibliothek  Saarbrücken, Universitätsbibliothek  Siegen, Universitätsbibliothek Stuttgart, Universitätsbibliothek Trier, Universitätsbibliothek  Wuppertal, Universitätsbibliothek Würzburg]
+                            Ergänzungsvertrag zur Vereinbarung über die Unterhaltung Einrichtung und Unterhaltung Dgitaler Auslegestellen des Deutschen Normenwerkes in Hessen (Teilnehmervertrag), we have licensees without subscription linking: [Universitäts- und Landesbibliothek Darmstadt]
+                             */
+                        }
+                    }
+                    else if(!data.subscribersCons.get(lic)) {
                         licensees.each { Org licensee ->
-                            Subscription subscription = subscriptions.find { s ->
-                                s.getSubscriber() == licensee && s.status == RDStore.SUBSCRIPTION_CURRENT
-                            }
-                            if(subscription) {
-                                log.debug("located matching subscription: ${subscription}")
-                                subscription.owner = lic
-                                subscription.save(flush:true) // needed because of list processing
-                            }
-                            else {
-                                log.debug("no current member subscription located for licensee ${licensee} and ${lic}, deleting orphaned licensee role")
-                                if(!OrgRole.executeUpdate('delete from OrgRole oo where oo.lic = :lic and oo.org = :org and oo.roleType = :roleType',[lic:lic,org:licensee,roleType:RDStore.OR_LICENSEE_CONS]))
-                                    log.error("an error occurred on deleting!")
-                            }
+                            log.debug("no subscription located for licensee ${licensee} and ${lic}, deleting orphaned licensee role")
+                            if(!OrgRole.executeUpdate('delete from OrgRole oo where oo.lic = :lic and oo.org = :org and oo.roleType = :roleType',[lic:lic,org:licensee,roleType:RDStore.OR_LICENSEE_CONS]))
+                                log.error("an error occurred on deleting!")
                         }
                     }
                 }
@@ -935,7 +963,7 @@ class YodaService {
     Map<String,Map<License,Set<Org>>> collectData() {
         Map<License,Set<Org>> subscribersCons = [:], licenseesCons = [:]
         Set<OrgRole> subscriberRoleSet = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub.owner != null and oo.roleType in (:subscrRoles)',[subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]),
-                     licenseeRoleSet = OrgRole.executeQuery('select oo from OrgRole oo where oo.lic != null and oo.lic.instanceOf != null and oo.roleType = :roleType',[roleType:RDStore.OR_LICENSEE_CONS])
+                     licenseeRoleSet = OrgRole.executeQuery('select oo from OrgRole oo where oo.lic != null and oo.roleType = :roleType',[roleType:RDStore.OR_LICENSEE_CONS])
         subscriberRoleSet.each { OrgRole oo ->
             Set<Org> subscribers = subscribersCons.get(oo.sub.owner)
             if(!subscribers)
