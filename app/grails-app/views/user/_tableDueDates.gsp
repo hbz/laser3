@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
+<%@ page import="com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-table">
     <thead>

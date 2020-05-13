@@ -1,11 +1,9 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.CalculatedLastUpdated
 import groovy.util.logging.Log4j
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
