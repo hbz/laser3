@@ -153,7 +153,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
-                            pc.delete(flush: true)
+                            pc.delete()
                         }
                     }
                 }

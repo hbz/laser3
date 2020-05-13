@@ -2,6 +2,11 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.99
+
+- removed attribute: `License.onixplLicense`
+- removed object: `OnixplLicense`
+
 #### 0.98
 
 - added new attribute: `Address.region`

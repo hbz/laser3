@@ -46,30 +46,22 @@
 .ui.table {
 
   tr{
-    td {
-      //background-color: white;
+    td, .la-no-uppercase {
       padding: 20px 0;
     }
     td, th {
       padding-left:0.9rem;
       padding-right:0.9rem;
     }
-    th{
-      color: #515151;
-      font-size: 0.8rem;
+    th {
       &:not(.la-no-uppercase) {
-        text-transform: uppercase;
-      }
-      a {
-        //display: inline-block;
-        //padding: 0.5rem 0;
-        cursor: pointer;
         color: #515151;
-      }
-    }
-    th:not(.sortable){
-      a {
-        text-decoration: underline;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        a {
+          cursor: pointer;
+          color: #515151;
+        }
       }
     }
   }
@@ -78,13 +70,7 @@
      la-table
 ---------------*/
 .ui.la-table.table{
-
   background-color: white;
-  tr {
-    td {
-      //background-color: white;
-    }
-  }
 }
 .metaboxContent .ui.la-table.table{
   border-collapse: separate;
@@ -95,7 +81,8 @@
 .ui.la-table.table tr td {
   border-top:none;
 }
-.ui.la-table.table tr td {
+.ui.la-table.table tr td,
+.ui.la-table.table tr th.la-no-uppercase{
   border-top:7px solid #F4F8F9;
 }
 /*--------------
