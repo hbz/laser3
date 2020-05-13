@@ -61,6 +61,9 @@ class LicenseCustomProperty extends CustomProperty implements AuditableSupport {
     ]
 
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 

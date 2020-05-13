@@ -3,10 +3,18 @@ package com.k_int.kbplus.abstract_domain
 
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.DateUtil
+import de.laser.interfaces.CalculatedLastUpdated
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
-abstract class AbstractProperty implements Serializable {
+abstract class AbstractProperty implements CalculatedLastUpdated, Serializable {
+
+    @Transient
+    def cascadingUpdateService
+
+    static Log static_logger = LogFactory.getLog(AbstractProperty)
 
     String           stringValue
     Integer          intValue
@@ -16,9 +24,12 @@ abstract class AbstractProperty implements Serializable {
     String           note = ""
     Date             dateValue
 
+    Date lastUpdatedCascading
+
     static mapping = {
         stringValue  type: 'text'
         note         type: 'text'
+        lastUpdatedCascading column: 'last_updated_cascading'
     }
 
     static constraints = {
@@ -29,6 +40,26 @@ abstract class AbstractProperty implements Serializable {
         urlValue    (nullable: true)
         note        (nullable: true)
         dateValue   (nullable: true)
+        lastUpdatedCascading (nullable: true, blank: false)
+    }
+
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+        cascadingUpdateService.update(this, dateCreated)
+    }
+
+    def afterUpdate() {
+        static_logger.debug("afterUpdate")
+        cascadingUpdateService.update(this, lastUpdated)
+    }
+
+    def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+    }
+
+    Date getCalculatedLastUpdated() {
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     @Transient

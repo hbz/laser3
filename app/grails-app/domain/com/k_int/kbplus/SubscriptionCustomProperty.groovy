@@ -57,6 +57,9 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
     ]
 
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 

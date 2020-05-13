@@ -35,6 +35,9 @@ class SubscriptionPrivateProperty extends PrivateProperty {
     ]
 
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 

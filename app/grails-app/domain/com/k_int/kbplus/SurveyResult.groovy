@@ -3,12 +3,23 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
+import de.laser.interfaces.CalculatedLastUpdated
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+
+import javax.persistence.Transient
 
 
-class SurveyResult extends AbstractProperty {
+class SurveyResult extends AbstractProperty implements CalculatedLastUpdated {
+
+    static Log static_logger = LogFactory.getLog(SurveyResult)
+
+    @Transient
+    def cascadingUpdateService
 
     Date dateCreated
     Date lastUpdated
+    Date lastUpdatedCascading
 
     Org owner
     Org participant
@@ -38,6 +49,7 @@ class SurveyResult extends AbstractProperty {
         participantComment (nullable:true, blank:false)
         ownerComment (nullable:true, blank:false)
         isRequired (nullable:false, blank:false)
+        lastUpdatedCascading (nullable: true, blank: false)
     }
 
     static mapping = {
@@ -48,6 +60,7 @@ class SurveyResult extends AbstractProperty {
 
         dateCreated column: 'surre_date_created'
         lastUpdated column: 'surre_last_updated'
+        lastUpdatedCascading column: 'surre_last_updated_cascading'
 
         resultValues column: 'surre_result_values'
 

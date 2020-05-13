@@ -41,6 +41,7 @@ class PersonPrivateProperty extends PrivateProperty {
         type:   PropertyDefinition,
         owner:  Person
     ]
+
     static findAllByDateValueBetweenForOrgAndIsNotPulbic(java.sql.Date dateValueFrom, java.sql.Date dateValueTo, Org org){
         executeQuery("SELECT distinct(s) FROM PersonPrivateProperty as s " +
             "WHERE (dateValue >= :fromDate and dateValue <= :toDate) " +
