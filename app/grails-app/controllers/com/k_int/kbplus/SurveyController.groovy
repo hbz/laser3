@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
@@ -3003,14 +3003,14 @@ class SurveyController {
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
             subsToCompare.add(newSub)
         }
-        List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect {
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params?.list('subscription.takeProperty').collect {
             genericOIDService.resolveOID(it)
         }
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
             surveyService.copyProperties(propertiesToTake, newSub, isRenewSub, flash, auditProperties)
         }
 
-        List<AbstractProperty> propertiesToDelete = params?.list('subscription.deleteProperty').collect {
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params?.list('subscription.deleteProperty').collect {
             genericOIDService.resolveOID(it)
         }
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {

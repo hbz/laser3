@@ -1,4 +1,4 @@
-<%@ page import="de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
+<%@ page import="com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-table">
     <thead>
@@ -17,7 +17,7 @@
         <g:if test="${obj}">
             <tr>
                 <td>
-                    <g:if test="${obj instanceof AbstractProperty}">
+                    <g:if test="${obj instanceof com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated}">
                         <i class="icon tags la-list-icon"></i>
                     </g:if>
                 %{--${dashDueDate.id} &nbsp--}%
@@ -62,7 +62,7 @@
                             </span>
                             <a href="#" class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
                         </g:elseif>
-                        <g:elseif test="${obj instanceof AbstractProperty}">
+                        <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">
                                 <i class="icon address book la-list-icon"></i>
                                 <g:link controller="person" action="show" id="${obj.owner.id}">${obj.owner?.first_name}&nbsp;${obj.owner?.last_name}</g:link>

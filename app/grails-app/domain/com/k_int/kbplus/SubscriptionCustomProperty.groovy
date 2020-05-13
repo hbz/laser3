@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.interfaces.AuditableSupport
@@ -35,7 +35,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
     Date lastUpdated
 
     static mapping = {
-        includes    AbstractProperty.mapping
+        includes    AbstractPropertyWithCalculatedLastUpdated.mapping
         owner       index:'scp_owner_idx'
 
         dateCreated column: 'scp_date_created'
@@ -43,7 +43,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
     }
 
     static constraints = {
-        importFrom  AbstractProperty
+        importFrom  AbstractPropertyWithCalculatedLastUpdated
         instanceOf (nullable: true)
 
         // Nullable is true, because values are already in the database

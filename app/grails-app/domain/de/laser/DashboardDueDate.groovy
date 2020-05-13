@@ -5,7 +5,7 @@ import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.UserSettings
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import de.laser.helper.SqlDateUtils
 import groovy.util.logging.Log4j
@@ -50,7 +50,7 @@ class DashboardDueDate {
     }
 
     static Date getDate(obj, user){
-        if (obj instanceof AbstractProperty)            return obj.dateValue
+        if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return obj.dateValue
         if (obj instanceof Task)                        return obj.endDate
         if (obj instanceof SurveyInfo)                  return obj.endDate
         if (obj instanceof Subscription){
@@ -60,7 +60,7 @@ class DashboardDueDate {
     }
 
     static String getAttributeValue(messageSource, obj, User user, Locale locale){
-        if (obj instanceof AbstractProperty)            return obj.type.getI10n('name', locale)
+        if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return obj.type.getI10n('name', locale)
         if (obj instanceof Task)                        return messageSource.getMessage('dashboardDueDate.task.endDate', null, locale)
         if (obj instanceof SurveyInfo)                  return messageSource.getMessage('dashboardDueDate.surveyInfo.endDate', null, locale)
         if (obj instanceof Subscription){
@@ -69,7 +69,7 @@ class DashboardDueDate {
         }
     }
     static String getAttributeName(obj, user){
-        if (obj instanceof AbstractProperty)            return 'type.name'
+        if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return 'type.name'
         if (obj instanceof Task)                        return 'endDate'
         if (obj instanceof SurveyInfo)                  return 'endDate'
         if (obj instanceof Subscription){

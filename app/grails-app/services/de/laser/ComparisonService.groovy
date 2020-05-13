@@ -3,7 +3,7 @@ package de.laser
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.TitleInstancePackagePlatform
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import grails.transaction.Transactional
@@ -22,7 +22,7 @@ class ComparisonService {
    */
   Map getGroupedPropertyTrees(Map groupedProperties, PropertyDefinitionGroup groupKey, PropertyDefinitionGroupBinding groupBinding, cmpObject) {
     //get the current properties within each group for each object
-    ArrayList<AbstractProperty> licenseProps = groupKey.getCurrentProperties(cmpObject)
+    ArrayList<AbstractPropertyWithCalculatedLastUpdated> licenseProps = groupKey.getCurrentProperties(cmpObject)
     LinkedHashMap group = (LinkedHashMap) groupedProperties.get(groupKey)
     if(licenseProps.size() > 0) {
       if(group) {
@@ -57,7 +57,7 @@ class ComparisonService {
    * @param result - the map being filled or updated
    * @return the updated map
    */
-    Map buildComparisonTree(Map result,cmpObject,Collection<AbstractProperty> props) {
+    Map buildComparisonTree(Map result,cmpObject,Collection<AbstractPropertyWithCalculatedLastUpdated> props) {
       props.each { prop ->
 
         //property level - check if the group contains already a mapping for the current property

@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 
@@ -13,7 +13,7 @@ class PlatformCustomProperty extends CustomProperty {
     Date lastUpdated
 
     static mapping = {
-        includes    AbstractProperty.mapping
+        includes    AbstractPropertyWithCalculatedLastUpdated.mapping
         owner       index:'pcp_owner_idx'
 
         dateCreated column: 'pcp_date_created'

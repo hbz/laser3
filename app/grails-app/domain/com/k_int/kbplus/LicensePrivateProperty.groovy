@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 
@@ -25,7 +25,7 @@ class LicensePrivateProperty extends PrivateProperty {
     Date lastUpdated
 
     static mapping = {
-        includes AbstractProperty.mapping
+        includes AbstractPropertyWithCalculatedLastUpdated.mapping
 
         id      column:'lpp_id'
         version column:'lpp_version'
@@ -39,7 +39,7 @@ class LicensePrivateProperty extends PrivateProperty {
     }
 
     static constraints = {
-        importFrom AbstractProperty
+        importFrom AbstractPropertyWithCalculatedLastUpdated
 
         paragraph (nullable:true)
         owner     (nullable:false, blank:false)
@@ -62,7 +62,7 @@ class LicensePrivateProperty extends PrivateProperty {
     }
 
     @Override
-    def copyInto(AbstractProperty newProp){
+    def copyInto(AbstractPropertyWithCalculatedLastUpdated newProp){
         newProp = super.copyInto(newProp)
 
         newProp.paragraph = paragraph

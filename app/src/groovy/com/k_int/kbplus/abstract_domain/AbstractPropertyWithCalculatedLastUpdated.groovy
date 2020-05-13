@@ -9,12 +9,13 @@ import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
-abstract class AbstractProperty implements CalculatedLastUpdated, Serializable {
+abstract class AbstractPropertyWithCalculatedLastUpdated
+        implements CalculatedLastUpdated, Serializable {
 
     @Transient
     def cascadingUpdateService
 
-    static Log static_logger = LogFactory.getLog(AbstractProperty)
+    static Log static_logger = LogFactory.getLog(AbstractPropertyWithCalculatedLastUpdated)
 
     String           stringValue
     Integer          intValue
@@ -86,7 +87,7 @@ abstract class AbstractProperty implements CalculatedLastUpdated, Serializable {
         if (urlValue)         { return urlValue.toString() }
     }
 
-    def copyInto(AbstractProperty newProp){
+    def copyInto(AbstractPropertyWithCalculatedLastUpdated newProp){
         if (type != newProp.type) {
             throw new IllegalArgumentException("AbstractProperty.copyInto nicht möglich, weil die Typen nicht übereinstimmen.")
         }

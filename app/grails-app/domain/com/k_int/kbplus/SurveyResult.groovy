@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory
 import javax.persistence.Transient
 
 
-class SurveyResult extends AbstractProperty implements CalculatedLastUpdated {
+class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements CalculatedLastUpdated {
 
     static Log static_logger = LogFactory.getLog(SurveyResult)
 
@@ -39,7 +39,7 @@ class SurveyResult extends AbstractProperty implements CalculatedLastUpdated {
     boolean isRequired = false
 
     static constraints = {
-        importFrom AbstractProperty
+        importFrom AbstractPropertyWithCalculatedLastUpdated
 
         finishDate (nullable:true, blank:false)
         comment (nullable:true, blank:false)
@@ -53,7 +53,7 @@ class SurveyResult extends AbstractProperty implements CalculatedLastUpdated {
     }
 
     static mapping = {
-        includes AbstractProperty.mapping
+        includes AbstractPropertyWithCalculatedLastUpdated.mapping
 
         id column: 'surre_id'
         version column: 'surre_version'
