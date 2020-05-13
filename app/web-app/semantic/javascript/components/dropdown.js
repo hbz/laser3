@@ -329,9 +329,13 @@ $.fn.dropdown = function(parameters) {
               $search = $('<input />')
                 .addClass(className.search)
                 .prop('autocomplete', 'off')
+                  // zurueck .attr('aria-autocomplete','both') // a11y
+                  // zurueck .attr('aria-controls','listBox') // a11y
+                .insertBefore($text)
+              ;
+              $text = $('.text')
                   .attr('aria-autocomplete','both') // a11y
                   .attr('aria-controls','listBox') // a11y
-                .insertBefore($text)
               ;
             }
             if( module.is.multiple() && module.is.searchSelection() && !module.has.sizer()) {
@@ -1406,7 +1410,7 @@ $.fn.dropdown = function(parameters) {
                     module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
-                      module.remove.searchTerm();
+                      //module.remove.searchTerm();
                     }
                   }
                   event.preventDefault();
@@ -1630,6 +1634,7 @@ $.fn.dropdown = function(parameters) {
                 return;
               }
               else {
+                // alert('ich wertde ausgeführt');
                 module.hideAndClear();
               }
             }
@@ -2240,7 +2245,8 @@ $.fn.dropdown = function(parameters) {
           activedescendant: function(selectedItemID){
             // console.log("aria-activedescendant WIRD GESETZT");
             // console.log(selectedItemID);
-            $search.attr('aria-activedescendant', selectedItemID)
+            // zurueck $search.attr('aria-activedescendant', selectedItemID) // a11y
+            $text.attr('aria-activedescendant', selectedItemID) // a11y
           },
           ariaSelected : function (selectedItem) {
             // console.log("aria-selected WIRD GESETZT");
@@ -2390,13 +2396,14 @@ $.fn.dropdown = function(parameters) {
                 ;
                 if(settings.preserveHTML) {
                   console.log("html wird gesetzt in set.text")
+                  console.log($search)
                   $text.html(text);
-                  $('#test input').val(text);
+                  $search.val(text);
                 }
                 else {
                   console.log("tex wird gesetzt set.text")
                   $text.text(text);
-                  $('#test input').val(text);
+                  $search.val(text);
                 }
               }
             }
@@ -2912,7 +2919,7 @@ $.fn.dropdown = function(parameters) {
           searchTerm: function() {
             console.log('Cleared search term')
             module.verbose('Cleared search term');
-            //$search.val('');
+            $search.val('');
             module.set.filtered();
           },
           userAddition: function() {

@@ -104,10 +104,9 @@
 
 
 <r:script>
-/*        $('#test').dropdown({
-            showOnFocus: false,
-            clearable: false
-        });*/
+       $('#test').dropdown({
+            forceSelection: false
+        });
 
         function chooseRequiredDropdown(opt) {
             $(document).ready(function () {
