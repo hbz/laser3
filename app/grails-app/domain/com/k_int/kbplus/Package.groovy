@@ -1,13 +1,12 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
 import grails.converters.JSON
@@ -18,7 +17,7 @@ import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class Package extends AbstractBaseDomain implements CalculatedLastUpdated {
+class Package extends AbstractBaseDomainWithCalculatedLastUpdated {
         //implements ShareSupport {
 
     static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
@@ -156,25 +155,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       lastUpdatedCascading (nullable: true, blank: false)
   }
 
-    def afterInsert() {
-        static_logger.debug("afterInsert")
-        cascadingUpdateService.update(this, dateCreated)
-    }
-
-    def afterUpdate() {
-        static_logger.debug("afterUpdate")
-        cascadingUpdateService.update(this, lastUpdated)
-    }
-
+    @Override
     def afterDelete() {
         static_logger.debug("afterDelete")
         cascadingUpdateService.update(this, new Date())
 
         //deletionService.deleteDocumentFromIndex(this.globalUID) ES not connected, reactivate as soon as ES works again
-    }
-
-    Date getCalculatedLastUpdated() {
-        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
@@ -696,6 +682,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
+    @Override
     def beforeInsert() {
         if ( name != null ) {
             sortName = generateSortName(name)
@@ -704,6 +691,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         super.beforeInsert()
     }
 
+    @Override
     def beforeUpdate() {
         if ( name != null ) {
             sortName = generateSortName(name)

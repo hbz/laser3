@@ -4,17 +4,16 @@ import com.k_int.ClassUtils
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.CalculatedLastUpdated
-import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
-class Platform extends AbstractBaseDomain implements CalculatedLastUpdated {
+class Platform extends AbstractBaseDomainWithCalculatedLastUpdated {
 
   @Transient
   def grailsApplication
@@ -95,25 +94,12 @@ class Platform extends AbstractBaseDomain implements CalculatedLastUpdated {
     lastUpdatedCascading (nullable: true, blank: false)
   }
 
-  def afterInsert() {
-    static_logger.debug("afterInsert")
-    cascadingUpdateService.update(this, dateCreated)
-  }
-
-  def afterUpdate() {
-    static_logger.debug("afterUpdate")
-    cascadingUpdateService.update(this, lastUpdated)
-  }
-
+  @Override
   def afterDelete() {
     static_logger.debug("afterDelete")
     cascadingUpdateService.update(this, new Date())
 
     deletionService.deleteDocumentFromIndex(this.globalUID)
-  }
-
-  Date getCalculatedLastUpdated() {
-    (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
   }
 
   @Deprecated

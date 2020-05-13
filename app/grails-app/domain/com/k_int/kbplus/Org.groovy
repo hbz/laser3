@@ -8,11 +8,10 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.DeleteFlag
 
 import groovy.util.logging.Log4j
@@ -26,8 +25,8 @@ import java.text.SimpleDateFormat
 
 @Log4j
 class Org
-        extends AbstractBaseDomain
-        implements CalculatedLastUpdated, DeleteFlag {
+        extends AbstractBaseDomainWithCalculatedLastUpdated
+        implements DeleteFlag {
 
     static Log static_logger = LogFactory.getLog(Org)
 
@@ -235,41 +234,6 @@ class Org
         lastUpdatedCascading (nullable: true, blank: false)
     }
 
-    /*
-    // ERMS-1497
-    List<Combo> getIncomingCombos() {
-        Combo.executeQuery('SELECT c FROM Combo c WHERE c.toOrg = :org AND c.status = :active',
-                [org: this, active: COMBO_STATUS_ACTIVE])
-    }
-
-    // ERMS-1497
-    List<Combo> getOutgoingCombos() {
-        Combo.executeQuery('SELECT c FROM Combo c WHERE c.fromOrg = :org AND c.status = :active',
-                [org: this, active: COMBO_STATUS_ACTIVE])
-    }
-    */
-
-    def afterInsert() {
-        static_logger.debug("afterInsert")
-        cascadingUpdateService.update(this, dateCreated)
-    }
-
-    def afterUpdate() {
-        static_logger.debug("afterUpdate")
-        cascadingUpdateService.update(this, lastUpdated)
-    }
-
-    def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
-
-        deletionService.deleteDocumentFromIndex(this.globalUID)
-    }
-
-    Date getCalculatedLastUpdated() {
-        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
-    }
-
     @Override
     boolean isDeleted() {
         return RDStore.ORG_STATUS_DELETED.id == status?.id
@@ -289,6 +253,14 @@ class Org
         }
 
         super.beforeInsert()
+    }
+
+    @Override
+    def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
+        deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
     boolean setDefaultCustomerType() {

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -15,7 +16,7 @@ import java.text.Normalizer
 import java.util.regex.Pattern
 
 @Log4j
-class TitleInstance extends AbstractBaseDomain implements CalculatedLastUpdated /*implements AuditableTrait*/ {
+class TitleInstance extends AbstractBaseDomainWithCalculatedLastUpdated {
 
     @Transient
     def grailsApplication
@@ -113,25 +114,12 @@ class TitleInstance extends AbstractBaseDomain implements CalculatedLastUpdated 
         lastUpdatedCascading (nullable: true, blank: false)
     }
 
-    def afterInsert() {
-        static_logger.debug("afterInsert")
-        cascadingUpdateService.update(this, dateCreated)
-    }
-
-    def afterUpdate() {
-        static_logger.debug("afterUpdate")
-        cascadingUpdateService.update(this, lastUpdated)
-    }
-
+    @Override
     def afterDelete() {
         static_logger.debug("afterDelete")
         cascadingUpdateService.update(this, new Date())
 
         deletionService.deleteDocumentFromIndex(this.globalUID)
-    }
-
-    Date getCalculatedLastUpdated() {
-        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
   String getIdentifierValue(String idtype) {

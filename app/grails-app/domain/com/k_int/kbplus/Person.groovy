@@ -1,10 +1,9 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.CalculatedLastUpdated
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -12,7 +11,7 @@ import org.apache.commons.logging.LogFactory
 import javax.persistence.Transient
 
 @Log4j
-class Person extends AbstractBaseDomain implements CalculatedLastUpdated {
+class Person extends AbstractBaseDomainWithCalculatedLastUpdated {
 
     static Log static_logger = LogFactory.getLog(Person)
 
@@ -105,25 +104,6 @@ class Person extends AbstractBaseDomain implements CalculatedLastUpdated {
     @Override
     String toString() {
         ((title ?: '') + ' ' + (last_name ?: ' ') + (first_name ? ', ' + first_name : '') + ' ' + (middle_name ?: '')).trim()
-    }
-
-    def afterInsert() {
-        static_logger.debug("afterInsert")
-        cascadingUpdateService.update(this, dateCreated)
-    }
-
-    def afterUpdate() {
-        static_logger.debug("afterUpdate")
-        cascadingUpdateService.update(this, lastUpdated)
-    }
-
-    def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
-    }
-
-    Date getCalculatedLastUpdated() {
-        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     /*

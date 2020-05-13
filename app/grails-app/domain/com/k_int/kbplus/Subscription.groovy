@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -24,8 +25,8 @@ import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
 class Subscription
-        extends AbstractBaseDomain
-        implements CalculatedType, CalculatedLastUpdated, Permissions, AuditableSupport, ShareSupport {
+        extends AbstractBaseDomainWithCalculatedLastUpdated
+        implements CalculatedType, Permissions, AuditableSupport, ShareSupport {
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
@@ -205,6 +206,7 @@ class Subscription
         hasPerpetualAccess(nullable: false, blank: false)
     }
 
+    @Override
     def afterInsert() {
         static_logger.debug("afterInsert")
         cascadingUpdateService.update(this, dateCreated)
@@ -213,11 +215,7 @@ class Subscription
             subscriptionService.setOrgLicRole(this,owner)
     }
 
-    def afterUpdate() {
-        static_logger.debug("afterUpdate")
-        cascadingUpdateService.update(this, lastUpdated)
-    }
-
+    @Override
     def afterDelete() {
         static_logger.debug("afterDelete")
         cascadingUpdateService.update(this, new Date())
@@ -229,10 +227,6 @@ class Subscription
     def onChange = { oldMap, newMap ->
         log.debug("onChange ${this}")
         auditService.onChangeHandler(this, oldMap, newMap)
-    }
-
-    Date getCalculatedLastUpdated() {
-        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     @Override
@@ -590,11 +584,6 @@ class Subscription
         }
 
         return false
-    }
-
-    @Override
-    def beforeInsert() {
-        super.beforeInsert()
     }
 
     @Transient

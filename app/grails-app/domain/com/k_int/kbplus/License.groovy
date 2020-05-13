@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -25,8 +26,8 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 class License
-        extends AbstractBaseDomain
-        implements CalculatedType, CalculatedLastUpdated, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
+        extends AbstractBaseDomainWithCalculatedLastUpdated
+        implements CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
 
     static Log static_logger = LogFactory.getLog(License)
 
@@ -181,25 +182,12 @@ class License
         lastUpdatedCascading (nullable: true, blank: false)
     }
 
-    def afterInsert() {
-        static_logger.debug("afterInsert")
-        cascadingUpdateService.update(this, dateCreated)
-    }
-
-    def afterUpdate() {
-        static_logger.debug("afterUpdate")
-        cascadingUpdateService.update(this, lastUpdated)
-    }
-
+    @Override
     def afterDelete() {
         static_logger.debug("afterDelete")
         cascadingUpdateService.update(this, new Date())
 
         deletionService.deleteDocumentFromIndex(this.globalUID)
-    }
-
-    Date getCalculatedLastUpdated() {
-        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     @Transient
