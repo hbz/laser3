@@ -75,3 +75,13 @@ dt {
 dd {
   margin-left: 10px;
 }
+// List for Breadcrumbs without list-style
+.ui.breadcrumb {
+    ul{
+    display: inline;
+    padding: 0;
+        li {
+        display: inline;
+        }
+    }
+}
