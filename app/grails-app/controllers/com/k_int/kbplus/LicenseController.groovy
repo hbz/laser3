@@ -54,15 +54,13 @@ class LicenseController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        result.contextOrg = contextService.getOrg()
-
         //used for showing/hiding the License Actions menus
         def admin_role = Role.findAllByAuthority("INST_ADM")
         result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)", [user: result.user, role: admin_role, status: [1, 3]])
 
-        def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
+        //def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
-        String filename = "license_${escapeService.escapeString(license_reference_str)}"
+        //String filename = "license_${escapeService.escapeString(license_reference_str)}"
         //result.onixplLicense = result.license.onixplLicense
 
         // ---- pendingChanges : start
@@ -74,8 +72,7 @@ class LicenseController extends AbstractDebugController {
             result.processingpc = true
         } else {
 
-            def pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, PENDING_CHANGE_PENDING])
 
             log.debug("pc result is ${result.pendingChanges}");
             // refactoring: replace link table with instanceOf
@@ -107,18 +104,19 @@ class LicenseController extends AbstractDebugController {
         //def task_tasks = task {
 
             // tasks
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license)
-            def preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
+            def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
             result << preCon
 
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgLinks = []
-            result.license.orgLinks?.each { or ->
-                if (!(or.org?.id == result.contextOrg?.id) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+            result.visibleOrgLinks = OrgRole.executeQuery('select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes)',[license:result.license,context:result.institution,roleTypes:[OR_LICENSEE, OR_LICENSING_CONSORTIUM]])
+
+            /*result.license.orgLinks?.each { or ->
+                if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
                     result.visibleOrgLinks << or
                 }
-            }
-            result.visibleOrgLinks.sort { it.org.sortname }
+            }*/
+            //result.visibleOrgLinks.sort { it.org.sortname }
         //}
 
         du.setBenchmark('properties')
@@ -128,29 +126,29 @@ class LicenseController extends AbstractDebugController {
 
             // -- private properties
 
-            result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
+            result.authorizedOrgs = result.user.authorizedOrgs
 
             // create mandatory LicensePrivateProperties if not existing
 
-            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, result.contextOrg)
+            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, result.institution)
 
             mandatories.each { pd ->
+                //TODO [ticket=2436]
                 if (!LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd)
 
                     if (newProp.hasErrors()) {
                         log.error(newProp.errors)
                     } else {
-                        log.debug("New license private property created via mandatory: " + newProp.type.name)
+                        log.debug("New license private property created via mandatory: ${newProp.type.name}")
                     }
                 }
             }
 
             // -- private properties
 
-            result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_LIC_EDITOR
-            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
+            result.modalPrsLinkRole = PRS_RESP_SPEC_LIC_EDITOR
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
 
             result.visiblePrsLinks = []
 
@@ -179,11 +177,11 @@ class LicenseController extends AbstractDebugController {
         //result.availableSubs = controlledListService.getSubscriptions(params+[status:SUBSCRIPTION_CURRENT]).results
         //result.availableSubs = []
 
-        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(
-                OrgRole.executeQuery(
+        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(result.visibleOrgLinks.collect { OrgRole oo -> oo.org })
+                /*OrgRole.executeQuery(
                         "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
                         [lic: result.license.id]
-                ))
+                )*/
         result.existingLicensorIdList = []
         // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
        // }
@@ -193,12 +191,12 @@ class LicenseController extends AbstractDebugController {
 
         // TODO: experimental asynchronous task
         //waitAll(task_tasks, task_properties)
+        result
+        /*withFormat {
+        html result
 
-        withFormat {
-      html result
-      json {
-        def map = exportService.addLicensesToMap([:], [result.license])
-        
+      /*json   def map = exportService.addLicensesToMap([:], [result.license])
+
         def json = map as JSON
         response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
         response.contentType = "application/json"
@@ -210,7 +208,7 @@ class LicenseController extends AbstractDebugController {
         exportService.addLicensesIntoXML(doc, doc.getDocumentElement(), [result.license])
 
         response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-        response.contentType = "text/xml"
+        response.contentTypexml"
         exportService.streamOutXML(doc, response.outputStream)
       }
       /*
@@ -222,8 +220,8 @@ class LicenseController extends AbstractDebugController {
           out.close()
 
       }
-      */
     }
+    */
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')

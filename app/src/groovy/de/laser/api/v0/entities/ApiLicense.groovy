@@ -127,7 +127,7 @@ class ApiLicense {
         // result.licenseUrl       = lic.licenseUrl
         // removed - result.licensorRef      = lic.licensorRef
         // removed - result.licenseeRef      = lic.licenseeRef
-        result.licenseType      = lic.licenseType
+        //result.licenseType      = lic.licenseType
         //result.noticePeriod     = lic.noticePeriod
         result.reference        = lic.reference
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
@@ -138,9 +138,9 @@ class ApiLicense {
 
         // RefdataValues
 
-        // result.licenseCategory  = lic.licenseCategory?.value // legacy
+        result.licenseCategory  = lic.licenseCategory?.value
         result.status           = lic.status?.value
-        // result.type             = lic.type?.value
+        result.type             = lic.type?.value
 
         // References
 
