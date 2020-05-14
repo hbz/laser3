@@ -29,10 +29,7 @@ class AddressbookService {
     }
 
     List<Person> getAllVisiblePersons(User user, List orgs) {
-        def membershipOrgIds = []
-        user.authorizedOrgs?.each{ ao ->
-            membershipOrgIds << ao.id
-        }
+        def membershipOrgIds = [contextService.org.id]
 
         def visiblePersons = []
         orgs.each { org ->
