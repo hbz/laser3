@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2445
 
 2492    14.05.2020  hbz-dev     David   Feature     API 0.100 - LastUpdated für Objekte mit Identifikator- und Merkmalsänderungen
 
