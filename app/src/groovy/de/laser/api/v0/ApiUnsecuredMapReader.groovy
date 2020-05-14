@@ -219,7 +219,7 @@ class ApiUnsecuredMapReader {
         result.primaryUrl       = pform.primaryUrl
         result.provenance       = pform.provenance
         result.dateCreated      = ApiToolkit.formatInternalDate(pform.dateCreated)
-        result.lastUpdated      = ApiToolkit.formatInternalDate(pform.lastUpdated)
+        result.lastUpdated      = ApiToolkit.formatInternalDate(pform.getCalculatedLastUpdated())
 
         // RefdataValues
         result.type                 = pform.type?.value

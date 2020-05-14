@@ -79,7 +79,7 @@ class ApiOrg {
         result.region       = org.region?.value
         result.country      = org.country?.value
         result.libraryType  = org.libraryType?.value
-        result.lastUpdated  = ApiToolkit.formatInternalDate(org.lastUpdated)
+        result.lastUpdated  = ApiToolkit.formatInternalDate(org.getCalculatedLastUpdated())
 
         //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
         //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
