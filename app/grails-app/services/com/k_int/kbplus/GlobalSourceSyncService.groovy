@@ -356,6 +356,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     TitleInstancePackagePlatform target = addNewTIPP(result,tippB)
                                     tippsToNotify << [event:'add',target:target]
                                 }
+                                transactionStatus.flush()
                             }
                         }
                         else {
@@ -406,7 +407,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 e.printStackTrace()
                 transactionStatus.setRollbackOnly()
             }
-            transactionStatus.flush()
         }
         tippsToNotify
     }
@@ -951,9 +951,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     void notifyDependencies(List<List<Map<String,Object>>> tippsToNotify) {
         //if everything went well, we should have here the list of tipps to notify ...
-        tippsToNotify.each { entry ->
-            entry.each { notify ->
-                log.debug(notify)
+        tippsToNotify.each { List<Map<String,Object>> entry ->
+            entry.eachWithIndex { Map<String,Object> notify, int index ->
+                log.debug("now processing entry #${index}, payload: ${notify}")
                 if(notify.event in ['pkgPropUpdate','pkgDelete']) {
                     Package target = (Package) notify.target
                     Set<SubscriptionPackage> spConcerned = SubscriptionPackage.findAllByPkg(target)
@@ -1050,6 +1050,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                 }
+                cleanUpGorm()
             }
         }
     }
