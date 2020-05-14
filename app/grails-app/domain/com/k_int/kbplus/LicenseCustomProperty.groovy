@@ -25,7 +25,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableSupport {
     @Transient
     def auditService
 
-    static auditable = true
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading'] ]
     static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
     PropertyDefinition type

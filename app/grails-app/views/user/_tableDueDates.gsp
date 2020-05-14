@@ -17,7 +17,7 @@
         <g:if test="${obj}">
             <tr>
                 <td>
-                    <g:if test="${obj instanceof com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated}">
+                    <g:if test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                         <i class="icon tags la-list-icon"></i>
                     </g:if>
                 %{--${dashDueDate.id} &nbsp--}%
