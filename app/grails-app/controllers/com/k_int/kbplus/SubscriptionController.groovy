@@ -3,12 +3,15 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.IssueEntitlementGroup
+import de.laser.domain.IssueEntitlementGroupItem
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.exceptions.CreationException
@@ -226,6 +229,13 @@ class SubscriptionController extends AbstractDebugController {
             filterSet = true
         }
 
+        if (params.titleGroup && (params.titleGroup != '')) {
+            base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
+            qry_params.titleGroup = Long.parseLong(params.titleGroup)
+            filterSet = true
+        }
+
+
         if ((params.sort != null) && (params.sort.length() > 0)) {
             if(params.sort == 'startDate')
                 base_qry += "order by ic.startDate ${params.order}, lower(ie.tipp.title.title) asc "
@@ -241,6 +251,10 @@ class SubscriptionController extends AbstractDebugController {
 
         Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
 
+
+        if(result.subscriptionInstance.ieGroups.size() > 0) {
+            result.num_ies = subscriptionService.getIssueEntitlementsWithFilter(result.subscriptionInstance, [offset: 0, max: 5000]).size()
+        }
         result.num_sub_rows = entitlements.size()
         result.entitlements = entitlements.drop(result.offset).take(result.max)
 
@@ -778,6 +792,20 @@ class SubscriptionController extends AbstractDebugController {
                         ie.coverageDepth = params.bulk_coverage
                     }
 
+                    if (params.titleGroup && (params.titleGroup.trim().length() > 0)) {
+                        IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
+                        if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie)){
+                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                    ie: ie,
+                                    ieGroup: entitlementGroup)
+
+                            if (!issueEntitlementGroupItem.save(flush: true)) {
+                                log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                            }
+
+                        }
+                    }
+
                     if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
                     }
@@ -1170,16 +1198,64 @@ class SubscriptionController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def createEntitlementGroup() {
-        log.debug("createEntitlementGroup .. params: ${params}")
+    def manageEntitlementGroup() {
+        log.debug("ManageEntitlementGroup .. params: ${params}")
 
         Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result.editable) {
             response.sendError(401); return
         }
 
+        result.titleGroups = result.subscriptionInstance.ieGroups
+
         result
 
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    Map<String,Object> editEntitlementGroupItem() {
+        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.ie = IssueEntitlement.get(params.ie)
+
+        if (result.ie && params.cmd == 'edit') {
+            render template: 'editEntitlementGroupItem', model: result
+            return
+        }
+        else if (result.ie && params.cmd == 'processing') {
+            List deleteIssueEntitlementGroupItem = []
+            result.ie.ieGroups.each{
+
+                if(!(it.ieGroup.id.toString() in params.list('titleGroup'))){
+
+                    deleteIssueEntitlementGroupItem << it.id
+                }
+            }
+
+            if(deleteIssueEntitlementGroupItem){
+                IssueEntitlementGroupItem.executeUpdate("DELETE IssueEntitlementGroupItem iegi where iegi.id in (:iegiIDs)", [iegiIDs: deleteIssueEntitlementGroupItem])
+            }
+            params.list('titleGroup').each {
+                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(it)
+
+                if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIeAndIeGroup(result.ie, issueEntitlementGroup))
+                {
+                    IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                            ie: result.ie,
+                            ieGroup: issueEntitlementGroup)
+
+                    if (!issueEntitlementGroupItem.save(flush: true)) {
+                        log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                    }
+                }
+            }
+
+        }
+        redirect action: 'index', id: params.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -1192,15 +1268,19 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        if(!IssueEntitlementGroup.findBySubAndName(result.subscriptionInstance, params.name)) {
 
-        IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(
-                name: params.name,
-                description: params.description ?: null,
-                sub: result.subscriptionInstance
-        ).save()
+            IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(
+                    name: params.name,
+                    description: params.description ?: null,
+                    sub: result.subscriptionInstance
+            ).save()
+        }else{
+             flash.error = g.message(code: "issueEntitlementGroup.create.fail")
+        }
 
 
-        redirect action: 'index', id: params.id
+        redirect action: 'manageEntitlementGroup', id: params.id
 
     }
 
@@ -2888,6 +2968,23 @@ class SubscriptionController extends AbstractDebugController {
         ie.status = deleted_ie;
 
         redirect action: 'index', id: params.sub
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def removeEntitlementGroup() {
+        log.debug("removeEntitlementGroup....");
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(params.titleGroup)
+
+        if(issueEntitlementGroup) {
+            IssueEntitlementGroupItem.findAllByIeGroup(issueEntitlementGroup).each {
+                it.delete(flush: true)
+            }
+
+            IssueEntitlementGroup.executeUpdate("delete from IssueEntitlementGroup ieg where ieg.id in (:issueEntitlementGroup)", [issueEntitlementGroup: issueEntitlementGroup.id])
+        }
+
+        redirect action: 'manageEntitlementGroup', id: params.sub
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')

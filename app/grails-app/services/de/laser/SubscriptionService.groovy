@@ -310,7 +310,6 @@ class SubscriptionService {
             List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
 
 
-
             ies.sort { it.tipp.title.title }
             ies
         }else{

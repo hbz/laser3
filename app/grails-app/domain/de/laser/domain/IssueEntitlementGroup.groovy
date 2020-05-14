@@ -19,10 +19,10 @@ class IssueEntitlementGroup {
     static hasMany = [items: IssueEntitlementGroupItem]
 
     static constraints = {
-        name        (nullable: false, blank: false)
+        name        (nullable: false, blank: false, unique: 'sub')
         description (nullable: true, blank: true)
 
-        sub         (nullable: false, blank: false)
+        sub         (nullable: false, blank: false, unique: 'name')
 
     }
 

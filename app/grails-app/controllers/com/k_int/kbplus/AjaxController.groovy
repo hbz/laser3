@@ -807,6 +807,12 @@ class AjaxController {
   }
 
   @Secured(['ROLE_USER'])
+  def lookupTitleGroups() {
+     params.checkView = true
+     render controlledListService.getTitleGroups(params) as JSON
+    }
+
+  @Secured(['ROLE_USER'])
   def lookupSubscriptions() {
     render controlledListService.getSubscriptions(params) as JSON
   }

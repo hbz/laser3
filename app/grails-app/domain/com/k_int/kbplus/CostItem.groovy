@@ -39,7 +39,7 @@ class CostItem
     SurveyOrg surveyOrg // NOT set if sub (exclusive)
     Order order
     Invoice invoice
-    IssueEntitlementGroup issueEntitlementGroup
+    IssueEntitlementGroup issueEntitlementGroup // only set if sub
 
     Boolean isVisibleForSubscriber = false
 

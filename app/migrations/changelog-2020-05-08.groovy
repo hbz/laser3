@@ -28,6 +28,11 @@ databaseChangeLog = {
 				constraints(nullable: "false")
 			}
 		}
+		createIndex(indexName: "unique_ig_sub_fk", schemaName: "public", tableName: "issue_entitlement_group", unique: "true") {
+			column(name: "ig_name")
+
+			column(name: "ig_sub_fk")
+		}
 	}
 
 	changeSet(author: "Moe (generated)", id: "1588864690157-2") {
