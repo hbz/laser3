@@ -1,4 +1,4 @@
-<%@ page import="java.text.SimpleDateFormat; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
+<%@ page import="java.text.SimpleDateFormat; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
     <g:if test="${ ! dueDates}">
         <semui:msg class="info" header="" message="profile.noDashboardReminderDates" />

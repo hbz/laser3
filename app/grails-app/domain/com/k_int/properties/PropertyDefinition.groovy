@@ -3,7 +3,7 @@ package com.k_int.properties
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ContextService
 import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.I10nTranslation
@@ -299,7 +299,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
      *
      * @param owner: The class that will hold the property, e.g License
      */
-    static AbstractProperty createGenericProperty(def flag, def owner, PropertyDefinition type) {
+    static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(def flag, def owner, PropertyDefinition type) {
         String classString = owner.getClass().toString()
         def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
 

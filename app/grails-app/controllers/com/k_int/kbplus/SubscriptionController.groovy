@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
@@ -5083,12 +5083,12 @@ class SubscriptionController extends AbstractDebugController {
             newSub = Subscription.get(params.targetSubscriptionId)
             subsToCompare.add(newSub)
         }
-        List<AbstractProperty> propertiesToTake = params.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, flash, auditProperties)
         }
 
-        List<AbstractProperty> propertiesToDelete = params.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteProperties(propertiesToDelete, newSub, isRenewSub, flash, auditProperties)
         }
@@ -5630,7 +5630,7 @@ class SubscriptionController extends AbstractDebugController {
 
     private void createProperty(PropertyDefinition propDef, Subscription sub, Org contextOrg, String value, String note) {
         //check if private or custom property
-        AbstractProperty prop
+        AbstractPropertyWithCalculatedLastUpdated prop
         if(propDef.tenant == contextOrg) {
             //process private property
             prop = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef)

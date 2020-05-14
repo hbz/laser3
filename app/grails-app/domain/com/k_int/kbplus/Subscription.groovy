@@ -4,13 +4,12 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.AuditableSupport
-import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
@@ -24,10 +23,10 @@ import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
 class Subscription
-        extends AbstractBaseDomain
-        implements CalculatedType, CalculatedLastUpdated, Permissions, AuditableSupport, ShareSupport {
+        extends AbstractBaseDomainWithCalculatedLastUpdated
+        implements CalculatedType, Permissions, AuditableSupport, ShareSupport {
 
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
     static Log static_logger = LogFactory.getLog(Subscription)
@@ -50,8 +49,6 @@ class Subscription
     def propertyService
     @Transient
     def deletionService
-    @Transient
-    def cascadingUpdateService
     @Transient
     def subscriptionService
     @Transient
@@ -205,29 +202,27 @@ class Subscription
         hasPerpetualAccess(nullable: false, blank: false)
     }
 
+    @Override
     def afterInsert() {
         static_logger.debug("afterInsert")
+        cascadingUpdateService.update(this, dateCreated)
+
         if(owner != null)
             subscriptionService.setOrgLicRole(this,owner)
     }
 
-    def afterUpdate() {
-        static_logger.debug("afterUpdate")
-    }
-
+    @Override
     def afterDelete() {
         static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
     @Transient
     def onChange = { oldMap, newMap ->
         log.debug("onChange ${this}")
-        auditService.onChange(this, oldMap, newMap)
-    }
-
-    Date getCalculatedLastUpdated() {
-        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
+        auditService.onChangeHandler(this, oldMap, newMap)
     }
 
     @Override
@@ -585,11 +580,6 @@ class Subscription
         }
 
         return false
-    }
-
-    @Override
-    def beforeInsert() {
-        super.beforeInsert()
     }
 
     @Transient

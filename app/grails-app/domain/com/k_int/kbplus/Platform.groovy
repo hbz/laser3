@@ -3,24 +3,21 @@ package com.k_int.kbplus
 import com.k_int.ClassUtils
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
-class Platform extends AbstractBaseDomain {
+class Platform extends AbstractBaseDomainWithCalculatedLastUpdated {
 
   @Transient
   def grailsApplication
-
   @Transient
   def propertyService
-
   @Transient
   def deletionService
 
@@ -47,6 +44,7 @@ class Platform extends AbstractBaseDomain {
 
   Date dateCreated
   Date lastUpdated
+  Date lastUpdatedCascading
 
   Org org
 
@@ -73,6 +71,7 @@ class Platform extends AbstractBaseDomain {
    serviceProvider column:'plat_servprov_rv_fk'
   softwareProvider column:'plat_softprov_rv_fk'
               org  column: 'plat_org_fk', index: 'plat_org_idx'
+    lastUpdatedCascading column: 'plat_last_updated_cascading'
              tipps sort: 'title.title', order: 'asc', batchSize: 10
             oapp batchSize: 10
     customProperties sort:'type', order:'desc', batchSize: 10
@@ -89,9 +88,14 @@ class Platform extends AbstractBaseDomain {
     softwareProvider(nullable:true, blank:false)
     gokbId (nullable:false, blank:false, unique: true, maxSize:511)
     org (nullable:true, blank:false)
+    lastUpdatedCascading (nullable: true, blank: false)
   }
 
+  @Override
   def afterDelete() {
+    static_logger.debug("afterDelete")
+    cascadingUpdateService.update(this, new Date())
+
     deletionService.deleteDocumentFromIndex(this.globalUID)
   }
 

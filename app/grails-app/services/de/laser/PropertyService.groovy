@@ -1,10 +1,9 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
 
 class PropertyService {
@@ -67,7 +66,7 @@ class PropertyService {
                             base_qry += " and gProp.intValue = null ) "
                         } else {
                             base_qry += " and gProp.intValue = :prop ) "
-                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                            base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
                         break
                     case String.toString():
@@ -75,7 +74,7 @@ class PropertyService {
                             base_qry += " and gProp.stringValue = null ) "
                         } else {
                             base_qry += " and lower(gProp.stringValue) like lower(:prop) ) "
-                            base_qry_params.put('prop', "%${AbstractProperty.parseValue(params.filterProp, pd.type)}%")
+                            base_qry_params.put('prop', "%${AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type)}%")
                         }
                         break
                     case BigDecimal.toString():
@@ -83,7 +82,7 @@ class PropertyService {
                             base_qry += " and gProp.decValue = null ) "
                         } else {
                             base_qry += " and gProp.decValue = :prop ) "
-                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                            base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
                         break
                     case Date.toString():
@@ -91,7 +90,7 @@ class PropertyService {
                             base_qry += " and gProp.dateValue = null ) "
                         } else {
                             base_qry += " and gProp.dateValue = :prop ) "
-                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                            base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
                         break
                     case URL.toString():
@@ -99,7 +98,7 @@ class PropertyService {
                             base_qry += " and gProp.urlValue = null ) "
                         } else {
                             base_qry += " and genfunc_filter_matcher(gProp.urlValue, :prop) = true ) "
-                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                            base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
                         break
                 }
