@@ -51,11 +51,15 @@ class SurveyService {
             return false
         }
 
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
+        if (accessService.checkPermAffiliationX('ORG_BASIC_MEMBER', 'INST_EDITOR', 'ROLE_ADMIN')) {
+            def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
-        if (surveyResults) {
-            return surveyResults.finishDate.contains(null) ? true : false
-        } else {
+            if (surveyResults) {
+                return surveyResults.finishDate.contains(null) ? true : false
+            } else {
+                return false
+            }
+        }else{
             return false
         }
 
