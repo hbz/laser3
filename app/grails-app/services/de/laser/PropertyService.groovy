@@ -40,14 +40,26 @@ class PropertyService {
             if(params.filterProp) {
                 switch (pd.type) {
                     case RefdataValue.toString():
-                        def pdValue = genericOIDService.resolveOID(params.filterProp)
-                        if (pdValue == RDStore.GENERIC_NULL_VALUE) {
-                            base_qry += " and gProp.refValue = null ) "
+                        List<String> selFilterProps = params.filterProp.split(',')
+                        List filterProp = []
+                        selFilterProps.each { String sel ->
+                            filterProp << genericOIDService.resolveOID(sel)
+                        }
+                        base_qry += " and "
+                        if (filterProp.contains(RDStore.GENERIC_NULL_VALUE) && filterProp.size() == 1) {
+                            base_qry += " gProp.refValue = null "
+                            filterProp.remove(RDStore.GENERIC_NULL_VALUE)
+                        }
+                        else if(filterProp.contains(RDStore.GENERIC_NULL_VALUE) && filterProp.size() > 1) {
+                            base_qry += " ( gProp.refValue = null or gProp.refValue in (:prop) ) "
+                            filterProp.remove(RDStore.GENERIC_NULL_VALUE)
+                            base_qry_params.put('prop', filterProp)
                         }
                         else {
-                            base_qry += " and gProp.refValue = :prop ) "
-                            base_qry_params.put('prop', pdValue)
+                            base_qry += " gProp.refValue in (:prop) "
+                            base_qry_params.put('prop', filterProp)
                         }
+                        base_qry += " ) "
                         break
                     case Integer.toString():
                         if (!params.filterProp || params.filterProp.length() < 1) {

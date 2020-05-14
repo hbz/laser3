@@ -53,17 +53,32 @@ class FilterService {
             queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
         }
 
-        if (params.region?.length() > 0) {
-            query << "o.region.id = :region"
-             queryParams << [region : Long.parseLong(params.region)]
+        if (params.region?.size() > 0) {
+            query << "o.region.id in (:region)"
+            List<String> selRegions = params.list("region")
+            List<Long> regions = []
+            selRegions.each { String sel ->
+                regions << Long.parseLong(sel)
+            }
+            queryParams << [region : regions]
         }
-        if (params.libraryNetwork?.length() > 0) {
-            query << "o.libraryNetwork.id = :libraryNetwork"
-             queryParams << [libraryNetwork : Long.parseLong(params.libraryNetwork)]
+        if (params.libraryNetwork?.size() > 0) {
+            query << "o.libraryNetwork.id in (:libraryNetwork)"
+            List<String> selLibraryNetworks = params.list("libraryNetwork")
+            List<Long> libraryNetworks = []
+            selLibraryNetworks.each { String sel ->
+                libraryNetworks << Long.parseLong(sel)
+            }
+            queryParams << [libraryNetwork : libraryNetworks]
         }
-        if (params.libraryType?.length() > 0) {
-            query << "o.libraryType.id = :libraryType"
-             queryParams << [libraryType : Long.parseLong(params.libraryType)]
+        if (params.libraryType?.size() > 0) {
+            query << "o.libraryType.id in (:libraryType)"
+            List<String> selLibraryTypes = params.list("libraryType")
+            List<Long> libraryTypes = []
+            selLibraryTypes.each { String sel ->
+                libraryTypes << Long.parseLong(sel)
+            }
+            queryParams << [libraryType : libraryTypes]
         }
         if (params.country?.length() > 0) {
             query << "o.country.id = :country"
@@ -122,17 +137,32 @@ class FilterService {
             query << "o.sector.id = :orgSector"
              queryParams << [orgSector : Long.parseLong(params.orgSector)]
         }
-        if (params.region?.length() > 0) {
-            query << "o.region.id = :region"
-             queryParams << [region : Long.parseLong(params.region)]
+        if (params.region?.size() > 0) {
+            query << "o.region.id in (:region)"
+            List<String> selRegions = params.list("region")
+            List<Long> regions = []
+            selRegions.each { String sel ->
+                regions << Long.parseLong(sel)
+            }
+            queryParams << [region : regions]
         }
-        if (params.libraryNetwork?.length() > 0) {
-            query << "o.libraryNetwork.id = :libraryNetwork"
-             queryParams << [libraryNetwork : Long.parseLong(params.libraryNetwork)]
+        if (params.libraryNetwork?.size() > 0) {
+            query << "o.libraryNetwork.id in (:libraryNetwork)"
+            List<String> selLibraryNetworks = params.list("libraryNetwork")
+            List<Long> libraryNetworks = []
+            selLibraryNetworks.each { String sel ->
+                libraryNetworks << Long.parseLong(sel)
+            }
+            queryParams << [libraryNetwork : libraryNetworks]
         }
-        if (params.libraryType?.length() > 0) {
+        if (params.libraryType?.size() > 0) {
             query << "o.libraryType.id = :libraryType"
-             queryParams << [libraryType : Long.parseLong(params.libraryType)]
+            List<String> selLibraryTypes = params.list("libraryType")
+            List<Long> libraryTypes = []
+            selLibraryTypes.each { String sel ->
+                libraryTypes << Long.parseLong(sel)
+            }
+            queryParams << [libraryType : libraryTypes]
         }
 
         if (params.customerType?.length() > 0) {
