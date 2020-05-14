@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2485    13.05.2020  hbz-dev     Andreas Feature     Dropdowns auf Mehrfachauswahl erweitert
+
+2484    13.05.2020  hbz-dev     Andreas Bug         Legacy-Controlleraufruf im Export korrigiert
+
 --      12.05.2020  hbz-dev     David   Feature     API 0.99
 
 2476    12.05.2020  hbz-dev     David   Feature     Übersichtsseite: Dokumente
