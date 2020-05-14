@@ -77,7 +77,7 @@
                                 select += '<div class="item"  data-value="' + option.value + '">' + optionText + '</div>';
                             }
 
-                            select = ' <div class="ui fluid search selection dropdown la-filterProp">' +
+                            select = ' <div class="ui fluid multiple search selection dropdown la-filterProp">' +
                                 '   <input type="hidden" id="filterProp" name="filterProp">' +
                                 '   <i class="dropdown icon"></i>' +
                                 '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +

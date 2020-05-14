@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.OrgSettings
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
@@ -2276,7 +2276,7 @@ class OrganisationService {
                                         AuditConfig ac = AuditConfig.getConfig(scp)
                                         if(ac) {
                                             //I do not understand what the difference in SubscriptionController is, so, I will not distinct here between multipleOccurrence or not
-                                            AbstractProperty prop = new SubscriptionCustomProperty(owner:consSub,type:scp.type)
+                                            AbstractPropertyWithCalculatedLastUpdated prop = new SubscriptionCustomProperty(owner:consSub,type:scp.type)
                                             prop = scp.copyInto(prop)
                                             prop.instanceOf = scp
                                             prop.save()
@@ -2406,7 +2406,7 @@ class OrganisationService {
                         AuditConfig ac = AuditConfig.getConfig(scp)
                         if(ac) {
                             //I do not understand what the difference in SubscriptionController is, so, I will not distinct here between multipleOccurrence or not
-                            AbstractProperty prop = new SubscriptionCustomProperty(owner:obj,type:scp.type)
+                            AbstractPropertyWithCalculatedLastUpdated prop = new SubscriptionCustomProperty(owner:obj,type:scp.type)
                             prop = scp.copyInto(prop)
                             prop.instanceOf = scp
                             prop.save()
