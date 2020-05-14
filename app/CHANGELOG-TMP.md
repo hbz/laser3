@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2474    14.05.2020  hbz-dev     Andreas Bug         Anzeige von Kontakten einer Zieleinrichtung angepasst
 
 2485    13.05.2020  hbz-dev     Andreas Feature     Dropdowns auf Mehrfachauswahl erweitert
 
