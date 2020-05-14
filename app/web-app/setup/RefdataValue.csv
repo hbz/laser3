@@ -608,7 +608,7 @@ funder.type,Other Religious Communities,Sonstige Religionsgemeinschaft,Other Rel
 funder.type,Other Territorial Authority,Sonstige Gebietskörperschaft,Other Territorial Authority,,
 funder.type,Private Funding Body (Natural Person),Private Trägerschaft (natürliche Personen),Private Funding Body (Natural Person),,
 funder.type,Protestant Church,Evangelische Kirche,Protestant Church,,
-funder.hsk.type,"Ecclesiastical, State Recognized","Kirchlich, stattlich anerkannt","Ecclesiastical, State Recognized",,
+funder.hsk.type,"Ecclesiastical, State Recognized","Kirchlich, staatlich anerkannt","Ecclesiastical, State Recognized",,
 funder.hsk.type,Public Law,Öffentlich-rechtlich,Public Law,,
 funder.hsk.type,"Private, Officially Recognized","Privat, staatlich anerkannt","Private, Officially Recognized",,
 gender,Female,Weiblich,Female,,
