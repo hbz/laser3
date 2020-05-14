@@ -2,6 +2,23 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.100
+
+- modifying nested objects of type `Identifier` affects now ..
+    - `License.lastUpdated`
+    - `Organisation.lastUpdated`
+    - `Package.lastUpdated`
+    - `Subscription.lastUpdated`
+- modifying nested objects of type `Property` affects now ..
+    - `License.lastUpdated`
+    - `Organisation.lastUpdated`
+    - `Person.lastUpdated`
+    - `Platform.lastUpdated`
+    - `Subscription.lastUpdated`
+    - `Organisation.lastUpdated`
+- removed attribute: `Property[isPublic=No].dateCreated`
+- removed attribute: `Property[isPublic=No].lastUpdated`
+
 #### 0.99
 
 - removed attribute: `License.onixplLicense`

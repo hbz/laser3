@@ -121,7 +121,7 @@ class ApiSubscription {
 		result.cancellationAllowances 	= sub.cancellationAllowances
 		result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
 		result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
-		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub.lastUpdated)
+		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub.getCalculatedLastUpdated())
 		result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
 		result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
 		result.name                 	= sub.name

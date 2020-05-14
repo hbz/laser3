@@ -123,7 +123,7 @@ class ApiLicense {
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
         // result.lastmod          = lic.lastmod // legacy ?
-        result.lastUpdated      = ApiToolkit.formatInternalDate(lic.lastUpdated)
+        result.lastUpdated      = ApiToolkit.formatInternalDate(lic.getCalculatedLastUpdated())
         // result.licenseUrl       = lic.licenseUrl
         // removed - result.licensorRef      = lic.licensorRef
         // removed - result.licenseeRef      = lic.licenseeRef
