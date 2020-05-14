@@ -8,6 +8,10 @@
 
 2484    13.05.2020  hbz-dev     Andreas Bug         Legacy-Controlleraufruf im Export korrigiert
 
+2483    12.05.2020  hbz-dev     David   Feature     lastUpdatedCalculated - Merkmale
+
+2482    12.05.2020  hbz-dev     David   Feature     lastUpdatedCalculated - Identifier
+
 --      12.05.2020  hbz-dev     David   Feature     API 0.99
 
 2476    12.05.2020  hbz-dev     David   Feature     Übersichtsseite: Dokumente

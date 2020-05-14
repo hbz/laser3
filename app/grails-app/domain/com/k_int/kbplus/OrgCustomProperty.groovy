@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 
@@ -14,7 +14,7 @@ class OrgCustomProperty extends CustomProperty {
     Date lastUpdated
 
     static mapping = {
-        includes    AbstractProperty.mapping
+        includes    AbstractPropertyWithCalculatedLastUpdated.mapping
         owner       index:'ocp_owner_idx'
         dateCreated column: 'ocp_date_created'
         lastUpdated column: 'ocp_last_updated'

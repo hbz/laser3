@@ -1,8 +1,9 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
+import de.laser.AuditConfig
 import de.laser.interfaces.AuditableSupport
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
@@ -24,8 +25,8 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
     @Transient
     def auditService
 
-    static auditable = true
-    static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading'] ]
+    static controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']
 
     PropertyDefinition type
     Subscription owner
@@ -35,7 +36,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
     Date lastUpdated
 
     static mapping = {
-        includes    AbstractProperty.mapping
+        includes    AbstractPropertyWithCalculatedLastUpdated.mapping
         owner       index:'scp_owner_idx'
 
         dateCreated column: 'scp_date_created'
@@ -43,7 +44,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
     }
 
     static constraints = {
-        importFrom  AbstractProperty
+        importFrom  AbstractPropertyWithCalculatedLastUpdated
         instanceOf (nullable: true)
 
         // Nullable is true, because values are already in the database
@@ -57,19 +58,22 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
     ]
 
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 
     @Transient
     def onChange = { oldMap, newMap ->
         log.debug("onChange ${this}")
-        auditService.onChange(this, oldMap, newMap)
+        auditService.onChangeHandler(this, oldMap, newMap)
     }
 
     @Transient
     def onDelete = { oldMap ->
         log.debug("onDelete ${this}")
-        auditService.onDelete(this, oldMap)
+        auditService.onDeleteHandler(this, oldMap)
     }
 
     def notifyDependencies_trait(changeDocument) {
