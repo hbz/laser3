@@ -56,11 +56,9 @@ class ApiPkg {
     static requestPackage(Package pkg, Org context) {
         Map<String, Object> result = [:]
 
-		// TODO check hasAccess
-		boolean hasAccess = true
         result = getPackageMap(pkg, context)
 
-        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
+        return new JSON(result)
     }
 
 	/**
@@ -101,7 +99,7 @@ class ApiPkg {
 		//result.documents        = ApiCollectionReader.retrieveDocumentCollection(pkg.documents) // com.k_int.kbplus.DocContext
 		result.identifiers      = ApiCollectionReader.getIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
 		//result.license          = ApiStubReader.requestLicenseStub(pkg.license, context) // com.k_int.kbplus.License
-		result.nominalPlatform  = ApiUnsecuredMapReader.getPlatformMap(pkg.nominalPlatform) // com.k_int.kbplus.Platform
+		result.nominalPlatform  = ApiUnsecuredMapReader.getPlatformMap(pkg.nominalPlatform, context) // com.k_int.kbplus.Platform
 		result.organisations    = ApiCollectionReader.getOrgLinkCollection(pkg.orgs, ApiReader.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // com.k_int.kbplus.SubscriptionPackage
 		result.tipps            = ApiCollectionReader.getTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform

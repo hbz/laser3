@@ -167,6 +167,19 @@ class ApiManager {
                 result = ApiPkg.requestPackage((Package) tmp.obj, contextOrg)
             }
         }
+        else if (checkValidRequest('platform')) {
+
+            ApiBox tmp = ApiPlatform.findPlatformBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiPlatform.requestPlatform((Platform) tmp.obj, contextOrg)
+            }
+        }
+        else if (checkValidRequest('platformList')) {
+
+            result = ApiPlatform.getPlatformList()
+        }
         else if (checkValidRequest('propertyList')) {
 
 			result = ApiCatalogue.getAllProperties(contextOrg)

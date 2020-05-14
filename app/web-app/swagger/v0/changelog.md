@@ -2,8 +2,18 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
-#### 0.100
+#### 0.101
 
+- added new endpoint: __/platform__
+- added new endpoint: __/platformList__
+- added new attribute: `Platform.properties`
+- removed attribute: `Platform.provenance`
+- removed attribute: `Platform.serviceProvider`
+- removed attribute: `Platform.softwareProvider`
+- removed attribute: `Platform.status`
+- removed attribute: `Platform.type`
+
+#### 0.100
 
 - modifying nested objects of type `Identifier` affects now ..
     - `License.lastUpdated` 

@@ -240,6 +240,65 @@
           $ref: "#/components/responses/preconditionFailed"
 
 
+  /platform:
+
+    get:
+      tags:
+      - Objects
+      summary: Retrieving a single platform
+      description: >
+        Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Platform"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        404:
+          description: Valid request, but platform not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+        412:
+          $ref: "#/components/responses/preconditionFailed"
+
+
+  /platformList:
+
+    get:
+      tags:
+        - Lists
+      summary: Retrieving a list of public platforms
+      description: >
+        Retrieving a list of public platforms
+
+      parameters:
+        - $ref: "#/components/parameters/authorization"
+        - $ref: "#/components/parameters/debug"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStub"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        404:
+          description: Valid request, but result is empty
+
+
   /propertyList:
 
     get:

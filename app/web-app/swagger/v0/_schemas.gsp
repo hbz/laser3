@@ -573,13 +573,15 @@
           properties:
             dateCreated:
               type: string
-              format: date
+              format: date-time
             lastUpdated:
               type: string
               format: date-time
-            primaryUrl:
-              type: string
-            provenance:
+            properties: # mapping customProperties
+              type: array
+              items:
+                $ref: "#/components/schemas/Property"
+            <%--provenance:
               type: string
             serviceProvider:
               type: string
@@ -590,16 +592,16 @@
               type: string
               description: Mapping RefdataCategory
               enum:
-                [""]
-            status:
+                [""]--%>
+            <%--status:
               type: stringRefdataCategory
               description: Mapping RefdataCategory "${RDConstants.PLATFORM_STATUS}"
-              enum: <% printRefdataEnum(RDConstants.PLATFORM_STATUS, 14) %>
-            type:
+              enum: <% printRefdataEnum(RDConstants.PLATFORM_STATUS, 14) %>--%>
+            <%--type:
               type: string
               description: Mapping RefdataCategory
               enum:
-                [""]
+                [""]--%>
 
 
     Property:
@@ -1247,18 +1249,10 @@
       items:
         $ref: "#/components/schemas/LicenseStub"
 
-
-%{--    OA2020List:--}%
-%{--      type: array--}%
-%{--      items:--}%
-%{--        $ref: "#/components/schemas/OrganisationStub"--}%
-
-
-%{--    StatisticList:--}%
-%{--      type: array--}%
-%{--      items:--}%
-%{--        $ref: "#/components/schemas/PackageStub"--}%
-
+    PlatformList:
+      type: array
+      items:
+        $ref: "#/components/schemas/PlatformStub"
 
     SubscriptionList:
       type: array
