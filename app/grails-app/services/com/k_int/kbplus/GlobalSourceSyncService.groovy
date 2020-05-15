@@ -168,7 +168,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 cleanUpGorm()
             }
             catch (SyncException e) {
-                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleRecordKey:titleUUID])
+                SystemEvent.createEvent('GSSS_OAI_WARNING',[titleRecordKey:titleUUID])
             }
         }
         providersToUpdate.each { providerUUID ->
@@ -177,7 +177,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 cleanUpGorm()
             }
             catch (SyncException e) {
-                SystemEvent.createEvent('GSSS_OAI_ERROR',[providerRecordKey:providerUUID])
+                SystemEvent.createEvent('GSSS_OAI_WARNING',[providerRecordKey:providerUUID])
             }
         }
         platformsToUpdate.each { Map<String,String> platformParams ->
@@ -186,7 +186,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 cleanUpGorm()
             }
             catch (SyncException e) {
-                SystemEvent.createEvent('GSSS_OAI_ERROR',[platformRecordKey:platformParams.gokbId])
+                SystemEvent.createEvent('GSSS_OAI_WARNING',[platformRecordKey:platformParams.gokbId])
             }
         }
     }
@@ -546,7 +546,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 catch (GroovyCastException e) {
                     log.error("Title type mismatch! This should not be possible! Inform GOKb team! -> ${titleInstance.gokbId} is corrupt!")
-                    SystemEvent.createEvent('GSSS_OAI_ERROR',[titleInstance:titleInstance.gokbId,errorType:"titleTypeMismatch"])
+                    SystemEvent.createEvent('GSSS_OAI_WARNING',[titleInstance:titleInstance.gokbId,errorType:"titleTypeMismatch"])
                 }
                 titleInstance.title = titleRecord.name.text()
                 titleInstance.medium = medium
@@ -643,7 +643,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                             else {
                                 log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id.text()} to GOKb!")
-                                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleHistoryEvent:eventData.@id.text(),errorType:"historyEventWithoutDate"])
+                                SystemEvent.createEvent('GSSS_OAI_WARNING',[titleHistoryEvent:eventData.@id.text(),errorType:"historyEventWithoutDate"])
                             }
                         }
                     }

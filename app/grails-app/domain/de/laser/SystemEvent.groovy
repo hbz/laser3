@@ -55,6 +55,7 @@ class SystemEvent {
             'GSSS_OAI_START'                : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'GSSS_OAI_COMPLETE'             : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'GSSS_OAI_ERROR'                : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'GSSS_OAI_WARNING'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.WARNING],
             'STATS_SYNC_JOB_START'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'STATS_SYNC_JOB_COMPLETE'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_UPDATE_JOB_START'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
