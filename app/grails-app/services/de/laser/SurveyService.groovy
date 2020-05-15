@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
@@ -51,11 +51,15 @@ class SurveyService {
             return false
         }
 
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
+        if (accessService.checkPermAffiliationX('ORG_BASIC_MEMBER', 'INST_EDITOR', 'ROLE_ADMIN')) {
+            def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
-        if (surveyResults) {
-            return surveyResults.finishDate.contains(null) ? true : false
-        } else {
+            if (surveyResults) {
+                return surveyResults.finishDate.contains(null) ? true : false
+            } else {
+                return false
+            }
+        }else{
             return false
         }
 
@@ -137,7 +141,7 @@ class SurveyService {
         return result
     }
 
-    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
+    boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
         Org contextOrg = contextService.getOrg()
         def targetProp
 
@@ -181,9 +185,9 @@ class SurveyService {
     }
 
 
-    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
+    boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
 
-        properties.each { AbstractProperty prop ->
+        properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
             AuditConfig.removeAllConfigs(prop)
         }
 

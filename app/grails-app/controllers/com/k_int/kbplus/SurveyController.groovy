@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
@@ -622,7 +622,7 @@ class SurveyController {
     })
     def show() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
@@ -719,7 +719,7 @@ class SurveyController {
     })
     def surveyTitles() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
@@ -761,7 +761,7 @@ class SurveyController {
     })
     def surveyConfigDocs() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
@@ -775,7 +775,7 @@ class SurveyController {
     })
     def surveyParticipants() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
@@ -823,7 +823,7 @@ class SurveyController {
     })
     def surveyCostItems() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
         result.putAll(financeService.setEditVars(result.institution))
@@ -1065,20 +1065,29 @@ class SurveyController {
     })
     def surveyEvaluation() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
         params.tab = params.tab ?: 'surveyConfigsView'
 
-        result.participants = result.surveyConfig?.orgs?.org.sort { it.sortname }
+        result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).sort {
+            it.participant.sortname
+        }
 
-        result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
-        result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
+        result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).sort {
+            it.participant.sortname
+        }
+
+        result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
+        result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
 
         result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).sort {
-            it.participant?.sortname
+            it.participant.sortname
         }
+
+        result.participants = result.surveyResult
+        result.participantsTotal = result.surveyResult?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
 
         if ( params.exportXLSX ) {
             SXSSFWorkbook wb
@@ -1117,7 +1126,7 @@ class SurveyController {
     })
     def surveyTitlesEvaluation() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
@@ -1171,7 +1180,7 @@ class SurveyController {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1232,7 +1241,7 @@ class SurveyController {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1392,7 +1401,7 @@ class SurveyController {
     def evaluateIssueEntitlementsSurvey() {
         def result = setResultGenericsAndCheckAccess()
 
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1418,7 +1427,7 @@ class SurveyController {
     })
     def evaluationParticipant() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             response.sendError(401); return
         }
 
@@ -1473,7 +1482,7 @@ class SurveyController {
     })
     def allSurveyProperties() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             response.sendError(401); return
         }
 
@@ -3003,14 +3012,14 @@ class SurveyController {
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
             subsToCompare.add(newSub)
         }
-        List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect {
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params?.list('subscription.takeProperty').collect {
             genericOIDService.resolveOID(it)
         }
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
             surveyService.copyProperties(propertiesToTake, newSub, isRenewSub, flash, auditProperties)
         }
 
-        List<AbstractProperty> propertiesToDelete = params?.list('subscription.deleteProperty').collect {
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params?.list('subscription.deleteProperty').collect {
             genericOIDService.resolveOID(it)
         }
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -3198,12 +3207,16 @@ class SurveyController {
             //isTargetSubChanged = true
         }
 
-        if (params?.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.deleteOwner(newSub, flash)
-            //isTargetSubChanged = true
-        } else if (params?.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.copyOwner(baseSub, newSub, flash)
-            //isTargetSubChanged = true
+        if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
+            if(!subscriptionService.setOrgLicRole(newSub, null)) {
+                Object[] args = [newSub]
+                flash.error += message(code:'default.save.error.message',args:args)
+            }
+        } else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
+            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
+                Object[] args = [newSub]
+                flash.error += message(code:'default.save.error.message',args:args)
+            }
         }
 
         if (params?.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -3366,7 +3379,7 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def exportSurCostItems() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             response.sendError(401); return
         }
         result.putAll(financeService.setEditVars(result.institution))

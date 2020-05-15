@@ -1,14 +1,14 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
-import de.laser.traits.AuditableTrait
+import de.laser.interfaces.AuditableSupport
 import grails.converters.JSON
 
 import javax.persistence.Transient
 
-class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
+class LicenseCustomProperty extends CustomProperty implements AuditableSupport {
 
     @Transient
     def genericOIDService
@@ -22,9 +22,10 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
     def pendingChangeService
     @Transient
     def deletionService
+    @Transient
+    def auditService
 
-    // AuditableTrait
-    static auditable = true
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading'] ]
     static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
     PropertyDefinition type
@@ -36,7 +37,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
     Date lastUpdated
 
     static mapping = {
-        includes   AbstractProperty.mapping
+        includes   AbstractPropertyWithCalculatedLastUpdated.mapping
         paragraph  type: 'text'
         owner      index:'lcp_owner_idx'
 
@@ -45,7 +46,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
     }
 
     static constraints = {
-        importFrom AbstractProperty
+        importFrom AbstractPropertyWithCalculatedLastUpdated
         instanceOf (nullable: true)
         paragraph  (nullable: true)
 
@@ -60,11 +61,14 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
     ]
 
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 
     @Override
-    def copyInto(AbstractProperty newProp){
+    def copyInto(AbstractPropertyWithCalculatedLastUpdated newProp){
         newProp = super.copyInto(newProp)
 
         newProp.paragraph = paragraph
@@ -72,20 +76,15 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
     }
 
     @Transient
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChangeHandler(this, oldMap, newMap)
+    }
+
+    @Transient
     def onDelete = { oldMap ->
-        log.debug("onDelete LicenseCustomProperty")
-
-        //def oid = "${this.owner.class.name}:${this.owner.id}"
-        def oid = "${this.class.name}:${this.id}"
-        Map<String, Object> changeDoc = [ OID: oid,
-                     event:'LicenseCustomProperty.deleted',
-                     prop: "${this.type.name}",
-                     old: "",
-                     new: "property removed",
-                     name: this.type.name
-                     ]
-
-        changeNotificationService.fireEvent(changeDoc)
+        log.debug("onDelete ${this}")
+        auditService.onDeleteHandler(this, oldMap)
     }
 
     def notifyDependencies_trait(changeDocument) {
@@ -181,7 +180,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
-                            pc.delete(flush: true)
+                            pc.delete()
                         }
                     }
                 }

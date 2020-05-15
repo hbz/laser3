@@ -118,10 +118,8 @@
                     <div class="ui card">
 
                         <div class="content">
-                            <div class="ui indicating progress" id="finishProcess" data-value="${finishProcess}"
-                                 data-total="100">
+                            <div class="ui indicating progress" id="finishProcess" data-percent="${finishProcess}">
                                 <div class="bar">
-                                    <div class="progress">${finishProcess}</div>
                                 </div>
 
                                 <div class="label"
@@ -146,10 +144,8 @@
                     <div class="ui card">
 
                         <div class="content">
-                            <div class="ui indicating progress" id="finishProcess2" data-value="${finishProcess}"
-                                 data-total="100">
+                            <div class="ui indicating progress" id="finishProcess2" data-percent="${finishProcess}">
                                 <div class="bar">
-                                    <div class="progress">${finishProcess}</div>
                                 </div>
 
                                 <div class="label"

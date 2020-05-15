@@ -17428,6 +17428,15 @@ dt {
 dd {
   margin-left: 10px;
 }
+
+.ui.breadcrumb ul {
+  display: inline;
+  padding: 0;
+}
+
+.ui.breadcrumb ul li {
+  display: inline;
+}
 /*!
  * # Semantic UI 2.3.1 - Loader
  * http://github.com/semantic-org/semantic-ui/
@@ -28088,7 +28097,8 @@ Floated Menu / Item
   background: #F2F2F2;
 }
 
-.ui.table tr td {
+.ui.table tr td,
+.ui.table tr .la-no-uppercase {
   padding: 20px 0;
 }
 
@@ -28098,22 +28108,15 @@ Floated Menu / Item
   padding-right: 0.9rem;
 }
 
-.ui.table tr th {
+.ui.table tr th:not(.la-no-uppercase) {
   color: #515151;
   font-size: 0.8rem;
-}
-
-.ui.table tr th:not(.la-no-uppercase) {
   text-transform: uppercase;
 }
 
-.ui.table tr th a {
+.ui.table tr th:not(.la-no-uppercase) a {
   cursor: pointer;
   color: #515151;
-}
-
-.ui.table tr th:not(.sortable) a {
-  text-decoration: underline;
 }
 
 /*--------------
@@ -28134,7 +28137,8 @@ Floated Menu / Item
   border-top: none;
 }
 
-.ui.la-table.table tr td {
+.ui.la-table.table tr td,
+.ui.la-table.table tr th.la-no-uppercase {
   border-top: 7px solid #F4F8F9;
 }
 

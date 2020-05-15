@@ -1,12 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SurveyInfo
-import com.k_int.kbplus.Task
-import com.k_int.kbplus.abstract_domain.AbstractProperty
-import com.k_int.kbplus.auth.User
-import grails.util.Holders
+
 import groovy.util.logging.Log4j
 
 @Log4j

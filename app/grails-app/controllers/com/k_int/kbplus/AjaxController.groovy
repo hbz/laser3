@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
@@ -651,7 +651,7 @@ class AjaxController {
         if(params.oid != "undefined") {
             PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
             if(propDef) {
-                List<AbstractProperty> values
+                List<AbstractPropertyWithCalculatedLastUpdated> values
                 if(propDef.tenant) {
                     switch(params.domain) {
                         case 'currentSubscriptions':

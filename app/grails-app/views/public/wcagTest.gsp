@@ -17,7 +17,7 @@
 
         <h2 class="ui dividing header">2. Brotkrumennavigation</h2>
         <semui:breadcrumbs>
-            <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
+            <semui:crumb message="myinst.currentSubscriptions.label"  />
         </semui:breadcrumbs>
 
         <h2 class="ui dividing header">3. Buttons</h2>

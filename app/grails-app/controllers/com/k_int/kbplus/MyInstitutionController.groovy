@@ -1341,8 +1341,9 @@ join sub.orgRelations or_sub where
 
                     if( params.sub) {
                         Subscription subInstance = Subscription.get(params.sub)
-                        subInstance.owner = copyLicense
-                        subInstance.save(flush: true)
+                        subscriptionService.setOrgLicRole(subInstance,copyLicense)
+                        //subInstance.owner = copyLicense
+                        //subInstance.save(flush: true)
                     }
 
                     redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
@@ -1385,8 +1386,9 @@ join sub.orgRelations or_sub where
             }
             if(params.sub) {
                 Subscription subInstance = Subscription.get(params.sub)
-                subInstance.owner = licenseInstance
-                subInstance.save(flush: true)
+                subscriptionService.setOrgLicRole(subInstance,licenseInstance)
+                /*subInstance.owner = licenseInstance
+                subInstance.save(flush: true)*/
             }
 
             flash.message = message(code: 'license.created.message')
@@ -2473,7 +2475,7 @@ AND EXISTS (
         result.contextOrg = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2551,7 +2553,7 @@ AND EXISTS (
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")

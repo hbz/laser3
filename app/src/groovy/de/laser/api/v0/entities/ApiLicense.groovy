@@ -123,11 +123,11 @@ class ApiLicense {
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
         // result.lastmod          = lic.lastmod // legacy ?
-        result.lastUpdated      = ApiToolkit.formatInternalDate(lic.lastUpdated)
+        result.lastUpdated      = ApiToolkit.formatInternalDate(lic.getCalculatedLastUpdated())
         // result.licenseUrl       = lic.licenseUrl
         // removed - result.licensorRef      = lic.licensorRef
         // removed - result.licenseeRef      = lic.licenseeRef
-        result.licenseType      = lic.licenseType
+        //result.licenseType      = lic.licenseType
         //result.noticePeriod     = lic.noticePeriod
         result.reference        = lic.reference
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
@@ -138,9 +138,9 @@ class ApiLicense {
 
         // RefdataValues
 
-        // result.licenseCategory  = lic.licenseCategory?.value // legacy
+        result.licenseCategory  = lic.licenseCategory?.value
         result.status           = lic.status?.value
-        // result.type             = lic.type?.value
+        result.type             = lic.type?.value
 
         // References
 
@@ -148,7 +148,7 @@ class ApiLicense {
         result.instanceOf       = ApiStubReader.requestLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
         result.properties       = ApiCollectionReader.getPropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
         result.documents        = ApiCollectionReader.getDocumentCollection(lic.documents) // com.k_int.kbplus.DocContext
-        result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
+        //result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {

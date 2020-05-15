@@ -5,16 +5,18 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.AuditableSupport
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
-import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -22,9 +24,10 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 class License
-        extends AbstractBaseDomain
-        implements CalculatedType, Permissions, ShareSupport, Comparable<License>,
-                AuditableTrait {
+        extends AbstractBaseDomainWithCalculatedLastUpdated
+        implements CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
+
+    static Log static_logger = LogFactory.getLog(License)
 
     @Transient
     def grailsApplication
@@ -44,9 +47,10 @@ class License
     def propertyService
     @Transient
     def deletionService
+    @Transient
+    def auditService
 
-    // AuditableTrait
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type', 'isPublicForApi' ]
 
     License instanceOf
@@ -56,6 +60,7 @@ class License
     boolean isPublicForApi = false
 
     @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS)
+    @Deprecated
     RefdataValue status
 
     @RefdataAnnotation(cat = RDConstants.LICENSE_TYPE)
@@ -69,17 +74,18 @@ class License
 
   String noticePeriod
   String licenseUrl
-  String licenseType
+  //String licenseType
   //String licenseStatus
 
-    long lastmod
+    //long lastmod
     Date startDate
     Date endDate
 
     Date dateCreated
     Date lastUpdated
+    Date lastUpdatedCascading
 
-  static hasOne = [onixplLicense: OnixplLicense]
+  //static hasOne = [onixplLicense: OnixplLicense]
 
   static hasMany = [
           ids: Identifier,
@@ -121,14 +127,16 @@ class License
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
          isPublicForApi column:'lic_is_public_for_api'
                isSlaved column:'lic_is_slaved'
-            licenseType column:'lic_license_type_str'
-          //licenseStatus column:'lic_license_status_str'
-                lastmod column:'lic_lastmod'
+          //licenseType column:'lic_license_type_str'
+        //licenseStatus column:'lic_license_status_str'
+              //lastmod column:'lic_lastmod'
               documents sort:'owner.id', order:'desc', batchSize: 10
-          onixplLicense column: 'lic_opl_fk'
+        //onixplLicense column: 'lic_opl_fk'
         licenseCategory column: 'lic_category_rdv_fk'
               startDate column: 'lic_start_date',   index: 'lic_dates_idx'
                 endDate column: 'lic_end_date',     index: 'lic_dates_idx'
+      lastUpdatedCascading column: 'lic_last_updated_cascading'
+
        customProperties sort:'type', order:'desc', batchSize: 10
       privateProperties sort:'type', order:'desc', batchSize: 10
          pendingChanges sort: 'ts', order: 'asc', batchSize: 10
@@ -152,10 +160,10 @@ class License
         licenseUrl(nullable:true, blank:true)
         instanceOf(nullable:true, blank:false)
         isSlaved    (nullable:false, blank:false)
-        licenseType(nullable:true, blank:true)
+        //licenseType(nullable:true, blank:true)
         //licenseStatus(nullable:true, blank:true)
         lastmod(nullable:true, blank:true)
-        onixplLicense(nullable: true, blank: true)
+        //onixplLicense(nullable: true, blank: true)
         licenseCategory(nullable: true, blank: true)
         startDate(nullable: true, blank: false, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
@@ -168,10 +176,21 @@ class License
             }
         })
         lastUpdated(nullable: true, blank: true)
+        lastUpdatedCascading (nullable: true, blank: false)
     }
 
+    @Override
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+
+    @Transient
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChangeHandler(this, oldMap, newMap)
     }
 
     @Override
@@ -269,9 +288,9 @@ class License
     }
 
     // used for views and dropdowns
-    def getReferenceConcatenated() {
-        def cons = getLicensingConsortium()
-        def subscr = getAllLicensee()
+    String getReferenceConcatenated() {
+        Org cons = getLicensingConsortium()
+        List<Org> subscr = getAllLicensee()
         if (subscr) {
             "${reference} (" + subscr.join(', ') + ")"
         }
@@ -786,8 +805,8 @@ AND lower(l.reference) LIKE (:ref)
                 startDate: startDate,
                 endDate: endDate,
                 dateCreated: dateCreated,
-                lastUpdated: lastUpdated,
-                onixplLicense: onixplLicense // fk
+                lastUpdated: lastUpdated
+                //onixplLicense: onixplLicense // fk
         )
 
         copy

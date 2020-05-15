@@ -2,7 +2,7 @@ package de.laser.api.v0
 
 
 import com.k_int.kbplus.License
-import com.k_int.kbplus.OnixplLicense
+//import com.k_int.kbplus.OnixplLicense
 import com.k_int.kbplus.Org
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.helper.Constants
@@ -24,6 +24,8 @@ class ApiReader {
             'oaMonitorSubscription':    [Constants.MIME_APPLICATION_JSON],
             'organisation':             [Constants.MIME_APPLICATION_JSON],
             'package':                  [Constants.MIME_APPLICATION_JSON],
+            'platform':                 [Constants.MIME_APPLICATION_JSON],
+            'platformList':             [Constants.MIME_APPLICATION_JSON],
             'propertyList':             [Constants.MIME_APPLICATION_JSON],
             'refdataList':              [Constants.MIME_APPLICATION_JSON],
             'statistic':                [Constants.MIME_APPLICATION_JSON],
@@ -32,7 +34,7 @@ class ApiReader {
             'subscriptionList':         [Constants.MIME_APPLICATION_JSON]
     ]
 
-    static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'propertyList', 'statisticList']
+    static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'platformList', 'propertyList', 'statisticList']
 
 
     // ##### CONSTANTS #####
@@ -70,6 +72,7 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return Map | Constants.HTTP_FORBIDDEN
      */
+    /*
     static requestOnixplLicense(OnixplLicense opl, License lic, Org context) {
         Map<String, Object> result = [:]
         boolean hasAccess = false
@@ -100,5 +103,5 @@ class ApiReader {
         }
 
         return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
-    }
+    }*/
 }
