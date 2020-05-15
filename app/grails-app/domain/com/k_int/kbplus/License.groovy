@@ -143,7 +143,7 @@ class License
 
               ids               batchSize: 10
               pkgs              batchSize: 10
-              subscriptions     batchSize: 10
+              subscriptions     sort:'name',order:'asc', batchSize: 10
               orgLinks          batchSize: 10
               prsLinks          batchSize: 10
               derivedLicenses   batchSize: 10
@@ -162,7 +162,7 @@ class License
         isSlaved    (nullable:false, blank:false)
         //licenseType(nullable:true, blank:true)
         //licenseStatus(nullable:true, blank:true)
-        lastmod(nullable:true, blank:true)
+        //lastmod(nullable:true, blank:true)
         //onixplLicense(nullable: true, blank: true)
         licenseCategory(nullable: true, blank: true)
         startDate(nullable: true, blank: false, validator: { val, obj ->
@@ -305,7 +305,7 @@ class License
     Org getLicensingConsortium() {
         Org result
         orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensing Consortium'] )
+            if ( or.roleType.value in ['Licensing Consortium'] )
                 result = or.org
             }
         result
