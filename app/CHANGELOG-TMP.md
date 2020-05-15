@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2384    15.05.2020  rc1.3       Moe     Feature     Umfrage Auswertung: Abgeschlossen Teilnehmer bzw. nicht abgeschlossene Teilnehmer mit Merkmal anzeigen
+
 2486    15.05.2020  rc1.3       Moe     Bug         Prozentanzeige in Umfrageübersicht ist Fehlerhaft
 
 2494    14.05.2020  rc1.3       Moe     Bug         Lizenztyp "lokale Lizenz" bei Vollnutzern nicht mehr gesetzt
