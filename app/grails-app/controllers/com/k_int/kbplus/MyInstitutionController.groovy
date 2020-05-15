@@ -2678,7 +2678,9 @@ AND EXISTS (
                 sendMailToSurveyOwner = true
                 // flash.message = message(code: "surveyResult.finish.info")
             } else {
-                flash.error = message(code: "surveyResult.finish.error")
+                if(!surveyConfig.pickAndChoose && surveyInfo.isMandatory) {
+                    flash.error = message(code: "surveyResult.finish.error")
+                }
             }
 
         if(sendMailToSurveyOwner) {

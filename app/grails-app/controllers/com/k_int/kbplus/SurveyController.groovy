@@ -6,6 +6,8 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.PropertyService
+import de.laser.domain.IssueEntitlementGroup
+import de.laser.domain.IssueEntitlementGroupItem
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -595,7 +597,8 @@ class SurveyController {
                     type: 'IssueEntitlementsSurvey',
                     surveyInfo: surveyInfo,
                     subSurveyUseForTransfer: false,
-                    pickAndChoose: true
+                    pickAndChoose: true,
+                    createTitleGroups: params.createTitleGroups ? true : false
 
             )
 
@@ -1344,11 +1347,31 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
+        Subscription participantSub = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
+        def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(participantSub)
+
+        IssueEntitlementGroup issueEntitlementGroup
+        if(result.surveyConfig.createTitleGroups){
+
+            Integer countTitleGroups = IssueEntitlementGroup.findAllBySubAndNameIlike(participantSub, 'Phase').size()
+
+            issueEntitlementGroup = new IssueEntitlementGroup(sub: participantSub, name: "Phase ${countTitleGroups+1}").save()
+        }
 
         ies?.each { ie ->
             ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
             ie.save(flush: true)
+
+            if(issueEntitlementGroup){
+                println(issueEntitlementGroup)
+                IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                        ie: ie,
+                        ieGroup: issueEntitlementGroup)
+
+                if (!issueEntitlementGroupItem.save(flush: true)) {
+                    log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
+                }
+            }
         }
 
         flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.info')
@@ -1379,12 +1402,31 @@ class SurveyController {
         def participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig)?.org.flatten().unique { a, b -> a.id <=> b.id }
 
         participantsFinish?.each { org ->
+            Subscription participantSub = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)
 
-            def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org))
+            def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(participantSub)
+
+            IssueEntitlementGroup issueEntitlementGroup
+            if(result.surveyConfig.createTitleGroups){
+
+                Integer countTitleGroups = IssueEntitlementGroup.findAllBySubAndNameIlike(participantSub, 'Phase').size()
+
+                issueEntitlementGroup = new IssueEntitlementGroup(sub: participantSub, name: "Phase ${countTitleGroups+1}").save()
+            }
 
             ies?.each { ie ->
                 ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
                 ie.save(flush: true)
+
+                if(issueEntitlementGroup){
+                    IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                            ie: ie,
+                            ieGroup: issueEntitlementGroup)
+
+                    if (!issueEntitlementGroupItem.save(flush: true)) {
+                        log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
+                    }
+                }
             }
         }
 
