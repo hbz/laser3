@@ -583,18 +583,14 @@
                 $ref: "#/components/schemas/Property"
             provider:
               $ref: "#/components/schemas/OrganisationStub"
-            <%--provenance:
-              type: string
             serviceProvider:
               type: string
-              description: Mapping RefdataCategory
-              enum:
-                [""]
+              description: Mapping RefdataCategory "${RDConstants.Y_N}"
+              enum: <% printRefdataEnum(RDConstants.Y_N, 14) %>
             softwareProvider:
               type: string
-              description: Mapping RefdataCategory
-              enum:
-                [""]--%>
+              description: Mapping RefdataCategory "${RDConstants.Y_N}"
+              enum: <% printRefdataEnum(RDConstants.Y_N, 14) %>
             <%--status:
               type: stringRefdataCategory
               description: Mapping RefdataCategory "${RDConstants.PLATFORM_STATUS}"
