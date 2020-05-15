@@ -9,8 +9,6 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 - added new attribute: `Platform.properties`
 - added new attribute: `Platform.provider`
 - removed attribute: `Platform.provenance`
-- removed attribute: `Platform.serviceProvider`
-- removed attribute: `Platform.softwareProvider`
 - removed attribute: `Platform.status`
 - removed attribute: `Platform.type`
 - updated schema:

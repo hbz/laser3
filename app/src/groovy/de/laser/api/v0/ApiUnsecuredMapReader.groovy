@@ -224,8 +224,8 @@ class ApiUnsecuredMapReader {
         // RefdataValues
         //result.type                 = pform.type?.value
         //result.status               = pform.status?.value
-        //result.serviceProvider      = pform.serviceProvider?.value
-        //result.softwareProvider     = pform.softwareProvider?.value
+        result.serviceProvider      = pform.serviceProvider?.value
+        result.softwareProvider     = pform.softwareProvider?.value
 
         // References
         result.provider = getOrganisationStubMap(pform.org) // com.k_int.kbplus.Org

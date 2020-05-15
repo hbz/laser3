@@ -36,10 +36,10 @@ class Platform extends AbstractBaseDomainWithCalculatedLastUpdated {
   @RefdataAnnotation(cat = RDConstants.PLATFORM_STATUS)
   RefdataValue status // TODO: not in Bootstrap
 
-  @RefdataAnnotation(cat = '?')
+  @RefdataAnnotation(cat = RDConstants.Y_N)
   RefdataValue serviceProvider
 
-  @RefdataAnnotation(cat = '?')
+  @RefdataAnnotation(cat = RDConstants.Y_N)
   RefdataValue softwareProvider
 
   Date dateCreated
