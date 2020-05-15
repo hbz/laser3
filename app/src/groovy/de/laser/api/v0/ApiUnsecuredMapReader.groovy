@@ -228,7 +228,7 @@ class ApiUnsecuredMapReader {
         //result.softwareProvider     = pform.softwareProvider?.value
 
         // References
-        //result.tipps = pform.tipps
+        result.provider = getOrganisationStubMap(pform.org) // com.k_int.kbplus.Org
         result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.customProperties, pform, context)
 
         ApiToolkit.cleanUp(result, true, true)

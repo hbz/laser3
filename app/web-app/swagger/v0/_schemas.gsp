@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
 <%
     def printRefdataEnum = { rdc, pos ->
         String spacer = ''
@@ -67,7 +67,7 @@
           enum: <% printRefdataEnum(RDConstants.ADDRESS_TYPE, 12) %>
         lastUpdated:
           type: string
-          format: date-time
+          format: "<% print ApiToolkit.DATE_TIME_PATTERN %>"
 
 
     Contact:
@@ -81,7 +81,7 @@
           type: string
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         type:
           type: string
           description: Mapping RefdataCategory "${RDConstants.CONTACT_TYPE}"
@@ -132,25 +132,25 @@
           type: string
         dateCreated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         datePaid:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         endDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         finalCostRounding:
           type: string
         invoiceDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         invoice:
           $ref: "#/components/schemas/Invoice"
         issueEntitlement:
           $ref: "#/components/schemas/IssueEntitlement_in_Subscription"
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         order:
           $ref: "#/components/schemas/Order"
         owner:
@@ -159,7 +159,7 @@
           type: string
         startDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         sub:
           $ref: "#/components/schemas/SubscriptionStub"
 <%--    subPkg:
@@ -183,7 +183,7 @@
           type: string
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         title:
           type: string
         type:
@@ -211,24 +211,24 @@
           type: string
         dateOfPayment:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         dateOfInvoice:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         datePassedToFinance:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         endDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         invoiceNumber:
           type: string
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         startDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         owner:
           $ref: "#/components/schemas/OrganisationStub"
 
@@ -242,16 +242,16 @@
           example: "issueentitlement:af045a3c-0e32-a681-c21d-3cf17f581d2c"
         accessStartDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         accessEndDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         coreStatusStart:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         coreStatusEnd:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         coreStatus:
           type: string
           description: Mapping RefdataCategory
@@ -263,7 +263,7 @@
           type: string
         endDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         endVolume:
           type: string
         endIssue:
@@ -274,7 +274,7 @@
           type: string
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         medium:
           type: string
           description: Mapping RefdataCategory
@@ -286,7 +286,7 @@
           type: string
         startDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         subscription:
           $ref: "#/components/schemas/SubscriptionStub"
         tipp:
@@ -299,19 +299,19 @@
       properties:
         dateCreated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         documents:
           type: array
           items:
             $ref: "#/components/schemas/Document" # resolved DocContext
         endDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         instanceOf:
           $ref: "#/components/schemas/LicenseStub"
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         licenseType:
           type: string
 <%--        onixplLicense:
@@ -326,7 +326,7 @@
             $ref: "#/components/schemas/Property"
         startDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         status:
           type: string
           description: Mapping RefdataCategory "${RDConstants.LICENSE_STATUS}"
@@ -344,7 +344,7 @@
           $ref: "#/components/schemas/Document"
         lastmod:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         title:
           type: string
           --%>
@@ -357,7 +357,7 @@
           type: string
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         orderNumber:
           type: string
         owner:
@@ -392,7 +392,7 @@
           type: integer --%>
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         libraryType:
           type: string
           description: Mapping RefdataCategory "LibraryType"
@@ -449,17 +449,17 @@
             enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           dateCreated:
             type: string
-            format: date
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
 <%--          documents:
             type: array
             items:
               $ref: "#/definitions/Document" # resolved DocContext--%>
           endDate:
             type: string
-            format: date
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           listVerifiedDate:
             type: string
-            format: date
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           fixed:
             type: string
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
@@ -472,7 +472,7 @@
             enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           lastUpdated:
             type: string
-            format: date-time
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
 <%--          license:
             $ref: "#/definitions/LicenseStub" --%>
           nominalPlatform:
@@ -506,7 +506,7 @@
             type: string
           startDate:
             type: string
-            format: date
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
 <%--          subscriptions:
             type: array
             items:
@@ -549,7 +549,7 @@
           type: string
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         contactType:
           type: string
           description: Mapping RefdataCategory "${RDConstants.PERSON_CONTACT_TYPE}"
@@ -573,14 +573,16 @@
           properties:
             dateCreated:
               type: string
-              format: date-time
+              format: <% print ApiToolkit.DATE_TIME_PATTERN %>
             lastUpdated:
               type: string
-              format: date-time
+              format: <% print ApiToolkit.DATE_TIME_PATTERN %>
             properties: # mapping customProperties
               type: array
               items:
                 $ref: "#/components/schemas/Property"
+            provider:
+              $ref: "#/components/schemas/OrganisationStub"
             <%--provenance:
               type: string
             serviceProvider:
@@ -640,14 +642,14 @@
           $ref: "#/components/schemas/CostItemCollection" # resolved CostItemCollection
         dateCreated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         documents:
           type: array
           items:
             $ref: "#/components/schemas/Document" # resolved DocContext
         endDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         form:
           type: string
           description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_FORM}"
@@ -672,15 +674,15 @@
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         license: # mapping attr owner
           $ref: "#/components/schemas/LicenseStub"
         manualCancellationDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         manualRenewalDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         noticePeriod:
           type: string
         organisations: # mapping attr orgRelations
@@ -703,7 +705,7 @@
           enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_RESOURCE, 12) %>
         startDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         status:
           type: string
           description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_STATUS}"
@@ -787,20 +789,20 @@
             type: string
           dateCreated:
             type: string
-            format: date-time
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           datePaid:
             type: string
-            format: date-time
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           endDate:
             type: string
-            format: date-time
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
 <%--      finalCostRounding:
             type: string --%>
           financialYear:
             type: string
           invoiceDate:
             type: string
-            format: date-time
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           invoiceNumber:
             type: string
 <%--      invoice:
@@ -809,7 +811,7 @@
             $ref: "#/components/schemas/IssueEntitlement_in_Subscription" --%>
           lastUpdated:
             type: string
-            format: date-time
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           orderNumber:
             type: string
 <%--      order:
@@ -822,7 +824,7 @@
             type: string
           startDate:
             type: string
-            format: date-time
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
 <%--      sub:
             $ref: "#/components/schemas/SubscriptionStub"
           subPkg:
@@ -845,16 +847,16 @@
           example: "issueentitlement:af045a3c-0e32-a681-c21d-3cf17f581d2c"
         accessStartDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         accessEndDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         coreStatusStart:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         coreStatusEnd:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         coreStatus:
           type: string
           description: Mapping RefdataCategory
@@ -864,7 +866,7 @@
           type: string
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         medium:
           type: string
           description: Mapping RefdataCategory
@@ -884,7 +886,7 @@
             type: string
           endDate:
             type: string
-            format: date-time
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           endVolume:
             type: string
           endIssue:
@@ -893,14 +895,14 @@
             type: string
           lastUpdated:
             type: string
-            format: date-time
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           startVolume:
             type: string
           startIssue:
             type: string
           startDate:
             type: string
-            format: date-time
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
 
 
     IssueEntitlement_in_Subscription:
@@ -919,7 +921,7 @@
       properties:
         endDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         organisation:
           $ref: "#/components/schemas/OrganisationStub"
           description: |
@@ -930,7 +932,7 @@
           enum: <% printRefdataEnum(RDConstants.ORGANISATIONAL_ROLE, 12) %>
         startDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
 
 
     Package_in_Subscription:
@@ -1061,7 +1063,7 @@
             [""]
         lastUpdated:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         option:
           type: string
           description: Mapping RefdataCategory
@@ -1125,10 +1127,10 @@
             $ref: "#/components/schemas/Identifier"
         startDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         endDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         reference:
           type: string
         normReference:
@@ -1186,10 +1188,10 @@
             $ref: "#/components/schemas/Identifier"
         startDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         endDate:
           type: string
-          format: date-time
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         name:
           type: string
         calculatedType:

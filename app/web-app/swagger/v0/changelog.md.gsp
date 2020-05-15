@@ -7,20 +7,24 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 - added new endpoint: __/platform__
 - added new endpoint: __/platformList__
 - added new attribute: `Platform.properties`
+- added new attribute: `Platform.provider`
 - removed attribute: `Platform.provenance`
 - removed attribute: `Platform.serviceProvider`
 - removed attribute: `Platform.softwareProvider`
 - removed attribute: `Platform.status`
 - removed attribute: `Platform.type`
+- updated schema:
+    - `format: date-time` to `format: "yyyy-MM-dd'T'HH:mm:ss"`
+    - `format: date` to `format: "yyyy-MM-dd'T'HH:mm:ss"`
 
 #### 0.100
 
-- modifying nested objects of type `Identifier` affects now ..
+- modifying nested objects of type `Identifier` affects now:
     - `License.lastUpdated`
     - `Organisation.lastUpdated`
     - `Package.lastUpdated`
     - `Subscription.lastUpdated`
-- modifying nested objects of type `Property` affects now ..
+- modifying nested objects of type `Property` affects now:
     - `License.lastUpdated`
     - `Organisation.lastUpdated`
     - `Person.lastUpdated`
