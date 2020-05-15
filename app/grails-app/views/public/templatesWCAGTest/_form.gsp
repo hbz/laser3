@@ -105,7 +105,8 @@
 
 <r:script>
        $('#test').dropdown({
-            forceSelection: false
+            //forceSelection: false
+            //clearable: true
         });
 
         function chooseRequiredDropdown(opt) {

@@ -6093,13 +6093,9 @@ $.fn.dropdown = function(parameters) {
               $search = $('<input />')
                 .addClass(className.search)
                 .prop('autocomplete', 'off')
-                  // zurueck .attr('aria-autocomplete','both') // a11y
-                  // zurueck .attr('aria-controls','listBox') // a11y
-                .insertBefore($text)
-              ;
-              $text = $('.text')
-                  .attr('aria-autocomplete','both') // a11y
+                  .attr('aria-autocomplete','list') // a11y
                   .attr('aria-controls','listBox') // a11y
+                .insertBefore($text)
               ;
             }
             if( module.is.multiple() && module.is.searchSelection() && !module.has.sizer()) {
@@ -6695,10 +6691,10 @@ $.fn.dropdown = function(parameters) {
           else {
             if(settings.allowAdditions) {
               module.set.selected(module.get.query());
-              module.remove.searchTerm();
+              // module.remove.searchTerm(); // a11y
             }
             else {
-              module.remove.searchTerm();
+              // module.remove.searchTerm(); // a11y
             }
           }
         },
@@ -6787,6 +6783,7 @@ $.fn.dropdown = function(parameters) {
               if(module.is.searchSelection() && !willRefocus) {
                 if(!itemActivated && !pageLostFocus) {
                   if(settings.forceSelection) {
+                    // alert('settings.forceSelection bei blur');
                     module.forceSelection();
                   }
                   module.hide();
@@ -7157,7 +7154,7 @@ $.fn.dropdown = function(parameters) {
                 module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                 module.event.item.click.call($selectedItem, event);
                 if(module.is.searchSelection()) {
-                  module.remove.searchTerm();
+                  // module.remove.searchTerm();
                 }
               }
 
@@ -7174,7 +7171,7 @@ $.fn.dropdown = function(parameters) {
                     module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
-                      //module.remove.searchTerm();
+                      // module.remove.searchTerm();
                     }
                   }
                   event.preventDefault();
@@ -8009,8 +8006,7 @@ $.fn.dropdown = function(parameters) {
           activedescendant: function(selectedItemID){
             // console.log("aria-activedescendant WIRD GESETZT");
             // console.log(selectedItemID);
-            // zurueck $search.attr('aria-activedescendant', selectedItemID) // a11y
-            $text.attr('aria-activedescendant', selectedItemID) // a11y
+            $search.attr('aria-activedescendant', selectedItemID) // a11y
           },
           ariaSelected : function (selectedItem) {
             // console.log("aria-selected WIRD GESETZT");
@@ -8161,13 +8157,13 @@ $.fn.dropdown = function(parameters) {
                 if(settings.preserveHTML) {
                   console.log("html wird gesetzt in set.text")
                   console.log($search)
-                  $text.html(text);
-                  $search.val(text);
+                  //$text.html(text);
+                  $search.val(text); // a11y
                 }
                 else {
                   console.log("tex wird gesetzt set.text")
-                  $text.text(text);
-                  $search.val(text);
+                  //$text.text(text);
+                  $search.val(text); // a11y
                 }
               }
             }
@@ -8840,6 +8836,7 @@ $.fn.dropdown = function(parameters) {
           },
           clearable: function() {
             $icon.removeClass(className.clear);
+            $search.val('');
           }
         },
 
@@ -9278,7 +9275,7 @@ $.fn.dropdown = function(parameters) {
         },
 
         hideAndClear: function() {
-          module.remove.searchTerm();
+          // module.remove.searchTerm(); // a11y
           if( module.has.maxSelections() ) {
             return;
           }
@@ -9722,7 +9719,7 @@ $.fn.dropdown.settings.templates = {
     else {
       html += '<div class="text" ></div>';
     }
-    html += '<div class="menu" id="listBox">';
+    html += '<div class="menu" id="listBox" role="listbox">';
     $.each(select.values, function(index, option) {
       html += (option.disabled)
         ? '<div id="' + option.value + '" class="disabled item" data-value="' + option.value + '">' + option.name + '</div>'
