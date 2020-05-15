@@ -3278,7 +3278,7 @@ class SubscriptionController extends AbstractDebugController {
         Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
 
         threadArray.each {
-            if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
+            if (it.name == 'PackageSync_'+result.subscriptionInstance?.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscriptionInstance,Package.findByGokbId(params.addUUID))) {
                 flash.message = message(code: 'subscription.details.linkPackage.thread.running')
             }
         }
@@ -3299,8 +3299,6 @@ class SubscriptionController extends AbstractDebugController {
                     try {
                         globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
                         List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
-                        globalSourceSyncService.notifyDependencies([tippsToNotify])
-                        globalSourceSyncService.cleanUpGorm()
                         Package pkgToLink = Package.findByGokbId(pkgUUID)
                         Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
                         println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
@@ -3317,6 +3315,9 @@ class SubscriptionController extends AbstractDebugController {
                                 pkgToLink.addToSubscription(it, false)
                             }
                         }
+                        Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id+"_pendingChanges")
+                        globalSourceSyncService.notifyDependencies([tippsToNotify])
+                        globalSourceSyncService.cleanUpGorm()
                     }
                     catch (Exception e) {
                         log.error("sync job has failed, please consult stacktrace as follows: ")

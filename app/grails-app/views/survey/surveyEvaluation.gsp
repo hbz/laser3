@@ -82,21 +82,21 @@
                         controller="survey" action="surveyEvaluation"
                         params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
                     ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-                    <div class="ui floating circular label">${participantsFinish.size() ?: 0}</div>
+                    <div class="ui floating circular label">${participantsFinishTotal.size() ?: 0}</div>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
                         params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
                     ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-                    <div class="ui floating circular label">${participantsNotFinish.size() ?: 0}</div>
+                    <div class="ui floating circular label">${participantsNotFinishTotal.size() ?: 0}</div>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
                         params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
                     ${message(code: 'surveyEvaluation.participantsView')}
-                    <div class="ui floating circular label">${participants?.size() ?: 0}</div>
+                    <div class="ui floating circular label">${participantsTotal.size() ?: 0}</div>
                 </g:link>
 
             </div>

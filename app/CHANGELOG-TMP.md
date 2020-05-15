@@ -2,6 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2384    15.05.2020  rc1.3       Moe     Feature     Umfrage Auswertung: Abgeschlossen Teilnehmer bzw. nicht abgeschlossene Teilnehmer mit Merkmal anzeigen
+
+2486    15.05.2020  rc1.3       Moe     Bug         Prozentanzeige in Umfrageübersicht ist Fehlerhaft
+
+2494    14.05.2020  rc1.3       Moe     Bug         Lizenztyp "lokale Lizenz" bei Vollnutzern nicht mehr gesetzt
+
+2415    14.05.2020  rc1.3       Moe     Bug         Berechtigungen bei Umfrage nochmal anpassen
+
+--      14.05.2020  rc1.3       Andreas Bug         Änderungsmitteilung beschleunigt, Meldung an Nutzer mit Zeitabschätzung versehen, Prozessablauf bei Paketsync geändert
+
 2470    11.05.2020  rc1.3       Moe     Bug         Globale Suche berücksichtigt Berechtigung für Umfragen nicht
 
 2407    07.05.2020  rc1.3       Anja    Bug         Migration von federal.state nach regions
