@@ -577,7 +577,7 @@
                     </div>
                 </div><!-- .card -->
 
-                <g:if test="${contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                <g:if test="${contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">

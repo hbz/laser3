@@ -172,7 +172,7 @@
                 </g:else>
             </g:if>
 
-            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM_SURVEY") && showConsortiaFunctions && subscriptionInstance.instanceOf == null }">
+            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM") && showConsortiaFunctions && subscriptionInstance.instanceOf == null }">
                     <semui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
 

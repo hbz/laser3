@@ -751,7 +751,7 @@ join sub.orgRelations or_sub where
 
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
 
-        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM_SURVEY' || authority == 'ORG_CONSORTIUM' }
+        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
@@ -4161,7 +4161,7 @@ AND EXISTS (
         Map<String, Object> result = [:]
 
         Org contextOrg = contextService.getOrg()
-        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']) {
+        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM']) {
             result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                     "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org)) and surInfo.owner = :owner",
                     [status: RDStore.SURVEY_SURVEY_STARTED,

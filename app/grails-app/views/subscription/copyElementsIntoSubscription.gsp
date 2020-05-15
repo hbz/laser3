@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
+            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
                 <div class="${workFlowPart == WORKFLOW_SUBSCRIBER ? 'active' : ''} step">
                     <div class="content">
                         <div class="title">
@@ -160,7 +160,7 @@
                 </div>
             </semui:complexSubNavItem>
 
-            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
+            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
                 <semui:complexSubNavItem class="${workFlowPart == WORKFLOW_SUBSCRIBER ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_SUBSCRIBER]}" >
                     <div class="content">
                         <div class="title">
@@ -193,7 +193,7 @@
     <g:if test="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <g:render template="/templates/subscription/copyDocsAndTasks" />
     </g:if>
-    <g:elseif test="${workFlowPart == WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
+    <g:elseif test="${workFlowPart == WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
         <g:render template="/templates/subscription/copySubscriber" />
     </g:elseif>
     <g:elseif test="${workFlowPart == WORKFLOW_PROPERTIES}">

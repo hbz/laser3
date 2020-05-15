@@ -378,16 +378,16 @@
 
             <div id="container-notes">
                 <g:render template="/templates/notes/card"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')]}"/>
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
             </div>
 
-            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
 
                 <g:render template="/templates/tasks/modal_create"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
 
             </g:if>
-            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
                 <g:render template="/templates/notes/modal_create"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
             </g:if>
@@ -851,7 +851,7 @@
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
                         ${message(code: 'surveyResult.participantComment')}
                     </g:if>
                     <g:else>
@@ -863,7 +863,7 @@
                     </g:else>
                 </th>
                 <th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
@@ -964,7 +964,7 @@
                             <semui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                         </td>
                         <td>
-                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
                                 <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
                             </g:if>
                             <g:else>

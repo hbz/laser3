@@ -284,7 +284,7 @@ class TaskService {
         List validSubscriptionsMitInstanceOf = []
         List validSubscriptionsOhneInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
-        boolean binKonsortium = contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']
+        boolean binKonsortium = contextOrg.getCustomerType() in ['ORG_CONSORTIUM']
 
         if (contextOrg) {
             if (binKonsortium) {
@@ -376,7 +376,7 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
 
             String licensesQueryOhneInstanceOf = 'SELECT lic.id, lic.reference, lic.status, lic.startDate, lic.endDate, o.roleType from License lic left join lic.orgLinks o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
-            if(accessService.checkPerm("ORG_CONSORTIUM") || accessService.checkPerm("ORG_CONSORTIUM_SURVEY")){
+            if(accessService.checkPerm("ORG_CONSORTIUM")){
                 def qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [

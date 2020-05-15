@@ -43,7 +43,7 @@ class SurveyService {
 
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -68,7 +68,7 @@ class SurveyService {
 
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -456,7 +456,7 @@ class SurveyService {
 
         Map sheetData = [:]
 
-        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']) {
+        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM']) {
             surveyConfigs.each { surveyConfig ->
                 List titles = []
                 List surveyData = []

@@ -16,7 +16,6 @@ class AccessService {
     static final ORG_INST = 'ORG_INST'
     static final ORG_BASIC_MEMBER = 'ORG_BASIC_MEMBER'
     static final ORG_CONSORTIUM = 'ORG_CONSORTIUM'
-    static final ORG_CONSORTIUM_SURVEY = 'ORG_CONSORTIUM_SURVEY'
     static final ORG_INST_COLLECTIVE = 'ORG_INST_COLLECTIVE'
 
     def grailsApplication
@@ -123,7 +122,7 @@ class AccessService {
                 isOrgBasicMemberView = org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
             } catch (IllegalStateException e) {}
 
-            if(isOrgBasicMemberView && (oss.getValue() in Role.findAllByAuthorityInList(['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM']))){
+            if(isOrgBasicMemberView && (oss.getValue() in Role.findAllByAuthorityInList(['ORG_CONSORTIUM']))){
                 fakeRole = Role.findByAuthority('ORG_BASIC_MEMBER')
             }
 

@@ -446,7 +446,7 @@
                         </td>
                         <td>${message(code: 'profile.notification.for.SurveysStart')}</td>
                     </tr>
-                    <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                    <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']}">
                     <tr>
                         <td>
                             <div class="ui checkbox">
