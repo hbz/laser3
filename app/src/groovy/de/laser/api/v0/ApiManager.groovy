@@ -8,7 +8,6 @@ import de.laser.api.v0.special.ApiStatistic
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
-import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.http.HttpStatus
 
 import javax.servlet.http.HttpServletRequest
@@ -47,6 +46,16 @@ class ApiManager {
         else if (! (format in ApiReader.SUPPORTED_FORMATS[obj])){
             return Constants.HTTP_NOT_ACCEPTABLE
         }
+
+        /*
+            Naming convention
+
+            ApiObject.findByX()         returning the matching result from db (implicit checking delete status)
+
+            ApiObject.requestY()        returning object if access is granted (implicit checked)
+
+            ApiObject.getZ()            returing object without access check
+         */
 
         if (checkValidRequest('costItem')) {
 
@@ -164,7 +173,7 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiPkg.requestPackage((Package) tmp.obj, contextOrg)
+                result = ApiPkg.getPackage((Package) tmp.obj, contextOrg)
             }
         }
         else if (checkValidRequest('platform')) {
@@ -173,7 +182,7 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiPlatform.requestPlatform((Platform) tmp.obj, contextOrg)
+                result = ApiPlatform.getPlatform((Platform) tmp.obj, contextOrg)
             }
         }
         else if (checkValidRequest('platformList')) {

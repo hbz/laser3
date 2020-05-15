@@ -68,11 +68,11 @@ class ApiPlatform {
     /**
      * @return JSON
      */
-    static requestPlatform(Platform pform, Org context) {
+    static getPlatform(Platform pform, Org context) {
         Map<String, Object> result = [:]
 
         result = ApiUnsecuredMapReader.getPlatformMap(pform, context)
 
-        return new JSON(result)
+        return result ? new JSON(result) : null
     }
 }

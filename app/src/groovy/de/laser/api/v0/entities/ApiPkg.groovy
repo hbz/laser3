@@ -51,14 +51,14 @@ class ApiPkg {
     }
 
     /**
-     * @return JSON | FORBIDDEN
+     * @return JSON
      */
-    static requestPackage(Package pkg, Org context) {
+    static getPackage(Package pkg, Org context) {
         Map<String, Object> result = [:]
 
         result = getPackageMap(pkg, context)
 
-        return new JSON(result)
+        return result ? new JSON(result) : null
     }
 
 	/**
