@@ -107,6 +107,7 @@
        $('#test').dropdown({
             //forceSelection: false
             //clearable: true
+              preserveHTML: false
         });
 
         function chooseRequiredDropdown(opt) {

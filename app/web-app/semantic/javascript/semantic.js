@@ -7589,6 +7589,14 @@ $.fn.dropdown = function(parameters) {
                 $choice.find(selector.menu).remove();
                 $choice.find(selector.menuIcon).remove();
               }
+              console.log("$choice");
+              console.log($choice);
+              if($choice.children().hasClass('description')) {
+                console.log("$choice.hasClass('description')");
+                // remove all the inner text from this span tag with the class description
+                console.log($choice.children().remove('.description'));
+                $choice.children().remove('.description')
+              }
               return ($choice.data(metadata.text) !== undefined)
                 ? $choice.data(metadata.text)
                 : (preserveHTML)
@@ -8162,7 +8170,8 @@ $.fn.dropdown = function(parameters) {
                 }
                 else {
                   console.log("tex wird gesetzt set.text")
-                  //$text.text(text);
+
+                  $text.text(text);
                   $search.val(text); // a11y
                 }
               }
@@ -8179,7 +8188,6 @@ $.fn.dropdown = function(parameters) {
             module.set.partialSearch(searchText);
             module.set.activeItem($item);
             module.set.selected(value, $item);
-            module.set.text(text);
             module.set.text(text);
             },
           selectedLetter: function(letter) {
@@ -9543,7 +9551,7 @@ $.fn.dropdown.settings = {
   fullTextSearch         : false,      // search anywhere in value (set to 'exact' to require exact matches)
 
   placeholder            : 'auto',     // whether to convert blank <select> values to placeholder text
-  preserveHTML           : true,       // preserve html when selecting value
+  preserveHTML           : false,       // preserve html when selecting value
   sortSelect             : false,      // sort selection on init
 
   forceSelection         : true,       // force a choice on blur with search selection
