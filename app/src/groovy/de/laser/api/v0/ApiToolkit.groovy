@@ -23,6 +23,8 @@ class ApiToolkit {
     static final NO_ACCESS_DUE_NO_APPROVAL  = 'NO_APPROVAL'
     static final NO_ACCESS_DUE_NOT_PUBLIC   = 'NOT_PUBLIC'
 
+    static final DATE_TIME_PATTERN      = "yyyy-MM-dd'T'HH:mm:ss"
+
     static List getAllApiLevels() {
         [API_LEVEL_READ, API_LEVEL_WRITE, API_LEVEL_DATAMANAGER, API_LEVEL_INVOICETOOL]
     }
@@ -128,7 +130,7 @@ class ApiToolkit {
             return null
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss") // DateUtil.getSDF_NoZ()
+        SimpleDateFormat sdf = new SimpleDateFormat(ApiToolkit.DATE_TIME_PATTERN) // DateUtil.getSDF_NoZ()
         sdf.format(date)
     }
 

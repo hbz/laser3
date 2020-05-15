@@ -24,6 +24,8 @@ class ApiReader {
             'oaMonitorSubscription':    [Constants.MIME_APPLICATION_JSON],
             'organisation':             [Constants.MIME_APPLICATION_JSON],
             'package':                  [Constants.MIME_APPLICATION_JSON],
+            'platform':                 [Constants.MIME_APPLICATION_JSON],
+            'platformList':             [Constants.MIME_APPLICATION_JSON],
             'propertyList':             [Constants.MIME_APPLICATION_JSON],
             'refdataList':              [Constants.MIME_APPLICATION_JSON],
             'statistic':                [Constants.MIME_APPLICATION_JSON],
@@ -32,7 +34,7 @@ class ApiReader {
             'subscriptionList':         [Constants.MIME_APPLICATION_JSON]
     ]
 
-    static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'propertyList', 'statisticList']
+    static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'platformList', 'propertyList', 'statisticList']
 
 
     // ##### CONSTANTS #####
