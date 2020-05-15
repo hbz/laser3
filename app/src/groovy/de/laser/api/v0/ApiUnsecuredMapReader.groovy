@@ -206,7 +206,7 @@ class ApiUnsecuredMapReader {
         ApiToolkit.cleanUp(result, true, true)
     }
 
-    static Map<String, Object> getPlatformMap(Platform pform) {
+    static Map<String, Object> getPlatformMap(Platform pform, Org context) {
         if (!pform) {
             return null
         }
@@ -217,18 +217,19 @@ class ApiUnsecuredMapReader {
         result.name             = pform.name
         result.normName         = pform.normname
         result.primaryUrl       = pform.primaryUrl
-        result.provenance       = pform.provenance
+        //result.provenance       = pform.provenance
         result.dateCreated      = ApiToolkit.formatInternalDate(pform.dateCreated)
         result.lastUpdated      = ApiToolkit.formatInternalDate(pform.getCalculatedLastUpdated())
 
         // RefdataValues
-        result.type                 = pform.type?.value
-        result.status               = pform.status?.value
-        result.serviceProvider      = pform.serviceProvider?.value
-        result.softwareProvider     = pform.softwareProvider?.value
+        //result.type                 = pform.type?.value
+        //result.status               = pform.status?.value
+        //result.serviceProvider      = pform.serviceProvider?.value
+        //result.softwareProvider     = pform.softwareProvider?.value
 
         // References
-        //result.tipps = pform.tipps
+        result.provider = getOrganisationStubMap(pform.org) // com.k_int.kbplus.Org
+        result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.customProperties, pform, context)
 
         ApiToolkit.cleanUp(result, true, true)
     }
