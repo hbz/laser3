@@ -2,6 +2,15 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.102
+
+- removed attribute: `License.licenseType`
+- removed attribute: `License.licenseStatus`
+- removed attribute: `License.status`
+- removed attribute: `License.lastmod`
+- removed attribute: `License.onixplLicense`
+- added new attribute: `License.licenseCategory`
+
 #### 0.101
 
 - added new endpoint: __/platform__

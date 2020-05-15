@@ -207,25 +207,25 @@
           lastUpdated:
             type: string
             format: date
-    #      licenseCategory:
-    #        type: string
-    #        description: Mapping RefdataCategory "${RDConstants.LICENSE_CATEGORY}"
-    #        enum:
-    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_CATEGORY).collect{ it.value }.join(', ') }]
+          licenseCategory:
+            type: string
+            description: Mapping RefdataCategory "${RDConstants.LICENSE_CATEGORY}"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_CATEGORY).collect{ it.value }.join(', ') }]
     #      licenseUrl:
     #        type: string
     #      licensorRef:
     #        type: string
     #      licenseeRef:
     #        type: string
-          licenseStatus:
-            type: string
-          licenseType:
-            type: string
+    #      licenseStatus:
+    #        type: string
+    #      licenseType:
+    #        type: string
     #      noticePeriod:
     #        type: string
-          onixplLicense:
-            $ref: "#/definitions/OnixplLicense"
+    #      onixplLicense:
+    #        $ref: "#/definitions/OnixplLicense"
           organisations: # mapping attr orgRelations
             type: array
             items:
@@ -245,11 +245,11 @@
           startDate:
             type: string
             format: date
-          status:
-            type: string
-            description: Mapping RefdataCategory "${RDConstants.LICENSE_STATUS}"
-            enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS).collect{ it.value }.join(', ') }]
+    #     status:
+    #       type: string
+    #       description: Mapping RefdataCategory "${RDConstants.LICENSE_STATUS}"
+    #       enum:
+    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS).collect{ it.value }.join(', ') }]
           subscriptions:
             type: array
             items:
