@@ -1071,14 +1071,23 @@ class SurveyController {
 
         params.tab = params.tab ?: 'surveyConfigsView'
 
-        result.participants = result.surveyConfig?.orgs?.org.sort { it.sortname }
+        result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).sort {
+            it.participant.sortname
+        }
 
-        result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
-        result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
+        result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).sort {
+            it.participant.sortname
+        }
+
+        result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
+        result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
 
         result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).sort {
-            it.participant?.sortname
+            it.participant.sortname
         }
+
+        result.participants = result.surveyResult
+        result.participantsTotal = result.surveyResult?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
 
         if ( params.exportXLSX ) {
             SXSSFWorkbook wb
