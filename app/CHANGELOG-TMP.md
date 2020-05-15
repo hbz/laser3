@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2445    14.05.2020  hbz-dev     Andreas Bug         Bereinigungsfunktion für fehlende Vertragsverknüpfungen testbereit fertig gestellt
 
 2471    15.05.2020  hbz-dev     David   Feature     API 0.101 - API-Endpunkte /platformList und /platform
 
