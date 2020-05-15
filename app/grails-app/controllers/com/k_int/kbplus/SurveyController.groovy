@@ -622,7 +622,7 @@ class SurveyController {
     })
     def show() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
@@ -719,7 +719,7 @@ class SurveyController {
     })
     def surveyTitles() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
@@ -761,7 +761,7 @@ class SurveyController {
     })
     def surveyConfigDocs() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
@@ -775,7 +775,7 @@ class SurveyController {
     })
     def surveyParticipants() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
@@ -823,7 +823,7 @@ class SurveyController {
     })
     def surveyCostItems() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
         result.putAll(financeService.setEditVars(result.institution))
@@ -1065,20 +1065,29 @@ class SurveyController {
     })
     def surveyEvaluation() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
         params.tab = params.tab ?: 'surveyConfigsView'
 
-        result.participants = result.surveyConfig?.orgs?.org.sort { it.sortname }
+        result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).sort {
+            it.participant.sortname
+        }
 
-        result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
-        result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
+        result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).sort {
+            it.participant.sortname
+        }
+
+        result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
+        result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
 
         result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).sort {
-            it.participant?.sortname
+            it.participant.sortname
         }
+
+        result.participants = result.surveyResult
+        result.participantsTotal = result.surveyResult?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }
 
         if ( params.exportXLSX ) {
             SXSSFWorkbook wb
@@ -1117,7 +1126,7 @@ class SurveyController {
     })
     def surveyTitlesEvaluation() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
 
@@ -1171,7 +1180,7 @@ class SurveyController {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1232,7 +1241,7 @@ class SurveyController {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1392,7 +1401,7 @@ class SurveyController {
     def evaluateIssueEntitlementsSurvey() {
         def result = setResultGenericsAndCheckAccess()
 
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1418,7 +1427,7 @@ class SurveyController {
     })
     def evaluationParticipant() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             response.sendError(401); return
         }
 
@@ -1473,7 +1482,7 @@ class SurveyController {
     })
     def allSurveyProperties() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             response.sendError(401); return
         }
 
@@ -3370,7 +3379,7 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def exportSurCostItems() {
         def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
+        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_USER','ROLE_ADMIN')) {
             response.sendError(401); return
         }
         result.putAll(financeService.setEditVars(result.institution))

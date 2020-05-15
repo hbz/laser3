@@ -2,9 +2,19 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2445    14.05.2020  hbz-dev     Andreas Bug         Bereinigungsfunktion für fehlende Vertragsverknüpfungen testbereit fertig gestellt
-
 2471    15.05.2020  hbz-dev     David   Feature     API 0.101 - API-Endpunkte /platformList und /platform
+
+2384    15.05.2020  rc1.3       Moe     Feature     Umfrage Auswertung: Abgeschlossen Teilnehmer bzw. nicht abgeschlossene Teilnehmer mit Merkmal anzeigen
+
+2486    15.05.2020  rc1.3       Moe     Bug         Prozentanzeige in Umfrageübersicht ist Fehlerhaft
+
+2494    14.05.2020  rc1.3       Moe     Bug         Lizenztyp "lokale Lizenz" bei Vollnutzern nicht mehr gesetzt
+
+2415    14.05.2020  rc1.3       Moe     Bug         Berechtigungen bei Umfrage nochmal anpassen
+
+--      14.05.2020  rc1.3       Andreas Bug         Änderungsmitteilung beschleunigt, Meldung an Nutzer mit Zeitabschätzung versehen, Prozessablauf bei Paketsync geändert
+
+2445    14.05.2020  hbz-dev     Andreas Bug         Bereinigungsfunktion für fehlende Vertragsverknüpfungen testbereit fertig gestellt
 
 2492    14.05.2020  hbz-dev     David   Feature     API 0.100 - LastUpdated für Objekte mit Identifikator- und Merkmalsänderungen
 

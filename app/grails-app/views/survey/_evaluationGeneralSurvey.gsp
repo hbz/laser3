@@ -83,6 +83,10 @@
                     <div class="ui grid">
                         <div class="right aligned wide column">
 
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button"><i
+                                    class="chart pie icon"></i></g:link>
+
                             <g:if test="${surveyConfig?.checkResultsEditByOrg(participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
