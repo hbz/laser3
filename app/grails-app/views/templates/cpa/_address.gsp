@@ -4,11 +4,8 @@
             <i class="ui icon building map marker alternate la-list-icon"></i>
         </span>
         <div class="content la-space-right">
-
-            %{--<a href="#addressFormModal">--}%
-            %{--<a onclick="addressEdit(${address?.id});">--}%
+            <strong>${address.type?.getI10n('value')}:</strong>
             <div class="item" data-href="#addressFormModal${address.id}" data-semui="modal" >
-                <strong>${address.type?.getI10n('value')}:</strong>
                 <g:if test="${address?.name}">
                     <br />
                     ${address?.name}
@@ -42,21 +39,12 @@
                     <g:if test="${address?.pobZipcode || address?.pobCity}">, </g:if>
                     ${address?.pobZipcode} ${address?.pobCity}
                 </g:if>
+                <g:if test="${editable}">
+                    <g:render template="/address/formModal" model="['addressId': address.id, modalId: 'addressFormModal' + address.id]"/>
+                </g:if>
             </div>
-            %{--</a>--}%
-            %{--</g:link>--}%
         </div>
         <div class="content">
-            <g:if test="${editable}">
-                <div class="item" data-href="#addressFormModal${address.id}" data-semui="modal" >
-                    <i class="write icon"></i>
-                </div>
-                <br />
-                <input class="ui mini icon button" type="button" data-semui="modal"
-                   data-href="#addressFormModal${address.id}"
-                   value="${message(code: 'person.addresses.label')}">
-                <g:render template="/address/formModal" model="['addressId': address.id, modalId: 'addressFormModal' + address.id]"/>
-            </g:if>
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
                     <g:set var="oid" value="${address.class.name}:${address.id}" />
@@ -71,24 +59,3 @@
         </div>
 	</div>
 </g:if>
-%{--$("[id^='addressFormModal']").remove();--}%
-%{--<g:javascript>--}%
-    %{--function addressEdit(id) {--}%
-        %{--$.ajax({--}%
-            %{--url: '<g:createLink controller="address" action="show"/>?id='+id,--}%
-            %{--success: function(result){--}%
-                %{--$("#dynamicModalContainer").empty();--}%
-                %{--$("#addressFormModal").remove();--}%
-                %{--$("#dynamicModalContainer").html(result);--}%
-                %{--$("#dynamicModalContainer .ui.modal").modal({--}%
-                    %{--onVisible: function () {--}%
-                        %{--r2d2.initDynamicSemuiStuff('#addressFormModal');--}%
-                        %{--r2d2.initDynamicXEditableStuff('#addressFormModal');--}%
-
-                        %{--// ajaxPostFunc()--}%
-                    %{--}--}%
-                %{--}).modal('show');--}%
-            %{--}--}%
-        %{--});--}%
-    %{--}--}%
-%{--</g:javascript>--}%

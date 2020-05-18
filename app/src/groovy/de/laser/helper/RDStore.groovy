@@ -187,6 +187,8 @@ class RDStore {
     static final ADRESS_TYPE_POSTAL             = getRefdataValue('Postal address', RDConstants.ADDRESS_TYPE)
     static final ADRESS_TYPE_BILLING            = getRefdataValue('Billing address', RDConstants.ADDRESS_TYPE)
     static final ADRESS_TYPE_LEGAL_PATRON       = getRefdataValue('Legal patron address', RDConstants.ADDRESS_TYPE)
+    static final ADRESS_TYPE_DELIVERY       = getRefdataValue('Delivery address', RDConstants.ADDRESS_TYPE)
+    static final ADRESS_TYPE_LIBRARY       = getRefdataValue('Library address', RDConstants.ADDRESS_TYPE)
 
     static final YN_YES         = getRefdataValue('Yes', RDConstants.Y_N)
     static final YN_NO          = getRefdataValue('No', RDConstants.Y_N)

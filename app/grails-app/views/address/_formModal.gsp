@@ -3,8 +3,23 @@
     <g:set var="addressInstance" value="${com.k_int.kbplus.Address.get(addressId)}"/>
 </g:if>
 <g:if test="${addressInstance}">
+    <%
+        String messageCode = 'person.address.label'
+        switch (addressInstance.type){
+            case RDStore.ADRESS_TYPE_LEGAL_PATRON:  messageCode = 'addressFormModalLegalPatronAddress'
+                break
+            case RDStore.ADRESS_TYPE_BILLING:       messageCode = 'addressFormModalBillingAddress'
+                break
+            case RDStore.ADRESS_TYPE_POSTAL:        messageCode = 'addressFormModalPostalAddress'
+                break
+            case RDStore.ADRESS_TYPE_DELIVERY:      messageCode = 'addressFormModalDeliveryAddress'
+                break
+            case RDStore.ADRESS_TYPE_LIBRARY:       messageCode = 'addressFormModalLibraryAddress'
+                break
+        }
+    %>
     <g:set var="modalText"
-           value="${message(code: 'default.edit.label', args: [message(code: 'person.address.label')])}" />
+           value="${message(code: 'default.edit.label', args: [message(code: messageCode)])}" />
     <g:set var="modalMsgSave" value="${message(code: 'default.button.save_changes')}" />
     <g:set var="url" value="${[controller: 'address', action: 'edit']}" />
 </g:if>
@@ -140,14 +155,6 @@
                 </div>
             </div>
         </div>
-%{--<hr>--}%
-        %{--prsId: ${prsId}--}%
-        %{--orgId: ${orgId}--}%
-        %{--modalId: ${modalId}--}%
-        %{--hideType: ${hideType}--}%
-        %{--addresssInstance: ${addressInstance}--}%
-        %{--type: ${addressInstance?.type}--}%
-%{--<hr>--}%
         %{--<g:if test="${(! (modalId && hideType)) || ((!orgId) && prsId)}">--}%
             %{--<h4 class="ui dividing header"><g:message code="address.additionals.label"/></h4>--}%
         %{--</g:if>--}%
@@ -166,17 +173,19 @@
             </g:elseif>
         %{--</g:if>--}%
         %{--<g:elseif test="${ ! addressInstance?.type}">--}%
-            %{--<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">--}%
-                %{--<label for="type_${modalId}">--}%
-                    %{--${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}--}%
-                %{--</label>--}%
-                %{--<laser:select class="ui dropdown" id="type_${modalId}" name="type.id"--}%
-                              %{--from="${com.k_int.kbplus.Address.getAllRefdataValues()}"--}%
-                              %{--optionKey="id"--}%
-                              %{--optionValue="value"--}%
-                              %{--value="${addressInstance?.type?.id}"/>--}%
-            %{--</div>--}%
-        %{--</g:elseif>--}%
+        <g:if test="${ ! addressInstance?.type}">
+        <h4 class="ui dividing header"><g:message code="address.additionals.label"/></h4>
+            <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
+                <label for="type_${modalId}">
+                    ${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
+                </label>
+                <laser:select class="ui dropdown" id="type_${modalId}" name="type.id"
+                              from="${com.k_int.kbplus.Address.getAllRefdataValues()}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${addressInstance?.type?.id}"/>
+            </div>
+        </g:if>
 
         %{--<g:if test="${!orgId}">--}%
             %{--<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'prs', 'error')} ">--}%
