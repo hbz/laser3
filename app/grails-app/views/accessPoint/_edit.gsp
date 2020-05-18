@@ -109,9 +109,9 @@
 <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}" />
 
 <h5>${message(code: 'accessPoint.ip.configuration')}
-<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
+%{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
     <i class="question circle icon la-popup"></i>
-</span>
+</span>--}%
     </h5>
 
 <table  class="ui celled la-table table very compact">

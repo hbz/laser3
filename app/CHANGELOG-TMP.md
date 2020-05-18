@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2451    18.05.2020  hbz-dev     Moe     Feature     (?) bei IP Konfiguration löschen
+
 2487    18.05.2020  hbz-dev     Moe     Bug         Anzahl der Titlel beim Filtern in der Titelumfrage stimmt nicht
 
 2488    18.05.2020  hbz-dev     Moe     Feature     Fachbereich und Reihe Filter in Titel-Umfrage und Bestand einer Lizenz einbauen
