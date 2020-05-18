@@ -207,7 +207,10 @@ class CostItem
 
     @Override
     String getCalculatedType() {
-        CalculatedType.TYPE_UNKOWN
+        if (isVisibleForSubscriber) {
+            return CalculatedType.TYPE_CONSORTIAL
+        }
+        CalculatedType.TYPE_LOCAL
     }
 
     List<BudgetCode> getBudgetcodes() {
