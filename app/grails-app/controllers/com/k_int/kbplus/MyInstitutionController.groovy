@@ -4161,7 +4161,7 @@ AND EXISTS (
         Map<String, Object> result = [:]
 
         Org contextOrg = contextService.getOrg()
-        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM']) {
+        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
             result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                     "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org)) and surInfo.owner = :owner",
                     [status: RDStore.SURVEY_SURVEY_STARTED,

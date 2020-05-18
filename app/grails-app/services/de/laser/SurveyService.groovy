@@ -456,7 +456,7 @@ class SurveyService {
 
         Map sheetData = [:]
 
-        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM']) {
+        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
             surveyConfigs.each { surveyConfig ->
                 List titles = []
                 List surveyData = []

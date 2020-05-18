@@ -284,7 +284,7 @@ class TaskService {
         List validSubscriptionsMitInstanceOf = []
         List validSubscriptionsOhneInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
-        boolean binKonsortium = contextOrg.getCustomerType() in ['ORG_CONSORTIUM']
+        boolean binKonsortium = contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'
 
         if (contextOrg) {
             if (binKonsortium) {
