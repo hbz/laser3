@@ -232,8 +232,19 @@ class SubscriptionController extends AbstractDebugController {
         if (params.titleGroup && (params.titleGroup != '')) {
             base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
             qry_params.titleGroup = Long.parseLong(params.titleGroup)
+        }
+        if(params.seriesNames) {
+            base_qry += " and lower(ie.tipp.title.seriesName) like :seriesNames "
+            qry_params.seriesNames = "%${params.seriesNames.trim().toLowerCase()}%"
             filterSet = true
         }
+
+        if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
+            base_qry += " and lower(ie.tipp.title.subjectReference) in (:subject_references)"
+            qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
 
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -251,6 +262,7 @@ class SubscriptionController extends AbstractDebugController {
 
         Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
 
+        result.subjects = subscriptionService.getSubjects(entitlements.collect {it.tipp.title.id})
 
         if(result.subscriptionInstance.ieGroups.size() > 0) {
             result.num_ies = subscriptionService.getIssueEntitlementsWithFilter(result.subscriptionInstance, [offset: 0, max: 5000]).size()
