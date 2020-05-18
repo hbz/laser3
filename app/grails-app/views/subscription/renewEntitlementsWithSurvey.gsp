@@ -156,7 +156,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             id="${newSub.id}"
             params="[surveyConfigID: surveyConfig.id, tab: 'allIEs']">
         <g:message code="renewEntitlementsWithSurvey.selectableTitles"/>
-        <div class="ui circular label">${countAllIEs}</div>
+        <div class="ui circular label">${countAllSourceIEs}/${countAllIEs}</div>
     </g:link>
 
     <g:link class="item ${params.tab == 'selectedIEs' ? 'active' : ''}"
