@@ -382,10 +382,6 @@
           type: string
           description: Mapping RefdataCategory "${RDConstants.REGIONS_DE}", "${RDConstants.REGIONS_AT}" and "${RDConstants.REGIONS_CH}"
           enum: <% printRefdataEnum([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH], 12) %>
-<%--    fteStudents:
-          type: integer
-        fteStaff:
-          type: integer --%>
         lastUpdated:
           type: string
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
@@ -460,8 +456,6 @@
             type: string
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
             enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
-<%--          forumId:
-            type: string --%>
           isPublic:
             type: string #mapped to boolean
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
@@ -587,15 +581,6 @@
               type: string
               description: Mapping RefdataCategory "${RDConstants.Y_N}"
               enum: <% printRefdataEnum(RDConstants.Y_N, 14) %>
-            <%--status:
-              type: stringRefdataCategory
-              description: Mapping RefdataCategory "${RDConstants.PLATFORM_STATUS}"
-              enum: <% printRefdataEnum(RDConstants.PLATFORM_STATUS, 14) %>--%>
-            <%--type:
-              type: string
-              description: Mapping RefdataCategory
-              enum:
-                [""]--%>
 
 
     Property:
@@ -1131,7 +1116,7 @@
           type: string
           description: Calculated object type
           enum:
-            ["${de.laser.interfaces.CalculatedType.TYPE_LOCAL}", "${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}"]
+            ["Template", "Local", "Consortial", "Participation", "Unkown"]
 
 
     PackageStub:
