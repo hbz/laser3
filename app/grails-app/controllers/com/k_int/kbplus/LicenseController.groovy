@@ -11,6 +11,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
+import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -526,17 +527,51 @@ from Subscription as s where
     def members() {
         log.debug("license id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
-        def validMemberLicenses = License.where {
-            instanceOf == result.license
-        }
+        Set<OrgRole> validMemberLicenses = OrgRole.executeQuery('select oo from OrgRole oo where oo.lic.instanceOf = :lic and oo.roleType = :roleType',[lic:result.license,roleType:OR_LICENSEE_CONS])
 
         result.validMemberLicenses = validMemberLicenses
         result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def subscriptions() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+        if(result.license.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+            Set<RefdataValue> subscriberRoleTypes = [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_CONS_HIDDEN, OR_SUBSCRIBER_COLLECTIVE]
+            result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscriptionInstance,subscriberRoleTypes:subscriberRoleTypes])
+
+        }
+
+        result
+    }
+
+    private ArrayList<Long> getOrgIdsForFilter() {
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        ArrayList<Long> resultOrgIds
+        def tmpParams = params.clone()
+        tmpParams.remove("max")
+        tmpParams.remove("offset")
+        if (accessService.checkPerm("ORG_CONSORTIUM"))
+            tmpParams.comboType = COMBO_TYPE_CONSORTIUM.value
+        else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
+            tmpParams.comboType = COMBO_TYPE_DEPARTMENT.value
+        def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
+
+        if (tmpParams.filterPropDef) {
+            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
+        }
+        fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
+        Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
     }
 
     /*
@@ -931,7 +966,6 @@ from Subscription as s where
 
             License licenseInstance = new License(
                     reference: lic_name,
-                    status: baseLicense.status,
                     type: baseLicense.type,
                     startDate: params.license.copyDates ? baseLicense?.startDate : null,
                     endDate: params.license.copyDates ? baseLicense?.endDate : null,
@@ -1060,7 +1094,7 @@ from Subscription as s where
             }
     }
 
-    private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
+    private Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
         def result             = [:]
         result.user            = User.get(springSecurityService.principal.id)
         result.institution     = contextService.org

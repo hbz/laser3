@@ -63,12 +63,12 @@
               <g:if test="${'licensingConsortium' in licenseFilterTable}">
                   <div class="field">
                       <label for="consortium"><g:message code="consortium"/></label>
-                      <g:select class="ui multiple fluid search dropdown" name="consortium"
-                                from="${orgs.consortia}"
-                                optionKey="id"
-                                optionValue="name"
-                                value="${params.consortium}"
-                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                      <select id="consortium" name="consortium" multiple="" class="ui search selection fluid dropdown">
+                          <option value=""><g:message code="default.select.choose.label"/></option>
+                          <g:each in="${orgs.consortia}" var="consortium">
+                              <option <%=(params.list('consortium').contains(consortium.id.toString())) ? 'selected="selected"' : ''%> value="${consortium.id}">${consortium.name}</option>
+                          </g:each>
+                      </select>
                   </div>
               </g:if>
               <div class="field">
@@ -79,30 +79,30 @@
           <div class="four fields">
               <div class="field">
                   <label for="licensor"><g:message code="license.licensor.label"/></label>
-                  <g:select class="ui multiple fluid search dropdown" name="licensor"
-                            from="${orgs.licensors}"
-                            optionKey="id"
-                            optionValue="name"
-                            value="${params.licensor}"
-                            noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                  <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
+                      <option value=""><g:message code="default.select.choose.label"/></option>
+                      <g:each in="${orgs.licensors}" var="licensor">
+                          <option <%=(params.list('licensor').contains(licensor.id.toString())) ? 'selected="selected"' : ''%> value="${licensor.id}">${licensor.name}</option>
+                      </g:each>
+                  </select>
               </div>
               <div class="field">
                   <label for="categorisation"><g:message code="license.categorisation.label"/></label>
-                  <laser:select class="ui multiple fluid dropdown" name="categorisation"
-                                from="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_CATEGORY)}"
-                                optionKey="id"
-                                optionValue="value"
-                                value="${params.categorisation}"
-                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                  <select id="categorisation" name="categorisation" multiple="" class="ui search selection fluid dropdown">
+                      <option value=""><g:message code="default.select.choose.label"/></option>
+                      <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_CATEGORY)}" var="categorisation">
+                          <option <%=(params.list('categorisation').contains(categorisation.id.toString())) ? 'selected="selected"' : ''%> value="${categorisation.id}">${categorisation.getI10n("value")}</option>
+                      </g:each>
+                  </select>
               </div>
               <div class="field">
                   <label for="subKind"><g:message code="license.subscription.kind.label"/></label>
-                  <laser:select class="ui multiple fluid dropdown" name="subKind"
-                                from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}"
-                                optionKey="id"
-                                optionValue="value"
-                                value="${params.subKind}"
-                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                  <select id="subKind" name="subKind" multiple="" class="ui search selection fluid dropdown">
+                      <option value=""><g:message code="default.select.choose.label"/></option>
+                      <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
+                          <option <%=(params.list('subKind').contains(subKind.id.toString())) ? 'selected="selected"' : ''%> value="${subKind.id}">${subKind.getI10n("value")}</option>
+                      </g:each>
+                  </select>
               </div>
               <div class="field la-field-right-aligned">
                   <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>

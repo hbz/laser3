@@ -28,9 +28,11 @@
             <semui:xEditable owner="${license}" field="reference" id="reference"/>
         </h1>
 
+        <%--<semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>--%>
+
         <g:render template="nav" />
 
-        <semui:objectStatus object="${license}" status="${license.status}" />
+        <%--<semui:objectStatus object="${license}" status="${license.status}" />--%>
 
         <g:if test="${license.instanceOf && (institution?.id == license.getLicensingConsortium()?.id)}">
             <div class="ui negative message">
@@ -69,25 +71,31 @@
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'startDate']" /></dd>
+                                    <g:if test="${editable}">
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'startDate']" /></dd>
+                                    </g:if>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.endDate')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'endDate']" /></dd>
+                                    <g:if test="${editable}">
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'endDate']" /></dd>
+                                    </g:if>
                                 </dl>
                             </div>
                         </div>
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-
-                                    <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
+                                    <dt><label class="control-label">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>
+                                    <g:if test="${editable}">
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'licenseCategory']"/></dd>
+                                    </g:if>
                                 </dl>
 
                                 <g:if test="${license.instanceOf && institution.id == license.getLicensingConsortium().id}">
@@ -109,7 +117,9 @@
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
                                     <dd><semui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'isPublicForApi']"/></dd>
+                                    <g:if test="${editable}">
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'isPublicForApi']"/></dd>
+                                    </g:if>
                                 </dl>
 
                             </div>

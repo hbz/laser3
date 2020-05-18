@@ -370,7 +370,7 @@ class ControlledListService {
                 License license = (License) it[0]
                 String licenseStartDate = license.startDate ? sdf.format(license.startDate) : '???'
                 String licenseEndDate = license.endDate ? sdf.format(license.endDate) : ''
-                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it[1]} - ${license.status.getI10n("value")} (${licenseStartDate} - ${licenseEndDate})",value:"${license.class.name}:${license.id}"])
+                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it[1]} - (${licenseStartDate} - ${licenseEndDate})",value:"${license.class.name}:${license.id}"])
             }
         }
         if(params.subscription == "true") {

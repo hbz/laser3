@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.Person" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.Person; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -25,24 +25,26 @@
 
 <g:render template="nav" />
 
-<g:render template="../templates/filter/javascript" />
-<semui:filter showFilterButton="true">
-    <g:form action="members" controller="license" params="${[id:params.id]}" method="get" class="ui form">
-        <%
-            List<List<String>> tmplConfigShow
-            if(accessService.checkPerm("ORG_CONSORTIUM"))
-                tmplConfigShow = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
-            else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                tmplConfigShow = [['name', 'identifier'], ['property']]
-        %>
-        <g:render template="/templates/filter/orgFilter"
-                  model="[
-                          tmplConfigShow: tmplConfigShow,
-                          tmplConfigFormFilter: true,
-                          useNewLayouter: true
-                  ]"/>
-    </g:form>
-</semui:filter>
+<g:if test="${license.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && license.getConsortia()?.id == institution.id}">
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
+        <g:form action="subscriptions" controller="license" params="${[id:params.id]}" method="get" class="ui form">
+            <%
+                List<List<String>> tmplConfigShow
+                if(accessService.checkPerm("ORG_CONSORTIUM"))
+                    tmplConfigShow = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
+                else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+                    tmplConfigShow = [['name', 'identifier'], ['property']]
+            %>
+            <g:render template="/templates/filter/orgFilter"
+                      model="[
+                              tmplConfigShow: tmplConfigShow,
+                              tmplConfigFormFilter: true,
+                              useNewLayouter: true
+                      ]"/>
+        </g:form>
+    </semui:filter>
+</g:if>
 
 <table class="ui celled la-table table">
     <thead>
@@ -80,10 +82,8 @@
     </thead>
     <tbody>
 
-        <g:each in="${validMemberLicenses}" status="i" var="orgRole">
-            <g:set var="sub" value="${orgRole.sub}"/>
-            <g:set var="lic" value="${sub.owner}"/>
-            <g:set var="subscr" value="${orgRole.org}"/>
+        <g:each in="${license.subscriptions}" status="i" var="sub">
+            <g:set var="subscr" value="${sub.getSubscriber()}"/>
             <%
                 /*LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(License.class.name, lic.id)
                 Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
@@ -95,7 +95,7 @@
                 <td>
                     <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
-                    <g:if test="${lic.isSlaved}">
+                    <g:if test="${license.isSlaved}">
                         <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'license.details.isSlaved.tooltip')}">
                             <i class="thumbtack blue icon"></i>
                         </span>
@@ -129,16 +129,16 @@
                     </div>
                 </td>
                 <td class="center aligned">
-                    <%--<g:if test="${navPrevSubscription}">
-                        <g:link controller="license" action="show" id="${navPrevSubscription.id}"><i class="arrow left icon"></i></g:link>
-                    </g:if>--%>
+                    <g:if test="${navPrevSubscription}">
+                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="arrow left icon"></i></g:link>
+                    </g:if>
                 </td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                 <td class="center aligned">
-                    <%--<g:if test="${navNextSubscription}">
-                        <g:link controller="license" action="show" id="${navNextSubscription.id}"><i class="arrow right icon"></i></g:link>
-                    </g:if>--%>
+                    <g:if test="${navNextSubscription}">
+                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="arrow right icon"></i></g:link>
+                    </g:if>
                 </td>
                 <td class="center aligned">
                     <g:link controller="subscription" action="show" id="${sub.id}"><i class="inverted circular clipboard orange link icon"></i></g:link>
@@ -156,7 +156,7 @@
                 </td>
                 <g:if test="${editable}">
                     <td class="x">
-                        <g:link class="ui icon negative button" controller="license" action="delete" params="${[id:lic.id]}">
+                        <g:link class="ui icon negative button" controller="license" action="delete" params="${[id:license.id]}">
                             <i class="trash alternate icon"></i>
                         </g:link>
                     </td>

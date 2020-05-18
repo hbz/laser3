@@ -317,7 +317,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def date_restriction = null;
+        def date_restriction = null
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
@@ -393,6 +393,22 @@ class MyInstitutionController extends AbstractDebugController {
             result.keyWord = params['keyword-search']
         }
 
+        if(params.consortium) {
+            base_qry += " and ( exists ( select o from l.orgLinks as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
+            List<Long> consortia = []
+            List<String> selCons = params.list('consortium')
+            selCons.each { String sel ->
+                consortia << Long.parseLong(sel)
+            }
+            qry_params += [licCons:lic_cons_role,cons:consortia]
+        }
+
+        if (date_restriction) {
+            base_qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null ) "
+            qry_params += [date_restr: date_restriction]
+            qry_params += [date_restr: date_restriction]
+        }
+
         // eval property filter
 
         if (params.filterPropDef) {
@@ -401,24 +417,34 @@ class MyInstitutionController extends AbstractDebugController {
             qry_params = psq.queryParams
         }
 
-        if (date_restriction) {
-            base_qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null OR l.startDate >= :date_restr  ) "
-            qry_params += [date_restr: date_restriction]
-            qry_params += [date_restr: date_restriction]
+        if(params.licensor) {
+            base_qry += " and ( exists ( select o from l.orgLinks as o where o.roleType = :licCons and o.org.id in (:licensors) ) ) "
+            List<Long> licensors = []
+            List<String> selLicensors = params.list('licensor')
+            selLicensors.each { String sel ->
+                licensors << Long.parseLong(sel)
+            }
+            qry_params += [licCons:RDStore.OR_LICENSOR,licensors:licensors]
         }
 
-        if(params.status) {
-            base_qry += " and l.status = :status "
-            qry_params += [status:RefdataValue.get(params.status)]
+        if(params.categorisation) {
+            base_qry += " and l.licenseCategory.id in (:categorisations) "
+            List<Long> categorisations = []
+            List<String> selCategories = params.list('categorisation')
+            selCategories.each { String sel ->
+                categorisations << Long.parseLong(sel)
+            }
+            qry_params.categorisations = categorisations
         }
-        else if(params.status == '') {
-            result.filterSet = false
-        }
-        else {
-            base_qry += " and l.status = :status "
-            qry_params += [status:RDStore.LICENSE_CURRENT]
-            params.status = RDStore.LICENSE_CURRENT.id
-            result.defaultSet = true
+
+        if(params.subKind) {
+            base_qry += " and ( exists ( select s from l.subscriptions as s where s.kind.id in (:subKinds) ) ) "
+            List<Long> subKinds = []
+            List<String> selCategories = params.list('subKinds')
+            selCategories.each { String sel ->
+                subKinds << Long.parseLong(sel)
+            }
+            qry_params.subKinds = subKinds
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -1342,7 +1368,6 @@ join sub.orgRelations or_sub where
                     copyLicense.reference = params.licenseName
                     copyLicense.startDate = DateUtil.parseDateGeneric(params.licenseStartDate)
                     copyLicense.endDate = DateUtil.parseDateGeneric(params.licenseEndDate)
-                    copyLicense.status = RefdataValue.get(params.status)
 
                     if (copyLicense.save(flush: true)) {
                         flash.message = message(code: 'license.createdfromTemplate.message')

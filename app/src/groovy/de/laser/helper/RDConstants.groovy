@@ -58,7 +58,6 @@ class RDConstants {
     public static final String LIBRARY_TYPE           = 'library.type'
     public static final String LICENSE_CATEGORY       = 'license.category'
     public static final String LICENSE_REMOTE_ACCESS  = 'license.remote.access'
-    public static final String LICENSE_STATUS         = 'license.status'
     public static final String LICENSE_TYPE           = 'license.type'
     public static final String LINK_TYPE              = 'link.type'
 
