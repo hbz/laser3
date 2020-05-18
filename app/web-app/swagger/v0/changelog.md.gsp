@@ -11,9 +11,7 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 - added new attribute: `License.licenseCategory`
 - removed attribute: `License.licenseType`
-- removed attribute: `License.licenseStatus`
 - removed attribute: `License.status`
-- removed attribute: `License.lastmod`
 
 #### 0.101
 

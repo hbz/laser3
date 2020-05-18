@@ -316,10 +316,6 @@
           type: string
           description: Mapping RefdataCategory "${RDConstants.LICENSE_CATEGORY}"
           enum: <% printRefdataEnum(RDConstants.LICENSE_CATEGORY, 12) %>
-<%--        licenseType:
-          type: string
-        onixplLicense:
-          $ref: "#/components/schemas/OnixplLicense"--%>
         organisations: # mapping attr orgRelations
           type: array
           items:
@@ -331,10 +327,6 @@
         startDate:
           type: string
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
-<%--    status:
-          type: string
-          description: Mapping RefdataCategory "${RDConstants.LICENSE_STATUS}"
-          enum: <% printRefdataEnum(RDConstants.LICENSE_STATUS, 12) %>--%>
         subscriptions:
           type: array
           items:
@@ -1139,7 +1131,7 @@
           type: string
           description: Calculated object type
           enum:
-            ["Template", "Local", "Consortial", "Participation", "Unkown"]
+            ["${de.laser.interfaces.CalculatedType.TYPE_LOCAL}", "${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}"]
 
 
     PackageStub:
