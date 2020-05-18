@@ -24,8 +24,14 @@
     <g:set var="url" value="${[controller: 'address', action: 'edit']}" />
 </g:if>
 <g:else>
-    <g:set var="modalText"
-           value="${message(code: 'default.new.label', args: [message(code: 'person.address.label')])}" />
+    <g:if test="${modalId}">
+        <g:set var="modalText"
+               value="${message(code: 'default.new.label', args: [message(code: modalId)])}" />
+    </g:if>
+    <g:else>
+        <g:set var="modalText"
+               value="${message(code: 'default.new.label', args: [message(code: 'person.address.label')])}" />
+    </g:else>
     <g:set var="modalMsgSave" value="${message(code: 'default.button.create.label')}" />
     <g:set var="url" value="${[controller: 'address', action: 'create']}" />
 </g:else>
@@ -173,7 +179,7 @@
             </g:elseif>
         %{--</g:if>--}%
         %{--<g:elseif test="${ ! addressInstance?.type}">--}%
-        <g:if test="${ ! addressInstance?.type}">
+        <g:if test="${ ( ! addressInstance?.type) && ( ! modalId) }">
         <h4 class="ui dividing header"><g:message code="address.additionals.label"/></h4>
             <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
                 <label for="type_${modalId}">
