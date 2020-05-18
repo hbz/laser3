@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
@@ -101,7 +101,7 @@ class QueryService {
             dueObjects.addAll(getDueSubscriptionPrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP)))
         }
         dueObjects = dueObjects.sort {
-            (it instanceof AbstractProperty)?
+            (it instanceof AbstractPropertyWithCalculatedLastUpdated)?
                     it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
         }
 

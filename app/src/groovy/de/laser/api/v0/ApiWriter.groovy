@@ -28,7 +28,7 @@ class ApiWriter {
                         licenseUrl:         data.licenseUrl,
                         // removed - licensorRef:        data.licensorRef,
                         // removed - licenseeRef:        data.licenseeRef,
-                        licenseType:        data.licenseType,
+                        //licenseType:        data.licenseType,
                         licenseStatus:      data.licenseStatus,
                         noticePeriod:       data.noticePeriod,
                         reference:          data.reference,

@@ -1,13 +1,17 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.IssueEntitlementGroup
+import de.laser.domain.IssueEntitlementGroupItem
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.exceptions.CreationException
@@ -225,6 +229,13 @@ class SubscriptionController extends AbstractDebugController {
             filterSet = true
         }
 
+        if (params.titleGroup && (params.titleGroup != '')) {
+            base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
+            qry_params.titleGroup = Long.parseLong(params.titleGroup)
+            filterSet = true
+        }
+
+
         if ((params.sort != null) && (params.sort.length() > 0)) {
             if(params.sort == 'startDate')
                 base_qry += "order by ic.startDate ${params.order}, lower(ie.tipp.title.title) asc "
@@ -240,6 +251,10 @@ class SubscriptionController extends AbstractDebugController {
 
         Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
 
+
+        if(result.subscriptionInstance.ieGroups.size() > 0) {
+            result.num_ies = subscriptionService.getIssueEntitlementsWithFilter(result.subscriptionInstance, [offset: 0, max: 5000]).size()
+        }
         result.num_sub_rows = entitlements.size()
         result.entitlements = entitlements.drop(result.offset).take(result.max)
 
@@ -777,6 +792,20 @@ class SubscriptionController extends AbstractDebugController {
                         ie.coverageDepth = params.bulk_coverage
                     }
 
+                    if (params.titleGroup && (params.titleGroup.trim().length() > 0)) {
+                        IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
+                        if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie)){
+                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                    ie: ie,
+                                    ieGroup: entitlementGroup)
+
+                            if (!issueEntitlementGroupItem.save(flush: true)) {
+                                log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                            }
+
+                        }
+                    }
+
                     if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
                     }
@@ -1165,6 +1194,94 @@ class SubscriptionController extends AbstractDebugController {
                 out.close()
             }
         }
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def manageEntitlementGroup() {
+        log.debug("ManageEntitlementGroup .. params: ${params}")
+
+        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.titleGroups = result.subscriptionInstance.ieGroups
+
+        result
+
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    Map<String,Object> editEntitlementGroupItem() {
+        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.ie = IssueEntitlement.get(params.ie)
+
+        if (result.ie && params.cmd == 'edit') {
+            render template: 'editEntitlementGroupItem', model: result
+            return
+        }
+        else if (result.ie && params.cmd == 'processing') {
+            List deleteIssueEntitlementGroupItem = []
+            result.ie.ieGroups.each{
+
+                if(!(it.ieGroup.id.toString() in params.list('titleGroup'))){
+
+                    deleteIssueEntitlementGroupItem << it.id
+                }
+            }
+
+            if(deleteIssueEntitlementGroupItem){
+                IssueEntitlementGroupItem.executeUpdate("DELETE IssueEntitlementGroupItem iegi where iegi.id in (:iegiIDs)", [iegiIDs: deleteIssueEntitlementGroupItem])
+            }
+            params.list('titleGroup').each {
+                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(it)
+
+                if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIeAndIeGroup(result.ie, issueEntitlementGroup))
+                {
+                    IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                            ie: result.ie,
+                            ieGroup: issueEntitlementGroup)
+
+                    if (!issueEntitlementGroupItem.save(flush: true)) {
+                        log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                    }
+                }
+            }
+
+        }
+        redirect action: 'index', id: params.id
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def processCreateEntitlementGroup() {
+        log.debug("processCreateEntitlementGroup .. params: ${params}")
+
+        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        if(!IssueEntitlementGroup.findBySubAndName(result.subscriptionInstance, params.name)) {
+
+            IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(
+                    name: params.name,
+                    description: params.description ?: null,
+                    sub: result.subscriptionInstance
+            ).save()
+        }else{
+             flash.error = g.message(code: "issueEntitlementGroup.create.fail")
+        }
+
+
+        redirect action: 'manageEntitlementGroup', id: params.id
+
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -1573,11 +1690,11 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        RefdataValue licenseeRoleType = OR_LICENSEE_CONS
+        /*RefdataValue licenseeRoleType = OR_LICENSEE_CONS
         if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
             licenseeRoleType = OR_LICENSEE_COLL
 
-        result.parentLicense = result.parentSub.owner
+        result.parentLicense = result.parentSub.owner*/
 
         Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
@@ -1588,23 +1705,29 @@ class SubscriptionController extends AbstractDebugController {
             if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
                 if(params.processOption == 'linkLicense') {
                     License newLicense = License.get(params.license_All)
-                    if (subChild.owner != newLicense) {
+                    /*if (subChild.owner != newLicense) {
                         subChild.owner = newLicense
                         if (subChild.save()) {
-                            OrgRole licenseeRole = new OrgRole(org: subChild.getSubscriber(), lic: newLicense, roleType: licenseeRoleType)
-                            if (licenseeRole.save())
-                                changeAccepted << "${subChild.name} (${message(code: 'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                            //OrgRole licenseeRole = new OrgRole(org: subChild.getSubscriber(), lic: newLicense, roleType: licenseeRoleType)
+                            //if (licenseeRole.save())
+
                         }
-                    }
+                    }*/
+                    if(subscriptionService.setOrgLicRole(subChild,newLicense))
+                        changeAccepted << "${subChild.name} (${message(code: 'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
                 else if(params.processOption == 'unlinkLicense') {
-                    OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
-                    subChild.owner.orgLinks.remove(toDelete)
+                    //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
+                    //subChild.owner.orgLinks.remove(toDelete)
+                    /*
                     subChild.owner = null
+                    subChild.save()
                     if (subChild.save()) {
-                        toDelete.delete()
-                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                        //toDelete.delete()
                     }
+                    */
+                    if(subscriptionService.setOrgLicRole(subChild,null))
+                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
             }
         }
@@ -1641,11 +1764,11 @@ class SubscriptionController extends AbstractDebugController {
         validSubChilds.each { subChild ->
             if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
                 //keep it, I need to ask Daniel for that
-                OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
-                subChild.owner.orgLinks.remove(toDelete)
-                subChild.owner = null
-                if (subChild.save()) {
-                    toDelete.delete()
+                //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
+                //subChild.owner.orgLinks.remove(toDelete)
+                //subChild.owner = null
+                if (subscriptionService.setOrgLicRole(subChild,null)) {
+                    //toDelete.delete()
                     removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
             }
@@ -2855,6 +2978,23 @@ class SubscriptionController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def removeEntitlementGroup() {
+        log.debug("removeEntitlementGroup....");
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(params.titleGroup)
+
+        if(issueEntitlementGroup) {
+            IssueEntitlementGroupItem.findAllByIeGroup(issueEntitlementGroup).each {
+                it.delete(flush: true)
+            }
+
+            IssueEntitlementGroup.executeUpdate("delete from IssueEntitlementGroup ieg where ieg.id in (:issueEntitlementGroup)", [issueEntitlementGroup: issueEntitlementGroup.id])
+        }
+
+        redirect action: 'manageEntitlementGroup', id: params.sub
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processRemoveEntitlements() {
         log.debug("processRemoveEntitlements....");
 
@@ -3278,7 +3418,7 @@ class SubscriptionController extends AbstractDebugController {
         Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
 
         threadArray.each {
-            if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
+            if (it.name == 'PackageSync_'+result.subscriptionInstance?.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscriptionInstance,Package.findByGokbId(params.addUUID))) {
                 flash.message = message(code: 'subscription.details.linkPackage.thread.running')
             }
         }
@@ -3299,8 +3439,6 @@ class SubscriptionController extends AbstractDebugController {
                     try {
                         globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
                         List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
-                        globalSourceSyncService.notifyDependencies([tippsToNotify])
-                        globalSourceSyncService.cleanUpGorm()
                         Package pkgToLink = Package.findByGokbId(pkgUUID)
                         Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
                         println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
@@ -3317,6 +3455,9 @@ class SubscriptionController extends AbstractDebugController {
                                 pkgToLink.addToSubscription(it, false)
                             }
                         }
+                        Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id+"_pendingChanges")
+                        globalSourceSyncService.notifyDependencies([tippsToNotify])
+                        globalSourceSyncService.cleanUpGorm()
                     }
                     catch (Exception e) {
                         log.error("sync job has failed, please consult stacktrace as follows: ")
@@ -4266,21 +4407,22 @@ class SubscriptionController extends AbstractDebugController {
                                 form: baseSub.form ?: null
                         )
 
-                        if (params.subscription.takeLinks) {
-                            //License
-                            newSub.owner = baseSub.owner ?: null
-                        }
-
                         if (!newSub.save(flush: true)) {
-                            log.error("Problem saving subscription ${newSub.errors}");
+                            log.error("Problem saving subscription ${newSub.errors}")
                             return newSub
                         } else {
-                            log.debug("Save ok");
+                            log.debug("Save ok")
+
+                            if (params.subscription.takeLinks) {
+                                //License
+                                if(baseSub.owner)
+                                    subscriptionService.setOrgLicRole(newSub,baseSub.owner)
+                            }
                             //Copy References
                             //OrgRole
                             baseSub.orgRelations?.each { or ->
 
-                                if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
+                                if ((or.org.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
                                     OrgRole newOrgRole = new OrgRole()
                                     InvokerHelper.setProperties(newOrgRole, or.properties)
                                     newOrgRole.sub = newSub
@@ -4837,10 +4979,16 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.deleteOwner(newSub, flash)
+            if(!subscriptionService.setOrgLicRole(newSub, null)) {
+                Object[] args = [newSub]
+                flash.error += message(code:'default.save.error.message',args:args)
+            }
             //isTargetSubChanged = true
         }else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.copyOwner(baseSub, newSub, flash)
+            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
+                Object[] args = [newSub]
+                flash.error += message(code:'default.save.error.message',args:args)
+            }
             //isTargetSubChanged = true
         }
 
@@ -5070,12 +5218,12 @@ class SubscriptionController extends AbstractDebugController {
             newSub = Subscription.get(params.targetSubscriptionId)
             subsToCompare.add(newSub)
         }
-        List<AbstractProperty> propertiesToTake = params.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, flash, auditProperties)
         }
 
-        List<AbstractProperty> propertiesToDelete = params.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteProperties(propertiesToDelete, newSub, isRenewSub, flash, auditProperties)
         }
@@ -5515,7 +5663,7 @@ class SubscriptionController extends AbstractDebugController {
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
                 if(sub.type == SUBSCRIPTION_TYPE_ADMINISTRATIVE)
                     sub.administrative = true
-                sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
+                //sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
                 sub.instanceOf = entry.instanceOf ? genericOIDService.resolveOID(entry.instanceOf) : null
                 Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
                 Org provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
@@ -5543,6 +5691,10 @@ class SubscriptionController extends AbstractDebugController {
                                 parentRoleType = OR_SUBSCRIBER
                             }
                             break
+                    }
+                    if(entry.owner) {
+                        License owner = genericOIDService.resolveOID(entry.owner)
+                        subscriptionService.setOrgLicRole(sub,owner)
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
                     if(!parentRole.save()) {
@@ -5613,7 +5765,7 @@ class SubscriptionController extends AbstractDebugController {
 
     private void createProperty(PropertyDefinition propDef, Subscription sub, Org contextOrg, String value, String note) {
         //check if private or custom property
-        AbstractProperty prop
+        AbstractPropertyWithCalculatedLastUpdated prop
         if(propDef.tenant == contextOrg) {
             //process private property
             prop = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef)

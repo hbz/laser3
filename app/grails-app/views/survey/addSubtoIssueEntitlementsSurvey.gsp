@@ -37,6 +37,13 @@
                               value="${params.endDate}" />
         </div>
 
+        <div class="field">
+            <label>${message(code: 'surveyConfig.createTitleGroups.label.info')}</label>
+            <div>
+                <input type="checkbox" id="createTitleGroups" name="createTitleGroups" ${params.createTitleGroups? 'checked':''}>
+            </div>
+        </div>
+
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 

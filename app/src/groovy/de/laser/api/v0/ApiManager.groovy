@@ -8,7 +8,6 @@ import de.laser.api.v0.special.ApiStatistic
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
-import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.http.HttpStatus
 
 import javax.servlet.http.HttpServletRequest
@@ -16,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.98'
+    static final VERSION = '0.103'
 
     /**
      * @return Object
@@ -47,6 +46,16 @@ class ApiManager {
         else if (! (format in ApiReader.SUPPORTED_FORMATS[obj])){
             return Constants.HTTP_NOT_ACCEPTABLE
         }
+
+        /*
+            Naming convention
+
+            ApiObject.findByX()         returning the matching result from db (implicit checking delete status)
+
+            ApiObject.requestY()        returning object if access is granted (implicit checked)
+
+            ApiObject.getZ()            returing object without access check
+         */
 
         if (checkValidRequest('costItem')) {
 
@@ -164,8 +173,21 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiPkg.requestPackage((Package) tmp.obj, contextOrg)
+                result = ApiPkg.getPackage((Package) tmp.obj, contextOrg)
             }
+        }
+        else if (checkValidRequest('platform')) {
+
+            ApiBox tmp = ApiPlatform.findPlatformBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiPlatform.getPlatform((Platform) tmp.obj, contextOrg)
+            }
+        }
+        else if (checkValidRequest('platformList')) {
+
+            result = ApiPlatform.getPlatformList()
         }
         else if (checkValidRequest('propertyList')) {
 

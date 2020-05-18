@@ -1051,6 +1051,19 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    Map<String,Object> checkLicenseSubscriptionLinks() {
+        flash.message = "Überprüfung Lizenzen <-> Verträge <-> Teilnehmer läuft ..."
+        yodaService.checkLicenseSubscriptionLinks()
+    }
+
+    @Secured(['ROLE_YODA'])
+    def synchronizeSubscriptionLicenseOrgLinks() {
+        flash.message = "Synchronisiere Lizenz-Vertrag-Einrichtung-Verknüpfungen ..."
+        yodaService.synchronizeSubscriptionLicenseOrgLinks()
+        redirect controller: 'home', action: 'index'
+    }
+
+    @Secured(['ROLE_YODA'])
     def startDateCheck(){
         if(subscriptionUpdateService.startDateCheck())
             flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
@@ -1110,7 +1123,7 @@ class YodaController {
             def oss = OrgSettings.get(o, OrgSettings.KEYS.CUSTOMER_TYPE)
             if (oss == OrgSettings.SETTING_NOT_FOUND) {
                 log.debug ('Setting customer type for org: ' + o.id)
-                OrgSettings.add(o, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_CONSORTIUM_SURVEY', 'org'))
+                OrgSettings.add(o, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_CONSORTIUM', 'org'))
                 consCount++
             }
         }

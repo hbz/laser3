@@ -131,7 +131,7 @@ class SurveyInfo {
         }
     }
     boolean isEditable() {
-        if(accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_EDITOR','ROLE_ADMIN') && this.owner?.id == contextService.getOrg().id)
+        if(accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && this.owner?.id == contextService.getOrg().id)
         {
             return true
         }

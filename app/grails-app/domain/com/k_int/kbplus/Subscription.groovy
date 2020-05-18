@@ -4,16 +4,16 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.CalculatedLastUpdated
+import de.laser.interfaces.AuditableSupport
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
-import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
 import org.apache.commons.logging.Log
@@ -24,11 +24,10 @@ import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
 class Subscription
-        extends AbstractBaseDomain
-        implements CalculatedType, CalculatedLastUpdated, Permissions, ShareSupport, AuditableTrait {
+        extends AbstractBaseDomainWithCalculatedLastUpdated
+        implements CalculatedType, Permissions, AuditableSupport, ShareSupport {
 
-    // AuditableTrait
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
     static Log static_logger = LogFactory.getLog(Subscription)
@@ -52,7 +51,10 @@ class Subscription
     @Transient
     def deletionService
     @Transient
-    def cascadingUpdateService
+    def subscriptionService
+    @Transient
+    def auditService
+
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -111,6 +113,7 @@ class Subscription
                      customProperties: SubscriptionCustomProperty,
                      privateProperties: SubscriptionPrivateProperty,
                      costItems: CostItem,
+                     ieGroups: IssueEntitlementGroup
   ]
 
   static mappedBy = [
@@ -201,21 +204,27 @@ class Subscription
         hasPerpetualAccess(nullable: false, blank: false)
     }
 
+    @Override
     def afterInsert() {
         static_logger.debug("afterInsert")
+        cascadingUpdateService.update(this, dateCreated)
+
+        if(owner != null)
+            subscriptionService.setOrgLicRole(this,owner)
     }
 
-    def afterUpdate() {
-        static_logger.debug("afterUpdate")
-    }
-
+    @Override
     def afterDelete() {
         static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
-    Date getCalculatedLastUpdated() {
-        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
+    @Transient
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChangeHandler(this, oldMap, newMap)
     }
 
     @Override
@@ -436,7 +445,7 @@ class Subscription
     Org getProvider() {
         Org result
         orgRelations.each { or ->
-            if ( or?.roleType?.value=='Content Provider' )
+            if ( or.roleType.value=='Content Provider' )
                 result = or.org
             }
         result
@@ -445,7 +454,7 @@ class Subscription
     Org getConsortia() {
         Org result
         orgRelations.each { or ->
-            if ( or?.roleType?.value=='Subscription Consortia' )
+            if ( or.roleType.value=='Subscription Consortia' )
                 result = or.org
             }
         result
@@ -574,11 +583,6 @@ class Subscription
 
         return false
     }
-
-  @Override
-  def beforeInsert() {
-    super.beforeInsert()
-  }
 
     @Transient
     def notifyDependencies_trait(changeDocument) {

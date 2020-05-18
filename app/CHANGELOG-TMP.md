@@ -2,11 +2,53 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2496    18.05.2020  hbz-dev     David   Feature     API 0.103 - Ausgegebene Kosten in /subscription absichern
+
+2392    15.05.2020  hbz-dev     Moe     Feature     Kundentyp Consortium_Survey entfernen
+
+2471    15.05.2020  hbz-dev     David   Feature     API 0.101 - API-Endpunkte /platformList und /platform
+
+2384    15.05.2020  rc1.3       Moe     Feature     Umfrage Auswertung: Abgeschlossen Teilnehmer bzw. nicht abgeschlossene Teilnehmer mit Merkmal anzeigen
+
+2486    15.05.2020  rc1.3       Moe     Bug         Prozentanzeige in Umfrageübersicht ist Fehlerhaft
+
+2494    14.05.2020  rc1.3       Moe     Bug         Lizenztyp "lokale Lizenz" bei Vollnutzern nicht mehr gesetzt
+
+2415    14.05.2020  rc1.3       Moe     Bug         Berechtigungen bei Umfrage nochmal anpassen
+
+--      14.05.2020  rc1.3       Andreas Bug         Änderungsmitteilung beschleunigt, Meldung an Nutzer mit Zeitabschätzung versehen, Prozessablauf bei Paketsync geändert
+
+2445    14.05.2020  hbz-dev     Andreas Bug         Bereinigungsfunktion für fehlende Vertragsverknüpfungen testbereit fertig gestellt
+
+2492    14.05.2020  hbz-dev     David   Feature     API 0.100 - LastUpdated für Objekte mit Identifikator- und Merkmalsänderungen
+
+2474    14.05.2020  hbz-dev     Andreas Bug         Anzeige von Kontakten einer Zieleinrichtung angepasst
+
+2485    13.05.2020  hbz-dev     Andreas Feature     Dropdowns auf Mehrfachauswahl erweitert
+
+2484    13.05.2020  hbz-dev     Andreas Bug         Legacy-Controlleraufruf im Export korrigiert
+
+2483    12.05.2020  hbz-dev     David   Feature     lastUpdatedCalculated - Merkmale
+
+2482    12.05.2020  hbz-dev     David   Feature     lastUpdatedCalculated - Identifier
+
+--      12.05.2020  hbz-dev     David   Feature     API 0.99
+
+2476    12.05.2020  hbz-dev     David   Feature     Übersichtsseite: Dokumente
+
+2470    11.05.2020  rc1.3       Moe     Bug         Globale Suche berücksichtigt Berechtigung für Umfragen nicht
+
+2473    11.05.2020  hbz-dev     David   Feature     Löschen von Organisationen - Kaskadierendes Löschen von Profiler-Einträgen
+
+2472    11.05.2020  hbz-dev     David   Feature     Refactoring: AuditableTrait auflösen
+
 2407    07.05.2020  rc1.3       Anja    Bug         Migration von federal.state nach regions
 
 2463    07.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: utb-Umfrage Auswertungssicht
 
 2468    07.05.2020  rc1.3       Moe     Bug         Erinnerungsmails für Umfrage Ende anpassen
+
+2444    06.05.2020  hbz-dev     Andreas Feature     Zentralisierung aller Änderungen der Lizenz-Vertrag-Verknüpfung
 
 2462    05.05.2020  rc1.3       Moe     Bug         Umfrage: Bestätigung bei "Nein" muss differenziert werden
 

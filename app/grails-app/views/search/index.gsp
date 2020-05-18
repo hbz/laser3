@@ -124,7 +124,7 @@ String period
         </div>
 
         <div class="field">
-            <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+            <g:if test="${contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                 <div class="ui checkbox">
                     <input type="checkbox" name="showMembersObjects" tabindex="0" ${params.showMembersObjects ? 'checked' : ''}>
                     <label><g:message code="search.advancedSearch.showMembersObjects"/></label>
@@ -478,12 +478,12 @@ String period
                                     <br>
                                     <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
                                     <br>
-                                    <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
                                         <g:link controller="subscription" action="members"
                                                 id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().membersCount}</g:link>
                                     </g:if>
-                                    <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
                                         <article class="la-readmore">
                                         <g:each in="${hit.getSourceAsMap().members}" var="member">
@@ -493,7 +493,7 @@ String period
                                         </article>
                                     </g:if>
                                     <br>
-                                    <g:if test="${hit.getSourceAsMap().typeId == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id && !(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+                                    <g:if test="${hit.getSourceAsMap().typeId == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id && !(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
                                     <b>${message(code: 'facet.so.consortiaName')}</b>: ${hit.getSourceAsMap().consortiaName}
                                     </g:if>
                                 </td>
@@ -537,12 +537,12 @@ String period
                                     <br>
                                     <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
                                     <br>
-                                    <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
                                         <g:link controller="license" action="members"
                                                 id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().membersCount}</g:link>
                                     </g:if>
-                                    <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
                                         <g:link controller="subscription" action="members" id="${hit.getSourceAsMap().dbId}"> ${hit.getSourceAsMap().members.size()}</g:link>
                                         <article class="la-readmore">
@@ -552,7 +552,7 @@ String period
                                         </article>
                                     </g:if>
                                     <br>
-                                    <g:if test="${!(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+                                    <g:if test="${!(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
                                         <b>${message(code: 'facet.so.consortiaName')}</b>: ${hit.getSourceAsMap().consortiaName}
                                     </g:if>
                                 </td>
@@ -593,7 +593,7 @@ String period
                                     <br>
                                     <b>${message(code: 'renewalWithSurvey.period')}</b>: ${period}
                                     <br>
-                                    <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <b>${message(code: 'surveyParticipants.label')}</b>: ${hit.getSourceAsMap().membersCount}
                                     </g:if>
                                 </td>

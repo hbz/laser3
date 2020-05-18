@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
@@ -177,6 +178,36 @@ class ControlledListService {
             }
         }
         issueEntitlements
+    }
+
+    /**
+     * Retrieves a list of issue entitlement group owned by the context organisation matching given parameters
+     * @param params - eventual request params
+     * @return a map containing a list of issue entitlement groups, an empty one if no issue entitlement group match the filter
+     */
+    Map getTitleGroups(Map params) {
+        Org org = contextService.getOrg()
+        LinkedHashMap issueEntitlementGroup = [results:[]]
+        //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
+        String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
+        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE], current:RDStore.SUBSCRIPTION_CURRENT]
+        if(params.sub) {
+            filter = '= :sub'
+            filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
+        }
+
+        if(params.query && params.query.length() > 0) {
+            filter += ' and genfunc_filter_matcher(ieg.name,:query) = true '
+            filterParams.put('query',params.query)
+        }
+        List result = IssueEntitlementGroup.executeQuery('select ieg from IssueEntitlementGroup as ieg where ieg.sub '+filter+' order by ieg.name asc, ieg.sub asc, ieg.sub.startDate asc, ieg.sub.endDate asc',filterParams)
+        if(result.size() > 0) {
+            result.each { res ->
+                Subscription s = (Subscription) res.sub
+                issueEntitlementGroup.results.add([name:"${res.name} (${s.dropdownNamingConvention(org)})",value:res.class.name+":"+res.id])
+            }
+        }
+        issueEntitlementGroup
     }
 
     /**

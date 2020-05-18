@@ -11,7 +11,7 @@
             <semui:subNavItem controller="license" action="pendingChanges" params="${[id:params.id]}" message="pendingChange.plural" />
         </sec:ifAnyGranted>
     </g:if>
-
+    <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="subscriptions" params="${[id:params.id]}" message="subscription.plural"/>
     <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="tasks" params="${[id:params.id]}" message="task.plural" />
     <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
     <semui:subNavItem controller="license" action="notes" params="${[id:params.id]}" message="license.nav.notes" />

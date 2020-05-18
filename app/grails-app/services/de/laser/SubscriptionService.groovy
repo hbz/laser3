@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
@@ -16,6 +16,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.interfaces.CalculatedType
 import grails.util.Holders
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -310,7 +311,6 @@ class SubscriptionService {
             List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
 
 
-
             ies.sort { it.tipp.title.title }
             ies
         }else{
@@ -478,7 +478,7 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
-
+    /*
     boolean deleteOwner(Subscription targetSub, def flash) {
         targetSub.owner = null
         return save(targetSub, flash)
@@ -490,6 +490,7 @@ class SubscriptionService {
         targetSub.owner = sourceSub.owner ?: null
         return save(targetSub, flash)
     }
+    */
 
 
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
@@ -925,7 +926,7 @@ class SubscriptionService {
     }
 
 
-    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
+    boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
         Org contextOrg = contextService.getOrg()
         def targetProp
 
@@ -968,9 +969,9 @@ class SubscriptionService {
     }
 
 
-    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
+    boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
         if (true){
-            properties.each { AbstractProperty prop ->
+            properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
                 AuditConfig.removeAllConfigs(prop)
             }
         }
@@ -1193,6 +1194,49 @@ class SubscriptionService {
             println e.message
             return false
         }
+    }
+
+    boolean setOrgLicRole(Subscription sub, License newOwner) {
+        boolean success = false
+        if(sub.owner != newOwner) {
+            Org subscr = sub.getSubscriber()
+            if(newOwner == null) {
+                Map<String,Object> licParams = [lic:sub.owner,subscriber:subscr]
+                Set<Subscription> linkedSubs = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.owner = :lic and oo.org = :subscriber and oo.roleType in (:roleTypes)',licParams+[roleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN,OR_SUBSCRIBER_COLLECTIVE]])
+                //size == 1 is correct because this is the last subscription to be linked for that org
+                if(linkedSubs.size() == 1) {
+                    log.info("no more license <-> subscription links between org -> removing licensee role")
+                    if(OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams))
+                        success = true
+                }
+            }
+            else if(newOwner != null) {
+                RefdataValue licRole
+                if(sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
+                    licRole = OR_LICENSEE_CONS
+                else if(sub.getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE,CalculatedType.TYPE_LOCAL])
+                    licRole = OR_LICENSEE
+                else if(sub.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+                    licRole = OR_LICENSING_CONSORTIUM
+                if(licRole) {
+                    OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newOwner,subscr,licRole)
+                    if(!orgLicRole){
+                        orgLicRole = OrgRole.findByLicAndOrgAndRoleType(sub.owner,subscr,licRole)
+                        if(orgLicRole && orgLicRole.lic != newOwner) {
+                            orgLicRole.lic = newOwner
+                        }
+                        else {
+                            orgLicRole = new OrgRole(lic: newOwner,org: subscr,roleType: licRole)
+                        }
+                        if(orgLicRole.save())
+                            success = true
+                    }
+                }
+            }
+            sub.owner = newOwner
+            success && sub.save()
+        }
+        else success
     }
 
     Map subscriptionImport(CommonsMultipartFile tsvFile) {

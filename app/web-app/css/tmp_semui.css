@@ -310,7 +310,9 @@ h1 .icon.h1-icon-overwrite {
 
 /* table-td-colors @ admin->systemEvents */
 
+.ui.la-table.table tr td[class^=table-td] { vertical-align: top; }
 .ui.la-table.table tr td.table-td-info    { }
+.ui.la-table.table tr td.table-td-ok      { background-color: rgba(0,255,0, 0.1); }
 .ui.la-table.table tr td.table-td-warning { background-color: rgba(255,255,0, 0.1); }
 .ui.la-table.table tr td.table-td-error   { background-color: rgba(255,0,0, 0.1); }
 

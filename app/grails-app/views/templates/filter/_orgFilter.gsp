@@ -81,38 +81,38 @@
             <g:if test="${field.equalsIgnoreCase('region')}">
                 <div class="field">
                     <label for="region">${message(code: 'org.region.label')}</label>
-                    <laser:select class="ui dropdown" id="region" name="region"
-                                  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,
-                                                                               RDConstants.REGIONS_AT,
-                                                                               RDConstants.REGIONS_CH])}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.region}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                    <select id="region" name="region" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,
+                                                                           RDConstants.REGIONS_AT,
+                                                                           RDConstants.REGIONS_CH])}" var="rdv">
+                            <option <%=(params.list('region').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('libraryNetwork')}">
                 <div class="field">
                     <label for="libraryNetwork">${message(code: 'org.libraryNetwork.label')}</label>
-                    <laser:select class="ui dropdown" id="libraryNetwork" name="libraryNetwork"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_NETWORK)}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.libraryNetwork}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                    <select id="libraryNetwork" name="libraryNetwork" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_NETWORK)}" var="rdv">
+                            <option <%=(params.list('libraryNetwork').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('libraryType')}">
                 <div class="field">
                     <label for="libraryType">${message(code: 'org.libraryType.label')}</label>
-                    <laser:select class="ui dropdown" id="libraryType" name="libraryType"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.libraryType}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                    <select id="libraryType" name="libraryType" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}" var="rdv">
+                            <option <%=(params.list('libraryType').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 

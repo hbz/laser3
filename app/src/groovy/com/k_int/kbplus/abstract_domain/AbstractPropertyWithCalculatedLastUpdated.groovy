@@ -3,10 +3,20 @@ package com.k_int.kbplus.abstract_domain
 
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.DateUtil
+import de.laser.interfaces.CalculatedLastUpdated
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.springframework.beans.factory.annotation.Autowired
 
 import javax.persistence.Transient
 
-abstract class AbstractProperty implements Serializable {
+abstract class AbstractPropertyWithCalculatedLastUpdated
+        implements CalculatedLastUpdated, Serializable {
+
+    @Autowired
+    def cascadingUpdateService // DO NOT OVERRIDE IN SUB CLASSES
+
+    static Log static_logger = LogFactory.getLog(AbstractPropertyWithCalculatedLastUpdated)
 
     String           stringValue
     Integer          intValue
@@ -16,9 +26,12 @@ abstract class AbstractProperty implements Serializable {
     String           note = ""
     Date             dateValue
 
+    Date lastUpdatedCascading
+
     static mapping = {
         stringValue  type: 'text'
         note         type: 'text'
+        lastUpdatedCascading column: 'last_updated_cascading'
     }
 
     static constraints = {
@@ -29,22 +42,36 @@ abstract class AbstractProperty implements Serializable {
         urlValue    (nullable: true)
         note        (nullable: true)
         dateValue   (nullable: true)
+        lastUpdatedCascading (nullable: true, blank: false)
+    }
+
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+        cascadingUpdateService.update(this, dateCreated)
+    }
+
+    def afterUpdate() {
+        static_logger.debug("afterUpdate")
+        cascadingUpdateService.update(this, lastUpdated)
+    }
+
+    def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+    }
+
+    Date getCalculatedLastUpdated() {
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
     @Transient
-    def getValueType(){
-        if(stringValue)
-            return "stringValue"
-        if(intValue)
-            return "intValue"
-        if(decValue)
-            return "decValue"
-        if(refValue)
-            return "refValue"
-        if(dateValue)
-            return "dateValue"
-        if(urlValue)
-            return "urlValue"
+    String getValueType(){
+        if (stringValue) { return "stringValue" }
+        if (intValue)    { return "intValue" }
+        if (decValue)    { return "decValue" }
+        if (refValue)    { return "refValue" }
+        if (dateValue)   { return "dateValue" }
+        if (urlValue)    { return "urlValue" }
     }
 
     String getValue() {
@@ -53,24 +80,19 @@ abstract class AbstractProperty implements Serializable {
 
     @Override
     String toString(){
-        if(stringValue)
-            return stringValue
-        if(intValue != null)
-            return intValue.toString()
-        if(decValue != null)
-            return decValue.toString()
-        if(refValue)
-            return refValue.toString()
-        if(dateValue)
-            return dateValue.getDateString()
-        if(urlValue)
-            return urlValue.toString()
+        if (stringValue)      { return stringValue }
+        if (intValue != null) { return intValue.toString() }
+        if (decValue != null) { return decValue.toString() }
+        if (refValue)         { return refValue.toString() }
+        if (dateValue)        { return dateValue.getDateString() }
+        if (urlValue)         { return urlValue.toString() }
     }
 
-    def copyInto(AbstractProperty newProp){
+    def copyInto(AbstractPropertyWithCalculatedLastUpdated newProp){
         if (type != newProp.type) {
             throw new IllegalArgumentException("AbstractProperty.copyInto nicht möglich, weil die Typen nicht übereinstimmen.")
-        } else {
+        }
+        else {
             newProp.stringValue = stringValue
             newProp.intValue = intValue
             newProp.decValue = decValue

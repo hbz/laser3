@@ -184,7 +184,6 @@ class ApiCollectionReader {
             if (it instanceof LicenseCustomProperty) {
                 tmp.paragraph = it.paragraph
             }
-
             tmp = ApiToolkit.cleanUp(tmp, true, false)
             result << tmp
         }
@@ -326,8 +325,8 @@ class ApiCollectionReader {
                 tmp.refdataCategory = it.type.refdataCategory
             }
 
-            tmp.dateCreated = ApiToolkit.formatInternalDate(it.dateCreated)
-            tmp.lastUpdated = ApiToolkit.formatInternalDate(it.lastUpdated)
+            //tmp.dateCreated = ApiToolkit.formatInternalDate(it.dateCreated)
+            //tmp.lastUpdated = ApiToolkit.formatInternalDate(it.getCalculatedLastUpdated())
 
             if (it instanceof LicensePrivateProperty) {
                 tmp.paragraph = it.paragraph

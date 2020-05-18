@@ -10,7 +10,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title><g:message code="laser" />Expunge deleted TIPPs</title>
+        <title><g:message code="laser" /> : Expunge deleted TIPPs</title>
     </head>
 
     <body>
