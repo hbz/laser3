@@ -2484,7 +2484,7 @@ AND EXISTS (
         result.contextOrg = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2562,7 +2562,7 @@ AND EXISTS (
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")

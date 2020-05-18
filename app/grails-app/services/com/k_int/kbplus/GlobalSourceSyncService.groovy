@@ -168,7 +168,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 cleanUpGorm()
             }
             catch (SyncException e) {
-                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleRecordKey:titleUUID])
+                SystemEvent.createEvent('GSSS_OAI_WARNING',[titleRecordKey:titleUUID])
             }
         }
         providersToUpdate.each { providerUUID ->
@@ -177,7 +177,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 cleanUpGorm()
             }
             catch (SyncException e) {
-                SystemEvent.createEvent('GSSS_OAI_ERROR',[providerRecordKey:providerUUID])
+                SystemEvent.createEvent('GSSS_OAI_WARNING',[providerRecordKey:providerUUID])
             }
         }
         platformsToUpdate.each { Map<String,String> platformParams ->
@@ -186,7 +186,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 cleanUpGorm()
             }
             catch (SyncException e) {
-                SystemEvent.createEvent('GSSS_OAI_ERROR',[platformRecordKey:platformParams.gokbId])
+                SystemEvent.createEvent('GSSS_OAI_WARNING',[platformRecordKey:platformParams.gokbId])
             }
         }
     }
@@ -356,6 +356,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     TitleInstancePackagePlatform target = addNewTIPP(result,tippB)
                                     tippsToNotify << [event:'add',target:target]
                                 }
+                                transactionStatus.flush()
                             }
                         }
                         else {
@@ -406,7 +407,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 e.printStackTrace()
                 transactionStatus.setRollbackOnly()
             }
-            transactionStatus.flush()
         }
         tippsToNotify
     }
@@ -546,7 +546,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 catch (GroovyCastException e) {
                     log.error("Title type mismatch! This should not be possible! Inform GOKb team! -> ${titleInstance.gokbId} is corrupt!")
-                    SystemEvent.createEvent('GSSS_OAI_ERROR',[titleInstance:titleInstance.gokbId,errorType:"titleTypeMismatch"])
+                    SystemEvent.createEvent('GSSS_OAI_WARNING',[titleInstance:titleInstance.gokbId,errorType:"titleTypeMismatch"])
                 }
                 titleInstance.title = titleRecord.name.text()
                 titleInstance.medium = medium
@@ -643,7 +643,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                             else {
                                 log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id.text()} to GOKb!")
-                                SystemEvent.createEvent('GSSS_OAI_ERROR',[titleHistoryEvent:eventData.@id.text(),errorType:"historyEventWithoutDate"])
+                                SystemEvent.createEvent('GSSS_OAI_WARNING',[titleHistoryEvent:eventData.@id.text(),errorType:"historyEventWithoutDate"])
                             }
                         }
                     }
@@ -951,9 +951,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     void notifyDependencies(List<List<Map<String,Object>>> tippsToNotify) {
         //if everything went well, we should have here the list of tipps to notify ...
-        tippsToNotify.each { entry ->
-            entry.each { notify ->
-                log.debug(notify)
+        tippsToNotify.each { List<Map<String,Object>> entry ->
+            entry.eachWithIndex { Map<String,Object> notify, int index ->
+                log.debug("now processing entry #${index}, payload: ${notify}")
                 if(notify.event in ['pkgPropUpdate','pkgDelete']) {
                     Package target = (Package) notify.target
                     Set<SubscriptionPackage> spConcerned = SubscriptionPackage.findAllByPkg(target)
@@ -1050,6 +1050,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                 }
+                cleanUpGorm()
             }
         }
     }
