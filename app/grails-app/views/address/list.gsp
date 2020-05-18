@@ -68,8 +68,8 @@
 								<g:link action="show" id="${addressInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>
 								<g:link action="edit" id="${addressInstance.id}" class="ui tiny button">${message('code':'default.button.edit.label')}</g:link>
 							</td>
-						</tr>
 					</g:each>
+						</tr>
 					</tbody>
 				</table>
 
