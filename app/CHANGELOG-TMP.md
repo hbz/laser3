@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2392    15.05.2020  hbz-dev     Moe     Feature     Kundentyp Consortium_Survey entfernen
+
 2471    15.05.2020  hbz-dev     David   Feature     API 0.101 - API-Endpunkte /platformList und /platform
 
 2384    15.05.2020  rc1.3       Moe     Feature     Umfrage Auswertung: Abgeschlossen Teilnehmer bzw. nicht abgeschlossene Teilnehmer mit Merkmal anzeigen

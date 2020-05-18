@@ -106,6 +106,7 @@
                 <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscriptionInstance.packages}">
                     <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+                    <semui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
                 </g:if>
                 <g:else>
                     <semui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.noPackagesYetAdded')}"/>
@@ -171,7 +172,7 @@
                 </g:else>
             </g:if>
 
-            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM_SURVEY") && showConsortiaFunctions && subscriptionInstance.instanceOf == null }">
+            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM") && showConsortiaFunctions && subscriptionInstance.instanceOf == null }">
                     <semui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
 

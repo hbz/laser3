@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -112,6 +113,7 @@ class Subscription
                      customProperties: SubscriptionCustomProperty,
                      privateProperties: SubscriptionPrivateProperty,
                      costItems: CostItem,
+                     ieGroups: IssueEntitlementGroup
   ]
 
   static mappedBy = [
