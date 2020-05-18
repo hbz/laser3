@@ -68,6 +68,12 @@ class AddressController extends AbstractDebugController {
             case RDStore.ADRESS_TYPE_LEGAL_PATRON:
                 modalId = "addressFormModalLegalPatronAddress"
                 break
+            case RDStore.ADRESS_TYPE_DELIVERY:
+                modalId = "addressFormModalDeliveryAddress"
+                break
+            case RDStore.ADRESS_TYPE_LIBRARY:
+                modalId = "addressFormModalLibraryAddress"
+                break
         }
         Map model = [
             addressInstance: addressInstance,

@@ -174,6 +174,12 @@
             <g:elseif test="${modalId == 'addressFormModalLegalPatronAddress'}">
                 <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_LEGAL_PATRON?.id}"/>
             </g:elseif>
+            <g:elseif test="${modalId == 'addressFormModalLibraryddress'}">
+                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_LIBRARY?.id}"/>
+            </g:elseif>
+            <g:elseif test="${modalId == 'addressFormModalDeliveryAddress'}">
+                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_DELIVERY?.id}"/>
+            </g:elseif>
             <g:elseif test="${addressInstance}">
                 <input id="type_${modalId}" name="type.id" type="hidden" value="${addressInstance.type?.id}"/>
             </g:elseif>
