@@ -2,6 +2,17 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.103
+
+- changed calculation of: `CostItem.calculatedType`
+- higher access restrictions: `Subscription.costItems`
+
+#### 0.102
+
+- added new attribute: `License.licenseCategory`
+- removed attribute: `License.licenseType`
+- removed attribute: `License.status`
+
 #### 0.101
 
 - added new endpoint: __/platform__

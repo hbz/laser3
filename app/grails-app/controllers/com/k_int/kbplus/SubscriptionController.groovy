@@ -466,6 +466,8 @@ class SubscriptionController extends AbstractDebugController {
                 int numOfPCs = result.package.removePackagePendingChanges([result.subscription.id], false)
 
                 int numOfIEs = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams).size()
+
+                int numOfCIs = CostItem.findAllBySubPkg(SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,result.package)).size()
                 def conflict_item_pkg =
                         [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}",
                          details: [['link': createLink(controller: 'package', action: 'show', id: result.package.id), 'text': result.package.name]],
@@ -488,6 +490,14 @@ class SubscriptionController extends AbstractDebugController {
                              action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete.plural")}"]
                             ]
                     conflicts_list += conflict_item_pc
+                }
+                if (numOfCIs > 0) {
+                    Map<String,Object> conflict_item_ci =
+                            [name: "${g.message(code: "subscription.details.unlink.costItems")}",
+                             details: [[number: numOfCIs, 'text': "${g.message(code: "financials.costItem")}"]],
+                             action: [actionRequired: true, text: "${g.message(code: "subscription.details.unlink.delete.impossible.plural")}"]
+                    ]
+                    conflicts_list += conflict_item_ci
                 }
 
                 SubscriptionPackage sp = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
@@ -522,6 +532,8 @@ class SubscriptionController extends AbstractDebugController {
 
                         int numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
 
+                        int numOfCIsChildSubs = CostItem.findAllBySubscriptionPackageInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs,result.package))
+
                         if (spChildSubs.size() > 0) {
                             Map conflict_item_pkgChildSubs = [
                                     name   : "${g.message(code: "subscription.details.unlink.linkedPackageSubChild")}",
@@ -543,6 +555,14 @@ class SubscriptionController extends AbstractDebugController {
                                     details: [[number: numOfPCsChildSubs, 'text': "${g.message(code: "subscription.details.unlink.pendingChangesSubChild")} "]],
                                     action : [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete.plural")}"]]
                             conflicts_list += conflict_item_pc
+                        }
+                        if (numOfCIsChildSubs > 0) {
+                            Map<String,Object> conflict_item_ci =
+                                    [name: "${g.message(code: "subscription.details.unlink.costItems")}",
+                                     details: [[number: numOfCIsChildSubs, 'text': "${g.message(code: "financials.costItem")}"]],
+                                     action: [actionRequired: true, text: "${g.message(code: "subscription.details.unlink.delete.impossible.plural")}"]
+                                    ]
+                            conflicts_list += conflict_item_ci
                         }
 
 

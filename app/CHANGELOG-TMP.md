@@ -16,6 +16,10 @@
 
 2488    18.05.2020  hbz-dev     Moe     Feature     Fachbereich und Reihe Filter in Titel-Umfrage und Bestand einer Lizenz einbauen
 
+2502    18.05.2020  hbz-dev     Andreas Bug         Fehlermeldung über anhängige Kosten bei Paketentknüpfung eingebaut
+
+2496    18.05.2020  hbz-dev     David   Feature     API 0.103 - Ausgegebene Kosten in /subscription absichern
+
 2392    15.05.2020  hbz-dev     Moe     Feature     Kundentyp Consortium_Survey entfernen
 
 2471    15.05.2020  hbz-dev     David   Feature     API 0.101 - API-Endpunkte /platformList und /platform
