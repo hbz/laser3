@@ -14,15 +14,14 @@
 </g:if>
 
 <g:if test="${actionName in ['currentLicenses']}">
-    <semui:actionsDropdown>
-        <g:if test="${accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR")}">
+    <g:if test="${accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR")}">
+        <semui:actionsDropdown>
             <semui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
-            <div class="divider"></div>
-        </g:if>
+        </semui:actionsDropdown>
+    </g:if>
 
-        <semui:actionsDropdownItem controller="licenseCompare" action="index" message="menu.my.comp_lic" />
-        %{--<semui:actionsDropdownItem controller="myInstitution" action="addLicense" message="license.copy" />--}%
-    </semui:actionsDropdown>
+        %{--<semui:actionsDropdownItem controller="licenseCompare" action="index" message="menu.my.comp_lic" />
+        <semui:actionsDropdownItem controller="myInstitution" action="addLicense" message="license.copy" />--}%
 </g:if>
 
 <g:if test="${actionName in ['manageMembers', 'addMembers']}">

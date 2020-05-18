@@ -345,46 +345,51 @@ class MyInstitutionController extends AbstractDebugController {
 
         result.filterSet = params.filterSet ? true : false
 
-        if (! params.orgRole) {
-            if (accessService.checkPerm("ORG_CONSORTIUM")) {
-                params.orgRole = 'Licensing Consortium'
-            }
-            else {
-                params.orgRole = 'Licensee'
-            }
-        }
+        Set<String> licenseFilterTable = []
 
-        if (params.orgRole == 'Licensee') {
-
-            base_qry = """
-from License as l where (
-    exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-)
-"""
+        if (accessService.checkPerm("ORG_INST")) {
+            base_qry = """from License as l where (
+                exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
+            )"""
             qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
+            if(result.editable)
+                licenseFilterTable << "action"
         }
-
-        if (params.orgRole == 'Licensing Consortium') {
-
-            base_qry = """
-from License as l where (
-    exists ( select o from l.orgLinks as o where ( 
-            ( o.roleType = :roleTypeC 
-                AND o.org = :lic_org 
-                AND l.instanceOf is null
-                AND NOT exists (
-                    select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+        else if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            base_qry = """from License as l where (
+                    exists ( select o from l.orgLinks as o where ( 
+                    ( o.roleType = :roleTypeC 
+                        AND o.org = :lic_org 
+                        AND l.instanceOf is null
+                        AND NOT exists (
+                        select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+                    )
                 )
-            )
-        ))
-)
-"""
+            )))"""
             qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
+            licenseFilterTable << "memberLicenses"
+            if(result.editable)
+                licenseFilterTable << "action"
         }
+        else {
+            base_qry = """from License as l where (
+                exists ( select o from l.orgLinks as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
+            )"""
+            qry_params = [roleType:licensee_cons_role, lic_org:result.institution]
+            licenseFilterTable << "licensingConsortium"
+        }
+        result.licenseFilterTable = licenseFilterTable
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            base_qry += " and genfunc_filter_matcher(l.reference, :ref) = true "
-            qry_params += [ref:"${params['keyword-search']}"]
+            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
+            + " or exists ( select s from Subscription as s where s.owner = l and genfunc_filter_matcher(s.name, :name_filter) = true ) " // filter by subscription
+            + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
+            + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
+            + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
+            + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
+            + " ) ) " // filter by Anbieter, Konsortium, Agency
+            +  " ) ")
+            qry_params += [name_filter:"${params['keyword-search']}"]
             result.keyWord = params['keyword-search']
         }
 
@@ -433,6 +438,10 @@ from License as l where (
         orgRoles.each { oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
+        Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority in ('ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM')) order by os.org.name asc")
+        Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
+        Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
+        result.orgs = orgs
 
 		List bm = du.stopBenchmark()
 		result.benchMark = bm

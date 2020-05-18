@@ -331,8 +331,16 @@
 
 
             <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
-                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfLicenses.label')}</th>
-                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfCostItems.label')}</th>
+                <th scope="col" rowspan="2">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                        <i class="users large icon"></i>
+                    </span>
+                </th>
+                <th scope="col" rowspan="2">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                        <i class="money bill large icon"></i>
+                    </span>
+                </th>
             </g:if>
 
             <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">

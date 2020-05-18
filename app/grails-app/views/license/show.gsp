@@ -82,13 +82,6 @@
                         </div>
                         <div class="ui card ">
                             <div class="content">
-                                <%--<dl>
-                                    <dt class="control-label">${message(code: 'default.status.label')}</dt>
-                                    <dd>
-                                        <semui:xEditableRefData owner="${license}" field="status" config="${RDConstants.LICENSE_STATUS}"/>
-                                    </dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'status']" /></dd>
-                                </dl>
                                 <dl>
 
                                     <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
@@ -96,15 +89,6 @@
                                         <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>
                                 </dl>
-                                -->
-                                <!--
-                                <dl>
-                                    <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
-                                    <dd>
-                                        <semui:xEditableRefData owner="${license}" field="isPublic" config="${RDConstants.Y_N}" />
-                                    </dd>
-                                </dl>
-                                --%>
 
                                 <g:if test="${license.instanceOf && institution.id == license.getLicensingConsortium().id}">
                                     <dl>
