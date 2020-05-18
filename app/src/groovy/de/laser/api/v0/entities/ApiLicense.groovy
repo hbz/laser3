@@ -122,13 +122,8 @@ class ApiLicense {
         // removed - result.contact          = lic.contact
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
-        // result.lastmod          = lic.lastmod // legacy ?
         result.lastUpdated      = ApiToolkit.formatInternalDate(lic.getCalculatedLastUpdated())
-        // result.licenseUrl       = lic.licenseUrl
-        // removed - result.licensorRef      = lic.licensorRef
-        // removed - result.licenseeRef      = lic.licenseeRef
         //result.licenseType      = lic.licenseType
-        //result.noticePeriod     = lic.noticePeriod
         result.reference        = lic.reference
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
         result.normReference    = lic.sortableReference
@@ -139,7 +134,7 @@ class ApiLicense {
         // RefdataValues
 
         result.licenseCategory  = lic.licenseCategory?.value
-        result.status           = lic.status?.value
+        //result.status           = lic.status?.value
         result.type             = lic.type?.value
 
         // References
