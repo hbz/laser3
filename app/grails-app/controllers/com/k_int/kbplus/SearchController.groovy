@@ -46,7 +46,7 @@ class SearchController extends AbstractDebugController {
                 params.q = "( ${params.q} )"
             }
 
-            if(params.showMembersObjects && result.contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']){
+            if(params.showMembersObjects && result.contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'){
                 params.consortiaGUID = result.contextOrg.globalUID
             }
 

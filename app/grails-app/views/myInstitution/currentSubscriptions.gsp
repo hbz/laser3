@@ -343,7 +343,7 @@
                 </th>
             </g:if>
 
-            <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+            <g:if test="${!(contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM')}">
             <th class="la-no-uppercase" scope="col" rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'subscription.isMultiYear.label')}">
@@ -459,7 +459,7 @@
                     </td>
                     <td>
                         <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
-                            <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                            <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
                                 ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
                             </g:if>
                             <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST_COLLECTIVE'}">
@@ -468,7 +468,7 @@
                         </g:link>
                     </td>
                 </g:if>
-                <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+                <g:if test="${!(contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM')}">
                     <td>
                         <g:if test="${s.isMultiYear}">
                             <g:if test="${(s.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
@@ -503,7 +503,7 @@
                         </g:link>
                     </g:if>
 
-                    <g:if test="${contextService.org?.getCustomerType() in ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'] && surveysConsortiaSub }">
+                    <g:if test="${contextService.org?.getCustomerType()  == 'ORG_CONSORTIUM' && surveysConsortiaSub }">
                         <g:link controller="subscription" action="surveysConsortia" id="${s?.id}"
                                 class="ui icon button">
                             <g:if test="${surveysConsortiaSub?.surveyInfo?.isCompletedforOwner()}">

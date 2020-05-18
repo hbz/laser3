@@ -156,7 +156,7 @@ class FilterService {
             queryParams << [libraryNetwork : libraryNetworks]
         }
         if (params.libraryType?.size() > 0) {
-            query << "o.libraryType.id = :libraryType"
+            query << "o.libraryType.id in (:libraryType)"
             List<String> selLibraryTypes = params.list("libraryType")
             List<Long> libraryTypes = []
             selLibraryTypes.each { String sel ->
