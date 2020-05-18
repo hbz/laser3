@@ -16,7 +16,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
 
     Date dateCreated
     Date lastUpdated
-    Date lastUpdatedCascading
 
     Org owner
     Org participant
@@ -46,7 +45,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         participantComment (nullable:true, blank:false)
         ownerComment (nullable:true, blank:false)
         isRequired (nullable:false, blank:false)
-        lastUpdatedCascading (nullable: true, blank: false)
     }
 
     static mapping = {
@@ -57,7 +55,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
 
         dateCreated column: 'surre_date_created'
         lastUpdated column: 'surre_last_updated'
-        lastUpdatedCascading column: 'surre_last_updated_cascading'
 
         resultValues column: 'surre_result_values'
 
