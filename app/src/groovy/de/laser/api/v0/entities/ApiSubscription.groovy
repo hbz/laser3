@@ -1,5 +1,6 @@
 package de.laser.api.v0.entities
 
+import com.k_int.kbplus.CostItem
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
@@ -78,7 +79,7 @@ class ApiSubscription {
 
 		boolean hasAccess = isInvoiceTool || calculateAccess(sub, context)
         if (hasAccess) {
-            result = getSubscriptionMap(sub, ApiReader.IGNORE_NONE, context)
+            result = getSubscriptionMap(sub, ApiReader.IGNORE_NONE, context, isInvoiceTool)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -112,7 +113,7 @@ class ApiSubscription {
 	/**
 	 * @return Map<String, Object>
 	 */
-	static Map<String, Object> getSubscriptionMap(Subscription sub, def ignoreRelation, Org context){
+	static Map<String, Object> getSubscriptionMap(Subscription sub, def ignoreRelation, Org context, boolean isInvoiceTool){
 		Map<String, Object> result = [:]
 
 		sub = GrailsHibernateUtil.unwrapIfProxy(sub)
@@ -183,8 +184,14 @@ class ApiSubscription {
 		) // com.k_int.kbplus.PersonRole
 		*/
 
-		// TODO: oaMonitor
-		result.costItems    = ApiCollectionReader.getCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
+		if (isInvoiceTool) {
+			result.costItems = ApiCollectionReader.getCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
+		}
+		else {
+			Collection<CostItem> filtered= sub.costItems.findAll{ it.owner == context || it.isVisibleForSubscriber }
+
+			result.costItems = ApiCollectionReader.getCostItemCollection(filtered) // com.k_int.kbplus.CostItem
+		}
 
 		ApiToolkit.cleanUp(result, true, true)
 	}

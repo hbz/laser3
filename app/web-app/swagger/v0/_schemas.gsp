@@ -98,7 +98,7 @@
           type: string
           description: Calculated object type
           enum:
-            ["Template", "Local", "Consortial", "Participation", "Unkown"]
+            ["${de.laser.interfaces.CalculatedType.TYPE_LOCAL}", "${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}"]
         billingCurrency:
           type: string
           description: Mapping RefdataCategory "Currency"
@@ -746,7 +746,7 @@
             type: string
             description: Calculated object type
             enum:
-              ["Template", "Local", "Consortial", "Participation", "Unkown"]
+              ["${de.laser.interfaces.CalculatedType.TYPE_LOCAL}", "${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}"]
           billingCurrency:
             type: string
             description: Mapping RefdataCategory "Currency"
