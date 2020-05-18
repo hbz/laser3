@@ -303,7 +303,6 @@
                     </div>
 
                 <div class="field">
-                    <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                     <label>${message(code:'financials.newCosts.titleGroup')}</label>
                     <div class="ui search selection dropdown newCISelect" id="newTitleGroup">
                         <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "com.k_int.kbplus.IssueEntitlementGroup:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">

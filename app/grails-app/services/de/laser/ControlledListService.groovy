@@ -181,9 +181,9 @@ class ControlledListService {
     }
 
     /**
-     * Retrieves a list of issue entitlements owned by the context organisation matching given parameters
+     * Retrieves a list of issue entitlement group owned by the context organisation matching given parameters
      * @param params - eventual request params
-     * @return a map containing a list of issue entitlements, an empty one if no issue entitlements match the filter
+     * @return a map containing a list of issue entitlement groups, an empty one if no issue entitlement group match the filter
      */
     Map getTitleGroups(Map params) {
         Org org = contextService.getOrg()

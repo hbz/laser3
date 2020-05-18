@@ -2627,7 +2627,7 @@ AND EXISTS (
             def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
             def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-            ies?.each { ie ->
+            ies.each { ie ->
                 ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
                 ie.save(flush: true)
             }

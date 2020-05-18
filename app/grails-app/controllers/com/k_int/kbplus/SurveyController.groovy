@@ -68,7 +68,7 @@ class SurveyController {
             new SimpleDateFormat('yyyy')
     ]
 
-    //the customer type ORG_CONSORTIUM should be abandoned as said in kanban meeting of February 19th, '20.
+
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
@@ -1313,7 +1313,7 @@ class SurveyController {
 
         def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
 
-        ies?.each { ie ->
+        ies.each { ie ->
             ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
             ie.save(flush: true)
         }
@@ -1348,7 +1348,7 @@ class SurveyController {
         }
 
         Subscription participantSub = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
-        def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(participantSub)
+        List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(participantSub)
 
         IssueEntitlementGroup issueEntitlementGroup
         if(result.surveyConfig.createTitleGroups){
@@ -1358,7 +1358,7 @@ class SurveyController {
             issueEntitlementGroup = new IssueEntitlementGroup(sub: participantSub, name: "Phase ${countTitleGroups+1}").save()
         }
 
-        ies?.each { ie ->
+        ies.each { ie ->
             ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
             ie.save(flush: true)
 
@@ -1404,7 +1404,7 @@ class SurveyController {
         participantsFinish?.each { org ->
             Subscription participantSub = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)
 
-            def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(participantSub)
+            List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(participantSub)
 
             IssueEntitlementGroup issueEntitlementGroup
             if(result.surveyConfig.createTitleGroups){
@@ -1414,7 +1414,7 @@ class SurveyController {
                 issueEntitlementGroup = new IssueEntitlementGroup(sub: participantSub, name: "Phase ${countTitleGroups+1}").save()
             }
 
-            ies?.each { ie ->
+            ies.each { ie ->
                 ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
                 ie.save(flush: true)
 

@@ -122,7 +122,7 @@ class AccessService {
                 isOrgBasicMemberView = org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
             } catch (IllegalStateException e) {}
 
-            if(isOrgBasicMemberView && (oss.getValue() in Role.findAllByAuthorityInList(['ORG_CONSORTIUM']))){
+            if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM'))){
                 fakeRole = Role.findByAuthority('ORG_BASIC_MEMBER')
             }
 
