@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2478    18.05.2020  hbz-dev     Moe     Feature     Farbschema von Umfragen vom Dashboard auch in "meine Umfragen" übertragen
+
+2455    18.05.2020  hbz-dev     Moe     Feature     Farbkonzept Umfragetypen
+
 2451    18.05.2020  hbz-dev     Moe     Feature     (?) bei IP Konfiguration löschen
 
 2487    18.05.2020  hbz-dev     Moe     Bug         Anzahl der Titlel beim Filtern in der Titelumfrage stimmt nicht

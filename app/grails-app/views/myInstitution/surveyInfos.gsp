@@ -12,9 +12,8 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb
-            text="${surveyInfo.type.getI10n('value')}"
-            class="active"/>
+    <semui:crumb text="${surveyInfo.type.getI10n('value')}"/>
+    <semui:crumb text="${surveyInfo.name}" class="active"/>
 </semui:breadcrumbs>
 
 
