@@ -2,6 +2,14 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.105
+
+- renamed endpoint: __/oaMonitorList__ to  __/oamonitor/organisations/list__
+- renamed endpoint: __/oaMonitor__ to  __/oamonitor/organisations__
+- renamed endpoint: __/oaMonitorSubscription__ to  __/oamonitor/subscriptions__
+- renamed endpoint: __/statisticList__ to  __/statistic/packages/list__
+- renamed endpoint: __/statisticPackage__ to  __/statistic/packages__
+
 #### 0.104
 
 - added `costItems` for __/oaMonitorSubscription__

@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2390    19.05.2020  hbz-dev     David   Feature     API 0.105 - API für OA-Monitor: Eigener Subscription-Endpunkt
+
 2502    18.05.2020  hbz-dev     Andreas Bug         Fehlermeldung über anhängige Kosten bei Paketentknüpfung eingebaut
 
 2496    18.05.2020  hbz-dev     David   Feature     API 0.103 - Ausgegebene Kosten in /subscription absichern
