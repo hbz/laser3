@@ -486,7 +486,7 @@
         - Datamanager
       summary:
       description: >
-        **EXPERIMENTAL AND NOT FULLY IMPLEMENTED; DO NOT USE**
+        **EXPERIMENTAL**
 
       parameters:
         - $ref: "#/components/parameters/q"

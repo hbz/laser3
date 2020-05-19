@@ -1222,7 +1222,6 @@
       items:
         type: string
 
-
     LicenseList:
       type: array
       items:

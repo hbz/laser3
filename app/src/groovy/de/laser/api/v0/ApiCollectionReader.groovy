@@ -65,15 +65,10 @@ class ApiCollectionReader {
         result
     }
 
-    // TODO: oaMonitor
-    static Collection<Object> getCostItemCollection(Collection<CostItem> list) {
+    static Collection<Object> getCostItemCollection(Collection<CostItem> filteredList) {
         Collection<Object> result = []
 
-        list?.each { it ->               // com.k_int.kbplus.CostItem
-
-            // TODO: isVisibleForSubscriber
-            // TODO: finalCostRounding
-            // TODO: budgetcodes
+        filteredList.each { it ->
 
             Map<String, Object> tmp     = [:]
 

@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.104
+
+- added `costItems` for __/oaMonitorSubscription__
+
 #### 0.103
 
 - changed calculation of: `CostItem.calculatedType`
