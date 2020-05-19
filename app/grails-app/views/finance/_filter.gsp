@@ -181,7 +181,7 @@
                     <label for="filterCIStatus">${message(code:'default.status.label')}</label>
                     <select name="filterCIStatus" id="filterCIStatus" multiple="" class="ui dropdown search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
-                        <g:each in="${[de.laser.helper.RDStore.GENERIC_NULL_VALUE]+RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)-de.laser.helper.RDStore.COST_ITEM_DELETED}" var="rdv">
+                        <g:each in="${[RDStore.GENERIC_NULL_VALUE]+RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)-RDStore.COST_ITEM_DELETED}" var="rdv">
                             <option value="${"${rdv.class.getName()}:${rdv.id}"}" <%=(filterPresets?.filterCIStatus?.contains(rdv)) ? 'selected="selected"' : '' %>>
                                 ${rdv.getI10n("value")}
                             </option>
