@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2390    19.05.2020  hbz-dev     David   Feature     API 0.105 - API für OA-Monitor: Eigener Subscription-Endpunkt
+
 2433    18.05.2020  hbz-dev     Moe     Feature     Excel Export: Zahlenwerte in Zellen als Zahlenwert speichern
 
 2386    18.05.2020  hbz-dev     Moe     Feature     Umfragen auch auf Dashboard von Konsortialstellen anzeigen

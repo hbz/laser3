@@ -322,6 +322,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         String context = params.get('context')
         String format
 
+        String section = params.get('section')
+        if (section) {
+            obj = section + '/' + obj
+        }
+        String cmd = params.get('cmd')
+        if (cmd) {
+            obj = obj + '/' + cmd
+        }
+
         Org contextOrg = null // TODO refactoring
 
         if (apiOrg) {

@@ -185,12 +185,12 @@ class ApiSubscription {
 		*/
 
 		if (isInvoiceTool) {
-			result.costItems = ApiCollectionReader.getCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
+			result.costItems = ApiCollectionReader.getCostItemCollection(sub.costItems)
 		}
 		else {
-			Collection<CostItem> filtered= sub.costItems.findAll{ it.owner == context || it.isVisibleForSubscriber }
+			Collection<CostItem> filtered = sub.costItems.findAll{ it.owner == context || it.isVisibleForSubscriber }
 
-			result.costItems = ApiCollectionReader.getCostItemCollection(filtered) // com.k_int.kbplus.CostItem
+			result.costItems = ApiCollectionReader.getCostItemCollection(filtered)
 		}
 
 		ApiToolkit.cleanUp(result, true, true)

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.103'
+    static final VERSION = '0.105'
 
     /**
      * @return Object
@@ -125,7 +125,15 @@ class ApiManager {
                 result = ApiLicense.getLicenseList((Org) tmp.obj, contextOrg)
             }
         }
-        else if (checkValidRequest('oaMonitor')) {
+        else if (checkValidRequest('oamonitor/organisations/list')) {
+
+            if (! isDatamanager) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            result = ApiOAMonitor.getAllOrgs()
+        }
+        else if (checkValidRequest('oamonitor/organisations')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -137,15 +145,7 @@ class ApiManager {
                 result = ApiOAMonitor.requestOrganisation((Org) tmp.obj, contextOrg)
             }
         }
-        else if (checkValidRequest('oaMonitorList')) {
-
-            if (! isDatamanager) {
-                return Constants.HTTP_FORBIDDEN
-            }
-
-            result = ApiOAMonitor.getAllOrgs()
-        }
-        else if (checkValidRequest('oaMonitorSubscription')) {
+        else if (checkValidRequest('oamonitor/subscriptions')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -197,7 +197,15 @@ class ApiManager {
 
             result = ApiCatalogue.getAllRefdatas()
         }
-        else if (checkValidRequest('statistic')) {
+        else if (checkValidRequest('statistic/packages/list')) {
+
+            if (! isDatamanager) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            result = ApiStatistic.getAllPackages()
+        }
+        else if (checkValidRequest('statistic/packages')) {
 
             if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -209,14 +217,7 @@ class ApiManager {
                 result = ApiStatistic.requestPackage((Package) tmp.obj)
             }
         }
-        else if (checkValidRequest('statisticList')) {
 
-            if (! isDatamanager) {
-                return Constants.HTTP_FORBIDDEN
-            }
-
-            result = ApiStatistic.getAllPackages()
-        }
         else if (checkValidRequest('subscription')) {
 
             ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)

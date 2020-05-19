@@ -203,8 +203,18 @@ class ApiOAMonitor {
 
             result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages)
 
-            // TODO: oaMonitor
-            //result.costItems    = ApiCollectionReader.getCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
+            Collection<CostItem> filtered = []
+
+            if (sub.getCalculatedType() in [Subscription.TYPE_PARTICIPATION, Subscription.TYPE_PARTICIPATION_AS_COLLECTIVE]) {
+                List<Org> validOwners = getAccessibleOrgs()
+                List<Org> subSubscribers = sub.getAllSubscribers()
+                //filtered = sub.costItems.findAll{ it.owner in validOwners && it.owner in subSubscribers }
+                filtered = sub.costItems.findAll{ it.owner in validOwners && (it.owner in subSubscribers || it.isVisibleForSubscriber) }
+            }
+            else {
+                filtered = sub.costItems
+            }
+            result.costItems = ApiCollectionReader.getCostItemCollection(filtered)
 
             ApiToolkit.cleanUp(result, true, true)
         }
