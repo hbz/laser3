@@ -210,7 +210,16 @@
                         </div>
                     </td>
                     <td>
-                        ${surveyInfo.type.getI10n('value')}
+                        <div class="ui label survey-${surveyInfo.type.value}">
+                            ${surveyInfo.type.getI10n('value')}
+                        </div>
+
+                        <g:if test="${surveyInfo.isMandatory}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
+                                <i class="yellow icon exclamation triangle"></i>
+                            </span>
+                        </g:if>
                     </td>
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>

@@ -5035,7 +5035,7 @@ class SurveyController {
 
             row.add([field: surveyConfig.surveyInfo?.name ?: '', style: null])
 
-            row.add([field: surveyConfig.getConfigNameShort ?: '', style: null])
+            row.add([field: surveyConfig.getConfigNameShort() ?: '', style: null])
 
             row.add([field: surveyConfig.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig?.surveyProperty?.type) + ')', style: null])
 

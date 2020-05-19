@@ -127,6 +127,28 @@
                                                   value="${params.asAt}"/>
                             </div>
                         </g:if>
+                    </div>
+                    <div class="three fields">
+                        <div class="field">
+                                                <label for="seriesNames">${message(code: 'titleInstance.seriesName.label')}</label>
+                            <input name="seriesNames" id="seriesNames" value="${params.series_names}"/>
+                        </div>
+
+                        <div class="field">
+                            <label for="subject_reference">${message(code: 'titleInstance.subjectReference.label')}</label>
+
+                            <select name="subject_references" id="subject_reference" multiple="" class="ui search selection dropdown">
+                                <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                                <g:each in="${subjects}" var="subject">
+                                    <option <%=(params.list('subject_references').contains(subject)) ? 'selected="selected"' : ''%>
+                                            value="${subject}">
+                                        ${subject}
+                                    </option>
+                                </g:each>
+                            </select>
+                        </div>
+
                         <div class="field la-field-right-aligned">
                             <a href="${request.forwardURI}"
                                class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</a>

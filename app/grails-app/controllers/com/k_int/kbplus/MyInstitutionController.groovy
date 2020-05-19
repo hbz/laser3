@@ -2177,20 +2177,15 @@ AND EXISTS (
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
+        if(accessService.checkPerm('ORG_CONSORTIUM')){
+            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
+                    " order by surConfig.surveyInfo.name",
+                    [org: result.institution,
+                     status: RDStore.SURVEY_SURVEY_STARTED])
+        }
+
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
-
-        result.surveysConsortia = []
-
-                /*SurveyResult.findAll("from SurveyResult where " +
-                " owner = :contextOrg and surveyConfig.surveyInfo.status != :status and " +
-                " and ((startDate >= :startDate and endDate <= :endDate)" +
-                " or (startDate <= :startDate and endDate is null) " +
-                " or (startDate is null and endDate is null))",
-                [contextOrg: contextService.org,
-                 status:  RefdataValue.getByValueAndCategory('In Processing', RDConstants.SURVEY_STATUS),
-                 startDate: new Date(System.currentTimeMillis()),
-                 endDate: new Date(System.currentTimeMillis())])*/
 
         result
     }
