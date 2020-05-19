@@ -26,6 +26,27 @@
 
 2496    18.05.2020  hbz-dev     David   Feature     API 0.103 - Ausgegebene Kosten in /subscription absichern
 
+
+
+
+2423    19.05.2020  hbz-dev     Moe     Feature     Meine Umfragen Sortierung anpassen
+
+2500    19.05.2020  hbz-dev     Moe     Feature     Zugangskonfiguration: Text im Löschen-Popup anpassen
+
+2433    18.05.2020  hbz-dev     Moe     Feature     Excel Export: Zahlenwerte in Zellen als Zahlenwert speichern
+
+2386    18.05.2020  hbz-dev     Moe     Feature     Umfragen auch auf Dashboard von Konsortialstellen anzeigen
+
+2478    18.05.2020  hbz-dev     Moe     Feature     Farbschema von Umfragen vom Dashboard auch in "meine Umfragen" übertragen
+
+2455    18.05.2020  hbz-dev     Moe     Feature     Farbkonzept Umfragetypen
+
+2451    18.05.2020  hbz-dev     Moe     Feature     (?) bei IP Konfiguration löschen
+
+2487    18.05.2020  hbz-dev     Moe     Bug         Anzahl der Titlel beim Filtern in der Titelumfrage stimmt nicht
+
+2488    18.05.2020  hbz-dev     Moe     Feature     Fachbereich und Reihe Filter in Titel-Umfrage und Bestand einer Lizenz einbauen
+
 2392    15.05.2020  hbz-dev     Moe     Feature     Kundentyp Consortium_Survey entfernen
 
 2471    15.05.2020  hbz-dev     David   Feature     API 0.101 - API-Endpunkte /platformList und /platform
