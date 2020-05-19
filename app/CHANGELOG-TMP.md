@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2238    19.05.2020  hbz-dev     Andreas Feature     Vertragssichten umgebaut (prä-finaler Stand vor Test)
+
 2433    18.05.2020  hbz-dev     Moe     Feature     Excel Export: Zahlenwerte in Zellen als Zahlenwert speichern
 
 2386    18.05.2020  hbz-dev     Moe     Feature     Umfragen auch auf Dashboard von Konsortialstellen anzeigen

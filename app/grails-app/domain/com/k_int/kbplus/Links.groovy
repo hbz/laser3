@@ -48,9 +48,9 @@ class Links {
 
     }
 
-    Subscription getOther(key) {
-        Subscription context
-        if(key instanceof Subscription)
+    def getOther(key) {
+        def context
+        if(key instanceof Subscription || key instanceof License)
             context = key
         else if(key instanceof GString || key instanceof String)
             context = genericOIDService.resolveOID(key)
@@ -60,9 +60,9 @@ class Links {
         }
 
         if(context.id == source)
-            return Subscription.get(destination)
+            return genericOIDService.resolveOID("${objectType}:${destination}")
         else if(context.id == destination)
-            return Subscription.get(source)
+            return genericOIDService.resolveOID("${objectType}:${source}")
         else return null
     }
 }

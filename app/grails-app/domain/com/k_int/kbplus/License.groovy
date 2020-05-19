@@ -59,9 +59,8 @@ class License
     boolean isSlaved = false
     boolean isPublicForApi = false
 
-    //@RefdataAnnotation(cat = RDConstants.LICENSE_STATUS)
-    //@Deprecated
-    //RefdataValue status
+    @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS)
+    RefdataValue status
 
     @RefdataAnnotation(cat = RDConstants.LICENSE_TYPE)
     RefdataValue type
@@ -118,7 +117,7 @@ class License
                      id column:'lic_id'
                 version column:'lic_version'
               globalUID column:'lic_guid'
-               //status column:'lic_status_rv_fk'
+                 status column:'lic_status_rv_fk'
                    type column:'lic_type_rv_fk'
               reference column:'lic_ref'
       sortableReference column:'lic_sortable_ref'
@@ -151,7 +150,7 @@ class License
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        //status(nullable:false, blank:false)
+        status(nullable:false, blank:false)
         type(nullable:true, blank:false)
         reference(nullable:false, blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
@@ -305,7 +304,7 @@ class License
     Org getLicensingConsortium() {
         Org result
         orgLinks.each { or ->
-            if ( or.roleType.value in ['Licensing Consortium'] )
+            if ( or.roleType.value == 'Licensing Consortium' )
                 result = or.org
             }
         result
@@ -314,7 +313,7 @@ class License
     Org getLicensor() {
         Org result
         orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensor'] )
+            if ( or.roleType.value in ['Licensor'] )
                 result = or.org;
         }
         result
@@ -323,7 +322,7 @@ class License
     Org getLicensee() {
         Org result
         orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
+            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
                 result = or.org;
         }
         result
@@ -331,7 +330,7 @@ class License
     List<Org> getAllLicensee() {
         List<Org> result = []
         orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
+            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
                 result << or.org
         }
         result
@@ -800,7 +799,7 @@ AND lower(l.reference) LIKE (:ref)
                 noticePeriod: noticePeriod,
                 licenseUrl: licenseUrl,
                 licenseType: licenseType,
-                licenseStatus: licenseStatus,
+                //licenseStatus: licenseStatus,
                 //lastmod: lastmod,
                 startDate: startDate,
                 endDate: endDate,

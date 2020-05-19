@@ -19,18 +19,14 @@ class NavigationGenerationService {
         if(previous.size() > 0) {
             previous.each { it ->
                 def obj = domainClass.getClazz().get(it.destination)
-                if(obj instanceof Subscription) {
-                    prevLink.add(obj)
-                }
+                prevLink.add(obj)
             }
         }
         else prevLink = null
         if(next.size() > 0) {
             next.each { it ->
                 def obj = domainClass.getClazz().get(it.source)
-                if(obj instanceof Subscription) {
-                    nextLink.add(obj)
-                }
+                nextLink.add(obj)
             }
         }
         else nextLink = null

@@ -1015,7 +1015,7 @@ class AjaxController {
           redirect(url: request.getHeader('referer'))
           return
       }
-      Subscription context = genericOIDService.resolveOID(params.context)
+      def context = genericOIDService.resolveOID(params.context)
       Doc linkComment = genericOIDService.resolveOID(params.commentID)
       Links link
       String commentContent
@@ -1024,7 +1024,7 @@ class AjaxController {
       if(params.link) {
           link = genericOIDService.resolveOID(params.link)
           if(params["linkType_${link.id}"]) {
-              Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
+              def pair = genericOIDService.resolveOID(params["pair_${link.id}"])
               String linkTypeString = params["linkType_${link.id}"].split("§")[0]
               int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
               RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
@@ -1041,12 +1041,12 @@ class AjaxController {
               log.debug(linkType)
           }
           else if(!params["linkType_${link.id}"]) {
-              flash.error = message(code:'subscription.linking.linkTypeError')
+              flash.error = message(code:'default.linking.linkTypeError')
           }
       }
       else {
         if(params["linkType_new"]) {
-            Subscription pair = genericOIDService.resolveOID(params.pair_new)
+            def pair = genericOIDService.resolveOID(params.pair_new)
             String linkTypeString = params["linkType_new"].split("§")[0]
             int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
             RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
@@ -1060,10 +1060,10 @@ class AjaxController {
                 source = pair.id
                 destination = context.id
             }
-            link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:Subscription.class.name)
+            link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:context.class.name)
         }
         else if(!params["linkType_new"]) {
-            flash.error = message(code:'subscription.linking.linkTypeError')
+            flash.error = message(code:'default.linking.linkTypeError')
         }
       }
       if(link && link.save(flush:true)) {
@@ -1089,7 +1089,7 @@ class AjaxController {
       }
       else if(link && link.errors) {
           log.error(link.errors)
-          flash.error = message(code:'subscription.linking.savingError')
+          flash.error = message(code:'default.linking.savingError')
       }
     redirect(url: request.getHeader('referer'))
   }
