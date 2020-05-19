@@ -3985,8 +3985,8 @@ class SubscriptionController extends AbstractDebugController {
                         result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
                         result.x_axis_labels = fsresult?.x_axis_labels
                         result.y_axis_labels = fsresult?.y_axis_labels
-
                         result.lusage = fsLicenseResult?.usage
+                        result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
                         result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
                         result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
                     }

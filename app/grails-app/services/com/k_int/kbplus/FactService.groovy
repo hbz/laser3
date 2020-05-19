@@ -493,6 +493,21 @@ class FactService {
     return missingMonthsPerFactType
   }
 
+  Map getLastUsagePeriodForReportType(supplierId, customerId){
+    String hqlQuery = "select stc.factType.value, max(stc.availTo) as availTo from StatsTripleCursor stc where " +
+        "stc.supplierId=:supplierId and stc.customerId=:customerId " +
+        "group by stc.factType.value"
+    Map<String,String> result = [:]
+    List lastReportPeriods = StatsTripleCursor.executeQuery(hqlQuery, [
+        supplierId : supplierId,
+        customerId : customerId
+    ])
+    lastReportPeriods.each { it ->
+      result[it[0]] = it[1].toString().substring(0,7)
+    }
+    result
+  }
+
   List getMonthsOfDateRange(Date begin, Date end){
     List result = []
     java.time.YearMonth from = java.time.YearMonth.parse(begin.toString().substring(0,7))

@@ -574,7 +574,8 @@
                                         <g:each in="${lusage}" var="v">
                                             <tr>
                                                 <g:set var="reportMetric" value="${l_y_axis_labels[counter++]}" />
-                                                <td>${reportMetric}</td>
+                                                <td>${reportMetric}
+                                            </td>
                                                 <g:each in="${v}" var="v2">
                                                     <td>${v2}</td>
                                                 </g:each>
@@ -602,7 +603,8 @@
                                     <table class="ui la-table-small celled la-table-inCard table">
                                         <thead>
                                         <tr>
-                                            <th>${message(code: 'default.usage.reportType')}</th>
+                                            <th>${message(code: 'default.usage.reportType')}
+                                            </th>
                                             <g:each in="${x_axis_labels}" var="l">
                                                 <th>${l}</th>
                                             </g:each>
@@ -614,7 +616,12 @@
                                         <g:each in="${usage}" var="v">
                                             <tr>
                                                 <g:set var="reportMetric" value="${y_axis_labels[counter++]}" />
-                                                <td>${reportMetric}</td>
+                                                <td>${reportMetric}
+                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                      data-html="${message(code: 'default.usage.reportUpToInfo')}: ${lastUsagePeriodForReportType[reportMetric.split(':')[0]]}">
+                                                    <i class="info icon small circular la-popup"></i>
+                                                </span>
+                                                </td>
                                                 <g:each in="${v}" status="i" var="v2">
                                                     <td>
                                                         <laser:statsLink
