@@ -301,25 +301,25 @@
             let values = []
             switch($(this).attr("id")) {
                 case 'filterCISub':
-                    values = [<g:each in="${filterPresets?.filterCISub}" var="ciSub" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(ciSub)}'<g:if test="${i < filterPresets?.filterCISub?.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterCISub}" var="ciSub" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(ciSub)}'<g:if test="${i < filterPresets.filterCISub.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCISPkg':
-                    values = [<g:each in="${filterPresets?.filterCISPkg}" var="ciSPkg" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(ciSPkg)}'<g:if test="${i < filterPresets?.filterCISPkg?.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterCISPkg}" var="ciSPkg" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(ciSPkg)}'<g:if test="${i < filterPresets.filterCISPkg.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterSubProviders':
-                    values = [<g:each in="${filterPresets?.filterSubProviders}" var="subProvider" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(subProvider)}'<g:if test="${i < filterPresets?.filterSubProviders?.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterSubProviders}" var="subProvider" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(subProvider)}'<g:if test="${i < filterPresets.filterSubProviders.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIBudgetCode':
-                    values = [<g:each in="${filterPresets?.filterCIBudgetCode}" var="budgetCode" status="i">'${budgetCode}'<g:if test="${i < filterPresets?.filterCIBudgetCode?.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterCIBudgetCode}" var="budgetCode" status="i">'${budgetCode}'<g:if test="${i < filterPresets.filterCIBudgetCode.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIInvoiceNumber':
-                    values = [<g:each in="${filterPresets?.filterCIInvoiceNumber}" var="invoiceNumber" status="i">'${invoiceNumber}'<g:if test="${i < filterPresets?.filterCIInvoiceNumber?.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterCIInvoiceNumber}" var="invoiceNumber" status="i">'${invoiceNumber}'<g:if test="${i < filterPresets.filterCIInvoiceNumber.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIOrderNumber':
-                    values = [<g:each in="${filterPresets?.filterCIOrderNumber}" var="orderNumber" status="i">'${orderNumber}'<g:if test="${i < filterPresets?.filterCIOrderNumber?.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterCIOrderNumber}" var="orderNumber" status="i">'${orderNumber}'<g:if test="${i < filterPresets.filterCIOrderNumber.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIReference':
-                    values = [<g:each in="${filterPresets?.filterCIReference}" var="reference" status="i">'${reference}'<g:if test="${i < filterPresets?.filterCIReference?.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterCIReference}" var="reference" status="i">'${reference}'<g:if test="${i < filterPresets.filterCIReference.size()-1}">,</g:if></g:each>];
                     break;
             }
             $(this).dropdown('set value',values);
