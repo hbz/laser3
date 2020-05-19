@@ -3981,6 +3981,8 @@ class SubscriptionController extends AbstractDebugController {
                         result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
                         result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
                         result.usage = fsresult?.usage
+                        result.missingMonths = fsresult?.missingMonths
+                        result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
                         result.x_axis_labels = fsresult?.x_axis_labels
                         result.y_axis_labels = fsresult?.y_axis_labels
 

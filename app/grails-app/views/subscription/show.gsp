@@ -566,16 +566,28 @@
                                             <g:each in="${l_x_axis_labels}" var="l">
                                                 <th>${l}</th>
                                             </g:each>
+                                            <th></th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <g:set var="counter" value="${0}"/>
                                         <g:each in="${lusage}" var="v">
                                             <tr>
-                                                <td>${l_y_axis_labels[counter++]}</td>
+                                                <g:set var="reportMetric" value="${l_y_axis_labels[counter++]}" />
+                                                <td>${reportMetric}</td>
                                                 <g:each in="${v}" var="v2">
                                                     <td>${v2}</td>
                                                 </g:each>
+                                                <td>
+                                                    <g:set var="missingSubMonths"
+                                                           value="${missingSubscriptionMonths[reportMetric.split(':')[0]]}"/>
+                                                    <g:if test="${missingSubMonths}">
+                                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                              data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missingSubMonths.join(',')}">
+                                                            <i class="exclamation triangle icon la-popup small"></i>
+                                                        </span>
+                                                    </g:if>
+                                                </td>
                                             </tr>
                                         </g:each>
                                         </tbody>
@@ -594,6 +606,7 @@
                                             <g:each in="${x_axis_labels}" var="l">
                                                 <th>${l}</th>
                                             </g:each>
+                                            <th></th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -622,6 +635,15 @@
                                                         </laser:statsLink>
                                                     </td>
                                                 </g:each>
+                                                <g:set var="missing" value="${missingMonths[reportMetric.split(':')[0]]}"/>
+                                                <td>
+                                                    <g:if test="${missing}">
+                                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                              data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missing.join(',')}">
+                                                            <i class="exclamation triangle icon la-popup small"></i>
+                                                        </span>
+                                                    </g:if>
+                                                </td>
                                             </tr>
                                         </g:each>
                                         </tbody>
