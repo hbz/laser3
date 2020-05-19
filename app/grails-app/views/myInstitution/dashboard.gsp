@@ -98,14 +98,13 @@
             </a>
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
 
-            <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
+        <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
                 <i class="checked tasks icon large"></i>
-                ${surveys?.size()}
+                ${surveys.size()}
                 ${message(code:'myinst.dash.survey.label')}
-            </a>
-        </g:if>
+        </a>
+
 
         <a class="${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
             <i class="warning circle icon large"></i>
@@ -401,24 +400,14 @@
 
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
-            <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
+
+        <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
                     <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
                 </div>
                     <g:render template="surveys"/>
-            </div>
-        </g:if>
-
-    %{--<g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-
-        <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="six" style="border-top: 1px solid #d4d4d5; ">
-            <div>
-                <g:render template="surveysConsortia"/>
-            </div>
         </div>
-    </g:if>
---}%
+
     <g:javascript>
         function taskcreate() {
 
