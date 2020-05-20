@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -36,21 +37,14 @@ class AddressController extends AbstractDebugController {
 			case 'POST':
                 Address addressInstance = new Address(params)
 				if (! addressInstance.save(flush: true)) {
-					if (params.redirect) {
-						redirect(url: request.getHeader('referer'), params: params)
-					} else {
-						render view: 'create', model: [addressInstance: addressInstance]
-					}
+			        flash.error = message(code: 'default.save.error.message', args: [message(code: 'address.label')
+                                                                                             +addressInstance.id])
+					redirect(url: request.getHeader('referer'), params: params)
 					return
 	        	}
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.id])
-			if (params.redirect) {
-				redirect(url: request.getHeader('referer'), params: params)
-			}
-			else {
-				redirect action: 'show', id: addressInstance.id
-			}
+                flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.id])
+                redirect(url: request.getHeader('referer'), params: params)
 			break
 		}
     }
@@ -60,61 +54,72 @@ class AddressController extends AbstractDebugController {
         Address addressInstance = Address.get(params.id)
         if (! addressInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
-            redirect action: 'list'
+            redirect(url: request.getHeader('referer'))
             return
         }
-
-        [
+        String modalId = ''
+        switch (addressInstance.type){
+            case RDStore.ADRESS_TYPE_POSTAL:
+                modalId = "addressFormModalPostalAddress"
+                break
+            case RDStore.ADRESS_TYPE_BILLING:
+                modalId = "addressFormModalBillingAddress"
+                break
+            case RDStore.ADRESS_TYPE_LEGAL_PATRON:
+                modalId = "addressFormModalLegalPatronAddress"
+                break
+            case RDStore.ADRESS_TYPE_DELIVERY:
+                modalId = "addressFormModalDeliveryAddress"
+                break
+            case RDStore.ADRESS_TYPE_LIBRARY:
+                modalId = "addressFormModalLibraryAddress"
+                break
+        }
+        Map model = [
             addressInstance: addressInstance,
-            editable: addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser())
-        ] // TODO
+            orgId: addressInstance.org?.id,
+            prsId: addressInstance.prs?.id,
+            modalId: modalId,
+            editable: addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser()),
+            redirect: '.',
+            hideType: true
+        ]
+        render template: "/address/formModal", model: model
     }
 
-    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
-        redirect controller: 'address', action: 'show', params: params
-        return // ----- deprecated
-
         Address addressInstance = Address.get(params.id)
         if (! addressInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
-            redirect action: 'list'
+            redirect(url: request.getHeader('referer'))
             return
         }
         if (! addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser())) {
-            redirect action: 'show', id: params.id
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (params.version) {
+            def version = params.version.toLong()
+            if (addressInstance.version > version) {
+                addressInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+                          [message(code: 'address.label')] as Object[],
+                          "Another user has updated this Address while you were editing")
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+        }
+
+        addressInstance.properties = params
+
+        if (! addressInstance.save(flush: true)) {
+            redirect(url: request.getHeader('referer'))
             return
         }
 
-		switch (request.method) {
-		case 'GET':
-	        [addressInstance: addressInstance]
-			break
-		case 'POST':
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (addressInstance.version > version) {
-	                addressInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'address.label')] as Object[],
-	                          "Another user has updated this Address while you were editing")
-	                render view: 'edit', model: [addressInstance: addressInstance]
-	                return
-	            }
-	        }
-
-	        addressInstance.properties = params
-
-	        if (! addressInstance.save(flush: true)) {
-	            render view: 'edit', model: [addressInstance: addressInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), addressInstance.id])
-	        redirect action: 'show', id: addressInstance.id
-			break
-		}
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), addressInstance.id])
+        redirect(url: request.getHeader('referer'))
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
