@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2506    19.05.2020  rc1.3       Andreas Bug         Überprüfung zu Kopie von Kosten vervollständigt
+
+2504    19.05.2020  rc1.3       Andreas Bug         Absturzfehler bei Anlegen der Musterdaten auf QA behoben
+
+2399    19.05.2020  rc1.3       Andreas Bug         Finanzfiltervorbelegung korrigiert
+
 2384    15.05.2020  rc1.3       Moe     Feature     Umfrage Auswertung: Abgeschlossen Teilnehmer bzw. nicht abgeschlossene Teilnehmer mit Merkmal anzeigen
 
 2486    15.05.2020  rc1.3       Moe     Bug         Prozentanzeige in Umfrageübersicht ist Fehlerhaft

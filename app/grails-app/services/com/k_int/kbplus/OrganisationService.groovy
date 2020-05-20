@@ -830,6 +830,7 @@ class OrganisationService {
 
     boolean setupTestDataForCons(Map generalData,Org current) {
         Map<String,PropertyDefinition> privateProperties = [:]
+        Object[] argv0 = [current.name]
         if(!PropertyDefinition.findAllByTenant(current)) {
             log.info("creating private properties ...")
 
@@ -984,7 +985,6 @@ class OrganisationService {
         Org modelMember = Org.findByName(messageSource.getMessage('org.setup.modelOrgName',argv0,LocaleContextHolder.getLocale()))
         if(!modelMember) {
             log.info("creating model member org ...")
-            Object[] argv0 = [current.name]
             Object[] argv1 = [current.shortname]
             modelMember = new Org(name: messageSource.getMessage('org.setup.modelOrgName',argv0,LocaleContextHolder.getLocale()),
                     sortname: messageSource.getMessage('org.setup.modelOrgSortname',argv1,LocaleContextHolder.getLocale()),

@@ -742,7 +742,7 @@ class FinanceController extends AbstractDebugController {
         result.putAll(financeService.setAdditionalGenericEditResults(result))
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
-        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia()
+        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
         result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[tab:result.tab, mode:"copy"])
         result.mode = "copy"
         render(template: "/finance/ajaxModal", model: result)

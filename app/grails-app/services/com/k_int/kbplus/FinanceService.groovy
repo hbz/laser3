@@ -397,7 +397,7 @@ class FinanceService {
         if(params.filterCIElement) {
             costItemFilterQuery += " and ci.costItemElement in (:filterCIElement) "
             List<RefdataValue> filterElements = []
-            String[] costItemElements = params."filterCIElement".split(',')
+            String[] costItemElements = params.list('filterCIElement')
             costItemElements.each { cie ->
                 filterElements.add(genericOIDService.resolveOID(cie))
             }
@@ -408,7 +408,7 @@ class FinanceService {
         if(params.filterCIStatus) {
             costItemFilterQuery += " and ci.costItemStatus in (:filterCIStatus) "
             List<RefdataValue> filterStatus = []
-            String[] costItemStatus = params."filterCIStatus".split(',')
+            String[] costItemStatus = params.list("filterCIStatus")
             costItemStatus.each { cis ->
                 filterStatus.add(genericOIDService.resolveOID(cis))
             }
