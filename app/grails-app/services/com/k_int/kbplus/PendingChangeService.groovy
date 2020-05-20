@@ -663,6 +663,13 @@ class PendingChangeService extends AbstractLockableService {
                 instanceIcon = '<span data-tooltip="'+messageSource.getMessage('financials.costItem',null,locale)+'"><i class="money bill icon"></i></span>'
                 eventData = [change.oldValue,change.newValue]
             }
+
+            //pendingChange.message_SU_NEW_01 for Renew Sub by Survey
+            if(change.subscription && change.msgToken == "pendingChange.message_SU_NEW_01") {
+                eventIcon = '<span data-tooltip="' + messageSource.getMessage("${change.msgToken}", null, locale) + '"><i class="yellow circle icon"></i></span>'
+                instanceIcon = '<span data-tooltip="' + messageSource.getMessage('subscription', null, locale) + '"><i class="clipboard icon"></i></span>'
+                eventString = messageSource.getMessage('pendingChange.message_SU_NEW_01.eventString', null, locale)
+            }
         }
         if(eventString == null && eventData)
             eventString = messageSource.getMessage(change.msgToken,eventData.toArray(),locale)
