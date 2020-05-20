@@ -100,6 +100,13 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                                       value="${params.asAt}"/>
                 </div>
             </g:if>--}%
+
+            <div class="two fields">
+                <semui:datepicker label="title.dateFirstOnline.from" name="dateFirstOnlineFrom" placeholder="default.date.label" value="${params.dateFirstOnlineFrom}"/>
+
+                <semui:datepicker label="title.dateFirstOnline.to"  name="dateFirstOnlineTo" placeholder="default.date.label" value="${params.dateFirstOnlineTo}"/>
+            </div>
+
         </div>
         <div class="three fields">
 
