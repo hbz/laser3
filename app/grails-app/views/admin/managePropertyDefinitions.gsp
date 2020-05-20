@@ -125,6 +125,16 @@
                                     </td>
                                     <td class="x">
 
+                                        <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                            <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SUR_PROP, null)}">
+                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
+                                                    <g:link class="ui icon button" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
+                                                        <i class="copy icon"></i>
+                                                    </g:link>
+                                                </span>
+                                            </g:if>
+                                        </sec:ifAnyGranted>
+
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
                                                 <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
