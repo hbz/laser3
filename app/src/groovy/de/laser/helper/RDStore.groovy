@@ -83,6 +83,7 @@ class RDStore {
     static final LICENSE_CURRENT            = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
     static final LICENSE_INTENDED           = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
     static final LICENSE_IN_PROGRESS        = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
+    static final LICENSE_EXPIRED            = getRefdataValue('Retired', RDConstants.LICENSE_STATUS)
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
     static final LINKTYPE_LICENSE           = getRefdataValue('license', RDConstants.LINK_TYPE)

@@ -36,7 +36,7 @@ class AdminController extends AbstractDebugController {
     def springSecurityService
     def dataloadService
     def statsSyncService
-    SubscriptionUpdateService subscriptionUpdateService
+    StatusUpdateService statusUpdateService
     def messageService
     def changeNotificationService
     def yodaService
@@ -516,7 +516,7 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def updateQASubscriptionDates() {
         if (grailsApplication.config.getCurrentServer() in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) {
-            def updateReport = subscriptionUpdateService.updateQASubscriptionDates()
+            def updateReport = statusUpdateService.updateQASubscriptionDates()
             if(updateReport instanceof Boolean)
                 flash.message = message(code:'subscription.qaTestDateUpdate.success')
             else {
