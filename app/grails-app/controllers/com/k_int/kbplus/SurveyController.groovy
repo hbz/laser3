@@ -580,7 +580,7 @@ class SurveyController {
                 status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
                 isSubscriptionSurvey: true,
-                isMandatory: true
+                isMandatory: params.mandatory ? true : false
         )
 
         if (!(surveyInfo.save(flush: true))) {
@@ -4442,6 +4442,8 @@ class SurveyController {
                         if(oldSub){
                             new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: memberSub.id, destination: oldSub.id, owner: contextService.getOrg(), objectType:Subscription.class.name).save(flush: true)
                         }
+
+                        PendingChange.construct([target:memberSub,oid:"${memberSub.getClass().getName()}:${memberSub.id}",msgToken:"pendingChange.message_SU_NEW_01",status:RDStore.PENDING_CHANGE_PENDING,owner:org])
 
                         return memberSub
                     }

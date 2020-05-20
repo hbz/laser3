@@ -220,9 +220,9 @@ class SubscriptionService {
             String base_qry = null
             Map<String,Object> qry_params = [subscription: subscription]
 
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             def date_filter
             if (params.asAt && params?.asAt?.length() > 0) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                 date_filter = sdf.parse(params.asAt)
                 /*result.as_at_date = date_filter
                 result.editable = false;*/
@@ -300,6 +300,18 @@ class SubscriptionService {
             if (params.pkgfilter && (params.pkgfilter != '')) {
                 base_qry += " and ie.tipp.pkg.id = :pkgId "
                 qry_params.pkgId = Long.parseLong(params.pkgfilter)
+            }
+
+            //dateFirstOnline from
+            if(params.dateFirstOnlineFrom) {
+                base_qry += " and (ie.tipp.title.dateFirstOnline is not null AND ie.tipp.title.dateFirstOnline >= :dateFirstOnlineFrom) "
+                qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
+
+            }
+            //dateFirstOnline to
+            if(params.dateFirstOnlineTo) {
+                base_qry += " and (ie.tipp.title.dateFirstOnline is not null AND ie.tipp.title.dateFirstOnline <= :dateFirstOnlineTo) "
+                qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
             }
 
             if ((params.sort != null) && (params.sort.length() > 0)) {
