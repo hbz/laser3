@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
+import org.hibernate.Session
 
 class JournalInstance extends TitleInstance {
 
@@ -13,11 +14,13 @@ class JournalInstance extends TitleInstance {
     }
 
     static JournalInstance construct(Map<String,Object> params) throws CreationException {
-        JournalInstance ji = new JournalInstance(params)
-        ji.setGlobalUID()
-        if(!ji.save())
-            throw new CreationException(ji.errors)
-        ji
+        withTransaction {
+            JournalInstance ji = new JournalInstance(params)
+            ji.setGlobalUID()
+            if(!ji.save())
+                throw new CreationException(ji.errors)
+            ji
+        }
     }
 
     String printTitleType() {

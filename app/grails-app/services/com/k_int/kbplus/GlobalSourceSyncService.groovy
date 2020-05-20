@@ -164,9 +164,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         titlesToUpdate.each { titleUUID ->
             //that may destruct debugging ...
             try {
-                TitleInstance.withNewSession {
-                    createOrUpdateTitle(titleUUID)
-                }
+                createOrUpdateTitle(titleUUID)
             }
             catch (SyncException e) {
                 SystemEvent.createEvent('GSSS_OAI_WARNING',[titleRecordKey:titleUUID])
@@ -234,7 +232,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tipps << tippConv(tipp)
         }
         log.info("Rec conversion for package returns object with name ${packageName} and ${tipps.size()} tipps")
-        Package.withNewSession {
+        Package.withTransaction {
             Package result = Package.findByGokbId(packageUUID)
             try {
                 if(result) {
@@ -401,7 +399,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 log.info("before processing identifiers - identifier count: ${packageData.identifiers.identifier.size()}")
                 packageData.identifiers.identifier.each { id ->
                     if(id.'@namespace'.text().toLowerCase() != 'originediturl') {
-                        Identifier.withNewSession {
+                        Identifier.withTransaction {
                             Identifier.construct([namespace: id.'@namespace'.text(), value: id.'@value'.text(), reference: result])
                         }
                     }
@@ -514,154 +512,156 @@ class GlobalSourceSyncService extends AbstractLockableService {
     TitleInstance createOrUpdateTitle(String titleUUID) throws SyncException {
         GPathResult titleOAI = fetchRecord(source.uri,'titles',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:titleUUID])
         if(titleOAI) {
-            GPathResult titleRecord = titleOAI.record.metadata.gokb.title
-            log.info("title record loaded, converting XML record and reconciling title record for UUID ${titleUUID} ...")
-            TitleInstance titleInstance = TitleInstance.findByGokbId(titleUUID)
-            if(titleRecord.type.text()) {
-                RefdataValue status = RefdataValue.getByValueAndCategory(titleRecord.status.text(),RDConstants.TITLE_STATUS)
-                //titleRecord.medium.text()
-                RefdataValue medium = RefdataValue.getByValueAndCategory(titleRecord.medium.text(),RDConstants.TITLE_MEDIUM) //misunderstandable mapping ...
-                try {
-                    switch(titleRecord.type.text()) {
-                        case 'BookInstance': titleInstance = titleInstance ? (BookInstance) titleInstance : BookInstance.withNewSession { BookInstance.construct([gokbId:titleUUID]) }
-                            if(titleRecord.editionNumber.text()) {
-                                try {
-                                    titleInstance.editionNumber = Integer.parseInt(titleRecord.editionNumber.text())
-                                }
-                                catch (NumberFormatException e) {
-                                    log.warn("${titleUUID} has invalid edition number supplied: ${titleRecord.editionNumber.text()}")
-                                    titleInstance.editionNumber = null
-                                }
-                            }
-                            else titleInstance.editionNumber = null
-                            titleInstance.editionDifferentiator = titleRecord.editionDifferentiator.text() ?: null
-                            titleInstance.editionStatement = titleRecord.editionStatement.text() ?: null
-                            titleInstance.volume = titleRecord.volumeNumber.text() ?: null
-                            titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? DateUtil.parseDateGeneric(titleRecord.dateFirstInPrint.text()) : null
-                            titleInstance.dateFirstOnline = titleRecord.dateFirstOnline ? DateUtil.parseDateGeneric(titleRecord.dateFirstOnline.text()) : null
-                            titleInstance.firstAuthor = titleRecord.firstAuthor.text() ?: null
-                            titleInstance.firstEditor = titleRecord.firstEditor.text() ?: null
-                            break
-                        case 'DatabaseInstance': titleInstance = titleInstance ? (DatabaseInstance) titleInstance : DatabaseInstance.withNewSession { DatabaseInstance.construct([gokbId:titleUUID]) }
-                            break
-                        case 'JournalInstance': titleInstance = titleInstance ? (JournalInstance) titleInstance : JournalInstance.withNewSession { JournalInstance.construct([gokbId:titleUUID]) }
-                            break
-                    }
-                }
-                catch (GroovyCastException e) {
-                    log.error("Title type mismatch! This should not be possible! Inform GOKb team! -> ${titleInstance.gokbId} is corrupt!")
-                    SystemEvent.createEvent('GSSS_OAI_WARNING',[titleInstance:titleInstance.gokbId,errorType:"titleTypeMismatch"])
-                }
-                titleInstance.title = titleRecord.name.text()
-                titleInstance.medium = medium
-                titleInstance.status = status
-                if(titleInstance.save()) {
-                    OrgRole.executeUpdate('delete from OrgRole oo where oo.title = :titleInstance',[titleInstance: titleInstance])
-                    if(titleRecord.publishers) {
-                        titleRecord.publishers.publisher.each { pubData ->
-                            Map<String,Object> publisherParams = [
-                                    name: pubData.name.text(),
-                                    //status: RefdataValue.getByValueAndCategory(pubData.status.text(),RefdataCategory.ORG_STATUS), -> is for combo type
-                                    gokbId: pubData.'@uuid'.text()
-                            ]
-                            Set<Map<String,String>> identifiers = []
-                            pubData.identifiers.identifier.each { identifier ->
-                                //the filter is temporary, should be excluded ...
-                                if(identifier.'@namespace'.text().toLowerCase() != 'originediturl') {
-                                    identifiers << [namespace:(String) identifier.'@namespace'.text(),value:(String) identifier.'@value'.text()]
-                                }
-                            }
-                            publisherParams.identifiers = identifiers
-                            Org publisher = lookupOrCreateTitlePublisher(publisherParams)
-                            //ex OrgRole.assertOrgTitleLink
-                            OrgRole titleLink = OrgRole.findByTitleAndOrgAndRoleType(titleInstance,publisher,RDStore.OR_PUBLISHER)
-                            if(!titleLink) {
-                                titleLink = new OrgRole(title:titleInstance,org:publisher,roleType:RDStore.OR_PUBLISHER,isShared:false)
-                                /*
-                                its usage / relevance for LAS:eR is unclear for the moment, must be clarified
-                                if(pubData.startDate)
-                                    titleLink.startDate = DateUtil.parseDateGeneric(pubData.startDate.text())
-                                if(pubData.endDate)
-                                    titleLink.endDate = DateUtil.parseDateGeneric(pubData.endDate.text())
-                                */
-                                if(!titleLink.save())
-                                    throw new SyncException("Error on creating title link: ${titleLink.errors}")
-                            }
-                        }
-                    }
-                    if(titleRecord.identifiers) {
-                        //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
-                        if(titleInstance.ids){
-                            titleInstance.ids.clear()
-                            titleInstance.save() //damn those wrestlers ...
-                        }
-                        titleRecord.identifiers.identifier.each { idData ->
-                            if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
-                                Identifier.withSession {
-                                    Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: titleInstance])
-                                }
-                            }
-                        }
-                    }
-                    if(titleRecord.history) {
-                        titleRecord.history.historyEvent.each { eventData ->
-                            if(eventData.date.text()) {
-                                Set<TitleInstance> from = [], to = []
-                                eventData.from.each { fromEv ->
-                                    from << createOrUpdateHistoryParticipant(fromEv,titleInstance.class.name)
-                                }
-                                eventData.to.each { toEv ->
-                                    to << createOrUpdateHistoryParticipant(toEv,titleInstance.class.name)
-                                }
-                                //does not work for any reason whatsoever, continue here
-                                Date eventDate = DateUtil.parseDateGeneric(eventData.date.text())
-                                String baseQuery = "select the from TitleHistoryEvent the where the.eventDate = :eventDate"
-                                Map<String,Object> queryParams = [eventDate:eventDate]
-                                if(from) {
-                                    baseQuery += " and exists (select p from the.participants p where p.participant in :from and p.participantRole = 'from')"
-                                    queryParams.from = from
-                                }
-                                if(to) {
-                                    baseQuery += " and exists (select p from the.participants p where p.participant in :to and p.participantRole = 'to')"
-                                    queryParams.to = to
-                                }
-                                List<TitleHistoryEvent> events = TitleHistoryEvent.executeQuery(baseQuery,queryParams)
-                                if(!events) {
-                                    Map<String,Object> event = [:]
-                                    event.from = from
-                                    event.to = to
-                                    event.internalId = eventData.'@id'.text()
-                                    event.eventDate = eventDate
-                                    TitleHistoryEvent the = new TitleHistoryEvent(event)
-                                    if(the.save()) {
-                                        from.each { partData ->
-                                            TitleHistoryEventParticipant participant = new TitleHistoryEventParticipant(event:the,participant:partData,participantRole:'from')
-                                            if(!participant.save())
-                                                throw new SyncException("Error on creating from participant: ${participant.errors}")
-                                        }
-                                        to.each { partData ->
-                                            TitleHistoryEventParticipant participant = new TitleHistoryEventParticipant(event:the,participant:partData,participantRole:'to')
-                                            if(!participant.save())
-                                                throw new SyncException("Error on creating to participant: ${participant.errors}")
-                                        }
+            TitleInstance.withNewSession { Session session ->
+                GPathResult titleRecord = titleOAI.record.metadata.gokb.title
+                log.info("title record loaded, converting XML record and reconciling title record for UUID ${titleUUID} ...")
+                TitleInstance titleInstance = TitleInstance.findByGokbId(titleUUID)
+                if(titleRecord.type.text()) {
+                    RefdataValue status = RefdataValue.getByValueAndCategory(titleRecord.status.text(),RDConstants.TITLE_STATUS)
+                    //titleRecord.medium.text()
+                    RefdataValue medium = RefdataValue.getByValueAndCategory(titleRecord.medium.text(),RDConstants.TITLE_MEDIUM) //misunderstandable mapping ...
+                    try {
+                        switch(titleRecord.type.text()) {
+                            case 'BookInstance': titleInstance = titleInstance ? (BookInstance) titleInstance :  BookInstance.construct([gokbId:titleUUID])
+                                if(titleRecord.editionNumber.text()) {
+                                    try {
+                                        titleInstance.editionNumber = Integer.parseInt(titleRecord.editionNumber.text())
                                     }
-                                    else throw new SyncException("Error on creating title history event: ${the.errors}")
+                                    catch (NumberFormatException e) {
+                                        log.warn("${titleUUID} has invalid edition number supplied: ${titleRecord.editionNumber.text()}")
+                                        titleInstance.editionNumber = null
+                                    }
                                 }
-                            }
-                            else {
-                                log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id.text()} to GOKb!")
-                                SystemEvent.createEvent('GSSS_OAI_WARNING',[titleHistoryEvent:eventData.@id.text(),errorType:"historyEventWithoutDate"])
-                            }
+                                else titleInstance.editionNumber = null
+                                titleInstance.editionDifferentiator = titleRecord.editionDifferentiator.text() ?: null
+                                titleInstance.editionStatement = titleRecord.editionStatement.text() ?: null
+                                titleInstance.volume = titleRecord.volumeNumber.text() ?: null
+                                titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? DateUtil.parseDateGeneric(titleRecord.dateFirstInPrint.text()) : null
+                                titleInstance.dateFirstOnline = titleRecord.dateFirstOnline ? DateUtil.parseDateGeneric(titleRecord.dateFirstOnline.text()) : null
+                                titleInstance.firstAuthor = titleRecord.firstAuthor.text() ?: null
+                                titleInstance.firstEditor = titleRecord.firstEditor.text() ?: null
+                                break
+                            case 'DatabaseInstance': titleInstance = titleInstance ? (DatabaseInstance) titleInstance : DatabaseInstance.construct([gokbId:titleUUID])
+                                break
+                            case 'JournalInstance': titleInstance = titleInstance ? (JournalInstance) titleInstance : JournalInstance.construct([gokbId:titleUUID])
+                                break
                         }
                     }
-                    titleInstance
+                    catch (GroovyCastException e) {
+                        log.error("Title type mismatch! This should not be possible! Inform GOKb team! -> ${titleInstance.gokbId} is corrupt!")
+                        SystemEvent.createEvent('GSSS_OAI_WARNING',[titleInstance:titleInstance.gokbId,errorType:"titleTypeMismatch"])
+                    }
+                    titleInstance.title = titleRecord.name.text()
+                    titleInstance.medium = medium
+                    titleInstance.status = status
+                    if(titleInstance.save()) {
+                        titleInstance.refresh()
+                        OrgRole.executeUpdate('delete from OrgRole oo where oo.title = :titleInstance',[titleInstance: titleInstance])
+                        if(titleRecord.publishers) {
+                            titleRecord.publishers.publisher.each { pubData ->
+                                Map<String,Object> publisherParams = [
+                                        name: pubData.name.text(),
+                                        //status: RefdataValue.getByValueAndCategory(pubData.status.text(),RefdataCategory.ORG_STATUS), -> is for combo type
+                                        gokbId: pubData.'@uuid'.text()
+                                ]
+                                Set<Map<String,String>> identifiers = []
+                                pubData.identifiers.identifier.each { identifier ->
+                                    //the filter is temporary, should be excluded ...
+                                    if(identifier.'@namespace'.text().toLowerCase() != 'originediturl') {
+                                        identifiers << [namespace:(String) identifier.'@namespace'.text(),value:(String) identifier.'@value'.text()]
+                                    }
+                                }
+                                publisherParams.identifiers = identifiers
+                                Org publisher = lookupOrCreateTitlePublisher(publisherParams)
+                                //ex OrgRole.assertOrgTitleLink
+                                OrgRole titleLink = OrgRole.findByTitleAndOrgAndRoleType(titleInstance,publisher,RDStore.OR_PUBLISHER)
+                                if(!titleLink) {
+                                    titleLink = new OrgRole(title:titleInstance,org:publisher,roleType:RDStore.OR_PUBLISHER,isShared:false)
+                                    /*
+                                    its usage / relevance for LAS:eR is unclear for the moment, must be clarified
+                                    if(pubData.startDate)
+                                        titleLink.startDate = DateUtil.parseDateGeneric(pubData.startDate.text())
+                                    if(pubData.endDate)
+                                        titleLink.endDate = DateUtil.parseDateGeneric(pubData.endDate.text())
+                                    */
+                                    if(!titleLink.save())
+                                        throw new SyncException("Error on creating title link: ${titleLink.errors}")
+                                }
+                            }
+                        }
+                        if(titleRecord.identifiers) {
+                            //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
+                            if(titleInstance.ids){
+                                titleInstance.ids.clear()
+                                titleInstance.save() //damn those wrestlers ...
+                            }
+                            titleRecord.identifiers.identifier.each { idData ->
+                                if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
+                                    Identifier.withTransaction { TransactionStatus transactionStatus ->
+                                        Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: titleInstance])
+                                    }
+                                }
+                            }
+                        }
+                        if(titleRecord.history) {
+                            titleRecord.history.historyEvent.each { eventData ->
+                                if(eventData.date.text()) {
+                                    Set<TitleInstance> from = [], to = []
+                                    eventData.from.each { fromEv ->
+                                        from << createOrUpdateHistoryParticipant(fromEv,titleInstance.class.name)
+                                    }
+                                    eventData.to.each { toEv ->
+                                        to << createOrUpdateHistoryParticipant(toEv,titleInstance.class.name)
+                                    }
+                                    Date eventDate = DateUtil.parseDateGeneric(eventData.date.text())
+                                    String baseQuery = "select the from TitleHistoryEvent the where the.eventDate = :eventDate"
+                                    Map<String,Object> queryParams = [eventDate:eventDate]
+                                    if(from) {
+                                        baseQuery += " and exists (select p from the.participants p where p.participant in :from and p.participantRole = 'from')"
+                                        queryParams.from = from
+                                    }
+                                    if(to) {
+                                        baseQuery += " and exists (select p from the.participants p where p.participant in :to and p.participantRole = 'to')"
+                                        queryParams.to = to
+                                    }
+                                    List<TitleHistoryEvent> events = TitleHistoryEvent.executeQuery(baseQuery,queryParams)
+                                    if(!events) {
+                                        Map<String,Object> event = [:]
+                                        event.from = from
+                                        event.to = to
+                                        event.internalId = eventData.'@id'.text()
+                                        event.eventDate = eventDate
+                                        TitleHistoryEvent the = new TitleHistoryEvent(event)
+                                        if(the.save()) {
+                                            from.each { partData ->
+                                                TitleHistoryEventParticipant participant = new TitleHistoryEventParticipant(event:the,participant:partData,participantRole:'from')
+                                                if(!participant.save())
+                                                    throw new SyncException("Error on creating from participant: ${participant.errors}")
+                                            }
+                                            to.each { partData ->
+                                                TitleHistoryEventParticipant participant = new TitleHistoryEventParticipant(event:the,participant:partData,participantRole:'to')
+                                                if(!participant.save())
+                                                    throw new SyncException("Error on creating to participant: ${participant.errors}")
+                                            }
+                                        }
+                                        else throw new SyncException("Error on creating title history event: ${the.errors}")
+                                    }
+                                }
+                                else {
+                                    log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id.text()} to GOKb!")
+                                    SystemEvent.createEvent('GSSS_OAI_WARNING',[titleHistoryEvent:eventData.@id.text(),errorType:"historyEventWithoutDate"])
+                                }
+                            }
+                        }
+                        titleInstance
+                    }
+                    else {
+                        throw new SyncException("Error on creating title instance: ${titleInstance.errors}")
+                    }
                 }
                 else {
-                    throw new SyncException("Error on creating title instance: ${titleInstance.errors}")
+                    throw new SyncException("ALARM! Title record ${titleUUID} without title type! Unable to process!")
                 }
-            }
-            else {
-                throw new SyncException("ALARM! Title record ${titleUUID} without title type! Unable to process!")
             }
         }
         else {
@@ -723,33 +723,35 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(providerOAI) {
             GPathResult providerRecord = providerOAI.record.metadata.gokb.org
             log.info("provider record loaded, converting XML record and reconciling title record for UUID ${providerUUID} ...")
-            Org provider = Org.findByGokbId(providerUUID)
-            if(provider) {
-                provider.name = providerRecord.name.text()
-                provider.status = RefdataValue.getByValueAndCategory(providerRecord.status.text(),RDConstants.ORG_STATUS)
-            }
-            else {
-                provider = new Org(
-                        name: providerRecord.name.text(),
-                        sector: RDStore.O_SECTOR_PUBLISHER,
-                        type: [RDStore.OT_PROVIDER],
-                        status: RefdataValue.getByValueAndCategory(providerRecord.status.text(),RDConstants.ORG_STATUS),
-                        gokbId: providerUUID
-                )
-            }
-            if(provider.save()) {
-                providerRecord.providedPlatforms.platform.each { plat ->
-                    //ex setOrUpdateProviderPlattform()
-                    log.info("checking provider with uuid ${providerUUID}")
-                    createOrUpdatePlatform([gokbId: plat.'@uuid'.text(), name: plat.name.text(), primaryUrl: plat.primaryUrl.text(), platformProvider:providerUUID])
-                    Platform platform = Platform.findByGokbId(plat.'@uuid'.text())
-                    if(platform.org != provider) {
-                        platform.org = provider
-                        platform.save()
+            Org.withTransaction {
+                Org provider = Org.findByGokbId(providerUUID)
+                if(provider) {
+                    provider.name = providerRecord.name.text()
+                    provider.status = RefdataValue.getByValueAndCategory(providerRecord.status.text(),RDConstants.ORG_STATUS)
+                }
+                else {
+                    provider = new Org(
+                            name: providerRecord.name.text(),
+                            sector: RDStore.O_SECTOR_PUBLISHER,
+                            type: [RDStore.OT_PROVIDER],
+                            status: RefdataValue.getByValueAndCategory(providerRecord.status.text(),RDConstants.ORG_STATUS),
+                            gokbId: providerUUID
+                    )
+                }
+                if(provider.save()) {
+                    providerRecord.providedPlatforms.platform.each { plat ->
+                        //ex setOrUpdateProviderPlattform()
+                        log.info("checking provider with uuid ${providerUUID}")
+                        createOrUpdatePlatform([gokbId: plat.'@uuid'.text(), name: plat.name.text(), primaryUrl: plat.primaryUrl.text(), platformProvider:providerUUID])
+                        Platform platform = Platform.findByGokbId(plat.'@uuid'.text())
+                        if(platform.org != provider) {
+                            platform.org = provider
+                            platform.save()
+                        }
                     }
                 }
+                else throw new SyncException(provider.errors)
             }
-            else throw new SyncException(provider.errors)
         }
         else throw new SyncException("Provider loading failed for UUID ${providerUUID}!")
     }
@@ -767,20 +769,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //Org.lookupOrCreate simplified, leading to Org.lookupOrCreate2
             Org publisher = Org.findByGokbId((String) publisherParams.gokbId)
             if(!publisher) {
-                publisher = new Org(
-                        name: publisherParams.name,
-                        status: RDStore.O_STATUS_CURRENT,
-                        gokbId: publisherParams.gokbId,
-                        sector: publisherParams.status instanceof RefdataValue ? (RefdataValue) publisherParams.status : null
-                )
-                if(publisher.save()) {
-                    publisherParams.identifiers.each { Map<String,Object> pubId ->
-                        pubId.reference = publisher
-                        Identifier.construct(pubId)
+                Org.withTransaction {
+                    publisher = new Org(
+                            name: publisherParams.name,
+                            status: RDStore.O_STATUS_CURRENT,
+                            gokbId: publisherParams.gokbId,
+                            sector: publisherParams.status instanceof RefdataValue ? (RefdataValue) publisherParams.status : null
+                    )
+                    if(publisher.save()) {
+                        publisherParams.identifiers.each { Map<String,Object> pubId ->
+                            pubId.reference = publisher
+                            Identifier.construct(pubId)
+                        }
                     }
-                }
-                else {
-                    throw new SyncException(publisher.errors)
+                    else {
+                        throw new SyncException(publisher.errors)
+                    }
                 }
             }
             publisher
@@ -797,20 +801,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @throws SyncException
      */
     void createOrUpdatePlatform(Map<String,String> platformParams) throws SyncException {
-        Platform platform = Platform.findByGokbId(platformParams.gokbId)
-        if(platform) {
-            platform.name = platformParams.name
-        }
-        else {
-            platform = new Platform(name: platformParams.name, gokbId: platformParams.gokbId)
-        }
-        platform.normname = platformParams.name.trim().toLowerCase()
-        if(platformParams.primaryUrl)
-            platform.primaryUrl = new URL(platformParams.primaryUrl)
-        if(platformParams.platformProvider)
-            platform.org = Org.findByGokbId(platformParams.platformProvider)
-        if(!platform.save()) {
-            throw new SyncException("Error on saving platform: ${platform.errors}")
+        Platform.withTransaction {
+            Platform platform = Platform.findByGokbId(platformParams.gokbId)
+            if(platform) {
+                platform.name = platformParams.name
+            }
+            else {
+                platform = new Platform(name: platformParams.name, gokbId: platformParams.gokbId)
+            }
+            platform.normname = platformParams.name.trim().toLowerCase()
+            if(platformParams.primaryUrl)
+                platform.primaryUrl = new URL(platformParams.primaryUrl)
+            if(platformParams.platformProvider)
+                platform.org = Org.findByGokbId(platformParams.platformProvider)
+            if(!platform.save()) {
+                throw new SyncException("Error on saving platform: ${platform.errors}")
+            }
         }
     }
 
