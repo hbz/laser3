@@ -1,6 +1,6 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Address;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
 <g:if test="${addressId}">
-    <g:set var="addressInstance" value="${com.k_int.kbplus.Address.get(addressId)}"/>
+    <g:set var="addressInstance" value="${Address.get(addressId)}"/>
 </g:if>
 <g:if test="${addressInstance}">
     <%
@@ -166,19 +166,19 @@
         %{--</g:if>--}%
         %{--<g:if test="${modalId && hideType}">--}%
             <g:if test="${modalId == 'addressFormModalPostalAddress'}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_POSTAL?.id}"/>
+                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_POSTAL.id}"/>
             </g:if>
             <g:elseif test="${modalId == 'addressFormModalBillingAddress'}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_BILLING?.id}"/>
+                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_BILLING.id}"/>
             </g:elseif>
             <g:elseif test="${modalId == 'addressFormModalLegalPatronAddress'}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_LEGAL_PATRON?.id}"/>
+                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_LEGAL_PATRON.id}"/>
             </g:elseif>
             <g:elseif test="${modalId == 'addressFormModalLibraryddress'}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_LIBRARY?.id}"/>
+                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_LIBRARY.id}"/>
             </g:elseif>
             <g:elseif test="${modalId == 'addressFormModalDeliveryAddress'}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_DELIVERY?.id}"/>
+                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_DELIVERY.id}"/>
             </g:elseif>
             <g:elseif test="${addressInstance}">
                 <input id="type_${modalId}" name="type.id" type="hidden" value="${addressInstance.type?.id}"/>
@@ -189,10 +189,10 @@
         <h4 class="ui dividing header"><g:message code="address.additionals.label"/></h4>
             <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
                 <label for="type_${modalId}">
-                    ${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
+                    ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
                 </label>
                 <laser:select class="ui dropdown" id="type_${modalId}" name="type.id"
-                              from="${com.k_int.kbplus.Address.getAllRefdataValues()}"
+                              from="${Address.getAllRefdataValues()}"
                               optionKey="id"
                               optionValue="value"
                               value="${addressInstance?.type?.id}"/>
@@ -221,13 +221,8 @@
 
     </g:form>
 </semui:modal>
-<r:script>
-    $("[id^='create_address']").show(function(event){
-        // var addressId = $("#id");
-        // if (addressId != null){
-        //     addressId = addressId.val;
-        // }
-        // alert($(this).attr('id'));
-        console.log($(this).attr('id'))
-    });
-</r:script>
+%{--<r:script>--}%
+    %{--$("[id^='create_address']").show(function(event){--}%
+        %{--console.log($(this).attr('id'))--}%
+    %{--});--}%
+%{--</r:script>--}%

@@ -77,8 +77,8 @@ class AddressController extends AbstractDebugController {
         }
         Map model = [
             addressInstance: addressInstance,
-            orgId: addressInstance?.org?.id,
-            prsId: addressInstance?.prs?.id,
+            orgId: addressInstance.org?.id,
+            prsId: addressInstance.prs?.id,
             modalId: modalId,
             editable: addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser()),
             redirect: '.',

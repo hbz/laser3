@@ -15,9 +15,8 @@
                 <semui:crumb message="menu.my.consortia" controller="myInstitution" action="manageMembers" params="[comboType:'Consortium']"/>
                 <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
             </g:if>
-
             <g:else>
-                <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>or
+                <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
             </g:else>
         </g:else>
     </g:if>
