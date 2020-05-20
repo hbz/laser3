@@ -5,6 +5,7 @@ import de.laser.domain.StatsTripleCursor
 import de.laser.helper.RDConstants
 import org.apache.commons.net.ntp.TimeStamp
 import org.hibernate.criterion.CriteriaSpecification
+import java.time.YearMonth
 
 class FactService {
 
@@ -474,7 +475,7 @@ class FactService {
         if (min < subscription.startDate){
           min = subscription.startDate
           months.removeAll { it ->
-            it < java.time.YearMonth.parse(subscription.startDate.toString().substring(0,7))
+            it < YearMonth.parse(subscription.startDate.toString().substring(0,7))
           }
         }
       }
@@ -483,7 +484,7 @@ class FactService {
         if (max > subscription.endDate){
           max = subscription.endDate
           months.removeAll { it ->
-            it > java.time.YearMonth.parse(subscription.endDate.toString().substring(0,7))
+            it > YearMonth.parse(subscription.endDate.toString().substring(0,7))
           }
         }
       }
@@ -510,8 +511,8 @@ class FactService {
 
   List getMonthsOfDateRange(Date begin, Date end){
     List result = []
-    java.time.YearMonth from = java.time.YearMonth.parse(begin.toString().substring(0,7))
-    java.time.YearMonth to = java.time.YearMonth.parse(end.toString().substring(0,7))
+    YearMonth from = YearMonth.parse(begin.toString().substring(0,7))
+    YearMonth to = YearMonth.parse(end.toString().substring(0,7))
     while (from<=to)
     {
       result.add(from)
