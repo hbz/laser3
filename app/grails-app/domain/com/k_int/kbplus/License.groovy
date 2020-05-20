@@ -60,7 +60,6 @@ class License
     boolean isPublicForApi = false
 
     @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS)
-    @Deprecated
     RefdataValue status
 
     @RefdataAnnotation(cat = RDConstants.LICENSE_TYPE)
@@ -305,7 +304,7 @@ class License
     Org getLicensingConsortium() {
         Org result
         orgLinks.each { or ->
-            if ( or.roleType.value in ['Licensing Consortium'] )
+            if ( or.roleType.value == 'Licensing Consortium' )
                 result = or.org
             }
         result
@@ -314,7 +313,7 @@ class License
     Org getLicensor() {
         Org result
         orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensor'] )
+            if ( or.roleType.value in ['Licensor'] )
                 result = or.org;
         }
         result
@@ -323,7 +322,7 @@ class License
     Org getLicensee() {
         Org result
         orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
+            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
                 result = or.org;
         }
         result
@@ -331,7 +330,7 @@ class License
     List<Org> getAllLicensee() {
         List<Org> result = []
         orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
+            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
                 result << or.org
         }
         result
@@ -800,7 +799,7 @@ AND lower(l.reference) LIKE (:ref)
                 noticePeriod: noticePeriod,
                 licenseUrl: licenseUrl,
                 licenseType: licenseType,
-                licenseStatus: licenseStatus,
+                //licenseStatus: licenseStatus,
                 //lastmod: lastmod,
                 startDate: startDate,
                 endDate: endDate,

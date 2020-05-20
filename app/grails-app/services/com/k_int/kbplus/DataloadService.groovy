@@ -280,8 +280,6 @@ class DataloadService {
             result.dbId = lic.id
             result.guid = lic.globalUID ?:''
             result.name = lic.reference
-            result.status = lic.status?.value
-            result.statusId = lic.status?.id
             result.visible = 'Private'
             result.rectype = lic.getClass().getSimpleName()
 

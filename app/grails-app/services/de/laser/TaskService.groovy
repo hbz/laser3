@@ -372,9 +372,9 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
         List<Map> validLicensesDropdown = []
 
         if (contextOrg) {
-            String licensesQueryMitInstanceOf = 'SELECT lic.id, lic.reference, lic.status, lic.startDate, lic.endDate, o.roleType, licinstanceof.type from License lic left join lic.orgLinks o left join lic.instanceOf licinstanceof WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is not null order by lic.sortableReference asc'
+            String licensesQueryMitInstanceOf = 'SELECT lic.id, lic.reference, lic.startDate, lic.endDate, o.roleType, licinstanceof.type from License lic left join lic.orgLinks o left join lic.instanceOf licinstanceof WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is not null order by lic.sortableReference asc'
 
-            String licensesQueryOhneInstanceOf = 'SELECT lic.id, lic.reference, lic.status, lic.startDate, lic.endDate, o.roleType from License lic left join lic.orgLinks o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
+            String licensesQueryOhneInstanceOf = 'SELECT lic.id, lic.reference, lic.startDate, lic.endDate, o.roleType from License lic left join lic.orgLinks o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
             if(accessService.checkPerm("ORG_CONSORTIUM")){
                 def qry_params_for_lic = [

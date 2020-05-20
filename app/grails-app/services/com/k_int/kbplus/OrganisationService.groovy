@@ -2030,6 +2030,7 @@ class OrganisationService {
             if(!Links.findBySourceAndDestination(source.id,destination.id))
                 setupLinking([owner:current,source:source.id,destination:destination.id,objectType:Subscription.class.name,linkType:RDStore.LINKTYPE_FOLLOWS])
             source.derivedSubscriptions.each { childSub ->
+                childSub.refresh()
                 Org childSubscriber = childSub.orgRelations.find { it.roleType == RDStore.OR_SUBSCRIBER_CONS }.org
                 Set<Subscription> childPairs = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :destination and oo.org = :member',[destination:destination,member:childSubscriber])
                 if(childPairs) {
@@ -2067,12 +2068,12 @@ class OrganisationService {
                         if(member)
                             memberRole = new OrgRole(org:member,sub:obj,roleType:RDStore.OR_SUBSCRIBER_CONS)
                         consRole = new OrgRole(org:consortium,sub:obj,roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA)
-                        obj.orgRelations = [memberRole,consRole]
+                        //obj.orgRelations = [memberRole,consRole]
                         obj.isSlaved = true
                         break
                     case RDStore.SUBSCRIPTION_TYPE_LOCAL:
                         memberRole = new OrgRole(org:member,sub:obj,roleType:RDStore.OR_SUBSCRIBER)
-                        obj.orgRelations = [memberRole]
+                        //obj.orgRelations = [memberRole]
                         break
                 }
                 break
@@ -2242,15 +2243,23 @@ class OrganisationService {
                                     Date startDate = entry.startDate ?: obj.startDate
                                     Date endDate = entry.endDate ?: obj.endDate
                                     RefdataValue status = entry.status ?: obj.status
-                                    Subscription consSub = new Subscription()
-                                    InvokerHelper.setProperties(consSub,obj.properties)
-                                    consSub.startDate = startDate
-                                    consSub.endDate = endDate
-                                    consSub.status = status
-                                    consSub.owner = entry.subOwner
-                                    consSub.instanceOf = obj
-                                    consSub.identifier = entry.subIdentifier
-                                    consSub.globalUID = null
+                                    Subscription consSub = new Subscription(name: obj.name,
+                                            startDate: startDate,
+                                            endDate: endDate,
+                                            manualCancellationDate: obj.manualCancellationDate,
+                                            status: status,
+                                            resource: obj.resource,
+                                            form: obj.form,
+                                            kind: obj.kind,
+                                            type: obj.type,
+                                            isPublicForApi: obj.isPublicForApi,
+                                            isMultiYear: obj.isMultiYear,
+                                            hasPerpetualAccess: obj.hasPerpetualAccess,
+                                            owner: entry.subOwner,
+                                            instanceOf: obj,
+                                            identifier: entry.subIdentifier,
+                                            globalUID: null)
+                                    //InvokerHelper.setProperties(consSub,obj.properties)
                                     if(!consSub.save())
                                         throw new CreationException(consSub.errors)
                                     memberRole = new OrgRole(org:subMember,sub:consSub,roleType:RDStore.OR_SUBSCRIBER_CONS)
@@ -2288,6 +2297,7 @@ class OrganisationService {
                                         createCostItem(ciParams)
                                     }
                                 }
+                                obj.refresh()
                                 obj.syncAllShares(synShareTargetList)
                                 break
                             case 'sharedProperties': v.each { property ->

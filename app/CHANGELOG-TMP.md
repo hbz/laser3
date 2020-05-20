@@ -2,11 +2,15 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2508    19.05.2020  hbz-dev     Christian   Feature Informationen über Statistikverfügbarkeit
+1361    20.05.2020  hbz-dev     Andreas Feature     Erweiterung des Cronjobs für Lizenzstatusänderungen auf Verträge
+
+2506    19.05.2020  rc1.3       Andreas Bug         Überprüfung zu Kopie von Kosten vervollständigt
 
 2299    20.05.2020  hbz-dev     Moe     Feature     Neues allg. Umfrage-Merkmal von allg. Lizenzmerkmal erstellen/ableiten
 
 2507    20.05.2020  hbz-dev     Moe     Feature     Titelauswahlumfrage soll nicht mehr automatisch verbindlich sein
+
+2508    19.05.2020  hbz-dev     Christian   Feature Informationen über Statistikverfügbarkeit
 
 2420    19.05.2020  hbz-dev     Moe     Feature     Titelauswahlumfrage: Filter/Sortierbarkeit nach Erscheinungsjahr
 
@@ -23,6 +27,8 @@
 2423    19.05.2020  hbz-dev     Moe     Feature     Meine Umfragen Sortierung anpassen
 
 2500    19.05.2020  hbz-dev     Moe     Feature     Zugangskonfiguration: Text im Löschen-Popup anpassen
+
+2238    19.05.2020  hbz-dev     Andreas Feature     Vertragssichten umgebaut (prä-finaler Stand vor Test)
 
 2433    18.05.2020  hbz-dev     Moe     Feature     Excel Export: Zahlenwerte in Zellen als Zahlenwert speichern
 
