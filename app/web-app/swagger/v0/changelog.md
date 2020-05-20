@@ -2,6 +2,11 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.106
+
+- reworked access to __/oamonitor/*__
+- reworked access to __/statistic/*__
+
 #### 0.105
 
 - renamed endpoint: __/oaMonitorList__ to  __/oamonitor/organisations/list__

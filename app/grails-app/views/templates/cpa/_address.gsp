@@ -4,44 +4,45 @@
             <i class="ui icon building map marker alternate la-list-icon"></i>
         </span>
         <div class="content la-space-right">
-            <g:link controller="address" action="show" id="${address?.id}">
-                <strong>${address.type?.getI10n('value')}:</strong>
-                <g:if test="${address?.name}">
+            <strong>${address.type?.getI10n('value')}:</strong>
+            <div class="item" data-href="#addressFormModal${address.id}" data-semui="modal" >
+                <g:if test="${address.name}">
                     <br />
-                    ${address?.name}
+                    ${address.name}
                 </g:if>
-                <g:if test="${address?.additionFirst}">
+                <g:if test="${address.additionFirst}">
                     <br />
-                    ${address?.additionFirst}
+                    ${address.additionFirst}
                 </g:if>
-                <g:if test="${address?.additionSecond}">
+                <g:if test="${address.additionSecond}">
                     <br />
-                    ${address?.additionSecond}
+                    ${address.additionSecond}
                 </g:if>
-
-                <br />
-                ${address?.street_1} ${address?.street_2}
-
-                <br />
-                ${address?.zipcode} ${address?.city}
-
-                <g:if test="${address?.region || address?.country}">
+                <g:if test="${address.street_1 || address.street_2}">
                     <br />
-                    ${address?.region?.getI10n('value')}
-                    <g:if test="${address?.region && address?.country}">, </g:if>
-                    ${address?.country?.getI10n('value')}
+                    ${address.street_1} ${address.street_2}
                 </g:if>
-
-                <g:if test="${address?.pob || address?.pobZipcode || address?.pobCity}">
+                <g:if test="${address.zipcode || address.city}">
+                    <br />
+                    ${address.zipcode} ${address.city}
+                </g:if>
+                <g:if test="${address.region || address.country}">
+                    <br />
+                    ${address.region?.getI10n('value')}
+                    <g:if test="${address.region && address.country}">, </g:if>
+                    ${address.country?.getI10n('value')}
+                </g:if>
+                <g:if test="${address.pob || address.pobZipcode || address.pobCity}">
                     <br />
                     <g:message code="address.pob.label" />
-                    ${address?.pob}
-                    <g:if test="${address?.pobZipcode || address?.pobCity}">, </g:if>
-                    ${address?.pobZipcode} ${address?.pobCity}
+                    ${address.pob}
+                    <g:if test="${address.pobZipcode || address.pobCity}">, </g:if>
+                    ${address.pobZipcode} ${address.pobCity}
                 </g:if>
-
-
-            </g:link>
+                <g:if test="${editable}">
+                    <g:render template="/address/formModal" model="['addressId': address.id, modalId: 'addressFormModal' + address.id]"/>
+                </g:if>
+            </div>
         </div>
         <div class="content">
             <g:if test="${editable && tmplShowDeleteButton}">
@@ -56,7 +57,5 @@
                 </div>
             </g:if>
         </div>
-
-
 	</div>
 </g:if>
