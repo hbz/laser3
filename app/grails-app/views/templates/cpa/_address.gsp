@@ -6,11 +6,11 @@
         <div class="content la-space-right">
             <strong>${address.type?.getI10n('value')}:</strong>
             <div class="item" data-href="#addressFormModal${address.id}" data-semui="modal" >
-                <g:if test="${address?.name}">
+                <g:if test="${address.name}">
                     <br />
                     ${address.name}
                 </g:if>
-                <g:if test="${address.additionFirst}">s
+                <g:if test="${address.additionFirst}">
                     <br />
                     ${address.additionFirst}
                 </g:if>
