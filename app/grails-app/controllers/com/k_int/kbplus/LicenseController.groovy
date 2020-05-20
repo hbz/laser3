@@ -576,11 +576,11 @@ from Subscription as s where
                     if (params.subRunTimeMultiYear || params.subRunTime) {
 
                         if (params.subRunTimeMultiYear && !params.subRunTime) {
-                            if(sub?.isMultiYear) {
+                            if(sub.isMultiYear) {
                                 result.subscriptions << [sub: sub, orgs: filteredSubscr]
                             }
                         }else if (!params.subRunTimeMultiYear && params.subRunTime){
-                            if(!sub?.isMultiYear) {
+                            if(!sub.isMultiYear) {
                                 result.subscriptions << [sub: sub, orgs: filteredSubscr]
                             }
                         }
