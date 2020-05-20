@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2299    20.05.2020  hbz-dev     Moe     Feature     Neues allg. Umfrage-Merkmal von allg. Lizenzmerkmal erstellen/ableiten
+
+2507    20.05.2020  hbz-dev     Moe     Feature     Titelauswahlumfrage soll nicht mehr automatisch verbindlich sein
+
 2420    19.05.2020  hbz-dev     Moe     Feature     Titelauswahlumfrage: Filter/Sortierbarkeit nach Erscheinungsjahr
 
 2385    19.05.2020  hbz-dev     Moe     Feature     Dashboard Änderung nach einem Umfrage Übertrag

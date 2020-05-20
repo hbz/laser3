@@ -580,7 +580,7 @@ class SurveyController {
                 status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
                 isSubscriptionSurvey: true,
-                isMandatory: true
+                isMandatory: params.mandatory ? true : false
         )
 
         if (!(surveyInfo.save(flush: true))) {

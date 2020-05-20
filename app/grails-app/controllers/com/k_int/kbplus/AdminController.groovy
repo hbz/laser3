@@ -1611,6 +1611,34 @@ class AdminController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
+    def transferSubPropToSurProp() {
+
+        PropertyDefinition propertyDefinition = PropertyDefinition.get(params.propertyDefinition)
+
+        if(!PropertyDefinition.findByNameAndDescrAndTenant(propertyDefinition.name, PropertyDefinition.SUR_PROP, null)){
+            PropertyDefinition surveyProperty = new PropertyDefinition(
+                    name: propertyDefinition.name,
+                    name_de: propertyDefinition.name_de,
+                    name_en: propertyDefinition.name_en,
+                    expl_de: propertyDefinition.expl_de,
+                    expl_en: propertyDefinition.expl_en,
+                    type: propertyDefinition.type,
+                    refdataCategory: propertyDefinition.refdataCategory,
+                    descr: PropertyDefinition.SUR_PROP
+            )
+
+            if (surveyProperty.save(flush: true)) {
+                flash.message = message(code: 'propertyDefinition.copySubPropToSurProp.created.sucess')
+            }
+            else {
+                flash.error = message(code: 'propertyDefinition.copySubPropToSurProp.created.fail')
+            }
+        }
+
+        redirect(action: 'managePropertyDefinitions')
+    }
+
+    @Secured(['ROLE_ADMIN'])
     def managePropertyGroups() {
         //def result = setResultGenerics()
         Map<String, Object> result = [:]

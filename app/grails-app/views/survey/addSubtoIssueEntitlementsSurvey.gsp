@@ -44,6 +44,13 @@
             </div>
         </div>
 
+        <div class="field">
+            <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
+            <div>
+                <input type="checkbox" id="mandatory" name="mandatory" ${params.mandatory? 'checked':''}>
+            </div>
+        </div>
+
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 
