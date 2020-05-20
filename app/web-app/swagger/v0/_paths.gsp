@@ -416,41 +416,7 @@
           $ref: "#/components/responses/notAcceptable"
 
 
-  /oaMonitor:
-
-    get:
-      tags:
-        - Datamanager
-      summary: Retrieving an organisation with more information
-      description: >
-        **EXPERIMENTAL**
-
-      parameters:
-        - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/v"
-        - $ref: "#/components/parameters/authorization"
-        - $ref: "#/components/parameters/debug"
-
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PlaceholderObject"
-        400:
-          $ref: "#/components/responses/badRequest"
-        401:
-          $ref: "#/components/responses/notAuthorized"
-        403:
-          $ref: "#/components/responses/forbidden"
-        404:
-          description: Valid request, but organisation not found
-        406:
-          $ref: "#/components/responses/notAcceptable"
-
-
-  /oaMonitorList:
+  /oamonitor/organisations/list:
 
     get:
       tags:
@@ -479,43 +445,12 @@
           $ref: "#/components/responses/notAcceptable"
 
 
-  /oaMonitorSubscription:
+  /oamonitor/organisations:
 
     get:
       tags:
         - Datamanager
-      summary:
-      description: >
-        **EXPERIMENTAL AND NOT FULLY IMPLEMENTED; DO NOT USE**
-
-      parameters:
-        - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/v"
-        - $ref: "#/components/parameters/authorization"
-
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PlaceholderObject"
-        400:
-          $ref: "#/components/responses/badRequest"
-        401:
-          $ref: "#/components/responses/notAuthorized"
-        403:
-          $ref: "#/components/responses/forbidden"
-        406:
-          $ref: "#/components/responses/notAcceptable"
-
-
-  /statistic:
-
-    get:
-      tags:
-        - Datamanager
-      summary: Retrieving a package with more information
+      summary: Retrieving a single organisation with more information
       description: >
         **EXPERIMENTAL**
 
@@ -539,12 +474,43 @@
         403:
           $ref: "#/components/responses/forbidden"
         404:
-          description: Valid request, but package not found
+          description: Valid request, but organisation not found
         406:
           $ref: "#/components/responses/notAcceptable"
 
 
-  /statisticList:
+  /oamonitor/subscriptions:
+
+    get:
+      tags:
+        - Datamanager
+      summary: Retrieving a single subscription with more information
+      description: >
+        **EXPERIMENTAL**
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaceholderObject"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        406:
+          $ref: "#/components/responses/notAcceptable"
+
+
+  /statistic/packages/list:
 
     get:
       tags:
@@ -569,5 +535,39 @@
           $ref: "#/components/responses/forbidden"
         404:
           description: Valid request, but no appropriate packages found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+
+
+  /statistic/packages:
+
+    get:
+      tags:
+        - Datamanager
+      summary: Retrieving a single package with more information
+      description: >
+        **EXPERIMENTAL**
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+        - $ref: "#/components/parameters/debug"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaceholderObject"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but package not found
         406:
           $ref: "#/components/responses/notAcceptable"

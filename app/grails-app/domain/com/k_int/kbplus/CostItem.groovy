@@ -206,11 +206,13 @@ class CostItem
     }
 
     @Override
+    // currently only used for API
     String getCalculatedType() {
         if (isVisibleForSubscriber) {
-            return CalculatedType.TYPE_CONSORTIAL
+            return CalculatedType.TYPE_CONSORTIAL // boolean flag = true -> shared consortia costs
         }
-        CalculatedType.TYPE_LOCAL
+
+        CalculatedType.TYPE_LOCAL // boolean flag = false -> local costs or hidden consortia costs
     }
 
     List<BudgetCode> getBudgetcodes() {

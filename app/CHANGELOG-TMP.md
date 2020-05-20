@@ -2,6 +2,14 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2505    19.05.2020  hbz-dev     David   Feature     API 0.106 - Getrennte Berechtigungen für Datamanager
+
+2504    19.05.2020  rc1.3       Andreas Bug         Absturzfehler bei Anlegen der Musterdaten auf QA behoben
+
+2399    19.05.2020  rc1.3       Andreas Bug         Finanzfiltervorbelegung korrigiert
+
+2390    19.05.2020  hbz-dev     David   Feature     API 0.105 - API für OA-Monitor: Eigener Subscription-Endpunkt
+
 2238    19.05.2020  hbz-dev     Andreas Feature     Vertragssichten umgebaut (prä-finaler Stand vor Test)
 
 2433    18.05.2020  hbz-dev     Moe     Feature     Excel Export: Zahlenwerte in Zellen als Zahlenwert speichern

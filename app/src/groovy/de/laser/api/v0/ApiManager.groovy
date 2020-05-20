@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.103'
+    static final VERSION = '0.106'
 
     /**
      * @return Object
@@ -27,8 +27,10 @@ class ApiManager {
     static read(String obj, String query, String value, Org contextOrg, String format) {
         def result
 
-        boolean isDatamanager = ApiToolkit.isDataManager(contextOrg)
-        boolean isInvoiceTool = ApiToolkit.isInvoiceTool(contextOrg)
+        boolean isDatamanager = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_DATAMANAGER)
+        boolean isOAMonitor   = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_OAMONITOR)
+        boolean isNatStat     = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_NATSTAT)
+        boolean isInvoiceTool = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_INVOICETOOL)
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
@@ -125,9 +127,17 @@ class ApiManager {
                 result = ApiLicense.getLicenseList((Org) tmp.obj, contextOrg)
             }
         }
-        else if (checkValidRequest('oaMonitor')) {
+        else if (checkValidRequest('oamonitor/organisations/list')) {
 
-            if (! isDatamanager) {
+            if (! (isOAMonitor || isDatamanager)) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            result = ApiOAMonitor.getAllOrgs()
+        }
+        else if (checkValidRequest('oamonitor/organisations')) {
+
+            if (! (isOAMonitor || isDatamanager)) {
                 return Constants.HTTP_FORBIDDEN
             }
             ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
@@ -137,17 +147,9 @@ class ApiManager {
                 result = ApiOAMonitor.requestOrganisation((Org) tmp.obj, contextOrg)
             }
         }
-        else if (checkValidRequest('oaMonitorList')) {
+        else if (checkValidRequest('oamonitor/subscriptions')) {
 
-            if (! isDatamanager) {
-                return Constants.HTTP_FORBIDDEN
-            }
-
-            result = ApiOAMonitor.getAllOrgs()
-        }
-        else if (checkValidRequest('oaMonitorSubscription')) {
-
-            if (! isDatamanager) {
+            if (! (isOAMonitor || isDatamanager)) {
                 return Constants.HTTP_FORBIDDEN
             }
 
@@ -197,9 +199,17 @@ class ApiManager {
 
             result = ApiCatalogue.getAllRefdatas()
         }
-        else if (checkValidRequest('statistic')) {
+        else if (checkValidRequest('statistic/packages/list')) {
 
-            if (! isDatamanager) {
+            if (! (isNatStat || isDatamanager)) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            result = ApiStatistic.getAllPackages()
+        }
+        else if (checkValidRequest('statistic/packages')) {
+
+            if (! (isNatStat || isDatamanager)) {
                 return Constants.HTTP_FORBIDDEN
             }
             ApiBox tmp = ApiPkg.findPackageBy(query, value)
@@ -209,14 +219,7 @@ class ApiManager {
                 result = ApiStatistic.requestPackage((Package) tmp.obj)
             }
         }
-        else if (checkValidRequest('statisticList')) {
 
-            if (! isDatamanager) {
-                return Constants.HTTP_FORBIDDEN
-            }
-
-            result = ApiStatistic.getAllPackages()
-        }
         else if (checkValidRequest('subscription')) {
 
             ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)

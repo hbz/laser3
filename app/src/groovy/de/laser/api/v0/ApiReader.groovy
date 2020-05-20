@@ -19,22 +19,28 @@ class ApiReader {
             'license':                  [Constants.MIME_APPLICATION_JSON],
             'licenseList':              [Constants.MIME_APPLICATION_JSON],
             'onixpl':                   [Constants.MIME_APPLICATION_XML],
-            'oaMonitor':                [Constants.MIME_APPLICATION_JSON],
-            'oaMonitorList':            [Constants.MIME_APPLICATION_JSON],
-            'oaMonitorSubscription':    [Constants.MIME_APPLICATION_JSON],
+            'oamonitor/organisations/list': [Constants.MIME_APPLICATION_JSON],
+            'oamonitor/organisations':      [Constants.MIME_APPLICATION_JSON],
+            'oamonitor/subscriptions':      [Constants.MIME_APPLICATION_JSON],
             'organisation':             [Constants.MIME_APPLICATION_JSON],
             'package':                  [Constants.MIME_APPLICATION_JSON],
             'platform':                 [Constants.MIME_APPLICATION_JSON],
             'platformList':             [Constants.MIME_APPLICATION_JSON],
             'propertyList':             [Constants.MIME_APPLICATION_JSON],
             'refdataList':              [Constants.MIME_APPLICATION_JSON],
-            'statistic':                [Constants.MIME_APPLICATION_JSON],
-            'statisticList':            [Constants.MIME_APPLICATION_JSON],
+            'statistic/packages/list':      [Constants.MIME_APPLICATION_JSON],
+            'statistic/packages':           [Constants.MIME_APPLICATION_JSON],
             'subscription':             [Constants.MIME_APPLICATION_JSON],
             'subscriptionList':         [Constants.MIME_APPLICATION_JSON]
     ]
 
-    static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'platformList', 'propertyList', 'statisticList']
+    static SIMPLE_QUERIES = [
+            'oamonitor/organisations/list',
+            'refdataList',
+            'platformList',
+            'propertyList',
+            'statistic/packages/list'
+    ]
 
 
     // ##### CONSTANTS #####
@@ -60,8 +66,8 @@ class ApiReader {
 
     final static IGNORE_SUBSCRIPTION_AND_PACKAGE = "IGNORE_SUBSCRIPTION_AND_PACKAGE"
 
-    final static IGNORE_CUSTOM_PROPERTIES   = "IGNORE_CUSTOM_PROPERTIES"
-    final static IGNORE_PRIVATE_PROPERTIES  = "IGNORE_PRIVATE_PROPERTIES"
+    final static IGNORE_CUSTOM_PROPERTIES        = "IGNORE_CUSTOM_PROPERTIES"
+    final static IGNORE_PRIVATE_PROPERTIES       = "IGNORE_PRIVATE_PROPERTIES"
 
 
     /**
