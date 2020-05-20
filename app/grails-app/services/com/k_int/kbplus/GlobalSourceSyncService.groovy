@@ -110,7 +110,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         if(listOAI.resumptionToken.size() > 0 && listOAI.resumptionToken.text().length() > 0) {
                             resumption = listOAI.resumptionToken
                             log.info("Continue with next iteration, token: ${resumption}")
-                            cleanUpGorm()
+                            //cleanUpGorm()
                         }
                         else
                             more = false
@@ -164,8 +164,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         titlesToUpdate.each { titleUUID ->
             //that may destruct debugging ...
             try {
-                createOrUpdateTitle(titleUUID)
-                cleanUpGorm()
+                TitleInstance.withNewSession {
+                    createOrUpdateTitle(titleUUID)
+                }
             }
             catch (SyncException e) {
                 SystemEvent.createEvent('GSSS_OAI_WARNING',[titleRecordKey:titleUUID])
@@ -173,8 +174,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         providersToUpdate.each { providerUUID ->
             try {
-                createOrUpdateProvider(providerUUID)
-                cleanUpGorm()
+                Org.withNewSession {
+                    createOrUpdateProvider(providerUUID)
+                }
             }
             catch (SyncException e) {
                 SystemEvent.createEvent('GSSS_OAI_WARNING',[providerRecordKey:providerUUID])
@@ -182,8 +184,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         platformsToUpdate.each { Map<String,String> platformParams ->
             try {
-                createOrUpdatePlatform(platformParams)
-                cleanUpGorm()
+                Platform.withNewSession {
+                    createOrUpdatePlatform(platformParams)
+                }
             }
             catch (SyncException e) {
                 SystemEvent.createEvent('GSSS_OAI_WARNING',[platformRecordKey:platformParams.gokbId])
@@ -231,8 +234,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tipps << tippConv(tipp)
         }
         log.info("Rec conversion for package returns object with name ${packageName} and ${tipps.size()} tipps")
-        Package result = Package.findByGokbId(packageUUID)
-        Package.withTransaction { TransactionStatus transactionStatus ->
+        Package.withNewSession {
+            Package result = Package.findByGokbId(packageUUID)
             try {
                 if(result) {
                     //local package exists -> update closure, build up GokbDiffEngine and the horrendous closures
@@ -356,7 +359,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     TitleInstancePackagePlatform target = addNewTIPP(result,tippB)
                                     tippsToNotify << [event:'add',target:target]
                                 }
-                                transactionStatus.flush()
                             }
                         }
                         else {
@@ -398,14 +400,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 log.info("before processing identifiers - identifier count: ${packageData.identifiers.identifier.size()}")
                 packageData.identifiers.identifier.each { id ->
-                    if(id.'@namespace'.text().toLowerCase() != 'originediturl')
-                        Identifier.construct([namespace: id.'@namespace'.text(), value: id.'@value'.text(), reference: result])
+                    if(id.'@namespace'.text().toLowerCase() != 'originediturl') {
+                        Identifier.withNewSession {
+                            Identifier.construct([namespace: id.'@namespace'.text(), value: id.'@value'.text(), reference: result])
+                        }
+                    }
                 }
             }
             catch (Exception e) {
                 log.error("Error on updating package ${result.id} ... rollback!")
                 e.printStackTrace()
-                transactionStatus.setRollbackOnly()
             }
         }
         tippsToNotify
@@ -519,7 +523,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 RefdataValue medium = RefdataValue.getByValueAndCategory(titleRecord.medium.text(),RDConstants.TITLE_MEDIUM) //misunderstandable mapping ...
                 try {
                     switch(titleRecord.type.text()) {
-                        case 'BookInstance': titleInstance = titleInstance ? (BookInstance) titleInstance : BookInstance.construct([gokbId:titleUUID])
+                        case 'BookInstance': titleInstance = titleInstance ? (BookInstance) titleInstance : BookInstance.withNewSession { BookInstance.construct([gokbId:titleUUID]) }
                             if(titleRecord.editionNumber.text()) {
                                 try {
                                     titleInstance.editionNumber = Integer.parseInt(titleRecord.editionNumber.text())
@@ -538,9 +542,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             titleInstance.firstAuthor = titleRecord.firstAuthor.text() ?: null
                             titleInstance.firstEditor = titleRecord.firstEditor.text() ?: null
                             break
-                        case 'DatabaseInstance': titleInstance = titleInstance ? (DatabaseInstance) titleInstance : DatabaseInstance.construct([gokbId:titleUUID])
+                        case 'DatabaseInstance': titleInstance = titleInstance ? (DatabaseInstance) titleInstance : DatabaseInstance.withNewSession { DatabaseInstance.construct([gokbId:titleUUID]) }
                             break
-                        case 'JournalInstance': titleInstance = titleInstance ? (JournalInstance) titleInstance : JournalInstance.construct([gokbId:titleUUID])
+                        case 'JournalInstance': titleInstance = titleInstance ? (JournalInstance) titleInstance : JournalInstance.withNewSession { JournalInstance.construct([gokbId:titleUUID]) }
                             break
                     }
                 }
@@ -592,8 +596,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             titleInstance.save() //damn those wrestlers ...
                         }
                         titleRecord.identifiers.identifier.each { idData ->
-                            if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
-                                Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:titleInstance])
+                            if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
+                                Identifier.withSession {
+                                    Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: titleInstance])
+                                }
+                            }
                         }
                     }
                     if(titleRecord.history) {
@@ -1050,7 +1057,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                 }
-                cleanUpGorm()
+                //cleanUpGorm()
             }
         }
     }
