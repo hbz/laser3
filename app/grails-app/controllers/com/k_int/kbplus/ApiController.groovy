@@ -339,10 +339,10 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
             if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
                 if ("GET" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_READ, ApiToolkit.API_LEVEL_INVOICETOOL, ApiToolkit.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in ApiToolkit.getReadingApiLevels())
                 }
                 else if ("POST" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_WRITE, ApiToolkit.API_LEVEL_INVOICETOOL, ApiToolkit.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in ApiToolkit.getWritingApiLevels())
                 }
             }
 

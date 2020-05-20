@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.105'
+    static final VERSION = '0.106'
 
     /**
      * @return Object
@@ -27,8 +27,10 @@ class ApiManager {
     static read(String obj, String query, String value, Org contextOrg, String format) {
         def result
 
-        boolean isDatamanager = ApiToolkit.isDataManager(contextOrg)
-        boolean isInvoiceTool = ApiToolkit.isInvoiceTool(contextOrg)
+        boolean isDatamanager = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_DATAMANAGER)
+        boolean isOAMonitor   = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_OAMONITOR)
+        boolean isNatStat     = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_NATSTAT)
+        boolean isInvoiceTool = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_INVOICETOOL)
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
@@ -127,7 +129,7 @@ class ApiManager {
         }
         else if (checkValidRequest('oamonitor/organisations/list')) {
 
-            if (! isDatamanager) {
+            if (! (isOAMonitor || isDatamanager)) {
                 return Constants.HTTP_FORBIDDEN
             }
 
@@ -135,7 +137,7 @@ class ApiManager {
         }
         else if (checkValidRequest('oamonitor/organisations')) {
 
-            if (! isDatamanager) {
+            if (! (isOAMonitor || isDatamanager)) {
                 return Constants.HTTP_FORBIDDEN
             }
             ApiBox tmp = ApiOrg.findOrganisationBy(query, value)
@@ -147,7 +149,7 @@ class ApiManager {
         }
         else if (checkValidRequest('oamonitor/subscriptions')) {
 
-            if (! isDatamanager) {
+            if (! (isOAMonitor || isDatamanager)) {
                 return Constants.HTTP_FORBIDDEN
             }
 
@@ -199,7 +201,7 @@ class ApiManager {
         }
         else if (checkValidRequest('statistic/packages/list')) {
 
-            if (! isDatamanager) {
+            if (! (isNatStat || isDatamanager)) {
                 return Constants.HTTP_FORBIDDEN
             }
 
@@ -207,7 +209,7 @@ class ApiManager {
         }
         else if (checkValidRequest('statistic/packages')) {
 
-            if (! isDatamanager) {
+            if (! (isNatStat || isDatamanager)) {
                 return Constants.HTTP_FORBIDDEN
             }
             ApiBox tmp = ApiPkg.findPackageBy(query, value)
