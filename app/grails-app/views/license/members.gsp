@@ -22,7 +22,7 @@
         <semui:totalNumber total="${validMemberLicenses.size() ?: 0}"/>
     </h1>
 
-<%--<semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>--%>
+    <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <g:render template="nav" />
 
@@ -76,9 +76,9 @@
             <g:set var="lic" value="${row.license}"/>
             <g:set var="subscr" value="${row.org}"/>
             <%
-                /*LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(License.class.name, lic.id)
-                Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
-                Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null*/
+                LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(License.class.name, lic.id)
+                License navPrevLicense = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
+                License navNextLicense = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
             %>
             <tr>
                 <td>${i + 1}</td>
@@ -120,16 +120,16 @@
                     </div>
                 </td>
                 <td class="center aligned">
-                    <%--<g:if test="${navPrevSubscription}">
-                        <g:link controller="license" action="show" id="${navPrevSubscription.id}"><i class="arrow left icon"></i></g:link>
-                    </g:if>--%>
+                    <g:if test="${navPrevLicense}">
+                        <g:link controller="license" action="show" id="${navPrevLicense.id}"><i class="arrow left icon"></i></g:link>
+                    </g:if>
                 </td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${lic.startDate}"/></td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${lic.endDate}"/></td>
                 <td class="center aligned">
-                    <%--<g:if test="${navNextSubscription}">
-                        <g:link controller="license" action="show" id="${navNextSubscription.id}"><i class="arrow right icon"></i></g:link>
-                    </g:if>--%>
+                    <g:if test="${navNextLicense}">
+                        <g:link controller="license" action="show" id="${navNextLicense.id}"><i class="arrow right icon"></i></g:link>
+                    </g:if>
                 </td>
                 <td>
                     <g:link controller="license" action="show" id="${lic.id}" class="ui icon button"><i class="write icon"></i></g:link>

@@ -154,10 +154,6 @@ class LicenseController extends AbstractDebugController {
 
             du.setBenchmark('links')
 
-            LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(License.class.name, result.license.id)
-            result.navPrevLicense = links.prevLink
-            result.navNextLicense = links.nextLink
-
             // links
             def key = result.license.id
             def sources = Links.executeQuery('select l from Links as l where l.source = :source and l.objectType = :objectType', [source: key, objectType: License.class.name])
@@ -1153,7 +1149,9 @@ from Subscription as s where
         result.institution     = contextService.org
         result.license         = License.get(params.id)
         result.licenseInstance = License.get(params.id)
-
+        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(License.class.name, result.license.id)
+        result.navPrevLicense = links.prevLink
+        result.navNextLicense = links.nextLink
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {

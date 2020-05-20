@@ -99,7 +99,7 @@ class OrgSettings {
 
         def oss = new OrgSettings(org: org, key: key)
         oss.setValue(value)
-        oss.save(flush: true)
+        oss.save()
 
         oss
     }
@@ -156,6 +156,6 @@ class OrgSettings {
                 strValue = (value ? value.toString() : null)
                 break
         }
-        save(flush: true)
+        save()
     }
 }
