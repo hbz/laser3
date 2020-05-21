@@ -58,6 +58,12 @@
                 <div class="ui divider"></div>
             </g:if>
 
+            <g:if test="${actionName == "evaluationParticipant" && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id && surveyConfig.isResultsSetFinishByOrg(participant)}">
+                <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                           message="openSurveyAgainForParticipant.button"/>
+                <div class="ui divider"></div>
+            </g:if>
+
             <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig.subSurveyUseForTransfer && !surveyConfig.pickAndChoose
                     && surveyInfo.status?.id in [de.laser.helper.RDStore.SURVEY_SURVEY_COMPLETED.id, de.laser.helper.RDStore.SURVEY_IN_EVALUATION.id, de.laser.helper.RDStore.SURVEY_COMPLETED.id]}">
                 <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey"

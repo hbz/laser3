@@ -35,6 +35,18 @@
 
 <semui:messages data="${flash}"/>
 
+<g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
+    <div class="ui icon positive message">
+        <i class="info icon"></i>
+        <div class="content">
+            <div class="header"></div>
+            <p>
+                <g:message code="surveyResult.finish.info.consortia"/>.
+            </p>
+        </div>
+    </div>
+</g:if>
+
 <g:if test="${participant}">
     <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>

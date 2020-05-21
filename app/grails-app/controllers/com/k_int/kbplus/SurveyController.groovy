@@ -1328,6 +1328,37 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
+    def openSurveyAgainForParticipant() {
+        Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.editable = result.surveyInfo.isEditable() ?: false
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
+
+        surveyResults.each {
+                it.finishDate = null
+                it.save()
+        }
+
+        redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def completeIssueEntitlementsSurveyforParticipant() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()

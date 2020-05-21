@@ -105,64 +105,69 @@ class SurveyUpdateService extends AbstractLockableService {
     }
 
     private void sendEmail(User user, Org org, List<SurveyInfo> surveyEntries) {
-        def emailReceiver = user.getEmail()
-        def currentServer = grailsApplication.config.getCurrentServer()
-        def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+
+        if (grailsApplication.config.grails.mail.disabled == true) {
+            println 'surveyUpdateService.sendEmail() failed due grailsApplication.config.grails.mail.disabled = true'
+        }else {
+
+            def emailReceiver = user.getEmail()
+            def currentServer = grailsApplication.config.getCurrentServer()
+            def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
 
 
-        surveyEntries.each {survey ->
-            try {
-                if (emailReceiver == null || emailReceiver.isEmpty()) {
-                    log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
-                } else {
-                    boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
-                    String ccAddress = null
-                    if (isNotificationCCbyEmail){
-                        ccAddress = user.getSetting(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
-                    }
+            surveyEntries.each { survey ->
+                try {
+                    if (emailReceiver == null || emailReceiver.isEmpty()) {
+                        log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                    } else {
+                        boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                        String ccAddress = null
+                        if (isNotificationCCbyEmail) {
+                            ccAddress = user.getSetting(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                        }
 
-                    List generalContactsEMails = []
+                        List generalContactsEMails = []
 
-                    survey.owner.getGeneralContactPersons(false)?.each { person ->
-                        person?.contacts?.each { contact ->
-                            if (['Mail', 'E-Mail'].contains(contact?.contentType?.value))
-                            {
-                                generalContactsEMails << contact?.content
+                        survey.owner.getGeneralContactPersons(false)?.each { person ->
+                            person?.contacts?.each { contact ->
+                                if (['Mail', 'E-Mail'].contains(contact?.contentType?.value)) {
+                                    generalContactsEMails << contact?.content
+                                }
                             }
                         }
-                    }
 
-                    replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
-                    Object[] args = ["${survey.type.getI10n('value')}"]
-                    Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-                    String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, locale) + " (" + org.name + ")"
+                        replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
+                        Object[] args = ["${survey.type.getI10n('value')}"]
+                        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, locale) + " (" + org.name + ")"
 
-                    if (isNotificationCCbyEmail && ccAddress) {
-                        mailService.sendMail {
-                            to      emailReceiver
-                            from    from
-                            cc      ccAddress
-                            replyTo replyTo
-                            subject mailSubject
-                            body    (view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                        if (isNotificationCCbyEmail && ccAddress) {
+                            mailService.sendMail {
+                                to emailReceiver
+                                from from
+                                cc ccAddress
+                                replyTo replyTo
+                                subject mailSubject
+                                body(view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                            }
+                        } else {
+                            mailService.sendMail {
+                                to emailReceiver
+                                from from
+                                replyTo replyTo
+                                subject mailSubject
+                                body(view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                            }
                         }
-                    } else {
-                        mailService.sendMail {
-                            to      emailReceiver
-                            from from
-                            replyTo replyTo
-                            subject mailSubject
-                            body    (view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
-                        }
-                    }
 
-                    log.debug("SurveyUpdateService - finished sendEmail() to " + user.displayName + " (" + user.email + ") " + org.name);
+                        log.debug("SurveyUpdateService - finished sendEmail() to " + user.displayName + " (" + user.email + ") " + org.name);
+                    }
+                } catch (Exception e) {
+                    String eMsg = e.message
+
+                    log.error("SurveyUpdateService - sendEmail() :: Unable to perform email due to exception ${eMsg}")
+                    SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user, org: org, survey: survey])
                 }
-            } catch (Exception e) {
-                String eMsg = e.message
-
-                log.error("SurveyUpdateService - sendEmail() :: Unable to perform email due to exception ${eMsg}")
-                SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user, org: org, survey: survey])
             }
         }
     }

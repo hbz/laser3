@@ -596,6 +596,11 @@ class SurveyService {
 
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
 
+        if (grailsApplication.config.grails.mail.disabled == true) {
+            println 'emailToSurveyOwnerbyParticipationFinish() failed due grailsApplication.config.grails.mail.disabled = true'
+            return false
+        }
+
         if(surveyInfo.owner)
         {
             //Only User that approved
