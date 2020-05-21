@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.SurveyConfig" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.SurveyConfig; de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -74,7 +74,7 @@
                         <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></g:link>
                 </g:if>
 
-                <g:if test="${editable}">
+                <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
                     <g:link class="item ${params.tab == 'consortiaMembers' ? 'active' : ''}"
                             controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"

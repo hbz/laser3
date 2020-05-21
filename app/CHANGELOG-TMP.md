@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2357    20.05.2020  rc1.3       Moe     Feature     Teilnehmer nachträglich einer Umfrage hinzufügen
+
 2360    20.05.2020  rc1.3       Moe     Feature     Teilnehmer bei einer Umfrage wieder freischalten
 
 2515    20.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Rolle Redakteur kann keine Fächergruppen anlegen

@@ -1831,7 +1831,7 @@ class SurveyController {
         SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
         SurveyInfo surveyInfo = surveyConfig?.surveyInfo
 
-        result.editable = (surveyInfo && surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+        result.editable = (surveyInfo && surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
 
         if (params.selectedOrgs && result.editable) {
 
@@ -1859,7 +1859,29 @@ class SurveyController {
                     if (!surveyOrg.save(flush: true)) {
                         log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}");
                     } else {
-                        //flash.message = g.message(code: "surveyParticipants.add.successfully")
+                        if(surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]){
+                            surveyConfig.surveyProperties.each { property ->
+
+                                SurveyResult surveyResult = new SurveyResult(
+                                        owner: result.institution,
+                                        participant: org ?: null,
+                                        startDate: surveyInfo.startDate,
+                                        endDate: surveyInfo.endDate ?: null,
+                                        type: property.surveyProperty,
+                                        surveyConfig: surveyConfig
+                                )
+
+                                if (surveyResult.save(flush: true)) {
+                                    log.debug(surveyResult)
+                                } else {
+                                    log.error("Not create surveyResult: "+ surveyResult)
+                                }
+                            }
+
+                            if(surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED){
+                                surveyUpdateService.emailsToSurveyUsersOfOrg(surveyInfo, org)
+                            }
+                        }
                     }
                 }
             }

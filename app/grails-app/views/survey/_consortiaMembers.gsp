@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore;" %>
 <br>
 
 <semui:filter>
@@ -18,13 +19,13 @@
 
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList          : consortiaMembers,
-                      tmplShowCheckbox : editable,
+                      tmplShowCheckbox : (surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]),
                       tmplDisableOrgIds: surveyConfig.orgs?.org?.id,
                       tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.type == 'Subscription' ? 'surveySubInfo' : '')]
               ]"/>
 
     <br/>
-    <g:if test="${editable}">
+    <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
         <input type="submit" class="ui button" value="${message(code: 'default.button.add.label')}"/>
     </g:if>
 

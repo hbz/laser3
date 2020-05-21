@@ -104,6 +104,21 @@ class SurveyUpdateService extends AbstractLockableService {
 
     }
 
+    def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org){
+
+            //Only User that approved
+            List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(org, 1)
+
+            //Only User with Notification by Email and for Surveys Start
+            userOrgs.each { userOrg ->
+                if(userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                {
+                    sendEmail(userOrg.user, userOrg.org, [surveyInfo])
+                }
+            }
+    }
+
     private void sendEmail(User user, Org org, List<SurveyInfo> surveyEntries) {
 
         if (grailsApplication.config.grails.mail.disabled == true) {
