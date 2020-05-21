@@ -4517,6 +4517,29 @@ class SurveyController {
 
                         if (!surveyOrg.save(flush: true)) {
                             log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}");
+                        }else{
+                            if(surveyConfig.surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]){
+                                surveyConfig.surveyProperties.each { property ->
+
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org ?: null,
+                                            startDate: surveyConfig.surveyInfo.startDate,
+                                            endDate: surveyConfig.surveyInfo.endDate ?: null,
+                                            type: property.surveyProperty,
+                                            surveyConfig: surveyConfig
+                                    )
+
+                                    if (surveyResult.save(flush: true)) {
+                                        log.debug(surveyResult)
+                                    } else {
+                                        log.error("Not create surveyResult: "+ surveyResult)
+                                    }
+                                }
+
+                                if(surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED){
+                                    surveyUpdateService.emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org)
+                                }
                         }
                     }
                 }
