@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2511    20.05.2020  rc1.4       Moe     Feature        KBART-Upload der Reihe
+
 2299    20.05.2020  hbz-dev     Moe     Feature     Neues allg. Umfrage-Merkmal von allg. Lizenzmerkmal erstellen/ableiten
 
 2507    20.05.2020  hbz-dev     Moe     Feature     Titelauswahlumfrage soll nicht mehr automatisch verbindlich sein
