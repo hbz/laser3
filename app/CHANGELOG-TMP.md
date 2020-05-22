@@ -2,7 +2,13 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2511    20.05.2020  rc1.4       Moe     Feature        KBART-Upload der Reihe
+2357    20.05.2020  rc1.3       Moe     Feature     Teilnehmer nachträglich einer Umfrage hinzufügen
+
+2360    20.05.2020  rc1.3       Moe     Feature     Teilnehmer bei einer Umfrage wieder freischalten
+
+2515    20.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Rolle Redakteur kann keine Fächergruppen anlegen
+
+2511    20.05.2020  rc1.4       Moe     Feature     KBART-Upload der Reihe
 
 1361    20.05.2020  hbz-dev     Andreas Feature     Erweiterung des Cronjobs für Lizenzstatusänderungen auf Verträge
 

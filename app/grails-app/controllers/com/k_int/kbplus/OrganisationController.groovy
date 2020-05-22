@@ -1344,7 +1344,7 @@ class OrganisationController extends AbstractDebugController {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
             result.editable = true
         } else {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR')
         }
 
         if (result.editable){
@@ -1368,7 +1368,7 @@ class OrganisationController extends AbstractDebugController {
         if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
             result.editable = true
         } else {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR')
         }
 
         if(result.editable) {
