@@ -135,8 +135,9 @@
         <h3 class="ui headerline"><i class="ui tasks icon"></i> ToDo-Liste (${listOfDocsInUseOrphaned.size()} Dateiobjekte)</h3>
 
         <p>
-            Alle aufgelisteten Einträge repräsentieren Dateiobjekte in der Datenbank OHNE entspr. Dateien im Filesystem.
-            Rote Einträge markieren DocContext.owner(<span style="color:red">status = deleted</span>) => Doc und sollten gelöscht werden können.
+            Alle aufgelisteten Einträge repräsentieren referenzierte Dateiobjekte in der Datenbank OHNE entspr. Dateien im Filesystem.
+            <br />
+            Rote Einträge markieren ungültige Referenzen: DocContext.owner(<span style="color:red">status = deleted</span>) => Doc.
         </p>
 
         <g:each in="${listOfDocsInUseOrphaned}" var="doc">
