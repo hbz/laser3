@@ -612,7 +612,13 @@ class AdminController extends AbstractDebugController {
 
         result.listOfFiles = []
         result.listOfFilesMatchingDocs = []
-        result.listOfFilesNotMatchingDocs = []
+        result.listOfFilesOrphaned = []
+
+        result.listOfDocsInUse = []
+        result.listOfDocsInUseOrphaned = []
+
+        result.listOfDocsNotInUse= []
+        result.listOfDocsNotInUseOrphaned = []
 
         try {
             File folder = new File("${result.filePath}")
@@ -628,38 +634,36 @@ class AdminController extends AbstractDebugController {
 
                 result.listOfFiles.each { ff ->
                     if (! matches.contains(ff)) {
-                        result.listOfFilesNotMatchingDocs << ff
+                        result.listOfFilesOrphaned << ff
                     }
                 }
+                result.listOfFilesOrphaned.toSorted()
             }
         }
         catch (Exception e) {}
 
         // docs
 
-        result.listOfDocs = Doc.executeQuery(
+        List<Doc> listOfDocs = Doc.executeQuery(
                 'select doc from Doc doc where doc.contentType = :ct order by doc.id',
                 [ct: Doc.CONTENT_TYPE_BLOB]
         )
-        result.listOfDocsNotMatchingFiles = []
-
-        result.listOfDocs.each{ doc ->
-            if (! fileCheck(doc)) {
-                result.listOfDocsNotMatchingFiles << doc
-            }
-        }
-
-        // docs in use
 
         result.listOfDocsInUse = Doc.executeQuery(
                 'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id',
                 [ct: Doc.CONTENT_TYPE_BLOB]
         )
-        result.listOfDocsInUseNotMatchingFiles = []
+
+        result.listOfDocsNotInUse = listOfDocs - result.listOfDocsInUse
 
         result.listOfDocsInUse.each{ doc ->
             if (! fileCheck(doc)) {
-                result.listOfDocsInUseNotMatchingFiles << doc
+                result.listOfDocsInUseOrphaned << doc
+            }
+        }
+        result.listOfDocsNotInUse.each{ doc ->
+            if (! fileCheck(doc)) {
+                result.listOfDocsNotInUseOrphaned << doc
             }
         }
 
