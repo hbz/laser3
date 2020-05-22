@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2516    22.05.2020  rc1.4       Andreas Feature     KBART-Import um neue Spalten erweitert
+
 2357    20.05.2020  rc1.3       Moe     Feature     Teilnehmer nachträglich einer Umfrage hinzufügen
 
 2360    20.05.2020  rc1.3       Moe     Feature     Teilnehmer bei einer Umfrage wieder freischalten
@@ -12,12 +14,11 @@
 
 1361    20.05.2020  hbz-dev     Andreas Feature     Erweiterung des Cronjobs für Lizenzstatusänderungen auf Verträge
 
-2506    19.05.2020  rc1.3       Andreas Bug         Überprüfung zu Kopie von Kosten vervollständigt
-
-
 2299    20.05.2020  hbz-dev     Moe     Feature     Neues allg. Umfrage-Merkmal von allg. Lizenzmerkmal erstellen/ableiten
 
 2507    20.05.2020  hbz-dev     Moe     Feature     Titelauswahlumfrage soll nicht mehr automatisch verbindlich sein
+
+2506    19.05.2020  rc1.3       Andreas Bug         Überprüfung zu Kopie von Kosten vervollständigt
 
 2508    19.05.2020  hbz-dev     Christian   Feature Informationen über Statistikverfügbarkeit
 

@@ -917,9 +917,11 @@ class PackageController extends AbstractDebugController {
                 Thread.currentThread().setName("PackageSync_"+sub.id)
                 try {
                     globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
-                    List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
+                    Package.withNewSession {
+                        List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
+                    }
                     globalSourceSyncService.notifyDependencies([tippsToNotify])
-                    globalSourceSyncService.cleanUpGorm()
+                    //globalSourceSyncService.cleanUpGorm()
                     println "Sync done, adding package to subscription ${sub}, with entitlements?: ${add_entitlements}"
                     pkg.addToSubscription(sub, add_entitlements)
                 }

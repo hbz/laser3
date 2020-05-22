@@ -50,11 +50,13 @@ class BookInstance extends TitleInstance {
     }
 
     static BookInstance construct(Map<String,Object> params) throws CreationException {
-        BookInstance bi = new BookInstance(params)
-        bi.setGlobalUID()
-        if(!bi.save())
-            throw new CreationException(bi.errors)
-        bi
+        withTransaction {
+            BookInstance bi = new BookInstance(params)
+            bi.setGlobalUID()
+            if(!bi.save())
+                throw new CreationException(bi.errors)
+            bi
+        }
     }
 
     String printTitleType() {
