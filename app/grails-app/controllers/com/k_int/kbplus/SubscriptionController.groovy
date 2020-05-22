@@ -958,7 +958,8 @@ class SubscriptionController extends AbstractDebugController {
                 startDateCol:-1, startVolumeCol:-1, startIssueCol:-1,
                 endDateCol:-1, endVolumeCol:-1, endIssueCol:-1,
                 accessStartDateCol:-1, accessEndDateCol:-1, coverageDepthCol:-1, coverageNotesCol:-1, embargoCol:-1,
-                listPriceCol:-1, listCurrencyCol:-1, localPriceCol:-1, localCurrencyCol:-1, priceDateCol:-1]
+                listPriceCol:-1, listCurrencyCol:-1, listPriceEurCol:-1, listPriceUsdCol:-1, listPriceGbpCol:-1, localPriceCol:-1, localCurrencyCol:-1, priceDateCol:-1]
+                boolean isUniqueListpriceColumn = false
                 //read off first line of KBART file
                 rows[0].split('\t').eachWithIndex { headerCol, int c ->
                     switch(headerCol.toLowerCase().trim()) {
@@ -1000,6 +1001,12 @@ class SubscriptionController extends AbstractDebugController {
                             break
                         case "listprice_currency": colMap.listCurrencyCol = c
                             break
+                        case "listprice_eur": colMap.listPriceEurCol = c
+                            break
+                        case "listprice_usd": colMap.listPriceUsdCol = c
+                            break
+                        case "listprice_gbp": colMap.listPriceGbpCol = c
+                            break
                         case "localprice_value": colMap.localPriceCol = c
                             break
                         case "localprice_currency": colMap.localCurrencyCol = c
@@ -1008,6 +1015,13 @@ class SubscriptionController extends AbstractDebugController {
                             break
                     }
                 }
+                if((colMap.listPriceCol > -1 && colMap.listCurrencyCol > -1) && (colMap.listPriceEurCol > -1 || colMap.listPriceGbpCol > -1 || colMap.listPriceUsdCol > -1)) {
+                    errorList.add(g.message(code:'subscription.details.addEntitlements.duplicatePriceColumn'))
+                }
+                else if((colMap.listPriceEurCol > -1 && colMap.listPriceUsdCol > -1) && (colMap.listPriceEurCol > -1 && colMap.listPriceGbpCol > -1) && (colMap.listPriceUsdCol > -1 && colMap.listPriceGbpCol > -1 )) {
+                    errorList.add(g.message(code:'subscription.details.addEntitlements.duplicatePriceColumn'))
+                }
+                else isUniqueListpriceColumn = true
                 //after having read off the header row, pop the first row
                 rows.remove(0)
                 //now, assemble the identifiers available to highlight
@@ -1105,12 +1119,21 @@ class SubscriptionController extends AbstractDebugController {
                                         break
                                 }
                             }
-                            if(result.uploadPriceInfo) {
+                            if(result.uploadPriceInfo && isUniqueListpriceColumn) {
                                 try {
                                     switch(colName) {
                                         case "listPriceCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
                                             break
                                         case "listCurrencyCol": ieCandidate.listCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)?.value
+                                            break
+                                        case "listPriceEurCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
+                                            ieCandidate.listCurrency = RefdataValue.getByValueAndCategory("EUR",RDConstants.CURRENCY).value
+                                            break
+                                        case "listPriceUsdCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
+                                            ieCandidate.listCurrency = RefdataValue.getByValueAndCategory("USD",RDConstants.CURRENCY).value
+                                            break
+                                        case "listPriceGbpCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
+                                            ieCandidate.listCurrency = RefdataValue.getByValueAndCategory("GBP",RDConstants.CURRENCY).value
                                             break
                                         case "localPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
                                             break
