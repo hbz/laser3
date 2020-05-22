@@ -1331,6 +1331,37 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
+    def openSurveyAgainForParticipant() {
+        Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.editable = result.surveyInfo.isEditable() ?: false
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
+
+        surveyResults.each {
+                it.finishDate = null
+                it.save()
+        }
+
+        redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def completeIssueEntitlementsSurveyforParticipant() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
@@ -1842,7 +1873,7 @@ class SurveyController {
         SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
         SurveyInfo surveyInfo = surveyConfig?.surveyInfo
 
-        result.editable = (surveyInfo && surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+        result.editable = (surveyInfo && surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
 
         if (params.selectedOrgs && result.editable) {
 
@@ -1870,7 +1901,29 @@ class SurveyController {
                     if (!surveyOrg.save(flush: true)) {
                         log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}");
                     } else {
-                        //flash.message = g.message(code: "surveyParticipants.add.successfully")
+                        if(surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]){
+                            surveyConfig.surveyProperties.each { property ->
+
+                                SurveyResult surveyResult = new SurveyResult(
+                                        owner: result.institution,
+                                        participant: org ?: null,
+                                        startDate: surveyInfo.startDate,
+                                        endDate: surveyInfo.endDate ?: null,
+                                        type: property.surveyProperty,
+                                        surveyConfig: surveyConfig
+                                )
+
+                                if (surveyResult.save(flush: true)) {
+                                    log.debug(surveyResult)
+                                } else {
+                                    log.error("Not create surveyResult: "+ surveyResult)
+                                }
+                            }
+
+                            if(surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED){
+                                surveyUpdateService.emailsToSurveyUsersOfOrg(surveyInfo, org)
+                            }
+                        }
                     }
                 }
             }
@@ -4512,6 +4565,30 @@ class SurveyController {
 
                         if (!surveyOrg.save(flush: true)) {
                             log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}");
+                        }else{
+                            if(surveyConfig.surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]) {
+                                surveyConfig.surveyProperties.each { property ->
+
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org ?: null,
+                                            startDate: surveyConfig.surveyInfo.startDate,
+                                            endDate: surveyConfig.surveyInfo.endDate ?: null,
+                                            type: property.surveyProperty,
+                                            surveyConfig: surveyConfig
+                                    )
+
+                                    if (surveyResult.save(flush: true)) {
+                                        log.debug(surveyResult)
+                                    } else {
+                                        log.error("Not create surveyResult: " + surveyResult)
+                                    }
+                                }
+
+                                if (surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED) {
+                                    surveyUpdateService.emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org)
+                                }
+                            }
                         }
                     }
                 }
