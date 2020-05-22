@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2432    22.05.2020  rc1.4       Andreas Feature     Kuratorengruppen von Paketen werden jetzt auf Lizenzdetailseite und Paket-verknüpfen-Seite angezeigt
+
+2413    22.05.2020  rc1.4       Andreas Feature     Titelausgabe um dynamische Ausgabe von Titelidentifierspalten erweitert
+
 2516    22.05.2020  rc1.4       Andreas Feature     KBART-Import um neue Spalten erweitert
 
 2357    20.05.2020  rc1.3       Moe     Feature     Teilnehmer nachträglich einer Umfrage hinzufügen
