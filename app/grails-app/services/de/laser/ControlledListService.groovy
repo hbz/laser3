@@ -1,9 +1,10 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -113,18 +114,18 @@ class ControlledListService {
             Subscription s = (Subscription) row[0]
 
             switch (params.ltype) {
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
-                    if (s.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION,TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]){
+                case CalculatedType.TYPE_PARTICIPATION:
+                    if (s.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]){
                         if(org in s.orgRelations.collect { or -> or.org })
                             result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
                     }
                     break
-                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
-                    if (s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL)
+                case CalculatedType.TYPE_CONSORTIAL:
+                    if (s.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
                         result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
                     break
-                case TemplateSupport.CALCULATED_TYPE_COLLECTIVE:
-                    if (s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_COLLECTIVE)
+                case CalculatedType.TYPE_COLLECTIVE:
+                    if (s.getCalculatedType() == CalculatedType.TYPE_COLLECTIVE)
                         result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
                     break
                 default:
@@ -180,6 +181,36 @@ class ControlledListService {
     }
 
     /**
+     * Retrieves a list of issue entitlement group owned by the context organisation matching given parameters
+     * @param params - eventual request params
+     * @return a map containing a list of issue entitlement groups, an empty one if no issue entitlement group match the filter
+     */
+    Map getTitleGroups(Map params) {
+        Org org = contextService.getOrg()
+        LinkedHashMap issueEntitlementGroup = [results:[]]
+        //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
+        String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
+        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE], current:RDStore.SUBSCRIPTION_CURRENT]
+        if(params.sub) {
+            filter = '= :sub'
+            filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
+        }
+
+        if(params.query && params.query.length() > 0) {
+            filter += ' and genfunc_filter_matcher(ieg.name,:query) = true '
+            filterParams.put('query',params.query)
+        }
+        List result = IssueEntitlementGroup.executeQuery('select ieg from IssueEntitlementGroup as ieg where ieg.sub '+filter+' order by ieg.name asc, ieg.sub asc, ieg.sub.startDate asc, ieg.sub.endDate asc',filterParams)
+        if(result.size() > 0) {
+            result.each { res ->
+                Subscription s = (Subscription) res.sub
+                issueEntitlementGroup.results.add([name:"${res.name} (${s.dropdownNamingConvention(org)})",value:res.class.name+":"+res.id])
+            }
+        }
+        issueEntitlementGroup
+    }
+
+    /**
      * Retrieves a list of licenses owned by the context organisation matching given parameters
      * @param params - eventual request params (currently not in use, handed for an eventual extension)
      * @return a map containing licenses, an empty one if no licenses match the filter
@@ -193,6 +224,11 @@ class ControlledListService {
         if(params.query && params.query.length() > 0) {
             licFilter = ' and genfunc_filter_matcher(l.reference,:query) = true '
             filterParams.put('query',params.query)
+        }
+        if(params.ctx) {
+            License ctx = genericOIDService.resolveOID(params.ctx)
+            filterParams.ctx = ctx
+            licFilter += " and l != :ctx "
         }
         result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
@@ -339,7 +375,7 @@ class ControlledListService {
                 License license = (License) it[0]
                 String licenseStartDate = license.startDate ? sdf.format(license.startDate) : '???'
                 String licenseEndDate = license.endDate ? sdf.format(license.endDate) : ''
-                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it[1]} - ${license.status.getI10n("value")} (${licenseStartDate} - ${licenseEndDate})",value:"${license.class.name}:${license.id}"])
+                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it[1]} - (${licenseStartDate} - ${licenseEndDate})",value:"${license.class.name}:${license.id}"])
             }
         }
         if(params.subscription == "true") {
@@ -348,7 +384,7 @@ class ControlledListService {
                 Subscription subscription = (Subscription) it[0]
                 /*
                 String tenant
-                if(subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
+                if(subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
                     try {
                         tenant = " - ${subscription.getAllSubscribers().get(0).sortname}"
                     }

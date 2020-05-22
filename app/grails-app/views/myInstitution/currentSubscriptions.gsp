@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -331,11 +331,19 @@
 
 
             <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
-                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfLicenses.label')}</th>
-                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfCostItems.label')}</th>
+                <th scope="col" rowspan="2">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                        <i class="users large icon"></i>
+                    </span>
+                </th>
+                <th scope="col" rowspan="2">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                        <i class="money bill large icon"></i>
+                    </span>
+                </th>
             </g:if>
 
-            <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+            <g:if test="${!(contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM')}">
             <th class="la-no-uppercase" scope="col" rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'subscription.isMultiYear.label')}">
@@ -451,7 +459,7 @@
                     </td>
                     <td>
                         <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
-                            <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                            <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
                                 ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
                             </g:if>
                             <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST_COLLECTIVE'}">
@@ -460,11 +468,11 @@
                         </g:link>
                     </td>
                 </g:if>
-                <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+                <g:if test="${!(contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM')}">
                     <td>
                         <g:if test="${s.isMultiYear}">
-                            <g:if test="${(s.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                                    s.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION)}">
+                            <g:if test="${(s.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
+                                    s.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
                                     <i class="map orange icon"></i>
@@ -495,7 +503,7 @@
                         </g:link>
                     </g:if>
 
-                    <g:if test="${contextService.org?.getCustomerType() in ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'] && surveysConsortiaSub }">
+                    <g:if test="${contextService.org?.getCustomerType()  == 'ORG_CONSORTIUM' && surveysConsortiaSub }">
                         <g:link controller="subscription" action="surveysConsortia" id="${s?.id}"
                                 class="ui icon button">
                             <g:if test="${surveysConsortiaSub?.surveyInfo?.isCompletedforOwner()}">

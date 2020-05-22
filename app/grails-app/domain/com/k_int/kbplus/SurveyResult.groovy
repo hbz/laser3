@@ -1,11 +1,18 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
+import de.laser.interfaces.CalculatedLastUpdated
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+
+import javax.persistence.Transient
 
 
-class SurveyResult extends AbstractProperty {
+class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements CalculatedLastUpdated {
+
+    static Log static_logger = LogFactory.getLog(SurveyResult)
 
     Date dateCreated
     Date lastUpdated
@@ -28,7 +35,7 @@ class SurveyResult extends AbstractProperty {
     boolean isRequired = false
 
     static constraints = {
-        importFrom AbstractProperty
+        importFrom AbstractPropertyWithCalculatedLastUpdated
 
         finishDate (nullable:true, blank:false)
         comment (nullable:true, blank:false)
@@ -41,7 +48,7 @@ class SurveyResult extends AbstractProperty {
     }
 
     static mapping = {
-        includes AbstractProperty.mapping
+        includes AbstractPropertyWithCalculatedLastUpdated.mapping
 
         id column: 'surre_id'
         version column: 'surre_version'
@@ -55,21 +62,17 @@ class SurveyResult extends AbstractProperty {
         endDate column: 'surre_end_date'
         finishDate column: 'surre_finish_date'
 
-
         owner column: 'surre_owner_fk'
         participant column: 'surre_participant_fk'
 
         type column: 'surre_type_fk'
         surveyConfig column: 'surre_survey_config_fk'
 
-
         comment column: 'surre_comment'
         participantComment column: 'surre_participant_comment'
         ownerComment column: 'surre_owner_comment'
 
         isRequired column: 'surre_is_required'
-
-
     }
 
     boolean isResultProcessed()

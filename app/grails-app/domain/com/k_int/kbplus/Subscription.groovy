@@ -4,30 +4,33 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.AuditableSupport
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
-import de.laser.interfaces.TemplateSupport
-import de.laser.traits.AuditableTrait
+import de.laser.interfaces.CalculatedType
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
 class Subscription
-        extends AbstractBaseDomain
-        implements TemplateSupport, Permissions, ShareSupport,
-                AuditableTrait {
+        extends AbstractBaseDomainWithCalculatedLastUpdated
+        implements CalculatedType, Permissions, AuditableSupport, ShareSupport {
 
-    // AuditableTrait
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
+
+    static Log static_logger = LogFactory.getLog(Subscription)
 
     @Transient
     def grailsApplication
@@ -47,6 +50,11 @@ class Subscription
     def propertyService
     @Transient
     def deletionService
+    @Transient
+    def subscriptionService
+    @Transient
+    def auditService
+
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -82,9 +90,11 @@ class Subscription
   // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
   boolean administrative = false
 
-  String noticePeriod
-  Date dateCreated
-  Date lastUpdated
+    String noticePeriod
+
+    Date dateCreated
+    Date lastUpdated
+    Date lastUpdatedCascading
 
   License owner
   SortedSet issueEntitlements
@@ -103,6 +113,7 @@ class Subscription
                      customProperties: SubscriptionCustomProperty,
                      privateProperties: SubscriptionPrivateProperty,
                      costItems: CostItem,
+                     ieGroups: IssueEntitlementGroup
   ]
 
   static mappedBy = [
@@ -142,6 +153,8 @@ class Subscription
         isSlaved        column:'sub_is_slaved'
         hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
         isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
+        lastUpdatedCascading column: 'sub_last_updated_cascading'
+
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
         pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
@@ -186,24 +199,32 @@ class Subscription
         isPublicForApi (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
+        lastUpdatedCascading (nullable: true, blank: false)
         isMultiYear(nullable: true, blank: false)
         hasPerpetualAccess(nullable: false, blank: false)
     }
 
+    @Override
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+        cascadingUpdateService.update(this, dateCreated)
+
+        if(owner != null)
+            subscriptionService.setOrgLicRole(this,owner)
+    }
+
+    @Override
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
-    // TODO: implement
-    @Override
-    boolean isTemplate() {
-        return false
-    }
-
-    // TODO: implement
-    @Override
-    boolean hasTemplate() {
-        return false
+    @Transient
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChangeHandler(this, oldMap, newMap)
     }
 
     @Override
@@ -219,7 +240,7 @@ class Subscription
 
     @Override
     boolean showUIShareButton() {
-        getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE]
+        getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
     }
 
     @Override
@@ -300,30 +321,27 @@ class Subscription
 
     @Override
     String getCalculatedType() {
-        def result = CALCULATED_TYPE_UNKOWN
+        String result = TYPE_UNKOWN
 
-        if (isTemplate()) {
-            result = CALCULATED_TYPE_TEMPLATE
-        }
-        else if(getCollective() && getConsortia() && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE
+        if (getCollective() && getConsortia() && instanceOf) {
+            result = TYPE_PARTICIPATION_AS_COLLECTIVE
         }
         else if(getCollective() && !getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_COLLECTIVE
+            result = TYPE_COLLECTIVE
         }
         else if(getConsortia() && !getAllSubscribers() && !instanceOf) {
             if(administrative) {
                 log.debug(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
+                result = TYPE_ADMINISTRATIVE
             }
-            else result = CALCULATED_TYPE_CONSORTIAL
+            else result = TYPE_CONSORTIAL
         }
         else if((getCollective() || getConsortia()) && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION
+            result = TYPE_PARTICIPATION
         }
         // TODO remove type_local
         else if(getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_LOCAL
+            result = TYPE_LOCAL
         }
         result
     }
@@ -331,31 +349,31 @@ class Subscription
     /*
     @Override
     String getCalculatedType() {
-        def result = CALCULATED_TYPE_UNKOWN
+        def result = TYPE_UNKOWN
 
         if (isTemplate()) {
-            result = CALCULATED_TYPE_TEMPLATE
+            result = TYPE_TEMPLATE
         }
         else if(getCollective() && ! getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_COLLECTIVE
+            result = TYPE_COLLECTIVE
         }
         else if(getCollective() && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION
+            result = TYPE_PARTICIPATION
         }
         else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
             if(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
+                result = TYPE_ADMINISTRATIVE
             else
-                result = CALCULATED_TYPE_CONSORTIAL
+                result = TYPE_CONSORTIAL
         }
         else if(getConsortia() && instanceOf) {
             if(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
+                result = TYPE_ADMINISTRATIVE
             else
-                result = CALCULATED_TYPE_PARTICIPATION
+                result = TYPE_PARTICIPATION
         }
         else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
-            result = CALCULATED_TYPE_LOCAL
+            result = TYPE_LOCAL
         }
         result
     }
@@ -427,7 +445,7 @@ class Subscription
     Org getProvider() {
         Org result
         orgRelations.each { or ->
-            if ( or?.roleType?.value=='Content Provider' )
+            if ( or.roleType.value=='Content Provider' )
                 result = or.org
             }
         result
@@ -436,7 +454,7 @@ class Subscription
     Org getConsortia() {
         Org result
         orgRelations.each { or ->
-            if ( or?.roleType?.value=='Subscription Consortia' )
+            if ( or.roleType.value=='Subscription Consortia' )
                 result = or.org
             }
         result
@@ -566,11 +584,6 @@ class Subscription
         return false
     }
 
-  @Override
-  def beforeInsert() {
-    super.beforeInsert()
-  }
-
     @Transient
     def notifyDependencies_trait(changeDocument) {
         log.debug("notifyDependencies_trait(${changeDocument})")
@@ -639,7 +652,7 @@ class Subscription
         groups.each{ it ->
 
             // cons_members
-            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
+            if (this.instanceOf) {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
 
                 // global groups

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.BookInstance; com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.ApiSource;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.BookInstance; com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.ApiSource;de.laser.helper.RDConstants" %>
 
 <%-- r:require module="annotations" --%>
 
@@ -74,6 +74,29 @@
         </div>
     </div><!--.row-->
 
+    <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+            <div class="ui top attached tabular menu">
+                <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" class="item ${params.titleGroup ? '': 'active' }">
+                    Alle
+                    <span class="ui circular label">
+                    ${num_ies}
+                    </span>
+                </g:link>
+
+                <g:each in="${subscriptionInstance.ieGroups.sort{it.name}}" var="titleGroup">
+                    <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" params="[titleGroup: titleGroup.id]" class="item ${(params.titleGroup == titleGroup.id.toString()) ? 'active': '' }">
+                        ${titleGroup.name}
+                        <span class="ui circular label">
+                            ${titleGroup.items.size()}
+                        </span>
+                    </g:link>
+                </g:each>
+
+            </div>
+
+        <div class="ui bottom attached tab active segment">
+    </g:if>
+
     <div class="row">
         <div class="column">
 
@@ -104,6 +127,28 @@
                                                   value="${params.asAt}"/>
                             </div>
                         </g:if>
+                    </div>
+                    <div class="three fields">
+                        <div class="field">
+                                                <label for="seriesNames">${message(code: 'titleInstance.seriesName.label')}</label>
+                            <input name="seriesNames" id="seriesNames" value="${params.series_names}"/>
+                        </div>
+
+                        <div class="field">
+                            <label for="subject_reference">${message(code: 'titleInstance.subjectReference.label')}</label>
+
+                            <select name="subject_references" id="subject_reference" multiple="" class="ui search selection dropdown">
+                                <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                                <g:each in="${subjects}" var="subject">
+                                    <option <%=(params.list('subject_references').contains(subject)) ? 'selected="selected"' : ''%>
+                                            value="${subject}">
+                                        ${subject}
+                                    </option>
+                                </g:each>
+                            </select>
+                        </div>
+
                         <div class="field la-field-right-aligned">
                             <a href="${request.forwardURI}"
                                class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</a>
@@ -139,6 +184,9 @@
                         <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices" /></th>
+                        <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+                            <th class="two wide"><g:message code="subscription.details.ieGroups" /></th>
+                        </g:if>
                         <th class="one wide"></th>
                     </tr>
                     <tr>
@@ -214,6 +262,16 @@
                             <th>
 
                             </th>
+                            <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+                                <th class="two wide">
+                                    <select class="ui dropdown" name="titleGroup" id="titleGroup">
+                                        <option value="">${message(code: 'default.select.choose.label')}</option>
+                                        <g:each in="${subscriptionInstance.ieGroups.sort{it.name}}" var="titleGroup">
+                                            <option value="${titleGroup.id}">${titleGroup.name}</option>
+                                        </g:each>
+                                    </select>
+                                </th>
+                            </g:if>
                             <th>
 
                                 <button data-position="top right"
@@ -225,7 +283,12 @@
                             </th>
                         </g:if>
                         <g:else>
-                            <th colspan="9"></th>
+                            <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+                                <th colspan="10"></th>
+                            </g:if>
+                            <g:else>
+                                <th colspan="9"></th>
+                            </g:else>
                         </g:else>
                     </tr>
                     </thead>
@@ -262,11 +325,11 @@
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie?.tipp?.title?.dateFirstInPrint}"/>
+                                                      date="${ie.tipp.title.dateFirstInPrint}"/>
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie?.tipp?.title?.dateFirstOnline}"/>
+                                                      date="${ie.tipp.title.dateFirstOnline}"/>
 
                                     </g:if>
                                     <g:elseif test="${ie.tipp.title instanceof com.k_int.kbplus.JournalInstance}">
@@ -332,6 +395,28 @@
                                         </g:link>
                                     </g:elseif>
                                 </td>
+                                <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+                                    <td>
+                                        <div class="la-icon-list">
+                                        <g:each in="${ie.ieGroups.sort{it.ieGroup.name}}" var="titleGroup">
+                                            <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" params="[titleGroup: titleGroup.ieGroup.id]" class="item">
+                                                <i class="grey icon object group la-popup-tooltip la-delay" data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
+                                                <div class="content">
+                                                ${titleGroup.ieGroup.name}
+                                                </div>
+                                            </g:link>
+                                        </g:each>
+                                        </div>
+                                        <div class="ui grid">
+                                            <div class="right aligned wide column">
+                                        <g:link action="editEntitlementGroupItem" params="${[cmd:'edit', ie:ie.id, id: subscriptionInstance.id]}" class="ui icon button trigger-modal">
+                                            <i class="object group icon"></i>
+                                        </g:link>
+                                            </div>
+                                        </div>
+
+                                    </td>
+                                </g:if>
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:link action="removeEntitlement" class="ui icon negative button"
@@ -350,6 +435,10 @@
 
         </div>
     </div><!--.row-->
+    <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+        </div>
+    </g:if>
+
 </div>
 
 <g:if test="${entitlements}">
@@ -411,6 +500,34 @@
             hide: 0
         }
       });
+
+    $('.trigger-modal').on('click', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr('href')
+            }).done( function (data) {
+                $('.ui.dimmer.modals > #editEntitlementGroupItemModal').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#editEntitlementGroupItemModal');
+                        r2d2.initDynamicXEditableStuff('#editEntitlementGroupItemModal');
+                        $("html").css("cursor", "auto");
+                        ajaxPostFunc()
+                    },
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        })
 </r:script>
 </body>
 </html>

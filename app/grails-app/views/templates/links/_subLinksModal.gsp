@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.helper.RDStore;de.laser.interfaces.TemplateSupport" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.helper.RDStore;de.laser.interfaces.CalculatedType" %>
 <g:if test="${editmode}">
     <a role="button" class="ui button ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
         <g:if test="${tmplIcon}">
@@ -10,8 +10,22 @@
     </a>
 </g:if>
 
+<%
+    String header, thisString, urlLookup
+    switch(objectType) {
+        case Subscription.class.name: header = message(code:"subscription.linking.header")
+            thisString = message(code:"subscription.linking.this")
+            urlLookup = "lookupSubscriptions"
+            break
+        case License.class.name: header = message(code:"license.linking.header")
+            thisString = message(code:"license.linking.this")
+            urlLookup = "lookupLicenses"
+            break
+    }
+%>
+
 <semui:modal id="${tmplModalID}" text="${tmplText}">
-    <g:form id="link_subs_${tmplModalID}" class="ui form" url="[controller: 'ajax', action: 'linkSubscriptions']" method="post">
+    <g:form id="link_${tmplModalID}" class="ui form" url="[controller: 'ajax', action: 'linkSubscriptions']" method="post">
         <input type="hidden" name="context" value="${context}"/>
         <%
             List<RefdataValue> refdataValues = RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LINK_TYPE)
@@ -23,10 +37,10 @@
                 }
                 if(link && link.linkType == rv) {
                     int perspIndex
-                    if(context == Subscription.class.name+":"+link.source) {
+                    if(context == objectType+":"+link.source) {
                         perspIndex = 0
                     }
-                    else if(context == Subscription.class.name+":"+link.destination) {
+                    else if(context == objectType+":"+link.destination) {
                         perspIndex = 1
                     }
                     else {
@@ -56,12 +70,12 @@
             <div id="sub_role_tab_${tmplModalID}" class="ui grid">
                 <div class="row">
                     <div class="column">
-                        <g:message code="subscription.linking.header"/>
+                        ${header}
                     </div>
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <g:message code="subscription.linking.this" />
+                        ${thisString}
                     </div>
                     <div class="twelve wide column">
                         <g:select class="ui dropdown select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
@@ -70,7 +84,7 @@
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <g:message code="subscription" />
+                        <g:message code="${controllerName}" />
                     </div>
                     <div class="twelve wide column">
                         <div class="ui search selection dropdown la-full-width" id="${selectPair}">
@@ -83,7 +97,7 @@
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <g:message code="subscription.linking.comment" />
+                        <g:message code="default.linking.comment" />
                     </div>
                     <div class="twelve wide column">
                         <g:textArea class="ui" name="${linkComment}" id="${linkComment}" value="${comment?.owner?.content}"/>
@@ -96,9 +110,10 @@
 <%-- for that one day, we may move away from that ... --%>
 <r:script>
     $(document).ready(function(){
+       console.log("${urlLookup}");
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?status=FETCH_ALL&query={query}&ctx=${context}",
+                url: "<g:createLink controller="ajax" action="${urlLookup}"/>?status=FETCH_ALL&query={query}&ctx=${context}",
                 cache: false
             },
             clearable: true,

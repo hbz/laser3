@@ -26,7 +26,6 @@ import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.SimpleDateFormat
@@ -37,7 +36,7 @@ class AdminController extends AbstractDebugController {
     def springSecurityService
     def dataloadService
     def statsSyncService
-    SubscriptionUpdateService subscriptionUpdateService
+    StatusUpdateService statusUpdateService
     def messageService
     def changeNotificationService
     def yodaService
@@ -149,7 +148,7 @@ class AdminController extends AbstractDebugController {
 
         List<String> jobList = [
                 'DocContext',
-                ['GlobalRecordInfo', 'globalRecordInfoStatus'],
+                //['GlobalRecordInfo', 'globalRecordInfoStatus'],
                 'IssueEntitlement',
                 'License',
                 'Org',
@@ -517,7 +516,7 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def updateQASubscriptionDates() {
         if (grailsApplication.config.getCurrentServer() in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) {
-            def updateReport = subscriptionUpdateService.updateQASubscriptionDates()
+            def updateReport = statusUpdateService.updateQASubscriptionDates()
             if(updateReport instanceof Boolean)
                 flash.message = message(code:'subscription.qaTestDateUpdate.success')
             else {
@@ -586,6 +585,95 @@ class AdminController extends AbstractDebugController {
 
         result.importIds = dataConsistencyService.checkImportIds()
         result.titles    = dataConsistencyService.checkTitles()
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def fileConsistency() {
+        Map<String, Object> result = [:]
+
+        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+        Closure fileCheck = { Doc doc ->
+
+            try {
+                File test = new File("${result.filePath}/${doc.uuid}")
+                if (test.exists() && test.isFile()) {
+                    return true
+                }
+            }
+            catch (Exception e) {
+                return false
+            }
+        }
+
+        // files
+
+        result.listOfFiles = []
+        result.listOfFilesMatchingDocs = []
+        result.listOfFilesNotMatchingDocs = []
+
+        try {
+            File folder = new File("${result.filePath}")
+
+            if (folder.exists()) {
+                result.listOfFiles = folder.listFiles().collect{it.getName()}
+
+                result.listOfFilesMatchingDocs = Doc.executeQuery(
+                        'select doc from Doc doc where doc.contentType = :ct and doc.uuid in (:files)',
+                        [ct: Doc.CONTENT_TYPE_BLOB, files: result.listOfFiles]
+                )
+                List<String> matches = result.listOfFilesMatchingDocs.collect{ it.uuid }
+
+                result.listOfFiles.each { ff ->
+                    if (! matches.contains(ff)) {
+                        result.listOfFilesNotMatchingDocs << ff
+                    }
+                }
+            }
+        }
+        catch (Exception e) {}
+
+        // docs
+
+        result.listOfDocs = Doc.executeQuery(
+                'select doc from Doc doc where doc.contentType = :ct order by doc.id',
+                [ct: Doc.CONTENT_TYPE_BLOB]
+        )
+        result.listOfDocsNotMatchingFiles = []
+
+        result.listOfDocs.each{ doc ->
+            if (! fileCheck(doc)) {
+                result.listOfDocsNotMatchingFiles << doc
+            }
+        }
+
+        // docs in use
+
+        result.listOfDocsInUse = Doc.executeQuery(
+                'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id',
+                [ct: Doc.CONTENT_TYPE_BLOB]
+        )
+        result.listOfDocsInUseNotMatchingFiles = []
+
+        result.listOfDocsInUse.each{ doc ->
+            if (! fileCheck(doc)) {
+                result.listOfDocsInUseNotMatchingFiles << doc
+            }
+        }
+
+        // doc contexts
+
+        result.numberOfDocContextsInUse = DocContext.executeQuery(
+                'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and (dc.status is null or dc.status != :del)',
+                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+        ).size()
+
+        result.numberOfDocContextsDeleted = DocContext.executeQuery(
+                'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and dc.status = :del',
+                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+        ).size()
 
         result
     }
@@ -1349,7 +1437,7 @@ class AdminController extends AbstractDebugController {
 
 
                     subscriberRoles.each{ role ->
-                        if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
+                        if (role.sub.getCalculatedType() == Subscription.TYPE_LOCAL) {
                             role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
                             role.save()
 
@@ -1362,7 +1450,7 @@ class AdminController extends AbstractDebugController {
 
                     }*/
                     conSubscriberRoles.each { role ->
-                        if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                        if (role.sub.getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
                             OrgRole newRole = new OrgRole(
                                     org: role.org,
                                     sub: role.sub,
@@ -1419,7 +1507,7 @@ class AdminController extends AbstractDebugController {
         result.orgListTotal = result.orgList.size()
 
         result.allConsortia = Org.executeQuery(
-                "select o from OrgSettings os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority in ('ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY') order by o.sortname, o.name"
+                "select o from OrgSettings os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority  = 'ORG_CONSORTIUM' order by o.sortname, o.name"
         )
         result
     }
@@ -1520,6 +1608,34 @@ class AdminController extends AbstractDebugController {
                 attrMap     : attrMap,
                 usedPdList  : usedPdList
         ]
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def transferSubPropToSurProp() {
+
+        PropertyDefinition propertyDefinition = PropertyDefinition.get(params.propertyDefinition)
+
+        if(!PropertyDefinition.findByNameAndDescrAndTenant(propertyDefinition.name, PropertyDefinition.SUR_PROP, null)){
+            PropertyDefinition surveyProperty = new PropertyDefinition(
+                    name: propertyDefinition.name,
+                    name_de: propertyDefinition.name_de,
+                    name_en: propertyDefinition.name_en,
+                    expl_de: propertyDefinition.expl_de,
+                    expl_en: propertyDefinition.expl_en,
+                    type: propertyDefinition.type,
+                    refdataCategory: propertyDefinition.refdataCategory,
+                    descr: PropertyDefinition.SUR_PROP
+            )
+
+            if (surveyProperty.save(flush: true)) {
+                flash.message = message(code: 'propertyDefinition.copySubPropToSurProp.created.sucess')
+            }
+            else {
+                flash.error = message(code: 'propertyDefinition.copySubPropToSurProp.created.fail')
+            }
+        }
+
+        redirect(action: 'managePropertyDefinitions')
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -1679,7 +1795,7 @@ class AdminController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def importSeriesToEBooks() {
+    def titleEnrichment() {
         Map<String, Object> result = [:]
 
 
@@ -1701,7 +1817,11 @@ class AdminController extends AbstractDebugController {
                         break
                     case "publication_title": colMap.publicationTitleCol = c
                         break
-                    case "series": colMap.seriesTitleCol = c
+                    case "series_name": colMap.seriesNameTitleCol = c
+                        break
+                    case "subject_reference": colMap.subjectReferenceTitleCol = c
+                        break
+                    case "summary_of_content": colMap.summaryOfContentTitleCol = c
                         break
                     case "doi_identifier": colMap.doiTitleCol = c
                         break
@@ -1742,15 +1862,26 @@ class AdminController extends AbstractDebugController {
                     if(tiObj) {
 
                         tiObj.each { titleInstance ->
+                            count++
                             if(titleInstance instanceof BookInstance) {
-                                count++
-
-                                if((cols[colMap.seriesTitleCol] != null || cols[colMap.seriesTitleCol] != "") && (cols[colMap.seriesTitleCol].trim() != titleInstance.summaryOfContent) ){
+                                if(colMap.summaryOfContentTitleCol && (cols[colMap.summaryOfContentTitleCol] != null || cols[colMap.summaryOfContentTitleCol] != "") && (cols[colMap.summaryOfContentTitleCol].trim() != titleInstance.summaryOfContent) ){
                                     countChanges++
-                                    titleInstance.summaryOfContent = cols[colMap.seriesTitleCol].trim()
+                                    titleInstance.summaryOfContent = cols[colMap.summaryOfContentTitleCol].trim()
                                     titleInstance.save(flush: true)
                                 }
                             }
+
+                                if(colMap.seriesNameTitleCol && (cols[colMap.seriesNameTitleCol] != null || cols[colMap.seriesNameTitleCol] != "") && (cols[colMap.seriesNameTitleCol].trim() != titleInstance.seriesName) ){
+                                    countChanges++
+                                    titleInstance.seriesName = cols[colMap.seriesNameTitleCol].trim()
+                                    titleInstance.save(flush: true)
+                                }
+
+                                if(colMap.subjectReferenceTitleCol && (cols[colMap.subjectReferenceTitleCol] != null || cols[colMap.subjectReferenceTitleCol] != "") && (cols[colMap.subjectReferenceTitleCol].trim() != titleInstance.subjectReference) ){
+                                    countChanges++
+                                    titleInstance.subjectReference = cols[colMap.subjectReferenceTitleCol].trim()
+                                    titleInstance.save(flush: true)
+                                }
                         }
                     }
                 }

@@ -26,8 +26,8 @@
         <g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
 
             <g:if test="${subInstance}">
-                <g:hiddenField name="sub" value="${subInstance?.id}"/>
-                <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', default: 'Create a new license and link it to the subscription "{0}"', args: [subInstance?.name])}</div>
+                <g:hiddenField name="sub" value="${subInstance.id}"/>
+                <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', default: 'Create a new license and link it to the subscription "{0}"', args: [subInstance.name])}</div>
             </g:if>
 
             <g:if test="${params.baselicense}">
@@ -77,12 +77,12 @@
         </g:form>
     </semui:form>
 
+<%-- TODO remove ERMS-2431
 <hr>
 
 <h3>${message(code: 'license.copy')}</h3>
 
 <g:if test="${numLicenses > 0 || (params.filter)}">
-
     <semui:filter>
         <g:form action="emptyLicense" params="${params}" method="get" class="ui form">
             <div class="fields">
@@ -167,7 +167,7 @@
 </g:if><g:else>
     <br><b>${message(code: 'license.template.empty')}</b>
 </g:else>
-
+--%>
 
 <r:script>
     $('.license-results input[type="radio"]').click(function () {

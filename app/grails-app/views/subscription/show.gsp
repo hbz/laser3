@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
 <%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole" %>
-<%@ page import="com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
@@ -41,7 +41,9 @@
         <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
             <semui:xEditable owner="${subscriptionInstance}" field="name" />
         </h1>
-        <semui:auditButton auditable="[subscriptionInstance, 'name']" />
+        <g:if test="${editable}">
+            <semui:auditButton auditable="[subscriptionInstance, 'name']" />
+        </g:if>
 
         <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
@@ -69,12 +71,16 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'startDate']"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'startDate']"/></dd>
+                                </g:if>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.endDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'endDate']"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'endDate']"/></dd>
+                                </g:if>
                             </dl>
                             <% /*
                             <dl>
@@ -85,13 +91,15 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
+                                </g:if>
                             </dl>
 
-                            <g:if test="${(subscriptionInstance.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                                    subscriptionInstance.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION) ||
-                                    (subscriptionInstance.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_LOCAL &&
-                                    subscriptionInstance.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_LOCAL)}">
+                            <g:if test="${(subscriptionInstance.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
+                                    subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
+                                    (subscriptionInstance.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
+                                    subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
                                     <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
@@ -105,7 +113,9 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'default.status.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config="${RDConstants.SUBSCRIPTION_STATUS}" constraint="removeValue_deleted" /></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
+                                </g:if>
                             </dl>
                             <sec:ifAnyGranted roles="ROLE_YODA">
                                 <dl>
@@ -136,17 +146,23 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="kind" config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'kind']"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'kind']"/></dd>
+                                </g:if>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="form" config="${RDConstants.SUBSCRIPTION_FORM}"/></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'form']"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'form']"/></dd>
+                                </g:if>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
+                                </g:if>
                             </dl>
                             <g:if test="${!params.orgBasicMemberView && subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id])}">
                                 <dl>
@@ -169,13 +185,17 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
                                 <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isPublicForApi" /></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isPublicForApi']"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isPublicForApi']"/></dd>
+                                </g:if>
                             </dl>
 
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
                                 <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="hasPerpetualAccess" /></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'hasPerpetualAccess']"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'hasPerpetualAccess']"/></dd>
+                                </g:if>
                             </dl>
 
                         </div>
@@ -211,7 +231,8 @@
                                                                         tmplModalID:"sub_edit_link_${link.id}",
                                                                         editmode: editable,
                                                                         context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
-                                                                        link: link
+                                                                        link: link,
+                                                                        objectType: "${Subscription.class.name}"
                                                               ]}" />
                                                     <g:if test="${editable}">
                                                         <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
@@ -240,7 +261,8 @@
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
                                                 editmode: editable,
-                                                context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}"
+                                                context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
+                                                objectType: "${Subscription.class.name}"
                                       ]}" />
                         </div>
                     </div>
@@ -566,16 +588,29 @@
                                             <g:each in="${l_x_axis_labels}" var="l">
                                                 <th>${l}</th>
                                             </g:each>
+                                            <th></th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <g:set var="counter" value="${0}"/>
                                         <g:each in="${lusage}" var="v">
                                             <tr>
-                                                <td>${l_y_axis_labels[counter++]}</td>
+                                                <g:set var="reportMetric" value="${l_y_axis_labels[counter++]}" />
+                                                <td>${reportMetric}
+                                            </td>
                                                 <g:each in="${v}" var="v2">
                                                     <td>${v2}</td>
                                                 </g:each>
+                                                <td>
+                                                    <g:set var="missingSubMonths"
+                                                           value="${missingSubscriptionMonths[reportMetric.split(':')[0]]}"/>
+                                                    <g:if test="${missingSubMonths}">
+                                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                              data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missingSubMonths.join(',')}">
+                                                            <i class="exclamation triangle icon la-popup small"></i>
+                                                        </span>
+                                                    </g:if>
+                                                </td>
                                             </tr>
                                         </g:each>
                                         </tbody>
@@ -590,10 +625,12 @@
                                     <table class="ui la-table-small celled la-table-inCard table">
                                         <thead>
                                         <tr>
-                                            <th>${message(code: 'default.usage.reportType')}</th>
+                                            <th>${message(code: 'default.usage.reportType')}
+                                            </th>
                                             <g:each in="${x_axis_labels}" var="l">
                                                 <th>${l}</th>
                                             </g:each>
+                                            <th></th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -601,7 +638,12 @@
                                         <g:each in="${usage}" var="v">
                                             <tr>
                                                 <g:set var="reportMetric" value="${y_axis_labels[counter++]}" />
-                                                <td>${reportMetric}</td>
+                                                <td>${reportMetric}
+                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                      data-html="${message(code: 'default.usage.reportUpToInfo')}: ${lastUsagePeriodForReportType[reportMetric.split(':')[0]]}">
+                                                    <i class="info icon small circular la-popup"></i>
+                                                </span>
+                                                </td>
                                                 <g:each in="${v}" status="i" var="v2">
                                                     <td>
                                                         <laser:statsLink
@@ -622,6 +664,15 @@
                                                         </laser:statsLink>
                                                     </td>
                                                 </g:each>
+                                                <g:set var="missing" value="${missingMonths[reportMetric.split(':')[0]]}"/>
+                                                <td>
+                                                    <g:if test="${missing}">
+                                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                              data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missing.join(',')}">
+                                                            <i class="exclamation triangle icon la-popup small"></i>
+                                                        </span>
+                                                    </g:if>
+                                                </td>
                                             </tr>
                                         </g:each>
                                         </tbody>

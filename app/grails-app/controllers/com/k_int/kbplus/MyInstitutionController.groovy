@@ -6,7 +6,7 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.DashboardDueDate
+import de.laser.DashboardDueDatesService
 import de.laser.SystemAnnouncement
 
 //import de.laser.TaskService //unused for quite a long time
@@ -317,7 +317,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def date_restriction = null;
+        def date_restriction = null
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
@@ -336,59 +336,77 @@ class MyInstitutionController extends AbstractDebugController {
         RefdataValue licensee_role           = RDStore.OR_LICENSEE
         RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
         RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
-        RefdataValue template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
 
-        def base_qry
-        def qry_params
+        String base_qry
+        Map qry_params
 
         @Deprecated
-        def qry = INSTITUTIONAL_LICENSES_QUERY
+        String qry = INSTITUTIONAL_LICENSES_QUERY
 
         result.filterSet = params.filterSet ? true : false
 
-        if (! params.orgRole) {
-            if (accessService.checkPerm("ORG_CONSORTIUM")) {
-                params.orgRole = 'Licensing Consortium'
-            }
-            else {
-                params.orgRole = 'Licensee'
-            }
+        Set<String> licenseFilterTable = []
+
+        if (accessService.checkPerm("ORG_INST")) {
+            base_qry = """from License as l where (
+                exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
+            )"""
+            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
+            if(result.editable)
+                licenseFilterTable << "action"
         }
-
-        if (params.orgRole == 'Licensee') {
-
-            base_qry = """
-from License as l where (
-    exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.type != :template )
-)
-"""
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, template: template_license_type]
-        }
-
-        if (params.orgRole == 'Licensing Consortium') {
-
-            base_qry = """
-from License as l where (
-    exists ( select o from l.orgLinks as o where ( 
-            ( o.roleType = :roleTypeC 
-                AND o.org = :lic_org 
-                AND l.instanceOf is null
-                AND NOT exists (
-                    select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+        else if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            base_qry = """from License as l where (
+                    exists ( select o from l.orgLinks as o where ( 
+                    ( o.roleType = :roleTypeC 
+                        AND o.org = :lic_org 
+                        AND l.instanceOf is null
+                        AND NOT exists (
+                        select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+                    )
                 )
-            )
-        )) 
-    AND ( l.type != :template )
-)
-"""
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, template:template_license_type]
+            )))"""
+            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
+            licenseFilterTable << "memberLicenses"
+            if(result.editable)
+                licenseFilterTable << "action"
         }
+        else {
+            base_qry = """from License as l where (
+                exists ( select o from l.orgLinks as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
+            )"""
+            qry_params = [roleType:licensee_cons_role, lic_org:result.institution]
+            licenseFilterTable << "licensingConsortium"
+        }
+        result.licenseFilterTable = licenseFilterTable
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            base_qry += " and genfunc_filter_matcher(l.reference, :ref) = true "
-            qry_params += [ref:"${params['keyword-search']}"]
+            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
+            + " or exists ( select s from Subscription as s where s.owner = l and genfunc_filter_matcher(s.name, :name_filter) = true ) " // filter by subscription
+            + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
+            + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
+            + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
+            + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
+            + " ) ) " // filter by Anbieter, Konsortium, Agency
+            +  " ) ")
+            qry_params += [name_filter:"${params['keyword-search']}"]
             result.keyWord = params['keyword-search']
+        }
+
+        if(params.consortium) {
+            base_qry += " and ( exists ( select o from l.orgLinks as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
+            List<Long> consortia = []
+            List<String> selCons = params.list('consortium')
+            selCons.each { String sel ->
+                consortia << Long.parseLong(sel)
+            }
+            qry_params += [licCons:lic_cons_role,cons:consortia]
+        }
+
+        if (date_restriction) {
+            base_qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null ) "
+            qry_params += [date_restr: date_restriction]
+            qry_params += [date_restr: date_restriction]
         }
 
         // eval property filter
@@ -399,24 +417,34 @@ from License as l where (
             qry_params = psq.queryParams
         }
 
-        if (date_restriction) {
-            base_qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null OR l.startDate >= :date_restr  ) "
-            qry_params += [date_restr: date_restriction]
-            qry_params += [date_restr: date_restriction]
+        if(params.licensor) {
+            base_qry += " and ( exists ( select o from l.orgLinks as o where o.roleType = :licCons and o.org.id in (:licensors) ) ) "
+            List<Long> licensors = []
+            List<String> selLicensors = params.list('licensor')
+            selLicensors.each { String sel ->
+                licensors << Long.parseLong(sel)
+            }
+            qry_params += [licCons:RDStore.OR_LICENSOR,licensors:licensors]
         }
 
-        if(params.status) {
-            base_qry += " and l.status = :status "
-            qry_params += [status:RefdataValue.get(params.status)]
+        if(params.categorisation) {
+            base_qry += " and l.licenseCategory.id in (:categorisations) "
+            List<Long> categorisations = []
+            List<String> selCategories = params.list('categorisation')
+            selCategories.each { String sel ->
+                categorisations << Long.parseLong(sel)
+            }
+            qry_params.categorisations = categorisations
         }
-        else if(params.status == '') {
-            result.filterSet = false
-        }
-        else {
-            base_qry += " and l.status = :status "
-            qry_params += [status:RDStore.LICENSE_CURRENT]
-            params.status = RDStore.LICENSE_CURRENT.id
-            result.defaultSet = true
+
+        if(params.subKind) {
+            base_qry += " and ( exists ( select s from l.subscriptions as s where s.kind.id in (:subKinds) ) ) "
+            List<Long> subKinds = []
+            List<String> selCategories = params.list('subKinds')
+            selCategories.each { String sel ->
+                subKinds << Long.parseLong(sel)
+            }
+            qry_params.subKinds = subKinds
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -436,6 +464,10 @@ from License as l where (
         orgRoles.each { oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
+        Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority in ('ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM')) order by os.org.name asc")
+        Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
+        Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
+        result.orgs = orgs
 
 		List bm = du.stopBenchmark()
 		result.benchMark = bm
@@ -630,31 +662,8 @@ from License as l where (
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
-        def qparams = [template_license_type]
-
-       // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
-        // (OS License specs)
-        // def qry = "from License as l where ( ( l.type = ? ) OR ( exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) ) OR ( l.isPublic=? ) ) AND l.status.value != 'Deleted'"
-
-        def query = "from License as l where l.type = ? "
-
-        if (params.filter) {
-            query += " and lower(l.reference) like ?"
-            qparams.add("%${params.filter.toLowerCase()}%")
-        }
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            query += " order by l.${params.sort} ${params.order}"
-        } else {
-            query += " order by sortableReference asc"
-        }
-
-        result.numLicenses = License.executeQuery("select l.id ${query}", qparams).size()
-        result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
-
-        result.licenses = result.licenses
-        result.numLicenses = result.numLicenses
+        result.licenses = [] // ERMS-2431
+        result.numLicenses = 0
 
         if (params.sub) {
             result.sub         = params.sub
@@ -777,7 +786,7 @@ join sub.orgRelations or_sub where
 
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
 
-        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM_SURVEY' || authority == 'ORG_CONSORTIUM' }
+        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
@@ -1359,7 +1368,6 @@ join sub.orgRelations or_sub where
                     copyLicense.reference = params.licenseName
                     copyLicense.startDate = DateUtil.parseDateGeneric(params.licenseStartDate)
                     copyLicense.endDate = DateUtil.parseDateGeneric(params.licenseEndDate)
-                    copyLicense.status = RefdataValue.get(params.status)
 
                     if (copyLicense.save(flush: true)) {
                         flash.message = message(code: 'license.createdfromTemplate.message')
@@ -1367,8 +1375,9 @@ join sub.orgRelations or_sub where
 
                     if( params.sub) {
                         Subscription subInstance = Subscription.get(params.sub)
-                        subInstance.owner = copyLicense
-                        subInstance.save(flush: true)
+                        subscriptionService.setOrgLicRole(subInstance,copyLicense)
+                        //subInstance.owner = copyLicense
+                        //subInstance.save(flush: true)
                     }
 
                     redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
@@ -1411,8 +1420,9 @@ join sub.orgRelations or_sub where
             }
             if(params.sub) {
                 Subscription subInstance = Subscription.get(params.sub)
-                subInstance.owner = licenseInstance
-                subInstance.save(flush: true)
+                subscriptionService.setOrgLicRole(subInstance,licenseInstance)
+                /*subInstance.owner = licenseInstance
+                subInstance.save(flush: true)*/
             }
 
             flash.message = message(code: 'license.created.message')
@@ -2158,9 +2168,8 @@ AND EXISTS (
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
 
-//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
+        result.dueDates = de.laser.DashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                 " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
@@ -2168,20 +2177,15 @@ AND EXISTS (
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
+        if(accessService.checkPerm('ORG_CONSORTIUM')){
+            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
+                    " order by surConfig.surveyInfo.name",
+                    [org: result.institution,
+                     status: RDStore.SURVEY_SURVEY_STARTED])
+        }
+
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
-
-        result.surveysConsortia = []
-
-                /*SurveyResult.findAll("from SurveyResult where " +
-                " owner = :contextOrg and surveyConfig.surveyInfo.status != :status and " +
-                " and ((startDate >= :startDate and endDate <= :endDate)" +
-                " or (startDate <= :startDate and endDate is null) " +
-                " or (startDate is null and endDate is null))",
-                [contextOrg: contextService.org,
-                 status:  RefdataValue.getByValueAndCategory('In Processing', RDConstants.SURVEY_STATUS),
-                 startDate: new Date(System.currentTimeMillis()),
-                 endDate: new Date(System.currentTimeMillis())])*/
 
         result
     }
@@ -2652,7 +2656,7 @@ AND EXISTS (
             def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
             def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-            ies?.each { ie ->
+            ies.each { ie ->
                 ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
                 ie.save(flush: true)
             }
@@ -2703,7 +2707,9 @@ AND EXISTS (
                 sendMailToSurveyOwner = true
                 // flash.message = message(code: "surveyResult.finish.info")
             } else {
-                flash.error = message(code: "surveyResult.finish.error")
+                if(!surveyConfig.pickAndChoose && surveyInfo.isMandatory) {
+                    flash.error = message(code: "surveyResult.finish.error")
+                }
             }
 
         if(sendMailToSurveyOwner) {
@@ -3761,7 +3767,6 @@ AND EXISTS (
                 }
             }
     }
-
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
     def manageParticipantSurveys() {
@@ -4185,7 +4190,7 @@ AND EXISTS (
         Map<String, Object> result = [:]
 
         Org contextOrg = contextService.getOrg()
-        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']) {
+        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
             result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                     "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org)) and surInfo.owner = :owner",
                     [status: RDStore.SURVEY_SURVEY_STARTED,

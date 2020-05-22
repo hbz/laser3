@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.TemplateSupport" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -20,7 +20,6 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-    <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
     <semui:xEditable owner="${license}" field="reference" id="reference"/>
 </h1>
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'license.details.addMembers.label', args:[message(code:'consortium.subscriber')])}</h2>

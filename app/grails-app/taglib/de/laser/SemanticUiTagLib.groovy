@@ -255,7 +255,7 @@ class SemanticUiTagLib {
                 if (obj?.getClass().controlledProperties?.contains(objAttr)) {
 
                     // inherited (to)
-                    if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
+                    if (obj.instanceOf) {
 
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved) {
@@ -324,7 +324,7 @@ class SemanticUiTagLib {
                 if (obj?.getClass().controlledProperties?.contains(objAttr)) {
 
                     // inherited (to)
-                    if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
+                    if (obj.instanceOf) {
 
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved) {

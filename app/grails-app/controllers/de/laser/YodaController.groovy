@@ -6,7 +6,6 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
-import de.laser.SystemEvent
 import de.laser.domain.ActivityProfiler
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DateUtil
@@ -23,7 +22,6 @@ import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
-import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.lang.reflect.Method
@@ -43,7 +41,7 @@ class YodaController {
     def globalSourceSyncService
     def contextService
     def dashboardDueDatesService
-    def subscriptionUpdateService
+    StatusUpdateService statusUpdateService
     def costItemUpdateService
     def documentUpdateService
     def quartzScheduler
@@ -581,7 +579,7 @@ class YodaController {
     def retriggerPendingChanges() {
         log.debug("match IssueEntitlements to TIPPs ...")
         flash.message = "Pakete werden nachgehalten ..."
-        subscriptionUpdateService.retriggerPendingChanges()
+        statusUpdateService.retriggerPendingChanges()
         redirect(url: request.getHeader('referer'))
     }
 
@@ -825,7 +823,7 @@ class YodaController {
                 Subscription sub = so[0]
                 OrgRole role 	 = so[1]
 
-				if (sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
+				if (sub.getCalculatedType() == Subscription.TYPE_LOCAL) {
 					role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
 					role.save()
 
@@ -841,7 +839,7 @@ class YodaController {
                 Subscription sub = so[0]
                 OrgRole role 	 = so[1]
 
-                if (sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                if (sub.getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
                     OrgRole newRole = new OrgRole(
                             org: role.org,
                             sub: sub,
@@ -871,7 +869,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def assignNoteOwners() {
-        subscriptionUpdateService.assignNoteOwners()
+        statusUpdateService.assignNoteOwners()
         redirect controller: 'home'
     }
 
@@ -1033,8 +1031,9 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def subscriptionCheck(){
-        flash.message = "Lizenzen werden upgedatet"
-        subscriptionUpdateService.subscriptionCheck()
+        flash.message = "Lizenzen und Verträge werden upgedatet"
+        statusUpdateService.subscriptionCheck()
+        statusUpdateService.licenseCheck()
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1047,14 +1046,27 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def updateLinks(){
-        int affected = subscriptionUpdateService.updateLinks()
+        int affected = statusUpdateService.updateLinks()
         flash.message = "Es wurden ${affected} Vor-/Nachfolgebeziehungen neu verknüpft"
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_YODA'])
+    Map<String,Object> checkLicenseSubscriptionLinks() {
+        flash.message = "Überprüfung Lizenzen <-> Verträge <-> Teilnehmer läuft ..."
+        yodaService.checkLicenseSubscriptionLinks()
+    }
+
+    @Secured(['ROLE_YODA'])
+    def synchronizeSubscriptionLicenseOrgLinks() {
+        flash.message = "Synchronisiere Lizenz-Vertrag-Einrichtung-Verknüpfungen ..."
+        yodaService.synchronizeSubscriptionLicenseOrgLinks()
+        redirect controller: 'home', action: 'index'
+    }
+
+    @Secured(['ROLE_YODA'])
     def startDateCheck(){
-        if(subscriptionUpdateService.startDateCheck())
+        if(statusUpdateService.startDateCheck())
             flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
         else
             flash.message = "Lizenzen ohne Startdatum haben bereits ihren Status verloren!"
@@ -1112,7 +1124,7 @@ class YodaController {
             def oss = OrgSettings.get(o, OrgSettings.KEYS.CUSTOMER_TYPE)
             if (oss == OrgSettings.SETTING_NOT_FOUND) {
                 log.debug ('Setting customer type for org: ' + o.id)
-                OrgSettings.add(o, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_CONSORTIUM_SURVEY', 'org'))
+                OrgSettings.add(o, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_CONSORTIUM', 'org'))
                 consCount++
             }
         }

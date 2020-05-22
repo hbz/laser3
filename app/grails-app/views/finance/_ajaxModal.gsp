@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.TemplateSupport" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">
@@ -302,6 +302,16 @@
                         </div>
                     </div>
 
+                <div class="field">
+                    <label>${message(code:'financials.newCosts.titleGroup')}</label>
+                    <div class="ui search selection dropdown newCISelect" id="newTitleGroup">
+                        <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "com.k_int.kbplus.IssueEntitlementGroup:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
+                        <i class="dropdown icon"></i>
+                        <input type="text" class="search">
+                        <div class="default text"></div>
+                    </div>
+                </div>
+
                 </div><!-- .field -->
             </fieldset> <!-- 2/2 field -->
 
@@ -362,12 +372,14 @@
             var selLinks = {
                 "newSubscription": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?query={query}",
                 "newPackage": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?query={query}",
-                "newIE": "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}"
+                "newIE": "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}",
+                "newTitleGroup": "${createLink([controller:"ajax",action:"lookupTitleGroups"])}?query={query}"
             };
             var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
             if($("[name='newSubscription']").val().length > 0) {
                 selLinks.newPackage += "&sub="+$("[name='newSubscription']").val();
                 selLinks.newIE += "&sub="+$("[name='newSubscription']").val();
+                selLinks.newTitleGroup += "&sub="+$("[name='newSubscription']").val();
             }
             $("#costButton1").click(function() {
                 if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
@@ -505,8 +517,10 @@
                 if($("[name='newLicenseeTarget']").length > 0 && !$("[name='newLicenseeTarget']").val().match(/:null|:for/))
                     context = $("[name='newLicenseeTarget']").val();
                 selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+context;
+                selLinks.newTitleGroup = "${createLink([controller:"ajax",action:"lookupTitleGroups"])}?query={query}&sub="+context;
                 selLinks.newPackage = "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?query={query}&ctx="+context;
                 $("#newIE").dropdown('clear');
+                $("#newTitleGroup").dropdown('clear');
                 $("#newPackage").dropdown('clear');
                 ajaxPostFunc();
             }
@@ -523,6 +537,10 @@
             $("#newIE").change(function(){
                 checkPackageBelongings();
             });
+
+        $("[name='newTitleGroup']").change(function(){
+            ajaxPostFunc();
+        });
 
             function ajaxPostFunc() {
                 $(".newCISelect").each(function(k,v){
@@ -541,6 +559,12 @@
                         String ieTitleTypeString = costItem.issueEntitlement.tipp.title.printTitleType()
                         %>
                     $("#newIE").dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
+                <%  }  %>
+                <%
+                    if(costItem?.issueEntitlementGroup) {
+                        String issueEntitlementGroupName = costItem.issueEntitlementGroup.name
+                        %>
+                $("#newTitleGroup").dropdown('set text',"${issueEntitlementGroupName} (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
                 <%  }  %>
             }
 

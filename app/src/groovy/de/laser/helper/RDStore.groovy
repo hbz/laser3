@@ -77,15 +77,16 @@ class RDStore {
     static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION     = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
     static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION   = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
 
-    static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', RDConstants.LICENSE_TYPE)
     static final LICENSE_TYPE_ACTUAL        = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
 
     static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
     static final LICENSE_CURRENT            = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
     static final LICENSE_INTENDED           = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
     static final LICENSE_IN_PROGRESS        = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
+    static final LICENSE_EXPIRED            = getRefdataValue('Retired', RDConstants.LICENSE_STATUS)
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
+    static final LINKTYPE_LICENSE           = getRefdataValue('license', RDConstants.LINK_TYPE)
 
     static final ORG_STATUS_DELETED         = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
 
@@ -185,11 +186,19 @@ class RDStore {
     static final PRS_FUNC_FUNC_BILLING_ADDRESS  = getRefdataValue('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
     static final PRS_FUNC_TECHNICAL_SUPPORT     = getRefdataValue('Technichal Support', RDConstants.PERSON_FUNCTION)
 
+    static final ADRESS_TYPE_POSTAL             = getRefdataValue('Postal address', RDConstants.ADDRESS_TYPE)
+    static final ADRESS_TYPE_BILLING            = getRefdataValue('Billing address', RDConstants.ADDRESS_TYPE)
+    static final ADRESS_TYPE_LEGAL_PATRON       = getRefdataValue('Legal patron address', RDConstants.ADDRESS_TYPE)
+    static final ADRESS_TYPE_DELIVERY       = getRefdataValue('Delivery address', RDConstants.ADDRESS_TYPE)
+    static final ADRESS_TYPE_LIBRARY       = getRefdataValue('Library address', RDConstants.ADDRESS_TYPE)
+
     static final YN_YES         = getRefdataValue('Yes', RDConstants.Y_N)
     static final YN_NO          = getRefdataValue('No', RDConstants.Y_N)
     static final YNO_YES        = getRefdataValue('Yes', RDConstants.Y_N_O)
     static final YNO_NO         = getRefdataValue('No', RDConstants.Y_N_O)
     static final YNO_OTHER      = getRefdataValue('Other', RDConstants.Y_N_O)
+
+    static final LANGUAGE_DE      = getRefdataValue('de', RDConstants.LANGUAGE)
 
     //Properties
 

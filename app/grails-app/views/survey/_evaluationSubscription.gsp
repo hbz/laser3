@@ -42,6 +42,7 @@
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasAccess}">
         <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess.participant.id})"
+                data-targetId="copyEmailaddresses_ajaxModal22"
                 class="ui icon button right floated trigger-modal">
             <g:message
                     code="survey.copyEmailaddresses.participantsHasAccess"/>
@@ -225,6 +226,7 @@
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasNotAccess}">
         <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess.participant.id})"
+                data-targetId="copyEmailaddresses_ajaxModal33"
                 class="ui icon button right floated trigger-modal">
             <g:message
                     code="survey.copyEmailaddresses.participantsHasNoAccess"/>

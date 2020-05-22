@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -14,12 +14,12 @@ import java.text.Normalizer
 import java.util.regex.Pattern
 
 @Log4j
-class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
+class TitleInstance extends AbstractBaseDomainWithCalculatedLastUpdated {
 
-  @Transient
-  def grailsApplication
-  @Transient
-  def deletionService
+    @Transient
+    def grailsApplication
+    @Transient
+    def deletionService
 
     // AuditableTrait
     //static auditable = true
@@ -36,6 +36,9 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
   String gokbId
   //URL originEditUrl
 
+  String seriesName
+  String subjectReference
+
   @RefdataAnnotation(cat = RDConstants.TITLE_STATUS)
   RefdataValue status
 
@@ -45,8 +48,9 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
   @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
   RefdataValue medium
 
-  Date dateCreated
-  Date lastUpdated
+    Date dateCreated
+    Date lastUpdated
+    Date lastUpdatedCascading
 
   static mappedBy = [
                      tipps:     'title',
@@ -71,13 +75,16 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
         normTitle column:'ti_norm_title', type:'text'
          keyTitle column:'ti_key_title', type:'text'
           version column:'ti_version'
+      seriesName  column:'ti_series_name', type:'text'
+      subjectReference column:'ti_subject_reference', type:'text'
            gokbId column:'ti_gokb_id', index:'ti_gokb_id_idx'
     //originEditUrl column:'ti_origin_edit_url'
            status column:'ti_status_rv_fk'
       // type column:'ti_type_rv_fk' -> existing values should be moved to medium
            medium column:'ti_medium_rv_fk'
             //tipps sort:'startDate', order: 'asc', batchSize: 10
-        sortTitle column:'sort_title', type:'text'
+      lastUpdatedCascading column: 'ti_last_updated_cascading'
+      sortTitle column:'sort_title', type:'text'
 
       ids           batchSize: 10
       orgs          batchSize: 10
@@ -97,17 +104,24 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
         keyTitle(nullable:true, blank:false,maxSize:2048)
         creators(nullable:true, blank:false)
         gokbId (nullable:false, blank:false, unique: true, maxSize:511)
+        seriesName(nullable:true, blank:false)
+        subjectReference(nullable:true, blank:false)
         //originEditUrl(nullable:true, blank:false)
+        lastUpdatedCascading (nullable: true, blank: false)
     }
 
+    @Override
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
-  String getIdentifierValue(idtype) {
-    def result=null
+  String getIdentifierValue(String idtype) {
+    String result
     ids?.each { id ->
-      if ( id.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
+      if (id.ns?.ns?.toLowerCase() == idtype.toLowerCase())
         result = id.value
     }
     result

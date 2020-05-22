@@ -8,11 +8,55 @@
 
 2515    20.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Rolle Redakteur kann keine Fächergruppen anlegen
 
+1361    20.05.2020  hbz-dev     Andreas Feature     Erweiterung des Cronjobs für Lizenzstatusänderungen auf Verträge
+
 2506    19.05.2020  rc1.3       Andreas Bug         Überprüfung zu Kopie von Kosten vervollständigt
+
+2299    20.05.2020  hbz-dev     Moe     Feature     Neues allg. Umfrage-Merkmal von allg. Lizenzmerkmal erstellen/ableiten
+
+2507    20.05.2020  hbz-dev     Moe     Feature     Titelauswahlumfrage soll nicht mehr automatisch verbindlich sein
+
+2508    19.05.2020  hbz-dev     Christian   Feature Informationen über Statistikverfügbarkeit
+
+2420    19.05.2020  hbz-dev     Moe     Feature     Titelauswahlumfrage: Filter/Sortierbarkeit nach Erscheinungsjahr
+
+2385    19.05.2020  hbz-dev     Moe     Feature     Dashboard Änderung nach einem Umfrage Übertrag
+
+2505    19.05.2020  hbz-dev     David   Feature     API 0.106 - Getrennte Berechtigungen für Datamanager
 
 2504    19.05.2020  rc1.3       Andreas Bug         Absturzfehler bei Anlegen der Musterdaten auf QA behoben
 
 2399    19.05.2020  rc1.3       Andreas Bug         Finanzfiltervorbelegung korrigiert
+
+2390    19.05.2020  hbz-dev     David   Feature     API 0.105 - API für OA-Monitor: Eigener Subscription-Endpunkt
+
+2423    19.05.2020  hbz-dev     Moe     Feature     Meine Umfragen Sortierung anpassen
+
+2500    19.05.2020  hbz-dev     Moe     Feature     Zugangskonfiguration: Text im Löschen-Popup anpassen
+
+2238    19.05.2020  hbz-dev     Andreas Feature     Vertragssichten umgebaut (prä-finaler Stand vor Test)
+
+2433    18.05.2020  hbz-dev     Moe     Feature     Excel Export: Zahlenwerte in Zellen als Zahlenwert speichern
+
+2386    18.05.2020  hbz-dev     Moe     Feature     Umfragen auch auf Dashboard von Konsortialstellen anzeigen
+
+2478    18.05.2020  hbz-dev     Moe     Feature     Farbschema von Umfragen vom Dashboard auch in "meine Umfragen" übertragen
+
+2455    18.05.2020  hbz-dev     Moe     Feature     Farbkonzept Umfragetypen
+
+2451    18.05.2020  hbz-dev     Moe     Feature     (?) bei IP Konfiguration löschen
+
+2487    18.05.2020  hbz-dev     Moe     Bug         Anzahl der Titlel beim Filtern in der Titelumfrage stimmt nicht
+
+2488    18.05.2020  hbz-dev     Moe     Feature     Fachbereich und Reihe Filter in Titel-Umfrage und Bestand einer Lizenz einbauen
+
+2502    18.05.2020  hbz-dev     Andreas Bug         Fehlermeldung über anhängige Kosten bei Paketentknüpfung eingebaut
+
+2496    18.05.2020  hbz-dev     David   Feature     API 0.103 - Ausgegebene Kosten in /subscription absichern
+
+2392    15.05.2020  hbz-dev     Moe     Feature     Kundentyp Consortium_Survey entfernen
+
+2471    15.05.2020  hbz-dev     David   Feature     API 0.101 - API-Endpunkte /platformList und /platform
 
 2384    15.05.2020  rc1.3       Moe     Feature     Umfrage Auswertung: Abgeschlossen Teilnehmer bzw. nicht abgeschlossene Teilnehmer mit Merkmal anzeigen
 
@@ -24,13 +68,37 @@
 
 --      14.05.2020  rc1.3       Andreas Bug         Änderungsmitteilung beschleunigt, Meldung an Nutzer mit Zeitabschätzung versehen, Prozessablauf bei Paketsync geändert
 
+2445    14.05.2020  hbz-dev     Andreas Bug         Bereinigungsfunktion für fehlende Vertragsverknüpfungen testbereit fertig gestellt
+
+2492    14.05.2020  hbz-dev     David   Feature     API 0.100 - LastUpdated für Objekte mit Identifikator- und Merkmalsänderungen
+
+2474    14.05.2020  hbz-dev     Andreas Bug         Anzeige von Kontakten einer Zieleinrichtung angepasst
+
+2485    13.05.2020  hbz-dev     Andreas Feature     Dropdowns auf Mehrfachauswahl erweitert
+
+2484    13.05.2020  hbz-dev     Andreas Bug         Legacy-Controlleraufruf im Export korrigiert
+
+2483    12.05.2020  hbz-dev     David   Feature     lastUpdatedCalculated - Merkmale
+
+2482    12.05.2020  hbz-dev     David   Feature     lastUpdatedCalculated - Identifier
+
+--      12.05.2020  hbz-dev     David   Feature     API 0.99
+
+2476    12.05.2020  hbz-dev     David   Feature     Übersichtsseite: Dokumente
+
 2470    11.05.2020  rc1.3       Moe     Bug         Globale Suche berücksichtigt Berechtigung für Umfragen nicht
+
+2473    11.05.2020  hbz-dev     David   Feature     Löschen von Organisationen - Kaskadierendes Löschen von Profiler-Einträgen
+
+2472    11.05.2020  hbz-dev     David   Feature     Refactoring: AuditableTrait auflösen
 
 2407    07.05.2020  rc1.3       Anja    Bug         Migration von federal.state nach regions
 
 2463    07.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: utb-Umfrage Auswertungssicht
 
 2468    07.05.2020  rc1.3       Moe     Bug         Erinnerungsmails für Umfrage Ende anpassen
+
+2444    06.05.2020  hbz-dev     Andreas Feature     Zentralisierung aller Änderungen der Lizenz-Vertrag-Verknüpfung
 
 2462    05.05.2020  rc1.3       Moe     Bug         Umfrage: Bestätigung bei "Nein" muss differenziert werden
 
@@ -46,6 +114,8 @@
 
 2376    04.05.2020  rc1.3       Andreas Bug         Vorbelegung des Filters in der Finanzübersicht war inkorrekt dargestellt
 
+2344    04.05.2020  hbz-dev     Moe     Feature     Erweiterung der Klasse Titles um Fächergruppe und Reihe
+
 2452    30.04.2020  rc1.3       Moe     Bug         Umfrage Bugs
 
 2199    28.04.2020  rc1.3       David   Feature     API: Top-Level-Objekte mit Status deleted
@@ -55,6 +125,8 @@
 --      28.04.2020  rc1.3       David   Bug         API 0.95 - /costItem
 
 2448    28.04.2020  rc1.3       Moe     Feature     E-Mail Benachrichtigung  an den Umfrage-Ersteller, wenn ein Teilnehmer die Umfrage abgeschlossen hat
+
+2431    27.04.2020  hbz-dev     David   Feature     Refactoring: Vertragsvorlage entfernen
 
 2434    27.04.2020  rc1.3       Moe     Feature     Umfrage-Kosten Export in Excel (Teilnehmersicht)
 
@@ -117,6 +189,12 @@
 2368    15.04.2020  rc1.3       David   Bug         Hotfixkandidat: Nutzer kann fälschlich ohne Org-Bezug anlegen
 
 2373    15.04.2020  rc1.3       Andreas Bug         NullPointerException bei Zusammenstellung der Hauptkontakte für Export behoben
+
+2382    15.04.2020  hbz-dev     Andreas Feature     IssueEntitlement: TIPP und Subscription-Fremdschlüssel sind nicht länger nullable
+
+2190    15.04.2020  hbz-dev     Andreas Feature     Umformulierung der Systemmail zu Passwort vergessen
+
+2253    14.04.2020  hbz-dev     Andreas Feature     Teil eins: Export von Vertragsmerkmalen in eigenen Spalten
 
 2367    14.04.2020  rc1.3       Andreas Feature     Lizenzexport um globale UIDs der Lizenzen erweitert
 

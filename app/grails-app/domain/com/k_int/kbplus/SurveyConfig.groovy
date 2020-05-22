@@ -49,6 +49,7 @@ class SurveyConfig {
     boolean costItemsFinish
     boolean evaluationFinish
     boolean subSurveyUseForTransfer
+    boolean createTitleGroups = false
 
     String transferWorkflow
 
@@ -78,6 +79,7 @@ class SurveyConfig {
         subSurveyUseForTransfer (nullable: true, blank: false)
         surResults(nullable: true, blank: false)
         transferWorkflow (nullable: true, blank: false)
+        createTitleGroups (nullable: true, blank: false)
 
     }
 
@@ -91,6 +93,7 @@ class SurveyConfig {
         internalComment column: 'surconf_internal_comment', type: 'text'
         url column: 'surconf_url'
         pickAndChoose column: 'surconf_pickandchoose'
+        createTitleGroups column: 'surconf_create_title_groups'
         configFinish column: 'surconf_config_finish'
         costItemsFinish column: 'surconf_costitems_finish'
         evaluationFinish column: 'surconf_evaluation_finish'

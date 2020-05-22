@@ -85,7 +85,7 @@
                             </g:link>(${docctx.owner?.type?.getI10n("value")})
                         </div>
                         <div class="right aligned eight wide column la-column-left-lessPadding">
-                            <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
+                            <g:if test="${docctx.owner.owner?.id == contextService.org.id && accessService.checkMinUserOrgRole(user,docctx.owner?.owner,"INST_EDITOR")}">
                                 <%-- START First Button --%>
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
@@ -119,7 +119,7 @@
                                 </div>
                             </g:else>
                             <%-- START Third Button --%>
-                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
+                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR")}">
                                 <g:if test="${docctx?.isShared}">
                                     <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"

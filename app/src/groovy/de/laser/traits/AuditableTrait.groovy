@@ -7,6 +7,7 @@ import com.k_int.kbplus.abstract_domain.CustomProperty
 
 import javax.persistence.Transient
 
+@Deprecated
 trait AuditableTrait {
 
     /**
@@ -42,7 +43,7 @@ trait AuditableTrait {
 
         log?.debug("onChange(id:${this.id}): ${oldMap} => ${newMap}")
 
-        if((this instanceof Subscription && !this.instanceOf) || !(this instanceof Subscription)) {
+        if(this.instanceOf == null) {
             List<String> gwp = auditService.getWatchedProperties(this)
 
             log?.debug("found watched properties: ${gwp}")

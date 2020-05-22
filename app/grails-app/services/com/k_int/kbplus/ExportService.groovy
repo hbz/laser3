@@ -10,12 +10,15 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.CellStyle
+import org.apache.poi.ss.usermodel.DataFormat
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
+import org.apache.poi.xssf.usermodel.XSSFDataFormat
 import org.apache.poi.xssf.usermodel.XSSFFont
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.MessageSource
@@ -131,12 +134,21 @@ class ExportService {
 				sheet.createFreezePane(0,1)
 				Row row
 				Cell cell
+				CellStyle numberStyle = wb.createCellStyle();
+				XSSFDataFormat df = wb.createDataFormat();
+				numberStyle.setDataFormat(df.getFormat("#,##0.00"));
 				columnData.each { rowData ->
 					int cellnum = 0
 					row = sheet.createRow(rownum)
 					rowData.each { cellData ->
 						cell = row.createCell(cellnum++)
-						cell.setCellValue(cellData.field)
+						if (cellData.field instanceof String) {
+							cell.setCellValue((String) cellData.field);
+						} else if (cellData.field instanceof Integer) {
+							cell.setCellValue((Integer) cellData.field);
+						} else if (cellData.field instanceof Double) {
+							cell.setCellValue((Double) cellData.field);
+						}
 						switch(cellData.style) {
 							case 'positive': cell.setCellStyle(csPositive)
 								break
@@ -146,6 +158,9 @@ class ExportService {
 								break
 							case 'bold': cell.setCellStyle(bold)
 								break
+						}
+						if(cellData.field instanceof Integer || cellData.field instanceof Double){
+							cell.setCellStyle(numberStyle);
 						}
 					}
 					rownum++
@@ -512,6 +527,8 @@ class ExportService {
 											 messageSource.getMessage('author.slash.editor',null,locale),
 											 messageSource.getMessage('title.editionStatement.label',null,locale),
 											 messageSource.getMessage('title.summaryOfContent.label',null,locale),
+											 messageSource.getMessage('title.seriesName.label',null,locale),
+											 messageSource.getMessage('title.subjectReference.label',null,locale),
 											 'zdb_id',
 											 'zdb_ppn',
 											 'DOI',
@@ -550,6 +567,8 @@ class ExportService {
 				row.add(' ')
 				row.add(' ')
 			}
+			row.add(tipp.title.seriesName ?: ' ')
+			row.add(tipp.title.subjectReference ?: ' ')
 
 			//zdb_id
 			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,';'))
@@ -600,6 +619,8 @@ class ExportService {
 				messageSource.getMessage('author.slash.editor',null,locale),
 				messageSource.getMessage('title.editionStatement.label',null,locale),
 				messageSource.getMessage('title.summaryOfContent.label',null,locale),
+				messageSource.getMessage('title.seriesName.label',null,locale),
+				messageSource.getMessage('title.subjectReference.label',null,locale),
 				'zdb_id',
 				'zdb_ppn',
 				'DOI',
@@ -638,6 +659,8 @@ class ExportService {
 				row.add([field: '', style:null])
 				row.add([field: '', style:null])
 			}
+			row.add(tipp.title.seriesName ?: ' ')
+			row.add(tipp.title.subjectReference ?: ' ')
 
 			//zdb_id
 			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','), style:null])

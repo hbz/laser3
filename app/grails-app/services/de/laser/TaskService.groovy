@@ -6,6 +6,8 @@ import de.laser.helper.RDStore
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.sql.Ref
+
 @Transactional
 class TaskService {
 
@@ -282,7 +284,7 @@ class TaskService {
         List validSubscriptionsMitInstanceOf = []
         List validSubscriptionsOhneInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
-        boolean binKonsortium = contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']
+        boolean binKonsortium = contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'
 
         if (contextOrg) {
             if (binKonsortium) {
@@ -370,11 +372,11 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
         List<Map> validLicensesDropdown = []
 
         if (contextOrg) {
-            String licensesQueryMitInstanceOf = 'SELECT lic.id, lic.reference, lic.status, lic.startDate, lic.endDate, o.roleType, licinstanceof.type from License lic left join lic.orgLinks o left join lic.instanceOf licinstanceof WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is not null order by lic.sortableReference asc'
+            String licensesQueryMitInstanceOf = 'SELECT lic.id, lic.reference, lic.startDate, lic.endDate, o.roleType, licinstanceof.type from License lic left join lic.orgLinks o left join lic.instanceOf licinstanceof WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is not null order by lic.sortableReference asc'
 
-            String licensesQueryOhneInstanceOf = 'SELECT lic.id, lic.reference, lic.status, lic.startDate, lic.endDate, o.roleType from License lic left join lic.orgLinks o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
+            String licensesQueryOhneInstanceOf = 'SELECT lic.id, lic.reference, lic.startDate, lic.endDate, o.roleType from License lic left join lic.orgLinks o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
-            if(accessService.checkPerm("ORG_CONSORTIUM") || accessService.checkPerm("ORG_CONSORTIUM_SURVEY")){
+            if(accessService.checkPerm("ORG_CONSORTIUM")){
                 def qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
@@ -413,8 +415,8 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
             def optionKey = it[0]
             String optionValue = it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')'
             boolean isLicensingConsortium = 'Licensing Consortium' == it[5]?.value
-            boolean hasTemplate2 = (it[6] != null) && (it[6] == RDStore.LICENSE_TYPE_TEMPLATE)
-            if (isLicensingConsortium && ! hasTemplate2) {
+
+            if (isLicensingConsortium) {
                 optionValue += member
             }
             return [optionKey: optionKey, optionValue: optionValue]

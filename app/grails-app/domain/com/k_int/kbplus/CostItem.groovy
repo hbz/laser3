@@ -1,16 +1,17 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import javax.persistence.Transient
 import java.time.Year
 
 class CostItem
         extends AbstractBaseDomain
-        implements DeleteFlag, TemplateSupport  {
+        implements DeleteFlag, CalculatedType  {
 
     static enum TAX_TYPES {
         TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),
@@ -38,6 +39,7 @@ class CostItem
     SurveyOrg surveyOrg // NOT set if sub (exclusive)
     Order order
     Invoice invoice
+    IssueEntitlementGroup issueEntitlementGroup // only set if sub
 
     Boolean isVisibleForSubscriber = false
 
@@ -117,6 +119,7 @@ class CostItem
         surveyOrg       column: 'ci_surorg_fk'
         order           column: 'ci_ord_fk'
         invoice         column: 'ci_inv_fk'
+        issueEntitlementGroup column: 'ci_ie_group_fk'
         costItemStatus  column: 'ci_status_rv_fk'
         billingCurrency column: 'ci_billing_currency_rv_fk'
         costDescription column: 'ci_cost_description', type:'text'
@@ -148,6 +151,7 @@ class CostItem
         owner(nullable: false, blank: false)
         type(nullable: true, blank: false)
         sub(nullable: true, blank: false)
+        issueEntitlementGroup(nullable: true, blank: false)
         subPkg(nullable: true, blank: false, validator: { val, obj ->
             if (obj.subPkg) {
                 if (obj.subPkg.subscription.id != obj.sub.id) return ['subscriptionPackageMismatch']
@@ -201,26 +205,14 @@ class CostItem
         super.beforeUpdate()
     }
 
-    @Deprecated
     @Override
-    boolean isTemplate() {
-        false
-    }
-
-    @Deprecated
-    @Override
-    boolean hasTemplate() {
-        false
-    }
-
-    @Override
+    // currently only used for API
     String getCalculatedType() {
-        String result = TemplateSupport.CALCULATED_TYPE_UNKOWN
-
-        if (isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        if (isVisibleForSubscriber) {
+            return CalculatedType.TYPE_CONSORTIAL // boolean flag = true -> shared consortia costs
         }
-        result
+
+        CalculatedType.TYPE_LOCAL // boolean flag = false -> local costs or hidden consortia costs
     }
 
     List<BudgetCode> getBudgetcodes() {

@@ -55,7 +55,7 @@
                 <span class="ui label green">${lic.id}</span>
             </g:else>
         </a>
-        > ${lic} > ${lic.status.getI10n('value')} <br/>
+        > ${lic} <br/>
     </g:each>
 
     <br />

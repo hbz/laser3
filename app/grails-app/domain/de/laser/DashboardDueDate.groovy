@@ -4,35 +4,28 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.Task
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.UserSettings
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
-import grails.util.Holders
+import de.laser.helper.SqlDateUtils
 import groovy.util.logging.Log4j
+
+import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 
 @Log4j
 class DashboardDueDate {
-    String attribute_value_de
-    String attribute_value_en
-    String attribute_name
-    Date date
-    /** Subscription, CustomProperty, PrivateProperty oder Task*/
-    String oid
     User responsibleUser
     Org  responsibleOrg
-    boolean isDone = false
     boolean isHidden = false
+    DueDateObject dueDateObject
+    Date dateCreated
     Date lastUpdated
 
-    Date dateCreated
-
-    DashboardDueDate(messageSource, Subscription obj, boolean isManualCancellationDate, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
-        this(
-                isManualCancellationDate? messageSource.getMessage('dashboardDueDate.subscription.manualCancellationDate', null, Locale.GERMAN) :
-                        messageSource.getMessage('dashboardDueDate.subscription.endDate', null, Locale.GERMAN),
-                isManualCancellationDate? messageSource.getMessage('dashboardDueDate.subscription.manualCancellationDate', null, Locale.ENGLISH) :
-                        messageSource.getMessage('dashboardDueDate.subscription.endDate', null, Locale.ENGLISH),
-                isManualCancellationDate? 'manualCancellationDate' : 'endDate',
-                isManualCancellationDate? obj.manualCancellationDate : obj.endDate,
+    DashboardDueDate(messageSource, obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
+        this(   getAttributeValue(messageSource, obj, responsibleUser, Locale.GERMAN),
+                getAttributeValue(messageSource, obj, responsibleUser, Locale.ENGLISH),
+                getAttributeName(obj, responsibleUser),
+                getDate(obj, responsibleUser),
                 obj,
                 responsibleUser,
                 responsibleOrg,
@@ -40,73 +33,89 @@ class DashboardDueDate {
                 isHidden
         )
     }
-    DashboardDueDate(messageSource, AbstractProperty obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
-        this(
-                obj.type.getI10n('name', Locale.GERMAN) ?: obj.type.getI10n('name', Locale.ENGLISH),
-                obj.type.getI10n('name', Locale.ENGLISH) ?: obj.type.getI10n('name', Locale.GERMAN),
-                'type.name',
-                obj.dateValue, obj, responsibleUser, responsibleOrg, isDone, isHidden)
+
+    void update(messageSource, obj){
+        Date now = new Date()
+        this.version = this.version +1
+        this.lastUpdated = now
+        this.dueDateObject.version = this.dueDateObject.version +1
+        this.dueDateObject.lastUpdated = now
+        this.dueDateObject.attribute_value_de = getAttributeValue(messageSource, obj, responsibleUser,
+                Locale.GERMAN)
+        this.dueDateObject.attribute_value_en = getAttributeValue(messageSource, obj, responsibleUser,
+                Locale.ENGLISH)
+        this.dueDateObject.date = getDate(obj, responsibleUser)
+        this.dueDateObject.save()
+        this.save()
     }
-    DashboardDueDate(messageSource, Task obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
-        this(   messageSource.getMessage('dashboardDueDate.task.endDate', null, Locale.GERMAN),
-                messageSource.getMessage('dashboardDueDate.task.endDate', null, Locale.ENGLISH),
-                'endDate',
-                obj.endDate, obj, responsibleUser, responsibleOrg, isDone, isHidden)
+
+    static Date getDate(obj, user){
+        if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return obj.dateValue
+        if (obj instanceof Task)                        return obj.endDate
+        if (obj instanceof SurveyInfo)                  return obj.endDate
+        if (obj instanceof Subscription){
+            if (isManualCancellationDate(obj, user))    return obj.manualCancellationDate
+            else                                        return obj.endDate
+        }
     }
-    DashboardDueDate(messageSource, SurveyInfo obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
-        this(   messageSource.getMessage('dashboardDueDate.surveyInfo.endDate', null, Locale.GERMAN),
-                messageSource.getMessage('dashboardDueDate.surveyInfo.endDate', null, Locale.ENGLISH),
-                'endDate',
-                obj.endDate, obj, responsibleUser, responsibleOrg, isDone, isHidden)
+
+    static String getAttributeValue(messageSource, obj, User user, Locale locale){
+        if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return obj.type.getI10n('name', locale)
+        if (obj instanceof Task)                        return messageSource.getMessage('dashboardDueDate.task.endDate', null, locale)
+        if (obj instanceof SurveyInfo)                  return messageSource.getMessage('dashboardDueDate.surveyInfo.endDate', null, locale)
+        if (obj instanceof Subscription){
+            if (isManualCancellationDate(obj, user))    return messageSource.getMessage('dashboardDueDate.subscription.manualCancellationDate', null, locale)
+            else                                        return messageSource.getMessage('dashboardDueDate.subscription.endDate', null, locale)
+        }
+    }
+    static String getAttributeName(obj, user){
+        if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return 'type.name'
+        if (obj instanceof Task)                        return 'endDate'
+        if (obj instanceof SurveyInfo)                  return 'endDate'
+        if (obj instanceof Subscription){
+            if (isManualCancellationDate(obj, user))    return 'manualCancellationDate'
+            else                                        return 'endDate'
+        }
+    }
+    static isManualCancellationDate(obj, user){
+        int reminderPeriodForManualCancellationDate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD).value ?: 1
+        return (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriodForManualCancellationDate))
     }
     private DashboardDueDate(attribute_value_de, attribute_value_en, attribute_name, date, object, responsibleUser, responsibleOrg, isDone, isHidden){
-        this.attribute_value_de = attribute_value_de
-        this.attribute_value_en = attribute_value_en
-        this.attribute_name = attribute_name
-        this.date = date
-        this.oid = "${object.class.name}:${object.id}"
+        Date now = new Date()
         this.responsibleUser = responsibleUser
         this.responsibleOrg = responsibleOrg
-        this.isDone = isDone
         this.isHidden = isHidden
+        this.dateCreated = now
+        this.lastUpdated = now
+
+        DueDateObject ddo = DueDateObject.findWhere(oid: "${object.class.name}:${object.id}", attribute_name: attribute_name)
+        if ( ! ddo ) {
+            ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, now, now)
+            ddo.save()
+        }
+        this.dueDateObject = ddo
+        this.save()
     }
 
     static mapping = {
         id                      column: 'das_id'
         version                 column: 'das_version'
-        attribute_value_de      column: 'das_attribute_value_de'
-        attribute_value_en      column: 'das_attribute_value_en'
-        attribute_name          column: 'das_attribute_name'
-        date                    column: 'das_date'
-        lastUpdated             column: 'das_last_updated'
-        oid                     column: 'das_oid'
         responsibleUser         column: 'das_responsible_user_fk', index: 'das_responsible_user_fk_idx'
         responsibleOrg          column: 'das_responsible_org_fk',  index: 'das_responsible_org_fk_idx'
-        isDone                  column: 'das_is_done'
         isHidden                column: 'das_is_hidden'
+        dueDateObject           (column: 'das_ddobj_fk',  lazy: false)
         dateCreated             column: 'das_date_created'
+        lastUpdated             column: 'das_last_updated'
         autoTimestamp true
     }
 
     static constraints = {
-//        attribute_value_de      (nullable:false, blank:false)
-//        attribute_value_en      (nullable:false, blank:false)
-//        attribute_name          (nullable:false, blank:false)
-        date                    (nullable:false, blank:false)
-        oid                     (nullable:false, blank:false)//, unique: ['attribut_name', 'das_oid', 'das_responsibleOrg', 'das_responsibleUser'])
         responsibleUser         (nullable:true, blank:false)
         responsibleOrg          (nullable:true, blank:false)
-        isDone                  (nullable:false, blank:false)
         isHidden                (nullable:false, blank:false)
+        dueDateObject           (nullable:true, blank:false)
+        dateCreated             (nullable: true, blank: false)
         lastUpdated             (nullable:true, blank:false)
-        dateCreated (nullable: true, blank: false)
     }
-
-    private static String getPropertyValue(String messageKey) {
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-        String value = messageSource.getMessage(messageKey, null, locale)
-        value
-    }
-
 }

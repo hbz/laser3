@@ -3,19 +3,18 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.CacheService
 import de.laser.controller.AbstractDebugController
+import de.laser.domain.IssueEntitlementGroup
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
-import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonBuilder
-import org.apache.commons.lang.StringUtils
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -860,6 +859,17 @@ class FinanceController extends AbstractDebugController {
                   }
               }
 
+              IssueEntitlementGroup issueEntitlementGroup = null
+              if(params.newTitleGroup)
+              {
+                  try {
+                      issueEntitlementGroup = IssueEntitlementGroup.load(params.newTitleGroup.split(":")[1])
+                  } catch (Exception e) {
+                      log.error("Non-valid IssueEntitlementGroup sent ${params.newTitleGroup}",e)
+                  }
+              }
+
+              println(issueEntitlementGroup)
               RefdataValue billing_currency = RefdataValue.get(params.newCostCurrency)
 
               //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
@@ -933,11 +943,12 @@ class FinanceController extends AbstractDebugController {
                   newCostItem.sub = sub
                   newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
                   newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie?.tipp) ?: null
+                  newCostItem.issueEntitlementGroup = issueEntitlementGroup ?: null
                   newCostItem.order = order
                   newCostItem.invoice = invoice
                   //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
                   if(sub)
-                      newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
+                      newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
                   else newCostItem.isVisibleForSubscriber = false
                   newCostItem.costItemCategory = cost_item_category
                   newCostItem.costItemElement = cost_item_element
@@ -1451,9 +1462,9 @@ class FinanceController extends AbstractDebugController {
         render result as JSON
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processCostItemsBulk() {
         Map<String,Object> result = financeService.setResultGenerics(params)

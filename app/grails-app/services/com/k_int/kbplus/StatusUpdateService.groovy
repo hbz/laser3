@@ -5,11 +5,11 @@ import de.laser.SystemEvent
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 
-class SubscriptionUpdateService extends AbstractLockableService {
+class StatusUpdateService extends AbstractLockableService {
 
     def changeNotificationService
     def contextService
@@ -45,7 +45,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 )
 
                 intendedSubsIds1.each { id ->
-                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_CURRENT)
+                    log.info('StatusUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_CURRENT)
                 }
             }
 
@@ -68,7 +68,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 )
 
                 intendedSubsIds2.each { id ->
-                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_CURRENT)
+                    log.info('StatusUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_CURRENT)
                 }
             }
 
@@ -89,7 +89,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 )
 
                 intendedSubsIds3.each { id ->
-                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
+                    log.info('StatusUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
                 }
             }
 
@@ -110,7 +110,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 )
 
                 intendedSubsIds4.each { id ->
-                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
+                    log.info('StatusUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
                 }
             }
 
@@ -131,7 +131,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 )
 
                 currentSubsIds.each { id ->
-                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
+                    log.info('StatusUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
                 }
             }
 
@@ -152,7 +152,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 )
 
                 currentSubsIds2.each { id ->
-                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
+                    log.info('StatusUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
                 }
             }
 
@@ -174,7 +174,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 )
 
                 currentSubsIds3.each { id ->
-                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_INTENDED_PERENNIAL)
+                    log.info('StatusUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_INTENDED_PERENNIAL)
                 }
             }**/
 
@@ -185,6 +185,92 @@ class SubscriptionUpdateService extends AbstractLockableService {
         }
         else {
             log.warn("Subscription check already running ... not starting again.")
+            return false
+        }
+    }
+
+    /**
+     * Cronjob-triggered.
+     * Runs through all subscriptions having status "Intended" or "Current" and checks their dates:
+     * - if state = planned, then check if start date is reached, if so: update to active, else do nothing
+     * - else if state = active, then check if end date is reached, if so: update to terminated, else do nothing
+     */
+    boolean licenseCheck() {
+        if(!running) {
+            running = true
+            println "processing all intended licenses ..."
+            Date currentDate = new Date(System.currentTimeMillis())
+
+            Map<String,Object> updatedObjs = [:]
+
+            // INTENDED -> CURRENT
+
+            Set<Long> intendedLicsIds1 = License.where {
+                status == RDStore.LICENSE_INTENDED && (startDate != null && startDate < currentDate) && (endDate != null && endDate >= currentDate)
+            }.collect{ it.id }
+
+            log.info("Intended licenses reached start date and are now running (${currentDate}): " + intendedLicsIds1)
+
+            if (intendedLicsIds1) {
+                updatedObjs << ["intendedToCurrent (${intendedLicsIds1.size()})" : intendedLicsIds1]
+
+                Subscription.executeUpdate(
+                        'UPDATE License lic SET lic.status =:status WHERE lic.id in (:ids)',
+                        [status: RDStore.LICENSE_CURRENT, ids: intendedLicsIds1]
+                )
+
+                intendedLicsIds1.each { id ->
+                    log.info('StatusUpdateService UPDATE license WHERE ID ' + id + ' Status: ' + RDStore.LICENSE_CURRENT)
+                }
+            }
+
+            // CURRENT -> EXPIRED
+
+            Set<Long> currentLicsIds = License.where {
+                status == RDStore.LICENSE_CURRENT && (startDate != null && startDate < currentDate) && (endDate != null && endDate < currentDate)
+            }.collect{ it.id }
+
+            log.info("Current licenses reached end date and are now expired (${currentDate}): " + currentLicsIds)
+
+            if (currentLicsIds) {
+                updatedObjs << ["currentToExpired (${currentLicsIds.size()})" : currentLicsIds]
+
+                Subscription.executeUpdate(
+                        'UPDATE License lic SET lic.status =:status WHERE lic.id in (:ids)',
+                        [status: RDStore.LICENSE_EXPIRED, ids: currentLicsIds]
+                )
+
+                currentLicsIds.each { id ->
+                    log.info('StatusUpdateService UPDATE license WHERE ID ' + id + ' Status: ' + RDStore.LICENSE_EXPIRED)
+                }
+            }
+
+            // INTENDED -> EXPIRED
+
+            Set<Long> intendedLicsIds2 = License.where {
+                status == RDStore.LICENSE_INTENDED && (startDate != null && startDate < currentDate) && (endDate != null && endDate < currentDate)
+            }.collect{ it.id }
+
+            log.info("Intended licenses reached start and end date and are now expired (${currentDate}): " + intendedLicsIds2)
+
+            if (intendedLicsIds2) {
+                updatedObjs << ["currentToExpired (${intendedLicsIds2.size()})" : intendedLicsIds2]
+
+                Subscription.executeUpdate(
+                        'UPDATE License lic SET lic.status =:status WHERE lic.id in (:ids)',
+                        [status: RDStore.LICENSE_EXPIRED, ids: intendedLicsIds2]
+                )
+
+                intendedLicsIds2.each { id ->
+                    log.info('StatusUpdateService UPDATE license WHERE ID ' + id + ' Status: ' + RDStore.LICENSE_EXPIRED)
+                }
+            }
+
+            SystemEvent.createEvent('LIC_UPDATE_SERVICE_PROCESSING', updatedObjs)
+            running = false
+        }
+        else {
+            log.warn("License check already running ... not starting again.")
             return false
         }
     }
@@ -311,9 +397,9 @@ class SubscriptionUpdateService extends AbstractLockableService {
             Org documentOwner
             if(dc.subscription) {
                 if(dc.isShared) {
-                    if(dc.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL)
+                    if(dc.subscription.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
                         documentOwner = dc.subscription.getConsortia()
-                    else if(dc.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+                    else if(dc.subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
                         documentOwner = dc.subscription.getCollective()
                 }
                 else
@@ -357,5 +443,4 @@ class SubscriptionUpdateService extends AbstractLockableService {
         }
         true
     }
-
 }

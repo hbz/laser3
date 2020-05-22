@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
@@ -8,19 +8,22 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.DashboardDueDate
+import de.laser.DashboardDueDatesService
+import de.laser.DueDateObject
 import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
+import de.laser.domain.I10nTranslation
 import de.laser.domain.SystemProfiler
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
+import org.springframework.web.servlet.support.RequestContextUtils
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
-import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
@@ -443,7 +446,9 @@ class AjaxController {
     render result as JSON
   }
 
+  @Deprecated
   def refdataSearch() {
+      // TODO: refactoring - only used by /templates/_orgLinksModal.gsp
 
     //log.debug("refdataSearch params: ${params}");
     
@@ -646,7 +651,7 @@ class AjaxController {
         if(params.oid != "undefined") {
             PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
             if(propDef) {
-                List<AbstractProperty> values
+                List<AbstractPropertyWithCalculatedLastUpdated> values
                 if(propDef.tenant) {
                     switch(params.domain) {
                         case 'currentSubscriptions':
@@ -702,30 +707,31 @@ class AjaxController {
         }
     }
 
-    @Deprecated
-  def sel2RefdataSearch() {
+    def sel2RefdataSearch() {
 
-    log.debug("sel2RefdataSearch params: ${params}");
+        log.debug("sel2RefdataSearch params: ${params}");
     
-    def result = []
-    //we call toString in case we got a GString
-    def config = refdata_config.get(params.id?.toString())
+        List result = []
+        Map<String, Object> config = refdata_config.get(params.id?.toString()) //we call toString in case we got a GString
+        boolean defaultOrder = true
 
-    if ( config == null ) {
-      // If we werent able to locate a specific config override, assume the ID is just a refdata key
-      config = [
-        domain:'RefdataValue',
-        countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
-        rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
-        qryParams:[],
-        cols:['value'],
-        format:'simple'
-      ]
-    }
+        if (config == null) {
+            String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+            defaultOrder = false
+            // If we werent able to locate a specific config override, assume the ID is just a refdata key
+            config = [
+                domain      :'RefdataValue',
+                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}' order by rdv.value_${locale}",
+                qryParams   :[],
+                cols        :['value'],
+                format      :'simple'
+            ]
+        }
 
     if ( config ) {
 
-      def query_params = []
+      List query_params = []
       config.qryParams.each { qp ->
         if ( qp?.clos) {
           query_params.add(qp.clos(params[qp.param]?:''));
@@ -779,8 +785,8 @@ class AjaxController {
     else {
       log.error("No config for refdata search ${params.id}");
     }
-      if(result)
-      {
+
+      if (result && defaultOrder) {
           result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
       }
 
@@ -799,6 +805,12 @@ class AjaxController {
     params.checkView = true
     render controlledListService.getIssueEntitlements(params) as JSON
   }
+
+  @Secured(['ROLE_USER'])
+  def lookupTitleGroups() {
+     params.checkView = true
+     render controlledListService.getTitleGroups(params) as JSON
+    }
 
   @Secured(['ROLE_USER'])
   def lookupSubscriptions() {
@@ -1003,7 +1015,7 @@ class AjaxController {
           redirect(url: request.getHeader('referer'))
           return
       }
-      Subscription context = genericOIDService.resolveOID(params.context)
+      def context = genericOIDService.resolveOID(params.context)
       Doc linkComment = genericOIDService.resolveOID(params.commentID)
       Links link
       String commentContent
@@ -1012,7 +1024,7 @@ class AjaxController {
       if(params.link) {
           link = genericOIDService.resolveOID(params.link)
           if(params["linkType_${link.id}"]) {
-              Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
+              def pair = genericOIDService.resolveOID(params["pair_${link.id}"])
               String linkTypeString = params["linkType_${link.id}"].split("§")[0]
               int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
               RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
@@ -1029,12 +1041,12 @@ class AjaxController {
               log.debug(linkType)
           }
           else if(!params["linkType_${link.id}"]) {
-              flash.error = message(code:'subscription.linking.linkTypeError')
+              flash.error = message(code:'default.linking.linkTypeError')
           }
       }
       else {
         if(params["linkType_new"]) {
-            Subscription pair = genericOIDService.resolveOID(params.pair_new)
+            def pair = genericOIDService.resolveOID(params.pair_new)
             String linkTypeString = params["linkType_new"].split("§")[0]
             int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
             RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
@@ -1048,10 +1060,10 @@ class AjaxController {
                 source = pair.id
                 destination = context.id
             }
-            link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:Subscription.class.name)
+            link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:context.class.name)
         }
         else if(!params["linkType_new"]) {
-            flash.error = message(code:'subscription.linking.linkTypeError')
+            flash.error = message(code:'default.linking.linkTypeError')
         }
       }
       if(link && link.save(flush:true)) {
@@ -1077,7 +1089,7 @@ class AjaxController {
       }
       else if(link && link.errors) {
           log.error(link.errors)
-          flash.error = message(code:'subscription.linking.savingError')
+          flash.error = message(code:'default.linking.savingError')
       }
     redirect(url: request.getHeader('referer'))
   }
@@ -1905,6 +1917,7 @@ class AjaxController {
         def result = [:]
         result.user = contextService.user
         result.institution = contextService.org
+        flash.error = ''
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.org.name} pages. Please request access on the profile page"
@@ -1912,18 +1925,18 @@ class AjaxController {
             return;
         }
 
-        if (params.id) {
-            DashboardDueDate dueDate = DashboardDueDate.get(params.id)
+        if (params.owner) {
+            DashboardDueDate dueDate = genericOIDService.resolveOID(params.owner)
             if (dueDate){
                 dueDate.isHidden = isHidden
                 dueDate.save(flush: true)
             } else {
-                if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
-                else            flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+                if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+                else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
             }
         } else {
-            if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
-            else            flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+            if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+            else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
         }
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
@@ -1933,12 +1946,69 @@ class AjaxController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.dashboardDueDatesOffset = result.offset
 
-//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
+        result.dueDates = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
+    }
 
+    @Secured(['ROLE_USER'])
+    def dashboardDueDateSetIsDone() {
+       setDashboardDueDateIsDone(true)
+    }
+
+    @Secured(['ROLE_USER'])
+    def dashboardDueDateSetIsUndone() {
+       setDashboardDueDateIsDone(false)
+    }
+
+    @Secured(['ROLE_USER'])
+    private setDashboardDueDateIsDone(boolean isDone){
+        log.debug("Done/Undone Dashboard DueDate - isDone="+isDone)
+
+        def result = [:]
+        result.user = contextService.user
+        result.institution = contextService.org
+        flash.error = ''
+
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = "You do not have permission to access ${contextService.org.name} pages. Please request access on the profile page"
+            response.sendError(401)
+            return
+        }
+
+
+        if (params.owner) {
+            DueDateObject dueDateObject = genericOIDService.resolveOID(params.owner)
+            if (dueDateObject){
+                Object obj = genericOIDService.resolveOID(dueDateObject.oid)
+                if (obj instanceof Task && isDone){
+                    Task dueTask = (Task)obj
+                    dueTask.setStatus(RDStore.TASK_STATUS_DONE)
+                    dueTask.save()
+                }
+                dueDateObject.isDone = isDone
+                dueDateObject.save()
+            } else {
+                if (isDone)   flash.error += message(code:'dashboardDueDate.err.toSetDone.doesNotExist')
+                else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
+            }
+        } else {
+            if (isDone)   flash.error += message(code:'dashboardDueDate.err.toSetDone.doesNotExist')
+            else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
+        }
+
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.dashboardDueDatesOffset = result.offset
+
+        result.dueDates = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+
+        render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
 
     /*
@@ -2548,8 +2618,13 @@ class AjaxController {
         def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
         result.params = params
         result.taskInstance = Task.get(params.id)
+        if (result.taskInstance){
+            render template:"../templates/tasks/modal_edit", model: result
+//        } else {
+//            flash.error = "Diese Aufgabe existiert nicht (mehr)."
+//            redirect(url: request.getHeader('referer'))
+        }
 
-        render template:"../templates/tasks/modal_edit", model: result
     }
 
     @Secured(['ROLE_USER'])

@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.DateUtil
@@ -105,6 +106,11 @@ class SubscriptionsQueryService {
                     qry_params = ['roleType':role_sub_collective, 'roleType2': role_subCons, 'activeInst':contextOrg]
                 }
             }
+        }
+
+        if(params.license) {
+            base_qry += " and s.owner = :lic"
+            qry_params.put('lic', License.get(params.license))
         }
 
         def consortia = params.consortia ? genericOIDService.resolveOID(params.consortia) : null

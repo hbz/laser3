@@ -1,10 +1,9 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
 
 class PropertyService {
@@ -41,21 +40,33 @@ class PropertyService {
             if(params.filterProp) {
                 switch (pd.type) {
                     case RefdataValue.toString():
-                        def pdValue = genericOIDService.resolveOID(params.filterProp)
-                        if (pdValue == RDStore.GENERIC_NULL_VALUE) {
-                            base_qry += " and gProp.refValue = null ) "
+                        List<String> selFilterProps = params.filterProp.split(',')
+                        List filterProp = []
+                        selFilterProps.each { String sel ->
+                            filterProp << genericOIDService.resolveOID(sel)
+                        }
+                        base_qry += " and "
+                        if (filterProp.contains(RDStore.GENERIC_NULL_VALUE) && filterProp.size() == 1) {
+                            base_qry += " gProp.refValue = null "
+                            filterProp.remove(RDStore.GENERIC_NULL_VALUE)
+                        }
+                        else if(filterProp.contains(RDStore.GENERIC_NULL_VALUE) && filterProp.size() > 1) {
+                            base_qry += " ( gProp.refValue = null or gProp.refValue in (:prop) ) "
+                            filterProp.remove(RDStore.GENERIC_NULL_VALUE)
+                            base_qry_params.put('prop', filterProp)
                         }
                         else {
-                            base_qry += " and gProp.refValue = :prop ) "
-                            base_qry_params.put('prop', pdValue)
+                            base_qry += " gProp.refValue in (:prop) "
+                            base_qry_params.put('prop', filterProp)
                         }
+                        base_qry += " ) "
                         break
                     case Integer.toString():
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.intValue = null ) "
                         } else {
                             base_qry += " and gProp.intValue = :prop ) "
-                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                            base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
                         break
                     case String.toString():
@@ -63,7 +74,7 @@ class PropertyService {
                             base_qry += " and gProp.stringValue = null ) "
                         } else {
                             base_qry += " and lower(gProp.stringValue) like lower(:prop) ) "
-                            base_qry_params.put('prop', "%${AbstractProperty.parseValue(params.filterProp, pd.type)}%")
+                            base_qry_params.put('prop', "%${AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type)}%")
                         }
                         break
                     case BigDecimal.toString():
@@ -71,7 +82,7 @@ class PropertyService {
                             base_qry += " and gProp.decValue = null ) "
                         } else {
                             base_qry += " and gProp.decValue = :prop ) "
-                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                            base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
                         break
                     case Date.toString():
@@ -79,7 +90,7 @@ class PropertyService {
                             base_qry += " and gProp.dateValue = null ) "
                         } else {
                             base_qry += " and gProp.dateValue = :prop ) "
-                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                            base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
                         break
                     case URL.toString():
@@ -87,7 +98,7 @@ class PropertyService {
                             base_qry += " and gProp.urlValue = null ) "
                         } else {
                             base_qry += " and genfunc_filter_matcher(gProp.urlValue, :prop) = true ) "
-                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                            base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
                         break
                 }

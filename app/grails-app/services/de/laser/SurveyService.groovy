@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
@@ -43,7 +43,7 @@ class SurveyService {
 
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -68,7 +68,7 @@ class SurveyService {
 
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -141,7 +141,7 @@ class SurveyService {
         return result
     }
 
-    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
+    boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
         Org contextOrg = contextService.getOrg()
         def targetProp
 
@@ -185,9 +185,9 @@ class SurveyService {
     }
 
 
-    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
+    boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
 
-        properties.each { AbstractProperty prop ->
+        properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
             AuditConfig.removeAllConfigs(prop)
         }
 
@@ -456,7 +456,7 @@ class SurveyService {
 
         Map sheetData = [:]
 
-        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']) {
+        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
             surveyConfigs.each { surveyConfig ->
                 List titles = []
                 List surveyData = []
@@ -597,7 +597,7 @@ class SurveyService {
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (grailsApplication.config.grails.mail.disabled == true) {
-            println 'emailToSurveyOwnerbyParticipationFinish() failed due grailsApplication.config.grails.mail.disabled = true'
+            println 'surveyService.emailToSurveyOwnerbyParticipationFinish() failed due grailsApplication.config.grails.mail.disabled = true'
             return false
         }
 

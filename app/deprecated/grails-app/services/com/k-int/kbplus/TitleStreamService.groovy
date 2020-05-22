@@ -7,7 +7,7 @@ import grails.transaction.Transactional
 
 import java.text.SimpleDateFormat
 
-@Transactional
+@Deprecated
 class TitleStreamService {
 
     def contextService

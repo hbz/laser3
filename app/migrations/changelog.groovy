@@ -68,7 +68,15 @@ databaseChangeLog = {
 	include file: 'changelog-2020-03-20.groovy'
 	include file: 'changelog-2020-03-26.groovy'
 	include file: 'changelog-2020-03-27.groovy'
-	include file: 'changelog-2020-03-30.groovy'
+	//include file: 'changelog-2020-03-30.groovy' chicken-and-egg problem due oo access
+	include file: 'changelog-2020-04-16.groovy'
+	include file: 'changelog-2020-04-27.groovy'
+	include file: 'changelog-2020-05-03.groovy'
+	include file: 'changelog-2020-05-04.groovy'
 	include file: 'changelog-2020-05-07.groovy'
+	include file: 'changelog-2020-05-08.groovy'
+	include file: 'changelog-2020-05-12.groovy'
 	include file: 'changelog-2020-05-14.groovy'
+	include file: 'changelog-2020-05-15.groovy'
+	include file: 'changelog-2020-05-20.groovy'
 }

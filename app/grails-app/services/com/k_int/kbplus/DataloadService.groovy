@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.SystemEvent
 import de.laser.helper.RDStore
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import groovy.json.JsonOutput
 import org.elasticsearch.ElasticsearchException
@@ -280,17 +280,15 @@ class DataloadService {
             result.dbId = lic.id
             result.guid = lic.globalUID ?:''
             result.name = lic.reference
-            result.status = lic.status?.value
-            result.statusId = lic.status?.id
             result.visible = 'Private'
             result.rectype = lic.getClass().getSimpleName()
 
             switch(lic.getCalculatedType()) {
-                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                case CalculatedType.TYPE_CONSORTIAL:
                     result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
                     result.membersCount = License.findAllByInstanceOf(lic).size()?:0
                     break
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                case CalculatedType.TYPE_PARTICIPATION:
                     List orgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
                     result.availableToOrgs = orgs?.id
                     result.consortiaGUID = lic.getLicensingConsortium()?.globalUID
@@ -301,7 +299,7 @@ class DataloadService {
                         result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
                     }
                     break
-                case TemplateSupport.CALCULATED_TYPE_LOCAL:
+                case CalculatedType.TYPE_LOCAL:
                     result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
                     break
             }
@@ -349,11 +347,11 @@ class DataloadService {
                 result.rectype = sub.getClass().getSimpleName()
 
                 switch (sub.getCalculatedType()) {
-                    case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    case CalculatedType.TYPE_CONSORTIAL:
                         result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
                         result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?:0
                         break
-                    case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    case CalculatedType.TYPE_PARTICIPATION:
                         List orgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value, RDStore.OR_SUBSCRIBER_COLLECTIVE.value]}?.org
                         result.availableToOrgs = orgs?.id
                         result.consortiaGUID = sub.getConsortia()?.globalUID
@@ -365,13 +363,13 @@ class DataloadService {
                         }
 
                         break
-                    case TemplateSupport.CALCULATED_TYPE_COLLECTIVE:
+                    case CalculatedType.TYPE_COLLECTIVE:
                         result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value]}?.org?.id
                         break
-                /*              case TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE:
+                /*              case CalculatedType.TYPE_ADMINISTRATIVE:
                                   result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                                   break*/
-                    case TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE:
+                    case CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE:
                         List orgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value, RDStore.OR_SUBSCRIBER_CONS.value]}?.org
                         result.availableToOrgs = orgs?.id
                         result.consortiaGUID = sub.getConsortia()?.globalUID
@@ -382,7 +380,7 @@ class DataloadService {
                             result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
                         }
                         break
-                    case TemplateSupport.CALCULATED_TYPE_LOCAL:
+                    case CalculatedType.TYPE_LOCAL:
                         result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
                         break
                 }
@@ -598,22 +596,22 @@ class DataloadService {
             result.rectype = ie.getClass().getSimpleName()
 
             switch (ie.subscription.getCalculatedType()) {
-                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                case CalculatedType.TYPE_CONSORTIAL:
                     result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
                     break
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                case CalculatedType.TYPE_PARTICIPATION:
                     result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value, RDStore.OR_SUBSCRIBER_COLLECTIVE.value]}?.org?.id
                     break
-                case TemplateSupport.CALCULATED_TYPE_COLLECTIVE:
+                case CalculatedType.TYPE_COLLECTIVE:
                     result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value]}?.org?.id
                     break
-            /*              case TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE:
+            /*              case CalculatedType.TYPE_ADMINISTRATIVE:
                               result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                               break*/
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE:
+                case CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE:
                     result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value, RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                     break
-                case TemplateSupport.CALCULATED_TYPE_LOCAL:
+                case CalculatedType.TYPE_LOCAL:
                     result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
                     break
             }
@@ -671,22 +669,22 @@ class DataloadService {
             }
 
             switch (subCustProp.owner.getCalculatedType()) {
-                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                case CalculatedType.TYPE_CONSORTIAL:
                     result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
                     break
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                case CalculatedType.TYPE_PARTICIPATION:
                     result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value, RDStore.OR_SUBSCRIBER_COLLECTIVE.value]}?.org?.id
                     break
-                case TemplateSupport.CALCULATED_TYPE_COLLECTIVE:
+                case CalculatedType.TYPE_COLLECTIVE:
                     result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value]}?.org?.id
                     break
-            /*              case TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE:
+            /*              case CalculatedType.TYPE_ADMINISTRATIVE:
                               result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                               break*/
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE:
+                case CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE:
                     result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value, RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                     break
-                case TemplateSupport.CALCULATED_TYPE_LOCAL:
+                case CalculatedType.TYPE_LOCAL:
                     result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
                     break
             }
@@ -775,13 +773,13 @@ class DataloadService {
             }
 
             switch(licCustProp.owner.getCalculatedType()) {
-                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                case CalculatedType.TYPE_CONSORTIAL:
                     result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
                     break
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                case CalculatedType.TYPE_PARTICIPATION:
                     result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
                     break
-                case TemplateSupport.CALCULATED_TYPE_LOCAL:
+                case CalculatedType.TYPE_LOCAL:
                     result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
                     break
             }
