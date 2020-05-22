@@ -1819,6 +1819,8 @@ class AdminController extends AbstractDebugController {
                         break
                     case "series_name": colMap.seriesNameTitleCol = c
                         break
+                    case "monograph_parent_collection_title": colMap.seriesNameTitleCol = c
+                        break
                     case "subject_reference": colMap.subjectReferenceTitleCol = c
                         break
                     case "summary_of_content": colMap.summaryOfContentTitleCol = c
