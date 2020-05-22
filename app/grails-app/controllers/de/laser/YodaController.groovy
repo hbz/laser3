@@ -41,7 +41,7 @@ class YodaController {
     def globalSourceSyncService
     def contextService
     def dashboardDueDatesService
-    def subscriptionUpdateService
+    StatusUpdateService statusUpdateService
     def costItemUpdateService
     def documentUpdateService
     def quartzScheduler
@@ -579,7 +579,7 @@ class YodaController {
     def retriggerPendingChanges() {
         log.debug("match IssueEntitlements to TIPPs ...")
         flash.message = "Pakete werden nachgehalten ..."
-        subscriptionUpdateService.retriggerPendingChanges()
+        statusUpdateService.retriggerPendingChanges()
         redirect(url: request.getHeader('referer'))
     }
 
@@ -869,7 +869,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def assignNoteOwners() {
-        subscriptionUpdateService.assignNoteOwners()
+        statusUpdateService.assignNoteOwners()
         redirect controller: 'home'
     }
 
@@ -1031,8 +1031,9 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def subscriptionCheck(){
-        flash.message = "Lizenzen werden upgedatet"
-        subscriptionUpdateService.subscriptionCheck()
+        flash.message = "Lizenzen und Verträge werden upgedatet"
+        statusUpdateService.subscriptionCheck()
+        statusUpdateService.licenseCheck()
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1045,7 +1046,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def updateLinks(){
-        int affected = subscriptionUpdateService.updateLinks()
+        int affected = statusUpdateService.updateLinks()
         flash.message = "Es wurden ${affected} Vor-/Nachfolgebeziehungen neu verknüpft"
         redirect(url: request.getHeader('referer'))
     }
@@ -1065,7 +1066,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def startDateCheck(){
-        if(subscriptionUpdateService.startDateCheck())
+        if(statusUpdateService.startDateCheck())
             flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
         else
             flash.message = "Lizenzen ohne Startdatum haben bereits ihren Status verloren!"
