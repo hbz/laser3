@@ -58,7 +58,7 @@
                 <div class="ui divider"></div>
             </g:if>
 
-            <g:if test="${actionName == "evaluationParticipant" && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id && surveyConfig.isResultsSetFinishByOrg(participant)}">
+            <g:if test="${actionName == "evaluationParticipant" && surveyInfo.status?.id == RDStore.SURVEY_SURVEY_STARTED.id && surveyConfig.isResultsSetFinishByOrg(participant)}">
                 <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
                                            message="openSurveyAgainForParticipant.button"/>
                 <div class="ui divider"></div>
@@ -111,14 +111,14 @@
 
             </g:if>
 
-            <g:if test="${surveyInfo.type in [RDStore.SURVEY_TYPE_SUBSCRIPTION] && surveyInfo.status?.id in [de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id, de.laser.helper.RDStore.SURVEY_SURVEY_COMPLETED.id]}">
+            <g:if test="${surveyInfo.type in [RDStore.SURVEY_TYPE_SUBSCRIPTION] && surveyInfo.status?.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
                 <semui:actionsDropdownItem controller="survey" action="copySurveyCostItemsToSub" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
                                            message="surveyInfo.copySurveyCostItems" tooltip=""/>
                 <div class="ui divider"></div>
 
             </g:if>
 
-            <g:if test="${(surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING.id)}">
+            <g:if test="${(surveyInfo.status?.id == RDStore.SURVEY_IN_PROCESSING.id)}">
                 <semui:actionsDropdownItem controller="survey" action="allSurveyProperties" params="[id: params.id]"
                                            message="survey.SurveyProp.all"/>
 

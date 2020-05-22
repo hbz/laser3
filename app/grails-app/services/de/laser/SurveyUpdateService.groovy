@@ -86,8 +86,8 @@ class SurveyUpdateService extends AbstractLockableService {
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
-                if(userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                        userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                if(userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
 
                     def orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
@@ -107,12 +107,12 @@ class SurveyUpdateService extends AbstractLockableService {
     def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org){
 
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(org, 1)
+            List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(org, UserOrg.STATUS_APPROVED)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
-                if(userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                        userOrg.user?.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                if(userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
                     sendEmail(userOrg.user, userOrg.org, [surveyInfo])
                 }
@@ -144,7 +144,7 @@ class SurveyUpdateService extends AbstractLockableService {
                         List generalContactsEMails = []
 
                         survey.owner.getGeneralContactPersons(false)?.each { person ->
-                            person?.contacts?.each { contact ->
+                            person.contacts?.each { contact ->
                                 if (['Mail', 'E-Mail'].contains(contact?.contentType?.value)) {
                                     generalContactsEMails << contact?.content
                                 }
