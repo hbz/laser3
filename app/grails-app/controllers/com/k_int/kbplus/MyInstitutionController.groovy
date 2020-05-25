@@ -63,6 +63,7 @@ class MyInstitutionController extends AbstractDebugController {
     def organisationService
     def financeService
     def surveyService
+    def formService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -3846,7 +3847,8 @@ AND EXISTS (
                 flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
             }
         }
-        else if (params.cmd == 'processing') {
+        else if (params.cmd == 'processing' && formService.validateToken(params)) {
+
             def valid
             def propDefGroup
             def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
