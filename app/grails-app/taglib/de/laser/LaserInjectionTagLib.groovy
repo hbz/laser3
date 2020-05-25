@@ -19,6 +19,7 @@ class LaserInjectionTagLib {
         g.set( var:'subscriptionsQueryService', bean:'subscriptionsQueryService' )
         g.set( var:'surveyService', bean:'surveyService' )
         g.set( var:'taskService', bean:'taskService' )
+        g.set( var:'GOKbService', bean:'GOKbService' )
         g.set( var:'yodaService', bean:'yodaService' )
     }
 }

@@ -479,7 +479,7 @@ from Subscription as s where
                 sub.save()
             }*/
         }
-        redirect controller:'license', action:'show', params: [id:params.license]
+        redirect controller:'license', action:'members', params: [id:params.license]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

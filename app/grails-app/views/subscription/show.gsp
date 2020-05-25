@@ -220,7 +220,11 @@
                                                     <g:link controller="subscription" action="show" id="${pair.id}">
                                                         ${pair.name}
                                                     </g:link><br>
-                                                    ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}
+                                                    ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}<br>
+                                                    <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
+                                                    <g:if test="${comment}">
+                                                        <em>${comment.owner.content}</em>
+                                                    </g:if>
                                                 </td>
                                                 <td class="right aligned">
                                                     <g:render template="/templates/links/subLinksModal"
