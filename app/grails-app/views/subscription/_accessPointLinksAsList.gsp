@@ -27,7 +27,7 @@
           <p>
             <em><g:message code="subscription.packages.curatoryGroups"/>
               <ul>
-                <g:each in="${packageMetadata.records?.get(0)?.curatoryGroups}" var="curatoryGroup">
+                <g:each in="${packageMetadata.records.get(0).curatoryGroups}" var="curatoryGroup">
                   <li>${curatoryGroup}</li>
                 </g:each>
               </ul>
