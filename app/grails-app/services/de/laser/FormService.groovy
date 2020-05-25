@@ -22,7 +22,7 @@ class FormService {
             if (token) {
                 SessionCacheWrapper cw = contextService.getSessionCache()
 
-                token = "FormService/validateToken/" + token
+                token = "FormService/Token/" + token
                 String md5 = params.toString().encodeAsMD5()
                 String given = cw.get(token)
 

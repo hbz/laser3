@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2178    25.05.2020  hbz-dev     David   Feature     Mehrfachanlegen von Adressen durch mehrfaches Klicken von "Anlegen-Button" soll unterbunden werden
+
 2131    25.05.2020  hbz-dev     David   Bug         Merkmalsgruppen werden mehrfach angelegt
 
 2444    22.05.2020  rc1.4       Andreas Bug         Rückverweis beim Entknüpfen von Teilnehmer angepasst

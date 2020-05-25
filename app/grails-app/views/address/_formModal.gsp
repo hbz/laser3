@@ -1,4 +1,6 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Address;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.Address;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
+<laser:serviceInjection />
+
 <g:if test="${addressId}">
     <g:set var="addressInstance" value="${Address.get(addressId)}"/>
 </g:if>
@@ -39,6 +41,8 @@
 <semui:modal id="${modalId ?: 'addressFormModal'}" text="${modalText}" msgSave="${modalMsgSave}">
 
     <g:form id="create_address_${modalId}" class="ui form" url="${url}" method="POST">
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+
         <g:if test="${addressInstance}">
             <input type="hidden" name="id" value="${addressInstance.id}"/>
         </g:if>

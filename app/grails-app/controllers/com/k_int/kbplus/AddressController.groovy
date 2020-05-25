@@ -13,6 +13,7 @@ class AddressController extends AbstractDebugController {
 	def springSecurityService
 	def addressbookService
     def contextService
+    def formService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -35,15 +36,18 @@ class AddressController extends AbstractDebugController {
 				[addressInstance: new Address(params)]
 				break
 			case 'POST':
-                Address addressInstance = new Address(params)
-				if (! addressInstance.save(flush: true)) {
-			        flash.error = message(code: 'default.save.error.message', args: [message(code: 'address.label')
-                                                                                             +addressInstance.id])
-					redirect(url: request.getHeader('referer'), params: params)
-					return
-	        	}
+                if (formService.validateToken(params)) {
 
-                flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.id])
+                    Address addressInstance = new Address(params)
+                    if (!addressInstance.save(flush: true)) {
+                        flash.error = message(code: 'default.save.error.message', args: [message(code: 'address.label')
+                                                                                                 + addressInstance.id])
+                        redirect(url: request.getHeader('referer'), params: params)
+                        return
+                    }
+
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.id])
+                }
                 redirect(url: request.getHeader('referer'), params: params)
 			break
 		}
