@@ -642,7 +642,7 @@
          $("*[id^=regions_]").hide();
          if(newValue){
              var id = newValue.split(':')[1]
-             $("#regions_" + id).editable('setValue', null);
+             // $("#regions_" + id).editable('setValue', null);
              $("#regions_" + id).show();
          }
     };

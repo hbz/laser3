@@ -2,6 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem 
+region-Dropdown auf org/show
+
 2515    20.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Rolle Redakteur kann keine Fächergruppen anlegen
 
 2506    19.05.2020  rc1.3       Andreas Bug         Überprüfung zu Kopie von Kosten vervollständigt
