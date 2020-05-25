@@ -1,9 +1,12 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; com.k_int.properties.*; com.k_int.kbplus.RefdataCategory"%>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; com.k_int.properties.*; com.k_int.kbplus.RefdataCategory; de.laser.FormService"%>
+<laser:serviceInjection />
 
 <semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label">
 
     <g:form class="ui form" url="${formUrl}" method="POST">
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <input type="hidden" name="cmd" value="processing"/>
+
         <g:if test="${pdGroup}">
             <input type="hidden" name="oid" value="${pdGroup.class.name}:${pdGroup.id}"/>
         </g:if>
