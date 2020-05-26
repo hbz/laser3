@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Refdatas
+
 2516    22.05.2020  rc1.4       Andreas Feature     KBART-Import um neue Spalten erweitert
 
 2357    20.05.2020  rc1.3       Moe     Feature     Teilnehmer nachträglich einer Umfrage hinzufügen
