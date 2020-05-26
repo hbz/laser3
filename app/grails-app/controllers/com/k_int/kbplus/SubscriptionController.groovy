@@ -267,9 +267,9 @@ class SubscriptionController extends AbstractDebugController {
         if(params.kbartPreselect) {
             CommonsMultipartFile kbartFile = params.kbartPreselect
             InputStream stream = kbartFile.getInputStream()
-            List issueEntitlement = entitlements.toList()
+            List issueEntitlements = entitlements.toList()
 
-            subscriptionService.issueEntitlementEnrichment(stream, entitlements.toList(), (params.preselectCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+            subscriptionService.issueEntitlementEnrichment(stream, issueEntitlements, (params.preselectCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
 
             params.remove("kbartPreselct")
         }
