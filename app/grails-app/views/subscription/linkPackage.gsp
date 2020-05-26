@@ -83,6 +83,7 @@
                             <g:sortableColumn property="name"
                                               title="${message(code: 'package.show.pkg_name')}"
                                               params="${params}"/>
+                            <th>${message(code: 'package.curatoryGroup.label')}</th>
                             <g:sortableColumn property="providerName"
                                               title="${message(code: 'package.content_provider')}"
                                               params="${params}"/>
@@ -106,24 +107,31 @@
                                         </a>
                                     </g:else>
                                         <br><b>(${hit.titleCount ?: '0'} ${message(code: 'title.plural')})</b>
-                                    </td>
-                                    <td>
+                                </td>
+                                <td>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.curatoryGroups}" var="curatoryGroup">
+                                            <div class="item">${curatoryGroup}</div>
+                                        </g:each>
+                                    </div>
+                                </td>
+                                <td>
                                         <g:if test="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid)}">
                                             <g:link controller="organisation" action="show" id="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid).id}">${hit.providerName}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${hit.providerName}
                                         </g:else>
-                                    </td>
-                                    <td>
+                                </td>
+                                <td>
                                         <g:if test="${com.k_int.kbplus.Platform.findByGokbId(hit.platformUuid)}">
                                             <g:link controller="platform" action="show" id="${com.k_int.kbplus.Platform.findByGokbId(hit.platformUuid).id}">${hit.platformName}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${hit.platformName}
                                         </g:else>
-                                    </td>
-                                    <td class="right aligned">
+                                </td>
+                                <td class="right aligned">
                                         <g:if test="${editable && (!pkgs || !(hit.uuid in pkgs))}">
                                             <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"
                                                     id="${params.id}"
@@ -157,8 +165,8 @@
                                             </g:elseif>
                                             <br/>
                                         </g:else>
-                                    </td>
-                                </tr>
+                                </td>
+                            </tr>
                         </g:each>
                         </tbody>
                     </table>

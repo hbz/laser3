@@ -4,6 +4,14 @@
 
 2531    26.05.2020  rc1.4       David   Bug         Aufgaben nicht aufrufbar / Schaltfläche "Neue Aufgabe" auf Dashboard tot 
 
+2444    22.05.2020  rc1.4       Andreas Bug         Rückverweis beim Entknüpfen von Teilnehmer angepasst
+
+2432    22.05.2020  rc1.4       Andreas Feature     Kuratorengruppen von Paketen werden jetzt auf Lizenzdetailseite und Paket-verknüpfen-Seite angezeigt
+
+2413    22.05.2020  rc1.4       Andreas Feature     Titelausgabe um dynamische Ausgabe von Titelidentifierspalten erweitert
+
+1492    22.05.2020  rc1.4       Andreas Feature     Verknüpfungskommentare werden direkt an der Verknüfung angezeigt
+
 2516    22.05.2020  rc1.4       Andreas Feature     KBART-Import um neue Spalten erweitert
 
 2357    20.05.2020  rc1.3       Moe     Feature     Teilnehmer nachträglich einer Umfrage hinzufügen

@@ -245,7 +245,8 @@ class ExportService {
 	 * @return a {@link Map} containing lists for the title row and the column data
 	 */
 	Map<String,List> generateTitleExportKBART(Collection entitlementData) {
-		Map<String,List> export = [titleRow:[
+		List<IdentifierNamespace> otherTitleIdentifierNamespaces = IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.ti != null and id.ns.ns not in (:coreTitleNS)',[coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
+		List<String> titleHeaders = [
 				'publication_title',
 				'print_identifier',
 				'online_identifier',
@@ -286,13 +287,14 @@ class ExportService {
 				'ISSNs',
 				'eISSNs',
 				'pISBNs',
-				'ISBNs',
-				'listprice_value',
+				'ISBNs']
+		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { IdentifierNamespace ns -> "${ns.ns}_identifer"})
+		titleHeaders.addAll(['listprice_value',
 				'listprice_currency',
 				'localprice_value',
 				'localprice_currency',
-				'price_date'
-		],columnData:[]]
+				'price_date'])
+		Map<String,List> export = [titleRow:titleHeaders,columnData:[]]
 		List allRows = []
 		entitlementData.each { ieObj ->
 			def entitlement
@@ -482,6 +484,10 @@ class ExportService {
 			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','))
 			//ISBNs
 			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','))
+			//other identifier namespaces
+			otherTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
+				row.add(joinIdentifiers(tipp.title.ids,ns.ns,','))
+			}
 			if(entitlement?.priceItem) {
 				//listprice_value
 				row.add(entitlement.priceItem.listPrice ? entitlement.priceItem.listPrice.setScale(2, RoundingMode.HALF_UP) : ' ')
@@ -520,28 +526,31 @@ class ExportService {
 		joined
 	}
 
-	Map<String,List> generateTitleExportCSV(Collection entitlementData) {
+	Map<String,List> generateTitleExportCSV(Collection entitlements) {
 		Locale locale = LocaleContextHolder.getLocale()
-		Map<String,List> export = [titleRow:[messageSource.getMessage('title',null,locale),
-											 messageSource.getMessage('tipp.volume',null,locale),
-											 messageSource.getMessage('author.slash.editor',null,locale),
-											 messageSource.getMessage('title.editionStatement.label',null,locale),
-											 messageSource.getMessage('title.summaryOfContent.label',null,locale),
-											 messageSource.getMessage('title.seriesName.label',null,locale),
-											 messageSource.getMessage('title.subjectReference.label',null,locale),
-											 'zdb_id',
-											 'zdb_ppn',
-											 'DOI',
-											 'ISSNs',
-											 'eISSNs',
-											 'pISBNs',
-											 'ISBNs',
-											 messageSource.getMessage('title.dateFirstInPrint.label',null,locale),
-											 messageSource.getMessage('title.dateFirstOnline.label',null,locale),
-											 messageSource.getMessage('tipp.listPrice',null,locale),
-											 messageSource.getMessage('financials.currency',null,locale),
-											 messageSource.getMessage('tipp.localPrice',null,locale),
-											 messageSource.getMessage('financials.currency',null,locale)],
+		List<IdentifierNamespace> otherTitleIdentifierNamespaces = IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.ti != null and id.ns.ns not in (:coreTitleNS)',[coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
+		List<String> titleHeaders = [messageSource.getMessage('title',null,locale),
+									 messageSource.getMessage('tipp.volume',null,locale),
+									 messageSource.getMessage('author.slash.editor',null,locale),
+									 messageSource.getMessage('title.editionStatement.label',null,locale),
+									 messageSource.getMessage('title.summaryOfContent.label',null,locale),
+									 messageSource.getMessage('title.seriesName.label',null,locale),
+									 messageSource.getMessage('title.subjectReference.label',null,locale),
+									 'zdb_id',
+									 'zdb_ppn',
+									 'DOI',
+									 'ISSNs',
+									 'eISSNs',
+									 'pISBNs',
+									 'ISBNs',
+									 messageSource.getMessage('title.dateFirstInPrint.label',null,locale),
+									 messageSource.getMessage('title.dateFirstOnline.label',null,locale)]
+		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect{ IdentifierNamespace ns -> "${ns.ns}_identifier"})
+		titleHeaders.addAll([messageSource.getMessage('tipp.listPrice',null,locale),
+									 messageSource.getMessage('financials.currency',null,locale),
+									 messageSource.getMessage('tipp.localPrice',null,locale),
+									 messageSource.getMessage('financials.currency',null,locale)])
+		Map<String,List> export = [titleRow:titleHeaders,
 		columnData:[]]
 		List rows = []
 		entitlements.each { entObj ->
@@ -592,7 +601,9 @@ class ExportService {
 				row.add(' ')
 				row.add(' ')
 			}
-
+			otherTitleIdentifierNamespaces.each { IdentifierNamespace otherNS ->
+				row.add(joinIdentifiers(tipp.title.ids,otherNS.ns,';'))
+			}
 			if(entitlement && entitlement.priceItem) {
 				row.add(entitlement.priceItem.listPrice ? entitlement.priceItem.listPrice.setScale(2,RoundingMode.HALF_UP) : ' ')
 				row.add(entitlement.priceItem.listCurrency ? entitlement.priceItem.listCurrency.value : ' ')
@@ -613,7 +624,8 @@ class ExportService {
 
 	Map<String, List> generateTitleExportXLS(Collection entitlements) {
 		Locale locale = LocaleContextHolder.getLocale()
-		Map<String,List> export = [titles:[
+		List<IdentifierNamespace> otherTitleIdentifierNamespaces = IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.ti != null and id.ns.ns not in (:coreTitleNS)',[coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
+		List<String> titleHeaders = [
 				messageSource.getMessage('title',null,locale),
 				messageSource.getMessage('tipp.volume',null,locale),
 				messageSource.getMessage('author.slash.editor',null,locale),
@@ -629,12 +641,13 @@ class ExportService {
 				'pISBNs',
 				'ISBNs',
 				messageSource.getMessage('title.dateFirstInPrint.label',null,locale),
-				messageSource.getMessage('title.dateFirstOnline.label',null,locale),
-				messageSource.getMessage('tipp.listPrice',null,locale),
+				messageSource.getMessage('title.dateFirstOnline.label',null,locale)]
+		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect {IdentifierNamespace ns -> "${ns.ns}_identifier"})
+		titleHeaders.addAll([messageSource.getMessage('tipp.listPrice',null,locale),
 				messageSource.getMessage('financials.currency',null,locale),
 				messageSource.getMessage('tipp.localPrice',null,locale),
-				messageSource.getMessage('financials.currency',null,locale)]]
-
+				messageSource.getMessage('financials.currency',null,locale)])
+		Map<String,List> export = [titles:titleHeaders]
 		List rows = []
 		entitlements.each { entObj ->
 			IssueEntitlement entitlement = null
@@ -659,8 +672,8 @@ class ExportService {
 				row.add([field: '', style:null])
 				row.add([field: '', style:null])
 			}
-			row.add(tipp.title.seriesName ?: ' ')
-			row.add(tipp.title.subjectReference ?: ' ')
+			row.add([field: tipp.title.seriesName ?: '',style: null])
+			row.add([field: tipp.title.subjectReference ?: '',style: null])
 
 			//zdb_id
 			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','), style:null])
@@ -683,6 +696,9 @@ class ExportService {
 			}else{
 				row.add([field: '', style:null])
 				row.add([field: '', style:null])
+			}
+			otherTitleIdentifierNamespaces.each { IdentifierNamespace otherNS ->
+				row.add([field: joinIdentifiers(tipp.title.ids,otherNS.ns,','),style:null])
 			}
 
 			if(entitlement && entitlement.priceItem) {
