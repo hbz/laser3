@@ -82,7 +82,7 @@ class RDStore {
     static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
     static final LICENSE_CURRENT            = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
     static final LICENSE_INTENDED           = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
-    static final LICENSE_IN_PROGRESS        = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
+    //static final LICENSE_IN_PROGRESS        = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
     static final LICENSE_EXPIRED            = getRefdataValue('Retired', RDConstants.LICENSE_STATUS)
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
@@ -124,7 +124,7 @@ class RDStore {
 
 //DO NOT USE THIS STATUS. Subs have no longer a deleted flag. They ARE deleted!
     @Deprecated
-    static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', RDConstants.SUBSCRIPTION_STATUS)
+    //static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_INTENDED      = getRefdataValue('Intended', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', RDConstants.SUBSCRIPTION_STATUS)

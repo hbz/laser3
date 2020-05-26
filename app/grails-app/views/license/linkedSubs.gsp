@@ -43,17 +43,10 @@
                     <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
                 </div>
 
-                <%
-                    def fakeList = []
-                    fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
-                    //fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
-                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
-                %>
-
                 <div class="field fieldcontain">
                     <label>${message(code: 'default.status.label')}</label>
                     <laser:select class="ui dropdown" name="status"
-                                  from="${ fakeList }"
+                                  from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.status}"
