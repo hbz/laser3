@@ -29,7 +29,16 @@
     <g:render template="../templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="linkedSubs" controller="license" params="${[id:params.id]}" method="get" class="ui form">
-            <div class="two fields">
+            <div class="four fields">
+                <div class="field">
+                    <label for="subscription">${message(code:'subscription')}</label>
+                    <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${subscriptionsForFilter}" var="sub">
+                            <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
+                        </g:each>
+                    </select>
+                </div>
                 <div class="field fieldcontain">
                     <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
                 </div>
@@ -50,10 +59,29 @@
                                   value="${params.status}"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>
+                <div class="field">
+                    <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
+                    <div class="inline fields la-filter-inline">
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
+                                <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
+                        </div>
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
+                                <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <g:if test="${consAtMember}">
                 <%
-                    List<List<String>> tmplConfigShow = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
+                    List<List<String>> tmplConfigShow = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property']]
                 %>
                 <g:render template="/templates/filter/orgFilter"
                           model="[
@@ -62,6 +90,13 @@
                                   useNewLayouter: true
                           ]"/>
             </g:if>
+            <g:else>
+                <div class="field la-field-right-aligned">
+                    <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                    <input name="filterSet" type="hidden" value="true">
+                    <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button"/>
+                </div>
+            </g:else>
         </g:form>
     </semui:filter>
 
@@ -96,6 +131,11 @@
                     <i class="map orange icon"></i>
                 </span>
             </th>
+            <g:if test="${editable}">
+                <th class="la-action-info">
+
+                </th>
+            </g:if>
         </tr>
     </thead>
     <tbody>
@@ -180,6 +220,15 @@
                         </span>
                     </g:if>
                 </td>
+                <g:if test="${editable}">
+                    <td class="x">
+                        <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="license" action="unlinkSubscription" params="${[subscription:sub.id,license:license.id]}"
+                                data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
+                                data-confirm-how = "unlink">
+                            <i class="unlink icon"></i>
+                        </g:link>
+                    </td>
+                </g:if>
             </tr>
         </g:each>
 

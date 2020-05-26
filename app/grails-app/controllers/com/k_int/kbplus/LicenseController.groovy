@@ -116,7 +116,7 @@ class LicenseController extends AbstractDebugController {
             result << preCon
 
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgLinks = OrgRole.executeQuery('select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes)',[license:result.license,context:result.institution,roleTypes:[OR_LICENSEE, OR_LICENSING_CONSORTIUM]])
+            result.visibleOrgLinks = OrgRole.executeQuery('select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType.value asc, oo.org.sortname asc',[license:result.license,context:result.institution,roleTypes:[OR_LICENSEE, OR_LICENSEE_CONS, OR_LICENSING_CONSORTIUM]])
 
             /*result.license.orgLinks?.each { or ->
                 if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
@@ -333,8 +333,8 @@ class LicenseController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDTIOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug(params)
 
@@ -344,27 +344,20 @@ class LicenseController extends AbstractDebugController {
         }
         result.institution = contextService.getOrg()
 
-        List orgType       = [OT_INSTITUTION.id.toString()]
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            orgType = [OT_CONSORTIUM.id.toString()]
-        }
-
         // TODO: not longer used? -> remove and refactor params
         //RefdataValue role_lic      = OR_LICENSEE_CONS
         //RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
         //if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
         //    role_lic = OR_LICENSEE_COLL
 
-        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
-
+        License licenseCopy
             if (accessService.checkPerm("ORG_INST_COLLECTIVE, ORG_CONSORTIUM")) {
 
                 if (params.cmd == 'generate') {
-                    institutionsService.copyLicense(
+                    licenseCopy = institutionsService.copyLicense(
                             result.license, [
                                 lic_name: "${result.license.reference} (Teilnehmervertrag)",
                                 isSlaved: "true",
-                                asOrgType: orgType,
                                 copyStartEnd: true
                             ],
                             InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
@@ -415,14 +408,10 @@ class LicenseController extends AbstractDebugController {
                 }
                 --*/
 
-                redirect controller: 'license', action: 'members', params: [id: result.license?.id]
             }
-            else {
-                redirect controller: 'license', action: 'show', params: [id: result.license?.id]
-            }
-        } else {
-            redirect controller: 'license', action: 'show', params: [id: result.license?.id]
-        }
+        if(licenseCopy)
+            redirect action: 'show', params: [id: licenseCopy.id]
+        else redirect action: 'show', params: [id: result.license?.id]
     }
 
     private def getAvailableSubscriptions(license, user) {
@@ -491,32 +480,37 @@ from Subscription as s where
         if (!result) {
             response.sendError(401); return
         }
-        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
-        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
-
+        result.putAll(setSubscriptionFilterData())
         Set<License> validMemberLicenses = License.findAllByInstanceOf(result.license)
         Set<Map<String,Object>> filteredMemberLicenses = []
         validMemberLicenses.each { License memberLicense ->
-            memberLicense.getAllLicensee().sort{ Org a, Org b -> a.sortname <=> b.sortname }.each { Org org ->
-                if(org.id in filteredOrgIds) {
-                    if (params.subRunTimeMultiYear || params.subRunTime) {
-                        if (params.subRunTimeMultiYear && !params.subRunTime) {
-                            filteredMemberLicenses << [license:memberLicense,org:org,subs:memberLicense.subscriptions.findAll{ Subscription s -> s.getSubscriber() == org && s.isMultiYear}]
-                        }else if (!params.subRunTimeMultiYear && params.subRunTime){
-                            filteredMemberLicenses << [license:memberLicense,org:org,subs:memberLicense.subscriptions.findAll{ Subscription s -> s.getSubscriber() == org && !s.isMultiYear}]
-                        }
-                        else {
-                            filteredMemberLicenses << [license:memberLicense,org:org,subs:memberLicense.subscriptions.findAll{ Subscription s -> s.getSubscriber() == org}]
-                        }
-                    }
-                    else {
-                        filteredMemberLicenses << [license:memberLicense,org:org,subs:memberLicense.subscriptions.findAll{ Subscription s -> s.getSubscriber() == org}]
-                    }
-
+            //memberLicense.getAllLicensee().sort{ Org a, Org b -> a.sortname <=> b.sortname }.each { Org org ->
+                //if(org.id in filteredOrgIds) {
+            Set<Subscription> subscriptions
+            if(params.validOn)
+                subscriptions = memberLicense.subscriptions.findAll { Subscription s -> (!s.startDate || s.startDate <= result.dateRestriction) && (!s.endDate || s.endDate >= result.dateRestriction) }
+            else subscriptions = memberLicense.subscriptions
+            if(params.status != 'FETCH_ALL') {
+                subscriptions.removeAll { Subscription s -> s.status.id != params.status as Long }
+            }
+            if (params.subRunTimeMultiYear || params.subRunTime) {
+                if (params.subRunTimeMultiYear && !params.subRunTime) {
+                    subscriptions = subscriptions.findAll{ Subscription s -> s.isMultiYear}
+                }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                    subscriptions = subscriptions.findAll{ Subscription s -> !s.isMultiYear}
                 }
             }
+            if(params.subscription) {
+                List<String> subFilter = params.list("subscription")
+                subscriptions.removeAll { Subscription s -> !subFilter.contains(s.id.toString()) }
+            }
+            filteredMemberLicenses << [license:memberLicense,subs:subscriptions.size()]
+                //}
+            //}
         }
-
+        if(params.status == "FETCH_ALL")
+            result.subscriptionsForFilter = Subscription.findAllByOwnerInList(validMemberLicenses)
+        else result.subscriptionsForFilter = Subscription.findAllByOwnerInListAndStatus(validMemberLicenses,RefdataValue.get(params.status as Long))
         result.validMemberLicenses = filteredMemberLicenses
         result
     }
@@ -529,24 +523,9 @@ from Subscription as s where
             response.sendError(401); return
         }
         result.subscriptions = []
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        Date dateRestriction = null
-        if (params.validOn == null || params.validOn.trim() == '') {
-            result.validOn = ""
-        } else {
-            result.validOn = params.validOn
-            dateRestriction = sdf.parse(params.validOn)
-        }
-        result.dateRestriction = dateRestriction
-        if (! params.status) {
-            if (params.isSiteReloaded != "yes") {
-                params.status = SUBSCRIPTION_CURRENT.id
-                result.defaultSet = true
-            }
-            else {
-                params.status = 'FETCH_ALL'
-            }
-        }
+        result.putAll(setSubscriptionFilterData())
+        if(params.status != "FETCH_ALL")
+            result.subscriptionsForFilter = result.license.subscriptions.findAll { Subscription s -> s.status.id == params.status as Long }
         if(result.license.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_CONS_HIDDEN, OR_SUBSCRIBER_COLLECTIVE]
             Map<String,Object> queryParams = [lic:result.license,status:result.status,subscriberRoleTypes:subscriberRoleTypes]
@@ -573,14 +552,19 @@ from Subscription as s where
                     }
                 }
                 if (filteredSubscr) {
-                    if (params.subRunTimeMultiYear || params.subRunTime) {
+                    if(params.list("subscription").contains(sub.id) || !params.list("subscription")) {
+                        if (params.subRunTimeMultiYear || params.subRunTime) {
 
-                        if (params.subRunTimeMultiYear && !params.subRunTime) {
-                            if(sub.isMultiYear) {
-                                result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                                if(sub.isMultiYear) {
+                                    result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                                }
+                            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                                if(!sub.isMultiYear) {
+                                    result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                                }
                             }
-                        }else if (!params.subRunTimeMultiYear && params.subRunTime){
-                            if(!sub.isMultiYear) {
+                            else {
                                 result.subscriptions << [sub: sub, orgs: filteredSubscr]
                             }
                         }
@@ -588,19 +572,54 @@ from Subscription as s where
                             result.subscriptions << [sub: sub, orgs: filteredSubscr]
                         }
                     }
-                    else {
-                        result.subscriptions << [sub: sub, orgs: filteredSubscr]
-                    }
                 }
             }
         }
         else {
             params.license = params.id
             def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-            result.subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}",tmpQ[1])
+            Set<Subscription> subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}",tmpQ[1])
+            if(params.subscription) {
+                result.subscriptions = []
+                List subIds = params.list("subscription")
+                subIds.each { subId ->
+                    result.subscriptions << subscriptions.find { Subscription s -> s.id == Long.parseLong(subId) }
+                }
+            }
+            else result.subscriptions = subscriptions
+
             result.consAtMember = false
         }
 
+        result
+    }
+
+    /**
+     * this is very ugly and should be subject of refactor - - but unfortunately, the
+     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.lang.Object, com.k_int.kbplus.Org)}
+     * requires the {@link org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap} as parameter.
+     * @return validOn and defaultSet-parameters of the filter
+     */
+    private Map<String,Object> setSubscriptionFilterData() {
+        Map<String, Object> result = [:]
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        Date dateRestriction = null
+        if (params.validOn == null || params.validOn.trim() == '') {
+            result.validOn = ""
+        } else {
+            result.validOn = params.validOn
+            dateRestriction = sdf.parse(params.validOn)
+        }
+        result.dateRestriction = dateRestriction
+        if (! params.status) {
+            if (!params.filterSet) {
+                params.status = SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            }
+            else {
+                params.status = 'FETCH_ALL'
+            }
+        }
         result
     }
 
