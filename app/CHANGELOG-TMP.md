@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2533    26.05.2020  rc1.4       Moe     Bug     Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
+
 2525    26.05.2020  rc1.4       Moe     Feature     manageMembersVollnutzer-Icon auch in Lizenzsichten für Konsortien
 
 2444    22.05.2020  rc1.4       Andreas Bug         Rückverweis beim Entknüpfen von Teilnehmer angepasst
