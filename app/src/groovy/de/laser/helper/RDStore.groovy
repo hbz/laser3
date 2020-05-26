@@ -122,8 +122,8 @@ class RDStore {
     static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
     static final SHARE_CONF_CONSORTIUM          = getRefdataValue('only for consortia members', RDConstants.SHARE_CONFIGURATION)
 
-//DO NOT USE THIS STATUS. Subs have no longer a deleted flag. They ARE deleted!
-    @Deprecated
+    //DO NOT USE THIS STATUS. Subs have no longer a deleted flag. They ARE deleted!
+    //@Deprecated
     //static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_INTENDED      = getRefdataValue('Intended', RDConstants.SUBSCRIPTION_STATUS)
