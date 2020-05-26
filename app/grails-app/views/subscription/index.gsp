@@ -74,57 +74,6 @@
         </div>
     </div><!--.row-->
 
-    <semui:msg class="warning" header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
-    <g:form class="ui form" controller="subscription" action="addEntitlements"
-            params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscriptionInstance.id]}"
-            method="post" enctype="multipart/form-data">
-        <div class="three fields">
-            <div class="field">
-                <div class="ui fluid action input">
-                    <input type="text" readonly="readonly"
-                           placeholder="${message(code: 'template.addDocument.selectFile')}">
-                    <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
-                           style="display: none;">
-
-                    <div class="ui icon button">
-                        <i class="attach icon"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="field">
-                <div class="ui checkbox toggle">
-                    <g:checkBox name="preselectValues" value="${preselectValues}"/>
-                    <label><g:message code="subscription.details.addEntitlements.preselectValues"/></label>
-                </div>
-                <div class="ui checkbox toggle">
-                    <g:checkBox name="preselectCoverageDates" value="${preselectCoverageDates}"/>
-                    <label><g:message code="subscription.details.addEntitlements.preselectCoverageDates"/></label>
-                </div>
-                <div class="ui checkbox toggle">
-                    <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
-                    <label><g:message code="subscription.details.addEntitlements.uploadPriceInfo"/></label>
-                </div>
-            </div>
-
-            <div class="field">
-                <input type="submit"
-                       value="${message(code: 'subscription.details.addEntitlements.preselect')}"
-                       class="fluid ui button"/>
-            </div>
-        </div>
-    </g:form>
-    <r:script>
-        $('.action .icon.button').click(function () {
-            $(this).parent('.action').find('input:file').click();
-        });
-
-        $('input:file', '.ui.action.input').on('change', function (e) {
-            var name = e.target.files[0].name;
-            $('input:text', $(e.target).parent()).val(name);
-        });
-    </r:script>
-
     <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
             <div class="ui top attached tabular menu">
                 <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" class="item ${params.titleGroup ? '': 'active' }">
@@ -212,6 +161,57 @@
 
         </div>
     </div><!--.row-->
+
+    <div class="row">
+        <div class="column">
+            <semui:msg class="warning" header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
+            <g:form class="ui form" controller="subscription" action="index"
+                    params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscriptionInstance.id]}"
+                    method="post" enctype="multipart/form-data">
+                <div class="three fields">
+                    <div class="field">
+                        <div class="ui fluid action input">
+                            <input type="text" readonly="readonly"
+                                   placeholder="${message(code: 'template.addDocument.selectFile')}">
+                            <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
+                                   style="display: none;">
+
+                            <div class="ui icon button">
+                                <i class="attach icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="ui checkbox toggle">
+                            <g:checkBox name="preselectCoverageDates" value="${preselectCoverageDates}"/>
+                            <label><g:message code="subscription.details.addEntitlements.preselectCoverageDates"/></label>
+                        </div>
+                        <div class="ui checkbox toggle">
+                            <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
+                            <label><g:message code="subscription.details.addEntitlements.uploadPriceInfo"/></label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <input type="submit"
+                               value="${message(code: 'subscription.details.addEntitlements.preselect')}"
+                               class="fluid ui button"/>
+                    </div>
+                </div>
+            </g:form>
+            <r:script>
+                $('.action .icon.button').click(function () {
+                    $(this).parent('.action').find('input:file').click();
+                });
+
+                $('input:file', '.ui.action.input').on('change', function (e) {
+                    var name = e.target.files[0].name;
+                    $('input:text', $(e.target).parent()).val(name);
+                });
+            </r:script>
+        </div>
+    </div>
 
 
     <div class="row">
