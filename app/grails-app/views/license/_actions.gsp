@@ -18,7 +18,7 @@
 
                     <semui:actionsDropdownItem controller="license"
                                                action="processAddMembers"
-                                               params="${[id:license?.id, cmd:'generate']}"
+                                               params="${[id:license.id, cmd:'generate']}"
                                                message="myinst.emptyLicense.child"
                                                class="js-no-wait-wheel"
                                                onclick="return confirm('${message(code:'license.addMembers.confirm')}')"
@@ -28,17 +28,16 @@
 
             <div class="divider"></div>
             <%
-                License license = License.get(license?.id)
-                boolean isCopyLicenseEnabled = license?.orgLinks?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_LICENSING_CONSORTIUM.id || it.roleType.id == RDStore.OR_LICENSEE.id) }
+                boolean isCopyLicenseEnabled = license.orgLinks?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_LICENSING_CONSORTIUM.id || it.roleType.id == RDStore.OR_LICENSEE.id) }
             %>
             <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
                 <% isCopyLicenseEnabled = true %>
             </sec:ifAnyGranted>
             <g:if test="${isCopyLicenseEnabled}">
-                <semui:actionsDropdownItem controller="license" action="copyLicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
+                <semui:actionsDropdownItem controller="license" action="copyLicense" params="${[id:license.id]}" message="myinst.copyLicense" />
             </g:if>
             <g:else>
-                <semui:actionsDropdownItemDisabled controller="license" action="copyLicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
+                <semui:actionsDropdownItemDisabled controller="license" action="copyLicense" params="${[id:license.id]}" message="myinst.copyLicense" />
             </g:else>
 
             <g:if test="${actionName == 'show'}">
