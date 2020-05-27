@@ -4,6 +4,9 @@
 
 2531    26.05.2020  rc1.4       David   Bug         Aufgaben nicht aufrufbar / Schaltfläche "Neue Aufgabe" auf Dashboard tot 
 
+2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem 
+region-Dropdown auf org/show
+
 2444    22.05.2020  rc1.4       Andreas Bug         Rückverweis beim Entknüpfen von Teilnehmer angepasst
 
 2432    22.05.2020  rc1.4       Andreas Feature     Kuratorengruppen von Paketen werden jetzt auf Lizenzdetailseite und Paket-verknüpfen-Seite angezeigt
