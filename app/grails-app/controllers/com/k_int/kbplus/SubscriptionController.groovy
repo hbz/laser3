@@ -3603,8 +3603,6 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("BuildQuery...");
 
         StringWriter sw = new StringWriter()
-
-        // sw.write("subtype:'Subscription Offered'")
         sw.write("rectype:'Package'")
 
         renewals_reversemap.each { mapping ->

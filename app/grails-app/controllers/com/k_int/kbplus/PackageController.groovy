@@ -191,34 +191,6 @@ class PackageController extends AbstractDebugController {
             }
         }
     }
-    
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def generateSlaveSubscriptions() {
-        params.each { p ->
-            if (p.key.startsWith("_create.")) {
-                def orgID = p.key.substring(8)
-                Org orgaisation = Org.get(orgID)
-                if (orgaisation)
-                    log.debug("Create slave subscription for ${orgaisation.name}")
-                createNewSubscription(orgaisation, params.id, params.genSubName);
-            }
-        }
-        redirect controller: 'package', action: 'consortia', params: [id: params.id]
-    }
-
-
-    @Deprecated
-    private def createNewSubscription(org, packageId, genSubName) {
-        //Initialize default subscription values
-        log.debug("Create slave with org ${org} and packageID ${packageId}")
-
-        String defaultSubIdentifier = java.util.UUID.randomUUID().toString()
-        Package pkg_to_link = Package.get(packageId)
-        log.debug("Sub start Date ${pkg_to_link.startDate} and end date ${pkg_to_link.endDate}")
-        pkg_to_link.createSubscription("Subscription Taken", genSubName ?: "Slave subscription for ${pkg_to_link.name}", defaultSubIdentifier,
-                pkg_to_link.startDate, pkg_to_link.endDate, org, "Subscriber", true, true)
-    }
 
     @Secured(['ROLE_ADMIN'])
     @Deprecated
