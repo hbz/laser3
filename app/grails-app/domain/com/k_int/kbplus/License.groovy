@@ -51,7 +51,7 @@ class License
     def auditService
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
-    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type', 'isPublicForApi' ]
+    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'isPublicForApi' ]
 
     License instanceOf
 
@@ -259,14 +259,14 @@ class License
     String getCalculatedType() {
         String result = CalculatedType.TYPE_UNKOWN
 
-        if (getLicensingConsortium() && ! getAllLicensee()) {
+        if (getLicensingConsortium() && ! instanceOf) {
             result = CalculatedType.TYPE_CONSORTIAL
         }
         else if (getLicensingConsortium() /*&& getAllLicensee()*/ && instanceOf) {
             // current and deleted member licenses
             result = CalculatedType.TYPE_PARTICIPATION
         }
-        else if (! getLicensingConsortium() && getAllLicensee()) {
+        else if (! getLicensingConsortium()) {
             result = CalculatedType.TYPE_LOCAL
         }
         result
