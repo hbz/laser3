@@ -126,9 +126,6 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        result.preselectCoverageDates = params.preselectCoverageDates == 'on'
-        result.uploadPriceInfo = params.uploadPriceInfo == 'on'
-
         Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
         Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
 
@@ -138,6 +135,7 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
+        result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
         result.contextOrg = contextService.getOrg()
         def verystarttime = exportService.printStart("subscription")
 
@@ -269,9 +267,11 @@ class SubscriptionController extends AbstractDebugController {
             InputStream stream = kbartFile.getInputStream()
             List issueEntitlements = entitlements.toList()
 
-            subscriptionService.issueEntitlementEnrichment(stream, issueEntitlements, (params.preselectCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+            subscriptionService.issueEntitlementEnrichment(stream, issueEntitlements, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
 
             params.remove("kbartPreselct")
+            params.remove("uploadCoverageDates")
+            params.remove("uploadPriceInfo")
         }
 
         result.subjects = subscriptionService.getSubjects(entitlements.collect {it.tipp.title.id})

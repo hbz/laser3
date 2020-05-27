@@ -1763,13 +1763,11 @@ class SubscriptionService {
                             }
                         }
                         if(uploadPriceInfo && priceItem){
-                            println("Andy:"+issueEntitlement.id+": "+ priceItem.issueEntitlement.id)
-                            println("Moe:"+priceItem)
                             priceItem.setGlobalUID()
                             if (!priceItem.save(flush: true)) {
                                 throw new Exception(priceItem.getErrors().toString())
                             }else {
-                                println("Moe1:"+priceItem)
+
                                 countChangesPrice++
                             }
                         }
