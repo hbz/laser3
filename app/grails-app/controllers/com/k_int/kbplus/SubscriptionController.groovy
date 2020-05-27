@@ -335,7 +335,7 @@ class SubscriptionController extends AbstractDebugController {
                     ServletOutputStream out = response.outputStream
                     Map<String,List> tableData = exportService.generateTitleExportCSV(entitlements)
                     out.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,';'))
                     }
                     out.close()
                     exportService.printDuration(verystarttime, "Overall Time")
@@ -1243,7 +1243,7 @@ class SubscriptionController extends AbstractDebugController {
                 ServletOutputStream out = response.outputStream
                 Map<String,List> tableData = exportService.generateTitleExportCSV(tipps)
                 out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,';'))
                 }
                 out.flush()
                 out.close()
@@ -4058,7 +4058,6 @@ class SubscriptionController extends AbstractDebugController {
             // performance problems: orgTypeService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
 
         //}
-
 
         result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscriptionInstance, 'Specific subscription editor')
 

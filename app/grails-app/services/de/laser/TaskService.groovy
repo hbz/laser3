@@ -367,17 +367,19 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
     }
 
     private List<Map> getLicensesDropdown(Org contextOrg, boolean isWithInstanceOf) {
-        List validLicensesOhneInstanceOf = []
-        List validLicensesMitInstanceOf = []
+        List<License> validLicensesOhneInstanceOf = []
+        List<License> validLicensesMitInstanceOf = []
         List<Map> validLicensesDropdown = []
 
         if (contextOrg) {
-            String licensesQueryMitInstanceOf = 'SELECT lic.id, lic.reference, lic.startDate, lic.endDate, o.roleType, licinstanceof.type from License lic left join lic.orgLinks o left join lic.instanceOf licinstanceof WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is not null order by lic.sortableReference asc'
+            String licensesQueryMitInstanceOf =
+                    'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate, licinstanceof.type from License lic left join lic.orgLinks o left join lic.instanceOf licinstanceof WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is not null order by lic.sortableReference asc'
 
-            String licensesQueryOhneInstanceOf = 'SELECT lic.id, lic.reference, lic.startDate, lic.endDate, o.roleType from License lic left join lic.orgLinks o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
+            String licensesQueryOhneInstanceOf =
+                    'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate from License lic left join lic.orgLinks o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
             if(accessService.checkPerm("ORG_CONSORTIUM")){
-                def qry_params_for_lic = [
+                Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
                             RDStore.OR_LICENSEE.id,
@@ -389,8 +391,9 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
                     validLicensesMitInstanceOf = License.executeQuery(licensesQueryMitInstanceOf, qry_params_for_lic)
                 }
 
-            } else if (accessService.checkPerm("ORG_INST")) {
-                def qry_params_for_lic = [
+            }
+            else if (accessService.checkPerm("ORG_INST")) {
+                Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
                             RDStore.OR_LICENSEE.id,
@@ -403,7 +406,8 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
                     validLicensesMitInstanceOf = License.executeQuery(licensesQueryMitInstanceOf, qry_params_for_lic)
                 }
 
-            } else {
+            }
+            else {
                 validLicensesOhneInstanceOf = []
                 validLicensesMitInstanceOf = []
             }
