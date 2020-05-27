@@ -10,6 +10,7 @@ import de.laser.helper.*
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -803,7 +804,7 @@ class OrganisationController extends AbstractDebugController {
         Boolean inContextOrg = contextService.getOrg().id == org.id
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
 
-        result.hasAccessToCustomeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
+        result.hasAccessToCustomeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_USER')) ||
                 (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_USER')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
@@ -813,7 +814,7 @@ class OrganisationController extends AbstractDebugController {
             result.orgInstance = org
 
             result.inContextOrg = inContextOrg
-            result.editable_customeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
+            result.editable_customeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) ||
                     (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')) ||
                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
             result.isComboRelated = isComboRelated
@@ -909,8 +910,13 @@ class OrganisationController extends AbstractDebugController {
     def deleteCustomerIdentifier() {
         log.debug("OrganisationController::deleteIdentifier ${params}");
         CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
-        if (ci && ci.owner == contextService.org) {
+        Org owner = GrailsHibernateUtil.unwrapIfProxy(ci).owner
+        if (ci && owner.id == contextService.org.id) {
             ci.delete()
+            log.debug("Customeridentifier deleted: ${params}")
+        } else {
+            log.error("Customeridentifier NOT deleted: ${params}; CostomerIdentifier not found or ContextOrg is not " +
+                    "owner of this CustomerIdentifier and has no rights to delete it!")
         }
         redirect action: 'ids', id: params.id
     }
