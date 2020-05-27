@@ -228,7 +228,7 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" role="menuitem" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
-                                <g:link class="item" role="menuitem" controller="license" action="create">${message(code:'license.template.new')}</g:link>
+                                <%--<g:link class="item" role="menuitem" controller="license" action="create">${message(code:'license.template.new')}</g:link>--%>
                                 <%--<g:link class="item" role="menuitem" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>--%>
                                 <g:link class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                                 <g:link class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
