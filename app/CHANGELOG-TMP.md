@@ -2,6 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2531    26.05.2020  rc1.4       David   Bug         Aufgaben nicht aufrufbar / Schaltfläche "Neue Aufgabe" auf Dashboard tot 
+
+2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem 
+region-Dropdown auf org/show
+
 2178    25.05.2020  hbz-dev     David   Feature     Mehrfachanlegen von Adressen durch mehrfaches Klicken von "Anlegen-Button" soll unterbunden werden
 
 2131    25.05.2020  hbz-dev     David   Bug         Merkmalsgruppen werden mehrfach angelegt
