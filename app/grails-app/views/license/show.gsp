@@ -167,9 +167,8 @@
                                                                             tmplID:'editLink',
                                                                             tmplModalID:"sub_edit_link_${link.id}",
                                                                             editmode: editable,
-                                                                            context: "${license.class.name}:${license.id}",
-                                                                            link: link,
-                                                                            objectType: "${License.class.name}"
+                                                                            context: license,
+                                                                            link: link
                                                                   ]}" />
                                                         <g:if test="${editable}">
                                                             <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
@@ -198,8 +197,7 @@
                                                     tmplButtonText:message(code:'license.details.addLink'),
                                                     tmplModalID:'sub_add_link',
                                                     editmode: editable,
-                                                    context: "${license.class.name}:${license.id}",
-                                                    objectType: "${License.class.name}"
+                                                    context: license
                                           ]}" />
                             </div>
                         </div>

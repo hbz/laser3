@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription;com.k_int.kbplus.SubscriptionPackage" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription;com.k_int.kbplus.SubscriptionPackage" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
 
@@ -133,7 +133,7 @@
 
 
 
-            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
+            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,com.k_int.kbplus.GenericOIDService.getOID(subscriptionInstance))}"/>
             %{--<sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">--}%
                 %{--<div class="divider">OLD:</div>--}%
                 %{--<g:if test="${subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_LOCAL && !previousSubscriptions}">--}%

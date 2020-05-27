@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import de.laser.CacheService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementGroup
 import de.laser.domain.PendingChangeConfiguration
@@ -43,8 +42,6 @@ class FinanceController extends AbstractDebugController {
     def accessService
     def contextService
     def genericOIDService
-    def navigationGenerationService
-    CacheService cacheService
     def financeService
     def escapeService
     def exportService
@@ -77,9 +74,6 @@ class FinanceController extends AbstractDebugController {
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
-            Map navigation = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
-            result.navNextSubscription = navigation.nextLink
-            result.navPrevSubscription = navigation.prevLink
             result
         }
         catch (FinancialDataException e) {

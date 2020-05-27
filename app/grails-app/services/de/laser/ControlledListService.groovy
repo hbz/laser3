@@ -72,7 +72,7 @@ class ControlledListService {
             filter.put("query",params.query)
             queryString += " and (genfunc_filter_matcher(s.name,:query) = true or genfunc_filter_matcher(orgRoles.org.sortname,:query) = true) "
         }
-        if(params.ctx) {
+        if(params.ctx && params.ctx.contains(Subscription.class.name)) {
             Subscription ctx = genericOIDService.resolveOID(params.ctx)
             filter.ctx = ctx
             queryString += " and s != :ctx "
@@ -225,8 +225,8 @@ class ControlledListService {
             licFilter = ' and genfunc_filter_matcher(l.reference,:query) = true '
             filterParams.put('query',params.query)
         }
-        if(params.ctx) {
-            License ctx = genericOIDService.resolveOID(params.ctx)
+        if(params.ctx && params.ctx.contains(License.class.name)) {
+            License ctxObj = genericOIDService.resolveOID(params.ctx)
             filterParams.ctx = ctx
             licFilter += " and l != :ctx "
         }

@@ -234,9 +234,8 @@
                                                                         tmplID:'editLink',
                                                                         tmplModalID:"sub_edit_link_${link.id}",
                                                                         editmode: editable,
-                                                                        context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
-                                                                        link: link,
-                                                                        objectType: "${Subscription.class.name}"
+                                                                        context: subscription,
+                                                                        link: link
                                                               ]}" />
                                                     <g:if test="${editable}">
                                                         <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
@@ -265,8 +264,7 @@
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
                                                 editmode: editable,
-                                                context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
-                                                objectType: "${Subscription.class.name}"
+                                                context: subscription
                                       ]}" />
                         </div>
                     </div>

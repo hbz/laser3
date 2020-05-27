@@ -6,7 +6,7 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.DeletionService
-import de.laser.NavigationGenerationService
+import de.laser.LinksGenerationService
 import de.laser.PropertyService
 import de.laser.SubscriptionsQueryService
 import de.laser.controller.AbstractDebugController
@@ -15,7 +15,6 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
-import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -46,7 +45,7 @@ class LicenseController extends AbstractDebugController {
     def deletionService
     def subscriptionService
     SubscriptionsQueryService subscriptionsQueryService
-    NavigationGenerationService navigationGenerationService
+    LinksGenerationService linksGenerationService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -154,31 +153,7 @@ class LicenseController extends AbstractDebugController {
 
             du.setBenchmark('links')
 
-            // links
-            def key = result.license.id
-            def sources = Links.executeQuery('select l from Links as l where l.source = :source and l.objectType = :objectType', [source: key, objectType: License.class.name])
-            def destinations = Links.executeQuery('select l from Links as l where l.destination = :destination and l.objectType = :objectType', [destination: key, objectType: License.class.name])
-            //IN is from the point of view of the context license (= params.id)
-            result.links = [:]
-
-            sources.each { link ->
-                License destination = License.get(link.destination)
-                if (destination.isVisibleBy(result.user)) {
-                    def index = link.linkType.getI10n("value")?.split("\\|")[0]
-                    if (result.links[index] == null) {
-                        result.links[index] = [link]
-                    } else result.links[index].add(link)
-                }
-            }
-            destinations.each { link ->
-                License source = License.get(link.source)
-                if (source.isVisibleBy(result.user)) {
-                    def index = link.linkType.getI10n("value")?.split("\\|")[1]
-                    if (result.links[index] == null) {
-                        result.links[index] = [link]
-                    } else result.links[index].add(link)
-                }
-            }
+            result.links = linksGenerationService.getSourcesAndDestinations(result.license,result.user)
 
             // -- private properties
 
@@ -1149,7 +1124,7 @@ from Subscription as s where
         result.institution     = contextService.org
         result.license         = License.get(params.id)
         result.licenseInstance = License.get(params.id)
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(License.class.name, result.license.id)
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.license))
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)

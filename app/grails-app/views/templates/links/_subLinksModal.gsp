@@ -11,15 +11,13 @@
 </g:if>
 
 <%
-    String header, thisString, urlLookup
-    switch(objectType) {
+    String header, thisString
+    switch(context.class.name) {
         case Subscription.class.name: header = message(code:"subscription.linking.header")
             thisString = message(code:"subscription.linking.this")
-            urlLookup = "lookupSubscriptions"
             break
         case License.class.name: header = message(code:"license.linking.header")
             thisString = message(code:"license.linking.this")
-            urlLookup = "lookupLicenses"
             break
     }
 %>
@@ -37,10 +35,10 @@
                 }
                 if(link && link.linkType == rv) {
                     int perspIndex
-                    if(context == objectType+":"+link.source) {
+                    if(context == link.source) {
                         perspIndex = 0
                     }
-                    else if(context == objectType+":"+link.destination) {
+                    else if(context == link.destination) {
                         perspIndex = 1
                     }
                     else {
@@ -84,11 +82,11 @@
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <g:message code="${controllerName}" />
+                        <g:message code="subscription.slash.name" />
                     </div>
                     <div class="twelve wide column">
                         <div class="ui search selection dropdown la-full-width" id="${selectPair}">
-                            <input type="hidden" name="${selectPair}" value="${pair?.class?.name}:${pair?.id}"/>
+                            <input type="hidden" name="${selectPair}"/>
                             <i class="dropdown icon"></i>
                             <input type="text" class="search"/>
                             <div class="default text"></div>
@@ -110,14 +108,13 @@
 <%-- for that one day, we may move away from that ... --%>
 <r:script>
     $(document).ready(function(){
-       console.log("${urlLookup}");
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="${urlLookup}"/>?status=FETCH_ALL&query={query}&ctx=${context}",
+                url: "<g:createLink controller="ajax" action="lookupSubscriptionsLicenses"/>?status=FETCH_ALL&query={query}&ctx=${GenericOIDService.getOID(context)}",
                 cache: false
             },
             clearable: true,
-            minCharacters: 0
+            minCharacters: 1
         });
     });
 </r:script>

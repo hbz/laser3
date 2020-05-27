@@ -76,7 +76,7 @@
             <g:set var="lic" value="${row.license}"/>
             <g:set var="subscr" value="${row.org}"/>
             <%
-                LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(License.class.name, lic.id)
+                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(com.k_int.kbplus.GenericOIDService.getOID(lic))
                 License navPrevLicense = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                 License navNextLicense = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
             %>
