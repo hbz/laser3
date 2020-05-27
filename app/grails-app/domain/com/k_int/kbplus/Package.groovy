@@ -187,10 +187,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
-  /**
-   * Materialise this package into a subscription of the given type (taken or offered)
-   * @param subtype One of 'Subscription Offered' or 'Subscription Taken'
-   */
   @Deprecated
   @Transient
   def createSubscription(subtype,
