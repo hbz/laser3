@@ -1220,47 +1220,6 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @Deprecated
-    def buildQuery(params) {
-        log.debug("BuildQuery...");
-
-        StringWriter sw = new StringWriter()
-
-        if (params?.q?.length() > 0)
-            sw.write(params.q)
-        else
-            sw.write("*:*")
-
-        reversemap.each { mapping ->
-
-            // log.debug("testing ${mapping.key}");
-
-            if (params[mapping.key] != null) {
-                if (params[mapping.key].class == java.util.ArrayList) {
-                    params[mapping.key].each { p ->
-                        sw.write(" AND ")
-                        sw.write(mapping.value)
-                        sw.write(":")
-                        sw.write("\"${p}\"")
-                    }
-                } else {
-                    // Only add the param if it's length is > 0 or we end up with really ugly URLs
-                    // II : Changed to only do this if the value is NOT an *
-                    if (params[mapping.key].length() > 0 && !(params[mapping.key].equalsIgnoreCase('*'))) {
-                        sw.write(" AND ")
-                        sw.write(mapping.value)
-                        sw.write(":")
-                        sw.write("\"${params[mapping.key]}\"")
-                    }
-                }
-            }
-        }
-
-        sw.write(" AND type:\"Subscription Offered\"");
-        def result = sw.toString();
-        result;
-    }
-
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processEmptyLicense() {
