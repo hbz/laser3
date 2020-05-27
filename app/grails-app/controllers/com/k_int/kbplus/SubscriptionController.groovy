@@ -269,7 +269,7 @@ class SubscriptionController extends AbstractDebugController {
 
             subscriptionService.issueEntitlementEnrichment(stream, issueEntitlements, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
 
-            params.remove("kbartPreselct")
+            params.remove("kbartPreselect")
             params.remove("uploadCoverageDates")
             params.remove("uploadPriceInfo")
         }
