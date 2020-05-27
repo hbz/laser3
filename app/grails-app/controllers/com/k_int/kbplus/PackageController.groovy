@@ -191,66 +191,7 @@ class PackageController extends AbstractDebugController {
             }
         }
     }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def consortia() {
-        redirect controller: 'package', action: 'show', params: params
-        return
-
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.packageInstance = Package.get(params.id)
-        result.editable = isEditable()
-        result.id = params.id
-
-        def hasAccess
-        def isAdmin
-        if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
-            isAdmin = true;
-        } else {
-            hasAccess = result.packageInstance.orgs.find {
-                it.roleType?.value == 'Package Consortia' && accessService.checkMinUserOrgRole(result.user, it.org, 'INST_ADM')
-            }
-        }
-
-        if (!isAdmin && hasAccess == null) {
-            flash.error = "Consortia screen only available to institution administrators for Packages with Package Consortium link."
-            response.sendError(401)
-            return
-        }
-        def packageInstance = result.packageInstance
-
-        RefdataValue type = RefdataValue.getByValueAndCategory('Consortium', 'Combo Type')
-
-        String institutions_in_consortia_hql = "select c.fromOrg from Combo as c where c.type = ? and c.toOrg in ( select org_role.org from Package as p join p.orgs as org_role where org_role.roleType.value = 'Package Consortia' and p = ?) order by c.fromOrg.name"
-        def consortiaInstitutions = Combo.executeQuery(institutions_in_consortia_hql, [type, packageInstance])
-
-        String package_consortia = "select org_role.org from Package as p join p.orgs as org_role where org_role.roleType.value = 'Package Consortia' and p = ?"
-        def consortia = Package.executeQuery(package_consortia, [packageInstance]);
-
-
-        def consortiaInstsWithStatus = [:]
-
-        String hql = "SELECT role.org FROM OrgRole as role WHERE role.org = ? AND (role.roleType.value = 'Subscriber') AND ( EXISTS ( select sp from role.sub.packages as sp where sp.pkg = ? ) )"
-        consortiaInstitutions.each { org ->
-            log.debug("looking up all orgs based on consortia org ${org} and package ${packageInstance}");
-            def queryParams = [org, packageInstance]
-            def hasPackage = OrgRole.executeQuery(hql, queryParams)
-            if (hasPackage) {
-                consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("Yes", RDConstants.Y_N_O))
-            } else {
-                consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("No", RDConstants.Y_N_O))
-            }
-        }
-        result.consortia = consortia
-        result.consortiaInstsWithStatus = consortiaInstsWithStatus
-
-        // log.debug("institutions with status are ${consortiaInstsWithStatus}")
-
-        result
-    }
-
+    
     @Deprecated
     @Secured(['ROLE_YODA'])
     def generateSlaveSubscriptions() {
