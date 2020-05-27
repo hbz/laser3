@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2532    26.05.2020  rc1.4       Andreas Bug         diverse Anzeigefehler in Sichten behoben
+
 2522    26.05.2020  rc1.4       Andreas Feature     Ausbesserungen Vertragssicht: Einkaufsliste abgearbeitet
 
 2531    26.05.2020  rc1.4       David   Bug         Aufgaben nicht aufrufbar / Schaltfläche "Neue Aufgabe" auf Dashboard tot 
