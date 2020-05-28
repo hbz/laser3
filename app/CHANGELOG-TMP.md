@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2546    28.05.2020  rc1.4       Moe     Feature     xEditable darf nicht einfach weggeklickt werden
+
 2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
 
 2533    26.05.2020  rc1.4       Moe     Bug         Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
