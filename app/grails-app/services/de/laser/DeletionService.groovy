@@ -236,7 +236,9 @@ class DeletionService {
         List ies            = IssueEntitlement.where { subscription == sub }.findAll()
                             // = new ArrayList(sub.issueEntitlements)
 
-        List costs          = new ArrayList(sub.costItems)
+        //TODO is a temporary solution for ERMS-2535 and is subject of refactoring!
+        List nonDeletedCosts = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus != RDStore.COST_ITEM_DELETED })
+        List deletedCosts   = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus == RDStore.COST_ITEM_DELETED })
         List oapl           = new ArrayList(sub.packages?.oapls)
         List privateProps   = new ArrayList(sub.privateProperties)
         List customProps    = new ArrayList(sub.customProperties)
@@ -261,7 +263,9 @@ class DeletionService {
         result.info << ['Pakete', subPkgs]
         result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['IssueEntitlements', ies]
-        result.info << ['Kostenposten', costs, FLAG_BLOCKER]
+        //TODO is a temporary solution for ERMS-2535 and is subject of refactoring!
+        result.info << ['nicht gelöschte Kostenposten', nonDeletedCosts, FLAG_BLOCKER]
+        result.info << ['gelöschte Kostenposten', deletedCosts]
         result.info << ['OrgAccessPointLink', oapl]
         result.info << ['Private Merkmale', sub.privateProperties]
         result.info << ['Allgemeine Merkmale', sub.customProperties]
@@ -379,6 +383,13 @@ class DeletionService {
                         tmp.delete()
                     }
 
+                    //cost items
+                    sub.costItems.clear()
+                    deletedCosts.each { tmp ->
+                        tmp.sub = null
+                        tmp.save()
+                    }
+
                     // private properties
                     sub.privateProperties.clear()
                     privateProps.each { tmp -> tmp.delete() }
@@ -394,7 +405,7 @@ class DeletionService {
                     // ----- keep foreign object, change state
                     // ----- keep foreign object, change state
 
-                    costs.each{ tmp ->
+                    nonDeletedCosts.each{ tmp ->
                         tmp.costItemStatus = RefdataValue.getByValueAndCategory('Deleted', RDConstants.COST_ITEM_STATUS)
                         tmp.sub = null
                         tmp.subPkg = null
