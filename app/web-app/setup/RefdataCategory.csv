@@ -56,21 +56,21 @@ license.arc.hosting.solution,Hostingrecht Lösung,Hosting Solution
 license.arc.hosting.time,Hostingrecht Zeitpunkt,Hosting Time
 license.arc.payment.note,Zugriffsrechte Kosten,Archive Payment Note
 license.arc.title.transfer.regulation,Titeltransfer Regeln,Titletransfer Regulation
-license.category,Lizenzkategorie,LicenseCategory
+license.category,Vertragskategorie,LicenseCategory
 license.oa.corresponding.author.identification,Autorenindentifikation,Corresponding Author Identification
 license.oa.earc.version,License.OA.eArcVersion,License.OA.eArcVersion
 license.oa.license.to.publish,Publikationslizenz,License to Publish
 license.oa.receiving.modalities,Bezugsmodalitäten,Receiving Modalities
 license.oa.repository,Repositorium,Repository
-license.oa.type,Open-Acces Typ,Open Acces Type
-license.remote.access,Lincense.RemoteAccess,Lincense.RemoteAccess
+license.oa.type,Open Access Typ,Open Access Type
+license.remote.access,License.RemoteAccess,License.RemoteAccess
 license.remote.access2,Remote-Zugriff,Remote Access
 license.statistics.delivery,Statistik Liefermethode,Statistics Delivery
 license.statistics.format,Statistik Auslieferungsformat,Statistics Format
 license.statistics.frequency,Statistik Auslieferungsfrequenz,Statistics Frequency
 license.statistics.standards,Statistikstandard,Statistics Standards
 license.statistics.user.creds,Statistik Nutzeridentifikation,Statistics User Credentials
-license.status,Lizenzstatus,License Status
+license.status,Vertragsstatus,License Status
 license.structure,Vertragskonstruktion,License Structure
 license.type,Lizenztyp,License Type
 link.type,Link Type,Link Type

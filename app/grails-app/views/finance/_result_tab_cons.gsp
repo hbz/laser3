@@ -24,13 +24,13 @@
     println jb.toPrettyString()
 --%>
 <%
-    int colspan1 = 5
-    int colspan2 = 7
-    int wideColspan2 = 13
+    int colspan1 = 6
+    int colspan2 = 9
+    int wideColspan2 = 15
     if(fixedSubscription) {
-        colspan1 = 4
-        colspan2 = 6
-        wideColspan2 = 12
+        colspan1 = 5
+        colspan2 = 8
+        wideColspan2 = 13
     }
 %>
 <table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
@@ -270,7 +270,7 @@
                 <td colspan="${colspan2}">
 
                 </td>
-                <td colspan="2">
+                <td>
                     ${message(code:'financials.sum.local')}<br>
                     ${message(code:'financials.sum.localAfterTax')}
                 </td>

@@ -8,6 +8,16 @@
 
 2525    26.05.2020  rc1.4       Moe     Feature     manageMembersVollnutzer-Icon auch in Lizenzsichten für Konsortien
 
+2532    26.05.2020  rc1.4       Andreas Bug         diverse Anzeigefehler in Sichten behoben
+
+2522    26.05.2020  rc1.4       Andreas Feature     Ausbesserungen Vertragssicht: Einkaufsliste abgearbeitet
+
+2531    26.05.2020  rc1.4       David   Bug         Aufgaben nicht aufrufbar / Schaltfläche "Neue Aufgabe" auf Dashboard tot 
+
+2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem 
+
+2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Re
+
 2444    22.05.2020  rc1.4       Andreas Bug         Rückverweis beim Entknüpfen von Teilnehmer angepasst
 
 2432    22.05.2020  rc1.4       Andreas Feature     Kuratorengruppen von Paketen werden jetzt auf Lizenzdetailseite und Paket-verknüpfen-Seite angezeigt

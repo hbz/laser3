@@ -1,13 +1,16 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
+import de.laser.AccessService
 import de.laser.AuditConfig
+import de.laser.AuditService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 
 class InstitutionsService {
 
     def contextService
+    AccessService accessService
 
     static final CUSTOM_PROPERTIES_COPY_HARD        = 'CUSTOM_PROPERTIES_COPY_HARD'
     static final CUSTOM_PROPERTIES_ONLY_INHERITED   = 'CUSTOM_PROPERTIES_ONLY_INHERITED'
@@ -18,43 +21,32 @@ class InstitutionsService {
             return null
         }
 
-        def org = params.consortium ?: contextService.getOrg()
+        Org org = params.consortium ?: contextService.getOrg()
 
-        def lic_name = params.lic_name ?: "Kopie von ${base.reference}"
-        RefdataValue license_type = RefdataValue.getByValueAndCategory('Actual', RDConstants.LICENSE_TYPE)
-        RefdataValue license_status = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
+        String lic_name = params.lic_name ?: "Kopie von ${base.reference}"
 
-        boolean slavedBool = false // ERMS-1562
-        if (params.isSlaved) {
-            if (params.isSlaved in ['1', 'Yes', 'yes', 'Ja', 'ja', 'true']) { // todo tmp fallback; remove later
-                slavedBool = true
-            }
-        }
+        boolean slavedBool = true //params.isSlaved is never settable; may be subject of change
 
-        def licenseInstance = new License(
+        License licenseInstance = new License(
                 reference: lic_name,
-                status: license_status,
-                type: license_type,
+                status: base.status,
                 noticePeriod: base.noticePeriod,
                 licenseUrl: base.licenseUrl,
-                //onixplLicense: base.onixplLicense,
-                startDate: base.startDate,
-                endDate: base.endDate,
-
                 instanceOf: base,
                 isSlaved: slavedBool
         )
-        if (params.copyStartEnd) {
-            licenseInstance.startDate = base.startDate
-            licenseInstance.endDate = base.endDate
+
+        Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceId(License.class.name,base.id)
+
+        inheritedAttributes.each { AuditConfig attr ->
+            licenseInstance[attr.referenceField] = base[attr.referenceField]
         }
 
-
-        if (! licenseInstance.save(flush: true)) {
-            log.error("Problem saving license ${licenseInstance.errors}");
+        if (! licenseInstance.save()) {
+            log.error("Problem saving license ${licenseInstance.errors}")
             return licenseInstance
         } else {
-            log.debug("Save ok");
+            log.debug("Save ok")
 
             if (option == InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED) {
 
@@ -67,14 +59,14 @@ class InstitutionsService {
                             def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
                             additionalProp = lcp.copyInto(additionalProp)
                             additionalProp.instanceOf = lcp
-                            additionalProp.save(flush: true)
+                            additionalProp.save()
                         }
                         else {
                             // no match found, creating new prop with backref
                             def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
                             newProp = lcp.copyInto(newProp)
                             newProp.instanceOf = lcp
-                            newProp.save(flush: true)
+                            newProp.save()
                         }
                     }
                 }
@@ -101,7 +93,7 @@ class InstitutionsService {
                     LicenseCustomProperty copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
                     copiedProp = prop.copyInto(copiedProp)
                     copiedProp.instanceOf = null
-                    copiedProp.save(flush: true)
+                    copiedProp.save()
                     //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                 }
 
@@ -135,21 +127,16 @@ class InstitutionsService {
             RefdataValue licensee_role = RDStore.OR_LICENSEE
             RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
-            log.debug("adding org link to new license");
+            log.debug("adding org link to new license")
 
-            def rdvConsortiumOrgRole = RDStore.OT_CONSORTIUM.id.toString()
-
-            if (params.asOrgType) {
-                if (rdvConsortiumOrgRole in params.asOrgType) {
-                    new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role).save(flush: true)
-                } else {
-                    new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role).save(flush: true)
-                }
+            if (accessService.checkPerm("ORG_CONSORTIUM")) {
+                new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role).save()
             }
-            else if (base.licensor) {
-                // legacy
-                RefdataValue licensor_role = RefdataValue.getByValueAndCategory('Licensor', RDConstants.ORGANISATIONAL_ROLE)
-                new OrgRole(lic: licenseInstance, org: base.licensor, roleType: licensor_role).save(flush: true)
+            else {
+                new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role).save()
+            }
+            OrgRole.findAllByLicAndRoleTypeAndIsShared(base,RDStore.OR_LICENSOR,true).each { OrgRole licRole ->
+                new OrgRole(lic: licenseInstance, org: licRole.org, roleType: RDStore.OR_LICENSOR, isShared: true).save()
             }
 
             return licenseInstance
