@@ -135,7 +135,7 @@
                                     <td>
                                         <%  boolean editable_this_ci = (ci.owner.id == contextService.org.id) &&
                                             (ci.customer.id == contextService.org.id ||
-                                                    Combo.findByFromOrgAndToOrg(contextservice.org, contextService.org))
+                                                    Combo.findByFromOrgAndToOrg(ci.customer, contextService.org))
                                         %>
                                         <g:if test="${editable_customeridentifier && editable_this_ci}">
                                             <button class="ui icon button" onclick="IdContoller.editCustomerIdentifier(${ci.id});"><i class="write icon"></i></button>
