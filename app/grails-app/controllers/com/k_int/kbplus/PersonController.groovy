@@ -17,6 +17,7 @@ class PersonController extends AbstractDebugController {
     def addressbookService
     def genericOIDService
     def contextService
+    def accessService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -229,12 +230,12 @@ class PersonController extends AbstractDebugController {
             return
         }
         
-        User user = User.get(springSecurityService.principal.id)
-        boolean editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+        Org org = contextService.getOrg()
+
+        boolean editable = true
 
         // create mandatory PersonPrivateProperties if not existing
 
-        Org org = contextService.getOrg()
         List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.PRS_PROP, true, org)
 
         mandatories.each{ pd ->
