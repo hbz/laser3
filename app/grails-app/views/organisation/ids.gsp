@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
+<%@ page import="com.k_int.kbplus.CustomerIdentifier; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
 <%@ page import="com.k_int.kbplus.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
@@ -133,7 +133,11 @@
                                     <td>${ci.value}</td>
                                     <td>${ci.note}</td>
                                     <td>
-                                        <g:if test="${editable_customeridentifier}">
+                                        <%  boolean editable_this_ci = (ci.owner.id == contextService.org.id) &&
+                                            (ci.customer.id == contextService.org.id ||
+                                                    Combo.findByFromOrgAndToOrg(ci.customer, contextService.org))
+                                        %>
+                                        <g:if test="${editable_customeridentifier && editable_this_ci}">
                                             <button class="ui icon button" onclick="IdContoller.editCustomerIdentifier(${ci.id});"><i class="write icon"></i></button>
                                             <g:link controller="organisation"
                                                     action="deleteCustomerIdentifier"
