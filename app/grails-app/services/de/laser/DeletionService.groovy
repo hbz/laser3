@@ -261,7 +261,9 @@ class DeletionService {
         result.info << ['Pakete', subPkgs]
         result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['IssueEntitlements', ies]
-        result.info << ['Kostenposten', costs, FLAG_BLOCKER]
+        //TODO is a temporary solution for ERMS-2535 and is subject of refactoring!
+        result.info << ['nicht gelöschte Kostenposten', costs.findAll { ci -> ci.costItemStatus != RDStore.COST_ITEM_DELETED }, FLAG_BLOCKER]
+        result.info << ['gelöschte Kostenposten', costs.findAll { ci -> ci.costItemStatus == RDStore.COST_ITEM_DELETED }]
         result.info << ['OrgAccessPointLink', oapl]
         result.info << ['Private Merkmale', sub.privateProperties]
         result.info << ['Allgemeine Merkmale', sub.customProperties]
@@ -377,6 +379,13 @@ class DeletionService {
                             coverage.delete()
                         }
                         tmp.delete()
+                    }
+
+                    //cost items
+                    sub.costItems.clear()
+                    sub.costItems.each { tmp ->
+                        tmp.sub = null
+                        tmp.save()
                     }
 
                     // private properties

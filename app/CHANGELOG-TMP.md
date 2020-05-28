@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2535    28.05.2020  rc1.4       Andreas Bug         Löschprüfung von Kosten bei zu löschenden Lizenzen überbrückt 
+
 2532    26.05.2020  rc1.4       Andreas Bug         diverse Anzeigefehler in Sichten behoben
 
 2522    26.05.2020  rc1.4       Andreas Feature     Ausbesserungen Vertragssicht: Einkaufsliste abgearbeitet
