@@ -69,6 +69,7 @@ class DateUtil {
         List<SimpleDateFormat> supportedFormats = [
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S"),
+                new SimpleDateFormat('yyyy-MM-dd'),
                 new SimpleDateFormat('yyyy/MM/dd'),
                 new SimpleDateFormat('dd.MM.yyyy'),
                 new SimpleDateFormat('dd/MM/yyyy'),
