@@ -159,6 +159,20 @@
                             </span>
                         </g:if>
 
+                        <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${subscr.getCustomerTypeI10n()}">
+                                <i class="chess rook grey icon"></i>
+                            </span>
+                        </g:if>
+
+                        <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${subscr.getCustomerTypeI10n()}">
+                                <i class="chess rook grey icon"></i>
+                            </span>
+                        </g:if>
+
                         <div class="ui list">
                             <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
                                 <div class="item">
