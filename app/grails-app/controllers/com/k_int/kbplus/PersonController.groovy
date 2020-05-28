@@ -17,7 +17,6 @@ class PersonController extends AbstractDebugController {
     def addressbookService
     def genericOIDService
     def contextService
-    def accessService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
