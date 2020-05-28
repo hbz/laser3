@@ -1519,7 +1519,7 @@ class AjaxController {
           }
           existingProps.removeAll { it.type.name != type.name } // dubious fix
 
-            println()
+
           if (existingProps.size() == 0 || type.multipleOccurrence) {
             newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
             if (newProp.hasErrors()) {
