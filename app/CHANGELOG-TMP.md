@@ -20,8 +20,6 @@
 
 2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Refdatas
 
-2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Re
-
 2444    22.05.2020  rc1.4       Andreas Bug         Rückverweis beim Entknüpfen von Teilnehmer angepasst
 
 2432    22.05.2020  rc1.4       Andreas Feature     Kuratorengruppen von Paketen werden jetzt auf Lizenzdetailseite und Paket-verknüpfen-Seite angezeigt
