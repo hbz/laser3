@@ -135,6 +135,7 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
+        result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
         result.contextOrg = contextService.getOrg()
         def verystarttime = exportService.printStart("subscription")
 
@@ -210,7 +211,6 @@ class SubscriptionController extends AbstractDebugController {
                 qry_params.endDate = date_filter
             }
         }
-
         if(params.mode != 'advanced') {
             base_qry += " and ie.status = :current "
             qry_params.current = TIPP_STATUS_CURRENT
@@ -261,6 +261,18 @@ class SubscriptionController extends AbstractDebugController {
         result.filterSet = filterSet
 
         Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
+
+        if(params.kbartPreselect) {
+            CommonsMultipartFile kbartFile = params.kbartPreselect
+            InputStream stream = kbartFile.getInputStream()
+            List issueEntitlements = entitlements.toList()
+
+            subscriptionService.issueEntitlementEnrichment(stream, issueEntitlements, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+
+            params.remove("kbartPreselect")
+            params.remove("uploadCoverageDates")
+            params.remove("uploadPriceInfo")
+        }
 
         result.subjects = subscriptionService.getSubjects(entitlements.collect {it.tipp.title.id})
 
@@ -5709,7 +5721,7 @@ class SubscriptionController extends AbstractDebugController {
         candidates.eachWithIndex{ entry, int s ->
             if(params["take${s}"]) {
                 //create object itself
-                Subscription sub = new Subscription(name: entry.name, 
+                Subscription sub = new Subscription(name: entry.name,
                         status: genericOIDService.resolveOID(entry.status),
                         type: genericOIDService.resolveOID(entry.type),
                         form: genericOIDService.resolveOID(entry.form),
@@ -6319,4 +6331,6 @@ class SubscriptionController extends AbstractDebugController {
         }
         parsed_date
     }
+
+
 }
