@@ -2,13 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2154    28.05.2020  rc1.3       Anja    Hotfix      Rechte zeilenweise für Kundennummern; Fehlermeldung bei Löschen 
-ausgeben
+2154    28.05.2020  rc1.3       Anja    Hotfix      Rechte zeilenweise für Kundennummern; Fehlermeldung bei Löschen ausgeben
 
-2154    27.05.20    rc1.3       Anja    Hotfixt     Rechte geändert für Kundennummern (anzeigen, ändern, löschen)
+2154    27.05.2020  rc1.3       Anja    Hotfix      Rechte geändert für Kundennummern (anzeigen, ändern, löschen)
 
-2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem 
-region-Dropdown auf org/show
+2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem region-Dropdown auf org/show
 
 2515    20.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Rolle Redakteur kann keine Fächergruppen anlegen
 
