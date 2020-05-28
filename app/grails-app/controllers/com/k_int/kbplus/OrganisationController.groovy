@@ -915,6 +915,12 @@ class OrganisationController extends AbstractDebugController {
             ci.delete()
             log.debug("Customeridentifier deleted: ${params}")
         } else {
+            if ( ! ci ) {
+                flash.message = message(code: 'default.not.found.message', args: [message(code:
+                        'org.customerIdentifier'), params.deleteCI])
+            } else {
+                flash.message = message(code: 'org.customerIdentifier.delete.norights')
+            }
             log.error("Customeridentifier NOT deleted: ${params}; CostomerIdentifier not found or ContextOrg is not " +
                     "owner of this CustomerIdentifier and has no rights to delete it!")
         }
