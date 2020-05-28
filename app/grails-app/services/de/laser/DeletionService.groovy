@@ -41,7 +41,7 @@ class DeletionService {
 
         // gathering references
 
-        List links = Links.where { objectType == lic.class.name && (source == lic.id || destination == lic.id) }.findAll()
+        List links = Links.where { source == GenericOIDService.getOID(lic) || destination == GenericOIDService.getOID(lic) }.findAll()
 
         List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
@@ -220,7 +220,7 @@ class DeletionService {
         List ref_instanceOf = Subscription.findAllByInstanceOf(sub)
         List ref_previousSubscription = Subscription.findAllByPreviousSubscription(sub)
 
-        List links = Links.where { objectType == sub.class.name && (source == sub.id || destination == sub.id) }.findAll()
+        List links = Links.where { source == GenericOIDService.getOID(sub) || destination == GenericOIDService.getOID(sub) }.findAll()
 
         List tasks                  = Task.findAllBySubscription(sub)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllBySub(sub)
@@ -425,7 +425,7 @@ class DeletionService {
 
         // gathering references
 
-        List links = Links.where { objectType == org.class.name && (source == org.id || destination == org.id) }.findAll()
+        List links = Links.where { source == GenericOIDService.getOID(org) || destination == GenericOIDService.getOID(org) }.findAll()
 
         List ids            = new ArrayList(org.ids)
         List outgoingCombos = new ArrayList(org.outgoingCombos)
