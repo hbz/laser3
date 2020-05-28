@@ -1051,73 +1051,6 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def addSubscription() {
-        def result = setResultGenerics()
-
-        def date_restriction = null;
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-
-        if (params.validOn == null) {
-            result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            date_restriction = sdf.parse(result.validOn)
-        } else if (params.validOn.trim() == '') {
-            result.validOn = "" 
-        } else {
-            result.validOn = params.validOn
-            date_restriction = sdf.parse(params.validOn)
-        }
-
-        // if ( ! permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM') ) {
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
-            response.sendError(401)
-            result.is_inst_admin = false;
-            // render(status: '401', text:"You do not have permission to add subscriptions to ${result.institution.name}. Please request editor access on the profile page");
-            return;
-        }
-
-        result.is_inst_admin = result.user?.hasAffiliation('INST_ADM')
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-        // def base_qry = " from Subscription as s where s.type.value = 'Subscription Offered' and s.isPublic=?"
-        def qry_params = []
-        String base_qry = " from Package as p where lower(p.name) like ?"
-
-        if (params.q == null) {
-            qry_params.add("%");
-        } else {
-            qry_params.add("%${params.q.trim().toLowerCase()}%");
-        }
-
-        if (date_restriction) {
-            base_qry += " and p.startDate <= ? and p.endDate >= ? "
-            qry_params.add(date_restriction)
-            qry_params.add(date_restriction)
-        }
-
-        // Only list subscriptions where the user has view perms against the org
-        // base_qry += "and ( ( exists select or from OrgRole where or.org =? and or.user = ? and or.perms.contains'view' ) "
-
-        // Or the user is a member of an org who has a consortial membership that has view perms
-        // base_qry += " or ( 2==2 ) )"
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += " order by ${params.sort} ${params.order}"
-        } else {
-            base_qry += " order by p.name asc"
-        }
-
-        result.num_pkg_rows = Package.executeQuery("select p.id " + base_qry, qry_params).size()
-        result.packages = Package.executeQuery("select p ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
-
-        result
-    }
-
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
@@ -1242,7 +1175,6 @@ join sub.orgRelations or_sub where
                         String postfix = cm.get(0).shortname ?: cm.get(0).name
 
                         Subscription cons_sub = new Subscription(
-                                            // type: RefdataValue.getByValue("Subscription Taken"),
                                           type: subType,
                                           kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
                                           name: params.newEmptySubName,
@@ -1286,47 +1218,6 @@ join sub.orgRelations or_sub where
         } else {
             redirect action: 'currentSubscriptions'
         }
-    }
-
-    @Deprecated
-    def buildQuery(params) {
-        log.debug("BuildQuery...");
-
-        StringWriter sw = new StringWriter()
-
-        if (params?.q?.length() > 0)
-            sw.write(params.q)
-        else
-            sw.write("*:*")
-
-        reversemap.each { mapping ->
-
-            // log.debug("testing ${mapping.key}");
-
-            if (params[mapping.key] != null) {
-                if (params[mapping.key].class == java.util.ArrayList) {
-                    params[mapping.key].each { p ->
-                        sw.write(" AND ")
-                        sw.write(mapping.value)
-                        sw.write(":")
-                        sw.write("\"${p}\"")
-                    }
-                } else {
-                    // Only add the param if it's length is > 0 or we end up with really ugly URLs
-                    // II : Changed to only do this if the value is NOT an *
-                    if (params[mapping.key].length() > 0 && !(params[mapping.key].equalsIgnoreCase('*'))) {
-                        sw.write(" AND ")
-                        sw.write(mapping.value)
-                        sw.write(":")
-                        sw.write("\"${params[mapping.key]}\"")
-                    }
-                }
-            }
-        }
-
-        sw.write(" AND type:\"Subscription Offered\"");
-        def result = sw.toString();
-        result;
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
@@ -1525,53 +1416,6 @@ join sub.orgRelations or_sub where
         docstoreService.unifiedDeleteDocuments(params)
 
         redirect controller: 'myInstitution', action: 'documents' /*, fragment: 'docstab' */
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def processAddSubscription() {
-
-        User user = User.get(springSecurityService.principal.id)
-        Org institution = contextService.getOrg()
-
-        if (! accessService.checkUserIsMember(user, institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            // render(status: '401', text:"You do not have permission to access ${institution.name}. Please request access on the profile page");
-            return;
-        }
-
-        log.debug("processAddSubscription ${params}");
-
-        Package basePackage = Package.get(params.packageId);
-
-        if (basePackage) {
-            //
-            boolean add_entitlements = (params.createSubAction == 'copy' ? true : false)
-
-            def new_sub = basePackage.createSubscription("Subscription Taken",
-                    "A New subscription....",
-                    "A New subscription identifier.....",
-                    basePackage.startDate,
-                    basePackage.endDate,
-                    basePackage.getConsortia(),
-                    add_entitlements)
-
-            OrgRole new_sub_link = new OrgRole(
-                    org: institution,
-                    sub: new_sub,
-                    roleType: RDStore.OR_SUBSCRIBER
-            ).save();
-
-            // This is done by basePackage.createSubscription
-            // def new_sub_package = new SubscriptionPackage(subscription: new_sub, pkg: basePackage).save();
-
-            flash.message = message(code: 'subscription.created.message', args: [message(code: 'default.subscription.label'), basePackage.id])
-            redirect controller: 'subscription', action: 'index', params: params, id: new_sub.id
-        } else {
-            flash.message = message(code: 'subscription.unknown.message')
-            redirect action: 'addSubscription', params: params
-        }
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
