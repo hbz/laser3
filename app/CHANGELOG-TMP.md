@@ -4,6 +4,8 @@
 
 2535    28.05.2020  rc1.4       Andreas Bug         Löschprüfung von Kosten bei zu löschenden Lizenzen überbrückt 
 
+2528    27.05.2020  rc1.4       Moe     Bug         Eigenes Merkmal "EGP-Nr." kann nicht hinzugefügt werden (LAS:eR-Backoffice)
+
 2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
 
 2533    26.05.2020  rc1.4       Moe     Bug         Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
@@ -16,9 +18,9 @@
 
 2531    26.05.2020  rc1.4       David   Bug         Aufgaben nicht aufrufbar / Schaltfläche "Neue Aufgabe" auf Dashboard tot 
 
-2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem 
+2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem region-Dropdown auf org/show
 
-2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Re
+2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Refdatas
 
 2444    22.05.2020  rc1.4       Andreas Bug         Rückverweis beim Entknüpfen von Teilnehmer angepasst
 
