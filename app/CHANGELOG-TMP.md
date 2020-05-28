@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
+
+2533    26.05.2020  rc1.4       Moe     Bug         Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
+
+2525    26.05.2020  rc1.4       Moe     Feature     manageMembersVollnutzer-Icon auch in Lizenzsichten für Konsortien
+
 2528    27.05.2020  rc1.4       Moe     Bug         Eigenes Merkmal "EGP-Nr." kann nicht hinzugefügt werden (LAS:eR-Backoffice)
 
 2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
