@@ -182,7 +182,7 @@
                               </g:if>
                           </td>
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
-                              <td>${l.getLicensingConsortium().name}</td>
+                              <td>${l.getLicensingConsortium()?.name}</td>
                           </g:if>
                           <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.endDate}"/></td>
                           <g:if test="${'action' in licenseFilterTable}">

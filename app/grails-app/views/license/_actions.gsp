@@ -6,7 +6,7 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR')}">
     <semui:actionsDropdown>
 
-        <g:if test="${editable}">
+        <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
             <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
             <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
         </g:if>
