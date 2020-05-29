@@ -2,7 +2,7 @@
     <semui:messages data="${flash}" />
     <div id="filterTemplateWrapper" class="wrapper">
         <div id="filterTemplate">
-            <g:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription]"/>
+            <g:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription,showView:showView]"/>
             <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
                 <g:each in="${dataToDisplay}" var="view">
                     <g:if test="${view == 'own'}">
@@ -96,6 +96,7 @@
                         $('#financeFilterData').attr('data-current', tabPath);
                         //console.log(tabPath);
                         $(".exportCSV").attr("href",rawHref+"&showView="+tabPath);
+                        $("#showView").val(tabPath);
                     }
                 });
 

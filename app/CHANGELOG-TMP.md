@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2553    29.05.2020  rc1.4       Andreas Bug         Formatierung von Daten bei der Anzeige von Vertragsmerkmalen in Lizenzübersicht korrigiert
+
+2537    29.05.2020  rc1.4       Andreas Feature     Finanzfilter übernimmt Reitereinstellung
+
 --      29.05.2020  rc1.4       Andreas Bug         Transaktionen bei Sync (Identifier) eingebaut
 
 2527    29.05.2020  rc1.4       Andreas Bug         verschiedene Fehler beim Kopieren von Lizenzen

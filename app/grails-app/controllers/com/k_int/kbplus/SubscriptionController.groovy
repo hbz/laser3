@@ -3984,7 +3984,7 @@ class SubscriptionController extends AbstractDebugController {
         //def task_usage = task {
 
             // usage
-            def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.platform?.id.unique()
+            def suppliers = Platform.executeQuery('select distinct(plat.id) from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub',[sub:result.subscriptionInstance])
 
             if (suppliers) {
                 if (suppliers.size() > 1) {
