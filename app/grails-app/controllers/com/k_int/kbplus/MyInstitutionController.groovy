@@ -354,6 +354,7 @@ class MyInstitutionController extends AbstractDebugController {
             qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
             if(result.editable)
                 licenseFilterTable << "action"
+            licenseFilterTable << "licensingConsortium"
         }
         else if (accessService.checkPerm("ORG_CONSORTIUM")) {
             base_qry = """from License as l where (
