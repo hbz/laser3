@@ -267,7 +267,7 @@ class SubscriptionController extends AbstractDebugController {
             InputStream stream = kbartFile.getInputStream()
             List issueEntitlements = entitlements.toList()
 
-            subscriptionService.issueEntitlementEnrichment(stream, issueEntitlements, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+            result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, issueEntitlements, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
 
             params.remove("kbartPreselect")
             params.remove("uploadCoverageDates")

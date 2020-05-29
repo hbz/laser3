@@ -1591,7 +1591,7 @@ class SubscriptionService {
         [candidates: candidates, globalErrors: globalErrors, parentSubType: parentSubType]
     }
 
-    List issueEntitlementEnrichment(InputStream stream, List<IssueEntitlement> issueEntitlements, boolean uploadCoverageDates, boolean uploadPriceInfo) {
+    Map issueEntitlementEnrichment(InputStream stream, List<IssueEntitlement> issueEntitlements, boolean uploadCoverageDates, boolean uploadPriceInfo) {
 
         Integer count = 0
         Integer countChangesPrice = 0
@@ -1776,11 +1776,11 @@ class SubscriptionService {
             }
         }
 
-        println(count)
+        /*println(count)
         println(countChangesCoverageDates)
-        println(countChangesPrice)
+        println(countChangesPrice)*/
 
-        return [count, countChangesCoverageDates, countChangesPrice]
+        return [issueEntitlements: issueEntitlements.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
     }
 
 }

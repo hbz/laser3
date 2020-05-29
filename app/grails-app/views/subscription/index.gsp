@@ -35,6 +35,16 @@
     <g:render template="message"/>
 </g:if>
 
+<g:if test="${enrichmentProcess}">
+    <div class="ui positive message">
+    <i class="close icon"></i>
+    <div class="header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/> </div>
+    <p>
+        <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess" args="[enrichmentProcess.issueEntitlements, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
+    </p>
+    </div>
+</g:if>
+
 <g:if test="${deletedSPs}">
     <div class="ui exclamation icon negative message">
         <i class="exclamation icon"></i>
