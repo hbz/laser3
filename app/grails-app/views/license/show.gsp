@@ -98,7 +98,7 @@
                                     </g:if>
                                 </dl>
                                 <dl>
-                                    <dt><label class="control-label">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
+                                    <dt><label class="control-label">${message(code:'license.licenseCategory')}</label></dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>
@@ -153,7 +153,11 @@
                                                         <g:link controller="license" action="show" id="${pair.id}">
                                                             ${pair.reference}
                                                         </g:link><br>
-                                                        ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}
+                                                        ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}<br>
+                                                        <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
+                                                        <g:if test="${comment}">
+                                                            <em>${comment.owner.content}</em>
+                                                        </g:if>
                                                     </td>
                                                     <td class="right aligned">
                                                         <g:render template="/templates/links/subLinksModal"

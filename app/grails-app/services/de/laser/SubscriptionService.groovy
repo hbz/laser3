@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat
 import static de.laser.helper.RDStore.*
 
 class SubscriptionService {
-    def genericOIDService
     def contextService
     def accessService
     def subscriptionsQueryService
@@ -151,12 +150,7 @@ class SubscriptionService {
     }
 
     List getValidSubChilds(Subscription subscription) {
-        List<Subscription> validSubChildren = Subscription.findAllByInstanceOf(subscription)
-        validSubChildren = validSubChildren?.sort { Subscription a, Subscription b ->
-            Org sa = a.getSubscriber()
-            Org sb = b.getSubscriber()
-            (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
-        }
+        List<Subscription> validSubChildren = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :sub and oo.roleType in (:subRoleTypes) order by oo.org.sortname asc, oo.org.name asc',[sub:subscription,subRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
         validSubChildren
     }
 
@@ -655,6 +649,7 @@ class SubscriptionService {
 
 
     void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
+        targetSub.refresh()
         List<Subscription> targetChildSubs = getValidSubChilds(targetSub)
         subscriptionToTake.each { subMember ->
             //Gibt es mich schon in der Ziellizenz?
@@ -689,7 +684,9 @@ class SubscriptionService {
                             isSlaved: subMember.isSlaved,
                             owner: targetSub.owner ? subMember.owner : null,
                             resource: targetSub.resource ?: null,
-                            form: targetSub.form ?: null
+                            form: targetSub.form ?: null,
+                            isPublicForApi: targetSub.isPublicForApi,
+                            hasPerpetualAccess: targetSub.hasPerpetualAccess
                     )
                     newSubscription.save(flush:true)
                     //ERMS-892: insert preceding relation in new data model
@@ -1589,6 +1586,198 @@ class SubscriptionService {
             candidates.put(candidate,mappingErrorBag)
         }
         [candidates: candidates, globalErrors: globalErrors, parentSubType: parentSubType]
+    }
+
+    List issueEntitlementEnrichment(InputStream stream, List<IssueEntitlement> issueEntitlements, boolean uploadCoverageDates, boolean uploadPriceInfo) {
+
+        Integer count = 0
+        Integer countChangesPrice = 0
+        Integer countChangesCoverageDates = 0
+
+        ArrayList<String> rows = stream.text.split('\n')
+        Map<String, Integer> colMap = [publicationTitleCol: -1, zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, dateFirstInPrintCol: -1, dateFirstOnlineCol: -1,
+                                       startDateCol       : -1, startVolumeCol: -1, startIssueCol: -1,
+                                       endDateCol         : -1, endVolumeCol: -1, endIssueCol: -1,
+                                       accessStartDateCol : -1, accessEndDateCol: -1, coverageDepthCol: -1, coverageNotesCol: -1, embargoCol: -1,
+                                       listPriceCol       : -1, listCurrencyCol: -1, listPriceEurCol: -1, listPriceUsdCol: -1, listPriceGbpCol: -1, localPriceCol: -1, localCurrencyCol: -1, priceDateCol: -1]
+        //read off first line of KBART file
+        rows[0].split('\t').eachWithIndex { headerCol, int c ->
+            switch (headerCol.toLowerCase().trim()) {
+                case "zdb_id": colMap.zdbCol = c
+                    break
+                case "print_identifier": colMap.printIdentifierCol = c
+                    break
+                case "online_identifier": colMap.onlineIdentifierCol = c
+                    break
+                case "publication_title": colMap.publicationTitleCol = c
+                    break
+                case "date_monograph_published_print": colMap.dateFirstInPrintCol = c
+                    break
+                case "date_monograph_published_online": colMap.dateFirstOnlineCol = c
+                    break
+                case "date_first_issue_online": colMap.startDateCol = c
+                    break
+                case "num_first_vol_online": colMap.startVolumeCol = c
+                    break
+                case "num_first_issue_online": colMap.startIssueCol = c
+                    break
+                case "date_last_issue_online": colMap.endDateCol = c
+                    break
+                case "num_last_vol_online": colMap.endVolumeCol = c
+                    break
+                case "num_last_issue_online": colMap.endIssueCol = c
+                    break
+                case "access_start_date": colMap.accessStartDateCol = c
+                    break
+                case "access_end_date": colMap.accessEndDateCol = c
+                    break
+                case "embargo_info": colMap.embargoCol = c
+                    break
+                case "coverage_depth": colMap.coverageDepthCol = c
+                    break
+                case "notes": colMap.coverageNotesCol = c
+                    break
+                case "listprice_value": colMap.listPriceCol = c
+                    break
+                case "listprice_currency": colMap.listCurrencyCol = c
+                    break
+                case "listprice_eur": colMap.listPriceEurCol = c
+                    break
+                case "listprice_usd": colMap.listPriceUsdCol = c
+                    break
+                case "listprice_gbp": colMap.listPriceGbpCol = c
+                    break
+                case "localprice_value": colMap.localPriceCol = c
+                    break
+                case "localprice_currency": colMap.localCurrencyCol = c
+                    break
+                case "price_date": colMap.priceDateCol = c
+                    break
+            }
+        }
+        //after having read off the header row, pop the first row
+        rows.remove(0)
+        //now, assemble the identifiers available to highlight
+        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNs('zdb'),
+                                                       eissn: IdentifierNamespace.findByNs('eissn'), isbn: IdentifierNamespace.findByNs('isbn'),
+                                                       issn : IdentifierNamespace.findByNs('issn'), pisbn: IdentifierNamespace.findByNs('pisbn'),
+                                                       doi  : IdentifierNamespace.findByNs('doi')]
+        rows.eachWithIndex { row, int i ->
+            log.debug("now processing entitlement ${i}")
+            ArrayList<String> cols = row.split('\t')
+            Map<String, Object> idCandidate
+            if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
+                idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
+            }
+            if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
+                idCandidate = [namespaces: [namespaces.eissn, namespaces.isbn], value: cols[colMap.onlineIdentifierCol]]
+            }
+            if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
+                idCandidate = [namespaces: [namespaces.issn, namespaces.pisbn], value: cols[colMap.printIdentifierCol]]
+            }
+            if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
+                idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
+            }
+            if (((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
+                    ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
+                    ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
+            } else {
+
+                Identifier id = Identifier.findByValueAndNsInList(idCandidate.value, idCandidate.namespaces)
+                if (id && id.ti) {
+                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title == id.ti }
+                    IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
+                    if (issueEntitlement) {
+                        count++
+                        PriceItem priceItem = issueEntitlement.priceItem ?: new PriceItem(issueEntitlement: issueEntitlement)
+                        colMap.each { String colName, int colNo ->
+                            if (colNo > -1 && cols[colNo]) {
+                                String cellEntry = cols[colNo].trim()
+                                if (uploadCoverageDates) {
+                                    switch (colName) {
+                                        case "startDateCol": ieCoverage.startDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : null
+                                            break
+                                        case "startVolumeCol": ieCoverage.startVolume = cellEntry ?: null
+                                            break
+                                        case "startIssueCol": ieCoverage.startIssue = cellEntry ?: null
+                                            break
+                                        case "endDateCol": ieCoverage.endDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : null
+                                            break
+                                        case "endVolumeCol": ieCoverage.endVolume = cellEntry ?: null
+                                            break
+                                        case "endIssueCol": ieCoverage.endIssue = cellEntry ?: null
+                                            break
+                                        case "accessStartDateCol": issueEntitlement.accessStartDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : issueEntitlement.accessStartDate
+                                            break
+                                        case "accessEndDateCol": issueEntitlement.accessEndDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : issueEntitlement.accessEndDate
+                                            break
+                                        case "embargoCol": ieCoverage.embargo = cellEntry ?: null
+                                            break
+                                        case "coverageDepthCol": ieCoverage.coverageDepth = cellEntry ?: null
+                                            break
+                                        case "coverageNotesCol": ieCoverage.coverageNote = cellEntry ?: null
+                                            break
+                                    }
+                                }
+                                if (uploadPriceInfo) {
+
+                                    try {
+                                        switch (colName) {
+                                            case "listPriceCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                break
+                                            case "listCurrencyCol": priceItem.listCurrency = cellEntry ? RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY) : null
+                                                break
+                                            case "listPriceEurCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("EUR", RDConstants.CURRENCY)
+                                                break
+                                            case "listPriceUsdCol": priceItem.listPrice = cellEntry ?  escapeService.parseFinancialValue(cellEntry) : null
+                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("USD", RDConstants.CURRENCY)
+                                                break
+                                            case "listPriceGbpCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("GBP", RDConstants.CURRENCY)
+                                                break
+                                            case "localPriceCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                break
+                                            case "localCurrencyCol": priceItem.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)
+                                                break
+                                            case "priceDateCol": priceItem.priceDate = cellEntry  ? DateUtil.parseDateGeneric(cellEntry) : null
+                                                break
+                                        }
+                                    }
+                                    catch (NumberFormatException e) {
+                                        log.error("Unparseable number ${cellEntry}")
+                                    }
+                                }
+                            }
+                        }
+
+                        if(uploadCoverageDates && ieCoverage && !ieCoverage.findEquivalent(issueEntitlement.coverages)){
+                            ieCoverage.issueEntitlement = issueEntitlement
+                            if (!ieCoverage.save(flush: true)) {
+                                throw new EntitlementCreationException(ieCoverage.getErrors())
+                            }else{
+                                countChangesCoverageDates++
+                            }
+                        }
+                        if(uploadPriceInfo && priceItem){
+                            priceItem.setGlobalUID()
+                            if (!priceItem.save(flush: true)) {
+                                throw new Exception(priceItem.getErrors().toString())
+                            }else {
+
+                                countChangesPrice++
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        println(count)
+        println(countChangesCoverageDates)
+        println(countChangesPrice)
+
+        return [count, countChangesCoverageDates, countChangesPrice]
     }
 
 }

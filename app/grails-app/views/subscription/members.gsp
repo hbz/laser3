@@ -149,6 +149,13 @@
                                 </span>
                             </g:if>
 
+                            <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                      data-content="${subscr.getCustomerTypeI10n()}">
+                                    <i class="chess rook grey icon"></i>
+                                </span>
+                            </g:if>
+
                             <div class="ui list">
                                 <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
                                     <div class="item">
@@ -236,7 +243,7 @@
                                     </span>
                                 </g:else>
                             </g:if>
-                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.sub = :sub',[sub:sub])}"/>
+                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.sub = :sub and ci.costItemStatus != :deleted',[sub:sub,deleted:RDStore.COST_ITEM_DELETED])}"/>
                             <g:if test="${!hasCostItems}">
                                 <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}">
                                     <i class="trash alternate icon"></i>
