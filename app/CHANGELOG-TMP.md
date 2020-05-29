@@ -2,8 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2553    29.05.2020  rc1.4       Andreas Bug         Formatierung von Daten bei der Anzeige von Vertragsmerkmalen in Lizenzübersicht korrigiert
 
-2464    29.05.2020  rc.1.4      Anja    Feature     Optik von modalem Dialog der Optik eines Filters anpassen
+2537    29.05.2020  rc1.4       Andreas Feature     Finanzfilter übernimmt Reitereinstellung
+
+2464    29.05.2020  rc1.4       Anja    Feature     Optik von modalem Dialog der Optik eines Filters anpassen
 
 --      29.05.2020  rc1.4       Andreas Bug         Transaktionen bei Sync (Identifier) eingebaut
 

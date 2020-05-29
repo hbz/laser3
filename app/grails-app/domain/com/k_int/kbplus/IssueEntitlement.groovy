@@ -63,9 +63,9 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
 'coverageNote','coverageDepth','embargo','startVolume','startIssue','startDate','endDate','endIssue','endVolume']
 
   int compareTo(obj) {
-    int cmp = tipp?.title?.title.compareTo(obj.tipp?.title?.title)
+    int cmp = tipp.title.title.compareTo(obj.tipp.title.title)
     if(cmp == 0)
-      return tipp?.id?.compareTo(obj.tipp?.id)
+      return tipp.id.compareTo(obj.tipp.id)
     return cmp
   }
 
