@@ -4,7 +4,6 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
-import de.laser.domain.AbstractI10nTranslatable
 import grails.plugin.mail.MailService
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -18,6 +17,7 @@ class DashboardDueDatesService {
     GrailsApplication grailsApplication
     GenericOIDService genericOIDService
     def messageSource
+    NormalizeService normalizeService
     Locale locale
     String from
     String replyTo
@@ -165,7 +165,7 @@ class DashboardDueDatesService {
         def emailReceiver = user.getEmail()
         def currentServer = grailsApplication.config.getCurrentServer()
         String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
-        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, locale) + " (" + org.name + ")"
+        String mailSubject = normalizeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, locale) + " (" + org.name + ")")
         if (emailReceiver == null || emailReceiver.isEmpty()) {
             log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);
         } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {

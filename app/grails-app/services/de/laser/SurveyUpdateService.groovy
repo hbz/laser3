@@ -15,6 +15,7 @@ class SurveyUpdateService extends AbstractLockableService {
 
     def grailsApplication
     def mailService
+    NormalizeService normalizeService
     def messageSource
     String from
     String replyTo
@@ -154,7 +155,7 @@ class SurveyUpdateService extends AbstractLockableService {
                         replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
                         Object[] args = ["${survey.type.getI10n('value')}"]
                         Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-                        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, locale) + " (" + org.name + ")"
+                        String mailSubject = normalizeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, locale) + " (" + org.name + ")")
 
                         if (isNotificationCCbyEmail && ccAddress) {
                             mailService.sendMail {

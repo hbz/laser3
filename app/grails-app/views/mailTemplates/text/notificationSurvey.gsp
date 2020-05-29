@@ -2,7 +2,7 @@
 ${message(code: 'email.text.title', locale: language)} ${userName},
 
 ${message(code: 'email.survey.text', locale: language)}
-${survey.name} (<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.startDate}"/> - <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.endDate}"/>)
+${normalizeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.startDate}"/> - <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.endDate}"/>)
 
 ${message(code: 'email.survey.text2', locale: language)}
 ${grailsApplication.config.grails.serverURL+raw(surveyUrl)}

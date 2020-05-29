@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2556    29.05.2020  rc1.4       Moe     Bug         Umlaute Parser für E-Mails wegen Problematik der Umlaute in Mails
+
 2547    29.05.2020  rc1.4       Moe     Bug         INST_User sieht falsche Meldung bei Umfrage
 
 2546    28.05.2020  rc1.4       Moe     Feature     xEditable darf nicht einfach weggeklickt werden
