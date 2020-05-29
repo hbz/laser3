@@ -1686,9 +1686,9 @@ class SubscriptionService {
                     ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
             } else {
 
-                Identifier id = Identifier.findByValueAndNsInList(idCandidate.value, idCandidate.namespaces)
-                if (id && id.ti) {
-                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title == id.ti }
+                TitleInstance tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
+                if (tiObj) {
+                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title.id == tiObj.id }
                     IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
                     if (issueEntitlement) {
                         count++
