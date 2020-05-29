@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat
 import static de.laser.helper.RDStore.*
 
 class SubscriptionService {
-    def genericOIDService
     def contextService
     def accessService
     def subscriptionsQueryService
@@ -151,7 +150,7 @@ class SubscriptionService {
     }
 
     List getValidSubChilds(Subscription subscription) {
-        List<Subscription> validSubChildren = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :sub and oo.roleType in (:subRoleTypes) order by oo.org.sortname asc, oo.org.name asc',[sub:subscription,subRoleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER,OR_SUBSCRIBER_CONS_HIDDEN]])
+        List<Subscription> validSubChildren = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :sub and oo.roleType in (:subRoleTypes) order by oo.org.sortname asc, oo.org.name asc',[sub:subscription,subRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
         validSubChildren
     }
 
