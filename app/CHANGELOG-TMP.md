@@ -6,7 +6,11 @@
 
 2527    29.05.2020  rc1.4       Andreas Bug         verschiedene Fehler beim Kopieren von Lizenzen
 
+2154    28.05.2020  rc1.3       Anja    Hotfix      Rechte zeilenweise für Kundennummern; Fehlermeldung bei Löschen ausgeben
+
 2535    28.05.2020  rc1.4       Andreas Bug         Löschprüfung von Kosten bei zu löschenden Lizenzen überbrückt 
+
+2154    27.05.2020  rc1.3       Anja    Hotfix      Rechte geändert für Kundennummern (anzeigen, ändern, löschen)
 
 2528    27.05.2020  rc1.4       Moe     Bug         Eigenes Merkmal "EGP-Nr." kann nicht hinzugefügt werden (LAS:eR-Backoffice)
 
