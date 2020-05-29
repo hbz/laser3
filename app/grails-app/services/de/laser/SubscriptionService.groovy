@@ -151,12 +151,7 @@ class SubscriptionService {
     }
 
     List getValidSubChilds(Subscription subscription) {
-        List<Subscription> validSubChildren = Subscription.findAllByInstanceOf(subscription)
-        validSubChildren = validSubChildren?.sort { Subscription a, Subscription b ->
-            Org sa = a.getSubscriber()
-            Org sb = b.getSubscriber()
-            (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
-        }
+        List<Subscription> validSubChildren = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :sub and oo.roleType in (:subRoleTypes) order by oo.org.sortname asc, oo.org.name asc',[sub:subscription,subRoleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER,OR_SUBSCRIBER_CONS_HIDDEN]])
         validSubChildren
     }
 
@@ -655,6 +650,7 @@ class SubscriptionService {
 
 
     void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
+        targetSub.refresh()
         List<Subscription> targetChildSubs = getValidSubChilds(targetSub)
         subscriptionToTake.each { subMember ->
             //Gibt es mich schon in der Ziellizenz?
@@ -689,7 +685,9 @@ class SubscriptionService {
                             isSlaved: subMember.isSlaved,
                             owner: targetSub.owner ? subMember.owner : null,
                             resource: targetSub.resource ?: null,
-                            form: targetSub.form ?: null
+                            form: targetSub.form ?: null,
+                            isPublicForApi: targetSub.isPublicForApi,
+                            hasPerpetualAccess: targetSub.hasPerpetualAccess
                     )
                     newSubscription.save(flush:true)
                     //ERMS-892: insert preceding relation in new data model
