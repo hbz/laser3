@@ -29,7 +29,7 @@
 <g:set var="counter" value="${-1}"/>
 <g:set var="index" value="${0}"/>
 
-<g:form action="processSimpleRenewal_Consortia" method="post" enctype="multipart/form-data" params="${params}">
+<g:form action="processSimpleRenewal_Consortia" method="post" params="${params}">
 
     <div>
         <hr/>
@@ -92,6 +92,7 @@
                     </div>
                 </td>
             </tr>
+            <%--
             <tr>
                 <th>${message(code: 'subscription.type.label')}</th>
                 <td>
@@ -190,6 +191,7 @@
                     </div>
                 </td>
             </tr>
+            --%>
             </tbody>
         </table>
 

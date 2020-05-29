@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      29.05.2020  rc1.4       Andreas Bug         Transaktionen bei Sync (Identifier) eingebaut
+
+2527    29.05.2020  rc1.4       Andreas Bug         verschiedene Fehler beim Kopieren von Lizenzen
+
 2154    28.05.2020  rc1.3       Anja    Hotfix      Rechte zeilenweise für Kundennummern; Fehlermeldung bei Löschen ausgeben
 
 2535    28.05.2020  rc1.4       Andreas Bug         Löschprüfung von Kosten bei zu löschenden Lizenzen überbrückt 
