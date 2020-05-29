@@ -2,6 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+2464    29.05.2020  rc.1.4      Anja    Feature     Optik von modalem Dialog der Optik eines Filters anpassen
+
 --      29.05.2020  rc1.4       Andreas Bug         Transaktionen bei Sync (Identifier) eingebaut
 
 2527    29.05.2020  rc1.4       Andreas Bug         verschiedene Fehler beim Kopieren von Lizenzen
