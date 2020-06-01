@@ -292,6 +292,11 @@ class SubscriptionService {
                 qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
             }
 
+            if (params.series_names && params.series_names != "" && params.list('series_names')) {
+                base_qry += " and lower(ie.tipp.title.seriesName) in (:series_names)"
+                qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
+            }
+
             if(params.ebookFirstAutorOrFirstEditor) {
                 base_qry += " and (lower(ie.tipp.title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
                 qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
@@ -385,6 +390,16 @@ class SubscriptionService {
             subjects = TitleInstance.executeQuery("select distinct(subjectReference) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by subjectReference", [titleIDs: titleIDs])
         }
         subjects
+
+    }
+
+    Set<String> getSeriesNames(List titleIDs) {
+        Set<String> seriesName = []
+
+        if(titleIDs){
+            seriesName = TitleInstance.executeQuery("select distinct(seriesName) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by seriesName", [titleIDs: titleIDs])
+        }
+        seriesName
 
     }
 

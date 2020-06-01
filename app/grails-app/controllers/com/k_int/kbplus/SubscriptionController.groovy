@@ -245,6 +245,12 @@ class SubscriptionController extends AbstractDebugController {
             filterSet = true
         }
 
+        if (params.series_names && params.series_names != "" && params.list('series_names')) {
+            base_qry += " and lower(ie.tipp.title.seriesName) in (:series_names)"
+            qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
 
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -275,6 +281,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         result.subjects = subscriptionService.getSubjects(entitlements.collect {it.tipp.title.id})
+        result.seriesNames = subscriptionService.getSeriesNames(entitlements.collect {it.tipp.title.id})
 
         if(result.subscriptionInstance.ieGroups.size() > 0) {
             result.num_ies = subscriptionService.getIssueEntitlementsWithFilter(result.subscriptionInstance, [offset: 0, max: 5000]).size()
@@ -1392,6 +1399,7 @@ class SubscriptionController extends AbstractDebugController {
         List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
 
         result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
+        result.seriesNames = subscriptionService.getSeriesNames(allIEs.collect {it.tipp.title.id})
         result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
         result.countAllIEs = allIEs.size()
         result.countAllSourceIEs = sourceIEs.size()
