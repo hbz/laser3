@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2559    02.06.2020  rc1.4       Andreas Bug         Bestätigungsdialog zum Anlegen eines Teilnehmervertrages an allgemeines Design angepasst
+
 2557    29.05.2020  rc1.4       Andreas Bug         Menüpunkte "Neue Aufgabe" und "Neues Dokument" unter Vertrag falsch angezeigt
 
 2553    29.05.2020  rc1.4       Andreas Bug         Formatierung von Daten bei der Anzeige von Vertragsmerkmalen in Lizenzübersicht korrigiert
