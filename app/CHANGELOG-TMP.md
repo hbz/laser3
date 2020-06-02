@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2563    02.06.2020  rc1.4       Moe     Bug         Gruppieren von Titeln in einer Lizenz
+
 2562    02.06.2020  rc1.4       Moe     Bug         Rechteüberprüfung für Umfrage beim Konsortium
 
 2529    02.06.2020  rc1.4       Moe     Feature     Titelbestand der Lizenz anreichern + Filterfunktion
