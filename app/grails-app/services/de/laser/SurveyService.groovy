@@ -26,9 +26,8 @@ class SurveyService {
     MessageSource messageSource
     ExportService exportService
     Locale locale
-    EscapeService escapeService
     MailService mailService
-    NormalizeService normalizeService
+    EscapeService escapeService
     GrailsApplication grailsApplication
 
     SimpleDateFormat formatter = DateUtil.getSDF_dmy()
@@ -618,7 +617,7 @@ class SurveyService {
                     def emailReceiver = user.getEmail()
                     def currentServer = grailsApplication.config.getCurrentServer()
                     def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
-                    String mailSubject = normalizeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, locale) +  " (" + participationFinish.sortname + ")")
+                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, locale) +  " (" + participationFinish.sortname + ")")
 
                         try {
                             if (emailReceiver == null || emailReceiver.isEmpty()) {

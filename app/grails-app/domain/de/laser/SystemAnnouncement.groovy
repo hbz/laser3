@@ -13,7 +13,7 @@ class SystemAnnouncement {
     def grailsApplication
     def mailService
     @Transient
-    def normalizeService
+    def escapeService
 
     User    user
     String  title
@@ -71,11 +71,11 @@ class SystemAnnouncement {
         s.replaceAll("\\<.*?>","")
     }
     String getCleanTitle() {
-        SystemAnnouncement.cleanUp(normalizeService.replaceUmlaute(title))
+        SystemAnnouncement.cleanUp(escapeService.replaceUmlaute(title))
     }
 
     String getCleanContent() {
-        SystemAnnouncement.cleanUp(normalizeService.replaceUmlaute(content))
+        SystemAnnouncement.cleanUp(escapeService.replaceUmlaute(content))
     }
 
     boolean publish() {
