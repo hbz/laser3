@@ -101,7 +101,7 @@ class SemanticUiDropdownTagLib {
         if (attrs.tooltip && attrs.tooltip != '') {
             linkBody = '<div data-tooltip="' + attrs.tooltip +'" data-position="bottom center">' + linkBody + '</div>'
         }
-        if (this.pageScope.variables?.actionName == attrs.action) {
+        if (this.pageScope.variables?.actionName == attrs.action && !attrs.notActive) {
             aClass = aClass + ' active'
         }
 

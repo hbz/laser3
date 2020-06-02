@@ -6,10 +6,14 @@ import de.laser.helper.RDStore
 import grails.util.Holders
 import net.sf.json.JSON
 
+import javax.persistence.Transient
+
 class SystemAnnouncement {
 
     def grailsApplication
     def mailService
+    @Transient
+    def escapeService
 
     User    user
     String  title
@@ -67,11 +71,11 @@ class SystemAnnouncement {
         s.replaceAll("\\<.*?>","")
     }
     String getCleanTitle() {
-        SystemAnnouncement.cleanUp(title)
+        SystemAnnouncement.cleanUp(escapeService.replaceUmlaute(title))
     }
 
     String getCleanContent() {
-        SystemAnnouncement.cleanUp(content)
+        SystemAnnouncement.cleanUp(escapeService.replaceUmlaute(content))
     }
 
     boolean publish() {
