@@ -34,7 +34,7 @@ class SemanticUiInplaceTagLib {
             def default_empty = message(code:'default.button.edit.label')
             def data_link     = null
 
-            out << "<a href=\"#\" id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
+            out << "<a href=\"#\" id=\"${id}\" data-onblur=\"ignore\" class=\"xEditableValue ${attrs.class ?: ''}\""
 
             if (attrs.type == "date") {
                 out << " data-type=\"text\"" // combodate | date
@@ -50,6 +50,7 @@ class SemanticUiInplaceTagLib {
             }
             out << " data-pk=\"${oid}\""
             out << " data-name=\"${attrs.field}\""
+            out << " data-onblur='submit'"
 
             if (attrs.validation) {
                 out << " data-validation=\"${attrs.validation}\" "
@@ -167,7 +168,7 @@ class SemanticUiInplaceTagLib {
                 }
 
                 // Output an editable link
-                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" " + dataValue +
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" data-onblur=\"ignore\" " + dataValue +
                         "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" " +
                         "data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
@@ -210,7 +211,7 @@ class SemanticUiInplaceTagLib {
                 String strValue = intValue ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
 
                 // Output an editable link
-                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" " +
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" data-onblur=\"ignore\"" +
                         " data-value=\"${intValue}\" data-pk=\"${oid}\" data-type=\"select\" " +
                         " data-name=\"${attrs.field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 

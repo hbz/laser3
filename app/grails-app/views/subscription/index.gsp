@@ -35,6 +35,16 @@
     <g:render template="message"/>
 </g:if>
 
+<g:if test="${enrichmentProcess}">
+    <div class="ui positive message">
+    <i class="close icon"></i>
+    <div class="header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/> </div>
+    <p>
+        <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess" args="[enrichmentProcess.issueEntitlements, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
+    </p>
+    </div>
+</g:if>
+
 <g:if test="${deletedSPs}">
     <div class="ui exclamation icon negative message">
         <i class="exclamation icon"></i>
@@ -187,8 +197,18 @@
                     </div>
                     <div class="three fields">
                         <div class="field">
-                                                <label for="seriesNames">${message(code: 'titleInstance.seriesName.label')}</label>
-                            <input name="seriesNames" id="seriesNames" value="${params.series_names}"/>
+                            <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
+
+                            <select name="series_names" id="series_names" multiple="" class="ui search selection dropdown">
+                                <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                                <g:each in="${seriesNames}" var="seriesName">
+                                    <option <%=(params.list('series_names').contains(seriesName)) ? 'selected="selected"' : ''%>
+                                            value="${seriesName}">
+                                        ${seriesName}
+                                    </option>
+                                </g:each>
+                            </select>
                         </div>
 
                         <div class="field">

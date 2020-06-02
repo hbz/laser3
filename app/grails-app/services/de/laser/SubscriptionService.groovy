@@ -286,6 +286,11 @@ class SubscriptionService {
                 qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
             }
 
+            if (params.series_names && params.series_names != "" && params.list('series_names')) {
+                base_qry += " and lower(ie.tipp.title.seriesName) in (:series_names)"
+                qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
+            }
+
             if(params.ebookFirstAutorOrFirstEditor) {
                 base_qry += " and (lower(ie.tipp.title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
                 qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
@@ -379,6 +384,16 @@ class SubscriptionService {
             subjects = TitleInstance.executeQuery("select distinct(subjectReference) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by subjectReference", [titleIDs: titleIDs])
         }
         subjects
+
+    }
+
+    Set<String> getSeriesNames(List titleIDs) {
+        Set<String> seriesName = []
+
+        if(titleIDs){
+            seriesName = TitleInstance.executeQuery("select distinct(seriesName) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by seriesName", [titleIDs: titleIDs])
+        }
+        seriesName
 
     }
 
@@ -1588,7 +1603,7 @@ class SubscriptionService {
         [candidates: candidates, globalErrors: globalErrors, parentSubType: parentSubType]
     }
 
-    List issueEntitlementEnrichment(InputStream stream, List<IssueEntitlement> issueEntitlements, boolean uploadCoverageDates, boolean uploadPriceInfo) {
+    Map issueEntitlementEnrichment(InputStream stream, List<IssueEntitlement> issueEntitlements, boolean uploadCoverageDates, boolean uploadPriceInfo) {
 
         Integer count = 0
         Integer countChangesPrice = 0
@@ -1683,9 +1698,9 @@ class SubscriptionService {
                     ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
             } else {
 
-                Identifier id = Identifier.findByValueAndNsInList(idCandidate.value, idCandidate.namespaces)
-                if (id && id.ti) {
-                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title == id.ti }
+                TitleInstance tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
+                if (tiObj) {
+                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title.id == tiObj.id }
                     IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
                     if (issueEntitlement) {
                         count++
@@ -1773,11 +1788,11 @@ class SubscriptionService {
             }
         }
 
-        println(count)
+        /*println(count)
         println(countChangesCoverageDates)
-        println(countChangesPrice)
+        println(countChangesPrice)*/
 
-        return [count, countChangesCoverageDates, countChangesPrice]
+        return [issueEntitlements: issueEntitlements.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
     }
 
 }
