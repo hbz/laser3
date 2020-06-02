@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2558    02.06.2020  rc1.4       Andreas Bug         Titelgruppen werden jetzt bei Lizenzkopien mitgenommen
+
 2529    02.06.2020  rc1.4       Moe     Feature     Titelbestand der Lizenz anreichern + Filterfunktion
 
 2553    29.05.2020  rc1.4       Andreas Bug         Formatierung von Daten bei der Anzeige von Vertragsmerkmalen in Lizenzübersicht korrigiert
