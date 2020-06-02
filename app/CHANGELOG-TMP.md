@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2536    02.06.2020  rc1.4       Moe     Bug         Umfrage Lizenz-Umfrage
+
 2541    02.06.2020  rc1.4       Moe     Bug         Mail "Lizenz-Umfrage: Abgeschlossen"
 
 2563    02.06.2020  rc1.4       Moe     Bug         Gruppieren von Titeln in einer Lizenz
