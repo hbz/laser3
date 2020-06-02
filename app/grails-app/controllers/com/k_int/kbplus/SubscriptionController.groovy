@@ -4330,14 +4330,6 @@ class SubscriptionController extends AbstractDebugController {
                                             newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                                             newIssueEntitlementCoverage.save(flush: true)
                                         }
-
-                                        ie.properties.ieGroups.each { ieGroup ->
-                                            def ieGroupProperties = ieGroup.properties
-                                            IssueEntitlementGroupItem newIssueEntitlementGroupItem = new IssueEntitlementGroupItem()
-                                            InvokerHelper.setProperties(newIssueEntitlementGroupItem, ieGroupProperties)
-                                            newIssueEntitlementGroupItem.ie = newIssueEntitlement
-                                            newIssueEntitlementGroupItem.save()
-                                        }
                                     }
                                 }
                             }
@@ -4582,13 +4574,6 @@ class SubscriptionController extends AbstractDebugController {
                                                 InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                                                 newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                                                 newIssueEntitlementCoverage.save(flush: true)
-                                            }
-                                            ie.properties.ieGroups.each { ieGroup ->
-                                                def ieGroupProperties = ieGroup.properties
-                                                IssueEntitlementGroupItem newIssueEntitlementGroupItem = new IssueEntitlementGroupItem()
-                                                InvokerHelper.setProperties(newIssueEntitlementGroupItem, ieGroupProperties)
-                                                newIssueEntitlementGroupItem.ie = newIssueEntitlement
-                                                newIssueEntitlementGroupItem.save()
                                             }
 
                                         }
@@ -5729,13 +5714,6 @@ class SubscriptionController extends AbstractDebugController {
                                     InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                                     newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                                     newIssueEntitlementCoverage.save()
-                                }
-                                ie.properties.ieGroups.each { ieGroup ->
-                                    def ieGroupProperties = ieGroup.properties
-                                    IssueEntitlementGroupItem newIssueEntitlementGroupItem = new IssueEntitlementGroupItem()
-                                    InvokerHelper.setProperties(newIssueEntitlementGroupItem, ieGroupProperties)
-                                    newIssueEntitlementGroupItem.ie = newIssueEntitlement
-                                    newIssueEntitlementGroupItem.save()
                                 }
                             }
                         }

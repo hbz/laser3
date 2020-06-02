@@ -658,14 +658,6 @@ class SubscriptionService {
                             newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                             newIssueEntitlementCoverage.save(flush: true)
                         }
-
-                        ieToTake.properties.ieGroups.each { ieGroup ->
-                            def ieGroupProperties = ieGroup.properties
-                            IssueEntitlementGroupItem newIssueEntitlementGroupItem = new IssueEntitlementGroupItem()
-                            InvokerHelper.setProperties(newIssueEntitlementGroupItem, ieGroupProperties)
-                            newIssueEntitlementGroupItem.ie = newIssueEntitlement
-                            newIssueEntitlementGroupItem.save()
-                        }
                     }
                 }
             }
@@ -789,14 +781,6 @@ class SubscriptionService {
                                         InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                                         newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                                         newIssueEntitlementCoverage.save()
-                                    }
-
-                                    ie.properties.ieGroups.each { ieGroup ->
-                                        def ieGroupProperties = ieGroup.properties
-                                        IssueEntitlementGroupItem newIssueEntitlementGroupItem = new IssueEntitlementGroupItem()
-                                        InvokerHelper.setProperties(newIssueEntitlementGroupItem, ieGroupProperties)
-                                        newIssueEntitlementGroupItem.ie = newIssueEntitlement
-                                        newIssueEntitlementGroupItem.save()
                                     }
                                 }
                             }
