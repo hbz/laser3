@@ -2,6 +2,14 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2536    02.06.2020  rc1.4       Moe     Bug         Umfrage Lizenz-Umfrage
+
+2541    02.06.2020  rc1.4       Moe     Bug         Mail "Lizenz-Umfrage: Abgeschlossen"
+
+2563    02.06.2020  rc1.4       Moe     Bug         Gruppieren von Titeln in einer Lizenz
+
+2562    02.06.2020  rc1.4       Moe     Bug         Rechteüberprüfung für Umfrage beim Konsortium
+
 2529    02.06.2020  rc1.4       Moe     Feature     Titelbestand der Lizenz anreichern + Filterfunktion
 
 2553    29.05.2020  rc1.4       Andreas Bug         Formatierung von Daten bei der Anzeige von Vertragsmerkmalen in Lizenzübersicht korrigiert
