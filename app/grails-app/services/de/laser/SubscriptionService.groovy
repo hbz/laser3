@@ -384,8 +384,11 @@ class SubscriptionService {
         if(titleIDs){
             subjects = TitleInstance.executeQuery("select distinct(subjectReference) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by subjectReference", [titleIDs: titleIDs])
         }
-        subjects
+        if(subjects.size() == 0){
+            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
+        }
 
+        subjects
     }
 
     Set<String> getSeriesNames(List titleIDs) {
@@ -393,6 +396,9 @@ class SubscriptionService {
 
         if(titleIDs){
             seriesName = TitleInstance.executeQuery("select distinct(seriesName) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by seriesName", [titleIDs: titleIDs])
+        }
+        if(seriesName.size() == 0){
+            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
         }
         seriesName
 
