@@ -41,13 +41,14 @@ class RDStore {
     static final O_STATUS_CURRENT           = getRefdataValue('Current', RDConstants.ORG_STATUS)
     static final O_STATUS_DELETED           = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
 
-    static final CCT_EMAIL          = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
-    static final CCT_PHONE          = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
-    static final CCT_URL            = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_EMAIL                  = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_PHONE                  = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_FAX                    = getRefdataValue('Fax', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_URL                    = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
 
-    static final CIEC_POSITIVE          = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
-    static final CIEC_NEGATIVE          = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
-    static final CIEC_NEUTRAL           = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
+    static final CIEC_POSITIVE              = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
+    static final CIEC_NEGATIVE              = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
+    static final CIEC_NEUTRAL               = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
 
     static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
     static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department', RDConstants.COMBO_TYPE)
