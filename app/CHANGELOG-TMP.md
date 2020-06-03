@@ -10,7 +10,15 @@
 
 2562    02.06.2020  rc1.4       Moe     Bug         Rechteüberprüfung für Umfrage beim Konsortium
 
+2558    02.06.2020  rc1.4       Andreas Bug         Titelgruppen werden jetzt bei Lizenzkopien mitgenommen
+
+2561    02.06.2020  rc1.4       Andreas Feature     Ausbesserungen in der Vertragsverwaltung gemäß Ticket
+
 2529    02.06.2020  rc1.4       Moe     Feature     Titelbestand der Lizenz anreichern + Filterfunktion
+
+2559    02.06.2020  rc1.4       Andreas Bug         Bestätigungsdialog zum Anlegen eines Teilnehmervertrages an allgemeines Design angepasst
+
+2557    29.05.2020  rc1.4       Andreas Bug         Menüpunkte "Neue Aufgabe" und "Neues Dokument" unter Vertrag falsch angezeigt
 
 2553    29.05.2020  rc1.4       Andreas Bug         Formatierung von Daten bei der Anzeige von Vertragsmerkmalen in Lizenzübersicht korrigiert
 

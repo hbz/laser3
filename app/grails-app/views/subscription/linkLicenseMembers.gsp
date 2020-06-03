@@ -53,7 +53,7 @@
         <g:link class="ui button negative js-open-confirm-modal"
                 data-confirm-tokenMsg="${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm', args: args.memberType)}"
                 data-confirm-term-how="ok" action="processUnLinkLicenseMembers" id="${params.id}"
-                params="[unlinkAll:true]">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</g:link>
+                params="[unlinkAll:true]">${message(code: 'subscription.linkLicenseMembers.deleteAllLicenses.button')}</g:link>
 
     </div>
 
@@ -185,8 +185,11 @@
                     </td>
 
                     <td class="x">
-                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i
-                                class="write icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"
+                                data-tooltip="${message(code:'subscription.details.viewMember.label')}"
+                                data-position="left center"
+                        >
+                            <i class="write icon"></i></g:link>
                     </td>
                 </tr>
             </g:each>
