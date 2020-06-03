@@ -19,7 +19,7 @@
 
                 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
                     <label for="contactType">
-                        ${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE)?.getI10n('desc')}
+                        ${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
                     </label>
                     <laser:select class="ui dropdown" id="contactType" name="contactType"
                                   from="${Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
