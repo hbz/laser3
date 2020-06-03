@@ -8,6 +8,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.IssueEntitlementGroupItem
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.domain.TIPPCoverage
@@ -651,6 +652,7 @@ class SubscriptionService {
                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                     InvokerHelper.setProperties(newIssueEntitlement, properties)
                     newIssueEntitlement.coverages = null
+                    newIssueEntitlement.ieGroups = null
                     newIssueEntitlement.subscription = targetSub
 
                     if(save(newIssueEntitlement, flash)){
@@ -774,6 +776,7 @@ class SubscriptionService {
                                 IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                                 InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
                                 newIssueEntitlement.coverages = null
+                                newIssueEntitlement.ieGroups = null
                                 newIssueEntitlement.subscription = newSubscription
 
                                 if(save(newIssueEntitlement, flash)){
