@@ -175,7 +175,7 @@
 
                     <div class="three fields">
                         <div class="field">
-                            <label for="filter">${message(code: 'default.filter.label')}</label>
+                            <label for="filter">${message(code: 'default.search.text')}</label>
                             <input name="filter" id="filter" value="${params.filter}"/>
                         </div>
 
@@ -468,7 +468,8 @@
                                     <g:elseif test="${editable}">
                                         <g:link action="addEmptyPriceItem" class="ui icon positive button"
                                                 params="${[ieid: ie.id, id: subscriptionInstance.id]}">
-                                            <i class="money icon"></i>
+                                            <i class="money icon la-popup-tooltip la-delay"
+                                               data-content="${message(code: 'subscription.details.addEmptyPriceItem.info')}"></i>
                                         </g:link>
                                     </g:elseif>
                                 </td>

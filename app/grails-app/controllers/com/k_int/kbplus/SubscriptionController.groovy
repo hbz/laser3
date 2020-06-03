@@ -4319,6 +4319,7 @@ class SubscriptionController extends AbstractDebugController {
                                     InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
                                     newIssueEntitlement.subscription = newSubscription
                                     newIssueEntitlement.coverages = null
+                                    newIssueEntitlement.ieGroups = null
 
                                     if(newIssueEntitlement.save(flush: true)){
                                         ie.properties.coverages.each{ coverage ->
@@ -4563,6 +4564,7 @@ class SubscriptionController extends AbstractDebugController {
                                         InvokerHelper.setProperties(newIssueEntitlement, properties)
                                         newIssueEntitlement.subscription = newSub
                                         newIssueEntitlement.coverages = null
+                                        newIssueEntitlement.ieGroups = null
 
                                         if(newIssueEntitlement.save(flush: true)){
                                             ie.properties.coverages.each{ coverage ->
@@ -4573,6 +4575,7 @@ class SubscriptionController extends AbstractDebugController {
                                                 newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                                                 newIssueEntitlementCoverage.save(flush: true)
                                             }
+
                                         }
                                     }
                                 }
@@ -5700,6 +5703,7 @@ class SubscriptionController extends AbstractDebugController {
                             IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                             InvokerHelper.setProperties(newIssueEntitlement, properties)
                             newIssueEntitlement.subscription = newSubscriptionInstance
+                            newIssueEntitlement.ieGroups = null
                             newIssueEntitlement.coverages = null
 
                             if(newIssueEntitlement.save()){
