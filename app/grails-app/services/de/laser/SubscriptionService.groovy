@@ -1707,9 +1707,9 @@ class SubscriptionService {
                     ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
             } else {
 
-                TitleInstance tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
-                if (tiObj) {
-                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title.id == tiObj.id }
+                List<TitleInstance> tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
+                if (tiObj.size() > 0) {
+                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title.id in tiObj.id }
                     IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
                     if (issueEntitlement) {
                         count++
