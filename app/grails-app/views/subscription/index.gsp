@@ -191,7 +191,7 @@
                         <g:if test="${params.mode != 'advanced'}">
                             <div class="field">
                                 <semui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
-                                                  value="${params.asAt}"/>
+                                                  value="${params.asAt}" placeholder="subscription.details.asAt.placeholder"/>
                             </div>
                         </g:if>
                     </div>
