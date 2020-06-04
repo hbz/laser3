@@ -67,7 +67,7 @@
                             ${prop.decValue}
                         </g:elseif>
                         <g:elseif test="${prop.type.type == Date.toString()}">
-                            ${prop.dateValue}
+                            <g:formatDate date="${prop.dateValue}" format="${message(code:'default.date.format.notime')}"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             ${prop.refValue?.getI10n('value')}

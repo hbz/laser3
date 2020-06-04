@@ -13,6 +13,7 @@ class SurveyOrg {
     Org org
 
     String priceComment
+    String ownerComment
     Date dateCreated
     Date lastUpdated
 
@@ -20,6 +21,7 @@ class SurveyOrg {
 
 
     static constraints = {
+        ownerComment(nullable: true, blank: false)
         priceComment(nullable: true, blank: false)
         finishDate (nullable:true, blank:false)
     }
@@ -31,6 +33,7 @@ class SurveyOrg {
         surveyConfig column: 'surorg_surveyconfig_fk'
         org column: 'surorg_org_fk'
         priceComment column: 'surorg_pricecomment', type: 'text'
+        ownerComment column: 'surorg_owner_comment', type: 'text'
         dateCreated column: 'surorg_date_created'
         lastUpdated column: 'surorg_last_updated'
         finishDate  column: 'surorg_finish_date'
