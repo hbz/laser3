@@ -2,7 +2,53 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2570    04.06.2020  rc1.4       Moe     Bug         Bei der Umfrage kann ohne http keine Url eingegeben werden
+
+2569    04.06.2020  rc1.4       Moe     Feature     Bemerkungsfeld für Umfrageersteller umbauen
+
+2171    04.06.2020  rc1.4       Andreas Bug         Temporäre Brücke gebaut zum Schließen von Kontaktmodals
+
+2550    04.06.2020  rc1.4       Andreas Bug         Titelauswahl konnte nicht weitergeblättert werden
+
 1824    03.06.2020  hbz-dev     Anja    Bugfix      "Kontakt hinzufügen" - Dropdown der Orgs nicht nach Sichtrechten gefiltert
+
+--      03.06.2020  rc1.4       Andreas Bug         Abfragen im statusUpdateService auf executeQuery umgestellt
+
+2564    03.06.2020  rc1.4       Moe     Bug         Titelgruppierung Nachbesserung für 1.4
+
+2536    02.06.2020  rc1.4       Moe     Bug         Umfrage Lizenz-Umfrage
+
+2541    02.06.2020  rc1.4       Moe     Bug         Mail "Lizenz-Umfrage: Abgeschlossen"
+
+2563    02.06.2020  rc1.4       Moe     Bug         Gruppieren von Titeln in einer Lizenz
+
+2562    02.06.2020  rc1.4       Moe     Bug         Rechteüberprüfung für Umfrage beim Konsortium
+
+2558    02.06.2020  rc1.4       Andreas Bug         Titelgruppen werden jetzt bei Lizenzkopien mitgenommen
+
+2561    02.06.2020  rc1.4       Andreas Feature     Ausbesserungen in der Vertragsverwaltung gemäß Ticket
+
+2529    02.06.2020  rc1.4       Moe     Feature     Titelbestand der Lizenz anreichern + Filterfunktion
+
+2559    02.06.2020  rc1.4       Andreas Bug         Bestätigungsdialog zum Anlegen eines Teilnehmervertrages an allgemeines Design angepasst
+
+2557    29.05.2020  rc1.4       Andreas Bug         Menüpunkte "Neue Aufgabe" und "Neues Dokument" unter Vertrag falsch angezeigt
+
+2553    29.05.2020  rc1.4       Andreas Bug         Formatierung von Daten bei der Anzeige von Vertragsmerkmalen in Lizenzübersicht korrigiert
+
+2537    29.05.2020  rc1.4       Andreas Feature     Finanzfilter übernimmt Reitereinstellung
+
+2464    29.05.2020  rc1.4       Anja    Feature     Optik von modalem Dialog der Optik eines Filters anpassen
+
+--      29.05.2020  rc1.4       Andreas Bug         Transaktionen bei Sync (Identifier) eingebaut
+
+2527    29.05.2020  rc1.4       Andreas Bug         verschiedene Fehler beim Kopieren von Lizenzen
+
+2556    29.05.2020  rc1.4       Moe     Bug         Umlaute Parser für E-Mails wegen Problematik der Umlaute in Mails
+
+2547    29.05.2020  rc1.4       Moe     Bug         INST_User sieht falsche Meldung bei Umfrage
+
+2546    28.05.2020  rc1.4       Moe     Feature     xEditable darf nicht einfach weggeklickt werden
 
 2154    28.05.2020  rc1.3       Anja    Hotfix      Rechte zeilenweise für Kundennummern; Fehlermeldung bei Löschen ausgeben
 
@@ -15,6 +61,12 @@
 2528    27.05.2020  rc1.4       Moe     Bug         Eigenes Merkmal "EGP-Nr." kann nicht hinzugefügt werden (LAS:eR-Backoffice)
 
 2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
+
+2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
+
+2533    26.05.2020  rc1.4       Moe     Bug         Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
+
+2525    26.05.2020  rc1.4       Moe     Feature     manageMembersVollnutzer-Icon auch in Lizenzsichten für Konsortien
 
 2533    26.05.2020  rc1.4       Moe     Bug         Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
 

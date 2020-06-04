@@ -74,7 +74,7 @@
                         <dt class="control-label">
                             ${message(code: 'surveyConfig.url.label')}
                         </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"/>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="text"/>
                         <g:if test="${surveyConfig.url}">
                             <semui:linkIcon href="${surveyConfig.url}"/>
                         </g:if>
@@ -130,7 +130,7 @@
                             <dt class="control-label">
                                 ${message(code: 'surveyConfig.url.label')}
                             </dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"
+                            <dd><semui:xEditable owner="${surveyConfig}" field="url" type="text"
                                                  overwriteEditable="${false}"/>
 
                             <semui:linkIcon href="${surveyConfig.url}"/>

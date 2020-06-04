@@ -6,7 +6,7 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR')}">
     <semui:actionsDropdown>
 
-        <g:if test="${editable}">
+        <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
             <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
             <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
         </g:if>
@@ -15,14 +15,14 @@
             <g:if test="${license.getLicensingConsortium()?.id == org.id}">
                 <g:if test="${!( license.instanceOf )}">
                     <div class="divider"></div>
-
-                    <semui:actionsDropdownItem controller="license"
+                    <%-- TODO integrate confirmation in actionsDropdownItem --%>
+                    <g:link controller="license"
                                                action="processAddMembers"
                                                params="${[id:license.id, cmd:'generate']}"
-                                               message="myinst.emptyLicense.child"
-                                               class="js-no-wait-wheel"
-                                               onclick="return confirm('${message(code:'license.addMembers.confirm')}')"
-                    />
+                                               class="item js-no-wait-wheel js-open-confirm-modal"
+                                               data-confirm-term-how="ok" data-confirm-tokenMsg="${message(code:'license.addMembers.confirm')}">
+                        ${message(code:'myinst.emptyLicense.child')}
+                    </g:link>
                 </g:if>
             </g:if>
 

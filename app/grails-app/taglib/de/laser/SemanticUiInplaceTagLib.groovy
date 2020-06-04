@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.SurveyResult
 import de.laser.helper.RDStore
 import java.text.SimpleDateFormat
 
@@ -34,7 +35,13 @@ class SemanticUiInplaceTagLib {
             def default_empty = message(code:'default.button.edit.label')
             def data_link     = null
 
-            out << "<a href=\"#\" id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
+            out << "<a href=\"#\" id=\"${id}\" "
+            if(attrs.owner instanceof SurveyResult){
+                out << "data-onblur=\"submit\" "
+            }else {
+                out << "data-onblur=\"ignore\" "
+            }
+            out << "class=\"xEditableValue ${attrs.class ?: ''}\""
 
             if (attrs.type == "date") {
                 out << " data-type=\"text\"" // combodate | date
@@ -50,6 +57,7 @@ class SemanticUiInplaceTagLib {
             }
             out << " data-pk=\"${oid}\""
             out << " data-name=\"${attrs.field}\""
+
 
             if (attrs.validation) {
                 out << " data-validation=\"${attrs.validation}\" "
@@ -167,8 +175,13 @@ class SemanticUiInplaceTagLib {
                 }
 
                 // Output an editable link
-                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" " + dataValue +
-                        "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" " +
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" "
+                if(attrs.owner instanceof SurveyResult){
+                    out << "data-onblur=\"submit\" "
+                }else {
+                    out << "data-onblur=\"ignore\" "
+                }
+                out << dataValue + "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" " +
                         "data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
                 // Here we can register different ways of presenting object references. The most pressing need to be
@@ -210,8 +223,13 @@ class SemanticUiInplaceTagLib {
                 String strValue = intValue ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
 
                 // Output an editable link
-                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" " +
-                        " data-value=\"${intValue}\" data-pk=\"${oid}\" data-type=\"select\" " +
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" "
+                if(attrs.owner instanceof SurveyResult){
+                    out << "data-onblur=\"submit\" "
+                }else {
+                    out << "data-onblur=\"ignore\" "
+                }
+                out <<  " data-value=\"${intValue}\" data-pk=\"${oid}\" data-type=\"select\" " +
                         " data-name=\"${attrs.field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
                 out << "${strValue}</a></span>"
