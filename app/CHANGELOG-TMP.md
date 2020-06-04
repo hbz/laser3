@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2569    04.06.2020  rc1.4       Moe     Feature     Bemerkungsfeld für Umfrageersteller umbauen
+
 2550    04.06.2020  rc1.4       Andreas Bug         Titelauswahl konnte nicht weitergeblättert werden
 
 --      03.06.2020  rc1.4       Andreas Bug         Abfragen im statusUpdateService auf executeQuery umgestellt
