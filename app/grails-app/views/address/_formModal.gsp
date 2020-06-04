@@ -26,7 +26,7 @@
 <g:else>
     <g:if test="${modalId}">
         <g:set var="modalText"
-               value="${message(code: 'default.new.label', args: [message(code: modalId)])}" />
+               value="${message(code: 'default.new.label', args: [message(code: messageCode?: 'landingpage.hero.button')])}" />
     </g:if>
     <g:else>
         <g:set var="modalText"
@@ -35,9 +35,7 @@
     <g:set var="modalMsgSave" value="${message(code: 'default.button.create.label')}" />
     <g:set var="url" value="${[controller: 'address', action: 'create']}" />
 </g:else>
-
 <semui:modal id="${modalId ?: 'addressFormModal'}" text="${modalText}" msgSave="${modalMsgSave}">
-
     <g:form id="create_address_${modalId}" class="ui form" url="${url}" method="POST">
         <g:if test="${addressInstance}">
             <input type="hidden" name="id" value="${addressInstance.id}"/>
