@@ -441,8 +441,8 @@ class MyInstitutionController extends AbstractDebugController {
         if(params.subKind) {
             base_qry += " and ( exists ( select s from l.subscriptions as s where s.kind.id in (:subKinds) ) ) "
             List<Long> subKinds = []
-            List<String> selCategories = params.list('subKinds')
-            selCategories.each { String sel ->
+            List<String> selKinds = params.list('subKind')
+            selKinds.each { String sel ->
                 subKinds << Long.parseLong(sel)
             }
             qry_params.subKinds = subKinds
