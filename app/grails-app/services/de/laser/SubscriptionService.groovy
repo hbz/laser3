@@ -395,7 +395,7 @@ class SubscriptionService {
         Set<String> seriesName = []
 
         if(titleIDs){
-            seriesName = TitleInstance.executeQuery("select distinct(seriesName) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by seriesName", [titleIDs: titleIDs])
+            seriesName = TitleInstance.executeQuery("select distinct(seriesName) from TitleInstance where seriesName is not null and id in (:titleIDs) order by seriesName", [titleIDs: titleIDs])
         }
         if(seriesName.size() == 0){
             seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
