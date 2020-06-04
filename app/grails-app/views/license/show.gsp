@@ -98,7 +98,7 @@
                                     </g:if>
                                 </dl>
                                 <dl>
-                                    <dt><label class="control-label">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
+                                    <dt><label class="control-label">${message(code:'license.licenseCategory')}</label></dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>

@@ -41,13 +41,14 @@ class RDStore {
     static final O_STATUS_CURRENT           = getRefdataValue('Current', RDConstants.ORG_STATUS)
     static final O_STATUS_DELETED           = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
 
-    static final CCT_EMAIL          = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
-    static final CCT_PHONE          = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
-    static final CCT_URL            = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_EMAIL                  = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_PHONE                  = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_FAX                    = getRefdataValue('Fax', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_URL                    = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
 
-    static final CIEC_POSITIVE          = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
-    static final CIEC_NEGATIVE          = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
-    static final CIEC_NEUTRAL           = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
+    static final CIEC_POSITIVE              = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
+    static final CIEC_NEGATIVE              = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
+    static final CIEC_NEUTRAL               = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
 
     static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
     static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department', RDConstants.COMBO_TYPE)
@@ -82,7 +83,7 @@ class RDStore {
     static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
     static final LICENSE_CURRENT            = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
     static final LICENSE_INTENDED           = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
-    static final LICENSE_IN_PROGRESS        = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
+    //static final LICENSE_IN_PROGRESS        = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
     static final LICENSE_EXPIRED            = getRefdataValue('Retired', RDConstants.LICENSE_STATUS)
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
@@ -122,9 +123,9 @@ class RDStore {
     static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
     static final SHARE_CONF_CONSORTIUM          = getRefdataValue('only for consortia members', RDConstants.SHARE_CONFIGURATION)
 
-//DO NOT USE THIS STATUS. Subs have no longer a deleted flag. They ARE deleted!
-    @Deprecated
-    static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', RDConstants.SUBSCRIPTION_STATUS)
+    //DO NOT USE THIS STATUS. Subs have no longer a deleted flag. They ARE deleted!
+    //@Deprecated
+    //static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_INTENDED      = getRefdataValue('Intended', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', RDConstants.SUBSCRIPTION_STATUS)

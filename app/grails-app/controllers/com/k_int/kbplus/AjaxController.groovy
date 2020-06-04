@@ -1523,9 +1523,10 @@ class AjaxController {
         else {
           def existingProps = owner.privateProperties.findAll {
             it.owner.id == owner.id &&
-            it.type.name == type.name // this sucks due lazy proxy problem
+            it.type.id == type.id // this sucks due lazy proxy problem
           }
           existingProps.removeAll { it.type.name != type.name } // dubious fix
+
 
           if (existingProps.size() == 0 || type.multipleOccurrence) {
             newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)

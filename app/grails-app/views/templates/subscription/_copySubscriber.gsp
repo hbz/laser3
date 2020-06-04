@@ -46,7 +46,15 @@
             <g:each in="${validSourceSubChilds}" var="sub">
                 <tr>
                     <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
-                        <td>${subscriberOrg.sortname}</td>
+                        <td>
+                            ${subscriberOrg.sortname}
+                            <g:if test="${subscriberOrg.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                      data-content="${subscriberOrg.getCustomerTypeI10n()}">
+                                    <i class="chess rook grey icon"></i>
+                                </span>
+                            </g:if>
+                        </td>
                         <td><g:formatDate formatName="default.date.format.notime"
                                           date="${sub.startDate}"/></td>
                         <td><g:formatDate formatName="default.date.format.notime"

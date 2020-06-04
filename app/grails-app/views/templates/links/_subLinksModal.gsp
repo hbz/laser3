@@ -110,7 +110,7 @@
     $(document).ready(function(){
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="lookupSubscriptionsLicenses"/>?status=FETCH_ALL&query={query}&ctx=${GenericOIDService.getOID(context)}",
+                url: "<g:createLink controller="ajax" action="${urlLookup}"/>?status=FETCH_ALL&query={query}&filterMembers=true&ctx=${GenericOIDService.getOID(context)}",
                 cache: false
             },
             clearable: true,

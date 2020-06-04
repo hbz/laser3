@@ -1317,7 +1317,6 @@ join sub.orgRelations or_sub where
                 subInstance.save(flush: true)*/
             }
 
-            flash.message = message(code: 'license.created.message')
             redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
         }
     }

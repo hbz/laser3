@@ -2,12 +2,33 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1824    03.06.2020  hbz-dev     Anja    Bugfix      "Kontakt hinzufügen" - Dropdown der Orgs nicht nach Sichtrechten gefiltert
+
+2154    28.05.2020  rc1.3       Anja    Hotfix      Rechte zeilenweise für Kundennummern; Fehlermeldung bei Löschen ausgeben
+
+2535    28.05.2020  rc1.4       Andreas Bug         Löschprüfung von Kosten bei zu löschenden Lizenzen überbrückt 
+
+2154    27.05.2020  rc1.3       Anja    Hotfix      Rechte geändert für Kundennummern (anzeigen, ändern, löschen)
+
 248     27.05.2020  hbz-dev     David   Feature     Entfernen von subscription offered / taken (subscription_type)
+
+2528    27.05.2020  rc1.4       Moe     Bug         Eigenes Merkmal "EGP-Nr." kann nicht hinzugefügt werden (LAS:eR-Backoffice)
+
+2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
+
+2533    26.05.2020  rc1.4       Moe     Bug         Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
+
+2525    26.05.2020  rc1.4       Moe     Feature     manageMembersVollnutzer-Icon auch in Lizenzsichten für Konsortien
+
+2532    26.05.2020  rc1.4       Andreas Bug         diverse Anzeigefehler in Sichten behoben
+
+2522    26.05.2020  rc1.4       Andreas Feature     Ausbesserungen Vertragssicht: Einkaufsliste abgearbeitet
 
 2531    26.05.2020  rc1.4       David   Bug         Aufgaben nicht aufrufbar / Schaltfläche "Neue Aufgabe" auf Dashboard tot 
 
-2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem 
-region-Dropdown auf org/show
+2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem region-Dropdown auf org/show
+
+2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Refdatas
 
 2178    25.05.2020  hbz-dev     David   Feature     Mehrfachanlegen von Adressen durch mehrfaches Klicken von "Anlegen-Button" soll unterbunden werden
 
@@ -20,6 +41,8 @@ region-Dropdown auf org/show
 2413    22.05.2020  rc1.4       Andreas Feature     Titelausgabe um dynamische Ausgabe von Titelidentifierspalten erweitert
 
 1492    22.05.2020  rc1.4       Andreas Feature     Verknüpfungskommentare werden direkt an der Verknüfung angezeigt
+
+2327    22.05.2020  rc1.4       Moe     Feature     KBART-Anreicherung auch für existierenden Bestand
 
 2516    22.05.2020  rc1.4       Andreas Feature     KBART-Import um neue Spalten erweitert
 

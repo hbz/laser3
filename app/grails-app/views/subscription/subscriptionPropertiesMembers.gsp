@@ -281,6 +281,12 @@
                                                 <i class="thumbtack blue icon"></i>
                                             </span>
                                         </g:if>
+                                        <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                                  data-content="${subscr.getCustomerTypeI10n()}">
+                                                <i class="chess rook grey icon"></i>
+                                            </span>
+                                        </g:if>
 
                                     </td>
                                 </g:each>
@@ -408,6 +414,13 @@
                                                           class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'license.details.isSlaved.tooltip')}">
                                                         <i class="thumbtack blue icon"></i>
+                                                    </span>
+                                                </g:if>
+
+                                                <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                                          data-content="${subscr.getCustomerTypeI10n()}">
+                                                        <i class="chess rook grey icon"></i>
                                                     </span>
                                                 </g:if>
 
@@ -629,6 +642,13 @@
                                               class="la-popup-tooltip la-delay"
                                               data-content="${message(code: 'license.details.isSlaved.tooltip')}">
                                             <i class="thumbtack blue icon"></i>
+                                        </span>
+                                    </g:if>
+
+                                    <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                              data-content="${subscr.getCustomerTypeI10n()}">
+                                            <i class="chess rook grey icon"></i>
                                         </span>
                                     </g:if>
 

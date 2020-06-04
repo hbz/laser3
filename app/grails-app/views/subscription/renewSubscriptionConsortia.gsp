@@ -269,6 +269,13 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
                                             <g:link controller="organisation" action="show"
                                                     id="${subscr.id}">${subscr}</g:link>
 
+                                            <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                                      data-content="${subscr.getCustomerTypeI10n()}">
+                                                    <i class="chess rook grey icon"></i>
+                                                </span>
+                                            </g:if>
+
                                             <g:set var="rdvGcp"
                                                    value="${RefdataValue.getByValue('General contact person')}"/>
                                             <g:set var="rdvSse"
