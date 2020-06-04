@@ -477,21 +477,24 @@
                                     <td>
                                         <div class="la-icon-list">
                                         <g:each in="${ie.ieGroups.sort{it.ieGroup.name}}" var="titleGroup">
-                                            <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" params="[titleGroup: titleGroup.ieGroup.id]" class="item">
+                                            <div class="item">
                                                 <i class="grey icon object group la-popup-tooltip la-delay" data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
                                                 <div class="content">
-                                                ${titleGroup.ieGroup.name}
+                                                <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" params="[titleGroup: titleGroup.ieGroup.id]" >${titleGroup.ieGroup.name}</g:link>
                                                 </div>
-                                            </g:link>
+                                            </div>
                                         </g:each>
                                         </div>
-                                        <div class="ui grid">
-                                            <div class="right aligned wide column">
-                                        <g:link action="editEntitlementGroupItem" params="${[cmd:'edit', ie:ie.id, id: subscriptionInstance.id]}" class="ui icon button trigger-modal">
-                                            <i class="object group icon"></i>
-                                        </g:link>
+                                        <g:if test="${editable}">
+                                            <div class="ui grid">
+                                                <div class="right aligned wide column">
+                                                    <g:link action="editEntitlementGroupItem" params="${[cmd:'edit', ie:ie.id, id: subscriptionInstance.id]}" class="ui icon button trigger-modal"
+                                                            data-tooltip="${message(code:'subscription.details.ieGroups.edit')}">
+                                                        <i class="object group icon"></i>
+                                                    </g:link>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </g:if>
 
                                     </td>
                                 </g:if>
