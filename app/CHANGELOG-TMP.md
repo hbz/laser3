@@ -4,6 +4,8 @@
 
 --      03.06.2020  rc1.4       Andreas Bug         Abfragen im statusUpdateService auf executeQuery umgestellt
 
+2564    03.06.2020  r1.4        Moe     Bug         Titelgruppierung Nachbesserung für 1.4
+
 2536    02.06.2020  rc1.4       Moe     Bug         Umfrage Lizenz-Umfrage
 
 2541    02.06.2020  rc1.4       Moe     Bug         Mail "Lizenz-Umfrage: Abgeschlossen"

@@ -48,8 +48,16 @@
                 <td>${i + 1}</td>
                 <td><semui:xEditable owner="${titleGroup}" field="name"/></td>
                 <td><semui:xEditable owner="${titleGroup}" field="description"/></td>
-                <td>${titleGroup.items.size()}</td>
+                <td>
+                    <g:link action="index" id="${params.id}" params="[titleGroup: titleGroup.id]">
+                    ${titleGroup.items.size()}
+                    </g:link>
+                </td>
                 <td class="x">
+
+                    <g:link action="index" class="ui icon button" id="${params.id}" params="[titleGroup: titleGroup.id]">
+                        <i class="pencil icon"></i>
+                    </g:link>
                     <g:if test="${editable}">
                         <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.issueEntitlementGroup = :titleGroup',[titleGroup:titleGroup])}"/>
                         <g:if test="${!hasCostItems}">
