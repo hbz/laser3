@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
+<%@ page import="com.k_int.kbplus.License;com.k_int.kbplus.Subscription;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
 <!doctype html>
 <%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
@@ -150,9 +150,16 @@
                                                     <td>
                                                         <g:set var="pair" value="${link.getOther(license)}"/>
                                                         <g:set var="sdf" value="${ de.laser.helper.DateUtil.getSDF_dmy()}"/>
-                                                        <g:link controller="license" action="show" id="${pair.id}">
-                                                            ${pair.reference}
-                                                        </g:link><br>
+                                                        <g:if test="${pair instanceof License}">
+                                                            <g:link controller="license" action="show" id="${pair.id}">
+                                                                ${pair.reference}
+                                                            </g:link>
+                                                        </g:if>
+                                                        <g:elseif test="${pair instanceof Subscription}">
+                                                            <g:link controller="subscription" action="show" id="${pair.id}">
+                                                                ${pair.name}
+                                                            </g:link>
+                                                        </g:elseif><br>
                                                         ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}<br>
                                                         <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
                                                         <g:if test="${comment}">

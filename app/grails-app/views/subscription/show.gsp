@@ -217,9 +217,16 @@
                                                 <td>
                                                     <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
                                                     <g:set var="sdf" value="${new SimpleDateFormat('dd.MM.yyyy')}"/>
-                                                    <g:link controller="subscription" action="show" id="${pair.id}">
-                                                        ${pair.name}
-                                                    </g:link><br>
+                                                    <g:if test="${pair instanceof License}">
+                                                        <g:link controller="license" action="show" id="${pair.id}">
+                                                            ${pair.reference}
+                                                        </g:link>
+                                                    </g:if>
+                                                    <g:elseif test="${pair instanceof Subscription}">
+                                                        <g:link controller="subscription" action="show" id="${pair.id}">
+                                                            ${pair.name}
+                                                        </g:link>
+                                                    </g:elseif><br>
                                                     ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}<br>
                                                     <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
                                                     <g:if test="${comment}">

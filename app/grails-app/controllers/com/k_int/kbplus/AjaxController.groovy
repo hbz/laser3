@@ -1007,7 +1007,7 @@ class AjaxController {
    * @return void, redirects to main page
    */
   @Secured(['ROLE_USER'])
-  def linkSubscriptions() {
+  def linkObjects() {
       boolean linkError = false
     //error when no pair is given!
     params.keySet().each {
@@ -1019,11 +1019,10 @@ class AjaxController {
         }
     }
       if(linkError) {
-          flash.error = "Bitte Verknüpfungsziel angeben!"
+          flash.error = message(code:'default.linking.noLinkError')
           redirect(url: request.getHeader('referer'))
           return
       }
-      def context = genericOIDService.resolveOID(params.context)
       Doc linkComment = genericOIDService.resolveOID(params.commentID)
       Links link
       String commentContent
@@ -1032,18 +1031,17 @@ class AjaxController {
       if(params.link) {
           link = genericOIDService.resolveOID(params.link)
           if(params["linkType_${link.id}"]) {
-              def pair = genericOIDService.resolveOID(params["pair_${link.id}"])
               String linkTypeString = params["linkType_${link.id}"].split("§")[0]
               int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
               RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
               commentContent = params["linkComment_${link.id}"].trim()
               if(perspectiveIndex == 0) {
-                  link.source = context.id
-                  link.destination = pair.id
+                  link.source = params.context
+                  link.destination = params["pair_${link.id}"]
               }
               else if(perspectiveIndex == 1) {
-                  link.source = pair.id
-                  link.destination = context.id
+                  link.source = params["pair_${link.id}"]
+                  link.destination = params.context
               }
               link.linkType = linkType
               log.debug(linkType)
@@ -1054,21 +1052,20 @@ class AjaxController {
       }
       else {
         if(params["linkType_new"]) {
-            def pair = genericOIDService.resolveOID(params.pair_new)
             String linkTypeString = params["linkType_new"].split("§")[0]
             int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
             RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
             commentContent = params.linkComment_new
-            Long source, destination
+            String source, destination
             if(perspectiveIndex == 0) {
-                source = context.id
-                destination = pair.id
+                source = params.context
+                destination = params.pair_new
             }
             else if(perspectiveIndex == 1) {
-                source = pair.id
-                destination = context.id
+                source = params.pair_new
+                destination = params.context
             }
-            link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:context.class.name)
+            link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg())
         }
         else if(!params["linkType_new"]) {
             flash.error = message(code:'default.linking.linkTypeError')

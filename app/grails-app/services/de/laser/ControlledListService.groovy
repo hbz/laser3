@@ -226,7 +226,7 @@ class ControlledListService {
             filterParams.put('query',params.query)
         }
         if(params.ctx && params.ctx.contains(License.class.name)) {
-            License ctxObj = genericOIDService.resolveOID(params.ctx)
+            License ctx = genericOIDService.resolveOID(params.ctx)
             filterParams.ctx = ctx
             licFilter += " and l != :ctx "
         }

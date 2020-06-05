@@ -23,8 +23,8 @@
 %>
 
 <semui:modal id="${tmplModalID}" text="${tmplText}">
-    <g:form id="link_${tmplModalID}" class="ui form" url="[controller: 'ajax', action: 'linkSubscriptions']" method="post">
-        <input type="hidden" name="context" value="${context}"/>
+    <g:form id="link_${tmplModalID}" class="ui form" url="[controller: 'ajax', action: 'linkObjects']" method="post">
+        <input type="hidden" name="context" value="${GenericOIDService.getOID(context)}"/>
         <%
             List<RefdataValue> refdataValues = RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LINK_TYPE)
             LinkedHashMap linkTypes = [:]
@@ -110,7 +110,7 @@
     $(document).ready(function(){
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="${urlLookup}"/>?status=FETCH_ALL&query={query}&filterMembers=true&ctx=${GenericOIDService.getOID(context)}",
+                url: "<g:createLink controller="ajax" action="lookupSubscriptionsLicenses"/>?status=FETCH_ALL&query={query}&filterMembers=true&ctx=${GenericOIDService.getOID(context)}",
                 cache: false
             },
             clearable: true,
