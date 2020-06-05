@@ -919,7 +919,13 @@ class FinanceController extends AbstractDebugController {
                           break
                   }
               }
-              RefdataValue elementSign   = params.ciec ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+              RefdataValue elementSign
+              try {
+                  elementSign = RefdataValue.get(Long.parseLong(params.ciec))
+              }
+              catch (Exception e) {
+                  elementSign = null
+              }
 
               boolean cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
 
