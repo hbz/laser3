@@ -42,9 +42,9 @@ class ApiSubscription {
         }
 		result.validatePrecondition_1()
 
-		if (result.obj instanceof Subscription) {
+		/*if (result.obj instanceof Subscription) {
 			result.validateDeletedStatus_2('status', RDStore.SUBSCRIPTION_DELETED)
-		}
+		}*/
 		result
     }
 
