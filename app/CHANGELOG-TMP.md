@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2560    05.06.2020  rc1.4       Andreas Bug         Kostenposten ohne Vorzeichen wurden nicht angelegt
+
 2571    04.06.2020  rc1.4       Moe     Bug         Beim Bestand ist das Reihe DropDown Filterfeld leer trotz vorhandenen Daten
 
 2572    04.06.2020  rc1.4       Moe     Bug         Title Show Seite: Cannot get property 'title' on null object
