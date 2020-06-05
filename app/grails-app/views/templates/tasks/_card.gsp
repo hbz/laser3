@@ -1,7 +1,7 @@
 <laser:serviceInjection />
 
-<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')} @ ${contextOrg} --%>
-<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')}" />
+<%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, institution, 'INST_EDITOR')} @ ${institution}--%>
+<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, institution, 'INST_EDITOR')}" />
 
 <semui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
     <g:each in="${tasks}" var="tsk">

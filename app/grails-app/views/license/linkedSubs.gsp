@@ -29,7 +29,7 @@
     <g:render template="../templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="linkedSubs" controller="license" params="${[id:params.id]}" method="get" class="ui form">
-            <div class="four fields">
+            <div class="three fields">
                 <div class="field">
                     <label for="subscription">${message(code:'subscription')}</label>
                     <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
@@ -52,6 +52,19 @@
                                   value="${params.status}"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>
+            </div>
+            <g:if test="${consAtMember}">
+                <%
+                    List<List<String>> tmplConfigShow = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
+                %>
+                <g:render template="/templates/filter/orgFilter"
+                          model="[
+                                  tmplConfigShow: tmplConfigShow,
+                                  tmplConfigFormFilter: true,
+                                  useNewLayouter: true
+                          ]"/>
+            </g:if>
+            <g:else>
                 <div class="field">
                     <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                     <div class="inline fields la-filter-inline">
@@ -71,19 +84,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <g:if test="${consAtMember}">
-                <%
-                    List<List<String>> tmplConfigShow = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property']]
-                %>
-                <g:render template="/templates/filter/orgFilter"
-                          model="[
-                                  tmplConfigShow: tmplConfigShow,
-                                  tmplConfigFormFilter: true,
-                                  useNewLayouter: true
-                          ]"/>
-            </g:if>
-            <g:else>
                 <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                     <input name="filterSet" type="hidden" value="true">

@@ -411,7 +411,13 @@
 
         <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
-                    <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
+                    <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                        <g:link controller="survey" action="currentSurveysConsortia" class="ui button">${message(code:'menu.my.surveys')}</g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
+                    </g:else>
+
                 </div>
                     <g:render template="surveys"/>
         </div>

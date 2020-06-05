@@ -8,6 +8,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.IssueEntitlementGroupItem
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.domain.TIPPCoverage
@@ -28,7 +29,6 @@ import java.text.SimpleDateFormat
 import static de.laser.helper.RDStore.*
 
 class SubscriptionService {
-    def genericOIDService
     def contextService
     def accessService
     def subscriptionsQueryService
@@ -151,12 +151,7 @@ class SubscriptionService {
     }
 
     List getValidSubChilds(Subscription subscription) {
-        List<Subscription> validSubChildren = Subscription.findAllByInstanceOf(subscription)
-        validSubChildren = validSubChildren?.sort { Subscription a, Subscription b ->
-            Org sa = a.getSubscriber()
-            Org sb = b.getSubscriber()
-            (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
-        }
+        List<Subscription> validSubChildren = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :sub and oo.roleType in (:subRoleTypes) order by oo.org.sortname asc, oo.org.name asc',[sub:subscription,subRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
         validSubChildren
     }
 
@@ -292,6 +287,11 @@ class SubscriptionService {
                 qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
             }
 
+            if (params.series_names && params.series_names != "" && params.list('series_names')) {
+                base_qry += " and lower(ie.tipp.title.seriesName) in (:series_names)"
+                qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
+            }
+
             if(params.ebookFirstAutorOrFirstEditor) {
                 base_qry += " and (lower(ie.tipp.title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
                 qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
@@ -384,7 +384,23 @@ class SubscriptionService {
         if(titleIDs){
             subjects = TitleInstance.executeQuery("select distinct(subjectReference) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by subjectReference", [titleIDs: titleIDs])
         }
+        if(subjects.size() == 0){
+            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
+        }
+
         subjects
+    }
+
+    Set<String> getSeriesNames(List titleIDs) {
+        Set<String> seriesName = []
+
+        if(titleIDs){
+            seriesName = TitleInstance.executeQuery("select distinct(seriesName) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by seriesName", [titleIDs: titleIDs])
+        }
+        if(seriesName.size() == 0){
+            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
+        }
+        seriesName
 
     }
 
@@ -636,6 +652,7 @@ class SubscriptionService {
                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                     InvokerHelper.setProperties(newIssueEntitlement, properties)
                     newIssueEntitlement.coverages = null
+                    newIssueEntitlement.ieGroups = null
                     newIssueEntitlement.subscription = targetSub
 
                     if(save(newIssueEntitlement, flash)){
@@ -655,6 +672,7 @@ class SubscriptionService {
 
 
     void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
+        targetSub.refresh()
         List<Subscription> targetChildSubs = getValidSubChilds(targetSub)
         subscriptionToTake.each { subMember ->
             //Gibt es mich schon in der Ziellizenz?
@@ -689,7 +707,9 @@ class SubscriptionService {
                             isSlaved: subMember.isSlaved,
                             owner: targetSub.owner ? subMember.owner : null,
                             resource: targetSub.resource ?: null,
-                            form: targetSub.form ?: null
+                            form: targetSub.form ?: null,
+                            isPublicForApi: targetSub.isPublicForApi,
+                            hasPerpetualAccess: targetSub.hasPerpetualAccess
                     )
                     newSubscription.save(flush:true)
                     //ERMS-892: insert preceding relation in new data model
@@ -756,6 +776,7 @@ class SubscriptionService {
                                 IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                                 InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
                                 newIssueEntitlement.coverages = null
+                                newIssueEntitlement.ieGroups = null
                                 newIssueEntitlement.subscription = newSubscription
 
                                 if(save(newIssueEntitlement, flash)){
@@ -1591,7 +1612,7 @@ class SubscriptionService {
         [candidates: candidates, globalErrors: globalErrors, parentSubType: parentSubType]
     }
 
-    List issueEntitlementEnrichment(InputStream stream, List<IssueEntitlement> issueEntitlements, boolean uploadCoverageDates, boolean uploadPriceInfo) {
+    Map issueEntitlementEnrichment(InputStream stream, List<IssueEntitlement> issueEntitlements, boolean uploadCoverageDates, boolean uploadPriceInfo) {
 
         Integer count = 0
         Integer countChangesPrice = 0
@@ -1686,9 +1707,9 @@ class SubscriptionService {
                     ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
             } else {
 
-                Identifier id = Identifier.findByValueAndNsInList(idCandidate.value, idCandidate.namespaces)
-                if (id && id.ti) {
-                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title == id.ti }
+                List<Long> titleIds = TitleInstance.executeQuery('select ti.id from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
+                if (titleIds.size() > 0) {
+                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title.id in titleIds }
                     IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
                     if (issueEntitlement) {
                         count++
@@ -1776,11 +1797,11 @@ class SubscriptionService {
             }
         }
 
-        println(count)
+        /*println(count)
         println(countChangesCoverageDates)
-        println(countChangesPrice)
+        println(countChangesPrice)*/
 
-        return [count, countChangesCoverageDates, countChangesPrice]
+        return [issueEntitlements: issueEntitlements.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
     }
 
 }

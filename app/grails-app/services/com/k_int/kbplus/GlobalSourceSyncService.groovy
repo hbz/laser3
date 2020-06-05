@@ -692,11 +692,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(participant.save()) {
                 if(particData.identifiers) {
                     particData.identifiers.identifier.each { idData ->
-                        if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
-                            Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:participant])
+                        if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
+                            Identifier.withTransaction {
+                                Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: participant])
+                            }
+                        }
                     }
                 }
-                Identifier.construct([namespace:'uri',value:particData.internalId.text(),reference:participant])
+                Identifier.withTransaction {
+                    Identifier.construct([namespace:'uri',value:particData.internalId.text(),reference:participant])
+                }
                 participant
             }
             else {

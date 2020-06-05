@@ -35,6 +35,16 @@
     <g:render template="message"/>
 </g:if>
 
+<g:if test="${enrichmentProcess}">
+    <div class="ui positive message">
+    <i class="close icon"></i>
+    <div class="header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/> </div>
+    <p>
+        <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess" args="[enrichmentProcess.issueEntitlements, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
+    </p>
+    </div>
+</g:if>
+
 <g:if test="${deletedSPs}">
     <div class="ui exclamation icon negative message">
         <i class="exclamation icon"></i>
@@ -165,7 +175,7 @@
 
                     <div class="three fields">
                         <div class="field">
-                            <label for="filter">${message(code: 'default.filter.label')}</label>
+                            <label for="filter">${message(code: 'default.search.text')}</label>
                             <input name="filter" id="filter" value="${params.filter}"/>
                         </div>
 
@@ -181,14 +191,24 @@
                         <g:if test="${params.mode != 'advanced'}">
                             <div class="field">
                                 <semui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
-                                                  value="${params.asAt}"/>
+                                                  value="${params.asAt}" placeholder="subscription.details.asAt.placeholder"/>
                             </div>
                         </g:if>
                     </div>
                     <div class="three fields">
                         <div class="field">
-                                                <label for="seriesNames">${message(code: 'titleInstance.seriesName.label')}</label>
-                            <input name="seriesNames" id="seriesNames" value="${params.series_names}"/>
+                            <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
+
+                            <select name="series_names" id="series_names" multiple="" class="ui search selection dropdown">
+                                <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                                <g:each in="${seriesNames}" var="seriesName">
+                                    <option <%=(params.list('series_names').contains(seriesName)) ? 'selected="selected"' : ''%>
+                                            value="${seriesName}">
+                                        ${seriesName}
+                                    </option>
+                                </g:each>
+                            </select>
                         </div>
 
                         <div class="field">
@@ -448,7 +468,8 @@
                                     <g:elseif test="${editable}">
                                         <g:link action="addEmptyPriceItem" class="ui icon positive button"
                                                 params="${[ieid: ie.id, id: subscriptionInstance.id]}">
-                                            <i class="money icon"></i>
+                                            <i class="money icon la-popup-tooltip la-delay"
+                                               data-content="${message(code: 'subscription.details.addEmptyPriceItem.info')}"></i>
                                         </g:link>
                                     </g:elseif>
                                 </td>
@@ -456,21 +477,24 @@
                                     <td>
                                         <div class="la-icon-list">
                                         <g:each in="${ie.ieGroups.sort{it.ieGroup.name}}" var="titleGroup">
-                                            <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" params="[titleGroup: titleGroup.ieGroup.id]" class="item">
+                                            <div class="item">
                                                 <i class="grey icon object group la-popup-tooltip la-delay" data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
                                                 <div class="content">
-                                                ${titleGroup.ieGroup.name}
+                                                <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" params="[titleGroup: titleGroup.ieGroup.id]" >${titleGroup.ieGroup.name}</g:link>
                                                 </div>
-                                            </g:link>
+                                            </div>
                                         </g:each>
                                         </div>
-                                        <div class="ui grid">
-                                            <div class="right aligned wide column">
-                                        <g:link action="editEntitlementGroupItem" params="${[cmd:'edit', ie:ie.id, id: subscriptionInstance.id]}" class="ui icon button trigger-modal">
-                                            <i class="object group icon"></i>
-                                        </g:link>
+                                        <g:if test="${editable}">
+                                            <div class="ui grid">
+                                                <div class="right aligned wide column">
+                                                    <g:link action="editEntitlementGroupItem" params="${[cmd:'edit', ie:ie.id, id: subscriptionInstance.id]}" class="ui icon button trigger-modal"
+                                                            data-tooltip="${message(code:'subscription.details.ieGroups.edit')}">
+                                                        <i class="object group icon"></i>
+                                                    </g:link>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </g:if>
 
                                     </td>
                                 </g:if>

@@ -27,8 +27,12 @@
 </g:if>
 <g:else>
     <g:if test="${modalId}">
-        <g:set var="modalText"
-               value="${message(code: 'default.new.label', args: [message(code: modalId)])}" />
+        <g:if test="${prId}">
+            <g:set var="modalText" value="${message(code: 'default.new.label', args: [message(code: 'addressFormModalLibraryAddress')])}"/>
+        </g:if>
+        <g:else>
+            <g:set var="modalText" value="${message(code: 'default.new.label', args: [message(code: modalId)])}" />
+        </g:else>
     </g:if>
     <g:else>
         <g:set var="modalText"

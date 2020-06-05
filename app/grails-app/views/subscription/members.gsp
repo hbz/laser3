@@ -243,7 +243,7 @@
                                     </span>
                                 </g:else>
                             </g:if>
-                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.sub = :sub',[sub:sub])}"/>
+                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.sub = :sub and ci.costItemStatus != :deleted',[sub:sub,deleted:RDStore.COST_ITEM_DELETED])}"/>
                             <g:if test="${!hasCostItems}">
                                 <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}">
                                     <i class="trash alternate icon"></i>
