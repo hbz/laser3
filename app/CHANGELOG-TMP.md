@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2571    04.06.2020  rc1.4       Moe     Bug         Beim Bestand ist das Reihe DropDown Filterfeld leer trotz vorhandenen Daten
+
+2572    04.06.2020  rc1.4       Moe     Bug         Title Show Seite: Cannot get property 'title' on null object
+
 2570    04.06.2020  rc1.4       Moe     Bug         Bei der Umfrage kann ohne http keine Url eingegeben werden
 
 2569    04.06.2020  rc1.4       Moe     Feature     Bemerkungsfeld für Umfrageersteller umbauen
