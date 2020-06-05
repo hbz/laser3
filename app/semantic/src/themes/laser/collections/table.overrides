@@ -225,6 +225,7 @@
   position: sticky !important;
   z-index: 2;
 }
+
 // Table Header
 .ui.table thead tr:first-child > th,
 .ui.table thead tr:nth-child(2) > th {
@@ -235,4 +236,9 @@
 }
 .ui.table thead tr:nth-child(2) > th {
   top: 118px;
+}
+// avoiding sticky behavior of calendar table
+.ui.table.day thead tr:first-child > th,
+.ui.table.day thead tr:nth-child(2) > th {
+  position: static !important;
 }
