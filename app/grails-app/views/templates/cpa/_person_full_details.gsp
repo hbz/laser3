@@ -52,10 +52,16 @@
                     </g:if>
 
                     <g:if test="${tmplShowAddAddresses}">
-                        <input class="ui mini icon button" type="button" data-semui="modal"
-                               data-href="#addressFormModal${person.id}"
-                               value="${message(code: 'person.addresses.label')}">
-                        <g:render template="/address/formModal" model="['prsId': person.id, modalId: 'addressFormModal' + person.id]"/>
+                        <% Map model = [:]
+                        model.prsId = person?.id
+                        model.redirect = '.'
+                        model.modalId = 'addressFormModal'+ person.id
+                        model.hideType = true%>
+                        <input class="ui mini icon button" type="button"
+                               value="${message(code: 'person.addresses.label')}"
+                               onclick="addresscreate('${model}'');"
+                               >
+                        %{--<g:render template="/address/formModal" model="['prsId': person.id, modalId: 'addressFormModal' + person.id]"/>--}%
                     </g:if>
 
                 </g:if>

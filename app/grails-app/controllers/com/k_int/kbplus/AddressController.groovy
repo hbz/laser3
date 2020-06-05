@@ -37,8 +37,7 @@ class AddressController extends AbstractDebugController {
 			case 'POST':
                 Address addressInstance = new Address(params)
 				if (! addressInstance.save(flush: true)) {
-			        flash.error = message(code: 'default.save.error.message', args: [message(code: 'address.label')
-                                                                                             +addressInstance.id])
+			        flash.error = message(code: 'default.save.error.general.message')
 					redirect(url: request.getHeader('referer'), params: params)
 					return
 	        	}

@@ -2640,6 +2640,53 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    def AddressEdit() {
+        Map result = [:]
+        result.addressInstance = Address.get(params.id)
+        if (result.addressInstance){
+            result.modalId = 'addressFormModal'
+            String messageCode = 'person.address.label'
+            switch (result.addressInstance.type){
+                case RDStore.ADRESS_TYPE_LEGAL_PATRON:  messageCode = 'addressFormModalLegalPatronAddress'
+                    break
+                case RDStore.ADRESS_TYPE_BILLING:       messageCode = 'addressFormModalBillingAddress'
+                    break
+                case RDStore.ADRESS_TYPE_POSTAL:        messageCode = 'addressFormModalPostalAddress'
+                    break
+                case RDStore.ADRESS_TYPE_DELIVERY:      messageCode = 'addressFormModalDeliveryAddress'
+                    break
+                case RDStore.ADRESS_TYPE_LIBRARY:       messageCode = 'addressFormModalLibraryAddress'
+                    break
+            }
+
+            result.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
+            result.modalMsgSave = message(code: 'default.button.save_changes')
+            result.url = [controller: 'address', action: 'edit']
+//            render template:"../views/address/formModal", model: result
+            render template:"../templates/addresses/formModal", model: result
+        } else {
+            flash.error = "Diese Adresse existiert nicht (mehr)."
+            redirect(url: request.getHeader('referer'))
+        }
+    }
+
+    @Secured(['ROLE_USER'])
+    def AddressCreate() {
+        Map result = [:]
+//        model.orgId = orgInstance?.id
+//        model.redirect = '.'
+//        model.modalId = 'addressFormModalPostalAddress'
+//        model.hideType = true%>
+//        result.modalText = message(code: 'default.new.label', args: [message(code: messageCode?: 'landingpage.hero.button')])
+        result.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
+        result.modalMsgSave = message(code: 'default.button.create.label')
+        result.url = [controller: 'address', action: 'create']
+
+        render template:"../templates/addresses/formModal", model: result
+//        render template:"../views/address/formModal", model: result
+    }
+
+    @Secured(['ROLE_USER'])
     def NoteEdit() {
         Map<String, Object> result = [:]
         result.params = params

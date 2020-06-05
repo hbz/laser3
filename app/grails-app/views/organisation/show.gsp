@@ -343,29 +343,49 @@
 
                                     <div class="ui list">
                                         <div class="item">
-                                            <input class="ui button" size="35"
-                                                   value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
-                                                   data-semui="modal"
-                                                   data-href="#addressFormModalPostalAddress"/>
-                                            <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalPostalAddress', hideType: true]"/>
 
-                                            <input class="ui button" size="35"
+                                            %{--<input class="ui button" size="35"--}%
+                                                   %{--value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"--}%
+                                                   %{--data-semui="modal"--}%
+                                                   %{--data-href="#addressFormModalPostalAddress"/>--}%
+                                            %{--<g:render template="/address/formModal"--}%
+                                                      %{--model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalPostalAddress', hideType: true]"/>--}%
+                                            <% Map model = [:]
+                                            model.orgId = orgInstance?.id
+                                            model.redirect = '.'
+                                            model.modalId = 'addressFormModalPostalAddress'
+                                            model.hideType = true%>
+                                            <input class="ui mini icon button" type="button"
+                                                   value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
+                                                   onclick="addresscreate('${model}');"
+                                            >
+
+                                            %{--<input class="ui button" size="35"--}%
+                                                   %{--value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"--}%
+                                                   %{--data-semui="modal"--}%
+                                                   %{--data-href="#addressFormModalBillingAddress"/>--}%
+                                            %{--<g:render template="/address/formModal"--}%
+                                                      %{--model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalBillingAddress', hideType: true]"/>--}%
+                                            <% model.modalId = 'addressFormModalBillingAddress' %>
+                                            <input class="ui mini icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
-                                                   data-semui="modal"
-                                                   data-href="#addressFormModalBillingAddress"/>
-                                            <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalBillingAddress', hideType: true]"/>
+                                                   onclick="addresscreate('${model}');"
+                                            >
                                         </div>
 
                                         <div class="item">
 
-                                            <input class="ui button" size="35"
+                                            %{--<input class="ui button" size="35"--}%
+                                                   %{--value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"--}%
+                                                   %{--data-semui="modal"--}%
+                                                   %{--data-href="#addressFormModalLegalPatronAddress"/>--}%
+                                            %{--<g:render template="/address/formModal"--}%
+                                                      %{--model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', hideType: true]"/>--}%
+                                            <% model.modalId = 'addressFormModalLegalPatronAddress' %>
+                                            <input class="ui mini icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"
-                                                   data-semui="modal"
-                                                   data-href="#addressFormModalLegalPatronAddress"/>
-                                            <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', hideType: true]"/>
+                                                   onclick="addresscreate(addresscreate);"
+                                            >
 
                                             %{-- <input class="ui button" size="35"
                                                     value="${message(code: 'default.add.label', args: [message(code: 'address.otherAddress')])}"
@@ -652,3 +672,48 @@
         showRegionsdropdown(country);
     });
 </r:script>
+<g:javascript>
+        function aaa(model) {
+            alert("aaa"+model);
+        }
+        function addresscreate(model) {
+            alert("addresscreate"+model);
+            $.ajax({
+                url: '<g:createLink controller="ajax" action="AddressCreate"/>',
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#addressFormModal").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#addressFormModal');
+                            r2d2.initDynamicXEditableStuff('#addressFormModal');
+
+                            ajaxPostFunc()
+                        }
+                    }).modal('show');
+                }
+            });
+        }
+        function addressedit(id) {
+            alert('addressedit'+id);
+            $.ajax({
+                url: '<g:createLink controller="ajax" action="AddressEdit"/>?id='+id,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#addressFormModal").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#addressFormModal');
+                            r2d2.initDynamicXEditableStuff('#addressFormModal');
+
+                            ajaxPostFunc()
+                        }
+                    }).modal('show');
+                }
+            });
+        }
+</g:javascript>
