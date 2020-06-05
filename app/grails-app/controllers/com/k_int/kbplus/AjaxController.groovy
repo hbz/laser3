@@ -2504,7 +2504,10 @@ class AjaxController {
                     if (target_object."${params.name}" instanceof Boolean) {
                         params.value = params.value?.equals("1")
                     }
-                    binding_properties[params.name] = params.value
+
+                    String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
+
+                    binding_properties[params.name] = value
                     bindData(target_object, binding_properties)
 
                     target_object.save(failOnError: true)
