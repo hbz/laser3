@@ -355,36 +355,24 @@
                                             model.redirect = '.'
                                             model.modalId = 'addressFormModalPostalAddress'
                                             model.hideType = true%>
-                                            <input class="ui mini icon button" type="button"
+                                            <input class="ui icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
-                                                   onclick="addresscreate('${model}');"
+                                                   onclick="addresscreate_1('${model.orgId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                             >
 
-                                            %{--<input class="ui button" size="35"--}%
-                                                   %{--value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"--}%
-                                                   %{--data-semui="modal"--}%
-                                                   %{--data-href="#addressFormModalBillingAddress"/>--}%
-                                            %{--<g:render template="/address/formModal"--}%
-                                                      %{--model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalBillingAddress', hideType: true]"/>--}%
                                             <% model.modalId = 'addressFormModalBillingAddress' %>
-                                            <input class="ui mini icon button" type="button"
+                                            <input class="ui icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
-                                                   onclick="addresscreate('${model}');"
+                                                   onclick="addresscreate_1('${model.orgId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                             >
                                         </div>
 
                                         <div class="item">
 
-                                            %{--<input class="ui button" size="35"--}%
-                                                   %{--value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"--}%
-                                                   %{--data-semui="modal"--}%
-                                                   %{--data-href="#addressFormModalLegalPatronAddress"/>--}%
-                                            %{--<g:render template="/address/formModal"--}%
-                                                      %{--model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', hideType: true]"/>--}%
                                             <% model.modalId = 'addressFormModalLegalPatronAddress' %>
-                                            <input class="ui mini icon button" type="button"
+                                            <input class="ui icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"
-                                                   onclick="addresscreate(addresscreate);"
+                                                   onclick="addresscreate_1('${model.orgId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                             >
 
                                             %{-- <input class="ui button" size="35"
@@ -674,30 +662,22 @@
     });
 </r:script>
 <g:javascript>
-        function addresscreate(model) {
-            alert("addresscreate"+model);
-            $.ajax({
-                url: '<g:createLink controller="ajax" action="AddressCreate"/>',
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#addressFormModal").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#addressFormModal');
-                            r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                            ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
+        function addresscreate_1(orgId, redirect, modalId, hideType) {
+            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?orgId='+orgId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
+            private_address_modal(url);
+        }
+        function addresscreate() {
+            var url = '<g:createLink controller="ajax" action="AddressCreate"/>';
+            private_address_modal(url);
         }
         function addressedit(id) {
-            alert('addressedit'+id);
+            var url = '<g:createLink controller="ajax" action="AddressEdit"/>?id='+id;
+            private_address_modal(url)
+        }
+
+        function private_address_modal(url) {
             $.ajax({
-                url: '<g:createLink controller="ajax" action="AddressEdit"/>?id='+id,
+                url: url,
                 success: function(result){
                     $("#dynamicModalContainer").empty();
                     $("#addressFormModal").remove();
@@ -708,7 +688,7 @@
                             r2d2.initDynamicSemuiStuff('#addressFormModal');
                             r2d2.initDynamicXEditableStuff('#addressFormModal');
 
-                            ajaxPostFunc()
+                            // ajaxPostFunc()
                         }
                     }).modal('show');
                 }

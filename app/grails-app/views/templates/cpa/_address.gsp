@@ -5,7 +5,6 @@
         </span>
         <div class="content la-space-right">
             <strong>${address.type?.getI10n('value')}:</strong>
-            %{--<div class="item" data-href="#addressFormModal${address.id}" data-semui="modal" >--}%
             <div class="item" onclick="addressedit(${address.id});" >
                 <g:if test="${address.name}">
                     <br />
