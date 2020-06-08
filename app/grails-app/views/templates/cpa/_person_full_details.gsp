@@ -59,7 +59,7 @@
                         model.hideType = true%>
                         <input class="ui mini icon button" type="button"
                                value="${message(code: 'person.addresses.label')}"
-                               onclick="addresscreate('${model}'');"
+                               onclick="addresscreate('${model}');"
                                >
                         %{--<g:render template="/address/formModal" model="['prsId': person.id, modalId: 'addressFormModal' + person.id]"/>--}%
                     </g:if>

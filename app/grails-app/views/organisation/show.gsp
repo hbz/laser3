@@ -673,9 +673,6 @@
     });
 </r:script>
 <g:javascript>
-        function aaa(model) {
-            alert("aaa"+model);
-        }
         function addresscreate(model) {
             alert("addresscreate"+model);
             $.ajax({

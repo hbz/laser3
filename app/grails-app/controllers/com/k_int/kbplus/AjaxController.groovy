@@ -2647,16 +2647,28 @@ class AjaxController {
             result.modalId = 'addressFormModal'
             String messageCode = 'person.address.label'
             switch (result.addressInstance.type){
-                case RDStore.ADRESS_TYPE_LEGAL_PATRON:  messageCode = 'addressFormModalLegalPatronAddress'
+                case RDStore.ADRESS_TYPE_LEGAL_PATRON:
+                    messageCode = 'addressFormModalLegalPatronAddress'
+                    result.typeId = RDStore.ADRESS_TYPE_LEGAL_PATRON.id
                     break
-                case RDStore.ADRESS_TYPE_BILLING:       messageCode = 'addressFormModalBillingAddress'
+                case RDStore.ADRESS_TYPE_BILLING:
+                    messageCode = 'addressFormModalBillingAddress'
+                    result.typeId = RDStore.ADRESS_TYPE_BILLING.id
                     break
-                case RDStore.ADRESS_TYPE_POSTAL:        messageCode = 'addressFormModalPostalAddress'
+                case RDStore.ADRESS_TYPE_POSTAL:
+                    messageCode = 'addressFormModalPostalAddress'
+                    result.typeId = RDStore.ADRESS_TYPE_POSTAL.id
                     break
-                case RDStore.ADRESS_TYPE_DELIVERY:      messageCode = 'addressFormModalDeliveryAddress'
+                case RDStore.ADRESS_TYPE_DELIVERY:
+                    messageCode = 'addressFormModalDeliveryAddress'
+                    result.typeId = RDStore.ADRESS_TYPE_DELIVERY.id
                     break
-                case RDStore.ADRESS_TYPE_LIBRARY:       messageCode = 'addressFormModalLibraryAddress'
+                case RDStore.ADRESS_TYPE_LIBRARY:
+                    messageCode = 'addressFormModalLibraryAddress'
+                    result.typeId = RDStore.ADRESS_TYPE_LIBRARY.id
                     break
+                default:
+                    result.typeId = addressInstance.type?.id
             }
 
             result.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])

@@ -1,10 +1,11 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Address;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
-<semui:modal id="${modalId ?: 'addressFormModal'}" text="${modalText}" msgSave="${modalMsgSave}">
+<semui:modal id="addressFormModal" text="${modalText}" msgSave="${modalMsgSave}">
     <g:form id="create_address_${modalId}" class="ui form" url="${url}" method="POST">
         <g:if test="${addressInstance}">
             <input type="hidden" name="id" value="${addressInstance.id}"/>
         </g:if>
         <input type="hidden" name="redirect" value="true"/>
+        <input id="type_${modalId}" name="type.id" type="hidden" value="${typeId}"/>
 
         <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
             <label for="name_${modalId}">
@@ -34,7 +35,8 @@
                         <g:message code="address.region.label" />
                     </label>
                     <laser:select class="ui dropdown" id="region_${modalId}" name="region.id"
-                                  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT,
+                                  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,
+                                                                               RDConstants.REGIONS_AT,
                                                                                RDConstants.REGIONS_CH])}"
                                   optionKey="id"
                                   optionValue="value"
@@ -127,24 +129,6 @@
             %{--<h4 class="ui dividing header"><g:message code="address.additionals.label"/></h4>--}%
         %{--</g:if>--}%
         %{--<g:if test="${modalId && hideType}">--}%
-            <g:if test="${modalId == 'addressFormModalPostalAddress'}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_POSTAL.id}"/>
-            </g:if>
-            <g:elseif test="${modalId == 'addressFormModalBillingAddress'}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_BILLING.id}"/>
-            </g:elseif>
-            <g:elseif test="${modalId == 'addressFormModalLegalPatronAddress'}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_LEGAL_PATRON.id}"/>
-            </g:elseif>
-            <g:elseif test="${modalId == 'addressFormModalLibraryddress'}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_LIBRARY.id}"/>
-            </g:elseif>
-            <g:elseif test="${modalId == 'addressFormModalDeliveryAddress'}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${RDStore.ADRESS_TYPE_DELIVERY.id}"/>
-            </g:elseif>
-            <g:elseif test="${addressInstance}">
-                <input id="type_${modalId}" name="type.id" type="hidden" value="${addressInstance.type?.id}"/>
-            </g:elseif>
         %{--</g:if>--}%
         %{--<g:elseif test="${ ! addressInstance?.type}">--}%
         <g:if test="${ ( ! addressInstance?.type) && ( ! modalId) }">
