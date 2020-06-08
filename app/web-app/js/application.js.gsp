@@ -97,7 +97,13 @@ r2d2 = {
 
     initGlobalSemuiStuff : function() {
         console.log("r2d2.initGlobalSemuiStuff()")
-
+        //JS Library readmore.js
+        $('.la-readmore').readmore({
+            speed: 75,
+            lessLink: '<a href="#">${message(code:"link.readless")}</a>',
+            moreLink: '<a href="#">${message(code:"link.readmore")}</a>',
+            collapsedHeight: 115
+        });
         //overwriting the template for input search (spotlight)
         // see https://jsfiddle.net/xnfkLnwe/1/
         // and https://github.com/Semantic-Org/Semantic-UI/issues/2405
