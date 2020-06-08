@@ -250,7 +250,9 @@ r2d2 = {
             },
             error: function (xhr, status, error) {
                 alert(xhr.status + ": " + xhr.statusText);
-            }
+            },
+        }).on('hidden', function() {
+            c3po.loadJsAfterAjax();
         });
 
         $(ctxSel + ' .xEditableValue').editable({
@@ -301,7 +303,7 @@ r2d2 = {
             }
             $(".table").trigger('reflow')
         }).on('hidden', function() {
-            $(".table").trigger('reflow')
+            c3po.loadJsAfterAjax();
         });
 
         $(ctxSel + ' .xEditableDatepicker').editable({
@@ -320,7 +322,7 @@ r2d2 = {
                 })
             ;
         }).on('hidden', function() {
-            $(".table").trigger('reflow')
+            c3po.loadJsAfterAjax();
         });
 
         $(ctxSel + ' .simpleHiddenRefdata').editable({
@@ -331,6 +333,8 @@ r2d2 = {
                 $("#" + hidden_field_id).val(params.value);
                 // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
             }
+        }).on('hidden', function() {
+            c3po.loadJsAfterAjax();
         });
 
         $(ctxSel + ' .simpleReferenceTypedown').select2({
@@ -350,13 +354,8 @@ r2d2 = {
                     return {results: data.values};
                 }
             }
-        });
-
-        $('.la-readmore').readmore({
-                speed: 75,
-                lessLink: '<a href="#">${message(code:"link.readless")}</a>',
-                moreLink: '<a href="#">${message(code:"link.readmore")}</a>',
-                collapsedHeight: 115
+        }).on('hidden', function() {
+            c3po.loadJsAfterAjax();
         });
     },
 
