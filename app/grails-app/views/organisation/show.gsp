@@ -472,6 +472,7 @@
                                         <% com.k_int.kbplus.Person prs = PersonRole.get(pr.id).prs%>
                                         <g:render template="/templates/cpa/person_full_details" model="${[
                                                 person              : prs,
+                                                personRole          : pr,
                                                 personContext       : orgInstance,
                                                 tmplShowDeleteButton    : true,
                                                 tmplShowAddPersonRoles  : true,
