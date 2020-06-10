@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2589    10.06.2020  rc1.4       Andreas Bug         Private Merkmale wurden bei Verträgen nicht angezeigt
+
 2588    09.06.2020  rc1.4       Andreas Bug         Verknüpfbare Verträge wurden für Vollnutzer nicht angezeigt
 
 2587    09.06.2020  rc1.4       Andreas Bug         Anzeigeüberprüfung der Nutzungsstatistiken wurde korrigiert
