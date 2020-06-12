@@ -6,4 +6,8 @@
 
 [data-tooltip]:after {
   white-space: normal;
-} 
+}
+
+.ui.popup .content {
+  text-transform: none;
+}

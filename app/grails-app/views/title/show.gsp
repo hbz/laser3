@@ -113,14 +113,14 @@
                                                data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                         <div class="content">
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${tipp.title.dateFirstInPrint}"/>
+                                  date="${ti.dateFirstInPrint}"/>
                         </div>
                         </div>
                         <div class="item">
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                    data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                         <div class="content"><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                              date="${tipp.title.dateFirstOnline}"/>
+                                              date="${ti.dateFirstOnline}"/>
                         </div>
                         </div>
                     </g:if>

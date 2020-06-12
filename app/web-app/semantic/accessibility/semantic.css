@@ -28304,6 +28304,11 @@ Floated Menu / Item
 .ui.table thead tr:nth-child(2) > th {
   top: 118px;
 }
+
+.ui.table.day thead tr:first-child > th,
+.ui.table.day thead tr:nth-child(2) > th {
+  position: static !important;
+}
 /*!
  * # Semantic UI 2.3.1 - Ad
  * http://github.com/semantic-org/semantic-ui/
@@ -36572,6 +36577,10 @@ a.ui.nag {
 
 [data-tooltip]:after {
   white-space: normal;
+}
+
+.ui.popup .content {
+  text-transform: none;
 }
 /*!
  * # Semantic UI 2.3.1 - Progress Bar

@@ -324,14 +324,14 @@
 
             <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
                 <th scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top right">
                         <i class="users large icon"></i>
-                    </span>
+                    </a>
                 </th>
                 <th scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                    <a href="#"  class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top right">
                         <i class="money bill large icon"></i>
-                    </span>
+                    </a>
                 </th>
             </g:if>
 
