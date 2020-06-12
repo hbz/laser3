@@ -18,7 +18,7 @@
 <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
 <semui:controlButtons>
-    <g:render template="actions" />
+    <%-- is as placeholder for breaking header --%>
 </semui:controlButtons>
 
 <semui:messages data="${flash}"/>

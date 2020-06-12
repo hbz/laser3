@@ -33,11 +33,13 @@
 
             <g:if test="${'onlyMemberSubs' in tableConfig}">
                 <div class="field fieldcontain">
-                    <label for="subscription">${message(code: 'subscription')}</label>
-                    <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <%-- continue here: change to ajax query --%>
-                    </select>
+                    <label>${message(code:'default.subscription.label')}</label>
+                    <div class="ui search selection multiple dropdown" id="selSubscription">
+                        <input type="hidden" name="selSubscription">
+                        <i class="dropdown icon"></i>
+                        <input type="text" class="search">
+                        <div class="default text"><g:message code="default.select.all.label"/></div>
+                    </div>
                 </div>
             </g:if>
 
@@ -85,7 +87,7 @@
             </div>
         </div>
 
-        <div class="five fields">
+        <div class="four fields">
             <g:if test="${institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
                     <fieldset id="subscritionType">
@@ -177,10 +179,42 @@
             </div>
 
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                <g:if test="${license}">
+                    <g:set var="returnURL" value="${request.forwardURI+"/"+license.id}"/>
+                </g:if>
+                <g:else>
+                    <g:set var="returnURL" value="${request.forwardURI}"/>
+                </g:else>
+                <a href="${returnURL}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                 <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
             </div>
 
         </div>
     </g:form>
 </semui:filter>
+
+<r:script>
+$(document).ready(function(){
+    let subStatus;
+    if($("#status").length > 0) {
+        subStatus = $("#status").val();
+        if(subStatus.length === 0) {
+            subStatus = "FETCH_ALL";
+        }
+    }
+    else {
+        subStatus = "FETCH_ALL";
+    }
+    <g:if test="${params.selSubscription}">
+        $("#selSubscription").dropdown('set value',[<g:each in="${params.selSubscription.split(',')}" var="sub" status="i">'${sub}'<g:if test="${i < params.selSubscription.split(',').size()-1}">,</g:if></g:each>]);
+    </g:if>
+    $("#selSubscription").dropdown({
+        apiSettings: {
+            url: "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}&ltype=${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}",
+            cache: false
+        },
+        clearable: true,
+        minCharacters: 1
+    });
+});
+</r:script>

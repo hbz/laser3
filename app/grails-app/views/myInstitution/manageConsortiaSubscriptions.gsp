@@ -56,7 +56,7 @@
 
 <h1 class="ui left floated aligned icon header la-clear-before">
     <semui:headerIcon />${message(code: 'menu.my.consortiaSubscriptions')}
-    <semui:totalNumber total="${countCostItems}"/>
+    <semui:totalNumber total="${totalCount}"/>
 </h1>
 
 <semui:messages data="${flash}"/>

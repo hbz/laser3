@@ -3002,7 +3002,7 @@ AND EXISTS (
 
         Map<String,Object> result = setResultGenerics()
         result.tableConfig = ['withCostItems']
-        result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConf))
+        result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
 
         LinkedHashMap<Subscription,List<Org>> providers = [:]
         Map<Org,Set<String>> mailAddresses = [:]

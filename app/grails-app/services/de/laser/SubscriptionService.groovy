@@ -20,6 +20,7 @@ import de.laser.helper.FactoryResult
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
+import grails.converters.JSON
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -41,6 +42,7 @@ class SubscriptionService {
     FilterService filterService
     Locale locale
     def grailsApplication
+    GenericOIDService genericOIDService
 
     @javax.annotation.PostConstruct
     void init() {
@@ -187,6 +189,16 @@ class SubscriptionService {
             ]
         }
 
+        if (params.selSubscription?.size() > 0) {
+            query += " and subT.instanceOf in (:subscriptions) "
+            Set<Subscription> subscriptions = []
+            List<String> selSubs = params.selSubscription.split(',')
+            selSubs.each { String sub ->
+                subscriptions << genericOIDService.resolveOID(sub)
+            }
+            qarams.put('subscriptions', subscriptions)
+        }
+        
         if (params.member?.size() > 0) {
             query += " and roleT.org.id = :member "
             qarams.put('member', params.long('member'))

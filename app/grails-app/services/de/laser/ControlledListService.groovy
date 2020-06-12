@@ -92,7 +92,7 @@ class ControlledListService {
                     }
                 }
             } else {
-                if(params.status != 'FETCH_ALL') { //FETCH_ALL may be sent from finances/_filter.gsp
+                if(params.status != 'FETCH_ALL') { //FETCH_ALL may be sent from finances/_filter.gsp and _consortiaSubscriptionFilter.gsp
                     if(params.status instanceof RefdataValue)
                         filter.status = params.status
                     else filter.status = RefdataValue.get(params.status)
@@ -116,7 +116,7 @@ class ControlledListService {
             switch (params.ltype) {
                 case CalculatedType.TYPE_PARTICIPATION:
                     if (s.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]){
-                        if(org in s.orgRelations.collect { or -> or.org })
+                        if(org.id == s.getConsortia().id)
                             result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
                     }
                     break

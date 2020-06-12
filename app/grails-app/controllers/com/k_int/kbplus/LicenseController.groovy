@@ -421,13 +421,17 @@ from Subscription as s where
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['showLinking','onlyMemberSubs']
         Set<Subscription> allSubscriptions = []
+        String action
         if(result.license.instanceOf) {
             result.putAll(subscriptionService.getMySubscriptionsForConsortia(params, result.user, result.institution, result.tableConfig))
-            allSubscriptions.addAll(result.entries)
+            allSubscriptions.addAll(result.entries.collect { row -> (Subscription) row[0] })
+            result.allSubscriptions = allSubscriptions
+            action = 'linkMemberLicensesToSubs'
         }
         else {
             result.putAll(subscriptionService.getMySubscriptions(params, result.user, result.institution))
             allSubscriptions.addAll(result.allSubscriptions)
+            action = 'linkLicenseToSubs'
         }
         License newLicense = params.unlink ? null : result.license
         if(params.subscription == "all") {
@@ -444,7 +448,7 @@ from Subscription as s where
             }
         }
         params.remove("unlink")
-        render view: 'linkLicenseToSubs', model: result
+        render view: action, model: result
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
