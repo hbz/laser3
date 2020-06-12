@@ -54,7 +54,8 @@ class Subscription
     def subscriptionService
     @Transient
     def auditService
-
+    @Transient
+    def genericOIDService
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -475,20 +476,18 @@ class Subscription
 
     Subscription getCalculatedPrevious() {
         Links match = Links.findWhere(
-                source: this.id,
-                objectType: Subscription.class.name,
+                source: GenericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
         )
-        return match ? Subscription.get(match?.destination) : null
+        return match ? genericOIDService.resolveOID(match.destination) : null
     }
 
     Subscription getCalculatedSuccessor() {
         Links match = Links.findWhere(
-                destination: this.id,
-                objectType: Subscription.class.name,
+                destination: GenericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
         )
-        return match ? Subscription.get(match?.source) : null
+        return match ? genericOIDService.resolveOID(match.source) : null
     }
 
     boolean isMultiYearSubscription()

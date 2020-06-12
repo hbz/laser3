@@ -133,7 +133,7 @@
                     <g:link controller="license" action="show" id="${lic.id}" class="ui icon button"><i class="write icon"></i></g:link>
                 </td>
                 <td>
-                    <g:link action="linkedSubs" id="${lic.id}"><semui:totalNumber total="${row.subs ?: 0}"/></g:link>
+                    <g:link action="linkMemberLicensesToSubs" id="${lic.id}"><semui:totalNumber total="${row.subs ?: 0}"/></g:link>
                 </td>
             </tr>
         </g:each>

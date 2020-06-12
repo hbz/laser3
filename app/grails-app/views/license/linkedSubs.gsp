@@ -124,11 +124,6 @@
                     <i class="map orange icon"></i>
                 </span>
             </th>
-            <g:if test="${editable}">
-                <th class="la-action-info">
-
-                </th>
-            </g:if>
         </tr>
     </thead>
     <tbody>
@@ -227,15 +222,6 @@
                         </span>
                     </g:if>
                 </td>
-                <g:if test="${editable}">
-                    <td class="x">
-                        <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="license" action="unlinkSubscription" params="${[subscription:sub.id,license:license.id]}"
-                                data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
-                                data-confirm-how = "unlink">
-                            <i class="unlink icon"></i>
-                        </g:link>
-                    </td>
-                </g:if>
             </tr>
         </g:each>
 

@@ -54,7 +54,17 @@ class SubscriptionsQueryService {
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextOrg]
 
         String base_qry
+        //test
+        String providerSort
         Map qry_params
+        if(params.sort == "providerAgency") {
+            providerSort = ', (select oo.org.name from OrgRole oo where oo.sub = s and oo.roleType in (:providerAgency)) as sortname'
+            qry_params = [providerAgency:[RDStore.OR_PROVIDER,RDStore.OR_AGENCY]]
+        }
+        else {
+            providerSort = ""
+            qry_params = [:]
+        }
 
         if (! params.orgRole) {
             if (accessService.checkPerm(contextOrg,'ORG_CONSORTIUM')) {
@@ -70,40 +80,40 @@ class SubscriptionsQueryService {
 
         if (params.orgRole == 'Subscriber') {
 
-            base_qry = "from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
+            base_qry = "${providerSort} from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
 
-            qry_params = ['roleType1':role_sub, 'roleType2':[role_subCons,role_subColl], 'activeInst':contextOrg, 'scRoleType':[role_sub_consortia,role_sub_collective]]
+            qry_params << ['roleType1':role_sub, 'roleType2':[role_subCons,role_subColl], 'activeInst':contextOrg, 'scRoleType':[role_sub_consortia,role_sub_collective]]
         }
 
         if (params.orgRole == 'Subscription Consortia') {
             if (params.actionName == 'manageMembers') {
-                base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                             " AND s.instanceOf is not null "
-                qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
+                qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             } else {
                 if (params.showParentsAndChildsSubs) {
-                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
-                    qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
+                    base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
+                    qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 } else {//nur Parents
-                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                    base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                                 " AND s.instanceOf is null "
-                    qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
+                    qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 }
             }
         }
         else if (params.orgRole == 'Subscription Collective') {
             if (params.actionName == 'manageMembers') {
-                base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                         " AND s.instanceOf is not null "
-                qry_params = ['roleType':role_sub_collective, 'activeInst':contextOrg]
+                qry_params << ['roleType':role_sub_collective, 'activeInst':contextOrg]
             } else {
                 if (params.showParentsAndChildsSubs) {
-                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
-                    qry_params = ['roleType':role_sub_collective, 'activeInst':contextOrg]
+                    base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
+                    qry_params << ['roleType':role_sub_collective, 'activeInst':contextOrg]
                 } else { //nur Parents
-                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                    base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                             " AND ( s.instanceOf is null or exists ( select o2 from s.orgRelations as o2 where ( o2.roleType = :roleType2 AND o2.org = :activeInst ) ) )"
-                    qry_params = ['roleType':role_sub_collective, 'roleType2': role_subCons, 'activeInst':contextOrg]
+                    qry_params << ['roleType':role_sub_collective, 'roleType2': role_subCons, 'activeInst':contextOrg]
                 }
             }
         }
@@ -200,7 +210,7 @@ class SubscriptionsQueryService {
         if (params.filterPropDef) {
             def query = propertyService.evalFilterQuery(params, base_qry, 's', qry_params)
             base_qry = query.query
-            qry_params = query.queryParams
+            qry_params.putAll(query.queryParams)
             filterSet = true
         }
 
@@ -312,9 +322,11 @@ class SubscriptionsQueryService {
             }
         }
 
-        //ERMS-584: the symbol "§" means that the given sort parameter should not be considered in base query
-        if ((params.sort != null) && (params.sort.length() > 0) && params.sort.indexOf("§") < 0) {
-            base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            if(params.sort == "providerAgency")
+                base_qry += " order by sortname ${params.order}"
+            else
+                base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
             base_qry += " order by lower(trim(s.name)) asc"
         }

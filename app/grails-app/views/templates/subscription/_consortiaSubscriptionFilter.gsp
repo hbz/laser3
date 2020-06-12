@@ -1,0 +1,186 @@
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<laser:serviceInjection />
+
+<g:render template="/templates/filter/javascript" />
+<semui:filter showFilterButton="true">
+    <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form">
+        <g:if test="${license}">
+            <input type="hidden" name="id" value="${license.id}"/>
+        </g:if>
+        <div class="three fields">
+            <div class="field">
+                <%--
+               <label>${message(code: 'default.search.text')}
+                   <span data-position="right center" data-variation="tiny" data-content="${message(code:'default.search.tooltip.subscription')}">
+                       <i class="question circle icon"></i>
+                   </span>
+               </label>
+               <div class="ui input">
+                   <input type="text" name="q"
+                          placeholder="${message(code: 'default.search.ph')}"
+                          value="${params.q}"/>
+               </div>
+               --%>
+
+                <label>${message(code:'myinst.consortiaSubscriptions.consortia')}</label>
+                <g:select class="ui search selection dropdown" name="member"
+                          from="${filterConsortiaMembers}"
+                          optionKey="id"
+                          optionValue="${{ it.sortname + ' (' + it.name + ')'}}"
+                          value="${params.member}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+
+            <g:if test="${'onlyMemberSubs' in tableConfig}">
+                <div class="field fieldcontain">
+                    <label for="subscription">${message(code: 'subscription')}</label>
+                    <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <%-- continue here: change to ajax query --%>
+                    </select>
+                </div>
+            </g:if>
+
+            <div class="field fieldcontain">
+                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+            </div>
+
+            <div class="field fieldcontain">
+                <label>${message(code: 'default.status.label')}</label>
+                <%
+                    def fakeList = []
+                    fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
+                    fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
+                %>
+                <laser:select class="ui dropdown" name="status"
+                              from="${ fakeList }"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.status}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+        </div>
+
+        <div class="four fields">
+            <g:render template="../templates/properties/genericFilter" model="[propList: filterPropList]"/>
+
+            <div class="field">
+                <label>${message(code:'subscription.form.label')}</label>
+                <laser:select class="ui dropdown" name="form"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.form}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+
+            <div class="field">
+                <label>${message(code:'subscription.resource.label')}</label>
+                <laser:select class="ui dropdown" name="resource"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.resource}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+        </div>
+
+        <div class="five fields">
+            <g:if test="${institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID}">
+                <div class="field">
+                    <fieldset id="subscritionType">
+                        <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
+                        <div class="inline fields la-filter-inline">
+                            <%
+                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
+                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
+                            %>
+                            <g:each in="${subTypes}" var="subType">
+                                <div class="inline field">
+                                    <div class="ui checkbox">
+                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
+                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                               tabindex="0">
+                                    </div>
+                                </div>
+                            </g:each>
+                        </div>
+                    </fieldset>
+                </div>
+            </g:if>
+            <div class="field fieldcontain">
+                <label for="identifier">${message(code: 'default.search.identifier')}</label>
+                <div class="ui input">
+                    <input type="text" id="identifier" name="identifier"
+                           placeholder="${message(code: 'default.search.identifier.ph')}"
+                           value="${params.identifier}"/>
+                </div>
+            </div>
+            <div class="field">
+                <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
+                <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
+                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
+                        value="${subKind.id}" ">
+                        ${subKind.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
+
+            </div>
+
+            <div class="field">
+                <label>${message(code:'subscription.isPublicForApi.label')}</label>
+                <laser:select class="ui fluid dropdown" name="isPublicForApi"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.isPublicForApi}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <div class="field">
+                <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.hasPerpetualAccess}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+
+
+        </div>
+
+        <div class="two fields">
+
+            <div class="field">
+                <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
+                <div class="inline fields la-filter-inline">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
+                            <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
+                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
+            </div>
+
+        </div>
+    </g:form>
+</semui:filter>
