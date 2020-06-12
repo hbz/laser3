@@ -43,14 +43,14 @@
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
                             <th scope="col" rowspan="2">
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
                                     <i class="users large icon"></i>
-                                </span>
+                                </a>
                             </th>
                             <th scope="col" rowspan="2">
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
                                     <i class="money bill large icon"></i>
-                                </span>
+                                </a>
                             </th>
                         </g:if>
                         <g:if test="${!(contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM')}">
