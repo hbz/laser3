@@ -4,9 +4,17 @@
 
 2589    10.06.2020  rc1.4       Andreas Bug         Private Merkmale wurden bei Verträgen nicht angezeigt
 
+2526    10.06.2020  rc1.4       Ingrid  Bug         Tooltips im Tabellenheader werden nicht mehr überdeckt & Anzeigefehler bei allen Tooltips gefixt
+
 2588    09.06.2020  rc1.4       Andreas Bug         Verknüpfbare Verträge wurden für Vollnutzer nicht angezeigt
 
 2587    09.06.2020  rc1.4       Andreas Bug         Anzeigeüberprüfung der Nutzungsstatistiken wurde korrigiert
+
+--      09.06.2020  hbz-dev     Ingrid  Feature     change circle size of or-button
+
+2408    08.06.2020  rc1.4       Ingrid  Bug         Nach Ausführen eines X-Editable-Elements kann man jetz wieder das Menu mit Hover bedienen
+
+2465    08.06.2020  rc1.4       Ingrid  Bug         Sicht des Kalendermonats jetzt ohne Fehler beim Scrollen
 
 2560    05.06.2020  rc1.4       Andreas Bug         Kostenposten ohne Vorzeichen wurden nicht angelegt
 
