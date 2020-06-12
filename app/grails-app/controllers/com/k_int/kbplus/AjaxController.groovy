@@ -2498,13 +2498,18 @@ class AjaxController {
                     }
                 } else {
                     def binding_properties = [:]
+
                     if (target_object."${params.name}" instanceof Double) {
                         params.value = Double.parseDouble(params.value)
                     }
                     if (target_object."${params.name}" instanceof Boolean) {
                         params.value = params.value?.equals("1")
                     }
-                    binding_properties[params.name] = params.value
+                    if(params.value instanceof String) {
+                        String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
+                        binding_properties[params.name] = value
+                    }
+                    else binding_properties[params.name] = params.value
                     bindData(target_object, binding_properties)
 
                     target_object.save(failOnError: true)
