@@ -134,7 +134,7 @@
 
 
 
-            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,com.k_int.kbplus.GenericOIDService.getOID(subscriptionInstance))}"/>
+            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,GenericOIDService.getOID(subscriptionInstance))}"/>
             %{--<sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">--}%
                 %{--<div class="divider">OLD:</div>--}%
                 %{--<g:if test="${subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_LOCAL && !previousSubscriptions}">--}%

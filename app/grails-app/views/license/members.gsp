@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -110,7 +110,7 @@
         <g:each in="${validMemberLicenses}" status="i" var="row">
             <g:set var="lic" value="${row.license}"/>
             <%
-                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(com.k_int.kbplus.GenericOIDService.getOID(lic))
+                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(lic))
                 License navPrevLicense = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                 License navNextLicense = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
             %>
