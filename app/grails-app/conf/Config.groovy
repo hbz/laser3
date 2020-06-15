@@ -432,15 +432,27 @@ grails.exceptionresolver.params.exclude = ['password']
 
 grails.project.dependency.resolver = "maven"
 
+// Log directory/created in current working dir if tomcat var not found.
+File logWatchFile
+// GlobalDataSyncLog directory/created in current working dir if tomcat var not found.
+File globalDataSyncLogWatchFile
+
+String base = System.getProperty("catalina.base")
+boolean environment_dev = false
 // set per-environment serverURL stem for creating absolute links
 environments {
     development {
         grails.logging.jul.usebridge = true
         grails.serverURL = "http://localhost:8080/laser"
+        environment_dev = true
+        logWatchFile = new File("logs/${appName}-${appVersion}.log")
+        globalDataSyncLogWatchFile = new File ("logs/globalDataSyncLog-${appVersion}.log")
     }
     production {
         grails.logging.jul.usebridge = false
         grails.serverURL = "http://localhost:8080/laser" // override in local config (laser-config.groovy)
+        logWatchFile = new File ("${base}/logs/catalina.out")
+        globalDataSyncLogWatchFile = new File ("${base}/logs/globalDataSyncLog-${appVersion}.log")
     }
 }
 
@@ -448,31 +460,13 @@ basicDataFileName = 'basicDataDump.xml'
 orgDumpFileNamePattern = 'orgDump_'
 orgDumpFileExtension = '.xml'
 
-// Log directory/created in current working dir if tomcat var not found.
-File logWatchFile
-
-// First lets see if we have a log file present.
-String base = System.getProperty("catalina.base")
-if (base) {
-    logWatchFile = new File ("${base}/logs/catalina.out")
-
-   if (!logWatchFile.exists()) {
-        // Need to create one in current context.
-        base = false;
-   }
-}
-
-if (!base) {
-    logWatchFile = new File("logs/${appName}-${appVersion}.log")
-}
 
 // Log file variable.
 def logFile = logWatchFile.canonicalPath
+def globalDataSyncFile = globalDataSyncLogWatchFile.canonicalPath
 
 //System.out.println("~ using log file location: ${logFile}")
 
-// Also add it as config value too.
-log_location = logFile
 
 grails {
     fileViewer {
@@ -495,21 +489,28 @@ log4j = {
 
   appenders {
     console name: "stdout", threshold: org.apache.log4j.Level.ALL
-    if (!base) {
+    if (environment_dev) {
       appender new RollingFileAppender(
           name: 'dailyAppender',
           fileName: (logFile),
           layout: pattern(conversionPattern:'%d [%t] %-5p %c{2} %x - %m%n')
       )
     }
+      appender new RollingFileAppender(
+              name: 'globalDataSyncAppender',
+              fileName: (globalDataSyncFile),
+              layout: pattern(conversionPattern: '%d [%t] %-5p %c{2} %x - %m%n')
+      )
   }
   root {
-    if (!base) {
+    if (environment_dev) {
       error 'stdout', 'dailyAppender'
     } else {
       error 'stdout'
     }
   }
+
+  debug globalDataSyncAppender: "grails.app.services.com.k_int.kbplus.GlobalSourceSyncService"
   //    // Enable Hibernate SQL logging with param values
   //    trace 'org.hibernate.type'
   // debug 'org.hibernate.SQL'
@@ -533,13 +534,11 @@ log4j = {
 
 
   debug  'grails.app.controllers',
-      'grails.app.service',
       'grails.app.services',
       'grails.app.domain',
       'grails.app.conf',
       'grails.app.jobs',
       'grails.app.conf.BootStrap',
-      'grails.app.controllers.OrganisationController',
       //'edu.umn.shibboleth.sp',
       'com.k_int',
   // 'org.springframework.security'
