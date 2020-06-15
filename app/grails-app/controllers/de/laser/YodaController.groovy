@@ -984,7 +984,8 @@ class YodaController {
         if(params.create)
         {
                 SystemMessage sm = new SystemMessage(
-                        content: params.content ?: '',
+                        content_de: params.content_de ?: '',
+                        content_en: params.content_en ?: '',
                         type: params.type,
                         isActive: false)
 

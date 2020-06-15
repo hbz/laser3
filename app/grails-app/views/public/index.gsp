@@ -83,7 +83,7 @@
 
                         <g:each in="${systemMessages}" var="news" status="i">
                             <div <g:if test="${i>0}">style="padding-top:1.6em"</g:if>>
-                                <% println news.content %>
+                                <% println news.getLocalizedContent() %>
                             </div>
                         </g:each>
 

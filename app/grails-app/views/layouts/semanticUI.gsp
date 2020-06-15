@@ -724,7 +724,7 @@
 
                     <g:each in="${systemMessages}" var="message">
                         <div style="padding-top:1.6em">
-                            <% println message.content %>
+                            <% println message.getLocalizedContent() %>
                         </div>
                     </g:each>
 

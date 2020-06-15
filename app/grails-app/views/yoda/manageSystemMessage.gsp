@@ -36,9 +36,16 @@
     </thead>
     <tbody>
     <g:each in="${systemMessages}" var="msg">
-        <tr>
+        <tr style="vertical-align: top">
             <td>
-                <semui:xEditable owner="${msg}" field="content" type="textarea"/>
+                <div class="ui attached segment">
+                    <strong>Deutsch</strong><br />
+                    <semui:xEditable owner="${msg}" field="content_de" type="textarea"/>
+                </div>
+                <div class="ui attached segment">
+                    <strong>Englisch</strong><br />
+                    <semui:xEditable owner="${msg}" field="content_en" type="textarea"/>
+                </div>
             </td>
             <td>
                 <g:if test="${SystemMessage.TYPE_OVERLAY == msg.type}">Systemmeldung</g:if>
@@ -66,8 +73,13 @@
 
         <fieldset>
             <div class="field">
-                <label>Nachricht</label>
-                <textarea name="content" ></textarea>
+                <label>Nachricht (Deutsch)</label>
+                <textarea name="content_de" ></textarea>
+            </div>
+
+            <div class="field">
+                <label>Nachricht (Englisch)</label>
+                <textarea name="content_en" ></textarea>
             </div>
 
             <div class="field">
