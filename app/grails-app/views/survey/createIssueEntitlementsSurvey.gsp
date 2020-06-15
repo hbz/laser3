@@ -64,19 +64,10 @@
                                   placeholder="filter.placeholder" value="${validOn}"/>
             </div>
 
-
-            <!-- TMP -->
-            <%
-                def fakeList = []
-                fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
-                fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
-                fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
-            %>
-
             <div class="field fieldcontain">
                 <label>${message(code: 'default.status.label')}</label>
                 <laser:select class="ui dropdown" name="status"
-                              from="${fakeList}"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.status}"
@@ -276,7 +267,6 @@
                             <g:if test="${editable && accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
 
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay"
-                                            data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
                                             controller="survey" action="addSubtoIssueEntitlementsSurvey"
                                             params="[sub: s.id]">
                                         <g:message code="createSubscriptionSurvey.selectButton"/>

@@ -8,7 +8,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -16,6 +16,7 @@ import de.laser.interfaces.DeleteFlag
 
 import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
+import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -24,8 +25,10 @@ import java.text.SimpleDateFormat
 
 @Log4j
 class Org
-        extends AbstractBaseDomain
+        extends AbstractBaseDomainWithCalculatedLastUpdated
         implements DeleteFlag {
+
+    static Log static_logger = LogFactory.getLog(Org)
 
     @Transient
     def sessionFactory // TODO: ugliest HOTFIX ever
@@ -55,11 +58,14 @@ class Org
     String comment
     String ipRange
     String scope
-    Date dateCreated
-    Date lastUpdated
+
     Org createdBy
     Org legallyObligedBy
     String categoryId
+
+    Date dateCreated
+    Date lastUpdated
+    Date lastUpdatedCascading
 
     @RefdataAnnotation(cat = RDConstants.ORG_SECTOR)
     RefdataValue sector
@@ -75,9 +81,6 @@ class Org
 
     @RefdataAnnotation(cat = '?')
     RefdataValue region
-
-    @RefdataAnnotation(cat = RDConstants.FEDERAL_STATE)
-    RefdataValue federalState
 
     @RefdataAnnotation(cat = RDConstants.LIBRARY_NETWORK)
     RefdataValue libraryNetwork
@@ -156,7 +159,6 @@ class Org
         membership          column:'org_membership'
            country          column:'org_country_rv_fk'
             region          column:'org_region_rv_fk'
-      federalState          column:'org_federal_state_rv_fk'
     libraryNetwork          column:'org_library_network_rv_fk'
         funderType          column:'org_funder_type_rv_fk'
      funderHskType          column:'org_funder_hsk_type_rv_fk'
@@ -168,6 +170,7 @@ class Org
         createdBy           column:'org_created_by_fk'
         legallyObligedBy    column:'org_legally_obliged_by_fk'
     costConfigurationPreset column:'org_config_preset_rv_fk'
+       lastUpdatedCascading column:'org_last_updated_cascading'
 
         orgType             joinTable: [
                 name:   'org_type',
@@ -215,7 +218,6 @@ class Org
 //                      return false
 //                  }
 //              })
-        federalState(nullable:true, blank:true)
       libraryNetwork(nullable:true, blank:true)
           funderType(nullable:true, blank:true)
        funderHskType(nullable:true, blank:true)
@@ -227,24 +229,7 @@ class Org
       costConfigurationPreset(nullable:true, blank:false)
              orgType(nullable:true, blank:true)
              gokbId (nullable:true, blank:true)
-    }
-
-    /*
-    // ERMS-1497
-    List<Combo> getIncomingCombos() {
-        Combo.executeQuery('SELECT c FROM Combo c WHERE c.toOrg = :org AND c.status = :active',
-                [org: this, active: COMBO_STATUS_ACTIVE])
-    }
-
-    // ERMS-1497
-    List<Combo> getOutgoingCombos() {
-        Combo.executeQuery('SELECT c FROM Combo c WHERE c.fromOrg = :org AND c.status = :active',
-                [org: this, active: COMBO_STATUS_ACTIVE])
-    }
-    */
-
-    def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.globalUID)
+        lastUpdatedCascading (nullable: true, blank: false)
     }
 
     @Override
@@ -266,6 +251,14 @@ class Org
         }
 
         super.beforeInsert()
+    }
+
+    @Override
+    def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
+        deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
     boolean setDefaultCustomerType() {

@@ -48,7 +48,8 @@ class UserSettings {
         IS_REMIND_FOR_ORG_PRIVATE_PROP              (RefdataValue, RDConstants.Y_N),
         IS_REMIND_FOR_PERSON_PRIVATE_PROP           (RefdataValue, RDConstants.Y_N),
         IS_REMIND_FOR_TASKS                         (RefdataValue, RDConstants.Y_N),
-        IS_REMIND_FOR_SURVEYS_ENDDATE               (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE     (RefdataValue, RDConstants.Y_N),
 
         REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD  (Integer),
         REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE       (Integer),
@@ -60,7 +61,8 @@ class UserSettings {
         REMIND_PERIOD_FOR_ORG_PRIVATE_PROP            (Integer),
         REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP         (Integer),
         REMIND_PERIOD_FOR_TASKS                       (Integer),
-        REMIND_PERIOD_FOR_SURVEYS_ENDDATE             (Integer)
+        REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE             (Integer),
+        REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE             (Integer)
 
         KEYS(type, rdc) {
             this.type = type

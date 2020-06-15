@@ -10,9 +10,21 @@
     </a>
 </g:if>
 
+<%
+    String header, thisString
+    switch(context.class.name) {
+        case Subscription.class.name: header = message(code:"subscription.linking.header")
+            thisString = message(code:"subscription.linking.this")
+            break
+        case License.class.name: header = message(code:"license.linking.header")
+            thisString = message(code:"license.linking.this")
+            break
+    }
+%>
+
 <semui:modal id="${tmplModalID}" text="${tmplText}">
-    <g:form id="link_subs_${tmplModalID}" class="ui form" url="[controller: 'ajax', action: 'linkSubscriptions']" method="post">
-        <input type="hidden" name="context" value="${context}"/>
+    <g:form id="link_${tmplModalID}" class="ui form" url="[controller: 'ajax', action: 'linkObjects']" method="post">
+        <input type="hidden" name="context" value="${GenericOIDService.getOID(context)}"/>
         <%
             List<RefdataValue> refdataValues = RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LINK_TYPE)
             LinkedHashMap linkTypes = [:]
@@ -23,10 +35,10 @@
                 }
                 if(link && link.linkType == rv) {
                     int perspIndex
-                    if(context == Subscription.class.name+":"+link.source) {
+                    if(context == link.source) {
                         perspIndex = 0
                     }
-                    else if(context == Subscription.class.name+":"+link.destination) {
+                    else if(context == link.destination) {
                         perspIndex = 1
                     }
                     else {
@@ -56,12 +68,12 @@
             <div id="sub_role_tab_${tmplModalID}" class="ui grid">
                 <div class="row">
                     <div class="column">
-                        <g:message code="subscription.linking.header"/>
+                        ${header}
                     </div>
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <g:message code="subscription.linking.this" />
+                        ${thisString}
                     </div>
                     <div class="twelve wide column">
                         <g:select class="ui dropdown select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
@@ -70,11 +82,11 @@
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <g:message code="subscription" />
+                        <g:message code="subscription.slash.name" />
                     </div>
                     <div class="twelve wide column">
                         <div class="ui search selection dropdown la-full-width" id="${selectPair}">
-                            <input type="hidden" name="${selectPair}" value="${pair?.class?.name}:${pair?.id}"/>
+                            <input type="hidden" name="${selectPair}"/>
                             <i class="dropdown icon"></i>
                             <input type="text" class="search"/>
                             <div class="default text"></div>
@@ -83,7 +95,7 @@
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <g:message code="subscription.linking.comment" />
+                        <g:message code="default.linking.comment" />
                     </div>
                     <div class="twelve wide column">
                         <g:textArea class="ui" name="${linkComment}" id="${linkComment}" value="${comment?.owner?.content}"/>
@@ -98,11 +110,11 @@
     $(document).ready(function(){
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?status=FETCH_ALL&query={query}&ctx=${context}",
+                url: "<g:createLink controller="ajax" action="lookupSubscriptionsLicenses"/>?status=FETCH_ALL&query={query}&filterMembers=true&ctx=${GenericOIDService.getOID(context)}",
                 cache: false
             },
             clearable: true,
-            minCharacters: 0
+            minCharacters: 1
         });
     });
 </r:script>

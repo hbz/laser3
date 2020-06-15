@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings;" %>
+<%@ page import="com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated; com.k_int.kbplus.UserSettings;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -25,7 +25,10 @@ ${message(code: 'email.text.title', locale: language)} ${userName},
 ${message(code: 'surveyConfig.orgs.label', locale: language)}: ${orgName}
 <br>
 <br>
-${message(code: 'surveyInfo.name.label', locale: language)}: ${survey.name} (<g:formatDate format="${message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')}"
+${message(code: 'surveyInfo.name.label', locale: language)}: <b>${survey.name} </b>
+
+<br>
+(<g:formatDate format="${message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')}"
                               date="${survey.startDate}"/> - <g:formatDate
         format="${message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')}" date="${survey.endDate}"/>)
 

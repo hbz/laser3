@@ -100,6 +100,13 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                                       value="${params.asAt}"/>
                 </div>
             </g:if>--}%
+
+            <div class="two fields">
+                <semui:datepicker label="title.dateFirstOnline.from" name="dateFirstOnlineFrom" placeholder="default.date.label" value="${params.dateFirstOnlineFrom}"/>
+
+                <semui:datepicker label="title.dateFirstOnline.to"  name="dateFirstOnlineTo" placeholder="default.date.label" value="${params.dateFirstOnlineTo}"/>
+            </div>
+
         </div>
         <div class="three fields">
 
@@ -109,8 +116,18 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             </div>
 
             <div class="field">
-                <label for="seriesNames">${message(code: 'renewEntitlementsWithSurvey.filter.series_names')}</label>
-                <input name="seriesNames" id="seriesNames" value="${params.series_names}"/>
+                <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
+
+                <select name="series_names" id="series_names" multiple="" class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${seriesNames}" var="seriesName">
+                        <option <%=(params.list('series_names').contains(seriesName)) ? 'selected="selected"' : ''%>
+                                value="${seriesName}">
+                            ${seriesName}
+                        </option>
+                    </g:each>
+                </select>
             </div>
 
             <div class="field">
@@ -156,7 +173,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             id="${newSub.id}"
             params="[surveyConfigID: surveyConfig.id, tab: 'allIEs']">
         <g:message code="renewEntitlementsWithSurvey.selectableTitles"/>
-        <div class="ui circular label">${countAllIEs}</div>
+        <div class="ui circular label">${countAllSourceIEs}/${countAllIEs}</div>
     </g:link>
 
     <g:link class="item ${params.tab == 'selectedIEs' ? 'active' : ''}"

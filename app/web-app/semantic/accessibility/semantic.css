@@ -2544,7 +2544,7 @@ aside.ui.accordion .title:not(.ui) {
 .ui.buttons .or {
   position: relative;
   width: 0.3em;
-  height: 2.57142857em;
+  height: 2.97142857em;
   z-index: 3;
 }
 
@@ -2557,11 +2557,11 @@ aside.ui.accordion .title:not(.ui) {
   left: 50%;
   background-color: #FFFFFF;
   text-shadow: none;
-  margin-top: -0.89285714em;
-  margin-left: -0.89285714em;
-  width: 1.78571429em;
-  height: 1.78571429em;
-  line-height: 1.78571429em;
+  margin-top: -1.09285714em;
+  margin-left: -1.09285714em;
+  width: 2.18571429em;
+  height: 2.18571429em;
+  line-height: 2.18571429em;
   color: rgba(0, 0, 0, 0.4);
   font-style: normal;
   font-weight: bold;
@@ -17428,6 +17428,15 @@ dt {
 dd {
   margin-left: 10px;
 }
+
+.ui.breadcrumb ul {
+  display: inline;
+  padding: 0;
+}
+
+.ui.breadcrumb ul li {
+  display: inline;
+}
 /*!
  * # Semantic UI 2.3.1 - Loader
  * http://github.com/semantic-org/semantic-ui/
@@ -28088,7 +28097,8 @@ Floated Menu / Item
   background: #F2F2F2;
 }
 
-.ui.table tr td {
+.ui.table tr td,
+.ui.table tr .la-th-column {
   padding: 20px 0;
 }
 
@@ -28099,21 +28109,19 @@ Floated Menu / Item
 }
 
 .ui.table tr th {
-  color: #515151;
-  font-size: 0.8rem;
+  font-weight: normal;
 }
 
-.ui.table tr th:not(.la-no-uppercase) {
+.ui.table tr th:not(.la-th-column):not(.la-no-uppercase) {
+  font-weight: bold;
+  color: #515151;
+  font-size: 0.8rem;
   text-transform: uppercase;
 }
 
-.ui.table tr th a {
+.ui.table tr th:not(.la-th-column):not(.la-no-uppercase) a {
   cursor: pointer;
   color: #515151;
-}
-
-.ui.table tr th:not(.sortable) a {
-  text-decoration: underline;
 }
 
 /*--------------
@@ -28134,7 +28142,8 @@ Floated Menu / Item
   border-top: none;
 }
 
-.ui.la-table.table tr td {
+.ui.la-table.table tr td,
+.ui.la-table.table tr th.la-th-column {
   border-top: 7px solid #F4F8F9;
 }
 
@@ -28294,6 +28303,11 @@ Floated Menu / Item
 
 .ui.table thead tr:nth-child(2) > th {
   top: 118px;
+}
+
+.ui.table.day thead tr:first-child > th,
+.ui.table.day thead tr:nth-child(2) > th {
+  position: static !important;
 }
 /*!
  * # Semantic UI 2.3.1 - Ad
@@ -36563,6 +36577,10 @@ a.ui.nag {
 
 [data-tooltip]:after {
   white-space: normal;
+}
+
+.ui.popup .content {
+  text-transform: none;
 }
 /*!
  * # Semantic UI 2.3.1 - Progress Bar

@@ -1,9 +1,8 @@
 package de.laser.domain
 
 import com.k_int.kbplus.TitleInstancePackagePlatform
-import de.laser.traits.AuditableTrait
 
-class TIPPCoverage extends AbstractCoverage implements AuditableTrait {
+class TIPPCoverage extends AbstractCoverage {
 
     Date dateCreated
     Date lastUpdated
@@ -41,5 +40,4 @@ class TIPPCoverage extends AbstractCoverage implements AuditableTrait {
         dateCreated column:'tc_date_created'
         sort startDate: 'asc', startVolume: 'asc', startIssue: 'asc', endDate: 'asc', endVolume: 'asc', endIssue: 'asc'
     }
-
 }

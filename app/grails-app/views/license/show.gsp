@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
+<%@ page import="com.k_int.kbplus.License;com.k_int.kbplus.Subscription;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
 <!doctype html>
 <%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
@@ -28,24 +28,21 @@
             <semui:xEditable owner="${license}" field="reference" id="reference"/>
         </h1>
 
+        <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+
         <g:render template="nav" />
 
-        <semui:objectStatus object="${license}" status="${license.status}" />
+        <%--<semui:objectStatus object="${license}" status="${license.status}" />--%>
 
-        <g:if test="${license.instanceOf && (contextOrg?.id == license.getLicensingConsortium()?.id)}">
+        <g:if test="${license.instanceOf && (institution?.id == license.getLicensingConsortium()?.id)}">
             <div class="ui negative message">
                 <div class="header"><g:message code="myinst.message.attention" /></div>
                 <p>
                     <g:message code="myinst.licenseDetails.message.ChildView" />
-                    <g:each in="${license.getAllLicensee()?.collect{itOrg -> itOrg.getDesignation()}}" var="licensee">
-                        <span class="ui label">${licensee}</span>,
-                    </g:each>
-
                     <g:message code="myinst.licenseDetails.message.ConsortialView" />
-                    <g:link controller="license" action="show" id="${license.instanceOf?.id}">
+                    <g:link controller="license" action="show" id="${license.instanceOf.id}">
                         <g:message code="myinst.subscriptionDetails.message.here" />
                     </g:link>.
-
                 </p>
             </div>
         </g:if>
@@ -54,14 +51,14 @@
 
         <semui:messages data="${flash}" />
 
-        <g:if test="${contextOrg.id == license.getLicensingConsortium()?.id || (! license.getLicensingConsortium() && contextOrg.id == license.getLicensee()?.id)}">
+        <g:if test="${institution.id == license.getLicensingConsortium()?.id || (! license.getLicensingConsortium() && institution.id == license.getLicensee()?.id)}">
             <g:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
         </g:if>
 
         <div class="ui stackable grid">
 
             <div class="twelve wide column">
-                <semui:errors bean="${titleInstanceInstance}" />
+                <%--semui:errors bean="${titleInstanceInstance}" /--%>
 
                 <!--<h4 class="ui header">${message(code:'license.details.information')}</h4>-->
 
@@ -74,55 +71,51 @@
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'startDate']" /></dd>
+                                    <g:if test="${editable}">
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'startDate']" /></dd>
+                                    </g:if>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.endDate')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'endDate']" /></dd>
+                                    <g:if test="${editable}">
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'endDate']" /></dd>
+                                    </g:if>
                                 </dl>
                             </div>
                         </div>
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt class="control-label">${message(code: 'default.status.label')}</dt>
+                                    <dt><label class="control-label">${message(code:'license.status')}</label></dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config="${RDConstants.LICENSE_STATUS}"/>
                                     </dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'status']" /></dd>
+                                    <g:if test="${editable}">
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'status']"/></dd>
+                                    </g:if>
                                 </dl>
-                                <%--
                                 <dl>
-
-                                    <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
+                                    <dt><label class="control-label">${message(code:'license.licenseCategory')}</label></dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>
-                                </dl>
-                                -->
-                                <!--
-                                <dl>
-                                    <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
-                                    <dd>
-                                        <semui:xEditableRefData owner="${license}" field="isPublic" config="${RDConstants.Y_N}" />
-                                    </dd>
-                                </dl>
-                                --%>
-                                <dl>
-                                    <dt class="control-label">${message(code:'license.linktoLicense', default:'License Template')}</dt>
-
-                                    <g:if test="${license.instanceOf}">
-                                        <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
+                                    <g:if test="${editable}">
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'licenseCategory']"/></dd>
                                     </g:if>
                                 </dl>
 
-                                <g:if test="${license.instanceOf}">
+                                <g:if test="${license.instanceOf && institution.id == license.getLicensingConsortium().id}">
+                                    <dl>
+                                        <dt class="control-label">${message(code:'license.linktoLicense')}</dt>
+
+                                        <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
+                                    </dl>
                                     <dl>
                                         <dt class="control-label">
-                                            ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                            ${message(code:'license.details.linktoLicense.pendingChange')}
                                         </dt>
                                         <dd>
                                             <semui:xEditableBoolean owner="${license}" field="isSlaved" />
@@ -133,122 +126,90 @@
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
                                     <dd><semui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'isPublicForApi']"/></dd>
+                                    <g:if test="${editable}">
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'isPublicForApi']"/></dd>
+                                    </g:if>
                                 </dl>
 
                             </div>
                         </div>
                     </div>
 
-                    <div class="ui card la-time-card">
+                    <div class="ui card">
                         <div class="content">
-
-                            <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
+                            <h5 class="ui header">
+                                <g:message code="license.details.linksHeader"/>
+                            </h5>
+                            <g:if test="${links.entrySet()}">
                                 <table class="ui three column table">
-                                    <g:each in="${license.subscriptions.sort{it.name}}" status="i" var="sub">
-                                        %{--<g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT && contextOrg?.id in sub.orgRelations?.org?.id}">--}%
-                                        <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id}">
-                                            <tr>
-                                                <th scope="row">
-                                                    <g:if test="${i < 1}">
-                                                        ${message(code:'license.linkedSubscriptions')}
-                                                    </g:if>
-                                                </th>
-                                                <td>
-                                                    <g:link controller="subscription" action="show" id="${sub.id}">${sub.name }</g:link>
-                                                </td>
-                                                <td class="right aligned">
-                                                    <g:if test="${editable}">
-                                                        <div class="ui icon negative buttons">
-                                                            <g:link class="ui button la-selectable-button js-open-confirm-modal" name="unlinkSubscription"
-                                                                    controller="license" action="unlinkSubscription"
-                                                                    params="['license':license.id, 'subscription':sub.id]"
-                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.licence.subscription", args:[sub.name])}"
-                                                                    data-confirm-term-how="unlink">
+                                    <g:each in="${links.entrySet().toSorted()}" var="linkTypes">
+                                        <g:if test="${linkTypes.getValue().size() > 0}">
+                                            <g:each in="${linkTypes.getValue()}" var="link">
+                                                <tr>
+                                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${linkTypes.getKey()}</th>
+                                                    <td>
+                                                        <g:set var="pair" value="${link.getOther(license)}"/>
+                                                        <g:set var="sdf" value="${ de.laser.helper.DateUtil.getSDF_dmy()}"/>
+                                                        <g:if test="${pair instanceof License}">
+                                                            <g:link controller="license" action="show" id="${pair.id}">
+                                                                ${pair.reference}
+                                                            </g:link>
+                                                        </g:if>
+                                                        <g:elseif test="${pair instanceof Subscription}">
+                                                            <g:link controller="subscription" action="show" id="${pair.id}">
+                                                                ${pair.name}
+                                                            </g:link>
+                                                        </g:elseif><br>
+                                                        ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}<br>
+                                                        <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
+                                                        <g:if test="${comment}">
+                                                            <em>${comment.owner.content}</em>
+                                                        </g:if>
+                                                    </td>
+                                                    <td class="right aligned">
+                                                        <g:render template="/templates/links/subLinksModal"
+                                                                  model="${[tmplText:message(code:'license.details.editLink'),
+                                                                            tmplIcon:'write',
+                                                                            tmplCss: 'icon la-selectable-button',
+                                                                            tmplID:'editLink',
+                                                                            tmplModalID:"sub_edit_link_${link.id}",
+                                                                            editmode: editable,
+                                                                            context: license,
+                                                                            link: link
+                                                                  ]}" />
+                                                        <g:if test="${editable}">
+                                                            <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.license.license")}"
+                                                                    data-confirm-term-how="unlink"
+                                                                    controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
                                                                 <i class="unlink icon"></i>
                                                             </g:link>
-                                                        </div>
-                                                    </g:if>
-                                                </td>
-                                            </tr>
+                                                        </g:if>
+                                                    </td>
+                                                </tr>
+                                            </g:each>
                                         </g:if>
                                     </g:each>
                                 </table>
                             </g:if>
                             <g:else>
-                                <dl>
-                                    <dt class="control-label">${message(code:'default.subscription.label')}</dt>
-                                    <dd>
-                                        ${message(code:'license.noLinkedSubscriptions')}
-                                    </dd>
-                                </dl>
+                                <p>
+                                    <g:message code="license.details.noLink"/>
+                                </p>
                             </g:else>
-
-                            %{--<dl>--}%
-                                %{--<dt></dt>--}%
-                                %{--<dd>--}%
-                                    <g:if test="${editable}">
-                                        <g:form id="linkSubscription" class="ui form" name="linkSubscription" action="linkToSubscription">
-                                            <input type="hidden" name="license" value="${license.id}"/>
-                                            <div class="fields">
-                                                <div class="field">
-                                                    <div class="ui search selection dropdown" id="subscription">
-                                                        <input type="hidden" name="subscription">
-                                                        <i class="dropdown icon"></i>
-                                                        <input type="text" class="search">
-                                                        <div class="default text">${message(code:'subscription')}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="field">
-                                                    <input type="submit" class="ui button" value="${message(code:'default.button.link.label')}"/>
-                                                </div>
-                                            </div>
-                                        </g:form>
-                                    </g:if>
-                                %{--</dd>--}%
-                            %{--</dl>--}%
-                            <%--
-                            <dl>
-
-                                <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
-                                <dd>
-                                    <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
-                                        <g:each in="${license.pkgs.sort{it.name}}" var="pkg">
-                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
-                                        </g:each>
-                                    </g:if>
-                                    <g:else>
-                                        ${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}
-                                    </g:else>
-                                </dd>
-                            </dl>
-                            --%>
-                            <dl>
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
-
-                                    <dt class="control-label">${message(code:'license.ONIX-PL-License')}</dt>
-                                    <dd>
-                                        <g:if test="${license.onixplLicense}">
-                                            <g:link controller="onixplLicense" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
-                                            <g:if test="${editable}">
-
-                                                <div class="ui mini icon buttons">
-                                                    <g:link class="ui button" controller="license" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
-                                                        <i class="unlink icon"> </i>${message(code:'default.button.unlink.label')}
-                                                    </g:link>
-                                                </div>
-
-                                            </g:if>
-                                        </g:if>
-                                        <g:else>
-                                            <g:link class="ui positive button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
-                                        </g:else>
-                                    </dd>
-
-                                </sec:ifAnyGranted>
-                            </dl>
+                            <div class="ui la-vertical buttons">
+                                <g:render template="/templates/links/subLinksModal"
+                                          model="${[tmplText:message(code:'license.details.addLink'),
+                                                    tmplID:'addLink',
+                                                    tmplButtonText:message(code:'license.details.addLink'),
+                                                    tmplModalID:'sub_add_link',
+                                                    editmode: editable,
+                                                    context: license
+                                          ]}" />
+                            </div>
                         </div>
                     </div>
+
                     <div class="ui card">
                         <div class="content">
 
@@ -261,7 +222,7 @@
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksSimpleModal"
-                                  model="${[linkType: license?.class?.name,
+                                  model="${[linkType: license.class.name,
                                             parent: license.class.name + ':' + license.id,
                                             property: 'orgLinks',
                                             recip_prop: 'lic',
@@ -298,20 +259,5 @@
 
 
         </div><!-- .grid -->
-
-        <r:script>
-            $(document).ready(function() {
-              $("#subscription").dropdown({
-                apiSettings: {
-                    url: "<g:createLink controller="ajax" action="lookupSubscriptions_IndendedAndCurrent"/>" +
-                            "?ltype=${license.getCalculatedType()}" +
-                            "&query={query}",
-                    cache: false
-                },
-                clearable: true,
-                minCharacters: 0
-              });
-            });
-        </r:script>
   </body>
 </html>

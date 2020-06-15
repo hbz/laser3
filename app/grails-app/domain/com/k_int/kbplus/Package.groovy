@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
@@ -17,20 +17,16 @@ import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class Package
-        extends AbstractBaseDomain
-        /*implements ShareSupport*/ {
+class Package extends AbstractBaseDomainWithCalculatedLastUpdated {
+        //implements ShareSupport {
 
-    // TODO AuditTrail
-  static auditable = [ignore:['version','lastUpdated','pendingChanges']]
-    // ??? org.quartz.JobExecutionException: groovy.lang.MissingPropertyException: No such property: auditable for class: com.k_int.kbplus.Package
+    static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
+    static Log static_logger = LogFactory.getLog(Package)
 
-  static Log static_logger = LogFactory.getLog(Package)
-
-  @Transient
-  def grailsApplication
-  @Transient
-  def deletionService
+    @Transient
+    def grailsApplication
+    @Transient
+    def deletionService
 
   //String identifier
   String name
@@ -68,12 +64,14 @@ class Package
     Platform nominalPlatform
     Date startDate
     Date endDate
-    Date dateCreated
-    Date lastUpdated
     License license
     String forumId
     Set pendingChanges
     Boolean autoAccept = false
+
+    Date dateCreated
+    Date lastUpdated
+    Date lastUpdatedCascading
 
 static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     orgs:      OrgRole,
@@ -122,6 +120,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             pendingChanges sort:'ts', order: 'asc', batchSize: 10
 
             listVerifiedDate column: 'pkg_list_verified_date'
+        lastUpdatedCascading column: 'pkg_last_updated_cascading'
 
             orgs            batchSize: 10
             prsLinks        batchSize: 10
@@ -151,9 +150,14 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
       listVerifiedDate(nullable:true, blank:false)
+      lastUpdatedCascading (nullable: true, blank: false)
   }
 
+    @Override
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         //deletionService.deleteDocumentFromIndex(this.globalUID) ES not connected, reactivate as soon as ES works again
     }
 
@@ -183,10 +187,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
-  /**
-   * Materialise this package into a subscription of the given type (taken or offered)
-   * @param subtype One of 'Subscription Offered' or 'Subscription Taken'
-   */
   @Deprecated
   @Transient
   def createSubscription(subtype,
@@ -317,7 +317,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                               accessStartDate:tipp.accessStartDate,
                                               accessEndDate:tipp.accessEndDate,
                                               acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED)
-              if(new_ie.save()) {
+              if(new_ie.save(flush:true)) {
                   tipp.coverages.each { covStmt ->
                       IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
                               startDate:covStmt.startDate,
@@ -331,7 +331,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                               coverageNote:covStmt.coverageNote,
                               issueEntitlement: new_ie
                       )
-                      ieCoverage.save()
+                      ieCoverage.save(flush:true)
                   }
               }
           }
@@ -676,6 +676,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
+    @Override
     def beforeInsert() {
         if ( name != null ) {
             sortName = generateSortName(name)
@@ -684,6 +685,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         super.beforeInsert()
     }
 
+    @Override
     def beforeUpdate() {
         if ( name != null ) {
             sortName = generateSortName(name)

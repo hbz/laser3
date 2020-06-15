@@ -14,6 +14,21 @@ class EscapeService {
         output
     }
 
+    String replaceUmlaute(String input) {
+
+        String result = input.replaceAll("ä", "ae")
+                .replaceAll("ö", "oe")
+                .replaceAll("ü", "ue")
+                .replaceAll("ß", "ss")
+
+        result = result.replaceAll("Ä", "Ae")
+                .replaceAll("Ö", "Oe")
+                .replaceAll("Ü", "Ue")
+
+        return result;
+
+    }
+
     BigDecimal parseFinancialValue(String input) {
         String uniformedThousandSeparator = input.replaceAll("[',.]/d{3}","")
         BigDecimal output = new BigDecimal(uniformedThousandSeparator.replaceAll(",","."))

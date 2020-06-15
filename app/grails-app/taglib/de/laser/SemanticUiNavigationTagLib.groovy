@@ -23,8 +23,10 @@ class SemanticUiNavigationTagLib {
     def breadcrumbs = { attrs, body ->
 
         out <<   '<nav class="ui breadcrumb" aria-label="Sie sind hier:">'
-        out <<     crumb([controller: 'home', ariaLabel:'Home', text:'<i class="home icon"></i>'])
-        out <<     body()
+        out <<      '<ul>'
+        out <<      crumb([controller: 'home', ariaLabel:'Home', text:'<i class="home icon"></i>'])
+        out <<          body()
+        out <<      '</ul>'
         out <<   '</nav>'
     }
 
@@ -43,7 +45,7 @@ class SemanticUiNavigationTagLib {
                 linkBody = linkBody.encodeAsHTML()
             }
 
-
+            out << '<li>'
             out << g.link(
                     linkBody,
                     controller: attrs.controller,
@@ -53,13 +55,15 @@ class SemanticUiNavigationTagLib {
                     class: 'section' + (attrs.class ? " ${attrs.class}" : ''),
                     id: attrs.id
             )
+            if (! "active".equalsIgnoreCase(attrs.class.toString())) {
+                out << '<span aria-hidden="true"> </span><div class="divider">/</div><span aria-hidden="true"> </span>'
+            }
+            out << '</li>'
         }
         else {
-            out << linkBody.encodeAsHTML()
+            out << '<li class="active section" aria-current="page">' << linkBody.encodeAsHTML() << '</li>'
         }
-        if (! "active".equalsIgnoreCase(attrs.class.toString())) {
-            out << '<span aria-hidden="true"> </span><div class="divider">/</div><span aria-hidden="true"> </span>'
-        }
+
     }
 
     // <semui:crumbAsBadge message="default.editable" class="orange" />

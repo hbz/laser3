@@ -43,7 +43,7 @@
                 <div class="field">
                     <label>${message(code:'default.myProviderAgency.label')}</label>
                     <div class="ui multiple search selection dropdown newFilter" id="filterSubProviders">
-                        <input type="hidden" name="filterSubProviders" value="${filterPresets?.filterSubProviders}">
+                        <input type="hidden" name="filterSubProviders">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -76,7 +76,7 @@
                     <div class="field fieldcontain"><!--NEW -->
                         <label>${message(code:'default.subscription.label')}</label>
                         <div class="ui search selection multiple dropdown newFilter" id="filterCISub">
-                            <input type="hidden" name="filterCISub" value="${filterPresets?.filterCISub}">
+                            <input type="hidden" name="filterCISub">
                             <i class="dropdown icon"></i>
                             <input type="text" class="search">
                             <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -86,7 +86,7 @@
                 <div class="field fieldcontain"><!--NEW -->
                     <label>${message(code:'package.label')}</label>
                     <div class="ui search selection multiple dropdown newFilter" id="filterCISPkg">
-                        <input type="hidden" name="filterCISPkg" value="${filterPresets?.filterCISPkg}">
+                        <input type="hidden" name="filterCISPkg">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -105,7 +105,7 @@
                 <div class="field">
                     <label>${message(code:'financials.budgetCode')}</label>
                     <div class="ui search selection multiple dropdown newFilter" id="filterCIBudgetCode">
-                        <input type="hidden" name="filterCIBudgetCode" value="${filterPresets?.filterCIBudgetCode}">
+                        <input type="hidden" name="filterCIBudgetCode">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -121,7 +121,7 @@
                 <div class="field">
                     <label>${message(code:'financials.invoice_number')}</label>
                     <div class="ui search selection dropdown newFilter" id="filterCIInvoiceNumber">
-                        <input type="hidden" name="filterCIInvoiceNumber" value="${filterPresets?.filterCIInvoiceNumber}">
+                        <input type="hidden" name="filterCIInvoiceNumber">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -136,7 +136,7 @@
                 <div class="field">
                     <label>${message(code:'financials.order_number')}</label>
                     <div class="ui search selection dropdown newFilter" id="filterCIOrderNumber">
-                        <input type="hidden" name="filterCIOrderNumber" value="${filterPresets?.filterCIOrderNumber}">
+                        <input type="hidden" name="filterCIOrderNumber">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -153,7 +153,7 @@
                 <div class="field fieldcontain">
                     <label>${message(code:'financials.referenceCodes')}</label>
                     <div class="ui search selection dropdown newFilter" id="filterCIReference">
-                        <input type="hidden" name="filterCIReference" value="${filterPresets?.filterCIReference}">
+                        <input type="hidden" name="filterCIReference">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -167,24 +167,26 @@
 
                 <div class="field fieldcontain">
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
-                    <laser:select id="filterCIElement" class="ui dropdown selection search"
-                                  name="filterCIElement"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)}"
-                                  optionKey="${{it.class.getName() + ":" + it.id}}"
-                                  optionValue="value"
-                                  value="${filterPresets?.filterCIElement}"
-                                  noSelection="${['':message(code:'default.select.all.label')]}"/>
+                    <select name="filterCIElement" id="filterCIElement" multiple="" class="ui dropdown search selection">
+                        <option value=""><g:message code="default.select.all.label"/></option>
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)}" var="rdv">
+                            <option value="${"${rdv.class.getName()}:${rdv.id}"}" <%=(filterPresets?.filterCIElement?.contains(rdv)) ? 'selected="selected"' : '' %>>
+                                ${rdv.getI10n("value")}
+                            </option>
+                        </g:each>
+                    </select>
                 </div>
 
                 <div class="field fieldcontain">
                     <label for="filterCIStatus">${message(code:'default.status.label')}</label>
-                    <laser:select id="filterCIStatus" class="ui dropdown selection search"
-                                  name="filterCIStatus"
-                                  from="${[de.laser.helper.RDStore.GENERIC_NULL_VALUE]+RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)-de.laser.helper.RDStore.COST_ITEM_DELETED}"
-                                  optionKey="${{it.class.getName() + ":" + it.id}}"
-                                  optionValue="value"
-                                  value="${filterPresets?.filterCIStatus}"
-                                  noSelection="${['':message(code:'default.select.all.label')]}"/>
+                    <select name="filterCIStatus" id="filterCIStatus" multiple="" class="ui dropdown search selection">
+                        <option value=""><g:message code="default.select.all.label"/></option>
+                        <g:each in="${[RDStore.GENERIC_NULL_VALUE]+RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)-RDStore.COST_ITEM_DELETED}" var="rdv">
+                            <option value="${"${rdv.class.getName()}:${rdv.id}"}" <%=(filterPresets?.filterCIStatus?.contains(rdv)) ? 'selected="selected"' : '' %>>
+                                ${rdv.getI10n("value")}
+                            </option>
+                        </g:each>
+                    </select>
                 </div>
             </div><!-- .three -->
 
@@ -255,6 +257,7 @@
                 <div class="field"></div>
                 <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}?reset=true" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                    <g:hiddenField name="showView" value="${showView}"/>
                     <input type="submit" name="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
                 </div>
             </div>
@@ -296,6 +299,31 @@
             "filterCIReference": "${createLink([controller:"ajax",action:"lookupReferences"])}?query={query}"
         };
         $(".newFilter").each(function(k,v){
+            let values = []
+            switch($(this).attr("id")) {
+                case 'filterCISub':
+                    values = [<g:each in="${filterPresets?.filterCISub}" var="ciSub" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(ciSub)}'<g:if test="${i < filterPresets.filterCISub.size()-1}">,</g:if></g:each>];
+                    break;
+                case 'filterCISPkg':
+                    values = [<g:each in="${filterPresets?.filterCISPkg}" var="ciSPkg" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(ciSPkg)}'<g:if test="${i < filterPresets.filterCISPkg.size()-1}">,</g:if></g:each>];
+                    break;
+                case 'filterSubProviders':
+                    values = [<g:each in="${filterPresets?.filterSubProviders}" var="subProvider" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(subProvider)}'<g:if test="${i < filterPresets.filterSubProviders.size()-1}">,</g:if></g:each>];
+                    break;
+                case 'filterCIBudgetCode':
+                    values = [<g:each in="${filterPresets?.filterCIBudgetCode}" var="budgetCode" status="i">'${budgetCode}'<g:if test="${i < filterPresets.filterCIBudgetCode.size()-1}">,</g:if></g:each>];
+                    break;
+                case 'filterCIInvoiceNumber':
+                    values = [<g:each in="${filterPresets?.filterCIInvoiceNumber}" var="invoiceNumber" status="i">'${invoiceNumber}'<g:if test="${i < filterPresets.filterCIInvoiceNumber.size()-1}">,</g:if></g:each>];
+                    break;
+                case 'filterCIOrderNumber':
+                    values = [<g:each in="${filterPresets?.filterCIOrderNumber}" var="orderNumber" status="i">'${orderNumber}'<g:if test="${i < filterPresets.filterCIOrderNumber.size()-1}">,</g:if></g:each>];
+                    break;
+                case 'filterCIReference':
+                    values = [<g:each in="${filterPresets?.filterCIReference}" var="reference" status="i">'${reference}'<g:if test="${i < filterPresets.filterCIReference.size()-1}">,</g:if></g:each>];
+                    break;
+            }
+            $(this).dropdown('set value',values);
             $(this).dropdown({
                 apiSettings: {
                     url: links[$(this).attr("id")],

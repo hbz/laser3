@@ -993,7 +993,7 @@
 .ui.buttons .or {
   position: relative;
   width: 0.3em;
-  height: 2.57142857em;
+  height: 2.97142857em;
   z-index: 3;
 }
 .ui.buttons .or:before {
@@ -1005,11 +1005,11 @@
   left: 50%;
   background-color: #FFFFFF;
   text-shadow: none;
-  margin-top: -0.89285714em;
-  margin-left: -0.89285714em;
-  width: 1.78571429em;
-  height: 1.78571429em;
-  line-height: 1.78571429em;
+  margin-top: -1.09285714em;
+  margin-left: -1.09285714em;
+  width: 2.18571429em;
+  height: 2.18571429em;
+  line-height: 2.18571429em;
   color: rgba(0, 0, 0, 0.4);
   font-style: normal;
   font-weight: bold;

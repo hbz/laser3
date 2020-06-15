@@ -142,12 +142,12 @@
 			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'federalState', 'error')} ">
-	<label for="federalState">
-		<g:message code="org.federalState.label" />
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'region', 'error')} ">
+	<label for="region">
+		<g:message code="org.region.label" />
 	</label>
-	<laser:select id="federalState" name="federalState.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.FEDERAL_STATE)}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.federalState?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+	<laser:select id="region" name="region.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH])}"
+			  optionKey="id" optionValue="value" value="${orgInstance?.region?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'libraryNetwork', 'error')} ">

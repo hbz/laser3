@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription;com.k_int.kbplus.SubscriptionPackage" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription;com.k_int.kbplus.SubscriptionPackage" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
 
@@ -106,6 +106,8 @@
                 <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscriptionInstance.packages}">
                     <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+                    <semui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
+                    <semui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
                 </g:if>
                 <g:else>
                     <semui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.noPackagesYetAdded')}"/>
@@ -132,7 +134,7 @@
 
 
 
-            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
+            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,GenericOIDService.getOID(subscriptionInstance))}"/>
             %{--<sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">--}%
                 %{--<div class="divider">OLD:</div>--}%
                 %{--<g:if test="${subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_LOCAL && !previousSubscriptions}">--}%
@@ -171,7 +173,7 @@
                 </g:else>
             </g:if>
 
-            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM_SURVEY") && showConsortiaFunctions && subscriptionInstance.instanceOf == null }">
+            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM") && showConsortiaFunctions && subscriptionInstance.instanceOf == null }">
                     <semui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
 

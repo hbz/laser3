@@ -107,10 +107,10 @@ class ApiOAMonitor {
             result.scope        = org.scope
             result.shortname    = org.shortname
             result.sortname     = org.sortname
-            result.federalState = org.federalState?.value
+            result.region       = org.region?.value
             result.country      = org.country?.value
             result.libraryType  = org.libraryType?.value
-            result.lastUpdated  = ApiToolkit.formatInternalDate(org.lastUpdated)
+            result.lastUpdated  = ApiToolkit.formatInternalDate(org.getCalculatedLastUpdated())
 
             //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
             //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
@@ -154,7 +154,7 @@ class ApiOAMonitor {
             result.cancellationAllowances 	= sub.cancellationAllowances
             result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
             result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
-            result.lastUpdated          	= ApiToolkit.formatInternalDate(sub.lastUpdated)
+            result.lastUpdated          	= ApiToolkit.formatInternalDate(sub.getCalculatedLastUpdated())
             result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
             result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
             result.name                 	= sub.name
@@ -203,8 +203,18 @@ class ApiOAMonitor {
 
             result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages)
 
-            // TODO: oaMonitor
-            //result.costItems    = ApiCollectionReader.getCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
+            Collection<CostItem> filtered = []
+
+            if (sub.getCalculatedType() in [Subscription.TYPE_PARTICIPATION, Subscription.TYPE_PARTICIPATION_AS_COLLECTIVE]) {
+                List<Org> validOwners = getAccessibleOrgs()
+                List<Org> subSubscribers = sub.getAllSubscribers()
+                //filtered = sub.costItems.findAll{ it.owner in validOwners && it.owner in subSubscribers }
+                filtered = sub.costItems.findAll{ it.owner in validOwners && (it.owner in subSubscribers || it.isVisibleForSubscriber) }
+            }
+            else {
+                filtered = sub.costItems
+            }
+            result.costItems = ApiCollectionReader.getCostItemCollection(filtered)
 
             ApiToolkit.cleanUp(result, true, true)
         }

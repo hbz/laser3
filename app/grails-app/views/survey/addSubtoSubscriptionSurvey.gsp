@@ -36,7 +36,7 @@
                               value="${params.endDate}" />
         </div>
 
-        <g:if test="${!(SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) && !subscription.getCalculatedSuccessor()}">
+        <g:if test="${!(SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true))}">
             <div class="field">
                 <label>${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info')}</label>
                 <div>

@@ -275,9 +275,9 @@
                                     &nbsp
                                 </dd>
                                 <dt>
-                                    <g:message code="org.regions.label" />
+                                    <g:message code="org.region.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.regions.expl')}">
+                                          data-content="${message(code: 'org.region.expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </dt>
@@ -452,6 +452,7 @@
                                         <% com.k_int.kbplus.Person prs = PersonRole.get(pr.id).prs%>
                                         <g:render template="/templates/cpa/person_full_details" model="${[
                                                 person              : prs,
+                                                personRole          : pr,
                                                 personContext       : orgInstance,
                                                 tmplShowDeleteButton    : true,
                                                 tmplShowAddPersonRoles  : true,
@@ -550,7 +551,7 @@
                     </div>
                 </div><!-- .card -->
 
-                <g:if test="${(contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']) && (contextService.getOrg() != orgInstance)}">
+                <g:if test="${(contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM') && (contextService.getOrg() != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">
@@ -642,7 +643,7 @@
          $("*[id^=regions_]").hide();
          if(newValue){
              var id = newValue.split(':')[1]
-             $("#regions_" + id).editable('setValue', null);
+             // $("#regions_" + id).editable('setValue', null);
              $("#regions_" + id).show();
          }
     };

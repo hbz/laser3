@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -24,7 +24,7 @@
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
                             data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="subscriptionDetails" action="members"
+                            data-confirm-term-how="ok" controller="subscription" action="members"
                             params="${params+[exportXLS:true]}">
                         ${message(code:'default.button.exports.xls')}
                     </g:link>
@@ -37,7 +37,7 @@
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
                             data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="subscriptionDetails" action="members"
+                            data-confirm-term-how="ok" controller="subscription" action="members"
                             params="${params+[format:'csv']}">
                         ${message(code:'default.button.exports.csv')}
                     </g:link>
@@ -82,7 +82,7 @@
             <%
                 List<List<String>> tmplConfigShow
                 if(accessService.checkPerm("ORG_CONSORTIUM"))
-                    tmplConfigShow = [['name', 'identifier', 'libraryType'], ['federalState', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
+                    tmplConfigShow = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
                 else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
                     tmplConfigShow = [['name', 'identifier'], ['property']]
             %>
@@ -149,6 +149,13 @@
                                 </span>
                             </g:if>
 
+                            <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                      data-content="${subscr.getCustomerTypeI10n()}">
+                                    <i class="chess rook grey icon"></i>
+                                </span>
+                            </g:if>
+
                             <div class="ui list">
                                 <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
                                     <div class="item">
@@ -182,7 +189,7 @@
                         <td></td>
                     </g:if>
                     <%
-                        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, sub.id)
+                        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(sub))
                         Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                         Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
                     %>
@@ -236,7 +243,7 @@
                                     </span>
                                 </g:else>
                             </g:if>
-                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.sub = :sub',[sub:sub])}"/>
+                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.sub = :sub and ci.costItemStatus != :deleted',[sub:sub,deleted:RDStore.COST_ITEM_DELETED])}"/>
                             <g:if test="${!hasCostItems}">
                                 <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}">
                                     <i class="trash alternate icon"></i>

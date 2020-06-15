@@ -36,7 +36,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.nio.charset.Charset
-import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
@@ -63,6 +62,7 @@ class MyInstitutionController extends AbstractDebugController {
     def organisationService
     def financeService
     def surveyService
+    def formService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -317,7 +317,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def date_restriction = null;
+        def date_restriction = null
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
@@ -345,47 +345,69 @@ class MyInstitutionController extends AbstractDebugController {
 
         result.filterSet = params.filterSet ? true : false
 
-        if (! params.orgRole) {
-            if (accessService.checkPerm("ORG_CONSORTIUM")) {
-                params.orgRole = 'Licensing Consortium'
-            }
-            else {
-                params.orgRole = 'Licensee'
-            }
-        }
+        Set<String> licenseFilterTable = []
 
-        if (params.orgRole == 'Licensee') {
-
-            base_qry = """
-from License as l where (
-    exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-)
-"""
+        if (accessService.checkPerm("ORG_INST")) {
+            base_qry = """from License as l where (
+                exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
+            )"""
             qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
+            if(result.editable)
+                licenseFilterTable << "action"
+            licenseFilterTable << "licensingConsortium"
         }
-
-        if (params.orgRole == 'Licensing Consortium') {
-
-            base_qry = """
-from License as l where (
-    exists ( select o from l.orgLinks as o where ( 
-            ( o.roleType = :roleTypeC 
-                AND o.org = :lic_org 
-                AND l.instanceOf is null
-                AND NOT exists (
-                    select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+        else if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            base_qry = """from License as l where (
+                    exists ( select o from l.orgLinks as o where ( 
+                    ( o.roleType = :roleTypeC 
+                        AND o.org = :lic_org 
+                        AND l.instanceOf is null
+                        AND NOT exists (
+                        select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+                    )
                 )
-            )
-        ))
-)
-"""
+            )))"""
             qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
+            licenseFilterTable << "memberLicenses"
+            if(result.editable)
+                licenseFilterTable << "action"
         }
+        else {
+            base_qry = """from License as l where (
+                exists ( select o from l.orgLinks as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
+            )"""
+            qry_params = [roleType:licensee_cons_role, lic_org:result.institution]
+            licenseFilterTable << "licensingConsortium"
+        }
+        result.licenseFilterTable = licenseFilterTable
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            base_qry += " and genfunc_filter_matcher(l.reference, :ref) = true "
-            qry_params += [ref:"${params['keyword-search']}"]
+            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
+            + " or exists ( select s from Subscription as s where s.owner = l and genfunc_filter_matcher(s.name, :name_filter) = true ) " // filter by subscription
+            + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
+            + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
+            + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
+            + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
+            + " ) ) " // filter by Anbieter, Konsortium, Agency
+            +  " ) ")
+            qry_params += [name_filter:"${params['keyword-search']}"]
             result.keyWord = params['keyword-search']
+        }
+
+        if(params.consortium) {
+            base_qry += " and ( exists ( select o from l.orgLinks as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
+            List<Long> consortia = []
+            List<String> selCons = params.list('consortium')
+            selCons.each { String sel ->
+                consortia << Long.parseLong(sel)
+            }
+            qry_params += [licCons:lic_cons_role,cons:consortia]
+        }
+
+        if (date_restriction) {
+            base_qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null ) "
+            qry_params += [date_restr: date_restriction]
+            qry_params += [date_restr: date_restriction]
         }
 
         // eval property filter
@@ -396,24 +418,34 @@ from License as l where (
             qry_params = psq.queryParams
         }
 
-        if (date_restriction) {
-            base_qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null OR l.startDate >= :date_restr  ) "
-            qry_params += [date_restr: date_restriction]
-            qry_params += [date_restr: date_restriction]
+        if(params.licensor) {
+            base_qry += " and ( exists ( select o from l.orgLinks as o where o.roleType = :licCons and o.org.id in (:licensors) ) ) "
+            List<Long> licensors = []
+            List<String> selLicensors = params.list('licensor')
+            selLicensors.each { String sel ->
+                licensors << Long.parseLong(sel)
+            }
+            qry_params += [licCons:RDStore.OR_LICENSOR,licensors:licensors]
         }
 
-        if(params.status) {
-            base_qry += " and l.status = :status "
-            qry_params += [status:RefdataValue.get(params.status)]
+        if(params.categorisation) {
+            base_qry += " and l.licenseCategory.id in (:categorisations) "
+            List<Long> categorisations = []
+            List<String> selCategories = params.list('categorisation')
+            selCategories.each { String sel ->
+                categorisations << Long.parseLong(sel)
+            }
+            qry_params.categorisations = categorisations
         }
-        else if(params.status == '') {
-            result.filterSet = false
-        }
-        else {
-            base_qry += " and l.status = :status "
-            qry_params += [status:RDStore.LICENSE_CURRENT]
-            params.status = RDStore.LICENSE_CURRENT.id
-            result.defaultSet = true
+
+        if(params.subKind) {
+            base_qry += " and ( exists ( select s from l.subscriptions as s where s.kind.id in (:subKinds) ) ) "
+            List<Long> subKinds = []
+            List<String> selKinds = params.list('subKind')
+            selKinds.each { String sel ->
+                subKinds << Long.parseLong(sel)
+            }
+            qry_params.subKinds = subKinds
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -433,6 +465,10 @@ from License as l where (
         orgRoles.each { oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
+        Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority in ('ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM')) order by os.org.name asc")
+        Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
+        Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
+        result.orgs = orgs
 
 		List bm = du.stopBenchmark()
 		result.benchMark = bm
@@ -745,88 +781,11 @@ join sub.orgRelations or_sub where
         def result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
-
-        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM_SURVEY' || authority == 'ORG_CONSORTIUM' }
-        result.allConsortia = Org.executeQuery(
-                """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
-                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
-                        os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) 
-                        order by lower(o.name)""",
-                [roles: consRoles]
-        )
-
-        def viableOrgs = []
-
-        if ( result.availableConsortia ){
-          result.availableConsortia.each {
-            viableOrgs.add(it)
-          }
-        }
-
-        viableOrgs.add(result.institution)
-
-        def date_restriction = null;
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-
-        if (params.validOn == null || params.validOn.trim() == '') {
-            result.validOn = ""
-        } else {
-            result.validOn = params.validOn
-            date_restriction = sdf.parse(params.validOn)
-        }
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
-        if (! params.status) {
-            if (params.isSiteReloaded != "yes") {
-                params.status = RDStore.SUBSCRIPTION_CURRENT.id
-                result.defaultSet = true
-            }
-            else {
-                params.status = 'FETCH_ALL'
-            }
-        }
-
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.filterSet = tmpQ[2]
-        List<Subscription> subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
-        if(!params.exportXLS)
-        result.num_sub_rows = subscriptions.size()
-
-        result.date_restriction = date_restriction;
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        if (OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
-            result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
-        }
-
-        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
-
-        if(params.sort && params.sort.indexOf("§") >= 0) {
-            switch(params.sort) {
-                case "orgRole§provider":
-                    result.subscriptions.sort { x,y ->
-                        String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
-                        String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
-
-                        if(params.order.equals("desc")){
-                            b.compareToIgnoreCase a
-                        } else {
-                            a.compareToIgnoreCase b
-                        }
-                    }
-                break
-            }
-        }
-
+        result.tableConfig = ['showActions','showLicense']
+        result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
 
         // Write the output to a file
-        sdf = DateUtil.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
@@ -838,7 +797,7 @@ join sub.orgRelations or_sub where
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(subscriptions, "xls", result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(result.allSubscriptions, "xls", result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -856,7 +815,7 @@ join sub.orgRelations or_sub where
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write((String) exportcurrentSubscription(subscriptions,"csv", result.institution))
+                    writer.write((String) exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
                 }
                 out.close()
             }
@@ -1015,73 +974,6 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def addSubscription() {
-        def result = setResultGenerics()
-
-        def date_restriction = null;
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-
-        if (params.validOn == null) {
-            result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            date_restriction = sdf.parse(result.validOn)
-        } else if (params.validOn.trim() == '') {
-            result.validOn = "" 
-        } else {
-            result.validOn = params.validOn
-            date_restriction = sdf.parse(params.validOn)
-        }
-
-        // if ( ! permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM') ) {
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
-            response.sendError(401)
-            result.is_inst_admin = false;
-            // render(status: '401', text:"You do not have permission to add subscriptions to ${result.institution.name}. Please request editor access on the profile page");
-            return;
-        }
-
-        result.is_inst_admin = result.user?.hasAffiliation('INST_ADM')
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-        // def base_qry = " from Subscription as s where s.type.value = 'Subscription Offered' and s.isPublic=?"
-        def qry_params = []
-        String base_qry = " from Package as p where lower(p.name) like ?"
-
-        if (params.q == null) {
-            qry_params.add("%");
-        } else {
-            qry_params.add("%${params.q.trim().toLowerCase()}%");
-        }
-
-        if (date_restriction) {
-            base_qry += " and p.startDate <= ? and p.endDate >= ? "
-            qry_params.add(date_restriction)
-            qry_params.add(date_restriction)
-        }
-
-        // Only list subscriptions where the user has view perms against the org
-        // base_qry += "and ( ( exists select or from OrgRole where or.org =? and or.user = ? and or.perms.contains'view' ) "
-
-        // Or the user is a member of an org who has a consortial membership that has view perms
-        // base_qry += " or ( 2==2 ) )"
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += " order by ${params.sort} ${params.order}"
-        } else {
-            base_qry += " order by p.name asc"
-        }
-
-        result.num_pkg_rows = Package.executeQuery("select p.id " + base_qry, qry_params).size()
-        result.packages = Package.executeQuery("select p ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
-
-        result
-    }
-
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
@@ -1206,7 +1098,6 @@ join sub.orgRelations or_sub where
                         String postfix = cm.get(0).shortname ?: cm.get(0).name
 
                         Subscription cons_sub = new Subscription(
-                                            // type: RefdataValue.getByValue("Subscription Taken"),
                                           type: subType,
                                           kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
                                           name: params.newEmptySubName,
@@ -1252,47 +1143,6 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @Deprecated
-    def buildQuery(params) {
-        log.debug("BuildQuery...");
-
-        StringWriter sw = new StringWriter()
-
-        if (params?.q?.length() > 0)
-            sw.write(params.q)
-        else
-            sw.write("*:*")
-
-        reversemap.each { mapping ->
-
-            // log.debug("testing ${mapping.key}");
-
-            if (params[mapping.key] != null) {
-                if (params[mapping.key].class == java.util.ArrayList) {
-                    params[mapping.key].each { p ->
-                        sw.write(" AND ")
-                        sw.write(mapping.value)
-                        sw.write(":")
-                        sw.write("\"${p}\"")
-                    }
-                } else {
-                    // Only add the param if it's length is > 0 or we end up with really ugly URLs
-                    // II : Changed to only do this if the value is NOT an *
-                    if (params[mapping.key].length() > 0 && !(params[mapping.key].equalsIgnoreCase('*'))) {
-                        sw.write(" AND ")
-                        sw.write(mapping.value)
-                        sw.write(":")
-                        sw.write("\"${params[mapping.key]}\"")
-                    }
-                }
-            }
-        }
-
-        sw.write(" AND type:\"Subscription Offered\"");
-        def result = sw.toString();
-        result;
-    }
-
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processEmptyLicense() {
@@ -1333,7 +1183,6 @@ join sub.orgRelations or_sub where
                     copyLicense.reference = params.licenseName
                     copyLicense.startDate = DateUtil.parseDateGeneric(params.licenseStartDate)
                     copyLicense.endDate = DateUtil.parseDateGeneric(params.licenseEndDate)
-                    copyLicense.status = RefdataValue.get(params.status)
 
                     if (copyLicense.save(flush: true)) {
                         flash.message = message(code: 'license.createdfromTemplate.message')
@@ -1341,8 +1190,9 @@ join sub.orgRelations or_sub where
 
                     if( params.sub) {
                         Subscription subInstance = Subscription.get(params.sub)
-                        subInstance.owner = copyLicense
-                        subInstance.save(flush: true)
+                        subscriptionService.setOrgLicRole(subInstance,copyLicense)
+                        //subInstance.owner = copyLicense
+                        //subInstance.save(flush: true)
                     }
 
                     redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
@@ -1385,11 +1235,11 @@ join sub.orgRelations or_sub where
             }
             if(params.sub) {
                 Subscription subInstance = Subscription.get(params.sub)
-                subInstance.owner = licenseInstance
-                subInstance.save(flush: true)
+                subscriptionService.setOrgLicRole(subInstance,licenseInstance)
+                /*subInstance.owner = licenseInstance
+                subInstance.save(flush: true)*/
             }
 
-            flash.message = message(code: 'license.created.message')
             redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
         }
     }
@@ -1488,53 +1338,6 @@ join sub.orgRelations or_sub where
         docstoreService.unifiedDeleteDocuments(params)
 
         redirect controller: 'myInstitution', action: 'documents' /*, fragment: 'docstab' */
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def processAddSubscription() {
-
-        User user = User.get(springSecurityService.principal.id)
-        Org institution = contextService.getOrg()
-
-        if (! accessService.checkUserIsMember(user, institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            // render(status: '401', text:"You do not have permission to access ${institution.name}. Please request access on the profile page");
-            return;
-        }
-
-        log.debug("processAddSubscription ${params}");
-
-        Package basePackage = Package.get(params.packageId);
-
-        if (basePackage) {
-            //
-            boolean add_entitlements = (params.createSubAction == 'copy' ? true : false)
-
-            def new_sub = basePackage.createSubscription("Subscription Taken",
-                    "A New subscription....",
-                    "A New subscription identifier.....",
-                    basePackage.startDate,
-                    basePackage.endDate,
-                    basePackage.getConsortia(),
-                    add_entitlements)
-
-            OrgRole new_sub_link = new OrgRole(
-                    org: institution,
-                    sub: new_sub,
-                    roleType: RDStore.OR_SUBSCRIBER
-            ).save();
-
-            // This is done by basePackage.createSubscription
-            // def new_sub_package = new SubscriptionPackage(subscription: new_sub, pkg: basePackage).save();
-
-            flash.message = message(code: 'subscription.created.message', args: [message(code: 'default.subscription.label'), basePackage.id])
-            redirect controller: 'subscription', action: 'index', params: params, id: new_sub.id
-        } else {
-            flash.message = message(code: 'subscription.unknown.message')
-            redirect action: 'addSubscription', params: params
-        }
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
@@ -2029,7 +1832,7 @@ AND EXISTS (
         result
     }
 
-    // RDStore.SUBSCRIPTION_DELETED is removed
+    /* RDStore.SUBSCRIPTION_DELETED is removed
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -2057,7 +1860,7 @@ AND EXISTS (
                 
                 if(subscription.save(flush: true)) {
                     //delete eventual links, bugfix for ERMS-800 (ERMS-892)
-                    Links.executeQuery('select l from Links as l where l.objectType = :objType and :subscription in (l.source,l.destination)',[objType:Subscription.class.name,subscription:subscription]).each { l ->
+                    Links.executeQuery('select l from Links as l where :subscription in (l.source,l.destination)',[subscription:GenericOIDService.getOID(subscription)]).each { l ->
                         DocContext comment = DocContext.findByLink(l)
                         if(comment) {
                             Doc commentContent = comment.owner
@@ -2078,6 +1881,7 @@ AND EXISTS (
 
         redirect action: 'currentSubscriptions'
     }
+     */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -2141,20 +1945,15 @@ AND EXISTS (
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
+        if(accessService.checkPerm('ORG_CONSORTIUM')){
+            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
+                    " order by surConfig.surveyInfo.name",
+                    [org: result.institution,
+                     status: RDStore.SURVEY_SURVEY_STARTED])
+        }
+
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
-
-        result.surveysConsortia = []
-
-                /*SurveyResult.findAll("from SurveyResult where " +
-                " owner = :contextOrg and surveyConfig.surveyInfo.status != :status and " +
-                " and ((startDate >= :startDate and endDate <= :endDate)" +
-                " or (startDate <= :startDate and endDate is null) " +
-                " or (startDate is null and endDate is null))",
-                [contextOrg: contextService.org,
-                 status:  RefdataValue.getByValueAndCategory('In Processing', RDConstants.SURVEY_STATUS),
-                 startDate: new Date(System.currentTimeMillis()),
-                 endDate: new Date(System.currentTimeMillis())])*/
 
         result
     }
@@ -2473,7 +2272,7 @@ AND EXISTS (
         result.contextOrg = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2551,7 +2350,7 @@ AND EXISTS (
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2625,7 +2424,7 @@ AND EXISTS (
             def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
             def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-            ies?.each { ie ->
+            ies.each { ie ->
                 ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
                 ie.save(flush: true)
             }
@@ -2676,7 +2475,9 @@ AND EXISTS (
                 sendMailToSurveyOwner = true
                 // flash.message = message(code: "surveyResult.finish.info")
             } else {
-                flash.error = message(code: "surveyResult.finish.error")
+                if(!surveyConfig.pickAndChoose && surveyInfo.isMandatory) {
+                    flash.error = message(code: "surveyResult.finish.error")
+                }
             }
 
         if(sendMailToSurveyOwner) {
@@ -3200,189 +3001,15 @@ AND EXISTS (
     def manageConsortiaSubscriptions() {
 
         Map<String,Object> result = setResultGenerics()
-
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('filterService')
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-        Map fsq = filterService.getOrgComboQuery([comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort: 'o.sortname'], contextService.getOrg())
-        result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
-
-        du.setBenchmark('filterSubTypes & filterPropList')
-
-        if(params.filterSet)
-            result.filterSet = params.filterSet
-
-        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(
-                RDStore.SUBSCRIPTION_TYPE_LOCAL
-        )
-        result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
-
-        /*
-        String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
-                "join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
-                "where orgK = :org and orgK = roleK.org and roleK.roleType = :rdvCons " +
-                "and orgK = roleTK.org and roleTK.roleType = :rdvCons " +
-                "and roleT.roleType = :rdvSubscr "
-        */
-
-        // CostItem ci
-
-        du.setBenchmark('filter query')
-
-        String query = "select ci, subT, roleT.org " +
-                " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
-                " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
-                " where roleK.org = :org and roleK.roleType = :rdvCons " +
-                " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
-                " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) " +
-                " and ( ci is null or (ci.owner = :org and ci.costItemStatus != :deleted) )"
-
-
-        Map qarams = [org      : result.institution,
-                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
-                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN,
-                      deleted  : RDStore.COST_ITEM_DELETED
-        ]
-
-        if (params.member?.size() > 0) {
-            query += " and roleT.org.id = :member "
-            qarams.put('member', params.long('member'))
-        }
-
-        if (params.identifier?.length() > 0) {
-            query += " and exists (select ident from Identifier ident join ident.org ioorg " +
-                    " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
-            qarams.put('identifier', "%${params.identifier}%")
-        }
-
-        if (params.validOn?.size() > 0) {
-            result.validOn = params.validOn
-
-            query += " and ( "
-            query += "( ci.startDate <= :validOn OR (ci.startDate is null AND (subT.startDate <= :validOn OR subT.startDate is null) ) ) and "
-            query += "( ci.endDate >= :validOn OR (ci.endDate is null AND (subT.endDate >= :validOn OR subT.endDate is null) ) ) "
-            query += ") "
-
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-            qarams.put('validOn', new Timestamp(sdf.parse(params.validOn).getTime()))
-        }
-
-        if (params.status?.size() > 0) {
-            query += " and subT.status.id = :status "
-            qarams.put('status', params.long('status'))
-        } else if(!params.filterSet) {
-            query += " and subT.status.id = :status "
-            qarams.put('status', RDStore.SUBSCRIPTION_CURRENT.id)
-            params.status = RDStore.SUBSCRIPTION_CURRENT.id
-            result.defaultSet = true
-        }
-
-        if (params.filterPropDef?.size() > 0) {
-            def psq = propertyService.evalFilterQuery(params, query, 'subT', qarams)
-            query = psq.query
-            qarams = psq.queryParams
-        }
-
-        if (params.form?.size() > 0) {
-            query += " and subT.form.id = :form "
-            qarams.put('form', params.long('form'))
-        }
-        if (params.resource?.size() > 0) {
-            query += " and subT.resource.id = :resource "
-            qarams.put('resource', params.long('resource'))
-        }
-        if (params.subTypes?.size() > 0) {
-            query += " and subT.type.id in (:subTypes) "
-            qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
-        }
-
-        if (params.containsKey('subKinds')) {
-            query += " and subT.kind.id in (:subKinds) "
-            qarams.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
-        }
-
-        if (params.isPublicForApi) {
-            query += "and subT.isPublicForApi = :isPublicForApi "
-            qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
-        }
-
-        if (params.hasPerpetualAccess) {
-            query += "and subT.hasPerpetualAccess = :hasPerpetualAccess "
-            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
-        }
-
-        if (params.subRunTimeMultiYear || params.subRunTime) {
-
-            if (params.subRunTimeMultiYear && !params.subRunTime) {
-                query += " and subT.isMultiYear = :subRunTimeMultiYear "
-                qarams.put('subRunTimeMultiYear', true)
-            }else if (!params.subRunTimeMultiYear && params.subRunTime){
-                query += " and subT.isMultiYear = :subRunTimeMultiYear "
-                qarams.put('subRunTimeMultiYear', false)
-            }
-        }
-
-
-
-        String orderQuery = " order by roleT.org.sortname, subT.name"
-        if (params.sort?.size() > 0) {
-            orderQuery = " order by " + params.sort + " " + params.order
-        }
-
-        if(params.filterSet && !params.member && !params.validOn && !params.status && !params.filterPropDef && !params.filterProp && !params.form && !params.resource && !params.subTypes)
-            result.filterSet = false
-
-        //log.debug( query + " " + orderQuery )
-        // log.debug( qarams )
-
-        du.setBenchmark('costs')
-
-        String totalMembersQuery = query.replace("ci, subT, roleT.org", "roleT.org")
-
-        result.totalMembers    = CostItem.executeQuery(
-                totalMembersQuery, qarams
-        )
-
-        List costs = CostItem.executeQuery(
-                query + " " + orderQuery, qarams
-        )
-        result.countCostItems = costs.size()
-        if(params.exportXLS || params.format)
-            result.costItems = costs
-        else result.costItems = costs.drop((int) result.offset).take((int) result.max)
-
-        result.finances = {
-            Map entries = [:]
-            result.costItems.each { obj ->
-                if (obj[0]) {
-                    CostItem ci = obj[0]
-                    if (!entries."${ci.billingCurrency}") {
-                        entries."${ci.billingCurrency}" = 0.0
-                    }
-
-                    if (ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE) {
-                        entries."${ci.billingCurrency}" += ci.costInBillingCurrencyAfterTax
-                    }
-                    else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
-                        entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
-                    }
-                }
-            }
-            entries
-        }()
-
-        List bm = du.stopBenchmark()
-        result.benchMark = bm
+        result.tableConfig = ['withCostItems']
+        result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
 
         LinkedHashMap<Subscription,List<Org>> providers = [:]
         Map<Org,Set<String>> mailAddresses = [:]
         BidiMap subLinks = new DualHashBidiMap()
         if(params.format || params.exportXLS) {
-            Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
+            Links.findAllByLinkType(RDStore.LINKTYPE_FOLLOWS).each { Links link ->
+                if(link.source.contains(Subscription.class.name) && link.destination.contains(Subscription.class.name))
                 subLinks.put(link.source,link.destination)
             }
             OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
@@ -3813,7 +3440,8 @@ AND EXISTS (
                 flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
             }
         }
-        else if (params.cmd == 'processing') {
+        else if (params.cmd == 'processing' && formService.validateToken(params)) {
+
             def valid
             def propDefGroup
             def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
@@ -4157,7 +3785,7 @@ AND EXISTS (
         Map<String, Object> result = [:]
 
         Org contextOrg = contextService.getOrg()
-        if (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']) {
+        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
             result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                     "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org)) and surInfo.owner = :owner",
                     [status: RDStore.SURVEY_SURVEY_STARTED,

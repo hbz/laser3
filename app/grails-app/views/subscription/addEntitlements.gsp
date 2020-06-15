@@ -432,7 +432,6 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
     });
 
     $(".ieOverwrite td").click(function() {
-        console.log("eee"); //continue here
         $(".ieOverwrite").trigger("change");
     });
 

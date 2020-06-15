@@ -6,15 +6,19 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.DeletionService
+import de.laser.LinksGenerationService
+import de.laser.PropertyService
+import de.laser.SubscriptionsQueryService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-import grails.converters.JSON
+import de.laser.interfaces.CalculatedType
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -30,6 +34,7 @@ class LicenseController extends AbstractDebugController {
     def genericOIDService
     def exportService
     def escapeService
+    PropertyService propertyService
     def institutionsService
     def pendingChangeService
     def executorWrapperService
@@ -39,6 +44,9 @@ class LicenseController extends AbstractDebugController {
     def filterService
     def orgTypeService
     def deletionService
+    def subscriptionService
+    SubscriptionsQueryService subscriptionsQueryService
+    LinksGenerationService linksGenerationService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -53,16 +61,14 @@ class LicenseController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        result.contextOrg = contextService.getOrg()
-
         //used for showing/hiding the License Actions menus
         def admin_role = Role.findAllByAuthority("INST_ADM")
         result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)", [user: result.user, role: admin_role, status: [1, 3]])
 
-        def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
+        //def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
-        String filename = "license_${escapeService.escapeString(license_reference_str)}"
-        result.onixplLicense = result.license.onixplLicense;
+        //String filename = "license_${escapeService.escapeString(license_reference_str)}"
+        //result.onixplLicense = result.license.onixplLicense
 
         // ---- pendingChanges : start
 
@@ -73,8 +79,7 @@ class LicenseController extends AbstractDebugController {
             result.processingpc = true
         } else {
 
-            def pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, PENDING_CHANGE_PENDING])
 
             log.debug("pc result is ${result.pendingChanges}");
             // refactoring: replace link table with instanceOf
@@ -106,18 +111,20 @@ class LicenseController extends AbstractDebugController {
         //def task_tasks = task {
 
             // tasks
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license)
-            def preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
+            def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
             result << preCon
 
+            String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgLinks = []
-            result.license.orgLinks?.each { or ->
-                if (!(or.org?.id == result.contextOrg?.id) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+            result.visibleOrgLinks = OrgRole.executeQuery("select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType.${i10value} asc, oo.org.sortname asc, oo.org.name asc",[license:result.license,context:result.institution,roleTypes:[OR_LICENSEE, OR_LICENSEE_CONS, OR_LICENSING_CONSORTIUM]])
+
+            /*result.license.orgLinks?.each { or ->
+                if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
                     result.visibleOrgLinks << or
                 }
-            }
-            result.visibleOrgLinks.sort { it.org.sortname }
+            }*/
+            //result.visibleOrgLinks.sort { it.org.sortname }
         //}
 
         du.setBenchmark('properties')
@@ -127,29 +134,33 @@ class LicenseController extends AbstractDebugController {
 
             // -- private properties
 
-            result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
+            result.authorizedOrgs = result.user.authorizedOrgs
 
             // create mandatory LicensePrivateProperties if not existing
 
-            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, result.contextOrg)
+            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, result.institution)
 
             mandatories.each { pd ->
+                //TODO [ticket=2436]
                 if (!LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd)
 
                     if (newProp.hasErrors()) {
                         log.error(newProp.errors)
                     } else {
-                        log.debug("New license private property created via mandatory: " + newProp.type.name)
+                        log.debug("New license private property created via mandatory: ${newProp.type.name}")
                     }
                 }
             }
 
+            du.setBenchmark('links')
+
+            result.links = linksGenerationService.getSourcesAndDestinations(result.license,result.user)
+
             // -- private properties
 
-            result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_LIC_EDITOR
-            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
+            result.modalPrsLinkRole = PRS_RESP_SPEC_LIC_EDITOR
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
 
             result.visiblePrsLinks = []
 
@@ -178,11 +189,11 @@ class LicenseController extends AbstractDebugController {
         //result.availableSubs = controlledListService.getSubscriptions(params+[status:SUBSCRIPTION_CURRENT]).results
         //result.availableSubs = []
 
-        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(
-                OrgRole.executeQuery(
+        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(result.visibleOrgLinks.collect { OrgRole oo -> oo.org })
+                /*OrgRole.executeQuery(
                         "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
                         [lic: result.license.id]
-                ))
+                )*/
         result.existingLicensorIdList = []
         // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
        // }
@@ -192,12 +203,12 @@ class LicenseController extends AbstractDebugController {
 
         // TODO: experimental asynchronous task
         //waitAll(task_tasks, task_properties)
+        result
+        /*withFormat {
+        html result
 
-        withFormat {
-      html result
-      json {
-        def map = exportService.addLicensesToMap([:], [result.license])
-        
+      /*json   def map = exportService.addLicensesToMap([:], [result.license])
+
         def json = map as JSON
         response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
         response.contentType = "application/json"
@@ -209,7 +220,7 @@ class LicenseController extends AbstractDebugController {
         exportService.addLicensesIntoXML(doc, doc.getDocumentElement(), [result.license])
 
         response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-        response.contentType = "text/xml"
+        response.contentTypexml"
         exportService.streamOutXML(doc, response.outputStream)
       }
       /*
@@ -221,8 +232,8 @@ class LicenseController extends AbstractDebugController {
           out.close()
 
       }
-      */
     }
+    */
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -299,8 +310,8 @@ class LicenseController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDTIOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug(params)
 
@@ -310,27 +321,20 @@ class LicenseController extends AbstractDebugController {
         }
         result.institution = contextService.getOrg()
 
-        List orgType       = [OT_INSTITUTION.id.toString()]
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            orgType = [OT_CONSORTIUM.id.toString()]
-        }
-
         // TODO: not longer used? -> remove and refactor params
         //RefdataValue role_lic      = OR_LICENSEE_CONS
         //RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
         //if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
         //    role_lic = OR_LICENSEE_COLL
 
-        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
-
+        License licenseCopy
             if (accessService.checkPerm("ORG_INST_COLLECTIVE, ORG_CONSORTIUM")) {
 
                 if (params.cmd == 'generate') {
-                    institutionsService.copyLicense(
+                    licenseCopy = institutionsService.copyLicense(
                             result.license, [
                                 lic_name: "${result.license.reference} (Teilnehmervertrag)",
                                 isSlaved: "true",
-                                asOrgType: orgType,
                                 copyStartEnd: true
                             ],
                             InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
@@ -381,14 +385,10 @@ class LicenseController extends AbstractDebugController {
                 }
                 --*/
 
-                redirect controller: 'license', action: 'members', params: [id: result.license?.id]
             }
-            else {
-                redirect controller: 'license', action: 'show', params: [id: result.license?.id]
-            }
-        } else {
-            redirect controller: 'license', action: 'show', params: [id: result.license?.id]
-        }
+        if(licenseCopy)
+            redirect action: 'show', params: [id: licenseCopy.id]
+        else redirect action: 'show', params: [id: result.license?.id]
     }
 
     private def getAvailableSubscriptions(license, user) {
@@ -417,124 +417,227 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
   def linkToSubscription(){
-    log.debug("linkToSubscription :: ${params}")
-    if(params.subscription && params.license){
-      Subscription sub = genericOIDService.resolveOID(params.subscription)
-      License owner = License.get(params.license)
-        // owner.addToSubscriptions(sub) // GORM problem
-        // owner.save()
-        sub.setOwner(owner)
-        sub.save()
-
-    }
-    redirect controller:'license', action:'show', params: [id:params.license]
-
+        log.debug("linkToSubscription :: ${params}")
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        result.tableConfig = ['showLinking','onlyMemberSubs']
+        Set<Subscription> allSubscriptions = []
+        String action
+        if(result.license.instanceOf) {
+            result.putAll(subscriptionService.getMySubscriptionsForConsortia(params, result.user, result.institution, result.tableConfig))
+            allSubscriptions.addAll(result.entries.collect { row -> (Subscription) row[0] })
+            result.allSubscriptions = allSubscriptions
+            action = 'linkMemberLicensesToSubs'
+        }
+        else {
+            result.putAll(subscriptionService.getMySubscriptions(params, result.user, result.institution))
+            allSubscriptions.addAll(result.allSubscriptions)
+            action = 'linkLicenseToSubs'
+        }
+        License newLicense = params.unlink ? null : result.license
+        if(params.subscription == "all") {
+            allSubscriptions.each { s->
+                subscriptionService.setOrgLicRole(s,newLicense)
+            }
+        }
+        else {
+            try {
+                subscriptionService.setOrgLicRole(Subscription.get(Long.parseLong(params.subscription)),newLicense)
+            }
+            catch (NumberFormatException e) {
+                log.error("Invalid identifier supplied!")
+            }
+        }
+        params.remove("unlink")
+        render view: action, model: result
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def unlinkSubscription(){
-        log.debug("unlinkSubscription :: ${params}")
-        if(params.subscription && params.license){
-            def sub = Subscription.get(params.subscription)
-            if (sub.owner == License.get(params.license)) {
-                sub.owner = null
-                sub.save()
-            }
-        }
-        redirect controller:'license', action:'show', params: [id:params.license]
+    Map<String,Object> linkLicenseToSubs() {
+        Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+        result.tableConfig = ['showLinking']
+        result
     }
 
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def consortia() {
-        redirect controller: 'license', action: 'show', params: params
-        return
-        /*
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def linkedSubs() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
+        result.subscriptions = []
+        result.putAll(setSubscriptionFilterData())
+        if(params.status != "FETCH_ALL")
+            result.subscriptionsForFilter = result.license.subscriptions.findAll { Subscription s -> s.status.id == params.status as Long }
+        if(result.license.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+            Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
+            Map<String,Object> queryParams = [lic:result.license,status:result.status,subscriberRoleTypes:subscriberRoleTypes]
+            String whereClause = ""
+            if(params.status != 'FETCH_ALL') {
+                whereClause += " and s.status.id = :status"
+                queryParams.status = params.status as Long
+            }
+            if(result.validOn) {
+                whereClause += " and ( ( s.startDate is null or s.startDate >= :validOn ) and ( s.endDate is null or s.endDate <= :validOn ) )"
+                queryParams.validOn = result.validOn
+            }
+            result.consAtMember = true
+            result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+            result.validSubChilds = Subscription.executeQuery("select s from Subscription s join s.orgRelations oo where s.owner = :lic and oo.roleType in :subscriberRoleTypes ${whereClause} order by oo.org.sortname asc, oo.org.name asc, s.name asc, s.startDate asc, s.endDate asc",queryParams)
+            ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
 
-    def hasAccess
-    def isAdmin
-    if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
-        isAdmin = true;
-    }else{
-       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' && accessService.checkMinUserOrgRole(result.user, it.org, 'INST_ADM') }
-    }
-    if( !isAdmin && (result.license.licenseType != "Template" || hasAccess == null)) {
-      flash.error = message(code:'license.consortia.access.error')
-      response.sendError(401) 
-      return
-    }
+            result.validSubChilds.each { sub ->
+                List<Org> subscr = sub.getAllSubscribers()
+                def filteredSubscr = []
+                subscr.each { Org subOrg ->
+                    if (filteredOrgIds.contains(subOrg.id)) {
+                        filteredSubscr << subOrg
+                    }
+                }
+                if (filteredSubscr) {
+                    if(params.list("subscription").contains(sub.id) || !params.list("subscription")) {
+                        if (params.subRunTimeMultiYear || params.subRunTime) {
 
-    log.debug("consortia(${params.id}) - ${result.license}")
-    def consortia = result.license?.orgLinks?.find{
-      it.roleType?.value == 'Licensing Consortium'}?.org
-
-    if(consortia){
-      result.consortia = consortia
-      result.consortiaInstsWithStatus = []
-    def type = RefdataValue.getByValueAndCategory('Consortium', 'Combo Type')
-    def institutions_in_consortia_hql = "select c.fromOrg from Combo as c where c.type = ? and c.toOrg = ? order by c.fromOrg.name"
-    def consortiaInstitutions = Combo.executeQuery(institutions_in_consortia_hql, [type, consortia])
-
-     result.consortiaInstsWithStatus = [ : ]
-     def findOrgLicenses = "SELECT lic from License AS lic WHERE exists ( SELECT link from lic.orgLinks AS link WHERE link.org = ? and link.roleType.value = 'Licensee') AND exists ( SELECT incLink from lic.incomingLinks AS incLink WHERE incLink.fromLic = ? ) AND lic.status.value != 'Deleted'"
-     consortiaInstitutions.each{ 
-        def queryParams = [ it, result.license]
-        def hasLicense = License.executeQuery(findOrgLicenses, queryParams)
-        if (hasLicense){
-          result.consortiaInstsWithStatus.put(it, RefdataValue.getByValueAndCategory("Yes", RDConstants.Y_N_O) )
-        }else{
-          result.consortiaInstsWithStatus.put(it, RefdataValue.getByValueAndCategory("No", RDConstants.Y_N_O) )
+                            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                                if(sub.isMultiYear) {
+                                    result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                                }
+                            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                                if(!sub.isMultiYear) {
+                                    result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                                }
+                            }
+                            else {
+                                result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                            }
+                        }
+                        else {
+                            result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                        }
+                    }
+                }
+            }
         }
-      }
-    }else{
-      flash.error=message(code:'license.consortia.noneset')
-    }
+        else {
+            params.license = params.id
+            def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+            Set<Subscription> subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}",tmpQ[1])
+            if(params.subscription) {
+                result.subscriptions = []
+                List subIds = params.list("subscription")
+                subIds.each { subId ->
+                    result.subscriptions << subscriptions.find { Subscription s -> s.id == Long.parseLong(subId) }
+                }
+            }
+            else result.subscriptions = subscriptions
 
-    result
-        */
-  }
-
-    @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def generateSlaveLicenses(){
-        redirect controller: 'license', action: 'show', params: params
-        return
-
-    params.each { p ->
-        if(p.key.startsWith("_create.")){
-         def orgID = p.key.substring(8)
-         Org orgaisation = Org.get(orgID)
-          def attrMap = [baselicense:params.baselicense,lic_name:params.lic_name,isSlaved:true]
-          log.debug("Create slave license for ${orgaisation.name}")
-          attrMap.copyStartEnd = true
-          institutionsService.copyLicense(attrMap);
+            result.consAtMember = false
         }
+
+        result
     }
-    redirect controller:'license', action:'consortia', params: [id:params.baselicense]
-  }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def members() {
         log.debug("license id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
-
-        def validMemberLicenses = License.where {
-            instanceOf == result.license
+        result.putAll(setSubscriptionFilterData())
+        Set<License> validMemberLicenses = License.findAllByInstanceOf(result.license)
+        Set<Map<String,Object>> filteredMemberLicenses = []
+        validMemberLicenses.each { License memberLicense ->
+            //memberLicense.getAllLicensee().sort{ Org a, Org b -> a.sortname <=> b.sortname }.each { Org org ->
+            //if(org.id in filteredOrgIds) {
+            Set<Subscription> subscriptions
+            if(params.validOn)
+                subscriptions = memberLicense.subscriptions.findAll { Subscription s -> (!s.startDate || s.startDate <= result.dateRestriction) && (!s.endDate || s.endDate >= result.dateRestriction) }
+            else subscriptions = memberLicense.subscriptions
+            if(params.status != 'FETCH_ALL') {
+                subscriptions.removeAll { Subscription s -> s.status.id != params.status as Long }
+            }
+            if (params.subRunTimeMultiYear || params.subRunTime) {
+                if (params.subRunTimeMultiYear && !params.subRunTime) {
+                    subscriptions = subscriptions.findAll{ Subscription s -> s.isMultiYear}
+                }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                    subscriptions = subscriptions.findAll{ Subscription s -> !s.isMultiYear}
+                }
+            }
+            if(params.subscription) {
+                List<String> subFilter = params.list("subscription")
+                subscriptions.removeAll { Subscription s -> !subFilter.contains(s.id.toString()) }
+            }
+            filteredMemberLicenses << [license:memberLicense,subs:subscriptions.size()]
+            //}
+            //}
         }
-
-        result.validMemberLicenses = validMemberLicenses
+        if(params.status == "FETCH_ALL")
+            result.subscriptionsForFilter = Subscription.findAllByOwnerInList(validMemberLicenses)
+        else result.subscriptionsForFilter = Subscription.findAllByOwnerInListAndStatus(validMemberLicenses,RefdataValue.get(params.status as Long))
+        result.validMemberLicenses = filteredMemberLicenses
         result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def linkMemberLicensesToSubs() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        result.tableConfig = ['onlyMemberSubs']
+        result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
+        result
+    }
+
+    /**
+     * this is very ugly and should be subject of refactor - - but unfortunately, the
+     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.lang.Object, com.k_int.kbplus.Org)}
+     * requires the {@link org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap} as parameter.
+     * @return validOn and defaultSet-parameters of the filter
+     */
+    private Map<String,Object> setSubscriptionFilterData() {
+        Map<String, Object> result = [:]
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        Date dateRestriction = null
+        if (params.validOn == null || params.validOn.trim() == '') {
+            result.validOn = ""
+        } else {
+            result.validOn = params.validOn
+            dateRestriction = sdf.parse(params.validOn)
+        }
+        result.dateRestriction = dateRestriction
+        if (! params.status) {
+            if (!params.filterSet) {
+                params.status = SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            }
+            else {
+                params.status = 'FETCH_ALL'
+            }
+        }
+        result
+    }
+
+    private ArrayList<Long> getOrgIdsForFilter() {
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        ArrayList<Long> resultOrgIds
+        def tmpParams = params.clone()
+        tmpParams.remove("max")
+        tmpParams.remove("offset")
+        if (accessService.checkPerm("ORG_CONSORTIUM"))
+            tmpParams.comboType = COMBO_TYPE_CONSORTIUM.value
+        else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
+            tmpParams.comboType = COMBO_TYPE_DEPARTMENT.value
+        def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
+
+        if (tmpParams.filterPropDef) {
+            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
+        }
+        fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
+        Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
     }
 
     /*
@@ -620,9 +723,6 @@ from Subscription as s where
             response.sendError(401); return
         }
 
-    result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-    result.offset = params.offset ?: 0;
-
         // postgresql migration
         String subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
         def subQueryResult = LicenseCustomProperty.executeQuery(subQuery, [owner: result.license])
@@ -671,9 +771,6 @@ from Subscription as s where
         if (!result) {
             response.sendError(401); return
         }
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ?: 0;
 
         def baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.status.value in (:stats)"
         def baseParams = [lic: result.license, stats: ['Accepted', 'Rejected']]
@@ -842,6 +939,8 @@ from Subscription as s where
     result
   }
 
+    /*
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   def unlinkLicense() {
@@ -881,6 +980,7 @@ from Subscription as s where
       }
       redirect(action: 'show', id: license.id);
   }
+     */
 
     def copyLicense()
     {
@@ -926,7 +1026,6 @@ from Subscription as s where
 
             License licenseInstance = new License(
                     reference: lic_name,
-                    status: baseLicense.status,
                     type: baseLicense.type,
                     startDate: params.license.copyDates ? baseLicense?.startDate : null,
                     endDate: params.license.copyDates ? baseLicense?.endDate : null,
@@ -1055,14 +1154,19 @@ from Subscription as s where
             }
     }
 
-    private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
+    private Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
         def result             = [:]
         result.user            = User.get(springSecurityService.principal.id)
         result.institution     = contextService.org
         result.license         = License.get(params.id)
         result.licenseInstance = License.get(params.id)
-
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.license))
+        result.navPrevLicense = links.prevLink
+        result.navNextLicense = links.nextLink
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ?: 0
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (! result.licenseInstance.isVisibleBy(result.user)) {

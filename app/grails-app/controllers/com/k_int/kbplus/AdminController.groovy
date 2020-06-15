@@ -36,7 +36,7 @@ class AdminController extends AbstractDebugController {
     def springSecurityService
     def dataloadService
     def statsSyncService
-    SubscriptionUpdateService subscriptionUpdateService
+    StatusUpdateService statusUpdateService
     def messageService
     def changeNotificationService
     def yodaService
@@ -148,7 +148,7 @@ class AdminController extends AbstractDebugController {
 
         List<String> jobList = [
                 'DocContext',
-                ['GlobalRecordInfo', 'globalRecordInfoStatus'],
+                //['GlobalRecordInfo', 'globalRecordInfoStatus'],
                 'IssueEntitlement',
                 'License',
                 'Org',
@@ -516,7 +516,7 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def updateQASubscriptionDates() {
         if (grailsApplication.config.getCurrentServer() in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) {
-            def updateReport = subscriptionUpdateService.updateQASubscriptionDates()
+            def updateReport = statusUpdateService.updateQASubscriptionDates()
             if(updateReport instanceof Boolean)
                 flash.message = message(code:'subscription.qaTestDateUpdate.success')
             else {
@@ -585,6 +585,99 @@ class AdminController extends AbstractDebugController {
 
         result.importIds = dataConsistencyService.checkImportIds()
         result.titles    = dataConsistencyService.checkTitles()
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def fileConsistency() {
+        Map<String, Object> result = [:]
+
+        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+        Closure fileCheck = { Doc doc ->
+
+            try {
+                File test = new File("${result.filePath}/${doc.uuid}")
+                if (test.exists() && test.isFile()) {
+                    return true
+                }
+            }
+            catch (Exception e) {
+                return false
+            }
+        }
+
+        // files
+
+        result.listOfFiles = []
+        result.listOfFilesMatchingDocs = []
+        result.listOfFilesOrphaned = []
+
+        result.listOfDocsInUse = []
+        result.listOfDocsInUseOrphaned = []
+
+        result.listOfDocsNotInUse= []
+        result.listOfDocsNotInUseOrphaned = []
+
+        try {
+            File folder = new File("${result.filePath}")
+
+            if (folder.exists()) {
+                result.listOfFiles = folder.listFiles().collect{it.getName()}
+
+                result.listOfFilesMatchingDocs = Doc.executeQuery(
+                        'select doc from Doc doc where doc.contentType = :ct and doc.uuid in (:files)',
+                        [ct: Doc.CONTENT_TYPE_BLOB, files: result.listOfFiles]
+                )
+                List<String> matches = result.listOfFilesMatchingDocs.collect{ it.uuid }
+
+                result.listOfFiles.each { ff ->
+                    if (! matches.contains(ff)) {
+                        result.listOfFilesOrphaned << ff
+                    }
+                }
+                result.listOfFilesOrphaned.toSorted()
+            }
+        }
+        catch (Exception e) {}
+
+        // docs
+
+        List<Doc> listOfDocs = Doc.executeQuery(
+                'select doc from Doc doc where doc.contentType = :ct order by doc.id',
+                [ct: Doc.CONTENT_TYPE_BLOB]
+        )
+
+        result.listOfDocsInUse = Doc.executeQuery(
+                'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id',
+                [ct: Doc.CONTENT_TYPE_BLOB]
+        )
+
+        result.listOfDocsNotInUse = listOfDocs - result.listOfDocsInUse
+
+        result.listOfDocsInUse.each{ doc ->
+            if (! fileCheck(doc)) {
+                result.listOfDocsInUseOrphaned << doc
+            }
+        }
+        result.listOfDocsNotInUse.each{ doc ->
+            if (! fileCheck(doc)) {
+                result.listOfDocsNotInUseOrphaned << doc
+            }
+        }
+
+        // doc contexts
+
+        result.numberOfDocContextsInUse = DocContext.executeQuery(
+                'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and (dc.status is null or dc.status != :del)',
+                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+        ).size()
+
+        result.numberOfDocContextsDeleted = DocContext.executeQuery(
+                'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and dc.status = :del',
+                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+        ).size()
 
         result
     }
@@ -840,10 +933,10 @@ class AdminController extends AbstractDebugController {
                                                 rdv(o.country.value)
                                             }
                                         }
-                                        federalState {
-                                            if(o.federalState) {
-                                                rdc(o.federalState.owner.desc)
-                                                rdv(o.federalState.value)
+                                        region {
+                                            if(o.region) {
+                                                rdc(o.region.owner.desc)
+                                                rdv(o.region.value)
                                             }
                                         }
                                         libraryNetwork {
@@ -1418,7 +1511,7 @@ class AdminController extends AbstractDebugController {
         result.orgListTotal = result.orgList.size()
 
         result.allConsortia = Org.executeQuery(
-                "select o from OrgSettings os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority in ('ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY') order by o.sortname, o.name"
+                "select o from OrgSettings os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority  = 'ORG_CONSORTIUM' order by o.sortname, o.name"
         )
         result
     }
@@ -1519,6 +1612,34 @@ class AdminController extends AbstractDebugController {
                 attrMap     : attrMap,
                 usedPdList  : usedPdList
         ]
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def transferSubPropToSurProp() {
+
+        PropertyDefinition propertyDefinition = PropertyDefinition.get(params.propertyDefinition)
+
+        if(!PropertyDefinition.findByNameAndDescrAndTenant(propertyDefinition.name, PropertyDefinition.SUR_PROP, null)){
+            PropertyDefinition surveyProperty = new PropertyDefinition(
+                    name: propertyDefinition.name,
+                    name_de: propertyDefinition.name_de,
+                    name_en: propertyDefinition.name_en,
+                    expl_de: propertyDefinition.expl_de,
+                    expl_en: propertyDefinition.expl_en,
+                    type: propertyDefinition.type,
+                    refdataCategory: propertyDefinition.refdataCategory,
+                    descr: PropertyDefinition.SUR_PROP
+            )
+
+            if (surveyProperty.save(flush: true)) {
+                flash.message = message(code: 'propertyDefinition.copySubPropToSurProp.created.sucess')
+            }
+            else {
+                flash.error = message(code: 'propertyDefinition.copySubPropToSurProp.created.fail')
+            }
+        }
+
+        redirect(action: 'managePropertyDefinitions')
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -1701,6 +1822,8 @@ class AdminController extends AbstractDebugController {
                     case "publication_title": colMap.publicationTitleCol = c
                         break
                     case "series_name": colMap.seriesNameTitleCol = c
+                        break
+                    case "monograph_parent_collection_title": colMap.seriesNameTitleCol = c
                         break
                     case "subject_reference": colMap.subjectReferenceTitleCol = c
                         break

@@ -82,6 +82,10 @@ class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLast
             VAT
     ]
 
+    @Transient
+    final static List<String> CORE_TITLE_NS = [
+            ZDB, ZDB_PPN, DOI, ISSN, EISSN, PISBN, ISBN, ISIL_PAKETSIGEL, ISCI, EZB_ANCHOR, EZB_COLLECTION_ID
+    ]
 
     @Transient
     final static String[] AVAILABLE_NSTYPES = [

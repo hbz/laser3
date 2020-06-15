@@ -2,6 +2,218 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2593    12.06.2020  hbz-dev     Andreas Bug         Merkmalstypen von DFG Förderung Höhe und Fachstatistik / Klassifikation auf String geändert
+
+2526    10.06.2020  rc1.4       Ingrid  Bug         Tooltips im Tabellenheader werden nicht mehr überdeckt & Anzeigefehler bei allen Tooltips gefixt
+
+--      09.06.2020  hbz-dev     Ingrid  Feature     change circle size of or-button
+
+2408    08.06.2020  rc1.4       Ingrid  Bug         Nach Ausführen eines X-Editable-Elements kann man jetz wieder das Menu mit Hover bedienen
+
+2465    08.06.2020  rc1.4       Ingrid  Bug         Sicht des Kalendermonats jetzt ohne Fehler beim Scrollen
+
+2560    05.06.2020  rc1.4       Andreas Bug         Kostenposten ohne Vorzeichen wurden nicht angelegt
+
+2571    04.06.2020  rc1.4       Moe     Bug         Beim Bestand ist das Reihe DropDown Filterfeld leer trotz vorhandenen Daten
+
+2572    04.06.2020  rc1.4       Moe     Bug         Title Show Seite: Cannot get property 'title' on null object
+
+2570    04.06.2020  rc1.4       Moe     Bug         Bei der Umfrage kann ohne http keine Url eingegeben werden
+
+2569    04.06.2020  rc1.4       Moe     Feature     Bemerkungsfeld für Umfrageersteller umbauen
+
+2171    04.06.2020  rc1.4       Andreas Bug         Temporäre Brücke gebaut zum Schließen von Kontaktmodals
+
+2550    04.06.2020  rc1.4       Andreas Bug         Titelauswahl konnte nicht weitergeblättert werden
+
+1824    03.06.2020  hbz-dev     Anja    Bugfix      "Kontakt hinzufügen" - Dropdown der Orgs nicht nach Sichtrechten gefiltert
+
+--      03.06.2020  rc1.4       Andreas Bug         Abfragen im statusUpdateService auf executeQuery umgestellt
+
+2564    03.06.2020  rc1.4       Moe     Bug         Titelgruppierung Nachbesserung für 1.4
+
+2536    02.06.2020  rc1.4       Moe     Bug         Umfrage Lizenz-Umfrage
+
+2541    02.06.2020  rc1.4       Moe     Bug         Mail "Lizenz-Umfrage: Abgeschlossen"
+
+2563    02.06.2020  rc1.4       Moe     Bug         Gruppieren von Titeln in einer Lizenz
+
+2562    02.06.2020  rc1.4       Moe     Bug         Rechteüberprüfung für Umfrage beim Konsortium
+
+2558    02.06.2020  rc1.4       Andreas Bug         Titelgruppen werden jetzt bei Lizenzkopien mitgenommen
+
+2561    02.06.2020  rc1.4       Andreas Feature     Ausbesserungen in der Vertragsverwaltung gemäß Ticket
+
+2529    02.06.2020  rc1.4       Moe     Feature     Titelbestand der Lizenz anreichern + Filterfunktion
+
+2559    02.06.2020  rc1.4       Andreas Bug         Bestätigungsdialog zum Anlegen eines Teilnehmervertrages an allgemeines Design angepasst
+
+2557    29.05.2020  rc1.4       Andreas Bug         Menüpunkte "Neue Aufgabe" und "Neues Dokument" unter Vertrag falsch angezeigt
+
+2553    29.05.2020  rc1.4       Andreas Bug         Formatierung von Daten bei der Anzeige von Vertragsmerkmalen in Lizenzübersicht korrigiert
+
+2537    29.05.2020  rc1.4       Andreas Feature     Finanzfilter übernimmt Reitereinstellung
+
+2464    29.05.2020  rc1.4       Anja    Feature     Optik von modalem Dialog der Optik eines Filters anpassen
+
+--      29.05.2020  rc1.4       Andreas Bug         Transaktionen bei Sync (Identifier) eingebaut
+
+2527    29.05.2020  rc1.4       Andreas Bug         verschiedene Fehler beim Kopieren von Lizenzen
+
+2556    29.05.2020  rc1.4       Moe     Bug         Umlaute Parser für E-Mails wegen Problematik der Umlaute in Mails
+
+2547    29.05.2020  rc1.4       Moe     Bug         INST_User sieht falsche Meldung bei Umfrage
+
+2546    28.05.2020  rc1.4       Moe     Feature     xEditable darf nicht einfach weggeklickt werden
+
+2154    28.05.2020  rc1.3       Anja    Hotfix      Rechte zeilenweise für Kundennummern; Fehlermeldung bei Löschen ausgeben
+
+2535    28.05.2020  rc1.4       Andreas Bug         Löschprüfung von Kosten bei zu löschenden Lizenzen überbrückt 
+
+2154    27.05.2020  rc1.3       Anja    Hotfix      Rechte geändert für Kundennummern (anzeigen, ändern, löschen)
+
+248     27.05.2020  hbz-dev     David   Feature     Entfernen von subscription offered / taken (subscription_type)
+
+2528    27.05.2020  rc1.4       Moe     Bug         Eigenes Merkmal "EGP-Nr." kann nicht hinzugefügt werden (LAS:eR-Backoffice)
+
+2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
+
+2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
+
+2533    26.05.2020  rc1.4       Moe     Bug         Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
+
+2525    26.05.2020  rc1.4       Moe     Feature     manageMembersVollnutzer-Icon auch in Lizenzsichten für Konsortien
+
+2533    26.05.2020  rc1.4       Moe     Bug         Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
+
+2525    26.05.2020  rc1.4       Moe     Feature     manageMembersVollnutzer-Icon auch in Lizenzsichten für Konsortien
+
+2532    26.05.2020  rc1.4       Andreas Bug         diverse Anzeigefehler in Sichten behoben
+
+2522    26.05.2020  rc1.4       Andreas Feature     Ausbesserungen Vertragssicht: Einkaufsliste abgearbeitet
+
+2531    26.05.2020  rc1.4       David   Bug         Aufgaben nicht aufrufbar / Schaltfläche "Neue Aufgabe" auf Dashboard tot 
+
+2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem region-Dropdown auf org/show
+
+2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Refdatas
+
+2178    25.05.2020  hbz-dev     David   Feature     Mehrfachanlegen von Adressen durch mehrfaches Klicken von "Anlegen-Button" soll unterbunden werden
+
+2131    25.05.2020  hbz-dev     David   Bug         Merkmalsgruppen werden mehrfach angelegt
+
+2444    22.05.2020  rc1.4       Andreas Bug         Rückverweis beim Entknüpfen von Teilnehmer angepasst
+
+2432    22.05.2020  rc1.4       Andreas Feature     Kuratorengruppen von Paketen werden jetzt auf Lizenzdetailseite und Paket-verknüpfen-Seite angezeigt
+
+2413    22.05.2020  rc1.4       Andreas Feature     Titelausgabe um dynamische Ausgabe von Titelidentifierspalten erweitert
+
+1492    22.05.2020  rc1.4       Andreas Feature     Verknüpfungskommentare werden direkt an der Verknüfung angezeigt
+
+2327    22.05.2020  rc1.4       Moe     Feature     KBART-Anreicherung auch für existierenden Bestand
+
+2516    22.05.2020  rc1.4       Andreas Feature     KBART-Import um neue Spalten erweitert
+
+2357    20.05.2020  rc1.3       Moe     Feature     Teilnehmer nachträglich einer Umfrage hinzufügen
+
+2360    20.05.2020  rc1.3       Moe     Feature     Teilnehmer bei einer Umfrage wieder freischalten
+
+2515    20.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: Rolle Redakteur kann keine Fächergruppen anlegen
+
+2511    20.05.2020  rc1.4       Moe     Feature     KBART-Upload der Reihe
+
+1361    20.05.2020  hbz-dev     Andreas Feature     Erweiterung des Cronjobs für Lizenzstatusänderungen auf Verträge
+
+2299    20.05.2020  hbz-dev     Moe     Feature     Neues allg. Umfrage-Merkmal von allg. Lizenzmerkmal erstellen/ableiten
+
+2507    20.05.2020  hbz-dev     Moe     Feature     Titelauswahlumfrage soll nicht mehr automatisch verbindlich sein
+
+2506    19.05.2020  rc1.3       Andreas Bug         Überprüfung zu Kopie von Kosten vervollständigt
+
+2508    19.05.2020  hbz-dev     Christian   Feature Informationen über Statistikverfügbarkeit
+
+2420    19.05.2020  hbz-dev     Moe     Feature     Titelauswahlumfrage: Filter/Sortierbarkeit nach Erscheinungsjahr
+
+2385    19.05.2020  hbz-dev     Moe     Feature     Dashboard Änderung nach einem Umfrage Übertrag
+
+2505    19.05.2020  hbz-dev     David   Feature     API 0.106 - Getrennte Berechtigungen für Datamanager
+
+2504    19.05.2020  rc1.3       Andreas Bug         Absturzfehler bei Anlegen der Musterdaten auf QA behoben
+
+2399    19.05.2020  rc1.3       Andreas Bug         Finanzfiltervorbelegung korrigiert
+
+2390    19.05.2020  hbz-dev     David   Feature     API 0.105 - API für OA-Monitor: Eigener Subscription-Endpunkt
+
+2423    19.05.2020  hbz-dev     Moe     Feature     Meine Umfragen Sortierung anpassen
+
+2500    19.05.2020  hbz-dev     Moe     Feature     Zugangskonfiguration: Text im Löschen-Popup anpassen
+
+2238    19.05.2020  hbz-dev     Andreas Feature     Vertragssichten umgebaut (prä-finaler Stand vor Test)
+
+2433    18.05.2020  hbz-dev     Moe     Feature     Excel Export: Zahlenwerte in Zellen als Zahlenwert speichern
+
+2386    18.05.2020  hbz-dev     Moe     Feature     Umfragen auch auf Dashboard von Konsortialstellen anzeigen
+
+2478    18.05.2020  hbz-dev     Moe     Feature     Farbschema von Umfragen vom Dashboard auch in "meine Umfragen" übertragen
+
+2455    18.05.2020  hbz-dev     Moe     Feature     Farbkonzept Umfragetypen
+
+2451    18.05.2020  hbz-dev     Moe     Feature     (?) bei IP Konfiguration löschen
+
+2487    18.05.2020  hbz-dev     Moe     Bug         Anzahl der Titlel beim Filtern in der Titelumfrage stimmt nicht
+
+2488    18.05.2020  hbz-dev     Moe     Feature     Fachbereich und Reihe Filter in Titel-Umfrage und Bestand einer Lizenz einbauen
+
+2502    18.05.2020  hbz-dev     Andreas Bug         Fehlermeldung über anhängige Kosten bei Paketentknüpfung eingebaut
+
+2496    18.05.2020  hbz-dev     David   Feature     API 0.103 - Ausgegebene Kosten in /subscription absichern
+
+2392    15.05.2020  hbz-dev     Moe     Feature     Kundentyp Consortium_Survey entfernen
+
+2471    15.05.2020  hbz-dev     David   Feature     API 0.101 - API-Endpunkte /platformList und /platform
+
+2384    15.05.2020  rc1.3       Moe     Feature     Umfrage Auswertung: Abgeschlossen Teilnehmer bzw. nicht abgeschlossene Teilnehmer mit Merkmal anzeigen
+
+2486    15.05.2020  rc1.3       Moe     Bug         Prozentanzeige in Umfrageübersicht ist Fehlerhaft
+
+2494    14.05.2020  rc1.3       Moe     Bug         Lizenztyp "lokale Lizenz" bei Vollnutzern nicht mehr gesetzt
+
+2415    14.05.2020  rc1.3       Moe     Bug         Berechtigungen bei Umfrage nochmal anpassen
+
+--      14.05.2020  rc1.3       Andreas Bug         Änderungsmitteilung beschleunigt, Meldung an Nutzer mit Zeitabschätzung versehen, Prozessablauf bei Paketsync geändert
+
+2445    14.05.2020  hbz-dev     Andreas Bug         Bereinigungsfunktion für fehlende Vertragsverknüpfungen testbereit fertig gestellt
+
+2492    14.05.2020  hbz-dev     David   Feature     API 0.100 - LastUpdated für Objekte mit Identifikator- und Merkmalsänderungen
+
+2474    14.05.2020  hbz-dev     Andreas Bug         Anzeige von Kontakten einer Zieleinrichtung angepasst
+
+2485    13.05.2020  hbz-dev     Andreas Feature     Dropdowns auf Mehrfachauswahl erweitert
+
+2484    13.05.2020  hbz-dev     Andreas Bug         Legacy-Controlleraufruf im Export korrigiert
+
+2483    12.05.2020  hbz-dev     David   Feature     lastUpdatedCalculated - Merkmale
+
+2482    12.05.2020  hbz-dev     David   Feature     lastUpdatedCalculated - Identifier
+
+--      12.05.2020  hbz-dev     David   Feature     API 0.99
+
+2476    12.05.2020  hbz-dev     David   Feature     Übersichtsseite: Dokumente
+
+2470    11.05.2020  rc1.3       Moe     Bug         Globale Suche berücksichtigt Berechtigung für Umfragen nicht
+
+2473    11.05.2020  hbz-dev     David   Feature     Löschen von Organisationen - Kaskadierendes Löschen von Profiler-Einträgen
+
+2472    11.05.2020  hbz-dev     David   Feature     Refactoring: AuditableTrait auflösen
+
+2407    07.05.2020  rc1.3       Anja    Bug         Migration von federal.state nach regions
+
+2463    07.05.2020  rc1.3       Moe     Bug         Hotfixkandidat: utb-Umfrage Auswertungssicht
+
+2468    07.05.2020  rc1.3       Moe     Bug         Erinnerungsmails für Umfrage Ende anpassen
+
+2444    06.05.2020  hbz-dev     Andreas Feature     Zentralisierung aller Änderungen der Lizenz-Vertrag-Verknüpfung
+
 2462    05.05.2020  rc1.3       Moe     Bug         Umfrage: Bestätigung bei "Nein" muss differenziert werden
 
 2461    05.05.2020  rc1.3       David   Bug         INST_ADMIN hat keine Bearbeitungsrechte für Org-Einstellungen

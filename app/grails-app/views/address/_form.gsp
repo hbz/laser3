@@ -65,11 +65,12 @@
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'state', 'error')}">
-	<label for="state">
-		<g:message code="address.state.label" />
+	<label for="region">
+		<g:message code="address.region.label" />
 	</label>
-	<laser:select class="ui dropdown" id="state" name="state.id"
-				  from="${RefdataCategory.getAllRefdataValues(RDConstants.FEDERAL_STATE)}"
+	<laser:select class="ui dropdown" id="region" name="region.id"
+				  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT,
+                                                               RDConstants.REGIONS_CH])}"
 				  optionKey="id"
 				  optionValue="value"
 				  value="${addressInstance?.state?.id}"

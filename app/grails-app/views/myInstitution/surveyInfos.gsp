@@ -12,9 +12,8 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb
-            text="${surveyInfo.type.getI10n('value')}"
-            class="active"/>
+    <semui:crumb text="${surveyInfo.type.getI10n('value')}"/>
+    <semui:crumb text="${surveyInfo.name}" class="active"/>
 </semui:breadcrumbs>
 
 
@@ -74,7 +73,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 </div>
 --%>
 
-<g:if test="${!editable}">
+<g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 

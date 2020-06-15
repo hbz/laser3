@@ -30,7 +30,7 @@ class ApiCollectionReader {
             tmp.lastUpdated     = ApiToolkit.formatInternalDate(it.lastUpdated)
 
             // RefdataValues
-            tmp.state       = it.state?.value
+            tmp.region       = it.region?.value
             tmp.country     = it.country?.value
             tmp.type        = it.type?.value
 
@@ -65,15 +65,10 @@ class ApiCollectionReader {
         result
     }
 
-    // TODO: oaMonitor
-    static Collection<Object> getCostItemCollection(Collection<CostItem> list) {
+    static Collection<Object> getCostItemCollection(Collection<CostItem> filteredList) {
         Collection<Object> result = []
 
-        list?.each { it ->               // com.k_int.kbplus.CostItem
-
-            // TODO: isVisibleForSubscriber
-            // TODO: finalCostRounding
-            // TODO: budgetcodes
+        filteredList.each { it ->
 
             Map<String, Object> tmp     = [:]
 
@@ -184,7 +179,6 @@ class ApiCollectionReader {
             if (it instanceof LicenseCustomProperty) {
                 tmp.paragraph = it.paragraph
             }
-
             tmp = ApiToolkit.cleanUp(tmp, true, false)
             result << tmp
         }
@@ -326,8 +320,8 @@ class ApiCollectionReader {
                 tmp.refdataCategory = it.type.refdataCategory
             }
 
-            tmp.dateCreated = ApiToolkit.formatInternalDate(it.dateCreated)
-            tmp.lastUpdated = ApiToolkit.formatInternalDate(it.lastUpdated)
+            //tmp.dateCreated = ApiToolkit.formatInternalDate(it.dateCreated)
+            //tmp.lastUpdated = ApiToolkit.formatInternalDate(it.getCalculatedLastUpdated())
 
             if (it instanceof LicensePrivateProperty) {
                 tmp.paragraph = it.paragraph

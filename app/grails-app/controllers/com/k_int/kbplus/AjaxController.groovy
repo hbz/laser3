@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
@@ -651,7 +651,7 @@ class AjaxController {
         if(params.oid != "undefined") {
             PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
             if(propDef) {
-                List<AbstractProperty> values
+                List<AbstractPropertyWithCalculatedLastUpdated> values
                 if(propDef.tenant) {
                     switch(params.domain) {
                         case 'currentSubscriptions':
@@ -807,8 +807,22 @@ class AjaxController {
   }
 
   @Secured(['ROLE_USER'])
+  def lookupTitleGroups() {
+     params.checkView = true
+     render controlledListService.getTitleGroups(params) as JSON
+    }
+
+  @Secured(['ROLE_USER'])
   def lookupSubscriptions() {
     render controlledListService.getSubscriptions(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupSubscriptionsLicenses() {
+    Map result = [results:[]]
+    result.results.addAll(controlledListService.getSubscriptions(params).results)
+    result.results.addAll(controlledListService.getLicenses(params).results)
+    render result as JSON
   }
 
   @Secured(['ROLE_USER'])
@@ -993,7 +1007,7 @@ class AjaxController {
    * @return void, redirects to main page
    */
   @Secured(['ROLE_USER'])
-  def linkSubscriptions() {
+  def linkObjects() {
       boolean linkError = false
     //error when no pair is given!
     params.keySet().each {
@@ -1005,11 +1019,10 @@ class AjaxController {
         }
     }
       if(linkError) {
-          flash.error = "Bitte Verknüpfungsziel angeben!"
+          flash.error = message(code:'default.linking.noLinkError')
           redirect(url: request.getHeader('referer'))
           return
       }
-      Subscription context = genericOIDService.resolveOID(params.context)
       Doc linkComment = genericOIDService.resolveOID(params.commentID)
       Links link
       String commentContent
@@ -1018,46 +1031,44 @@ class AjaxController {
       if(params.link) {
           link = genericOIDService.resolveOID(params.link)
           if(params["linkType_${link.id}"]) {
-              Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
               String linkTypeString = params["linkType_${link.id}"].split("§")[0]
               int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
               RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
               commentContent = params["linkComment_${link.id}"].trim()
               if(perspectiveIndex == 0) {
-                  link.source = context.id
-                  link.destination = pair.id
+                  link.source = params.context
+                  link.destination = params["pair_${link.id}"]
               }
               else if(perspectiveIndex == 1) {
-                  link.source = pair.id
-                  link.destination = context.id
+                  link.source = params["pair_${link.id}"]
+                  link.destination = params.context
               }
               link.linkType = linkType
               log.debug(linkType)
           }
           else if(!params["linkType_${link.id}"]) {
-              flash.error = message(code:'subscription.linking.linkTypeError')
+              flash.error = message(code:'default.linking.linkTypeError')
           }
       }
       else {
         if(params["linkType_new"]) {
-            Subscription pair = genericOIDService.resolveOID(params.pair_new)
             String linkTypeString = params["linkType_new"].split("§")[0]
             int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
             RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
             commentContent = params.linkComment_new
-            Long source, destination
+            String source, destination
             if(perspectiveIndex == 0) {
-                source = context.id
-                destination = pair.id
+                source = params.context
+                destination = params.pair_new
             }
             else if(perspectiveIndex == 1) {
-                source = pair.id
-                destination = context.id
+                source = params.pair_new
+                destination = params.context
             }
-            link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:Subscription.class.name)
+            link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg())
         }
         else if(!params["linkType_new"]) {
-            flash.error = message(code:'subscription.linking.linkTypeError')
+            flash.error = message(code:'default.linking.linkTypeError')
         }
       }
       if(link && link.save(flush:true)) {
@@ -1083,7 +1094,7 @@ class AjaxController {
       }
       else if(link && link.errors) {
           log.error(link.errors)
-          flash.error = message(code:'subscription.linking.savingError')
+          flash.error = message(code:'default.linking.savingError')
       }
     redirect(url: request.getHeader('referer'))
   }
@@ -1509,9 +1520,10 @@ class AjaxController {
         else {
           def existingProps = owner.privateProperties.findAll {
             it.owner.id == owner.id &&
-            it.type.name == type.name // this sucks due lazy proxy problem
+            it.type.id == type.id // this sucks due lazy proxy problem
           }
           existingProps.removeAll { it.type.name != type.name } // dubious fix
+
 
           if (existingProps.size() == 0 || type.multipleOccurrence) {
             newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
@@ -2403,6 +2415,10 @@ class AjaxController {
             if (selectedRoleTypes) {
                 query += "and pr.functionType in (:selectedRoleTypes) "
                 queryParams << [selectedRoleTypes: selectedRoleTypes]
+//                selectedRoleTypes.eachWithIndex{ it, index ->
+//                    query += "and pr.functionType = :r${index} "
+//                    queryParams << ["r${index}": it]
+//                }
             }
 
             List<Person> persons = Person.executeQuery(query, queryParams)
@@ -2487,13 +2503,18 @@ class AjaxController {
                     }
                 } else {
                     def binding_properties = [:]
+
                     if (target_object."${params.name}" instanceof Double) {
                         params.value = Double.parseDouble(params.value)
                     }
                     if (target_object."${params.name}" instanceof Boolean) {
                         params.value = params.value?.equals("1")
                     }
-                    binding_properties[params.name] = params.value
+                    if(params.value instanceof String) {
+                        String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
+                        binding_properties[params.name] = value
+                    }
+                    else binding_properties[params.name] = params.value
                     bindData(target_object, binding_properties)
 
                     target_object.save(failOnError: true)

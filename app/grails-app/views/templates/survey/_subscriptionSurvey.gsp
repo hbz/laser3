@@ -1,4 +1,8 @@
-<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.CostItem; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory" %>
+
+<g:set var="surveyOrg"
+       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+
 <div class="ui stackable grid">
     <div class="twelve wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
@@ -74,7 +78,7 @@
                         <dt class="control-label">
                             ${message(code: 'surveyConfig.url.label')}
                         </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"/>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="text"/>
                         <g:if test="${surveyConfig.url}">
                             <semui:linkIcon href="${surveyConfig.url}"/>
                         </g:if>
@@ -130,7 +134,7 @@
                             <dt class="control-label">
                                 ${message(code: 'surveyConfig.url.label')}
                             </dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"
+                            <dd><semui:xEditable owner="${surveyConfig}" field="url" type="text"
                                                  overwriteEditable="${false}"/>
 
                             <semui:linkIcon href="${surveyConfig.url}"/>
@@ -155,6 +159,16 @@
                         </div>
                     </div>
                 </g:else>
+
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER') && surveyOrg}">
+                    <dl>
+                        <dt class="control-label">
+                                ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
+
+                    </dl>
+                </g:if>
 
                 <br>
 
@@ -378,16 +392,16 @@
 
             <div id="container-notes">
                 <g:render template="/templates/notes/card"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')]}"/>
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
             </div>
 
-            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
 
                 <g:render template="/templates/tasks/modal_create"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
 
             </g:if>
-            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
                 <g:render template="/templates/notes/modal_create"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
             </g:if>
@@ -402,11 +416,8 @@
 </div><!-- .grid -->
 
 <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-
-    <g:set var="surveyOrg"
-           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
     <g:set var="costItemSurvey"
-           value="${surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrg(surveyOrg) : null}"/>
+           value="${surveyOrg ? CostItem.findBySurveyOrg(surveyOrg) : null}"/>
 
     <g:if test="${surveyInfo.owner.id != contextService.getOrg().id && ((costItemSums && costItemSums.subscrCosts) || costItemSurvey)}">
         <div class="ui card la-time-card">
@@ -774,10 +785,10 @@
                         </g:if>
                     </td>
                     <td>
-                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
+                        ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
                         <g:if test="${surveyProperty.surveyProperty.type == 'class com.k_int.kbplus.RefdataValue'}">
                             <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
+                            <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
                                     var="refdataValue">
                                 <g:set var="refdataValues"
                                        value="${refdataValues + refdataValue?.getI10n('value')}"/>
@@ -851,7 +862,7 @@
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER')}">
                         ${message(code: 'surveyResult.participantComment')}
                     </g:if>
                     <g:else>
@@ -863,7 +874,7 @@
                     </g:else>
                 </th>
                 <th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER')}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
@@ -898,10 +909,10 @@
 
                     </td>
                     <td>
-                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
+                        ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
                         <g:if test="${surveyResult.type.type == 'class com.k_int.kbplus.RefdataValue'}">
                             <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
+                            <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">
                                 <g:if test="${refdataValue.getI10n('value')}">
                                     <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
@@ -912,7 +923,7 @@
                         </g:if>
                     </td>
                     <g:set var="surveyOrg"
-                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, institution)}"/>
+                           value="${SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, institution)}"/>
 
                     <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
                         <td>
@@ -947,7 +958,7 @@
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>
-                            <g:elseif test="${surveyResult.type.type == com.k_int.kbplus.RefdataValue.toString()}">
+                            <g:elseif test="${surveyResult.type.type == RefdataValue.toString()}">
 
                                 <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type.name in ["Participation"] && surveyResult.owner?.id != contextService.getOrg().id}">
                                     <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
@@ -964,7 +975,7 @@
                             <semui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                         </td>
                         <td>
-                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER')}">
                                 <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
                             </g:if>
                             <g:else>

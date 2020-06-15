@@ -10,6 +10,7 @@ import de.laser.helper.*
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -189,7 +190,7 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermTypeAffiliation("ORG_CONSORTIUM", "Consortium", "INST_USER")
     })
     Map listInstitution() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         params.orgType   = OT_INSTITUTION.id.toString()
         params.orgSector = O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
@@ -636,21 +637,23 @@ class OrganisationController extends AbstractDebugController {
         DebugUtil du = new DebugUtil()
         du.setBenchmark('this-n-that')
 
-        Map result = setResultGenericsAndCheckAccess(params)
-        if(!result) {
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        if (! result) {
             response.sendError(401)
+            return
+        }
+        if (! result.orgInstance) {
+            redirect action: 'list'
             return
         }
 
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
 
-        du.setBenchmark('orgRoles')
+        du.setBenchmark('orgRoles & editable')
 
-        du.setBenchmark('editable')
-
-        def orgSector = O_SECTOR_PUBLISHER
-        def orgType = OT_PROVIDER
+        RefdataValue orgSector = O_SECTOR_PUBLISHER
+        RefdataValue orgType = OT_PROVIDER
 
         //IF ORG is a Provider
         if(result.orgInstance.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
@@ -741,7 +744,7 @@ class OrganisationController extends AbstractDebugController {
         DebugUtil du = new DebugUtil()
         du.setBenchmark('this-n-that')
 
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -803,7 +806,7 @@ class OrganisationController extends AbstractDebugController {
         Boolean inContextOrg = contextService.getOrg().id == org.id
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
 
-        result.hasAccessToCustomeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
+        result.hasAccessToCustomeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_USER')) ||
                 (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_USER')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
@@ -813,7 +816,7 @@ class OrganisationController extends AbstractDebugController {
             result.orgInstance = org
 
             result.inContextOrg = inContextOrg
-            result.editable_customeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
+            result.editable_customeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) ||
                     (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')) ||
                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
             result.isComboRelated = isComboRelated
@@ -876,7 +879,7 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def documents() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -887,7 +890,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -909,8 +912,19 @@ class OrganisationController extends AbstractDebugController {
     def deleteCustomerIdentifier() {
         log.debug("OrganisationController::deleteIdentifier ${params}");
         CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
-        if (ci && ci.owner == contextService.org) {
+        Org owner = GrailsHibernateUtil.unwrapIfProxy(ci).owner
+        if (ci && owner.id == contextService.org.id) {
             ci.delete()
+            log.debug("Customeridentifier deleted: ${params}")
+        } else {
+            if ( ! ci ) {
+                flash.message = message(code: 'default.not.found.message', args: [message(code:
+                        'org.customerIdentifier'), params.deleteCI])
+            } else {
+                flash.message = message(code: 'org.customerIdentifier.delete.norights')
+            }
+            log.error("Customeridentifier NOT deleted: ${params}; CostomerIdentifier not found or ContextOrg is not " +
+                    "owner of this CustomerIdentifier and has no rights to delete it!")
         }
         redirect action: 'ids', id: params.id
     }
@@ -1052,7 +1066,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def userCreate() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         result.availableOrgs = Org.get(params.id)
         result.availableOrgRoles = Role.findAllByRoleType('user')
         result.editor = result.user
@@ -1181,7 +1195,7 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -1219,7 +1233,7 @@ class OrganisationController extends AbstractDebugController {
                 ])
     })
     def readerNumber() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -1245,7 +1259,7 @@ class OrganisationController extends AbstractDebugController {
         ])
     })
     def accessPoints() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return
@@ -1342,7 +1356,7 @@ class OrganisationController extends AbstractDebugController {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
             result.editable = true
         } else {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR')
         }
 
         if (result.editable){
@@ -1366,7 +1380,7 @@ class OrganisationController extends AbstractDebugController {
         if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
             result.editable = true
         } else {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR')
         }
 
         if(result.editable) {
@@ -1379,11 +1393,12 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    private Map setResultGenericsAndCheckAccess(params) {
+    private Map<String, Object> setResultGenericsAndCheckAccess(params) {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
-        Map result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN'),inContextOrg:true,institutionalView:false,departmentalView:false]
-        if(params.id) {
+        Map<String, Object> result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN'),inContextOrg:true,institutionalView:false,departmentalView:false]
+
+        if (params.id) {
             result.orgInstance = Org.get(params.id)
             result.inContextOrg = result.orgInstance?.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
@@ -1413,7 +1428,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR")
     @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ORG_EDITOR") })
     def toggleCombo() {
-        Map result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
         if(!result) {
             response.sendError(401)
             return

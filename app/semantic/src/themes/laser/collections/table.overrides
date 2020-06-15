@@ -46,31 +46,27 @@
 .ui.table {
 
   tr{
-    td {
-      //background-color: white;
+    td, .la-th-column {
       padding: 20px 0;
     }
     td, th {
       padding-left:0.9rem;
       padding-right:0.9rem;
     }
-    th{
-      color: #515151;
-      font-size: 0.8rem;
-      &:not(.la-no-uppercase) {
-        text-transform: uppercase;
-      }
-      a {
-        //display: inline-block;
-        //padding: 0.5rem 0;
-        cursor: pointer;
+    th {
+      font-weight: normal;
+      &:not(.la-th-column):not(.la-no-uppercase)
+      {
+        font-weight: bold;
         color: #515151;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        a {
+          cursor: pointer;
+          color: #515151;
+        }
       }
-    }
-    th:not(.sortable){
-      a {
-        text-decoration: underline;
-      }
+
     }
   }
 }
@@ -78,13 +74,7 @@
      la-table
 ---------------*/
 .ui.la-table.table{
-
   background-color: white;
-  tr {
-    td {
-      //background-color: white;
-    }
-  }
 }
 .metaboxContent .ui.la-table.table{
   border-collapse: separate;
@@ -95,7 +85,8 @@
 .ui.la-table.table tr td {
   border-top:none;
 }
-.ui.la-table.table tr td {
+.ui.la-table.table tr td,
+.ui.la-table.table tr th.la-th-column{
   border-top:7px solid #F4F8F9;
 }
 /*--------------
@@ -234,6 +225,7 @@
   position: sticky !important;
   z-index: 2;
 }
+
 // Table Header
 .ui.table thead tr:first-child > th,
 .ui.table thead tr:nth-child(2) > th {
@@ -244,4 +236,9 @@
 }
 .ui.table thead tr:nth-child(2) > th {
   top: 118px;
+}
+// avoiding sticky behavior of calendar table
+.ui.table.day thead tr:first-child > th,
+.ui.table.day thead tr:nth-child(2) > th {
+  position: static !important;
 }

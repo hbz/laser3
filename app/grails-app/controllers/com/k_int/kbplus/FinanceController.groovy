@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import de.laser.CacheService
 import de.laser.controller.AbstractDebugController
+import de.laser.domain.IssueEntitlementGroup
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException
@@ -42,8 +42,6 @@ class FinanceController extends AbstractDebugController {
     def accessService
     def contextService
     def genericOIDService
-    def navigationGenerationService
-    CacheService cacheService
     def financeService
     def escapeService
     def exportService
@@ -76,9 +74,6 @@ class FinanceController extends AbstractDebugController {
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
-            Map navigation = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
-            result.navNextSubscription = navigation.nextLink
-            result.navPrevSubscription = navigation.prevLink
             result
         }
         catch (FinancialDataException e) {
@@ -740,7 +735,9 @@ class FinanceController extends AbstractDebugController {
         result.putAll(financeService.setAdditionalGenericEditResults(result))
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
-        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia()
+        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
+        if(!result.copyCostsFromConsortia)
+            result.taxKey = result.costItem.taxKey
         result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[tab:result.tab, mode:"copy"])
         result.mode = "copy"
         render(template: "/finance/ajaxModal", model: result)
@@ -858,6 +855,17 @@ class FinanceController extends AbstractDebugController {
                   }
               }
 
+              IssueEntitlementGroup issueEntitlementGroup = null
+              if(params.newTitleGroup)
+              {
+                  try {
+                      issueEntitlementGroup = IssueEntitlementGroup.load(params.newTitleGroup.split(":")[1])
+                  } catch (Exception e) {
+                      log.error("Non-valid IssueEntitlementGroup sent ${params.newTitleGroup}",e)
+                  }
+              }
+
+              println(issueEntitlementGroup)
               RefdataValue billing_currency = RefdataValue.get(params.newCostCurrency)
 
               //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
@@ -905,7 +913,13 @@ class FinanceController extends AbstractDebugController {
                           break
                   }
               }
-              RefdataValue elementSign   = params.ciec ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+              RefdataValue elementSign
+              try {
+                  elementSign = RefdataValue.get(Long.parseLong(params.ciec))
+              }
+              catch (Exception e) {
+                  elementSign = null
+              }
 
               boolean cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
 
@@ -931,6 +945,7 @@ class FinanceController extends AbstractDebugController {
                   newCostItem.sub = sub
                   newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
                   newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie?.tipp) ?: null
+                  newCostItem.issueEntitlementGroup = issueEntitlementGroup ?: null
                   newCostItem.order = order
                   newCostItem.invoice = invoice
                   //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
@@ -1449,9 +1464,9 @@ class FinanceController extends AbstractDebugController {
         render result as JSON
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processCostItemsBulk() {
         Map<String,Object> result = financeService.setResultGenerics(params)

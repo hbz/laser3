@@ -30,15 +30,18 @@
     <span class="ui label">${sessionCache.getSession().class}</span></h4>
 
 <div class="ui segment">
+    <g:link class="ui button small"
+            controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
+
     <g:if test="${sessionCache.list().size() > 0}">
-        <g:each in="${contextService.getSessionCache().list()}" var="entry">
-            <strong>${entry.key}</strong> ${entry.value} <br />
-        </g:each>
+        <dl>
+            <g:each in="${contextService.getSessionCache().list()}" var="entry">
+                <dt>${entry.key}</dt>
+                <dd>${entry.value}</dd>
+            </g:each>
+        </dl>
     </g:if>
 
-    <br />
-    <g:link class="ui button"
-            controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
 </div>
 
 <hr />
@@ -79,36 +82,51 @@
                 }
 
             </span> --%>
-            <g:if test="${cache.getKeys().size() > 0}">
-                <span class="ui label button" onclick="$(this).parent('h4').next('.segment').find('.cacheContent').toggleClass('hidden')">count: ${cache.getKeys().size()}</span>
-            </g:if>
         </h4>
 
-        <div class="ui segment">
-            ${cache}
+        <div class="ui segments">
 
-            <dl>
-                <div class="cacheContent hidden">
-                    <g:each in="${cache.getKeys().toSorted()}" var="key">
-                        <g:set var="cacheEntry" value="${cache.get(key)}" />
-                        <g:if test="${cacheEntry}">
-                            <dt>
-                                ${cacheEntry.getObjectKey() instanceof String ? cacheEntry.getObjectKey() : cacheEntry.getObjectKey().key}
-                                [ version=${cacheEntry.version} : hitCount=${cacheEntry.hitCount} ]
-                            </dt>
-                            <dd>
-                                <g:set var="objectValue" value="${cacheEntry.getObjectValue()}" />
-                                <g:if test="${objectValue.getClass().getSimpleName() != 'Item'}">
-                                    ${objectValue}
-                                </g:if>
-                            </dd>
-                        </g:if>
-                    </g:each>
-                </div>
-            </dl>
+            <div class="ui segment">
 
-            <g:link class="ui button"
-                    controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache leeren</g:link>
+                <g:link class="ui button small" controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache leeren</g:link>
+
+                <button class="ui button small" onclick="$(this).parent('.segment').next('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
+
+                <g:if test="${cache.getKeys().size() > 0}">
+                    <button class="ui button small positive" onclick="$(this).parent('.segment').find('.cacheContent').toggleClass('hidden')">Elemente: ${cache.getKeys().size()}</button>
+
+                    <div class="cacheContent hidden">
+                        <dl>
+                        <g:each in="${cache.getKeys().toSorted()}" var="key">
+                            <g:set var="cacheEntry" value="${cache.get(key)}" />
+                            <g:if test="${cacheEntry}">
+                                <dt>
+                                    ${cacheEntry.getObjectKey() instanceof String ? cacheEntry.getObjectKey() : cacheEntry.getObjectKey().key}
+                                    [ version=${cacheEntry.version} : hitCount=${cacheEntry.hitCount} ]
+                                </dt>
+                                <dd>
+                                    <g:set var="objectValue" value="${cacheEntry.getObjectValue()}" />
+                                    <g:if test="${objectValue.getClass().getSimpleName() != 'Item'}">
+                                        ${objectValue}
+                                    </g:if>
+                                </dd>
+                            </g:if>
+                        </g:each>
+                        </dl>
+                    </div>
+
+                </g:if>
+            </div>
+
+            <div class="ui secondary segment cacheConfig hidden">
+                <%
+                    Map<String, Object> cacheConfig = cache.getCacheConfiguration().getProperties().findAll {
+                        it.value instanceof Number || it.value instanceof Boolean || it.value instanceof String
+                    }.sort{ it.key.toLowerCase() }
+
+                    print cacheConfig.collect{ "${it.key} = ${it.value}" }
+                %>
+            </div>
 
         </div>
     </g:each>
@@ -135,7 +153,9 @@
     <h4 class="ui header">${cacheName} <span class="ui label">${cache.class}</span></h4>
 
     <div class="ui segment">
-        ${cache}
+
+        <g:link class="ui button small"
+                controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'cache']">Cache leeren</g:link>
 
         <ul>
             <g:each in="${cache.allKeys}" var="key">
@@ -144,8 +164,7 @@
             </g:each>
         </ul>
 
-        <g:link class="ui button"
-                controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'cache']">Cache leeren</g:link>
+        ${cache}
 
     </div>
 </g:each>

@@ -1169,7 +1169,8 @@
 .ui.sortable.table thead th.sortable:hover {
   background: #F2F2F2;
 }
-.ui.table tr td {
+.ui.table tr td,
+.ui.table tr .la-th-column {
   padding: 20px 0;
 }
 .ui.table tr td,
@@ -1178,18 +1179,17 @@
   padding-right: 0.9rem;
 }
 .ui.table tr th {
+  font-weight: normal;
+}
+.ui.table tr th:not(.la-th-column):not(.la-no-uppercase) {
+  font-weight: bold;
   color: #515151;
   font-size: 0.8rem;
-}
-.ui.table tr th:not(.la-no-uppercase) {
   text-transform: uppercase;
 }
-.ui.table tr th a {
+.ui.table tr th:not(.la-th-column):not(.la-no-uppercase) a {
   cursor: pointer;
   color: #515151;
-}
-.ui.table tr th:not(.sortable) a {
-  text-decoration: underline;
 }
 
 /*--------------
@@ -1207,7 +1207,8 @@
 .ui.la-table.table tr td {
   border-top: none;
 }
-.ui.la-table.table tr td {
+.ui.la-table.table tr td,
+.ui.la-table.table tr th.la-th-column {
   border-top: 7px solid #F4F8F9;
 }
 
@@ -1347,4 +1348,8 @@
 }
 .ui.table thead tr:nth-child(2) > th {
   top: 118px;
+}
+.ui.table.day thead tr:first-child > th,
+.ui.table.day thead tr:nth-child(2) > th {
+  position: static !important;
 }

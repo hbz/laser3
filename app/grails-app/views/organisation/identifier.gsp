@@ -317,15 +317,16 @@
                             </dl>
                             <dl>
                                 <dt>
-                                    <g:message code="org.federalState.label" />
+                                    <g:message code="org.region.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.federalState.expl')}">
+                                          data-content="${message(code: 'org.region.expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </dt>
                                 <dd>
                                     <semui:xEditableRefData owner="${orgInstance}" field="federalState"
-                                                            config="${RDConstants.FEDERAL_STATE}"/>
+                                                            config="${[RDConstants.REGIONS_DE, RDConstants.REGIONS_AT,
+                                                                       RDConstants.REGIONS_CH]}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -576,7 +577,7 @@
                     </div>
                 </div><!-- .card -->
 
-                <g:if test="${contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                <g:if test="${contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">

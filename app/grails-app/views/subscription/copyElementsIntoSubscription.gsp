@@ -42,10 +42,7 @@
                             </g:link>
                         </div>
                         <div class="description">
-                            <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
-                            <i class="ellipsis vertical icon"></i>${message(code:'subscription.status.label')}
                             <i class="image outline icon"></i>${message(code:'subscription.kind.label')}
-                            <br>
                             <i class="dolly icon"></i>${message(code:'subscription.form.label')}
                             <i class="box icon"></i>${message(code:'subscription.resource.label')}
                             <br>
@@ -88,7 +85,7 @@
                 </div>
             </div>
 
-            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
+            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
                 <div class="${workFlowPart == WORKFLOW_SUBSCRIBER ? 'active' : ''} step">
                     <div class="content">
                         <div class="title">
@@ -160,7 +157,7 @@
                 </div>
             </semui:complexSubNavItem>
 
-            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
+            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_EDITOR")}">
                 <semui:complexSubNavItem class="${workFlowPart == WORKFLOW_SUBSCRIBER ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_SUBSCRIBER]}" >
                     <div class="content">
                         <div class="title">
@@ -193,7 +190,7 @@
     <g:if test="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <g:render template="/templates/subscription/copyDocsAndTasks" />
     </g:if>
-    <g:elseif test="${workFlowPart == WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
+    <g:elseif test="${workFlowPart == WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_EDITOR")}">
         <g:render template="/templates/subscription/copySubscriber" />
     </g:elseif>
     <g:elseif test="${workFlowPart == WORKFLOW_PROPERTIES}">

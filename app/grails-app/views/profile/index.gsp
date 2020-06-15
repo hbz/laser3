@@ -305,13 +305,25 @@
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isSurveysEndDate" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SURVEYS_ENDDATE, YN_YES).rdValue==YN_YES}"/>
-                                    <input type="checkbox" name="isSurveysEndDate" class="hidden" value="Y" ${isSurveysEndDate?'checked':''}/>
+                                    <g:set var="isSurveysNotMandatoryEndDate" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isSurveysNotMandatoryEndDate" class="hidden" value="Y" ${isSurveysNotMandatoryEndDate?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.surveys.endDate')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSurveysEndDate" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SURVEYS_ENDDATE, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSurveysEndDate" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isSurveysMandatoryEndDate" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isSurveysMandatoryEndDate" class="hidden" value="Y" ${isSurveysMandatoryEndDate?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.surveysMandatory.endDate')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForSurveysMandatoryEndDate" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                     </tbody>
@@ -434,7 +446,7 @@
                         </td>
                         <td>${message(code: 'profile.notification.for.SurveysStart')}</td>
                     </tr>
-                    <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                    <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
                     <tr>
                         <td>
                             <div class="ui checkbox">

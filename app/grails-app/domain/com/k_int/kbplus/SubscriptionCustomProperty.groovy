@@ -1,15 +1,16 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
-import de.laser.traits.AuditableTrait
+import de.laser.AuditConfig
+import de.laser.interfaces.AuditableSupport
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 
 import javax.persistence.Transient
 
-class SubscriptionCustomProperty extends CustomProperty implements AuditableTrait {
+class SubscriptionCustomProperty extends CustomProperty implements AuditableSupport {
 
     @Transient
     def genericOIDService
@@ -21,10 +22,11 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
     def pendingChangeService
     @Transient
     def deletionService
+    @Transient
+    def auditService
 
-    // AuditableTrait
-    static auditable = true
-    static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading'] ]
+    static controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']
 
     PropertyDefinition type
     Subscription owner
@@ -34,7 +36,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
     Date lastUpdated
 
     static mapping = {
-        includes    AbstractProperty.mapping
+        includes    AbstractPropertyWithCalculatedLastUpdated.mapping
         owner       index:'scp_owner_idx'
 
         dateCreated column: 'scp_date_created'
@@ -42,7 +44,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
     }
 
     static constraints = {
-        importFrom  AbstractProperty
+        importFrom  AbstractPropertyWithCalculatedLastUpdated
         instanceOf (nullable: true)
 
         // Nullable is true, because values are already in the database
@@ -56,25 +58,22 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
     ]
 
     def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 
     @Transient
+    def onChange = { oldMap, newMap ->
+        log.debug("onChange ${this}")
+        auditService.onChangeHandler(this, oldMap, newMap)
+    }
+
+    @Transient
     def onDelete = { oldMap ->
-        log.debug("onDelete SubscriptionCustomProperty")
-
-        //def oid = "${this.owner.class.name}:${this.owner.id}"
-        String oid = "${this.class.name}:${this.id}"
-        Map<String, Object> changeDoc = [
-                          OID: oid,
-                          event:'SubscriptionCustomProperty.deleted',
-                          prop: "${this.type.name}",
-                          old: "",
-                          new: "property removed",
-                          name: this.type.name
-        ]
-
-        changeNotificationService.fireEvent(changeDoc)
+        log.debug("onDelete ${this}")
+        auditService.onDeleteHandler(this, oldMap)
     }
 
     def notifyDependencies_trait(changeDocument) {
@@ -158,7 +157,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
-                            pc.delete(flush: true)
+                            pc.delete()
                         }
                     }
                 }

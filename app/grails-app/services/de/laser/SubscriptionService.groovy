@@ -1,9 +1,11 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
@@ -13,21 +15,23 @@ import de.laser.domain.PriceItem
 import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DateUtil
+import de.laser.helper.DebugUtil
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.interfaces.CalculatedType
+import grails.converters.JSON
 import grails.util.Holders
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
-import static de.laser.helper.RDStore.*
-
 class SubscriptionService {
-    def genericOIDService
     def contextService
     def accessService
     def subscriptionsQueryService
@@ -35,13 +39,311 @@ class SubscriptionService {
     def messageSource
     def escapeService
     def refdataService
+    FilterService filterService
     Locale locale
     def grailsApplication
+    GenericOIDService genericOIDService
 
     @javax.annotation.PostConstruct
     void init() {
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+    }
+
+    //ex SubscriptionController.currentSubscriptions()
+    Map<String,Object> getMySubscriptions(GrailsParameterMap params, User contextUser, Org contextOrg) {
+        Map<String,Object> result = [:]
+        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [contextOrg])
+
+        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
+        result.allConsortia = Org.executeQuery(
+                """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
+                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
+                        os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) 
+                        order by lower(o.name)""",
+                [roles: consRoles]
+        )
+
+        def viableOrgs = []
+
+        if ( result.availableConsortia ){
+            result.availableConsortia.each {
+                viableOrgs.add(it)
+            }
+        }
+
+        viableOrgs.add(contextOrg)
+
+        def date_restriction = null
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+
+        if (params.validOn == null || params.validOn.trim() == '') {
+            result.validOn = ""
+        } else {
+            result.validOn = params.validOn
+            date_restriction = sdf.parse(params.validOn)
+        }
+
+        result.editable = accessService.checkMinUserOrgRole(contextUser, contextOrg, 'INST_EDITOR')
+
+        if (! params.status) {
+            if (params.isSiteReloaded != "yes") {
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            }
+            else {
+                params.status = 'FETCH_ALL'
+            }
+        }
+
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result.filterSet = tmpQ[2]
+        List<Subscription> subscriptions
+        if(params.sort == "providerAgency") {
+            subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]).collect{ row -> row[0] }
+        }
+        else {
+            subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
+        }
+        result.allSubscriptions = subscriptions
+        if(!params.exportXLS)
+            result.num_sub_rows = subscriptions.size()
+
+        result.date_restriction = date_restriction;
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        if (OrgSettings.get(contextOrg, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
+            result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
+            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+        }
+
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        result
+    }
+
+    Map<String,Object> getMySubscriptionsForConsortia(GrailsParameterMap params,User contextUser, Org contextOrg,List<String> tableConf) {
+        Map<String,Object> result = [:]
+
+        DebugUtil du = new DebugUtil()
+        du.setBenchmark('filterService')
+
+        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        Map fsq = filterService.getOrgComboQuery([comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort: 'o.sortname'], contextOrg)
+        result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
+
+        du.setBenchmark('filterSubTypes & filterPropList')
+
+        if(params.filterSet)
+            result.filterSet = params.filterSet
+
+        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(
+                RDStore.SUBSCRIPTION_TYPE_LOCAL
+        )
+        result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
+
+        /*
+        String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
+                "join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
+                "where orgK = :org and orgK = roleK.org and roleK.roleType = :rdvCons " +
+                "and orgK = roleTK.org and roleTK.roleType = :rdvCons " +
+                "and roleT.roleType = :rdvSubscr "
+        */
+
+        // CostItem ci
+
+        du.setBenchmark('filter query')
+
+        String query
+        Map qarams
+
+        if('withCostItems' in tableConf) {
+            query = "select ci, subT, roleT.org " +
+                    " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
+                    " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
+                    " where roleK.org = :org and roleK.roleType = :rdvCons " +
+                    " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
+                    " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) " +
+                    " and ( ci is null or (ci.owner = :org and ci.costItemStatus != :deleted) )"
+            qarams = [org      : contextOrg,
+                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN,
+                      deleted  : RDStore.COST_ITEM_DELETED
+            ]
+        }
+        else if('onlyMemberSubs' in tableConf) {
+            query = "select subT, roleT.org " +
+                    " from Subscription subT join subT.instanceOf subK " +
+                    " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
+                    " where roleK.org = :org and roleK.roleType = :rdvCons " +
+                    " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
+                    " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) "
+            qarams = [org      : contextOrg,
+                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+            ]
+        }
+
+        if (params.selSubscription?.size() > 0) {
+            query += " and subT.instanceOf in (:subscriptions) "
+            Set<Subscription> subscriptions = []
+            List<String> selSubs = params.selSubscription.split(',')
+            selSubs.each { String sub ->
+                subscriptions << genericOIDService.resolveOID(sub)
+            }
+            qarams.put('subscriptions', subscriptions)
+        }
+        
+        if (params.member?.size() > 0) {
+            query += " and roleT.org.id = :member "
+            qarams.put('member', params.long('member'))
+        }
+
+        if (params.identifier?.length() > 0) {
+            query += " and exists (select ident from Identifier ident join ident.org ioorg " +
+                    " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
+            qarams.put('identifier', "%${params.identifier}%")
+        }
+
+        if (params.validOn?.size() > 0) {
+            result.validOn = params.validOn
+
+            if('withCostItems' in tableConf) {
+                query += " and ( "
+                query += "( ci.startDate <= :validOn OR (ci.startDate is null AND (subT.startDate <= :validOn OR subT.startDate is null) ) ) and "
+                query += "( ci.endDate >= :validOn OR (ci.endDate is null AND (subT.endDate >= :validOn OR subT.endDate is null) ) ) "
+                query += ") "
+            }
+            else if('onlyMemberSubs' in tableConf) {
+                query += " and ( "
+                query += "(subT.startDate <= :validOn OR subT.startDate is null) and "
+                query += "(subT.endDate <= :validOn OR subT.endDate is null)"
+                query += ") "
+            }
+
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            qarams.put('validOn', new Timestamp(sdf.parse(params.validOn).getTime()))
+        }
+
+        if (params.status?.size() > 0) {
+            query += " and subT.status.id = :status "
+            qarams.put('status', params.long('status'))
+        } else if(!params.filterSet) {
+            query += " and subT.status.id = :status "
+            qarams.put('status', RDStore.SUBSCRIPTION_CURRENT.id)
+            params.status = RDStore.SUBSCRIPTION_CURRENT.id
+            result.defaultSet = true
+        }
+
+        if (params.filterPropDef?.size() > 0) {
+            def psq = propertyService.evalFilterQuery(params, query, 'subT', qarams)
+            query = psq.query
+            qarams = psq.queryParams
+        }
+
+        if (params.form?.size() > 0) {
+            query += " and subT.form.id = :form "
+            qarams.put('form', params.long('form'))
+        }
+        if (params.resource?.size() > 0) {
+            query += " and subT.resource.id = :resource "
+            qarams.put('resource', params.long('resource'))
+        }
+        if (params.subTypes?.size() > 0) {
+            query += " and subT.type.id in (:subTypes) "
+            qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
+        }
+
+        if (params.containsKey('subKinds')) {
+            query += " and subT.kind.id in (:subKinds) "
+            qarams.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+        }
+
+        if (params.isPublicForApi) {
+            query += "and subT.isPublicForApi = :isPublicForApi "
+            qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+
+        if (params.hasPerpetualAccess) {
+            query += "and subT.hasPerpetualAccess = :hasPerpetualAccess "
+            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+
+        if (params.subRunTimeMultiYear || params.subRunTime) {
+
+            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                query += " and subT.isMultiYear = :subRunTimeMultiYear "
+                qarams.put('subRunTimeMultiYear', true)
+            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                query += " and subT.isMultiYear = :subRunTimeMultiYear "
+                qarams.put('subRunTimeMultiYear', false)
+            }
+        }
+
+        String orderQuery = " order by roleT.org.sortname, subT.name"
+        if (params.sort?.size() > 0) {
+            orderQuery = " order by " + params.sort + " " + params.order
+        }
+
+        if(params.filterSet && !params.member && !params.validOn && !params.status && !params.filterPropDef && !params.filterProp && !params.form && !params.resource && !params.subTypes)
+            result.filterSet = false
+
+        //log.debug( query + " " + orderQuery )
+        // log.debug( qarams )
+
+        if('withCostItems' in tableConf) {
+            du.setBenchmark('costs')
+
+            String totalMembersQuery = query.replace("ci, subT, roleT.org", "roleT.org")
+
+            result.totalMembers    = CostItem.executeQuery(
+                    totalMembersQuery, qarams
+            )
+
+            List costs = CostItem.executeQuery(
+                    query + " " + orderQuery, qarams
+            )
+            result.totalCount = costs.size()
+            if(params.exportXLS || params.format)
+                result.entries = costs
+            else result.entries = costs.drop((int) result.offset).take((int) result.max)
+
+            result.finances = {
+                Map entries = [:]
+                result.entries.each { obj ->
+                    if (obj[0]) {
+                        CostItem ci = obj[0]
+                        if (!entries."${ci.billingCurrency}") {
+                            entries."${ci.billingCurrency}" = 0.0
+                        }
+
+                        if (ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE) {
+                            entries."${ci.billingCurrency}" += ci.costInBillingCurrencyAfterTax
+                        }
+                        else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
+                            entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
+                        }
+                    }
+                }
+                entries
+            }()
+        }
+        else if('onlyMemberSubs') {
+            Set<Subscription> memberSubscriptions = Subscription.executeQuery(query,qarams)
+            result.memberSubscriptions = memberSubscriptions
+            result.totalCount = memberSubscriptions.size()
+            result.entries = memberSubscriptions.drop((int) result.offset).take((int) result.max)
+        }
+
+        List bm = du.stopBenchmark()
+        result.benchMark = bm
+
+        result
     }
 
     List getMySubscriptions_readRights(){
@@ -124,45 +426,40 @@ class SubscriptionService {
     //Konsortiallizenzen
     private List getSubscriptionsConsortiaQuery() {
         Map params = [:]
-//        params.status = SUBSCRIPTION_CURRENT.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.showParentsAndChildsSubs = false
 //        params.showParentsAndChildsSubs = 'true'
-        params.orgRole = OR_SUBSCRIPTION_CONSORTIA.value
+        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 
     //Teilnehmerlizenzen
     private List getSubscriptionsConsortialLicenseQuery() {
         Map params = [:]
-//        params.status = SUBSCRIPTION_CURRENT.id
-        params.orgRole = OR_SUBSCRIBER.value
-        params.subTypes = SUBSCRIPTION_TYPE_CONSORTIAL.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIBER.value
+        params.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 
     //Lokallizenzen
     private List getSubscriptionsLocalLicenseQuery() {
         Map params = [:]
-//        params.status = SUBSCRIPTION_CURRENT.id
-        params.orgRole = OR_SUBSCRIBER.value
-        params.subTypes = SUBSCRIPTION_TYPE_LOCAL.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIBER.value
+        params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 
     List getValidSubChilds(Subscription subscription) {
-        List<Subscription> validSubChildren = Subscription.findAllByInstanceOf(subscription)
-        validSubChildren = validSubChildren?.sort { Subscription a, Subscription b ->
-            Org sa = a.getSubscriber()
-            Org sb = b.getSubscriber()
-            (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
-        }
+        List<Subscription> validSubChildren = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :sub and oo.roleType in (:subRoleTypes) order by oo.org.sortname asc, oo.org.name asc',[sub:subscription,subRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
         validSubChildren
     }
 
     List getCurrentValidSubChilds(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatus(
                 subscription,
-                SUBSCRIPTION_CURRENT
+                RDStore.SUBSCRIPTION_CURRENT
         )
         if(validSubChilds) {
             validSubChilds = validSubChilds?.sort { a, b ->
@@ -219,9 +516,9 @@ class SubscriptionService {
             String base_qry = null
             Map<String,Object> qry_params = [subscription: subscription]
 
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             def date_filter
             if (params.asAt && params?.asAt?.length() > 0) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                 date_filter = sdf.parse(params.asAt)
                 /*result.as_at_date = date_filter
                 result.editable = false;*/
@@ -259,11 +556,11 @@ class SubscriptionService {
 
             if(params.mode != 'advanced') {
                 base_qry += " and ie.status = :current "
-                qry_params.current = TIPP_STATUS_CURRENT
+                qry_params.current = RDStore.TIPP_STATUS_CURRENT
             }
             else {
                 base_qry += " and ie.status != :deleted "
-                qry_params.deleted = TIPP_STATUS_DELETED
+                qry_params.deleted = RDStore.TIPP_STATUS_DELETED
             }
 
             if(params.ieAcceptStatusFixed) {
@@ -291,6 +588,11 @@ class SubscriptionService {
                 qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
             }
 
+            if (params.series_names && params.series_names != "" && params.list('series_names')) {
+                base_qry += " and lower(ie.tipp.title.seriesName) in (:series_names)"
+                qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
+            }
+
             if(params.ebookFirstAutorOrFirstEditor) {
                 base_qry += " and (lower(ie.tipp.title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
                 qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
@@ -301,6 +603,18 @@ class SubscriptionService {
                 qry_params.pkgId = Long.parseLong(params.pkgfilter)
             }
 
+            //dateFirstOnline from
+            if(params.dateFirstOnlineFrom) {
+                base_qry += " and (ie.tipp.title.dateFirstOnline is not null AND ie.tipp.title.dateFirstOnline >= :dateFirstOnlineFrom) "
+                qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
+
+            }
+            //dateFirstOnline to
+            if(params.dateFirstOnlineTo) {
+                base_qry += " and (ie.tipp.title.dateFirstOnline is not null AND ie.tipp.title.dateFirstOnline <= :dateFirstOnlineTo) "
+                qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
+            }
+
             if ((params.sort != null) && (params.sort.length() > 0)) {
                 base_qry += "order by ie.${params.sort} ${params.order} "
             } else {
@@ -308,7 +622,6 @@ class SubscriptionService {
             }
 
             List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
-
 
 
             ies.sort { it.tipp.title.title }
@@ -372,7 +685,23 @@ class SubscriptionService {
         if(titleIDs){
             subjects = TitleInstance.executeQuery("select distinct(subjectReference) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by subjectReference", [titleIDs: titleIDs])
         }
+        if(subjects.size() == 0){
+            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
+        }
+
         subjects
+    }
+
+    Set<String> getSeriesNames(List titleIDs) {
+        Set<String> seriesName = []
+
+        if(titleIDs){
+            seriesName = TitleInstance.executeQuery("select distinct(seriesName) from TitleInstance where seriesName is not null and id in (:titleIDs) order by seriesName", [titleIDs: titleIDs])
+        }
+        if(seriesName.size() == 0){
+            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
+        }
+        seriesName
 
     }
 
@@ -407,7 +736,7 @@ class SubscriptionService {
 
 
     boolean deleteStatus(Subscription targetSub, def flash) {
-        targetSub.status = SUBSCRIPTION_NO_STATUS
+        targetSub.status = RDStore.SUBSCRIPTION_NO_STATUS
         return save(targetSub, flash)
     }
 
@@ -478,7 +807,7 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
-
+    /*
     boolean deleteOwner(Subscription targetSub, def flash) {
         targetSub.owner = null
         return save(targetSub, flash)
@@ -490,12 +819,13 @@ class SubscriptionService {
         targetSub.owner = sourceSub.owner ?: null
         return save(targetSub, flash)
     }
+    */
 
 
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
         OrgRole.executeUpdate(
                 "delete from OrgRole o where o in (:orgRelations) and o.sub = :sub and o.roleType not in (:roleTypes)",
-                [orgRelations: toDeleteOrgRelations, sub: targetSub, roleTypes: [OR_SUBSCRIPTION_CONSORTIA, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER]]
+                [orgRelations: toDeleteOrgRelations, sub: targetSub, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         )
     }
 
@@ -527,7 +857,7 @@ class SubscriptionService {
 //        targetSub.issueEntitlements.each{ ie ->
         getIssueEntitlements(targetSub).each{ ie ->
             if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id } ) {
-                ie.status = TIPP_STATUS_DELETED
+                ie.status = RDStore.TIPP_STATUS_DELETED
                 save(ie, flash)
             }
         }
@@ -600,7 +930,7 @@ class SubscriptionService {
 
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
         entitlementsToDelete.each {
-            it.status = TIPP_STATUS_DELETED
+            it.status = RDStore.TIPP_STATUS_DELETED
             save(it, flash)
         }
 //        IssueEntitlement.executeUpdate(
@@ -611,8 +941,8 @@ class SubscriptionService {
 
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
         entitlementsToTake.each { ieToTake ->
-            if (ieToTake.status != TIPP_STATUS_DELETED) {
-                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != TIPP_STATUS_DELETED}
+            if (ieToTake.status != RDStore.TIPP_STATUS_DELETED) {
+                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED}
                 if (list?.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
                     Object[] args = [ieToTake.tipp.title.title]
@@ -623,6 +953,7 @@ class SubscriptionService {
                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                     InvokerHelper.setProperties(newIssueEntitlement, properties)
                     newIssueEntitlement.coverages = null
+                    newIssueEntitlement.ieGroups = null
                     newIssueEntitlement.subscription = targetSub
 
                     if(save(newIssueEntitlement, flash)){
@@ -642,6 +973,7 @@ class SubscriptionService {
 
 
     void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
+        targetSub.refresh()
         List<Subscription> targetChildSubs = getValidSubChilds(targetSub)
         subscriptionToTake.each { subMember ->
             //Gibt es mich schon in der Ziellizenz?
@@ -654,7 +986,7 @@ class SubscriptionService {
 //                diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem
             } else {
                 //ChildSub Exist
-//                ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, LINKTYPE_FOLLOWS, Subscription.class.name)
+//                ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, RDStore.LINKTYPE_FOLLOWS, Subscription.class.name)
 //                if (prevLinks.size() == 0) {
 
                     /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
@@ -676,12 +1008,14 @@ class SubscriptionService {
                             isSlaved: subMember.isSlaved,
                             owner: targetSub.owner ? subMember.owner : null,
                             resource: targetSub.resource ?: null,
-                            form: targetSub.form ?: null
+                            form: targetSub.form ?: null,
+                            isPublicForApi: targetSub.isPublicForApi,
+                            hasPerpetualAccess: targetSub.hasPerpetualAccess
                     )
                     newSubscription.save(flush:true)
                     //ERMS-892: insert preceding relation in new data model
                     if (subMember) {
-                        Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
+                        Links prevLink = new Links(source: GenericOIDService.getOID(newSubscription), destination: GenericOIDService.getOID(subMember), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
                         if (!prevLink.save()) {
                             log.error("Subscription linking failed, please check: ${prevLink.errors}")
                         }
@@ -698,7 +1032,7 @@ class SubscriptionService {
                     }
                     if (subMember.privateProperties) {
                         //privatProperties
-                        List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [OR_SUBSCRIBER_CONS, OR_SUBSCRIPTION_CONSORTIA]]).collect {
+                        List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]]).collect {
                             it -> it.id
                         }
                         subMember.privateProperties?.each { prop ->
@@ -743,6 +1077,7 @@ class SubscriptionService {
                                 IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                                 InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
                                 newIssueEntitlement.coverages = null
+                                newIssueEntitlement.ieGroups = null
                                 newIssueEntitlement.subscription = newSubscription
 
                                 if(save(newIssueEntitlement, flash)){
@@ -761,7 +1096,7 @@ class SubscriptionService {
 
                     //OrgRole
                     subMember.orgRelations?.each { or ->
-                        if ((or.org.id == contextService.getOrg().id) || (or.roleType in [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_CONS_HIDDEN, OR_SUBSCRIPTION_COLLECTIVE]) || (targetSub.orgRelations.size() >= 1)) {
+                        if ((or.org.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_COLLECTIVE]) || (targetSub.orgRelations.size() >= 1)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.sub = newSubscription
@@ -809,7 +1144,7 @@ class SubscriptionService {
         toCopyTasks.each { tsk ->
             def task = Task.findBySubscriptionAndId(sourceSub, tsk)
             if (task) {
-                if (task.status != TASK_STATUS_DONE) {
+                if (task.status != RDStore.TASK_STATUS_DONE) {
                     Task newTask = new Task()
                     InvokerHelper.setProperties(newTask, task.properties)
                     newTask.systemCreateDate = new Date()
@@ -888,7 +1223,7 @@ class SubscriptionService {
     def deleteDocs(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
         def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
-        [del: DOC_CTX_STATUS_DELETED, ids: toDeleteDocs])
+        [del: RDStore.DOC_CTX_STATUS_DELETED, ids: toDeleteDocs])
         log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
     }
 
@@ -925,7 +1260,7 @@ class SubscriptionService {
     }
 
 
-    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
+    boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
         Org contextOrg = contextService.getOrg()
         def targetProp
 
@@ -968,9 +1303,9 @@ class SubscriptionService {
     }
 
 
-    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
+    boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
         if (true){
-            properties.each { AbstractProperty prop ->
+            properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
                 AuditConfig.removeAllConfigs(prop)
             }
         }
@@ -1068,7 +1403,7 @@ class SubscriptionService {
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
         }
-        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, TIPP_STATUS_CURRENT))
+        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT))
             {
                 throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
         } else {
@@ -1154,7 +1489,7 @@ class SubscriptionService {
             return false
         }
         else {
-            ie.status = TIPP_STATUS_DELETED
+            ie.status = RDStore.TIPP_STATUS_DELETED
             if(ie.save()) {
                 return true
             }
@@ -1170,7 +1505,7 @@ class SubscriptionService {
             return false
         }
         else {
-            ie.status = TIPP_STATUS_DELETED
+            ie.status = RDStore.TIPP_STATUS_DELETED
             if(ie.save()) {
                 return true
             }
@@ -1195,17 +1530,60 @@ class SubscriptionService {
         }
     }
 
+    boolean setOrgLicRole(Subscription sub, License newOwner) {
+        boolean success = false
+        if(sub.owner != newOwner) {
+            Org subscr = sub.getSubscriber()
+            if(newOwner == null) {
+                Map<String,Object> licParams = [lic:sub.owner,subscriber:subscr]
+                Set<Subscription> linkedSubs = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.owner = :lic and oo.org = :subscriber and oo.roleType in (:roleTypes)',licParams+[roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIBER_COLLECTIVE]])
+                //size == 1 is correct because this is the last subscription to be linked for that org
+                if(linkedSubs.size() == 1) {
+                    log.info("no more license <-> subscription links between org -> removing licensee role")
+                    if(OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams))
+                        success = true
+                }
+            }
+            else if(newOwner != null) {
+                RefdataValue licRole
+                if(sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
+                    licRole = RDStore.OR_LICENSEE_CONS
+                else if(sub.getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE,CalculatedType.TYPE_LOCAL])
+                    licRole = RDStore.OR_LICENSEE
+                else if(sub.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+                    licRole = RDStore.OR_LICENSING_CONSORTIUM
+                if(licRole) {
+                    OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newOwner,subscr,licRole)
+                    if(!orgLicRole){
+                        orgLicRole = OrgRole.findByLicAndOrgAndRoleType(sub.owner,subscr,licRole)
+                        if(orgLicRole && orgLicRole.lic != newOwner) {
+                            orgLicRole.lic = newOwner
+                        }
+                        else {
+                            orgLicRole = new OrgRole(lic: newOwner,org: subscr,roleType: licRole)
+                        }
+                        if(orgLicRole.save())
+                            success = true
+                    }
+                }
+            }
+            sub.owner = newOwner
+            success && sub.save()
+        }
+        else success
+    }
+
     Map subscriptionImport(CommonsMultipartFile tsvFile) {
         Org contextOrg = contextService.org
         RefdataValue comboType
         String[] parentSubType
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            comboType = COMBO_TYPE_CONSORTIUM
-            parentSubType = [SUBSCRIPTION_TYPE_CONSORTIAL.getI10n('value')]
+            comboType = RDStore.COMBO_TYPE_CONSORTIUM
+            parentSubType = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.getI10n('value')]
         }
         else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-            comboType = COMBO_TYPE_DEPARTMENT
-            parentSubType = [SUBSCRIPTION_TYPE_LOCAL.getI10n('value')]
+            comboType = RDStore.COMBO_TYPE_DEPARTMENT
+            parentSubType = [RDStore.SUBSCRIPTION_TYPE_LOCAL.getI10n('value')]
         }
         Map colMap = [:]
         Map<String, Map> propMap = [:]
@@ -1319,21 +1697,21 @@ class SubscriptionService {
                     else {
                         //missing case one: invalid status key
                         //default to subscription not set
-                        candidate.status = "${SUBSCRIPTION_NO_STATUS.class.name}:${SUBSCRIPTION_NO_STATUS.id}"
+                        candidate.status = "${RDStore.SUBSCRIPTION_NO_STATUS.class.name}:${RDStore.SUBSCRIPTION_NO_STATUS.id}"
                         mappingErrorBag.noValidStatus = statusKey
                     }
                 }
                 else {
                     //missing case two: no status key set
                     //default to subscription not set
-                    candidate.status = "${SUBSCRIPTION_NO_STATUS.class.name}:${SUBSCRIPTION_NO_STATUS.id}"
+                    candidate.status = "${RDStore.SUBSCRIPTION_NO_STATUS.class.name}:${RDStore.SUBSCRIPTION_NO_STATUS.id}"
                     mappingErrorBag.statusNotSet = true
                 }
             }
             else {
                 //missing case three: the entire column is missing
                 //default to subscription not set
-                candidate.status = "${SUBSCRIPTION_NO_STATUS.class.name}:${SUBSCRIPTION_NO_STATUS.id}"
+                candidate.status = "${RDStore.SUBSCRIPTION_NO_STATUS.class.name}:${RDStore.SUBSCRIPTION_NO_STATUS.id}"
                 mappingErrorBag.statusNotSet = true
             }
             //moving on to optional attributes
@@ -1469,7 +1847,7 @@ class SubscriptionService {
                 String idCandidate = cols[colMap.instanceOf].trim()
                 String memberIdCandidate = cols[colMap.member].trim()
                 if(idCandidate && memberIdCandidate) {
-                    List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [OR_SUBSCRIPTION_CONSORTIA, OR_SUBSCRIPTION_COLLECTIVE], idCandidate: idCandidate])
+                    List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIPTION_COLLECTIVE], idCandidate: idCandidate])
                     // TODO [ticket=1789]
                     //  List<Org> possibleOrgs = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc, Combo c join idOcc.identifier id where c.fromOrg = idOcc.org and :idCandidate in (cast(idOcc.org.id as string),idOcc.org.globalUID) or (id.value = :idCandidate and id.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type",[idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
                     List<Org> possibleOrgs = Org.executeQuery("select distinct ident.org from Identifier ident, Combo c where c.fromOrg = ident.org and :idCandidate in (cast(ident.org.id as string), ident.org.globalUID) or (ident.value = :idCandidate and ident.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type", [idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
@@ -1533,6 +1911,198 @@ class SubscriptionService {
             candidates.put(candidate,mappingErrorBag)
         }
         [candidates: candidates, globalErrors: globalErrors, parentSubType: parentSubType]
+    }
+
+    Map issueEntitlementEnrichment(InputStream stream, List<IssueEntitlement> issueEntitlements, boolean uploadCoverageDates, boolean uploadPriceInfo) {
+
+        Integer count = 0
+        Integer countChangesPrice = 0
+        Integer countChangesCoverageDates = 0
+
+        ArrayList<String> rows = stream.text.split('\n')
+        Map<String, Integer> colMap = [publicationTitleCol: -1, zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, dateFirstInPrintCol: -1, dateFirstOnlineCol: -1,
+                                       startDateCol       : -1, startVolumeCol: -1, startIssueCol: -1,
+                                       endDateCol         : -1, endVolumeCol: -1, endIssueCol: -1,
+                                       accessStartDateCol : -1, accessEndDateCol: -1, coverageDepthCol: -1, coverageNotesCol: -1, embargoCol: -1,
+                                       listPriceCol       : -1, listCurrencyCol: -1, listPriceEurCol: -1, listPriceUsdCol: -1, listPriceGbpCol: -1, localPriceCol: -1, localCurrencyCol: -1, priceDateCol: -1]
+        //read off first line of KBART file
+        rows[0].split('\t').eachWithIndex { headerCol, int c ->
+            switch (headerCol.toLowerCase().trim()) {
+                case "zdb_id": colMap.zdbCol = c
+                    break
+                case "print_identifier": colMap.printIdentifierCol = c
+                    break
+                case "online_identifier": colMap.onlineIdentifierCol = c
+                    break
+                case "publication_title": colMap.publicationTitleCol = c
+                    break
+                case "date_monograph_published_print": colMap.dateFirstInPrintCol = c
+                    break
+                case "date_monograph_published_online": colMap.dateFirstOnlineCol = c
+                    break
+                case "date_first_issue_online": colMap.startDateCol = c
+                    break
+                case "num_first_vol_online": colMap.startVolumeCol = c
+                    break
+                case "num_first_issue_online": colMap.startIssueCol = c
+                    break
+                case "date_last_issue_online": colMap.endDateCol = c
+                    break
+                case "num_last_vol_online": colMap.endVolumeCol = c
+                    break
+                case "num_last_issue_online": colMap.endIssueCol = c
+                    break
+                case "access_start_date": colMap.accessStartDateCol = c
+                    break
+                case "access_end_date": colMap.accessEndDateCol = c
+                    break
+                case "embargo_info": colMap.embargoCol = c
+                    break
+                case "coverage_depth": colMap.coverageDepthCol = c
+                    break
+                case "notes": colMap.coverageNotesCol = c
+                    break
+                case "listprice_value": colMap.listPriceCol = c
+                    break
+                case "listprice_currency": colMap.listCurrencyCol = c
+                    break
+                case "listprice_eur": colMap.listPriceEurCol = c
+                    break
+                case "listprice_usd": colMap.listPriceUsdCol = c
+                    break
+                case "listprice_gbp": colMap.listPriceGbpCol = c
+                    break
+                case "localprice_value": colMap.localPriceCol = c
+                    break
+                case "localprice_currency": colMap.localCurrencyCol = c
+                    break
+                case "price_date": colMap.priceDateCol = c
+                    break
+            }
+        }
+        //after having read off the header row, pop the first row
+        rows.remove(0)
+        //now, assemble the identifiers available to highlight
+        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNs('zdb'),
+                                                       eissn: IdentifierNamespace.findByNs('eissn'), isbn: IdentifierNamespace.findByNs('isbn'),
+                                                       issn : IdentifierNamespace.findByNs('issn'), pisbn: IdentifierNamespace.findByNs('pisbn'),
+                                                       doi  : IdentifierNamespace.findByNs('doi')]
+        rows.eachWithIndex { row, int i ->
+            log.debug("now processing entitlement ${i}")
+            ArrayList<String> cols = row.split('\t')
+            Map<String, Object> idCandidate
+            if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
+                idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
+            }
+            if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
+                idCandidate = [namespaces: [namespaces.eissn, namespaces.isbn], value: cols[colMap.onlineIdentifierCol]]
+            }
+            if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
+                idCandidate = [namespaces: [namespaces.issn, namespaces.pisbn], value: cols[colMap.printIdentifierCol]]
+            }
+            if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
+                idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
+            }
+            if (((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
+                    ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
+                    ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
+            } else {
+
+                List<Long> titleIds = TitleInstance.executeQuery('select ti.id from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
+                if (titleIds.size() > 0) {
+                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title.id in titleIds }
+                    IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
+                    if (issueEntitlement) {
+                        count++
+                        PriceItem priceItem = issueEntitlement.priceItem ?: new PriceItem(issueEntitlement: issueEntitlement)
+                        colMap.each { String colName, int colNo ->
+                            if (colNo > -1 && cols[colNo]) {
+                                String cellEntry = cols[colNo].trim()
+                                if (uploadCoverageDates) {
+                                    switch (colName) {
+                                        case "startDateCol": ieCoverage.startDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : null
+                                            break
+                                        case "startVolumeCol": ieCoverage.startVolume = cellEntry ?: null
+                                            break
+                                        case "startIssueCol": ieCoverage.startIssue = cellEntry ?: null
+                                            break
+                                        case "endDateCol": ieCoverage.endDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : null
+                                            break
+                                        case "endVolumeCol": ieCoverage.endVolume = cellEntry ?: null
+                                            break
+                                        case "endIssueCol": ieCoverage.endIssue = cellEntry ?: null
+                                            break
+                                        case "accessStartDateCol": issueEntitlement.accessStartDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : issueEntitlement.accessStartDate
+                                            break
+                                        case "accessEndDateCol": issueEntitlement.accessEndDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : issueEntitlement.accessEndDate
+                                            break
+                                        case "embargoCol": ieCoverage.embargo = cellEntry ?: null
+                                            break
+                                        case "coverageDepthCol": ieCoverage.coverageDepth = cellEntry ?: null
+                                            break
+                                        case "coverageNotesCol": ieCoverage.coverageNote = cellEntry ?: null
+                                            break
+                                    }
+                                }
+                                if (uploadPriceInfo) {
+
+                                    try {
+                                        switch (colName) {
+                                            case "listPriceCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                break
+                                            case "listCurrencyCol": priceItem.listCurrency = cellEntry ? RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY) : null
+                                                break
+                                            case "listPriceEurCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("EUR", RDConstants.CURRENCY)
+                                                break
+                                            case "listPriceUsdCol": priceItem.listPrice = cellEntry ?  escapeService.parseFinancialValue(cellEntry) : null
+                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("USD", RDConstants.CURRENCY)
+                                                break
+                                            case "listPriceGbpCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("GBP", RDConstants.CURRENCY)
+                                                break
+                                            case "localPriceCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                break
+                                            case "localCurrencyCol": priceItem.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)
+                                                break
+                                            case "priceDateCol": priceItem.priceDate = cellEntry  ? DateUtil.parseDateGeneric(cellEntry) : null
+                                                break
+                                        }
+                                    }
+                                    catch (NumberFormatException e) {
+                                        log.error("Unparseable number ${cellEntry}")
+                                    }
+                                }
+                            }
+                        }
+
+                        if(uploadCoverageDates && ieCoverage && !ieCoverage.findEquivalent(issueEntitlement.coverages)){
+                            ieCoverage.issueEntitlement = issueEntitlement
+                            if (!ieCoverage.save(flush: true)) {
+                                throw new EntitlementCreationException(ieCoverage.getErrors())
+                            }else{
+                                countChangesCoverageDates++
+                            }
+                        }
+                        if(uploadPriceInfo && priceItem){
+                            priceItem.setGlobalUID()
+                            if (!priceItem.save(flush: true)) {
+                                throw new Exception(priceItem.getErrors().toString())
+                            }else {
+
+                                countChangesPrice++
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /*println(count)
+        println(countChangesCoverageDates)
+        println(countChangesPrice)*/
+
+        return [issueEntitlements: issueEntitlements.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
     }
 
 }

@@ -228,7 +228,7 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" role="menuitem" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
-                                <g:link class="item" role="menuitem" controller="license" action="create">${message(code:'license.template.new')}</g:link>
+                                <%--<g:link class="item" role="menuitem" controller="license" action="create">${message(code:'license.template.new')}</g:link>--%>
                                 <%--<g:link class="item" role="menuitem" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>--%>
                                 <g:link class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                                 <g:link class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
@@ -336,7 +336,6 @@
                                     <g:link class="item" role="menuitem" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="admin" action="titlesImport">${message(code:'menu.admin.bulkOps.titlesImport')}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="titleEnrichment">Title Enrichment</g:link>
                                 </div>
                             </div>
@@ -419,9 +418,11 @@
                                     <%--<g:link class="item" role="menuitem" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>--%>
                                     <%--<g:link class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>--%>
                                     <%--<g:link class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>--%>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="checkLicenseSubscriptionLinks">${message(code:'menu.admin.bulkOps.checkLicenseLinks')}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
+                                    <g:link class="item" role="menuitem" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</g:link>
                                 </div>
                             </div>
 
@@ -435,7 +436,7 @@
                                     <g:link class="item" role="menuitem" controller="yoda" action="retriggerPendingChanges">${message(code:'menu.yoda.retriggerPendingChanges')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="getTIsWithoutGOKBId">${message(code:'menu.yoda.purgeTIsWithoutGOKBID')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="titlesUpdate">${message(code:'menu.admin.bulkOps.titlesImport')}</g:link>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="titlesUpdate">${message(code:'menu.admin.bulkOps.checkLicenseLinks')}</g:link>
                                 </div>
                             </div>
 
@@ -463,13 +464,13 @@
                                     <g:link class="item" role="menuitem" controller="yoda" action="migrateNatStatSettings">Migrate NatStat Settings (0.20)</g:link>
                                     <%--<g:link class="item" role="menuitem" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl (0.20)</g:link>--%>
                                     <g:link class="item" role="menuitem" controller="yoda" action="checkIssueEntitlementPackages"><g:message code="menu.admin.checkIssueEntitlementPackages"/> (0.20)</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="replaceUserSettingDashboardReminderPeriod">Replace UserSetting Dashboard ReminderPeriod in Database</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="cleanUpSurveys">Clean Up Surveys with Multi Term</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="insertEditUris">Insert Edit URIs for GOKB Sources</g:link>
 
-                                    <%--<g:link class="item" role="menuitem" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>--%>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
                                     <%--<g:link class="item" role="menuitem" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
                                     <%--<g:link class="item" role="menuitem" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
                                     <%--<g:link class="item" role="menuitem" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>--%>

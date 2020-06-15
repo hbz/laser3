@@ -13,11 +13,13 @@ class DatabaseInstance extends TitleInstance{
     }
 
     static DatabaseInstance construct(Map<String,Object> params) throws CreationException {
-        DatabaseInstance dbi = new DatabaseInstance(params)
-        dbi.setGlobalUID()
-        if(!dbi.save())
-            throw new CreationException(dbi.errors)
-        dbi
+        withTransaction {
+            DatabaseInstance dbi = new DatabaseInstance(params)
+            dbi.setGlobalUID()
+            if(!dbi.save())
+                throw new CreationException(dbi.errors)
+            dbi
+        }
     }
 
     String printTitleType() {

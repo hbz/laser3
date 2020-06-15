@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.IssueEntitlementGroupItem
 import de.laser.domain.PriceItem
 import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.CreationException
@@ -54,16 +55,17 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
 
   static hasOne =    [priceItem: PriceItem]
 
-  static hasMany = [coverages: IssueEntitlementCoverage]
+  static hasMany = [coverages: IssueEntitlementCoverage,
+                    ieGroups: IssueEntitlementGroupItem]
 
   @Transient
   def comparisonProps = ['derivedAccessStartDate', 'derivedAccessEndDate',
 'coverageNote','coverageDepth','embargo','startVolume','startIssue','startDate','endDate','endIssue','endVolume']
 
   int compareTo(obj) {
-    int cmp = tipp?.title?.title.compareTo(obj.tipp?.title?.title)
+    int cmp = tipp.title.title.compareTo(obj.tipp.title.title)
     if(cmp == 0)
-      return tipp?.id?.compareTo(obj.tipp?.id)
+      return tipp.id.compareTo(obj.tipp.id)
     return cmp
   }
 

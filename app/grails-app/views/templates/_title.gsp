@@ -24,12 +24,14 @@
       </div>
     </div>
     </g:if>
+    <g:if test="${item.tipp.title.summaryOfContent}">
     <div class="item">
       <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
       <div class="content">
         ${item.tipp.title.summaryOfContent}
       </div>
     </div>
+    </g:if>
   </g:if>
 
   <g:if test="${item.tipp.title.seriesName}">

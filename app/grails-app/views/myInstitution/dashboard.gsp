@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated; com.k_int.kbplus.UserSettings; de.laser.DashboardDueDate" %>
 <g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
@@ -98,14 +98,13 @@
             </a>
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
 
-            <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
+        <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
                 <i class="checked tasks icon large"></i>
-                ${surveys?.size()}
+                ${surveys.size()}
                 ${message(code:'myinst.dash.survey.label')}
-            </a>
-        </g:if>
+        </a>
+
 
         <a class="${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
             <i class="warning circle icon large"></i>
@@ -174,6 +173,14 @@
                             </div><!-- .column -->
                             <div class="seven wide column">
                                 ${raw(row.eventString)}
+
+                                <g:if test="${entry.change.msgToken == "pendingChange.message_SU_NEW_01"}">
+                                    <div class="right aligned wide column">
+                                        <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[id: entry.change.subscription.id]}">
+                                            <g:message code="myinst.copyMyElements"/>
+                                        </g:link>
+                                    </div>
+                                </g:if>
                             </div><!-- .column -->
                             <div class="three wide column">
                                 <div class="ui buttons">
@@ -401,24 +408,20 @@
 
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
-            <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
+
+        <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
-                    <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
+                    <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                        <g:link controller="survey" action="currentSurveysConsortia" class="ui button">${message(code:'menu.my.surveys')}</g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
+                    </g:else>
+
                 </div>
                     <g:render template="surveys"/>
-            </div>
-        </g:if>
-
-    %{--<g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-
-        <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="six" style="border-top: 1px solid #d4d4d5; ">
-            <div>
-                <g:render template="surveysConsortia"/>
-            </div>
         </div>
-    </g:if>
---}%
+
     <g:javascript>
         function taskcreate() {
 

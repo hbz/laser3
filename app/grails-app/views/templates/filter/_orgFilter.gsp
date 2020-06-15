@@ -78,39 +78,41 @@
                 </div>
             </g:if>
 
-            <g:if test="${field.equalsIgnoreCase('federalState')}">
+            <g:if test="${field.equalsIgnoreCase('region')}">
                 <div class="field">
-                    <label for="federalState">${message(code: 'org.federalState.label')}</label>
-                    <laser:select class="ui dropdown" id="federalState" name="federalState"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.FEDERAL_STATE)}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.federalState}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                    <label for="region">${message(code: 'org.region.label')}</label>
+                    <select id="region" name="region" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,
+                                                                           RDConstants.REGIONS_AT,
+                                                                           RDConstants.REGIONS_CH])}" var="rdv">
+                            <option <%=(params.list('region').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('libraryNetwork')}">
                 <div class="field">
                     <label for="libraryNetwork">${message(code: 'org.libraryNetwork.label')}</label>
-                    <laser:select class="ui dropdown" id="libraryNetwork" name="libraryNetwork"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_NETWORK)}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.libraryNetwork}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                    <select id="libraryNetwork" name="libraryNetwork" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_NETWORK)}" var="rdv">
+                            <option <%=(params.list('libraryNetwork').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('libraryType')}">
                 <div class="field">
                     <label for="libraryType">${message(code: 'org.libraryType.label')}</label>
-                    <laser:select class="ui dropdown" id="libraryType" name="libraryType"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.libraryType}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                    <select id="libraryType" name="libraryType" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}" var="rdv">
+                            <option <%=(params.list('libraryType').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 
@@ -138,26 +140,37 @@
                 />
             </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('subscription')}">
+                <div class="field">
+                    <label for="subscription">${message(code:'subscription')}</label>
+                    <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${subscriptions}" var="sub">
+                            <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
             <g:if test="${field.equalsIgnoreCase('subRunTimeMultiYear')}">
-            <div class="field">
-                <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
-                <div class="inline fields la-filter-inline">
-                    <div class="inline field">
-                        <div class="ui checkbox">
-                            <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
-                            <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
-                                   tabindex="0">
+                <div class="field">
+                    <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
+                    <div class="inline fields la-filter-inline">
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
+                                <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
                         </div>
-                    </div>
-                    <div class="inline field">
-                        <div class="ui checkbox">
-                            <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
-                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
-                                   tabindex="0">
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
+                                <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             </g:if>
 
 
@@ -181,8 +194,8 @@
 <g:if test="${! allFields.contains('sector') && params.orgSector}">
     <input type="hidden" name="orgSector" value="${params.orgSector}" />
 </g:if>
-<g:if test="${! allFields.contains('federalState') && params.federalState}">
-    <input type="hidden" name="federalState" value="${params.federalState}" />
+<g:if test="${! allFields.contains('region') && params.region}">
+    <input type="hidden" name="region" value="${params.region}" />
 </g:if>
 <g:if test="${! allFields.contains('libraryNetwork') && params.libraryNetwork}">
     <input type="hidden" name="libraryNetwork" value="${params.libraryNetwork}" />

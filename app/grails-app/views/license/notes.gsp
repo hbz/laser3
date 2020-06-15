@@ -15,6 +15,8 @@
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
 
+    <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+
     <g:render template="nav" />
 
     <g:render template="/templates/notes/table" model="${[instance: license, redirect: 'notes']}"/>

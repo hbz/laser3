@@ -322,6 +322,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         String context = params.get('context')
         String format
 
+        String section = params.get('section')
+        if (section) {
+            obj = section + '/' + obj
+        }
+        String cmd = params.get('cmd')
+        if (cmd) {
+            obj = obj + '/' + cmd
+        }
+
         Org contextOrg = null // TODO refactoring
 
         if (apiOrg) {
@@ -330,10 +339,10 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
             if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
                 if ("GET" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_READ, ApiToolkit.API_LEVEL_INVOICETOOL, ApiToolkit.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in ApiToolkit.getReadingApiLevels())
                 }
                 else if ("POST" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_WRITE, ApiToolkit.API_LEVEL_INVOICETOOL, ApiToolkit.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in ApiToolkit.getWritingApiLevels())
                 }
             }
 

@@ -18,13 +18,38 @@ class ApiToolkit {
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
     static final API_LEVEL_WRITE        = 'API_LEVEL_WRITE'
     static final API_LEVEL_DATAMANAGER  = 'API_LEVEL_DATAMANAGER'
+    static final API_LEVEL_OAMONITOR    = 'API_LEVEL_OAMONITOR'
+    static final API_LEVEL_NATSTAT      = 'API_LEVEL_NATSTAT'
     static final API_LEVEL_INVOICETOOL  = 'API_LEVEL_INVOICETOOL'
 
     static final NO_ACCESS_DUE_NO_APPROVAL  = 'NO_APPROVAL'
     static final NO_ACCESS_DUE_NOT_PUBLIC   = 'NOT_PUBLIC'
 
+    static final DATE_TIME_PATTERN      = "yyyy-MM-dd'T'HH:mm:ss"
+
     static List getAllApiLevels() {
-        [API_LEVEL_READ, API_LEVEL_WRITE, API_LEVEL_DATAMANAGER, API_LEVEL_INVOICETOOL]
+        [
+            API_LEVEL_READ,
+            API_LEVEL_WRITE,
+            API_LEVEL_DATAMANAGER,
+            API_LEVEL_OAMONITOR,
+            API_LEVEL_NATSTAT,
+            API_LEVEL_INVOICETOOL
+        ]
+    }
+    static List getReadingApiLevels() {
+        [
+            API_LEVEL_READ,
+            API_LEVEL_DATAMANAGER,
+            API_LEVEL_OAMONITOR,
+            API_LEVEL_NATSTAT,
+            API_LEVEL_INVOICETOOL
+        ]
+    }
+    static List getWritingApiLevels() {
+        [
+            API_LEVEL_WRITE
+        ]
     }
 
     static void setApiLevel(Org org, String apiLevel) {
@@ -52,20 +77,11 @@ class ApiToolkit {
         OrgSettings.delete(org, OrgSettings.KEYS.API_PASSWORD)
     }
 
-    static boolean isDataManager(Org org) {
-        def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+    static boolean hasApiLevel(Org org, String apiLevel) {
+        def orgSetting = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
 
-        if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
-            return ApiToolkit.API_LEVEL_DATAMANAGER == apiLevel.getValue()
-        }
-        return false
-    }
-
-    static boolean isInvoiceTool(Org org) {
-        def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
-
-        if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
-            return ApiToolkit.API_LEVEL_INVOICETOOL == apiLevel.getValue()
+        if (orgSetting != OrgSettings.SETTING_NOT_FOUND) {
+            return apiLevel == orgSetting.getValue()
         }
         return false
     }
@@ -114,21 +130,12 @@ class ApiToolkit {
         list
     }
 
-    static Object checkPreconditionFailed(result) {
-
-        if (result) {
-            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
-        }
-
-        result
-    }
-
     static String formatInternalDate(Date date) {
         if (! date) {
             return null
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss") // DateUtil.getSDF_NoZ()
+        SimpleDateFormat sdf = new SimpleDateFormat(ApiToolkit.DATE_TIME_PATTERN) // DateUtil.getSDF_NoZ()
         sdf.format(date)
     }
 

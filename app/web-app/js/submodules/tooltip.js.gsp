@@ -8,7 +8,7 @@ tooltip = {
     go : function() {
         tooltip.configs.tooltipTrigger =  $('.la-popup-tooltip');
         tooltip.initializePopup(tooltip.configs.tooltipTrigger);
-        tooltip.acccessViaKeys();
+        //tooltip.acccessViaKeys();
     },
     initializePopup: function(obj) {
 
@@ -17,7 +17,8 @@ tooltip = {
             hoverable: true,
             inline     : true,
             lastResort: true,
-            position: 'left center',
+            movePopup: false,
+            boundary: 'body',
             delay: {
                 show: 300,
                 hide: 500

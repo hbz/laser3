@@ -1,8 +1,11 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
 import de.laser.domain.StatsTripleCursor
 import de.laser.helper.RDConstants
+import org.apache.commons.net.ntp.TimeStamp
 import org.hibernate.criterion.CriteriaSpecification
+import java.time.YearMonth
 
 class FactService {
 
@@ -304,6 +307,7 @@ class FactService {
 
       result.x_axis_labels = x_axis_labels
       result.y_axis_labels = y_axis_labels
+      result.missingMonths = getMissingMonths(supplier_id, org_id, subscription)
     }
 
     result
@@ -433,6 +437,86 @@ class FactService {
       result.usage = generateUsageMDList(factList, y_axis_labels, x_axis_labels)
       result.x_axis_labels = x_axis_labels
       result.y_axis_labels = y_axis_labels
+      result.missingMonths = getMissingMonths(supplier_id, org_id)
+    }
+    result
+  }
+
+  Map<String,List> getMissingMonths(supplier_id, org_id, Subscription subscription = null) {
+    Org customerOrg = Org.get(org_id)
+    return getUsageRanges(supplier_id, customerOrg, subscription)
+  }
+
+  private Map<String,List> getUsageRanges(supplier_id, Org org, Subscription subscription) {
+    String customer = org.getIdentifierByType('wibid')?.value
+    String supplierId = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+    List factTypes = StatsTripleCursor.findAllByCustomerIdAndSupplierId(customer, supplierId).factType.unique()
+
+    String titleRangesHql = "select stc from StatsTripleCursor as stc where " +
+        "stc.factType=:factType and stc.supplierId=:supplierId and stc.customerId=:customerId " +
+        "order by stc.titleId, stc.factType, stc.availFrom"
+    Map<String,List> missingMonthsPerFactType = [:]
+    factTypes.each { ft ->
+      List rangeList = []
+      List ranges = StatsTripleCursor.executeQuery(titleRangesHql, [
+          supplierId : supplierId,
+          customerId : customer,
+          factType : ft
+      ])
+      List months = []
+      ranges.each(){
+        getMonthsOfDateRange(it.availFrom, it.availTo).each { m ->
+          if (! months.contains(m))
+            months.add(m)
+        }
+      }
+      Date min = ranges*.availFrom.min()
+      if (subscription?.startDate){
+        if (min < subscription.startDate){
+          min = subscription.startDate
+          months.removeAll { it ->
+            it < YearMonth.parse(subscription.startDate.toString().substring(0,7))
+          }
+        }
+      }
+      Date max = ranges*.availTo.max()
+      if (subscription?.endDate){
+        if (max > subscription.endDate){
+          max = subscription.endDate
+          months.removeAll { it ->
+            it > YearMonth.parse(subscription.endDate.toString().substring(0,7))
+          }
+        }
+      }
+      List completeList = getMonthsOfDateRange(min, max)
+      missingMonthsPerFactType[ft.value] = ((completeList - months) + (months - completeList))
+    }
+    return missingMonthsPerFactType
+  }
+
+  Map getLastUsagePeriodForReportType(supplierId, customerId){
+    String hqlQuery = "select stc.factType.value, max(stc.availTo) as availTo from StatsTripleCursor stc where " +
+        "stc.supplierId=:supplierId and stc.customerId=:customerId " +
+        "group by stc.factType.value"
+    Map<String,String> result = [:]
+    List lastReportPeriods = StatsTripleCursor.executeQuery(hqlQuery, [
+        supplierId : supplierId,
+        customerId : customerId
+    ])
+    lastReportPeriods.each { it ->
+      result[it[0]] = it[1].toString().substring(0,7)
+    }
+    result
+  }
+
+  List getMonthsOfDateRange(Date begin, Date end){
+    List result = []
+    YearMonth from = YearMonth.parse(begin.toString().substring(0,7))
+    YearMonth to = YearMonth.parse(end.toString().substring(0,7))
+    while (from<=to)
+    {
+      result.add(from)
+      from = from.plusMonths(1)
     }
     result
   }

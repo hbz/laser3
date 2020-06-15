@@ -15,7 +15,7 @@ class ApiMapReader {
             result.middleName      = prs.middle_name
             result.lastName        = prs.last_name
             result.title           = prs.title
-            result.lastUpdated     = ApiToolkit.formatInternalDate(prs.lastUpdated)
+            result.lastUpdated     = ApiToolkit.formatInternalDate(prs.getCalculatedLastUpdated())
 
             // RefdataValues
             result.gender          = prs.gender?.value

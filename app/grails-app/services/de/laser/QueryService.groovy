@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
@@ -48,11 +48,20 @@ class QueryService {
                                   endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_TASKS)]]) )
         }
 
-        if (contextUser.getSettingsValue(IS_REMIND_FOR_SURVEYS_ENDDATE)==YN_YES) {
+        if (contextUser.getSettingsValue(IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE)==YN_YES) {
 
-            dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(sr.surveyConfig.surveyInfo) FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status ",
+            dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(sr.surveyConfig.surveyInfo) FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status AND surInfo.isMandatory = false",
                     [org: contextOrg,
-                     endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_ENDDATE),
+                     endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE),
+                     status: RDStore.SURVEY_SURVEY_STARTED]))
+
+        }
+
+        if (contextUser.getSettingsValue(IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE)==YN_YES) {
+
+            dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(sr.surveyConfig.surveyInfo) FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status AND surInfo.isMandatory = true",
+                    [org: contextOrg,
+                     endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE),
                      status: RDStore.SURVEY_SURVEY_STARTED]))
 
         }
@@ -92,7 +101,7 @@ class QueryService {
             dueObjects.addAll(getDueSubscriptionPrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP)))
         }
         dueObjects = dueObjects.sort {
-            (it instanceof AbstractProperty)?
+            (it instanceof AbstractPropertyWithCalculatedLastUpdated)?
                     it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
         }
 

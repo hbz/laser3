@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
+import de.laser.EscapeService
 import de.laser.helper.RDStore
 import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.annotation.Secured
@@ -13,6 +14,7 @@ class PublicController {
     def springSecurityService
     def genericOIDService
     def mailService
+    EscapeService escapeService
 
     @Cacheable('laser_static_pages')
     @Secured(['permitAll'])
@@ -30,7 +32,7 @@ class PublicController {
                 to 'barrierefreiheitsbelange@hbz-nrw.de'
                 from grailsApplication.config.notifications.email.from
                 subject grailsApplication.config.laserSystemId + ' - ' + 'Feedback-Mechanismus Barrierefreiheit'
-                body (view: '/mailTemplates/text/wcagFeedback', model: [name:params.name, email:params.email,url:params.url, comment:params.comment])
+                body (view: '/mailTemplates/text/wcagFeedback', model: [name:params.name, email:params.email,url:params.url, comment:escapeService.replaceUmlaute(params.comment)])
 
             }
         }
@@ -56,7 +58,7 @@ class PublicController {
                 """select o from Org o, OrgSettings os_gs, OrgSettings os_ct where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
                         os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and 
-                        os_ct.roleValue in (select r from Role r where authority in ('ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'))
+                        os_ct.roleValue in (select r from Role r where authority  = 'ORG_CONSORTIUM')
                         order by lower(o.name)"""
         )
 

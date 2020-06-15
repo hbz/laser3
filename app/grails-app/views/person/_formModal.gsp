@@ -1,21 +1,28 @@
-<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+<%@ page import="de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
 <laser:serviceInjection/>
 
 
 <g:set var="modalId" value="${modalId ?: 'personFormModal'}"/>
+<%
+    Map params = [:]
+    params.sort = params.sort ?: " LOWER(o.name)"
+    Map fsq = filterService.getOrgQuery(params)
+    List orgList  = Org.findAll(fsq.query, fsq.queryParams)
+    %>
 <semui:modal id="${modalId}" text="${message(code: (modalId))}">
     <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create', params: [org_id: org.id]]"
             method="POST">
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <div class="field">
             <div class="two fields">
 
                 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
                     <label for="contactType">
-                        ${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE)?.getI10n('desc')}
+                        ${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
                     </label>
                     <laser:select class="ui dropdown" id="contactType" name="contactType"
-                                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
+                                  from="${Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${personInstance?.contactType?.id ?: RDStore.CONTACT_TYPE_PERSONAL.id}"
@@ -70,7 +77,7 @@
                         <g:message code="person.gender.label" />
                     </label>
                     <laser:select class="ui dropdown" id="gender" name="gender"
-                                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.GENDER).sort { a, b -> a.value.compareTo(b.value) }}"
+                                  from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${personInstance?.gender?.id}"
@@ -120,37 +127,37 @@
                             &nbsp;<%--<g:message code="contact.contentType.label" default="ContentType" />--%>
                         </label>
 
-                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)?.getI10n('value')}" />
-                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('Phone', RDConstants.CONTACT_CONTENT_TYPE)?.getI10n('value')}" />
-                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('Fax', RDConstants.CONTACT_CONTENT_TYPE)?.getI10n('value')}" />
+                        <input type="text" readonly value="${RDStore.CCT_EMAIL.getI10n('value')}" />
+                        <input type="text" readonly value="${RDStore.CCT_PHONE.getI10n('value')}" />
+                        <input type="text" readonly value="${RDStore.CCT_FAX.getI10n('value')}" />
 
                         <input type="hidden" id="contact1_contentType" name="contact1_contentType"
-                               value="${RefdataValue.getByValueAndCategory('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)?.id}" />
+                               value="${RDStore.CCT_EMAIL.id}" />
 
                         <input type="hidden" id="contact2_contentType" name="contact2_contentType"
-                               value="${RefdataValue.getByValueAndCategory('Phone', RDConstants.CONTACT_CONTENT_TYPE)?.id}" />
+                               value="${RDStore.CCT_PHONE.id}" />
 
                         <input type="hidden" id="contact3_contentType" name="contact3_contentType"
-                               value="${RefdataValue.getByValueAndCategory('Fax', RDConstants.CONTACT_CONTENT_TYPE)?.id}" />
+                               value="${RDStore.CCT_FAX.id}" />
                     </div>
 
                     <div class="field three fieldcontain">
                         <label for="contact1_type" for="contact2_type" for="contact3_type">
-                            ${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
+                            ${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
                         </label>
-
+                        <g:set var="allContactTypes" value="${Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}" />
                         <laser:select class="ui dropdown" name="contact1_type"
-                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
+                                      from="${allContactTypes}"
                                       optionKey="id"
                                       optionValue="value" />
 
                         <laser:select class="ui dropdown" name="contact2_type"
-                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
+                                      from="${allContactTypes}"
                                       optionKey="id"
                                       optionValue="value" />
 
                         <laser:select class="ui dropdown" name="contact3_type"
-                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
+                                      from="${allContactTypes}"
                                       optionKey="id"
                                       optionValue="value" />
                     </div>
@@ -200,7 +207,7 @@
                                             </label>
                                             <g:select class="ui search dropdown"
                                                       name="functionOrg"
-                                                      from="${Org.getAll()}"
+                                                      from="${orgList}"
                                                       value="${org?.id}"
                                                       optionKey="id"
                                                       optionValue=""/>
@@ -242,7 +249,7 @@
                                         </label>
                                         <g:select class="ui search dropdown"
                                                   name="positionOrg"
-                                                  from="${Org.getAll()}"
+                                                  from="${orgList}"
                                                   value="${org?.id}"
                                                   optionKey="id"
                                                   optionValue=""/>
