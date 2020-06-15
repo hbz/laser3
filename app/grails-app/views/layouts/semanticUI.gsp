@@ -304,6 +304,7 @@
                                 </div>
                             </div>
 
+                            <g:link class="item" role="menuitem" controller="admin" action="systemMessages">${message(code: 'menu.admin.systemMessage')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="systemAnnouncements">${message(code:'menu.admin.announcements')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</g:link>
 
@@ -373,7 +374,6 @@
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="appThreads">${message(code:'menu.yoda.appThreads')}</g:link>
 

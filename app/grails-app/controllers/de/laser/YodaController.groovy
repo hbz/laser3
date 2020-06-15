@@ -977,41 +977,6 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def manageSystemMessage() {
-        Map<String, Object> result = [:]
-        result.user = springSecurityService.currentUser
-
-        if(params.create)
-        {
-                SystemMessage sm = new SystemMessage(
-                        content_de: params.content_de ?: '',
-                        content_en: params.content_en ?: '',
-                        type: params.type,
-                        isActive: false)
-
-                if (sm.save(flush: true)) {
-                    flash.message = 'Nachricht erstellt'
-                } else {
-                    flash.error = 'Nachricht wurde nicht erstellt!'
-                }
-        }
-
-        result.systemMessages = SystemMessage.executeQuery('select sm from SystemMessage sm order by sm.isActive desc, sm.lastUpdated desc')
-        result.editable = true
-        result
-    }
-
-    @Secured(['ROLE_YODA'])
-    def deleteSystemMessage(Long id) {
-        if(SystemMessage.get(id)) {
-            SystemMessage.get(id).delete(flush: true)
-            flash.message = 'Nachricht wurde gelöscht!!'
-        }
-
-        redirect(action: 'manageSystemMessage')
-    }
-
-    @Secured(['ROLE_YODA'])
     def dueDates_updateDashboardDB(){
         flash.message = "DB wird upgedatet...<br/>"
         dashboardDueDatesService.takeCareOfDueDates(true, false, flash)

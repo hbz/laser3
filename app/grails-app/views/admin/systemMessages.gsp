@@ -8,7 +8,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
+    <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb message="menu.admin.systemMessage" class="active"/>
 </semui:breadcrumbs>
 
@@ -58,7 +58,7 @@
                 <g:formatDate date="${msg.lastUpdated}" format="${message(code: 'default.date.format.noZ')}"/>
             </td>
             <td class="x">
-                <g:link controller="yoda" action="deleteSystemMessage" id="${msg.id}" class="ui negative icon button">
+                <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="ui negative icon button">
                     <i class="trash alternate icon"></i>
                 </g:link>
             </td>
@@ -69,7 +69,7 @@
 
 <semui:modal id="modalCreateSystemMessage" text="Neue Nachricht erstellen">
 
-    <g:form class="ui form" url="[controller: 'yoda', action: 'manageSystemMessage', params: [create: true]]" method="post">
+    <g:form class="ui form" url="[controller: 'admin', action: 'systemMessages', params: [create: true]]" method="post">
 
         <fieldset>
             <div class="field">
