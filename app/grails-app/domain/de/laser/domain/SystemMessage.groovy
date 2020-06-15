@@ -32,4 +32,11 @@ class SystemMessage {
     static getTypes() {
         [TYPE_OVERLAY, TYPE_STARTPAGE_NEWS]
     }
+
+    static getActiveMessages(String type) {
+        SystemMessage.executeQuery(
+                'select sm from SystemMessage sm where sm.isActive = true and sm.type = :type order by sm.lastUpdated desc', [
+                type: type
+        ])
+    }
 }

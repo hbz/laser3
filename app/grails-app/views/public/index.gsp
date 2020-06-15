@@ -1,3 +1,4 @@
+<%@ page import="de.laser.domain.SystemMessage" %>
 <!doctype html>
 <html>
 <head>
@@ -68,38 +69,29 @@
         </div>
 
         <!-- NEWS -->
-        <div class="ui segment la-eye-catcher">
-            <div class="ui container">
-                <div class="ui labeled button" tabindex="0" >
-                    <div class="ui blue button la-eye-catcher-header">
-                        <h1>NEWS</h1>
+        <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_STARTPAGE_NEWS)}" />
+
+        <g:if test="${systemMessages}">
+            <div class="ui segment la-eye-catcher">
+                <div class="ui container">
+                    <div class="ui labeled button" tabindex="0" >
+                        <div class="ui blue button la-eye-catcher-header">
+                            <h1>NEWS</h1>
+                        </div>
+
+                        <span class="ui basic blue left pointing label la-eye-catcher-txt">
+
+                        <g:each in="${systemMessages}" var="news" status="i">
+                            <div <g:if test="${i>0}">style="padding-top:1.6em"</g:if>>
+                                <% println news.content %>
+                            </div>
+                        </g:each>
+
+                        </span>
                     </div>
-
-                    <span class="ui basic blue left pointing label la-eye-catcher-txt">
-
-                        <strong><g:message code="landingpage.news.header"/></strong>
-                        <br />
-                        <br />
-
-                        <g:message code="landingpage.news.p1" />
-
-                        <br />
-                        <br />
-
-                        <g:message code="landingpage.news.p2" />
-
-                        <br />
-                        <br />
-
-                        <g:message code="landingpage.news.p3" />
-
-                        <br />
-                    </span>
                 </div>
-
             </div>
-
-        </div>
+        </g:if>
 
         <!-- segment -->
         <div class="ui segment">

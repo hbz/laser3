@@ -715,18 +715,19 @@
         </r:script>
 
         <%-- maintenance --%>
-        <g:if test="${SystemMessage.findAllByIsActive(true)}">
+        <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_OVERLAY)}" />
+
+        <g:if test="${systemMessages}">
             <div id="maintenance">
                 <div class="ui segment center aligned inverted orange">
-                    <strong>ACHTUNG:</strong>
+                    <strong>SYSTEMMELDUNG</strong>
 
-                    <div class="ui list">
-                        <g:each in="${SystemMessage.findAllByIsActive(true)}" var="message">
-                            <div class="item">
-                                ${message.content}
-                            </div>
-                        </g:each>
-                    </div>
+                    <g:each in="${systemMessages}" var="message">
+                        <div style="padding-top:1.6em">
+                            <% println message.content %>
+                        </div>
+                    </g:each>
+
                 </div>
             </div>
         </g:if>

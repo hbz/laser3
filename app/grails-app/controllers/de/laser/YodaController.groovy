@@ -989,14 +989,13 @@ class YodaController {
                         isActive: false)
 
                 if (sm.save(flush: true)) {
-                    flash.message = 'System Nachricht erstellt'
+                    flash.message = 'Nachricht erstellt'
                 } else {
-                    flash.error = 'System Nachricht wurde nicht erstellt!!'
+                    flash.error = 'Nachricht wurde nicht erstellt!'
                 }
         }
 
-
-        result.systemMessages = SystemMessage.findAll()
+        result.systemMessages = SystemMessage.executeQuery('select sm from SystemMessage sm order by sm.isActive desc, sm.lastUpdated desc')
         result.editable = true
         result
     }
@@ -1005,7 +1004,7 @@ class YodaController {
     def deleteSystemMessage(Long id) {
         if(SystemMessage.get(id)) {
             SystemMessage.get(id).delete(flush: true)
-            flash.message = 'System Nachricht wurde gelöscht!!'
+            flash.message = 'Nachricht wurde gelöscht!!'
         }
 
         redirect(action: 'manageSystemMessage')

@@ -6,25 +6,30 @@
     <title>${message(code:'laser')} : ${message(code: 'menu.admin.systemMessage')}</title>
 </head>
 <body>
+
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb message="menu.admin.systemMessage" class="active"/>
 </semui:breadcrumbs>
 
-<h2 class="ui header">${message(code: "menu.admin.systemMessage")}</h2>
+<br />
+<h2 class="ui left floated aligned header la-clear-before">${message(code: "menu.admin.systemMessage")}</h2>
 
 <semui:messages data="${flash}" />
 
 <div class="la-float-right">
-    <input type="submit" class="ui button" value="Neue System Nachricht erstellen" data-semui="modal" data-href="#modalCreateSystemMessage" />
+    <input type="submit" class="ui button" value="Neue Nachricht erstellen" data-semui="modal" data-href="#modalCreateSystemMessage" />
 </div>
+
+<br />
+<br />
 
 <table class="ui celled la-table table">
     <thead>
     <tr>
         <th>Nachricht</th>
+        <th>Typ</th>
         <th>Aktiv</th>
-        <th>Erstellt</th>
         <th>Letzte Änderung</th>
         <th class="la-action-info">${message(code:'default.actions.label')}</th>
     </tr>
@@ -32,37 +37,46 @@
     <tbody>
     <g:each in="${systemMessages}" var="msg">
         <tr>
-            <td>${msg.content}</td>
-            <td><semui:xEditableBoolean owner="${msg}" field="isActive"/></td>
-            <td><g:formatDate date="${msg.dateCreated}"
-                              format="${message(code: 'default.date.format.noZ')}"/></td>
-            <td><g:formatDate date="${msg.lastUpdated}"
-                              format="${message(code: 'default.date.format.noZ')}"/></td>
+            <td>
+                <semui:xEditable owner="${msg}" field="content" type="textarea"/>
+            </td>
+            <td>
+                <g:if test="${SystemMessage.TYPE_OVERLAY == msg.type}">Systemmeldung</g:if>
+                <g:if test="${SystemMessage.TYPE_STARTPAGE_NEWS == msg.type}">Startseite</g:if>
+            </td>
+            <td>
+                <semui:xEditableBoolean owner="${msg}" field="isActive"/>
+            </td>
+            <td>
+                <g:formatDate date="${msg.lastUpdated}" format="${message(code: 'default.date.format.noZ')}"/>
+            </td>
             <td class="x">
-                        <g:if test="${true}">
-                            <g:link controller="yoda" action="deleteSystemMessage" id="${msg.id}"
-                                    class="ui negative icon button"><i
-                                    class="trash alternate icon"></i></g:link>
-                        </g:if>
+                <g:link controller="yoda" action="deleteSystemMessage" id="${msg.id}" class="ui negative icon button">
+                    <i class="trash alternate icon"></i>
+                </g:link>
             </td>
         </tr>
     </g:each>
     </tbody>
 </table>
 
-<semui:modal id="modalCreateSystemMessage" text="Neue System Nachricht erstellen">
+<semui:modal id="modalCreateSystemMessage" text="Neue Nachricht erstellen">
 
     <g:form class="ui form" url="[controller: 'yoda', action: 'manageSystemMessage', params: [create: true]]" method="post">
 
         <fieldset>
             <div class="field">
-                <label>Text</label>
-                <input type="text" name="content" />
+                <label>Nachricht</label>
+                <textarea name="content" ></textarea>
             </div>
 
             <div class="field">
                 <label>Typ</label>
-                <g:select name="type" from="${SystemMessage.getTypes()}" class="ui fluid search dropdown"/>
+                <g:select from="${[[SystemMessage.TYPE_OVERLAY, 'Systemmeldung'], [SystemMessage.TYPE_STARTPAGE_NEWS, 'Startseite']]}"
+                          optionKey="${{it[0]}}"
+                          optionValue="${{it[1]}}"
+                          name="type"
+                          class="ui fluid search dropdown"/>
             </div>
         </fieldset>
     </g:form>
