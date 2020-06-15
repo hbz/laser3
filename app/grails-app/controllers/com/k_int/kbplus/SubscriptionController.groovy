@@ -3,8 +3,6 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
@@ -72,7 +70,7 @@ class SubscriptionController extends AbstractDebugController {
     def docstoreService
     GlobalSourceSyncService globalSourceSyncService
     def GOKbService
-    def navigationGenerationService
+    def linksGenerationService
     def financeService
     def orgTypeService
     def subscriptionsQueryService
@@ -315,10 +313,6 @@ class SubscriptionController extends AbstractDebugController {
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
             result.processingpc = true
         }
-
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -1574,10 +1568,6 @@ class SubscriptionController extends AbstractDebugController {
         //    )
         //}
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         result.filterSet = params.filterSet ? true : false
 
         SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd')
@@ -1651,9 +1641,6 @@ class SubscriptionController extends AbstractDebugController {
 //        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         result.contextOrg = contextService.getOrg()
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
 
         result.surveys = SurveyConfig.executeQuery("from SurveyConfig where subscription = :sub and surveyInfo.status not in (:invalidStatuses)",
                 [sub: result.subscription.instanceOf,
@@ -1675,10 +1662,6 @@ class SubscriptionController extends AbstractDebugController {
 //        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         result.surveys = result.subscription ? SurveyConfig.findAllBySubscription(result.subscription) : null
 
         result
@@ -1699,9 +1682,6 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         result.parentLicense = result.parentSub.owner
@@ -1872,10 +1852,6 @@ class SubscriptionController extends AbstractDebugController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
@@ -2088,10 +2064,6 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
         params.remove('filterPropDef')
@@ -2153,10 +2125,6 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         params.tab = params.tab ?: 'generalProperties'
-
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscriptionInstance.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
@@ -2875,10 +2843,6 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         result
     }
 
@@ -3247,9 +3211,6 @@ class SubscriptionController extends AbstractDebugController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -3265,10 +3226,6 @@ class SubscriptionController extends AbstractDebugController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -3323,10 +3280,6 @@ class SubscriptionController extends AbstractDebugController {
         result.myTaskInstanceCount = result.myTaskInstanceList?.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         log.debug(result.taskInstanceList)
         result
     }
@@ -3365,9 +3318,6 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -3713,10 +3663,6 @@ class SubscriptionController extends AbstractDebugController {
         result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
         result.historyLinesTotal = AuditLogEvent.executeQuery("select e.id from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params).size()
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         result
     }
 
@@ -3745,10 +3691,6 @@ class SubscriptionController extends AbstractDebugController {
                 baseQuery,
                 baseParams
         )[0]
-
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
 
         result
     }
@@ -3848,36 +3790,7 @@ class SubscriptionController extends AbstractDebugController {
 
         du.setBenchmark('links')
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
-        // links
-        def key = result.subscription.id
-        def sources = Links.executeQuery('select l from Links as l where l.source = :source and l.objectType = :objectType', [source: key, objectType: Subscription.class.name])
-        def destinations = Links.executeQuery('select l from Links as l where l.destination = :destination and l.objectType = :objectType', [destination: key, objectType: Subscription.class.name])
-        //IN is from the point of view of the context subscription (= params.id)
-        result.links = [:]
-
-        sources.each { link ->
-            Subscription destination = Subscription.get(link.destination)
-            if (destination.isVisibleBy(result.user)) {
-                def index = link.linkType.getI10n("value")?.split("\\|")[0]
-                if (result.links[index] == null) {
-                    result.links[index] = [link]
-                } else result.links[index].add(link)
-            }
-        }
-        destinations.each { link ->
-            Subscription source = Subscription.get(link.source)
-            if (source.isVisibleBy(result.user)) {
-                def index = link.linkType.getI10n("value")?.split("\\|")[1]
-                if (result.links[index] == null) {
-                    result.links[index] = [link]
-                } else result.links[index].add(link)
-            }
-        }
-
+        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
 
         du.setBenchmark('pending changes')
 
@@ -4613,10 +4526,6 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
 
-            LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
-            result.navPrevSubscription = links.prevLink
-            result.navNextSubscription = links.nextLink
-
             // tasks
             Org contextOrg = contextService.getOrg()
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
@@ -4741,8 +4650,6 @@ class SubscriptionController extends AbstractDebugController {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
                 result.newSub = newSub
-
-                //LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
 
                 if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
                 result.isRenewSub = true
@@ -5919,6 +5826,10 @@ class SubscriptionController extends AbstractDebugController {
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
+
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.subscription))
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         result.showConsortiaFunctions = showConsortiaFunctions(contextService.getOrg(), result.subscription)
         result.consortialView = result.showConsortiaFunctions

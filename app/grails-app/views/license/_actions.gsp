@@ -55,6 +55,15 @@
                 </g:else>
 
             </g:if>
+            <g:if test="${actionName == 'linkedSubs'}">
+                <div class="divider"></div>
+                <g:if test="${license.instanceOf}">
+                    <g:link class="item" action="linkMemberLicensesToSubs" id="${params.id}"><g:message code="license.linktoMemberSubscription"/></g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="item" action="linkLicenseToSubs" id="${params.id}"><g:message code="license.linktoSubscription"/></g:link>
+                </g:else>
+            </g:if>
 
         </g:if>
     </semui:actionsDropdown>

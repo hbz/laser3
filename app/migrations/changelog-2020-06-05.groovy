@@ -13,4 +13,41 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "agalffy (modified)", id: "1591357660544-2") {
+		grailsChange {
+			change {
+				sql.execute("alter table links alter column l_source_fk type character varying(255)")
+			}
+		}
+	}
+
+	changeSet(author: "agalffy (modified)", id: "1591357660544-3") {
+		grailsChange {
+			change {
+				sql.execute("alter table links alter column l_destination_fk type character varying(255)")
+			}
+		}
+	}
+
+	changeSet(author: "agalffy (modified)", id: "1591357660544-4") {
+		grailsChange {
+			change {
+				sql.execute("update links set l_source_fk = concat(l_object,':',l_source_fk)")
+			}
+		}
+	}
+
+	changeSet(author: "agalffy (modified)", id: "1591357660544-5") {
+		grailsChange {
+			change {
+				sql.execute("update links set l_destination_fk = concat(l_object,':',l_destination_fk)")
+			}
+		}
+	}
+
+	changeSet(author: "agalffy (modified)", id: "1591357660544-6") {
+		dropColumn(columnName: "l_object", tableName: "links")
+	}
+
 }

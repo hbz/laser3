@@ -13,7 +13,7 @@ class LaserInjectionTagLib {
         g.set( var:'filterService', bean:'filterService' )
         g.set( var:'genericOIDService', bean:'genericOIDService' )
         g.set( var:'instAdmService', bean:'instAdmService' )
-        g.set( var:'navigationGenerationService', bean:'navigationGenerationService' )
+        g.set( var:'linksGenerationService', bean:'linksGenerationService' )
         g.set( var:'orgDocumentService', bean:'orgDocumentService' )
         g.set( var:'pendingChangeService', bean:'pendingChangeService')
         g.set( var:'springSecurityService', bean:'springSecurityService' )

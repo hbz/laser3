@@ -209,7 +209,7 @@ class PendingChangeService extends AbstractLockableService {
                                     payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
                                 }
 
-                                if(payload.changeDoc?.status) //continue here: reset DB, perform everything, then check process at this line - status of retired TIPPs goes miraculously to null
+                                if(payload.changeDoc?.status)
                                 {
                                     payload.changeDoc?.status = payload.changeDoc?.status?.id
                                 }

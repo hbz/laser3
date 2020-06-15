@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Person; de.laser.interfaces.CalculatedType; com.k_int.kbplus.Subscription; de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Person; de.laser.interfaces.CalculatedType; com.k_int.kbplus.Subscription; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -124,11 +124,6 @@
                     <i class="map orange icon"></i>
                 </span>
             </th>
-            <g:if test="${editable}">
-                <th class="la-action-info">
-
-                </th>
-            </g:if>
         </tr>
     </thead>
     <tbody>
@@ -142,7 +137,7 @@
                 <g:set var="sub" value="${row}"/>
             </g:else>
             <%
-                LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, sub.id)
+                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(sub))
                 Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                 Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
             %>
@@ -227,15 +222,6 @@
                         </span>
                     </g:if>
                 </td>
-                <g:if test="${editable}">
-                    <td class="x">
-                        <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="license" action="unlinkSubscription" params="${[subscription:sub.id,license:license.id]}"
-                                data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
-                                data-confirm-how = "unlink">
-                            <i class="unlink icon"></i>
-                        </g:link>
-                    </td>
-                </g:if>
             </tr>
         </g:each>
 
