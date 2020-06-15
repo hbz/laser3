@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.107
+
+- Bugfix 500 response by subscription endpoint
+
 #### 0.106
 
 - reworked access to __/oamonitor/*__

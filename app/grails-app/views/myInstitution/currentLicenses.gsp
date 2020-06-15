@@ -122,7 +122,7 @@
                       <g:sortableColumn rowspan="2" params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
                           <th rowspan="2">
-                              <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.superOrgType')])}" data-position="top center">
+                              <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.superOrgType')])}" data-position="top right">
                                   <i class="users large icon"></i>
                               </span>
                           </th>
