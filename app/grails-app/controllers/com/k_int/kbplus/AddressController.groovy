@@ -38,12 +38,12 @@ class AddressController extends AbstractDebugController {
                 Address addressInstance = new Address(params)
 				if (! addressInstance.save()) {
 			        flash.error = message(code: 'default.save.error.general.message')
-                    log.error('Adresse konnte nicht gespeichert werden. '+params)
+                    log.error('Adresse konnte nicht gespeichert werden. '+addressInstance.errors)
 					redirect(url: request.getHeader('referer'), params: params)
 					return
 	        	}
 
-                flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.id])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.name])
                 redirect(url: request.getHeader('referer'), params: params)
 			break
 		}
@@ -79,6 +79,7 @@ class AddressController extends AbstractDebugController {
             addressInstance: addressInstance,
             orgId: addressInstance.org?.id,
             prsId: addressInstance.prs?.id,
+            typeId: addressInstance.type?.id,
             modalId: modalId,
             editable: addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser()),
             redirect: '.',

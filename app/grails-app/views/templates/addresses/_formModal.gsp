@@ -132,7 +132,7 @@
         %{--</g:if>--}%
         %{--<g:elseif test="${ ! addressInstance?.type}">--}%
         <g:if test="${ ( ! addressInstance?.type) && ( ! modalId) }">
-        <h4 class="ui dividing header"><g:message code="address.additionals.label"/></h4>
+            <h4 class="ui dividing header"><g:message code="address.additionals.label"/></h4>
             <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
                 <label for="type_${modalId}">
                     ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}

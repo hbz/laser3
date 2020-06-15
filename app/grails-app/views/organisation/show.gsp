@@ -282,9 +282,9 @@
                                     </span>
                                 </dt>
                                 <dd>
-                                    <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
-                                    <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
-                                    <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
+                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
+                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
+                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
                                 </dd>
                             </dl>
                         </div>
@@ -357,13 +357,13 @@
                                             model.hideType = true%>
                                             <input class="ui icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
-                                                   onclick="addresscreate_1('${model.orgId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                                   onclick="addresscreate_1('${model.orgId}', '${RDStore.ADRESS_TYPE_POSTAL.id}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                             >
 
                                             <% model.modalId = 'addressFormModalBillingAddress' %>
                                             <input class="ui icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
-                                                   onclick="addresscreate_1('${model.orgId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                                   onclick="addresscreate_1('${model.orgId}', '${RDStore.ADRESS_TYPE_BILLING.id}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                             >
                                         </div>
 
@@ -372,7 +372,7 @@
                                             <% model.modalId = 'addressFormModalLegalPatronAddress' %>
                                             <input class="ui icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"
-                                                   onclick="addresscreate_1('${model.orgId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                                   onclick="addresscreate_1('${model.orgId}', '${RDStore.ADRESS_TYPE_LEGAL_PATRON.id}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                             >
 
                                             %{-- <input class="ui button" size="35"
@@ -662,8 +662,8 @@
     });
 </r:script>
 <g:javascript>
-        function addresscreate_1(orgId, redirect, modalId, hideType) {
-            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?orgId='+orgId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
+        function addresscreate_1(orgId, typeId, redirect, modalId, hideType) {
+            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
             private_address_modal(url);
         }
         function addresscreate() {

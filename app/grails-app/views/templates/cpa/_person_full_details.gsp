@@ -61,10 +61,6 @@
                                value="${message(code: 'person.addresses.label')}"
                                onclick="addresscreate('${model}');"
                         >
-                        %{--<input class="ui mini icon button" type="button" data-semui="modal"--}%
-                               %{--data-href="#addressFormModal${personRole.id}"--}%
-                               %{--value="${message(code: 'person.addresses.label')}">--}%
-                        %{--<g:render template="/address/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'addressFormModal' + personRole.id]"/>--}%
                     </g:if>
 
                 </g:if>

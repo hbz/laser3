@@ -2687,6 +2687,7 @@ class AjaxController {
         model.orgId = params.orgId
         model.redirect = params.redirect
         model.modalId = params.modalId
+        model.typeId = params.typeId
         model.hideType = params.hideType
         if (model.modalId) {
             if (params.prId) {
