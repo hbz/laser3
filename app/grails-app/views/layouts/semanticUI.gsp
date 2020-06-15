@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.SystemMessage" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;de.laser.domain.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -715,22 +715,15 @@
         </r:script>
 
         <%-- maintenance --%>
-        <g:if test="${SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || SystemMessage.findAllByShowNowAndOrgIsNull(true)}">
+        <g:if test="${SystemMessage.findAllByIsActive(true)}">
             <div id="maintenance">
                 <div class="ui segment center aligned inverted orange">
                     <strong>ACHTUNG:</strong>
 
                     <div class="ui list">
-                        <g:each in="${SystemMessage.findAllByShowNow(true)}" var="message">
+                        <g:each in="${SystemMessage.findAllByIsActive(true)}" var="message">
                             <div class="item">
-                                <g:if test="${message.org}">
-                                    <g:if test="${contextOrg.id == message.org.id}">
-                                        ${message.text}
-                                    </g:if>
-                                </g:if>
-                                <g:else>
-                                    ${message.text}
-                                </g:else>
+                                ${message.content}
                             </div>
                         </g:each>
                     </div>

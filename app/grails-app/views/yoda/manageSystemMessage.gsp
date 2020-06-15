@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SystemMessage" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.domain.SystemMessage" %>
 <!doctype html>
 <html>
 <head>
@@ -23,26 +23,24 @@
     <thead>
     <tr>
         <th>Nachricht</th>
-        <th>Anzeigen?</th>
-        <th>Org</th>
-        <th>Erstellt am</th>
-        <th>Letzte Änderung am</th>
+        <th>Aktiv</th>
+        <th>Erstellt</th>
+        <th>Letzte Änderung</th>
         <th class="la-action-info">${message(code:'default.actions.label')}</th>
     </tr>
     </thead>
     <tbody>
-    <g:each in="${systemMessages}" var="m">
+    <g:each in="${systemMessages}" var="msg">
         <tr>
-            <td>${m?.text}</td>
-            <td><semui:xEditableBoolean owner="${m}" field="showNow"/></td>
-            <td>${m.org?.name}</td>
-            <td><g:formatDate date="${m?.dateCreated}"
-                              format="${message(code: 'default.date.format')}"/></td>
-            <td><g:formatDate date="${m?.lastUpdated}"
-                              format="${message(code: 'default.date.format')}"/></td>
+            <td>${msg.content}</td>
+            <td><semui:xEditableBoolean owner="${msg}" field="isActive"/></td>
+            <td><g:formatDate date="${msg.dateCreated}"
+                              format="${message(code: 'default.date.format.noZ')}"/></td>
+            <td><g:formatDate date="${msg.lastUpdated}"
+                              format="${message(code: 'default.date.format.noZ')}"/></td>
             <td class="x">
                         <g:if test="${true}">
-                            <g:link controller="yoda" action="deleteSystemMessage" id="${m?.id}"
+                            <g:link controller="yoda" action="deleteSystemMessage" id="${msg.id}"
                                     class="ui negative icon button"><i
                                     class="trash alternate icon"></i></g:link>
                         </g:if>
@@ -59,23 +57,13 @@
         <fieldset>
             <div class="field">
                 <label>Text</label>
-                <input type="text" name="text" />
+                <input type="text" name="content" />
             </div>
 
             <div class="field">
-                <label>Organisation</label>
-                <g:select name="org"
-                          from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector = ? order by o.name', [RDStore.O_SECTOR_HIGHER_EDU])}"
-                          optionKey="id"
-                          optionValue="name"
-                          class="ui fluid search dropdown"/>
+                <label>Typ</label>
+                <g:select name="type" from="${SystemMessage.getTypes()}" class="ui fluid search dropdown"/>
             </div>
-
-            <div class="field">
-                <label>System Nachricht Anzeigen</label>
-                <g:checkBox name="showNow"/>
-            </div>
-
         </fieldset>
     </g:form>
 

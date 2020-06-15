@@ -7,6 +7,7 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.ActivityProfiler
+import de.laser.domain.SystemMessage
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -982,21 +983,16 @@ class YodaController {
 
         if(params.create)
         {
+                SystemMessage sm = new SystemMessage(
+                        content: params.content ?: '',
+                        type: params.type,
+                        isActive: false)
 
-            if(!SystemMessage.findAllByText(params.text)) {
-
-                def systemMessage = new SystemMessage(office: params.office ?: null,
-                        text: params.text ?: '',
-                        showNow: params.showNow ?: 0)
-
-                if (systemMessage.save(flush: true)) {
+                if (sm.save(flush: true)) {
                     flash.message = 'System Nachricht erstellt'
                 } else {
                     flash.error = 'System Nachricht wurde nicht erstellt!!'
                 }
-            }else {
-                flash.error = 'System Nachricht schon im System!!'
-            }
         }
 
 
