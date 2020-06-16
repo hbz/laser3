@@ -117,7 +117,7 @@
 <table  class="ui celled la-table table very compact">
     <thead>
     <tr>
-        <g:sortableColumn property="ipData" title="${message(code: 'accessPoint.ip.data')} "  />
+        <th>${message(code: 'accessPoint.ip.data')}</th>
         <th>${message(code: 'default.actions.label')}</th>
     </tr>
     </thead>
