@@ -7,6 +7,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
+import de.laser.domain.SystemMessage
 import de.laser.domain.SystemProfiler
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
@@ -474,7 +475,6 @@ class DeletionService {
         List pendingChanges     = PendingChange.findAllByOwner(org)
         List tasks              = Task.findAllByOrg(org)
         List tasksResp          = Task.findAllByResponsibleOrg(org)
-        List systemMessages     = SystemMessage.findAllByOrg(org)
         List systemProfilers    = SystemProfiler.findAllByContext(org)
 
         List facts              = Fact.findAllByInst(org)
@@ -530,7 +530,6 @@ class DeletionService {
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_BLOCKER]
         result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
         result.info << ['Aufgaben (responsibility)', tasksResp, FLAG_BLOCKER]
-        result.info << ['SystemMessages', systemMessages, FLAG_BLOCKER]
         result.info << ['SystemProfilers', systemProfilers]
 
         result.info << ['Facts', facts, FLAG_BLOCKER]

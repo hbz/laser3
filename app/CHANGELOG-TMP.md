@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2540    16.06.2020  hbz-dev     David   Feature     News-Bereich der Startseite dynamisch machen
+
 2573    15.06.2020  hbz-dev     Moe     Feature     GlobalData Sync Logs in separate Log führen
 
 2593    12.06.2020  hbz-dev     Andreas Bug         Merkmalstypen von DFG Förderung Höhe und Fachstatistik / Klassifikation auf String geändert

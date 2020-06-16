@@ -7,6 +7,7 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.ActivityProfiler
+import de.laser.domain.SystemMessage
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -794,7 +795,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def settings() {
         Map<String, Object> result = [:]
-        result.settings = Setting.list();
+        result.settings = Setting.executeQuery('select s from Setting s where s.name != \'MaintenanceMode\' order by s.name asc')
         result
     }
 
@@ -973,46 +974,6 @@ class YodaController {
         }
 
         render result as JSON
-    }
-
-    @Secured(['ROLE_YODA'])
-    def manageSystemMessage() {
-        Map<String, Object> result = [:]
-        result.user = springSecurityService.currentUser
-
-        if(params.create)
-        {
-
-            if(!SystemMessage.findAllByText(params.text)) {
-
-                def systemMessage = new SystemMessage(office: params.office ?: null,
-                        text: params.text ?: '',
-                        showNow: params.showNow ?: 0)
-
-                if (systemMessage.save(flush: true)) {
-                    flash.message = 'System Nachricht erstellt'
-                } else {
-                    flash.error = 'System Nachricht wurde nicht erstellt!!'
-                }
-            }else {
-                flash.error = 'System Nachricht schon im System!!'
-            }
-        }
-
-
-        result.systemMessages = SystemMessage.findAll()
-        result.editable = true
-        result
-    }
-
-    @Secured(['ROLE_YODA'])
-    def deleteSystemMessage(Long id) {
-        if(SystemMessage.get(id)) {
-            SystemMessage.get(id).delete(flush: true)
-            flash.message = 'System Nachricht wurde gelöscht!!'
-        }
-
-        redirect(action: 'manageSystemMessage')
     }
 
     @Secured(['ROLE_YODA'])
