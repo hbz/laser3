@@ -18,7 +18,7 @@
 <semui:messages data="${flash}" />
 
 <div class="la-float-right">
-    <input type="submit" class="ui button" value="Neue Nachricht erstellen" data-semui="modal" data-href="#modalCreateSystemMessage" />
+    <input type="submit" class="ui button" value="${message(code: 'admin.systemMessage.create')}" data-semui="modal" data-href="#modalCreateSystemMessage" />
 </div>
 
 <br />
@@ -26,29 +26,29 @@
 
 <table class="ui celled la-table table">
     <thead>
-    <tr>
-        <th>Nachricht</th>
-        <th>Typ</th>
-        <th>Aktiv</th>
-        <th>Letzte Änderung</th>
-        <th class="la-action-info">${message(code:'default.actions.label')}</th>
-    </tr>
+        <tr>
+            <th>${message(code: 'default.content.label')}</th>
+            <th>${message(code: 'default.type.label')}</th>
+            <th>${message(code: 'default.activated.label')}</th>
+            <th>${message(code: 'default.lastUpdated.label')}</th>
+            <th class="la-action-info">${message(code:'default.actions.label')}</th>
+        </tr>
     </thead>
     <tbody>
-    <g:each in="${systemMessages}" var="msg">
+        <g:each in="${systemMessages}" var="msg">
         <tr style="vertical-align: top">
             <td>
                 <div class="ui attached segment">
-                    <strong>Deutsch</strong><br />
+                    <strong>${message(code: 'default.german.label')}</strong><br />
                     <semui:xEditable owner="${msg}" field="content_de" type="textarea"/>
                 </div>
                 <div class="ui attached segment">
-                    <strong>Englisch</strong><br />
+                    <strong>${message(code: 'default.english.label')}</strong><br />
                     <semui:xEditable owner="${msg}" field="content_en" type="textarea"/>
                 </div>
             </td>
             <td>
-                <g:if test="${SystemMessage.TYPE_OVERLAY == msg.type}">Systemmeldung</g:if>
+                <g:if test="${SystemMessage.TYPE_ATTENTION == msg.type}">Systemmeldung</g:if>
                 <g:if test="${SystemMessage.TYPE_STARTPAGE_NEWS == msg.type}">Startseite</g:if>
             </td>
             <td>
@@ -63,28 +63,27 @@
                 </g:link>
             </td>
         </tr>
-    </g:each>
+        </g:each>
     </tbody>
 </table>
 
-<semui:modal id="modalCreateSystemMessage" text="Neue Nachricht erstellen">
-
+<semui:modal id="modalCreateSystemMessage" message="admin.systemMessage.create">
     <g:form class="ui form" url="[controller: 'admin', action: 'systemMessages', params: [create: true]]" method="post">
 
         <fieldset>
             <div class="field">
-                <label>Nachricht (Deutsch)</label>
+                <label>${message(code: 'default.content.label')} (${message(code: 'default.german.label')})</label>
                 <textarea name="content_de" ></textarea>
             </div>
 
             <div class="field">
-                <label>Nachricht (Englisch)</label>
+                <label>${message(code: 'default.content.label')} (${message(code: 'default.english.label')})</label>
                 <textarea name="content_en" ></textarea>
             </div>
 
             <div class="field">
-                <label>Typ</label>
-                <g:select from="${[[SystemMessage.TYPE_OVERLAY, 'Systemmeldung'], [SystemMessage.TYPE_STARTPAGE_NEWS, 'Startseite']]}"
+                <label>${message(code: 'default.type.label')}</label>
+                <g:select from="${[[SystemMessage.TYPE_ATTENTION, 'Systemmeldung'], [SystemMessage.TYPE_STARTPAGE_NEWS, 'Startseite']]}"
                           optionKey="${{it[0]}}"
                           optionValue="${{it[1]}}"
                           name="type"
@@ -92,9 +91,7 @@
             </div>
         </fieldset>
     </g:form>
-
 </semui:modal>
-
 
 </body>
 </html>

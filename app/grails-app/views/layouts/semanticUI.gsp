@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;de.laser.domain.SystemMessage" %>
+<%@ page import="com.k_int.kbplus.Setting; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;de.laser.domain.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -688,6 +688,22 @@
 
         <%-- global content container --%>
         <main class="ui main container ${visibilityContextOrgMenu} ">
+
+            <%-- system messages --%>
+            <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}" />
+            <g:if test="${systemMessages}">
+                <div class="ui segment center aligned orange">
+                    <strong>SYSTEMMELDUNG</strong>
+
+                    <g:each in="${systemMessages}" var="message">
+                        <div style="padding-top:1em">
+                            <% println message.getLocalizedContent() %>
+                        </div>
+                    </g:each>
+
+                </div>
+            </g:if>
+
             <g:layoutBody/>
         </main><!-- .main -->
 
@@ -715,20 +731,15 @@
         </r:script>
 
         <%-- maintenance --%>
-        <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_OVERLAY)}" />
 
-        <g:if test="${systemMessages}">
+        <g:if test="${Setting.findByName('MaintenanceMode')?.value == 'true'}">
             <div id="maintenance">
                 <div class="ui segment center aligned inverted orange">
-                    <strong>SYSTEMMELDUNG</strong>
+                    <h3 class="ui header">${message(code:'system.maintenanceMode.header')}</h3>
 
-                    <g:each in="${systemMessages}" var="message">
-                        <div style="padding-top:1.6em">
-                            <% println message.getLocalizedContent() %>
-                        </div>
-                    </g:each>
+                    ${message(code:'system.maintenanceMode.message')}
 
-                </div>
+                <div>
             </div>
         </g:if>
 

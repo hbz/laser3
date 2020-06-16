@@ -4,7 +4,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 class SystemMessage {
 
-    static final String TYPE_OVERLAY        = "TYPE_OVERLAY"
+    static final String TYPE_ATTENTION = "TYPE_ATTENTION"
     static final String TYPE_STARTPAGE_NEWS = "TYPE_STARTPAGE_NEWS"
 
     String content_de
@@ -35,7 +35,7 @@ class SystemMessage {
     }
 
     static getTypes() {
-        [TYPE_OVERLAY, TYPE_STARTPAGE_NEWS]
+        [TYPE_ATTENTION, TYPE_STARTPAGE_NEWS]
     }
 
     static getActiveMessages(String type) {

@@ -1915,9 +1915,9 @@ class AdminController extends AbstractDebugController {
                     isActive: false)
 
             if (sm.save(flush: true)){
-                flash.message = 'Nachricht erstellt'
+                flash.message = 'Systemmeldung erstellt'
             } else {
-                flash.error = 'Nachricht wurde nicht erstellt!'
+                flash.error = 'Systemmeldung wurde nicht erstellt'
             }
         }
 
@@ -1931,7 +1931,7 @@ class AdminController extends AbstractDebugController {
 
         if (SystemMessage.get(id)){
             SystemMessage.get(id).delete(flush: true)
-            flash.message = 'Nachricht wurde gelöscht!'
+            flash.message = 'Systemmeldung wurde gelöscht'
         }
 
         redirect(action: 'systemMessages')

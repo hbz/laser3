@@ -795,7 +795,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def settings() {
         Map<String, Object> result = [:]
-        result.settings = Setting.list();
+        result.settings = Setting.executeQuery('select s from Setting s where s.name != \'MaintenanceMode\' order by s.name asc')
         result
     }
 
