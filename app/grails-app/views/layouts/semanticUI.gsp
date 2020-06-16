@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.SystemMessage" %>
+<%@ page import="com.k_int.kbplus.Setting; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;de.laser.domain.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -304,6 +304,7 @@
                                 </div>
                             </div>
 
+                            <g:link class="item" role="menuitem" controller="admin" action="systemMessages">${message(code: 'menu.admin.systemMessage')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="systemAnnouncements">${message(code:'menu.admin.announcements')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</g:link>
 
@@ -373,7 +374,6 @@
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="appThreads">${message(code:'menu.yoda.appThreads')}</g:link>
 
@@ -688,6 +688,22 @@
 
         <%-- global content container --%>
         <main class="ui main container ${visibilityContextOrgMenu} ">
+
+            <%-- system messages --%>
+            <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}" />
+            <g:if test="${systemMessages}">
+                <div class="ui segment center aligned orange">
+                    <strong>SYSTEMMELDUNG</strong>
+
+                    <g:each in="${systemMessages}" var="message">
+                        <div style="padding-top:1em">
+                            <% println message.getLocalizedContent() %>
+                        </div>
+                    </g:each>
+
+                </div>
+            </g:if>
+
             <g:layoutBody/>
         </main><!-- .main -->
 
@@ -715,26 +731,15 @@
         </r:script>
 
         <%-- maintenance --%>
-        <g:if test="${SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || SystemMessage.findAllByShowNowAndOrgIsNull(true)}">
+
+        <g:if test="${Setting.findByName('MaintenanceMode')?.value == 'true'}">
             <div id="maintenance">
                 <div class="ui segment center aligned inverted orange">
-                    <strong>ACHTUNG:</strong>
+                    <h3 class="ui header">${message(code:'system.maintenanceMode.header')}</h3>
 
-                    <div class="ui list">
-                        <g:each in="${SystemMessage.findAllByShowNow(true)}" var="message">
-                            <div class="item">
-                                <g:if test="${message.org}">
-                                    <g:if test="${contextOrg.id == message.org.id}">
-                                        ${message.text}
-                                    </g:if>
-                                </g:if>
-                                <g:else>
-                                    ${message.text}
-                                </g:else>
-                            </div>
-                        </g:each>
-                    </div>
-                </div>
+                    ${message(code:'system.maintenanceMode.message')}
+
+                <div>
             </div>
         </g:if>
 

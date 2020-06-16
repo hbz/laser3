@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2540    16.06.2020  hbz-dev     David   Feature     News-Bereich der Startseite dynamisch machen
+
 2593    12.06.2020  hbz-dev     Andreas Bug         Merkmalstypen von DFG Förderung Höhe und Fachstatistik / Klassifikation auf String geändert
 
 2526    10.06.2020  rc1.4       Ingrid  Bug         Tooltips im Tabellenheader werden nicht mehr überdeckt & Anzeigefehler bei allen Tooltips gefixt
