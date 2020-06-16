@@ -35,7 +35,7 @@ databaseChangeLog = {
 			change {
 				sql.execute("""insert into system_message(sm_content_de, sm_content_en, sm_type, sm_is_active, sm_version, sm_date_created, sm_last_updated) values (
 'Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!', 
-'Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!',
+'The system will be updated in the next few minutes. Please do not enter any more data!',
 'TYPE_ATTENTION', false, 0, now(), now()
 )""")
 

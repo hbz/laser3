@@ -79,7 +79,7 @@
                             <h1>NEWS</h1>
                         </div>
 
-                        <span class="ui basic blue left pointing label la-eye-catcher-txt">
+                        <div class="ui basic blue left pointing label la-eye-catcher-txt">
 
                         <g:each in="${systemMessages}" var="news" status="i">
                             <div <g:if test="${i>0}">style="padding-top:1.6em"</g:if>>
@@ -87,7 +87,7 @@
                             </div>
                         </g:each>
 
-                        </span>
+                        </div>
                     </div>
                 </div>
             </div>
