@@ -451,6 +451,8 @@
                                     <%--<g:link class="item" role="menuitem" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
                                     <g:link class="item" role="menuitem" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="manageFTControl" >Manage FTControl</g:link>
+                                    <div class="divider"></div>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="killDataloadService" >Kill ES Update Index</g:link>
                                 </div>
                             </div>
 

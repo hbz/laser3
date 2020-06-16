@@ -658,6 +658,17 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def killDataloadService() {
+
+        log.debug("kill DataloadService")
+        dataloadService.killDataloadService()
+
+        log.debug("redirecting to home ..")
+
+        redirect controller:'home'
+    }
+
+    @Secured(['ROLE_YODA'])
     def checkESElementswithDBElements() {
         log.debug("checkESElementswithDBElements")
         dataloadService.checkESElementswithDBElements()
