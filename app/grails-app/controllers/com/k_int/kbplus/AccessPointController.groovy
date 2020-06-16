@@ -88,12 +88,6 @@ class AccessPointController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def list() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
-        [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
-    }
-
     /**
      * Check for existing name in all supported locales and return available suggestions for IP Access Method
      * A simpler solution would be nice
@@ -477,7 +471,8 @@ class AccessPointController extends AbstractDebugController {
         Boolean autofocus = (params.autofocus) ? true : false
         Boolean activeChecksOnly = (params.checked == 'false') ? false : true
 
-        ArrayList accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);
+        Map accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
+
 
         orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
 

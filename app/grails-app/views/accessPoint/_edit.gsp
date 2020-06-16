@@ -122,9 +122,19 @@
     </tr>
     </thead>
     <tbody>
-    <g:each in="${accessPointDataList}" var="accessPointData">
+    <g:each in="${accessPointDataList.ipv4Ranges}" var="accessPointData">
         <tr>
-            <td>${accessPointData.getInputStr()}</td>
+            <td>${accessPointData.ipRange}</td>
+            <td class="center aligned">
+                <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}" class="ui negative icon mini button">
+                    <i class="trash very alternate icon"></i>
+                </g:link>
+            </td>
+        </tr>
+    </g:each>
+    <g:each in="${accessPointDataList.ipv6Ranges}" var="accessPointData">
+        <tr>
+            <td>${accessPointData.ipRange}</td>
             <td class="center aligned">
                 <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}" class="ui negative icon mini button">
                     <i class="trash very alternate icon"></i>
