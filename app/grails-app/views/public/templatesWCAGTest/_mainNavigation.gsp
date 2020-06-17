@@ -1,12 +1,13 @@
 
     <nav id="mainMenueTest" class="ui inverted stackable menu" role="menubar" aria-label="${message(code:'aria-label.mainNavigation')}">
-        <div class="ui container" >
+        <div class="ui container" role="none">
             <a href="#" aria-label="Start" class="header item la-logo-item">
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </a>
 
-            <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
-                Alle
+            <span class="ui dropdown item" >
+                <span role="menuitem" aria-haspopup="true">Alle</span>
+
                 <i aria-hidden="true" class="dropdown icon"></i>
 
                 <div class="menu">
