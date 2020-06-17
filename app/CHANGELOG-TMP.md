@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2596    17.06.2020  rc1.4       Moe     Bug         Bei Löschen einer Lizenz soll auch die Umfrage gelöscht werden
+
+2450    16.06.2020  rc1.4       Moe     Bug         Fehlermeldung im Bereich Zugangskonfiguartion
+
 2589    10.06.2020  rc1.4       Andreas Bug         Private Merkmale wurden bei Verträgen nicht angezeigt
 
 2526    10.06.2020  rc1.4       Ingrid  Bug         Tooltips im Tabellenheader werden nicht mehr überdeckt & Anzeigefehler bei allen Tooltips gefixt
