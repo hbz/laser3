@@ -36,12 +36,7 @@
 
                 <div class="field required">
                     <label>${message(code:'default.status.label')}</label>
-                    <%
-                        def fakeList = []
-                        fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
-                        fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
-                    %>
-                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
+                    <laser:select name="status" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" optionKey="id" optionValue="value"
                                   noSelection="${['' : '']}"
                                   value="${['':'']}"
                                   class="ui select dropdown"/>

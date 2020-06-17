@@ -3,8 +3,104 @@
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
 2594    17.06.2020  rc1.4       David   Feature     SchemaSpy automatisiert ausführen
- 
+
+2596    17.06.2020  rc1.4       Moe     Bug         Bei Löschen einer Lizenz soll auch die Umfrage gelöscht werden
+
+2450    16.06.2020  rc1.4       Moe     Bug         Fehlermeldung im Bereich Zugangskonfiguartion
+
+2589    10.06.2020  rc1.4       Andreas Bug         Private Merkmale wurden bei Verträgen nicht angezeigt
+
+2526    10.06.2020  rc1.4       Ingrid  Bug         Tooltips im Tabellenheader werden nicht mehr überdeckt & Anzeigefehler bei allen Tooltips gefixt
+
+2588    09.06.2020  rc1.4       Andreas Bug         Verknüpfbare Verträge wurden für Vollnutzer nicht angezeigt
+
+2587    09.06.2020  rc1.4       Andreas Bug         Anzeigeüberprüfung der Nutzungsstatistiken wurde korrigiert
+
+--      09.06.2020  hbz-dev     Ingrid  Feature     change circle size of or-button
+
+2408    08.06.2020  rc1.4       Ingrid  Bug         Nach Ausführen eines X-Editable-Elements kann man jetz wieder das Menu mit Hover bedienen
+
+2465    08.06.2020  rc1.4       Ingrid  Bug         Sicht des Kalendermonats jetzt ohne Fehler beim Scrollen
+
+2560    05.06.2020  rc1.4       Andreas Bug         Kostenposten ohne Vorzeichen wurden nicht angelegt
+
+2571    04.06.2020  rc1.4       Moe     Bug         Beim Bestand ist das Reihe DropDown Filterfeld leer trotz vorhandenen Daten
+
+2572    04.06.2020  rc1.4       Moe     Bug         Title Show Seite: Cannot get property 'title' on null object
+
+2570    04.06.2020  rc1.4       Moe     Bug         Bei der Umfrage kann ohne http keine Url eingegeben werden
+
+2569    04.06.2020  rc1.4       Moe     Feature     Bemerkungsfeld für Umfrageersteller umbauen
+
+2171    04.06.2020  rc1.4       Andreas Bug         Temporäre Brücke gebaut zum Schließen von Kontaktmodals
+
+2550    04.06.2020  rc1.4       Andreas Bug         Titelauswahl konnte nicht weitergeblättert werden
+
+--      03.06.2020  rc1.4       Andreas Bug         Abfragen im statusUpdateService auf executeQuery umgestellt
+
+2564    03.06.2020  rc1.4       Moe     Bug         Titelgruppierung Nachbesserung für 1.4
+
+2536    02.06.2020  rc1.4       Moe     Bug         Umfrage Lizenz-Umfrage
+
+2541    02.06.2020  rc1.4       Moe     Bug         Mail "Lizenz-Umfrage: Abgeschlossen"
+
+2563    02.06.2020  rc1.4       Moe     Bug         Gruppieren von Titeln in einer Lizenz
+
+2562    02.06.2020  rc1.4       Moe     Bug         Rechteüberprüfung für Umfrage beim Konsortium
+
+2558    02.06.2020  rc1.4       Andreas Bug         Titelgruppen werden jetzt bei Lizenzkopien mitgenommen
+
+2561    02.06.2020  rc1.4       Andreas Feature     Ausbesserungen in der Vertragsverwaltung gemäß Ticket
+
+2529    02.06.2020  rc1.4       Moe     Feature     Titelbestand der Lizenz anreichern + Filterfunktion
+
+2559    02.06.2020  rc1.4       Andreas Bug         Bestätigungsdialog zum Anlegen eines Teilnehmervertrages an allgemeines Design angepasst
+
+2557    29.05.2020  rc1.4       Andreas Bug         Menüpunkte "Neue Aufgabe" und "Neues Dokument" unter Vertrag falsch angezeigt
+
+2553    29.05.2020  rc1.4       Andreas Bug         Formatierung von Daten bei der Anzeige von Vertragsmerkmalen in Lizenzübersicht korrigiert
+
+2537    29.05.2020  rc1.4       Andreas Feature     Finanzfilter übernimmt Reitereinstellung
+
+2464    29.05.2020  rc1.4       Anja    Feature     Optik von modalem Dialog der Optik eines Filters anpassen
+
+--      29.05.2020  rc1.4       Andreas Bug         Transaktionen bei Sync (Identifier) eingebaut
+
+2527    29.05.2020  rc1.4       Andreas Bug         verschiedene Fehler beim Kopieren von Lizenzen
+
+2556    29.05.2020  rc1.4       Moe     Bug         Umlaute Parser für E-Mails wegen Problematik der Umlaute in Mails
+
+2547    29.05.2020  rc1.4       Moe     Bug         INST_User sieht falsche Meldung bei Umfrage
+
+2546    28.05.2020  rc1.4       Moe     Feature     xEditable darf nicht einfach weggeklickt werden
+
+2154    28.05.2020  rc1.3       Anja    Hotfix      Rechte zeilenweise für Kundennummern; Fehlermeldung bei Löschen ausgeben
+
+2535    28.05.2020  rc1.4       Andreas Bug         Löschprüfung von Kosten bei zu löschenden Lizenzen überbrückt 
+
+2154    27.05.2020  rc1.3       Anja    Hotfix      Rechte geändert für Kundennummern (anzeigen, ändern, löschen)
+
+2528    27.05.2020  rc1.4       Moe     Bug         Eigenes Merkmal "EGP-Nr." kann nicht hinzugefügt werden (LAS:eR-Backoffice)
+
+2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
+
+2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
+
+2533    26.05.2020  rc1.4       Moe     Bug         Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
+
+2525    26.05.2020  rc1.4       Moe     Feature     manageMembersVollnutzer-Icon auch in Lizenzsichten für Konsortien
+
+2533    26.05.2020  rc1.4       Moe     Bug         Standard Dashboard Reiter fehlerhafte Einträge bzw. Umfrage fehlt
+
+2525    26.05.2020  rc1.4       Moe     Feature     manageMembersVollnutzer-Icon auch in Lizenzsichten für Konsortien
+
+2532    26.05.2020  rc1.4       Andreas Bug         diverse Anzeigefehler in Sichten behoben
+
+2522    26.05.2020  rc1.4       Andreas Feature     Ausbesserungen Vertragssicht: Einkaufsliste abgearbeitet
+
 2531    26.05.2020  rc1.4       David   Bug         Aufgaben nicht aufrufbar / Schaltfläche "Neue Aufgabe" auf Dashboard tot 
+
+2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem region-Dropdown auf org/show
 
 2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Refdatas
 
@@ -15,6 +111,8 @@
 2413    22.05.2020  rc1.4       Andreas Feature     Titelausgabe um dynamische Ausgabe von Titelidentifierspalten erweitert
 
 1492    22.05.2020  rc1.4       Andreas Feature     Verknüpfungskommentare werden direkt an der Verknüfung angezeigt
+
+2327    22.05.2020  rc1.4       Moe     Feature     KBART-Anreicherung auch für existierenden Bestand
 
 2516    22.05.2020  rc1.4       Andreas Feature     KBART-Import um neue Spalten erweitert
 

@@ -113,7 +113,7 @@
        console.log("${urlLookup}");
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="${urlLookup}"/>?status=FETCH_ALL&query={query}&ctx=${context}",
+                url: "<g:createLink controller="ajax" action="${urlLookup}"/>?status=FETCH_ALL&query={query}&filterMembers=${accessService.checkPerm("ORG_CONSORTIUM")}&ctx=${context}",
                 cache: false
             },
             clearable: true,

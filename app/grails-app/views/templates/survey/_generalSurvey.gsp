@@ -1,4 +1,8 @@
-<%@ page import="de.laser.helper.RDStore" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyOrg" %>
+
+<g:set var="surveyOrg"
+       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+
 <div class="ui stackable grid">
     <div class="twelve wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
@@ -35,7 +39,7 @@
                         <dt class="control-label">
                             ${message(code: 'surveyConfig.url.label')}
                         </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"/>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="text"/>
                         <g:if test="${surveyConfig.url}">
                             <semui:linkIcon href="${surveyConfig.url}"/>
                         </g:if>
@@ -72,7 +76,7 @@
                             <dt class="control-label">
                                 ${message(code: 'surveyConfig.url.label')}
                             </dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="url" type="url"
+                            <dd><semui:xEditable owner="${surveyConfig}" field="url" type="text"
                                                  overwriteEditable="${false}"/>
 
                                 <semui:linkIcon href="${surveyConfig.url}"/>
@@ -97,6 +101,18 @@
                         </div>
                     </div>
                 </g:else>
+
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER') && surveyOrg}">
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
+
+                    </dl>
+                </g:if>
+
+
             </div>
         </div>
     </div>
@@ -259,7 +275,7 @@
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER')}">
                         ${message(code: 'surveyResult.participantComment')}
                     </g:if>
                     <g:else>
@@ -271,7 +287,7 @@
                     </g:else>
                 </th>
                 <th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER')}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
@@ -356,7 +372,7 @@
                         <semui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                     </td>
                     <td>
-                        <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                        <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER')}">
                             <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
                         </g:if>
                         <g:else>

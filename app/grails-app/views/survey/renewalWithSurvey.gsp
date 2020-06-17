@@ -225,9 +225,12 @@ ${surveyInfo.name}
                         </span>
                     </g:if>
 
-                    <g:if test="${participantResult.resultOfParticipation?.ownerComment}">
+                    <g:set var="surveyOrg"
+                           value="${SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)}"/>
+
+                    <g:if test="${surveyOrg}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult.resultOfParticipation?.ownerComment}">
+                              data-content="${surveyOrg.ownerComment}">
                             <i class="info circle icon"></i>
                         </span>
                     </g:if>
@@ -284,9 +287,12 @@ ${surveyInfo.name}
                             </span>
                         </g:if>
 
-                        <g:if test="${participantResultProperty?.ownerComment}">
+                        <g:set var="surveyOrg"
+                               value="${SurveyOrg.findBySurveyConfigAndOrg(participantResultProperty.surveyConfig, participantResultProperty.participant)}"/>
+
+                        <g:if test="${surveyOrg}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${participantResultProperty?.ownerComment}">
+                                  data-content="${surveyOrg.ownerComment}">
                                 <i class="info circle icon"></i>
                             </span>
                         </g:if>
@@ -434,9 +440,12 @@ ${surveyInfo.name}
                         </span>
                     </g:if>
 
-                    <g:if test="${participantResult.resultOfParticipation?.ownerComment}">
+                    <g:set var="surveyOrg"
+                           value="${SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)}"/>
+
+                    <g:if test="${surveyOrg}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult.resultOfParticipation?.ownerComment}">
+                              data-content="${surveyOrg.ownerComment}">
                             <i class="info circle icon"></i>
                         </span>
                     </g:if>
@@ -494,9 +503,12 @@ ${surveyInfo.name}
                             </span>
                         </g:if>
 
-                        <g:if test="${participantResultProperty?.ownerComment}">
+                        <g:set var="surveyOrg"
+                               value="${SurveyOrg.findBySurveyConfigAndOrg(participantResultProperty.surveyConfig, participantResultProperty.participant)}"/>
+
+                        <g:if test="${surveyOrg}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${participantResultProperty?.ownerComment}">
+                                  data-content="${surveyOrg.ownerComment}">
                                 <i class="info circle icon"></i>
                             </span>
                         </g:if>
@@ -742,9 +754,12 @@ ${surveyInfo.name}
                         </span>
                     </g:if>
 
-                    <g:if test="${participantResult.resultOfParticipation?.ownerComment}">
+                    <g:set var="surveyOrg"
+                           value="${SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)}"/>
+
+                    <g:if test="${surveyOrg}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult.resultOfParticipation?.ownerComment}">
+                              data-content="${surveyOrg.ownerComment}">
                             <i class="info circle icon"></i>
                         </span>
                     </g:if>
@@ -763,9 +778,12 @@ ${surveyInfo.name}
                             </span>
                         </g:if>
 
-                        <g:if test="${participantResultProperty?.ownerComment}">
+                        <g:set var="surveyOrg"
+                               value="${SurveyOrg.findBySurveyConfigAndOrg(participantResultProperty.surveyConfig, participantResultProperty.participant)}"/>
+
+                        <g:if test="${surveyOrg}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${participantResultProperty?.ownerComment}">
+                                  data-content="${surveyOrg.ownerComment}">
                                 <i class="info circle icon"></i>
                             </span>
                         </g:if>
@@ -905,9 +923,12 @@ ${surveyInfo.name}
                         </span>
                     </g:if>
 
-                    <g:if test="${participantResult.resultOfParticipation?.ownerComment}">
+                    <g:set var="surveyOrg"
+                           value="${SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)}"/>
+
+                    <g:if test="${surveyOrg}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participantResult.resultOfParticipation?.ownerComment}">
+                              data-content="${surveyOrg.ownerComment}">
                             <i class="info circle icon"></i>
                         </span>
                     </g:if>
@@ -926,9 +947,12 @@ ${surveyInfo.name}
                             </span>
                         </g:if>
 
-                        <g:if test="${participantResultProperty?.ownerComment}">
+                        <g:set var="surveyOrg"
+                               value="${SurveyOrg.findBySurveyConfigAndOrg(participantResultProperty.surveyConfig, participantResultProperty.participant)}"/>
+
+                        <g:if test="${surveyOrg}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${participantResultProperty?.ownerComment}">
+                                  data-content="${surveyOrg.ownerComment}">
                                 <i class="info circle icon"></i>
                             </span>
                         </g:if>

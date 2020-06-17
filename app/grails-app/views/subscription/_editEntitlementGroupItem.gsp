@@ -1,6 +1,6 @@
 
 
-<semui:modal id="editEntitlementGroupItemModal" message="subscription.details.ieGroups" isEditModal="true">
+<semui:modal id="editEntitlementGroupItemModal" message="subscription.details.ieGroups.edit" isEditModal="true">
 
     <g:form class="ui form" action="editEntitlementGroupItem" params="[ie: ie.id, id: subscriptionInstance.id]" method="POST">
         <input type="hidden" name="cmd" value="processing"/>

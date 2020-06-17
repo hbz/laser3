@@ -354,6 +354,7 @@ class MyInstitutionController extends AbstractDebugController {
             qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
             if(result.editable)
                 licenseFilterTable << "action"
+            licenseFilterTable << "licensingConsortium"
         }
         else if (accessService.checkPerm("ORG_CONSORTIUM")) {
             base_qry = """from License as l where (
@@ -440,8 +441,8 @@ class MyInstitutionController extends AbstractDebugController {
         if(params.subKind) {
             base_qry += " and ( exists ( select s from l.subscriptions as s where s.kind.id in (:subKinds) ) ) "
             List<Long> subKinds = []
-            List<String> selCategories = params.list('subKinds')
-            selCategories.each { String sel ->
+            List<String> selKinds = params.list('subKind')
+            selKinds.each { String sel ->
                 subKinds << Long.parseLong(sel)
             }
             qry_params.subKinds = subKinds
@@ -1425,7 +1426,6 @@ join sub.orgRelations or_sub where
                 subInstance.save(flush: true)*/
             }
 
-            flash.message = message(code: 'license.created.message')
             redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
         }
     }

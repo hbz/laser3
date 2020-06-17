@@ -6,42 +6,55 @@
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
 
 <semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
-
+    %{--<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}--}%
+    %{--<semui:totalNumber total="${orgList?.size()?:0}"/>--}%
+    %{--</h1>--}%
     <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
     <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
 
-    <div>
-    <label><g:message code="person.function.label" /></label>&nbsp
-        <laser:select class="ui dropdown search"
-                      name="prsFunctionMultiSelect"
-                      multiple=""
-                      from="${rdvAllPersonFunctions}"
-                      optionKey="id"
-                      optionValue="value"
-                      value="${PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
+    <div class="ui la-filter segment la-clear-before">
+        <div class="field">
+            <div>
+                <label><g:message code="person.function.label" /></label>
+            </div>
+            <div>
+                <laser:select class="ui dropdown search"
+                              name="prsFunctionMultiSelect"
+                              multiple=""
+                              from="${rdvAllPersonFunctions}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
+            </div>
+        </div>
+        <div class="field">
+            <div>
+                <label><g:message code="person.position.label" /></label>
+            </div>
+            <div>
+                <laser:select class="ui dropdown search"
+                              name="prsPositionMultiSelect"
+                              multiple=""
+                              from="${rdvAllPersonPositions}"
+                              optionKey="id"
+                              optionValue="value"
+                              />
+            </div>
+        </div>
+        <br />
+        <div class="field">
+            <div class="ui checkbox">
+                <input type="checkbox" id="publicContacts" checked/>
+                <label for="publicContacts">${message(code:'email.fromPublicContacts')}</label>
+            </div>
+        <div class="ui checkbox">
+            <input type="checkbox" id="privateContacts" checked/>
+            <label for="privateContacts">${message(code:'email.fromPrivateAddressbook')}</label>
+        </div>
     </div>
-    <br>
-    <div>
-        <label><g:message code="person.position.label" /></label>&nbsp
-        <laser:select class="ui dropdown search"
-                      name="prsPositionMultiSelect"
-                      multiple=""
-                      from="${rdvAllPersonPositions}"
-                      optionKey="id"
-                      optionValue="value"
-                      />
     </div>
     <br />
-    <div class="ui checkbox">
-        <input type="checkbox" id="publicContacts" checked/>
-        <label for="publicContacts">${message(code:'email.fromPublicContacts')}</label>
-    </div>
-    <div class="ui checkbox">
-        <input type="checkbox" id="privateContacts" checked/>
-        <label for="privateContacts">${message(code:'email.fromPrivateAddressbook')}</label>
-    </div>
 
-    <br><br>
     <div class="ui form">
         <div class="field">
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
+<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService; de.laser.AuditConfig "%>
 <%@ page import="com.k_int.kbplus.SubscriptionController" %>
 <laser:serviceInjection />
 
@@ -22,7 +22,6 @@
                         <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription.id}">${sourceSubscription.dropdownNamingConvention()}</g:link></g:if>
                     </th>
                     <g:if test="${isConsortialSubs}">
-                                %{--th SHARE--}%
                                 <th class="center aligned">
                                     <g:message code="subscription.details.copyElementsIntoSubscription.share"/>
                                 </th>
@@ -49,8 +48,13 @@
                         </div>
                     </td>
                     <g:if test="${isConsortialSubs}">
-                        %{--SHARE--}%
                         <td class="center aligned">
+                            <div class="ui checkbox la-toggle-radio la-share">
+                                <input class="ui checkbox" type="checkbox" name="toggleShareStartDate" ${AuditConfig.getConfig(sourceSubscription,'startDate') ? 'checked': ''} />
+                            </div>
+                            <div class="ui checkbox la-toggle-radio la-share">
+                                <input class="ui checkbox" type="checkbox" name="toggleShareEndDate" ${AuditConfig.getConfig(sourceSubscription,'endDate') ? 'checked': ''} />
+                            </div>
                         </td>
                     </g:if>
                     %{--AKTIONEN:--}%
@@ -86,8 +90,10 @@
                         </div>
                     </td>
                     <g:if test="${isConsortialSubs}">
-                    %{--SHARE--}%
                         <td class="center aligned">
+                            <div class="ui checkbox la-toggle-radio la-share">
+                                <input class="ui checkbox" type="checkbox" name="toggleShareStatus" ${AuditConfig.getConfig(sourceSubscription,'status') ? 'checked': ''} />
+                            </div>
                         </td>
                     </g:if>
                 %{--AKTIONEN:--}%
@@ -124,9 +130,11 @@
                     </div>
                 </td>
                 <g:if test="${isConsortialSubs}">
-                        %{--SHARE--}%
-                        <td class="center aligned">
-                        </td>
+                    <td class="center aligned">
+                        <div class="ui checkbox la-toggle-radio la-share">
+                            <input class="ui checkbox" type="checkbox" name="toggleShareKind" value="${sourceSubscription.kind}" ${AuditConfig.getConfig(sourceSubscription,'kind') ? 'checked': ''} />
+                        </div>
+                    </td>
                 </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
@@ -160,9 +168,11 @@
                     </div>
                 </td>
                 <g:if test="${isConsortialSubs}">
-                        %{--SHARE--}%
-                        <td class="center aligned">
-                        </td>
+                    <td class="center aligned">
+                        <div class="ui checkbox la-toggle-radio la-share">
+                            <input class="ui checkbox" type="checkbox" name="toggleShareForm" ${AuditConfig.getConfig(sourceSubscription,'form') ? 'checked': ''} />
+                        </div>
+                    </td>
                 </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
@@ -196,9 +206,11 @@
                     </div>
                 </td>
                 <g:if test="${isConsortialSubs}">
-                        %{--SHARE--}%
-                        <td class="center aligned">
-                        </td>
+                    <td class="center aligned">
+                        <div class="ui checkbox la-toggle-radio la-share">
+                            <input class="ui checkbox" type="checkbox" name="toggleShareResource" ${AuditConfig.getConfig(sourceSubscription,'resource') ? 'checked': ''} />
+                        </div>
+                    </td>
                 </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
@@ -232,9 +244,11 @@
                     </div>
                 </td>
                 <g:if test="${isConsortialSubs}">
-                        %{--SHARE--}%
-                        <td class="center aligned">
-                        </td>
+                    <td class="center aligned">
+                        <div class="ui checkbox la-toggle-radio la-share">
+                            <input class="ui checkbox" type="checkbox" name="toggleSharePublicForApi" ${AuditConfig.getConfig(sourceSubscription,'isPublicForApi') ? 'checked': ''} />
+                        </div>
+                    </td>
                 </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
@@ -260,13 +274,15 @@
                 <td name="subscription.takePerpetualAccess.source">
                     <div>
                         <b><i class="flag outline icon"></i>${message(code: 'subscription.hasPerpetualAccess.label')}:</b>
-                        ${sourceSubscription.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        ${sourceSubscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                     </div>
                 </td>
                 <g:if test="${isConsortialSubs}">
-                        %{--SHARE--}%
-                        <td class="center aligned">
-                        </td>
+                    <td class="center aligned">
+                        <div class="ui checkbox la-toggle-radio la-share">
+                            <input class="ui checkbox" type="checkbox" name="toggleSharePerpetualAccess" ${AuditConfig.getConfig(sourceSubscription,'hasPerpetualAccess') ? 'checked': ''} />
+                        </div>
+                    </td>
                 </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
@@ -300,9 +316,13 @@
                     </div>
                 </td>
                 <g:if test="${isConsortialSubs}">
-                        %{--SHARE--}%
-                        <td class="center aligned">
-                        </td>
+                     <td class="center aligned">
+                         <g:if test="${sourceSubscription.owner}">
+                             <div class="ui checkbox la-toggle-radio la-share">
+                                 <input class="ui checkbox" type="checkbox" name="toggleShareOwner" ${AuditConfig.getConfig(sourceSubscription,'owner') ? 'checked': ''} />
+                             </div>
+                         </g:if>
+                     </td>
                 </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
@@ -353,7 +373,6 @@
                     </div>
                 </td>
                 <g:if test="${isConsortialSubs}">
-                        %{--SHARE--}%
                         <td class="center aligned">
                             <g:each in="${source_visibleOrgRelations}" var="source_role">
                                 <g:if test="${source_role.org}">
@@ -432,7 +451,6 @@
                     </g:each>
                 </td>
                 <g:if test="${isConsortialSubs}">
-                %{--SHARE--}%
                     <td class="center aligned">
                     </td>
                 </g:if>

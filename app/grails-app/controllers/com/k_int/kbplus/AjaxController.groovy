@@ -1515,9 +1515,10 @@ class AjaxController {
         else {
           def existingProps = owner.privateProperties.findAll {
             it.owner.id == owner.id &&
-            it.type.name == type.name // this sucks due lazy proxy problem
+            it.type.id == type.id // this sucks due lazy proxy problem
           }
           existingProps.removeAll { it.type.name != type.name } // dubious fix
+
 
           if (existingProps.size() == 0 || type.multipleOccurrence) {
             newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
@@ -2497,13 +2498,18 @@ class AjaxController {
                     }
                 } else {
                     def binding_properties = [:]
+
                     if (target_object."${params.name}" instanceof Double) {
                         params.value = Double.parseDouble(params.value)
                     }
                     if (target_object."${params.name}" instanceof Boolean) {
                         params.value = params.value?.equals("1")
                     }
-                    binding_properties[params.name] = params.value
+                    if(params.value instanceof String) {
+                        String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
+                        binding_properties[params.name] = value
+                    }
+                    else binding_properties[params.name] = params.value
                     bindData(target_object, binding_properties)
 
                     target_object.save(failOnError: true)

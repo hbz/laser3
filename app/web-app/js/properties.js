@@ -2,6 +2,10 @@
 c3po = {
     loadJsAfterAjax: function () {
         r2d2.go();
+        bb8.go();
+        tooltip.go();
+        a11yMenu.go();
+        a11yIcon.go();
     },
 
     PROP_SEARCH_NATIVE: 'PROP_SEARCH_NATIVE',

@@ -135,6 +135,7 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
+        result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
         result.contextOrg = contextService.getOrg()
         def verystarttime = exportService.printStart("subscription")
 
@@ -210,7 +211,6 @@ class SubscriptionController extends AbstractDebugController {
                 qry_params.endDate = date_filter
             }
         }
-
         if(params.mode != 'advanced') {
             base_qry += " and ie.status = :current "
             qry_params.current = TIPP_STATUS_CURRENT
@@ -245,6 +245,12 @@ class SubscriptionController extends AbstractDebugController {
             filterSet = true
         }
 
+        if (params.series_names && params.series_names != "" && params.list('series_names')) {
+            base_qry += " and lower(ie.tipp.title.seriesName) in (:series_names)"
+            qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
 
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -262,7 +268,20 @@ class SubscriptionController extends AbstractDebugController {
 
         Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
 
+        if(params.kbartPreselect) {
+            CommonsMultipartFile kbartFile = params.kbartPreselect
+            InputStream stream = kbartFile.getInputStream()
+            List issueEntitlements = entitlements.toList()
+
+            result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, issueEntitlements, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+
+            params.remove("kbartPreselect")
+            params.remove("uploadCoverageDates")
+            params.remove("uploadPriceInfo")
+        }
+
         result.subjects = subscriptionService.getSubjects(entitlements.collect {it.tipp.title.id})
+        result.seriesNames = subscriptionService.getSeriesNames(entitlements.collect {it.tipp.title.id})
 
         if(result.subscriptionInstance.ieGroups.size() > 0) {
             result.num_ies = subscriptionService.getIssueEntitlementsWithFilter(result.subscriptionInstance, [offset: 0, max: 5000]).size()
@@ -1380,6 +1399,7 @@ class SubscriptionController extends AbstractDebugController {
         List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
 
         result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
+        result.seriesNames = subscriptionService.getSeriesNames(allIEs.collect {it.tipp.title.id})
         result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
         result.countAllIEs = allIEs.size()
         result.countAllSourceIEs = sourceIEs.size()
@@ -3972,7 +3992,7 @@ class SubscriptionController extends AbstractDebugController {
         //def task_usage = task {
 
             // usage
-            def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.platform?.id.unique()
+            def suppliers = Platform.executeQuery('select distinct(plat.id) from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub',[sub:result.subscriptionInstance])
 
             if (suppliers) {
                 if (suppliers.size() > 1) {
@@ -3982,7 +4002,7 @@ class SubscriptionController extends AbstractDebugController {
                     def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
                     result.natStatSupplierId = platform?.stringValue ?: null
                     result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
-                    if (result.institutional_usage_identifier && result.natStatSupplierId) {
+                    if (result.institutional_usage_identifier) {
 
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
                         def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
@@ -4002,16 +4022,18 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                        result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
-                        result.usage = fsresult?.usage
-                        result.missingMonths = fsresult?.missingMonths
-                        result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
-                        result.x_axis_labels = fsresult?.x_axis_labels
-                        result.y_axis_labels = fsresult?.y_axis_labels
-                        result.lusage = fsLicenseResult?.usage
-                        result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
-                        result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
-                        result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+                        if(result.statsWibid && result.natStatSupplierId) {
+                            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+                            result.usage = fsresult?.usage
+                            result.missingMonths = fsresult?.missingMonths
+                            result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
+                            result.x_axis_labels = fsresult?.x_axis_labels
+                            result.y_axis_labels = fsresult?.y_axis_labels
+                            result.lusage = fsLicenseResult?.usage
+                            result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
+                            result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
+                            result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+                        }
                     }
                 }
             }
@@ -4299,6 +4321,7 @@ class SubscriptionController extends AbstractDebugController {
                                     InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
                                     newIssueEntitlement.subscription = newSubscription
                                     newIssueEntitlement.coverages = null
+                                    newIssueEntitlement.ieGroups = null
 
                                     if(newIssueEntitlement.save(flush: true)){
                                         ie.properties.coverages.each{ coverage ->
@@ -4543,6 +4566,7 @@ class SubscriptionController extends AbstractDebugController {
                                         InvokerHelper.setProperties(newIssueEntitlement, properties)
                                         newIssueEntitlement.subscription = newSub
                                         newIssueEntitlement.coverages = null
+                                        newIssueEntitlement.ieGroups = null
 
                                         if(newIssueEntitlement.save(flush: true)){
                                             ie.properties.coverages.each{ coverage ->
@@ -4553,6 +4577,7 @@ class SubscriptionController extends AbstractDebugController {
                                                 newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                                                 newIssueEntitlementCoverage.save(flush: true)
                                             }
+
                                         }
                                     }
                                 }
@@ -4658,11 +4683,11 @@ class SubscriptionController extends AbstractDebugController {
             def sub_endDate = params.subscription.end_date ? parseDate(params.subscription.end_date, possible_date_formats) : null
             def sub_status = params.subStatus ?: RDStore.SUBSCRIPTION_NO_STATUS
             def sub_type = params.subType
-            def sub_kind = params.subKind ?: null
+            /*def sub_kind = params.subKind ?: null
             def sub_form = params.subForm ?: null
             def sub_resource = params.subResource ?: null
             def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
-            def sub_isPublicForApi = params.subIsPublicForApi == '1'
+            def sub_isPublicForApi = params.subIsPublicForApi == '1'*/
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
@@ -4675,16 +4700,16 @@ class SubscriptionController extends AbstractDebugController {
                     startDate: sub_startDate,
                     endDate: sub_endDate,
                     manualCancellationDate: manualCancellationDate,
-                    identifier: java.util.UUID.randomUUID().toString(),
-                    isSlaved: baseSub?.isSlaved,
+                    identifier: UUID.randomUUID().toString(),
+                    isSlaved: baseSub.isSlaved,
                     type: sub_type,
-                    kind: sub_kind,
                     status: sub_status,
+                    /*kind: sub_kind,
                     resource: sub_resource,
-                    form: sub_form,
+                    form: sub_form,*/
                     administrative: baseSub.administrative,
-                    hasPerpetualAccess: sub_hasPerpetualAccess,
-                    isPublicForApi: sub_isPublicForApi
+                    /*hasPerpetualAccess: sub_hasPerpetualAccess,
+                    isPublicForApi: sub_isPublicForApi*/
             )
 
             if (!newSub.save(flush: true)) {
@@ -4701,12 +4726,13 @@ class SubscriptionController extends AbstractDebugController {
                         //println(auditField)
                         AuditConfig.addConfig(newSub, auditField)
                     }
+
                 }
                 //Copy References
                 //OrgRole
                 baseSub.orgRelations?.each { or ->
 
-                    if ((or.org?.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
+                    if ((or.org.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
@@ -4720,7 +4746,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 result.newSub = newSub
 
-                LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
+                //LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
 
                 if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
                 result.isRenewSub = true
@@ -4830,13 +4856,13 @@ class SubscriptionController extends AbstractDebugController {
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
-        List<String> subTypSubscriberVisible = [SUBSCRIPTION_TYPE_CONSORTIAL,
-                                                SUBSCRIPTION_TYPE_ADMINISTRATIVE]
+        List<String> subTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
+                                                CalculatedType.TYPE_ADMINISTRATIVE]
         result.isSubscriberVisible =
                 result.sourceSubscription &&
                 result.targetSubscription &&
-                subTypSubscriberVisible.contains(result.sourceSubscription.type) &&
-                subTypSubscriberVisible.contains(result.targetSubscription.type)
+                subTypSubscriberVisible.contains(result.sourceSubscription.getCalculatedType()) &&
+                subTypSubscriberVisible.contains(result.targetSubscription.getCalculatedType())
 
         if (! result.isSubscriberVisible) {
             flash.message += message(code: 'subscription.info.subscriberNotAvailable')
@@ -4986,6 +5012,14 @@ class SubscriptionController extends AbstractDebugController {
             subscriptionService.copyDates(baseSub, newSub, flash)
             //isTargetSubChanged = true
         }
+        if(params.toggleShareStartDate)
+            AuditConfig.addConfig(newSub,'startDate')
+        else if(params.toggleShareStartDate == false && AuditConfig.getConfig(newSub, 'startDate'))
+            AuditConfig.removeConfig(newSub, 'startDate')
+        if(params.toggleShareEndDate)
+            AuditConfig.addConfig(newSub,'endDate')
+        else if(params.toggleShareEndDate == false && AuditConfig.getConfig(newSub, 'endDate'))
+            AuditConfig.removeConfig(newSub, 'endDate')
 
         if (params.subscription?.deleteStatus && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteStatus(newSub, flash)
@@ -4994,6 +5028,10 @@ class SubscriptionController extends AbstractDebugController {
             subscriptionService.copyStatus(baseSub, newSub, flash)
             //isTargetSubChanged = true
         }
+        if(params.toggleShareStatus)
+            AuditConfig.addConfig(newSub,'status')
+        else if(!params.toggleShareStatus && AuditConfig.getConfig(newSub, 'status'))
+            AuditConfig.removeConfig(newSub, 'status')
 
         if (params.subscription?.deleteKind && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteKind(newSub, flash)
@@ -5002,6 +5040,10 @@ class SubscriptionController extends AbstractDebugController {
             subscriptionService.copyKind(baseSub, newSub, flash)
             //isTargetSubChanged = true
         }
+        if(params.toggleShareKind)
+            AuditConfig.addConfig(newSub,'kind')
+        else if(!params.toggleShareKind && AuditConfig.getConfig(newSub, 'kind'))
+            AuditConfig.removeConfig(newSub, 'kind')
 
         if (params.subscription?.deleteForm && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteForm(newSub, flash)
@@ -5010,6 +5052,10 @@ class SubscriptionController extends AbstractDebugController {
             subscriptionService.copyForm(baseSub, newSub, flash)
             //isTargetSubChanged = true
         }
+        if(params.toggleShareForm)
+            AuditConfig.addConfig(newSub,'form')
+        else if(!params.toggleShareForm && AuditConfig.getConfig(newSub, 'form'))
+            AuditConfig.removeConfig(newSub, 'form')
 
         if (params.subscription?.deleteResource && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteResource(newSub, flash)
@@ -5018,6 +5064,10 @@ class SubscriptionController extends AbstractDebugController {
             subscriptionService.copyResource(baseSub, newSub, flash)
             //isTargetSubChanged = true
         }
+        if(params.toggleShareResource)
+            AuditConfig.addConfig(newSub,'resource')
+        else if(!params.toggleShareResource && AuditConfig.getConfig(newSub, 'resource'))
+            AuditConfig.removeConfig(newSub, 'resource')
 
         if (params.subscription?.deletePublicForApi && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deletePublicForApi(newSub, flash)
@@ -5026,6 +5076,10 @@ class SubscriptionController extends AbstractDebugController {
             subscriptionService.copyPublicForApi(baseSub, newSub, flash)
             //isTargetSubChanged = true
         }
+        if(params.toggleSharePublicForApi)
+            AuditConfig.addConfig(newSub,'isPublicForApi')
+        else if(!params.toggleSharePublicForApi && AuditConfig.getConfig(newSub, 'isPublicForApi'))
+            AuditConfig.removeConfig(newSub, 'isPublicForApi')
 
         if (params.subscription?.deletePerpetualAccess && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deletePerpetualAccess(newSub, flash)
@@ -5034,6 +5088,10 @@ class SubscriptionController extends AbstractDebugController {
             subscriptionService.copyPerpetualAccess(baseSub, newSub, flash)
             //isTargetSubChanged = true
         }
+        if(params.toggleSharePerpetualAccess)
+            AuditConfig.addConfig(newSub,'hasPerpetualAccess')
+        else if(!params.toggleSharePerpetualAccess && AuditConfig.getConfig(newSub, 'hasPerpetualAccess'))
+            AuditConfig.removeConfig(newSub, 'hasPerpetualAccess')
 
         if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
             if(!subscriptionService.setOrgLicRole(newSub, null)) {
@@ -5048,6 +5106,10 @@ class SubscriptionController extends AbstractDebugController {
             }
             //isTargetSubChanged = true
         }
+        if(params.toggleShareOwner)
+            AuditConfig.addConfig(newSub,'owner')
+        else if(!params.toggleShareOwner && AuditConfig.getConfig(newSub, 'owner'))
+            AuditConfig.removeConfig(newSub, 'owner')
 
         if (params.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
             List<OrgRole> toDeleteOrgRelations = params.list('subscription.deleteOrgRelations').collect { genericOIDService.resolveOID(it) }
@@ -5063,14 +5125,12 @@ class SubscriptionController extends AbstractDebugController {
                 genericOIDService.resolveOID(it)
             }
 
-            //newSub = newSub.refresh()
+            newSub = newSub.refresh()
             newSub.orgRelations.each {newSubOrgRole ->
 
-                if(newSubOrgRole.org in toggleShareOrgRoles.org)
-                {
+                if(newSubOrgRole.org in toggleShareOrgRoles.org) {
                     newSubOrgRole.isShared = true
                     newSubOrgRole.save(flush:true)
-
                     ((ShareSupport) newSub).updateShare(newSubOrgRole)
                 }
             }
@@ -5237,12 +5297,10 @@ class SubscriptionController extends AbstractDebugController {
         if (params.targetSubscriptionId) {
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
-
         if (params.subscription?.copySubscriber && isBothSubscriptionsSet(baseSub, newSub)) {
             List<Subscription> toCopySubs = params.list('subscription.copySubscriber').collect { genericOIDService.resolveOID(it) }
             subscriptionService.copySubscriber(toCopySubs, newSub, flash)
         }
-        globalSourceSyncService.cleanUpGorm()
 
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
@@ -5647,6 +5705,7 @@ class SubscriptionController extends AbstractDebugController {
                             IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                             InvokerHelper.setProperties(newIssueEntitlement, properties)
                             newIssueEntitlement.subscription = newSubscriptionInstance
+                            newIssueEntitlement.ieGroups = null
                             newIssueEntitlement.coverages = null
 
                             if(newIssueEntitlement.save()){
@@ -5709,7 +5768,7 @@ class SubscriptionController extends AbstractDebugController {
         candidates.eachWithIndex{ entry, int s ->
             if(params["take${s}"]) {
                 //create object itself
-                Subscription sub = new Subscription(name: entry.name, 
+                Subscription sub = new Subscription(name: entry.name,
                         status: genericOIDService.resolveOID(entry.status),
                         type: genericOIDService.resolveOID(entry.type),
                         form: genericOIDService.resolveOID(entry.form),
@@ -6319,4 +6378,6 @@ class SubscriptionController extends AbstractDebugController {
         }
         parsed_date
     }
+
+
 }

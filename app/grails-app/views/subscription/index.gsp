@@ -35,6 +35,16 @@
     <g:render template="message"/>
 </g:if>
 
+<g:if test="${enrichmentProcess}">
+    <div class="ui positive message">
+    <i class="close icon"></i>
+    <div class="header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/> </div>
+    <p>
+        <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess" args="[enrichmentProcess.issueEntitlements, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
+    </p>
+    </div>
+</g:if>
+
 <g:if test="${deletedSPs}">
     <div class="ui exclamation icon negative message">
         <i class="exclamation icon"></i>
@@ -74,56 +84,62 @@
         </div>
     </div><!--.row-->
 
-    <semui:msg class="warning" header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
-    <g:form class="ui form" controller="subscription" action="addEntitlements"
-            params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscriptionInstance.id]}"
-            method="post" enctype="multipart/form-data">
-        <div class="three fields">
-            <div class="field">
-                <div class="ui fluid action input">
-                    <input type="text" readonly="readonly"
-                           placeholder="${message(code: 'template.addDocument.selectFile')}">
-                    <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
-                           style="display: none;">
+    <g:if test="${issueEntitlementEnrichment}">
+        <div class="row">
+            <div class="column">
+                <div class="ui la-filter segment">
+                <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
 
-                    <div class="ui icon button">
-                        <i class="attach icon"></i>
+                <semui:msg class="warning" header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
+                <g:form class="ui form" controller="subscription" action="index"
+                        params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscriptionInstance.id]}"
+                        method="post" enctype="multipart/form-data">
+                    <div class="three fields">
+                        <div class="field">
+                            <div class="ui fluid action input">
+                                <input type="text" readonly="readonly"
+                                       placeholder="${message(code: 'template.addDocument.selectFile')}">
+                                <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
+                                       style="display: none;">
+
+                                <div class="ui icon button">
+                                    <i class="attach icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui checkbox toggle">
+                                <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
+                                <label><g:message code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
+                            </div>
+                            <div class="ui checkbox toggle">
+                                <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
+                                <label><g:message code="subscription.details.issueEntitlementEnrichment.uploadPriceInfo.label"/></label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <input type="submit"
+                                   value="${message(code: 'subscription.details.addEntitlements.preselect')}"
+                                   class="fluid ui button"/>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </g:form>
+                <r:script>
+                    $('.action .icon.button').click(function () {
+                        $(this).parent('.action').find('input:file').click();
+                    });
 
-            <div class="field">
-                <div class="ui checkbox toggle">
-                    <g:checkBox name="preselectValues" value="${preselectValues}"/>
-                    <label><g:message code="subscription.details.addEntitlements.preselectValues"/></label>
-                </div>
-                <div class="ui checkbox toggle">
-                    <g:checkBox name="preselectCoverageDates" value="${preselectCoverageDates}"/>
-                    <label><g:message code="subscription.details.addEntitlements.preselectCoverageDates"/></label>
-                </div>
-                <div class="ui checkbox toggle">
-                    <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
-                    <label><g:message code="subscription.details.addEntitlements.uploadPriceInfo"/></label>
-                </div>
-            </div>
-
-            <div class="field">
-                <input type="submit"
-                       value="${message(code: 'subscription.details.addEntitlements.preselect')}"
-                       class="fluid ui button"/>
+                    $('input:file', '.ui.action.input').on('change', function (e) {
+                        var name = e.target.files[0].name;
+                        $('input:text', $(e.target).parent()).val(name);
+                    });
+                </r:script>
             </div>
         </div>
-    </g:form>
-    <r:script>
-        $('.action .icon.button').click(function () {
-            $(this).parent('.action').find('input:file').click();
-        });
-
-        $('input:file', '.ui.action.input').on('change', function (e) {
-            var name = e.target.files[0].name;
-            $('input:text', $(e.target).parent()).val(name);
-        });
-    </r:script>
+        </div>
+    </g:if>
 
     <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
             <div class="ui top attached tabular menu">
@@ -159,7 +175,7 @@
 
                     <div class="three fields">
                         <div class="field">
-                            <label for="filter">${message(code: 'default.filter.label')}</label>
+                            <label for="filter">${message(code: 'default.search.text')}</label>
                             <input name="filter" id="filter" value="${params.filter}"/>
                         </div>
 
@@ -175,14 +191,24 @@
                         <g:if test="${params.mode != 'advanced'}">
                             <div class="field">
                                 <semui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
-                                                  value="${params.asAt}"/>
+                                                  value="${params.asAt}" placeholder="subscription.details.asAt.placeholder"/>
                             </div>
                         </g:if>
                     </div>
                     <div class="three fields">
                         <div class="field">
-                                                <label for="seriesNames">${message(code: 'titleInstance.seriesName.label')}</label>
-                            <input name="seriesNames" id="seriesNames" value="${params.series_names}"/>
+                            <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
+
+                            <select name="series_names" id="series_names" multiple="" class="ui search selection dropdown">
+                                <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                                <g:each in="${seriesNames}" var="seriesName">
+                                    <option <%=(params.list('series_names').contains(seriesName)) ? 'selected="selected"' : ''%>
+                                            value="${seriesName}">
+                                        ${seriesName}
+                                    </option>
+                                </g:each>
+                            </select>
                         </div>
 
                         <div class="field">
@@ -442,7 +468,8 @@
                                     <g:elseif test="${editable}">
                                         <g:link action="addEmptyPriceItem" class="ui icon positive button"
                                                 params="${[ieid: ie.id, id: subscriptionInstance.id]}">
-                                            <i class="money icon"></i>
+                                            <i class="money icon la-popup-tooltip la-delay"
+                                               data-content="${message(code: 'subscription.details.addEmptyPriceItem.info')}"></i>
                                         </g:link>
                                     </g:elseif>
                                 </td>
@@ -450,21 +477,24 @@
                                     <td>
                                         <div class="la-icon-list">
                                         <g:each in="${ie.ieGroups.sort{it.ieGroup.name}}" var="titleGroup">
-                                            <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" params="[titleGroup: titleGroup.ieGroup.id]" class="item">
+                                            <div class="item">
                                                 <i class="grey icon object group la-popup-tooltip la-delay" data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
                                                 <div class="content">
-                                                ${titleGroup.ieGroup.name}
+                                                <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" params="[titleGroup: titleGroup.ieGroup.id]" >${titleGroup.ieGroup.name}</g:link>
                                                 </div>
-                                            </g:link>
+                                            </div>
                                         </g:each>
                                         </div>
-                                        <div class="ui grid">
-                                            <div class="right aligned wide column">
-                                        <g:link action="editEntitlementGroupItem" params="${[cmd:'edit', ie:ie.id, id: subscriptionInstance.id]}" class="ui icon button trigger-modal">
-                                            <i class="object group icon"></i>
-                                        </g:link>
+                                        <g:if test="${editable}">
+                                            <div class="ui grid">
+                                                <div class="right aligned wide column">
+                                                    <g:link action="editEntitlementGroupItem" params="${[cmd:'edit', ie:ie.id, id: subscriptionInstance.id]}" class="ui icon button trigger-modal"
+                                                            data-tooltip="${message(code:'subscription.details.ieGroups.edit')}">
+                                                        <i class="object group icon"></i>
+                                                    </g:link>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </g:if>
 
                                     </td>
                                 </g:if>

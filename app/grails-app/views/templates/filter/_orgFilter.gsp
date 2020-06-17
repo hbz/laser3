@@ -140,26 +140,37 @@
                 />
             </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('subscription')}">
+                <div class="field">
+                    <label for="subscription">${message(code:'subscription')}</label>
+                    <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${subscriptions}" var="sub">
+                            <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
             <g:if test="${field.equalsIgnoreCase('subRunTimeMultiYear')}">
-            <div class="field">
-                <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
-                <div class="inline fields la-filter-inline">
-                    <div class="inline field">
-                        <div class="ui checkbox">
-                            <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
-                            <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
-                                   tabindex="0">
+                <div class="field">
+                    <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
+                    <div class="inline fields la-filter-inline">
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
+                                <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
                         </div>
-                    </div>
-                    <div class="inline field">
-                        <div class="ui checkbox">
-                            <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
-                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
-                                   tabindex="0">
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
+                                <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             </g:if>
 
 

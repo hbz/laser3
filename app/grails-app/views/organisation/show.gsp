@@ -452,6 +452,7 @@
                                         <% com.k_int.kbplus.Person prs = PersonRole.get(pr.id).prs%>
                                         <g:render template="/templates/cpa/person_full_details" model="${[
                                                 person              : prs,
+                                                personRole          : pr,
                                                 personContext       : orgInstance,
                                                 tmplShowDeleteButton    : true,
                                                 tmplShowAddPersonRoles  : true,
@@ -642,7 +643,7 @@
          $("*[id^=regions_]").hide();
          if(newValue){
              var id = newValue.split(':')[1]
-             $("#regions_" + id).editable('setValue', null);
+             // $("#regions_" + id).editable('setValue', null);
              $("#regions_" + id).show();
          }
     };

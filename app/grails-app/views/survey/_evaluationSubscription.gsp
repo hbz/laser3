@@ -207,9 +207,7 @@
                     </td>
                 </g:each>
                 <td>
-                    <g:if test="${resultPropertyParticipation}">
-                        <semui:xEditable owner="${resultPropertyParticipation}" type="text" field="ownerComment"/>
-                    </g:if>
+                        <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
                 </td>
             </tr>
         </g:each>
@@ -390,9 +388,7 @@
 
                 </g:each>
                 <td>
-                    <g:if test="${resultPropertyParticipation}">
-                        <semui:xEditable owner="${resultPropertyParticipation}" type="text" field="ownerComment"/>
-                    </g:if>
+                        <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
                 </td>
             </tr>
         </g:each>

@@ -29,7 +29,7 @@
         <td class="center aligned">
             1
         </td>
-        <th scope="row" class="la-no-uppercase">
+        <th scope="row" class="la-th-column">
             <a href="/laser/subscription/show/15963" class="la-main-object">
 
                 Academic Search Complete / ASC
@@ -77,7 +77,7 @@
         <td class="center aligned">
             2
         </td>
-        <th scope="row" class="la-no-uppercase">
+        <th scope="row" class="la-th-column">
             <a href="/laser/subscription/show/9545" class="la-main-object">
 
                 Academic Search Premier / ASP
@@ -133,7 +133,7 @@
         <td class="center aligned">
             3
         </td>
-        <th scope="row" class="la-no-uppercase">
+        <th scope="row" class="la-th-column">
             <a href="/laser/subscription/show/11635" class="la-main-object">
 
                 Academic Search Ultimate / ASU
@@ -189,7 +189,7 @@
         <td class="center aligned">
             4
         </td>
-        <th scope="row" class="la-no-uppercase">
+        <th scope="row" class="la-th-column">
             <a href="/laser/subscription/show/11636" class="la-main-object">
 
                 Allgemeines K&uuml;nstlerlexikon Online / AKL
@@ -245,7 +245,7 @@
         <td class="center aligned">
             5
         </td>
-        <th scope="row" class="la-no-uppercase">
+        <th scope="row" class="la-th-column">
             <a href="/laser/subscription/show/11605" class="la-main-object">
 
                 All You Can Read
@@ -301,7 +301,7 @@
         <td class="center aligned">
             6
         </td>
-        <th scope="row" class="la-no-uppercase">
+        <th scope="row" class="la-th-column">
             <a href="/laser/subscription/show/12686" class="la-main-object">
 
                 Ann&eacute;e philologique, L&acute; / Aph
@@ -357,7 +357,7 @@
         <td class="center aligned">
             7
         </td>
-        <th scope="row" class="la-no-uppercase">
+        <th scope="row" class="la-th-column">
             <a href="/laser/subscription/show/9798" class="la-main-object">
 
                 Annual Bibliography of English Language / ABELL
@@ -413,7 +413,7 @@
         <td class="center aligned">
             8
         </td>
-        <th scope="row" class="la-no-uppercase">
+        <th scope="row" class="la-th-column">
             <a href="/laser/subscription/show/11936" class="la-main-object">
 
                 Art Full Text
@@ -469,7 +469,7 @@
         <td class="center aligned">
             9
         </td>
-        <th scope="row" class="la-no-uppercase">
+        <th scope="row" class="la-th-column">
             <a href="/laser/subscription/show/11659" class="la-main-object">
 
                 Beck Hochschulmodul
@@ -525,7 +525,7 @@
         <td class="center aligned">
             10
         </td>
-        <th scope="row" class="la-no-uppercase">
+        <th scope="row" class="la-th-column">
             <a href="/laser/subscription/show/15385" class="la-main-object">
 
                 Bibliotheca Teubneriana Latina / BTL

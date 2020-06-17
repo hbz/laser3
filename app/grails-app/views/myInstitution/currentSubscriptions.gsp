@@ -108,18 +108,10 @@
             </div>
             */ %>
 
-            <!-- TMP -->
-            <%
-                def fakeList = []
-                fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
-                //fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
-                fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
-            %>
-
             <div class="field fieldcontain">
                 <label>${message(code: 'default.status.label')}</label>
                 <laser:select class="ui dropdown" name="status"
-                              from="${ fakeList }"
+                              from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                               optionKey="id"
                               optionValue="value"
                               value="${params.status}"
@@ -332,14 +324,14 @@
 
             <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
                 <th scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top right">
                         <i class="users large icon"></i>
-                    </span>
+                    </a>
                 </th>
                 <th scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                    <a href="#"  class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top right">
                         <i class="money bill large icon"></i>
-                    </span>
+                    </a>
                 </th>
             </g:if>
 

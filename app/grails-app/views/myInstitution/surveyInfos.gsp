@@ -73,7 +73,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 </div>
 --%>
 
-<g:if test="${!editable && surveyResults.finishDate.contains(null)}">
+<g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 

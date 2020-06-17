@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.Person" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -29,19 +29,56 @@
 <g:render template="../templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="members" controller="license" params="${[id:params.id]}" method="get" class="ui form">
-        <%
-            List<List<String>> tmplConfigShow
-            if(accessService.checkPerm("ORG_CONSORTIUM"))
-                tmplConfigShow = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
-            else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                tmplConfigShow = [['name', 'identifier'], ['property']]
-        %>
-        <g:render template="/templates/filter/orgFilter"
-                  model="[
-                          tmplConfigShow: tmplConfigShow,
-                          tmplConfigFormFilter: true,
-                          useNewLayouter: true
-                  ]"/>
+        <div class="three fields">
+            <div class="field">
+                <label for="subscription">${message(code:'subscription')}</label>
+                <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
+                    <option value="">${message(code:'default.select.choose.label')}</option>
+                    <g:each in="${subscriptionsForFilter}" var="sub">
+                        <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
+                    </g:each>
+                </select>
+            </div>
+            <div class="field fieldcontain">
+                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+            </div>
+
+            <div class="field fieldcontain">
+                <label>${message(code: 'default.status.label')}</label>
+                <laser:select class="ui dropdown" name="status"
+                              from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.status}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
+                <div class="inline fields la-filter-inline">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
+                            <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
+                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                <input name="filterSet" type="hidden" value="true">
+                <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button"/>
+            </div>
+        </div>
     </g:form>
 </semui:filter>
 
@@ -49,8 +86,7 @@
     <thead>
         <tr>
             <th>${message(code:'sidewide.number')}</th>
-            <th>${message(code:'default.sortname.label')}</th>
-            <th>${message(code:'subscriptionDetails.members.members')}</th>
+            <th>${message(code:'license.member')}</th>
             <th class="la-no-uppercase">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
@@ -66,15 +102,13 @@
                 </span>
             </th>
             <th>${message(code: 'license')}</th>
-            <%-- for owned subscriptions!!!! --%>
-            <th>${message(code: 'default.subscription.label')} (${message(code:'default.status.label')})</th>
+            <th>${message(code: 'license.subs.count')}</th>
         </tr>
     </thead>
     <tbody>
 
         <g:each in="${validMemberLicenses}" status="i" var="row">
             <g:set var="lic" value="${row.license}"/>
-            <g:set var="subscr" value="${row.org}"/>
             <%
                 LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(License.class.name, lic.id)
                 License navPrevLicense = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
@@ -82,43 +116,7 @@
             %>
             <tr>
                 <td>${i + 1}</td>
-                <td>${subscr.sortname}</td>
-                <td>
-                    <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                    <g:if test="${lic.isSlaved}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'license.details.isSlaved.tooltip')}">
-                            <i class="thumbtack blue icon"></i>
-                        </span>
-                    </g:if>
-
-                    <div class="ui list">
-                        <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
-                            <div class="item">
-                                <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
-                                (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')})
-                            </div>
-                        </g:each>
-                        <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', institution)}" var="gcp">
-                            <div class="item">
-                                <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
-                                (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
-                            </div>
-                        </g:each>
-                        <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, license, 'Specific license editor')}" var="sle">
-                            <div class="item">
-                                <g:link controller="person" action="show" id="${sle.id}">${sle}</g:link>
-                                (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')})
-                            </div>
-                        </g:each>
-                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, license, 'Specific license editor', institution)}" var="sle">
-                            <div class="item">
-                                <g:link controller="person" action="show" id="${sle.id}">${sle}</g:link>
-                                (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
-                            </div>
-                        </g:each>
-                    </div>
-                </td>
+                <td>${lic.reference}</td>
                 <td class="center aligned">
                     <g:if test="${navPrevLicense}">
                         <g:link controller="license" action="show" id="${navPrevLicense.id}"><i class="arrow left icon"></i></g:link>
@@ -135,21 +133,7 @@
                     <g:link controller="license" action="show" id="${lic.id}" class="ui icon button"><i class="write icon"></i></g:link>
                 </td>
                 <td>
-                    <g:each in="${row.subs}" var="sub">
-                        <g:link controller="subscription" action="show" id="${sub.id}">${sub.name} (${sub.status.getI10n("value")})</g:link>
-                        <g:if test="${sub.isMultiYear}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                <i class="map orange icon"></i>
-                            </span>
-                        </g:if>
-                        <g:if test="${editable}">
-                            <g:link class="ui icon negative button" controller="license" action="unlinkSubscription" params="${[subscription:sub.id,license:lic.id]}">
-                                <i class="unlink alternate icon"></i>
-                            </g:link>
-                        </g:if>
-                        <br>
-                    </g:each>
+                    <g:link action="linkedSubs" id="${lic.id}"><semui:totalNumber total="${row.subs ?: 0}"/></g:link>
                 </td>
             </tr>
         </g:each>

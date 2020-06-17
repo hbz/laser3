@@ -236,12 +236,16 @@ class DeletionService {
         List ies            = IssueEntitlement.where { subscription == sub }.findAll()
                             // = new ArrayList(sub.issueEntitlements)
 
-        List costs          = new ArrayList(sub.costItems)
+        //TODO is a temporary solution for ERMS-2535 and is subject of refactoring!
+        List nonDeletedCosts = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus != RDStore.COST_ITEM_DELETED })
+        List deletedCosts   = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus == RDStore.COST_ITEM_DELETED })
         List oapl           = new ArrayList(sub.packages?.oapls)
         List privateProps   = new ArrayList(sub.privateProperties)
         List customProps    = new ArrayList(sub.customProperties)
-        List surveys        = SurveyConfig.findAllBySubscription(sub)
 
+        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriber(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
+
+        SurveyInfo surveyInfo
         // collecting informations
 
         result.info = []
@@ -261,11 +265,13 @@ class DeletionService {
         result.info << ['Pakete', subPkgs]
         result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['IssueEntitlements', ies]
-        result.info << ['Kostenposten', costs, FLAG_BLOCKER]
+        //TODO is a temporary solution for ERMS-2535 and is subject of refactoring!
+        result.info << ['nicht gelöschte Kostenposten', nonDeletedCosts, FLAG_BLOCKER]
+        result.info << ['gelöschte Kostenposten', deletedCosts]
         result.info << ['OrgAccessPointLink', oapl]
         result.info << ['Private Merkmale', sub.privateProperties]
         result.info << ['Allgemeine Merkmale', sub.customProperties]
-        result.info << ['Umfragen', surveys, FLAG_WARNING]
+        result.info << ['Umfragen', surveys, sub.instanceOf ? FLAG_WARNING : FLAG_BLOCKER]
 
         // checking constraints and/or processing
 
@@ -379,6 +385,13 @@ class DeletionService {
                         tmp.delete()
                     }
 
+                    //cost items
+                    sub.costItems.clear()
+                    deletedCosts.each { tmp ->
+                        tmp.sub = null
+                        tmp.save()
+                    }
+
                     // private properties
                     sub.privateProperties.clear()
                     privateProps.each { tmp -> tmp.delete() }
@@ -394,12 +407,52 @@ class DeletionService {
                     // ----- keep foreign object, change state
                     // ----- keep foreign object, change state
 
-                    costs.each{ tmp ->
+                    nonDeletedCosts.each{ tmp ->
                         tmp.costItemStatus = RefdataValue.getByValueAndCategory('Deleted', RDConstants.COST_ITEM_STATUS)
                         tmp.sub = null
                         tmp.subPkg = null
                         tmp.issueEntitlement = null
                         tmp.save()
+                    }
+
+                    surveys.each{ tmp ->
+
+                        if(tmp instanceof SurveyConfig){
+
+                            SurveyResult.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyConfigProperties.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyOrg.findAllBySurveyConfig(tmp).each { tmp2 ->
+
+                                CostItem.findAllBySurveyOrg(tmp2).each { tmp3 -> tmp3.delete() }
+                                tmp2.delete()
+                            }
+
+                            DocContext.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            Task.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            if(tmp.surveyInfo.surveyConfigs.size() == 1){
+                                surveyInfo = tmp.surveyInfo
+                            }
+
+                            tmp.delete()
+                        }
+
+                        if(tmp instanceof SurveyOrg){
+
+                            CostItem.findAllBySurveyOrg(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
+                            tmp.delete()
+
+                        }
+                    }
+
+                    if (surveyInfo){
+                        surveyInfo.delete()
                     }
 
                     sub.delete()
