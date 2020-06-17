@@ -230,7 +230,7 @@ class ControlledListService {
             filterParams.ctx = ctx
             licFilter += " and l != :ctx "
         }
-        if(params.filterMembers) {
+        if(Boolean.valueOf(params.filterMembers)) {
             filterParams.orgRoles.removeAll([RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS])
         }
         result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
