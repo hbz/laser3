@@ -366,7 +366,7 @@ $.fn.dropdown = function(parameters) {
                 .addClass(className.selection)
                 .addClass(className.dropdown)
                   .attr('role', 'combobox') //a11y
-                  .attr('aria-haspopup','listbox') //a11y
+                  .attr('aria-haspopup','listBox') //a11y
                   .attr('aria-owns','listBox') //a11y
                   .attr('id','test') //a11y
 
