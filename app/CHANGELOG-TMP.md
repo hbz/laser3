@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2594    17.06.2020  rc1.4       David   Feature     SchemaSpy automatisiert ausführen
+ 
 2531    26.05.2020  rc1.4       David   Bug         Aufgaben nicht aufrufbar / Schaltfläche "Neue Aufgabe" auf Dashboard tot 
 
 2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Refdatas
