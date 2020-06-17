@@ -196,7 +196,7 @@ class AccessPointController extends AbstractDebugController {
             return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
         } else {
             if (!params.accessMethod) {
-                params.accessMethod = RDStore.ACCESS_POINT_TYPE_IP
+                params.accessMethod = RDStore.ACCESS_POINT_TYPE_IP.value
             }
             params.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE);
             return params
