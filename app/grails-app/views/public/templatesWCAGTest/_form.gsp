@@ -94,6 +94,16 @@
         </select>
     </div>
 
+    <select  id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">>
+        <option value="1116">Allianzlizenz</option>
+        <option value="1214">Deal-Lizenz</option>
+        <option value="1213">FID-Lizenz</option>
+        <option value="1118">Konsortiallizenz</option>
+        <option value="1215">Lokale Lizenz</option>
+        <option value="1117">Nationallizenz</option>
+    </select>
+</div>
+
 
 
 
