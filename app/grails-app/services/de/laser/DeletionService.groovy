@@ -271,7 +271,7 @@ class DeletionService {
         result.info << ['OrgAccessPointLink', oapl]
         result.info << ['Private Merkmale', sub.privateProperties]
         result.info << ['Allgemeine Merkmale', sub.customProperties]
-        result.info << ['Umfragen', surveys, FLAG_WARNING]
+        result.info << ['Umfragen', surveys, sub.instanceOf ? FLAG_WARNING : FLAG_BLOCKER]
 
         // checking constraints and/or processing
 
