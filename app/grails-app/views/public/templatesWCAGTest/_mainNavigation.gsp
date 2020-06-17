@@ -5,7 +5,7 @@
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </a>
 
-            <span class="ui dropdown item" >
+            <div class="ui dropdown item" >
                 <span role="menuitem" aria-haspopup="true">Alle</span>
 
                 <i aria-hidden="true" class="dropdown icon"></i>
