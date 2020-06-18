@@ -5,7 +5,8 @@
             <input type="hidden" name="id" value="${addressInstance.id}"/>
         </g:if>
         <input type="hidden" name="redirect" value="true"/>
-        <input id="type_${modalId}" name="type.id" type="hidden" value="${typeId}"/>
+        TypeId: <input id="type_${modalId}" name="type.id" value="${typeId}"/>
+        %{--<input id="type_${modalId}" name="type.id" type="hidden" value="${typeId}"/>--}%
 
         <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
             <label for="name_${modalId}">

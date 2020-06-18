@@ -119,7 +119,7 @@ class AddressController extends AbstractDebugController {
             return
         }
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), addressInstance.id])
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), addressInstance.name])
         redirect(url: request.getHeader('referer'))
     }
 

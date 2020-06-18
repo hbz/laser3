@@ -23,6 +23,8 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
+import javax.servlet.http.HttpServletResponse
+
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import java.text.SimpleDateFormat
@@ -2648,54 +2650,57 @@ class AjaxController {
     def AddressEdit() {
         Map model = [:]
         model.addressInstance = Address.get(params.id)
-        if (model.addressInstance){
-            model.modalId = 'addressFormModal'
-            String messageCode = 'person.address.label'
-            switch (model.addressInstance.type){
-                case RDStore.ADRESS_TYPE_LEGAL_PATRON:
-                    messageCode = 'addressFormModalLegalPatronAddress'
-                    model.typeId = RDStore.ADRESS_TYPE_LEGAL_PATRON.id
-                    break
-                case RDStore.ADRESS_TYPE_BILLING:
-                    messageCode = 'addressFormModalBillingAddress'
-                    model.typeId = RDStore.ADRESS_TYPE_BILLING.id
-                    break
-                case RDStore.ADRESS_TYPE_POSTAL:
-                    messageCode = 'addressFormModalPostalAddress'
-                    model.typeId = RDStore.ADRESS_TYPE_POSTAL.id
-                    break
-                case RDStore.ADRESS_TYPE_DELIVERY:
-                    messageCode = 'addressFormModalDeliveryAddress'
-                    model.typeId = RDStore.ADRESS_TYPE_DELIVERY.id
-                    break
-                case RDStore.ADRESS_TYPE_LIBRARY:
-                    messageCode = 'addressFormModalLibraryAddress'
-                    model.typeId = RDStore.ADRESS_TYPE_LIBRARY.id
-                    break
-                default:
-                    model.typeId = addressInstance.type?.id
-            }
-
-            model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
-            model.modalMsgSave = message(code: 'default.button.save_changes')
-            model.url = [controller: 'address', action: 'edit']
-            render template:"../templates/addresses/formModal", model: model
-        } else {
-            flash.error = "Diese Adresse existiert nicht (mehr)."
-            redirect(url: request.getHeader('referer'))
-        }
+//        if (model.addressInstance){
+//            model.modalId = 'addressFormModal'
+//            String messageCode = 'person.address.label'
+//            switch (model.addressInstance.type){
+//                case RDStore.ADRESS_TYPE_LEGAL_PATRON:
+//                    messageCode = 'addressFormModalLegalPatronAddress'
+//                    model.typeId = RDStore.ADRESS_TYPE_LEGAL_PATRON.id
+//                    break
+//                case RDStore.ADRESS_TYPE_BILLING:
+//                    messageCode = 'addressFormModalBillingAddress'
+//                    model.typeId = RDStore.ADRESS_TYPE_BILLING.id
+//                    break
+//                case RDStore.ADRESS_TYPE_POSTAL:
+//                    messageCode = 'addressFormModalPostalAddress'
+//                    model.typeId = RDStore.ADRESS_TYPE_POSTAL.id
+//                    break
+//                case RDStore.ADRESS_TYPE_DELIVERY:
+//                    messageCode = 'addressFormModalDeliveryAddress'
+//                    model.typeId = RDStore.ADRESS_TYPE_DELIVERY.id
+//                    break
+//                case RDStore.ADRESS_TYPE_LIBRARY:
+//                    messageCode = 'addressFormModalLibraryAddress'
+//                    model.typeId = RDStore.ADRESS_TYPE_LIBRARY.id
+//                    break
+//                default:
+//                    model.typeId = addressInstance.type?.id
+//            }
+//
+//            model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
+//            model.modalMsgSave = message(code: 'default.button.save_changes')
+//            model.url = [controller: 'address', action: 'edit']
+//            render template:"../templates/addresses/formModal", model: model
+//        } else {
+//            flash.error = "Diese Adresse existiert nicht (mehr)."
+//            redirect(url: request.getHeader('referer'))
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND)
+            response.setHeader("Fehler", "Diese Adresse existiert nicht (mehr).")
+//        }
     }
 
     @Secured(['ROLE_USER'])
     def AddressCreate() {
         Map model = [:]
         model.orgId = params.orgId
+        model.prsId = params.prsId
         model.redirect = params.redirect
         model.modalId = params.modalId
         model.typeId = params.typeId
         model.hideType = params.hideType
         if (model.modalId) {
-            if (params.prId) {
+            if (params.prsId) {
                 model.modalText = message(code: 'default.new.label', args: [message(code: 'addressFormModalLibraryAddress')])
             } else {
                 model.modalText = message(code: 'default.new.label', args: [message(code: model.modalId)])

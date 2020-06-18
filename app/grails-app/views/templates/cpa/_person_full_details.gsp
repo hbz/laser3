@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
 
 <g:if test="${person && personContext}">
     <div class="ui divided middle aligned selection list la-flex-list la-list-border-around">
@@ -54,13 +54,13 @@
                     <g:if test="${tmplShowAddAddresses}">
                         <% Map model = [:]
                         model.prsId = person?.id
+                        model.typeId = RDStore.ADRESS_TYPE_LIBRARY
                         model.redirect = '.'
                         model.modalId = 'addressFormModal'+ personRole.id
                         model.hideType = true%>
                         <input class="ui mini icon button" type="button"
                                value="${message(code: 'person.addresses.label')}"
-                               onclick="addresscreate('${model}');"
-                        >
+                               onclick="addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
                     </g:if>
 
                 </g:if>

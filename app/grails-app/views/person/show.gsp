@@ -111,7 +111,6 @@ ${personInstance}
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
-
                                     <g:render template="/templates/cpa/address" model="${[
                                             address: a,
                                             tmplShowDeleteButton: true,
@@ -427,3 +426,40 @@ ${personInstance}
 
 </body>
 </html>
+<g:javascript>
+        %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
+            %{--var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
+            %{--private_address_modal(url);--}%
+        %{--}--}%
+        %{--function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {--}%
+            %{--var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
+            %{--private_address_modal(url);--}%
+        %{--}--}%
+        function addressedit(id) {
+            var url = '<g:createLink controller="ajax" action="AddressEdit"/>?id='+id;
+            private_address_modal(url)
+        }
+
+        function private_address_modal(url) {
+            $.ajax({
+                url: url,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#addressFormModal").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#addressFormModal');
+                            r2d2.initDynamicXEditableStuff('#addressFormModal');
+
+                            // ajaxPostFunc()
+                        }
+                    }).modal('show');
+                },
+                error: function (request, status, error) {
+                    alert(request.status + ": " + request.statusText);
+                }
+            });
+        }
+</g:javascript>
