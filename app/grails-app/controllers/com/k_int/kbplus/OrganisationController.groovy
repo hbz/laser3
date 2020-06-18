@@ -1275,7 +1275,24 @@ class OrganisationController extends AbstractDebugController {
         def orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance)
         result.orgAccessPointList = orgAccessPointList
 
-        result
+
+        if (params.exportXLSX) {
+
+            SXSSFWorkbook wb
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "org.nav.accessPoints")
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints(result.orgAccessPointList.collect {it.oap}, result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }else {
+            result
+        }
     }
 
     def addOrgType()
