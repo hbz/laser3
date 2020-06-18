@@ -265,7 +265,7 @@
             <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
             <div class="field">
                 <fieldset>
-                    <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
+                    <legend id="la-legend-searchDropdown">${message(code: 'consortium')}</legend>
 
                     <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
                               optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
