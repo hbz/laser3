@@ -22,10 +22,11 @@
   <br>
 
   <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-  <g:message code="accessPoint.new"/>
+  ${orgInstance.name}
   </h1>
   <g:render template="/organisation/nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
+  <h1 class="ui header la-noMargin-top"><g:message code="accessPoint.new"/></h1>
   <semui:messages data="${flash}"/>
   <div id="details">
     <g:render template="create_${accessMethod}"/>

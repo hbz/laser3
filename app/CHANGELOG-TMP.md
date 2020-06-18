@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2600    17.06.2020  hbz-dev     Moe     Bug         Zugangskonfigurationen für Konsorten eintragen
+
 2599    17.06.2020  hbz-dev     Moe     Bug         Export von Zugangskonfiguration
 
 2258    16.06.2020  hbz-dev     Moe     Bug         Neue Identifikatoren kommen nicht in den ES Index
