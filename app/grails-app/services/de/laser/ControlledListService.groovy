@@ -181,7 +181,7 @@ class ControlledListService {
     }
 
     /**
-     * Retrieves a list of issue entitlement group owned by the context organisation matching given parameters
+     * Retrieves a list of issue entitlement groups owned by the context organisation matching given parameters
      * @param params - eventual request params
      * @return a map containing a list of issue entitlement groups, an empty one if no issue entitlement group match the filter
      */
@@ -212,15 +212,14 @@ class ControlledListService {
 
     /**
      * Retrieves a list of licenses owned by the context organisation matching given parameters
-     * @param params - eventual request params (currently not in use, handed for an eventual extension)
+     * @param params - eventual request params
      * @return a map containing licenses, an empty one if no licenses match the filter
      */
     Map getLicenses(Map params) {
         Org org = contextService.getOrg()
         LinkedHashMap licenses = [results:[]]
-        List<License> result = []
         String licFilter = ''
-        LinkedHashMap filterParams = [org:org,orgRoles:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS]]
+        LinkedHashMap linkParams = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS],linkType:RDStore.LINKTYPE_LICENSE], filterParams = [:]
         if(params.query && params.query.length() > 0) {
             licFilter = ' and genfunc_filter_matcher(l.reference,:query) = true '
             filterParams.put('query',params.query)
@@ -231,13 +230,15 @@ class ControlledListService {
             licFilter += " and l != :ctx "
         }
         if(params.filterMembers) {
-            filterParams.orgRoles.removeAll([RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS])
+            linkParams.orgRoles.removeAll([RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS])
         }
-        result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
-        if(result.size() > 0) {
+        List<Links> result = Links.executeQuery("select l.source from Links as l where l.linkType = :linkType and l.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:orgRoles))",linkParams)
+        if(result) {
+            filterParams.availableLicenses = result
+            Set<License> licenseSet = License.executeQuery("select l from License where concat('${License.class.name}':,l.id) in (:availableLicenses)${licFilter}",filterParams)
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             log.debug("licenses found")
-            result.each { res ->
+            licenseSet.each { License res ->
                 licenses.results += ([name:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})",value:res.class.name+":"+res.id])
             }
         }

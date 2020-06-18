@@ -3303,12 +3303,12 @@ class SurveyController {
         }
 
         if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, null)) {
+            if(!subscriptionService.setOrgLicRole(newSub, null,false)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
         } else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
+            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner,true)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }

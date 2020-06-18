@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.Links; com.k_int.kbplus.Person; de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -170,10 +170,9 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                     <td>${sub.status.getI10n('value')}</td>
                     <td>
-                        <g:if test="${sub?.owner?.id}">
-                            <g:link controller="license" action="show"
-                                    id="${sub.owner.id}">${sub.owner.reference}</g:link>
-                        </g:if>
+                        <g:each in="${Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }}" var="license">
+                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
+                        </g:each>
                     </td>
                     <td>
                         <g:if test="${sub.isMultiYear}">

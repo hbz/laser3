@@ -7,6 +7,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDatesService
+import de.laser.LinksGenerationService
 import de.laser.SystemAnnouncement
 
 //import de.laser.TaskService //unused for quite a long time
@@ -63,6 +64,7 @@ class MyInstitutionController extends AbstractDebugController {
     def financeService
     def surveyService
     def formService
+    LinksGenerationService linksGenerationService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -297,17 +299,6 @@ class MyInstitutionController extends AbstractDebugController {
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def actionLicenses() {
-        log.debug("actionLicenses :: ${params}")
-        if (params['copy-license']) {
-            newLicense_DEPR(params)
-        } /*else if (params['delete-license']) {
-            deleteLicense(params)
-        } */
-    }
-
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentLicenses() {
 
         def result = setResultGenerics()
@@ -333,15 +324,12 @@ class MyInstitutionController extends AbstractDebugController {
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
 
-        RefdataValue licensee_role           = RDStore.OR_LICENSEE
-        RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
-        RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
+        RefdataValue subscr_role           = RDStore.OR_SUBSCRIBER
+        RefdataValue subscriber_cons_role  = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue sub_cons_role         = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
         String base_qry
         Map qry_params
-
-        @Deprecated
-        String qry = INSTITUTIONAL_LICENSES_QUERY
 
         result.filterSet = params.filterSet ? true : false
 
@@ -349,34 +337,27 @@ class MyInstitutionController extends AbstractDebugController {
 
         if (accessService.checkPerm("ORG_INST")) {
             base_qry = """from License as l where (
-                exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
+                exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.org = :lic_org and oo.roleType in (:roleTypes)) ) 
             )"""
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
+            qry_params = [linkType:RDStore.LINKTYPE_LICENSE, roleTypes:[subscr_role,subscriber_cons_role], lic_org:result.institution]
             if(result.editable)
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"
         }
         else if (accessService.checkPerm("ORG_CONSORTIUM")) {
             base_qry = """from License as l where (
-                    exists ( select o from l.orgLinks as o where ( 
-                    ( o.roleType = :roleTypeC 
-                        AND o.org = :lic_org 
-                        AND l.instanceOf is null
-                        AND NOT exists (
-                        select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
-                    )
-                )
-            )))"""
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
+                    exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.sub.instanceOf = null and oo.org = :lic_org and oo.roleType = :roleTypeC) ) 
+            )"""
+            qry_params = [linkType:RDStore.LINKTYPE_LICENSE, roleTypeC:sub_cons_role, lic_org:result.institution]
             licenseFilterTable << "memberLicenses"
             if(result.editable)
                 licenseFilterTable << "action"
         }
         else {
             base_qry = """from License as l where (
-                exists ( select o from l.orgLinks as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
+                exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType = :roleType AND oo.org = :lic_org ) ) 
             )"""
-            qry_params = [roleType:licensee_cons_role, lic_org:result.institution]
+            qry_params = [linkType:RDStore.LINKTYPE_LICENSE, roleType:subscriber_cons_role, lic_org:result.institution]
             licenseFilterTable << "licensingConsortium"
         }
         result.licenseFilterTable = licenseFilterTable
@@ -459,6 +440,17 @@ class MyInstitutionController extends AbstractDebugController {
 
         List totalLicenses = License.executeQuery("select l ${base_qry}", qry_params)
         result.licenseCount = totalLicenses.size()
+        result.allLinkedSubscriptions = [:]
+        Set<Links> allLinkedLicenses = Links.findAllBySourceInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },RDStore.LINKTYPE_LICENSE)
+        allLinkedLicenses.each { Links li ->
+            Subscription s = genericOIDService.resolveOID(li.destination)
+            License l = genericOIDService.resolveOID(li.source)
+            Set<Subscription> linkedSubscriptions = result.allLinkedSubscriptions.get(l)
+            if(!linkedSubscriptions)
+                linkedSubscriptions = []
+            linkedSubscriptions << s
+            result.allLinkedSubscriptions.put(l,linkedSubscriptions)
+        }
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
         result.orgRoles = [:]
@@ -1190,7 +1182,7 @@ join sub.orgRelations or_sub where
 
                     if( params.sub) {
                         Subscription subInstance = Subscription.get(params.sub)
-                        subscriptionService.setOrgLicRole(subInstance,copyLicense)
+                        subscriptionService.setOrgLicRole(subInstance,copyLicense,false)
                         //subInstance.owner = copyLicense
                         //subInstance.save(flush: true)
                     }
@@ -1235,7 +1227,7 @@ join sub.orgRelations or_sub where
             }
             if(params.sub) {
                 Subscription subInstance = Subscription.get(params.sub)
-                subscriptionService.setOrgLicRole(subInstance,licenseInstance)
+                subscriptionService.setOrgLicRole(subInstance,licenseInstance,false)
                 /*subInstance.owner = licenseInstance
                 subInstance.save(flush: true)*/
             }
@@ -1244,39 +1236,73 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    @Deprecated
-    def newLicense_DEPR(params) {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = contextService.getOrg()
-
-        if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
-            flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
-            response.sendError(401)
-            // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
-            return;
+    /**
+     * connects the context subscription with the given pair.
+     *
+     * @return void, redirects to main page
+     */
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def linkObjects() {
+        //error when no pair is given!
+        params.keySet().each {
+            if(it.contains("pair_")) {
+                def pairCheck = params.get(it)
+                if(!pairCheck) {
+                    flash.error = message(code:'default.linking.noLinkError')
+                    redirect(url: request.getHeader('referer'))
+                    return
+                }
+            }
         }
-
-        def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
-
-        if (! baseLicense?.hasPerm("view", user)) {
-            log.debug("return 401....");
-            flash.error = message(code:'myinst.newLicense.error')
-            response.sendError(401)
-
+        //distinct between insert and update - if a link id exists, then proceed with edit, else create new instance
+        Map<String,Object> configMap = [owner:contextService.org]
+        //perspectiveIndex 0: source -> dest, 1: dest -> source
+        if(params.link) {
+            configMap.link = genericOIDService.resolveOID(params.link)
+            if(params.commentID)
+                configMap.comment = genericOIDService.resolveOID(params.commentID)
+            if(params["linkType_${link.id}"]) {
+                String linkTypeString = params["linkType_${link.id}"].split("§")[0]
+                int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
+                RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
+                configMap.commentContent = params["linkComment_${link.id}"].trim()
+                if(perspectiveIndex == 0) {
+                    configMap.source = params.context
+                    configMap.destination = params["pair_${link.id}"]
+                }
+                else if(perspectiveIndex == 1) {
+                    configMap.source = params["pair_${link.id}"]
+                    configMap.destination = params.context
+                }
+                configMap.linkType = linkType
+            }
+            else if(!params["linkType_${link.id}"]) {
+                flash.error = message(code:'default.linking.linkTypeError')
+            }
         }
         else {
-            //Moe fragen
-            /*def copyLicense = institutionsService.copyLicense(baseLicense, params)
-            if (copyLicense.hasErrors() ){ */
-                log.error("Problem saving license ${copyLicense.errors}");
-                render view: 'editLicense', model: [licenseInstance: copyLicense]
-           /* }else{
-                flash.message = message(code: 'license.created.message')
-                redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
-            }*/
+            if(params["linkType_new"]) {
+                String linkTypeString = params["linkType_new"].split("§")[0]
+                int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
+                configMap.linkType = genericOIDService.resolveOID(linkTypeString)
+                configMap.commentContent = params.linkComment_new
+                if(perspectiveIndex == 0) {
+                    configMap.source = params.context
+                    configMap.destination = params.pair_new
+                }
+                else if(perspectiveIndex == 1) {
+                    configMap.source = params.pair_new
+                    configMap.destination = params.context
+                }
+            }
+            else if(!params["linkType_new"]) {
+                flash.error = message(code:'default.linking.linkTypeError')
+            }
         }
+        def error = linksGenerationService.createOrUpdateLink(configMap)
+        if(error != false)
+            flash.error = error
+        redirect(url: request.getHeader('referer'))
     }
 
     /*
@@ -1791,6 +1817,7 @@ AND EXISTS (
         return qry_map
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def availableLicenses() {
@@ -3672,6 +3699,7 @@ AND EXISTS (
         result
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def ajaxEmptySubscription() {
@@ -3693,35 +3721,6 @@ AND EXISTS (
             result
         }
         render (template: "../templates/filter/orgFilterTable", model: [orgList: result.members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
-    }
-
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def actionAffiliationRequestOrg() {
-        log.debug("actionMembershipRequestOrg");
-        UserOrg req = UserOrg.get(params.req);
-        User user = User.get(springSecurityService.principal.id)
-        Org currentOrg = contextService.getOrg()
-        if ( req != null && req.org == currentOrg) {
-            switch(params.act) {
-                case 'approve':
-                    req.status = UserOrg.STATUS_APPROVED
-                    break;
-                case 'deny':
-                    req.status = UserOrg.STATUS_REJECTED
-                    break;
-                default:
-                    log.error("FLASH UNKNOWN CODE");
-                    break;
-            }
-            req.dateActioned = System.currentTimeMillis();
-            req.save(flush:true);
-        }
-        else {
-            log.error("FLASH");
-        }
-        redirect(action: "manageAffiliationRequests")
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')

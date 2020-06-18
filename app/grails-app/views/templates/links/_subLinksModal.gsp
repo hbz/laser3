@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.helper.RDStore;de.laser.interfaces.CalculatedType" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.helper.RDStore;de.laser.interfaces.CalculatedType;de.laser.helper.RDConstants" %>
 <g:if test="${editmode}">
     <a role="button" class="ui button ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
         <g:if test="${tmplIcon}">
@@ -11,42 +11,50 @@
 </g:if>
 
 <%
-    String header, thisString
+    String header, thisString, lookupName
     switch(context.class.name) {
         case Subscription.class.name: header = message(code:"subscription.linking.header")
             thisString = message(code:"subscription.linking.this")
+            lookupName = "lookupSubscriptions"
             break
         case License.class.name: header = message(code:"license.linking.header")
             thisString = message(code:"license.linking.this")
+            lookupName = "lookupLicenses"
             break
     }
 %>
 
 <semui:modal id="${tmplModalID}" text="${tmplText}">
-    <g:form id="link_${tmplModalID}" class="ui form" url="[controller: 'ajax', action: 'linkObjects']" method="post">
+    <g:form id="link_${tmplModalID}" class="ui form" url="[controller: 'myInstitution', action: 'linkObjects']" method="post">
         <input type="hidden" name="context" value="${GenericOIDService.getOID(context)}"/>
         <%
-            List<RefdataValue> refdataValues = RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LINK_TYPE)
             LinkedHashMap linkTypes = [:]
-            refdataValues.each { rv ->
-                String[] linkArray = rv.getI10n("value").split("\\|")
-                linkArray.eachWithIndex { l, int perspective ->
-                    linkTypes.put(rv.class.name+":"+rv.id+"§"+perspective,l)
-                }
-                if(link && link.linkType == rv) {
-                    int perspIndex
-                    if(context == link.source) {
-                        perspIndex = 0
+            if(subscriptionLicenseLink) {
+
+            }
+            else {
+                List<RefdataValue> refdataValues = RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE
+                refdataValues.each { rv ->
+                    String[] linkArray = rv.getI10n("value").split("\\|")
+                    linkArray.eachWithIndex { l, int perspective ->
+                        linkTypes.put(rv.class.name+":"+rv.id+"§"+perspective,l)
                     }
-                    else if(context == link.destination) {
-                        perspIndex = 1
+                    if(link && link.linkType == rv) {
+                        int perspIndex
+                        if(context == link.source) {
+                            perspIndex = 0
+                        }
+                        else if(context == link.destination) {
+                            perspIndex = 1
+                        }
+                        else {
+                            perspIndex = 0
+                        }
+                        linkType = "${rv.class.name}:${rv.id}§${perspIndex}"
                     }
-                    else {
-                        perspIndex = 0
-                    }
-                    linkType = "${rv.class.name}:${rv.id}§${perspIndex}"
                 }
             }
+
         %>
         <g:if test="${link}">
             <g:set var="pair" value="${link.getOther(context)}"/>
@@ -82,7 +90,7 @@
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <g:message code="subscription.slash.name" />
+                        <g:message code="${controllerName}" />
                     </div>
                     <div class="twelve wide column">
                         <div class="ui search selection dropdown la-full-width" id="${selectPair}">
@@ -110,7 +118,7 @@
     $(document).ready(function(){
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="lookupSubscriptionsLicenses"/>?status=FETCH_ALL&query={query}&filterMembers=true&ctx=${GenericOIDService.getOID(context)}",
+                url: "<g:createLink controller="ajax" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=true&ctx=${GenericOIDService.getOID(context)}",
                 cache: false
             },
             clearable: true,
