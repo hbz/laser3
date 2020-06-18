@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2568    17.06.2020  rc1.4       Moe     Bug         Vertragsfilter "Konsortium" nicht auf GASCO-Konsortien beschränkt
+2568    18.06.2020  rc1.4       Moe     Bug         Vertragsfilter "Konsortium" nicht auf GASCO-Konsortien beschränkt
+
+2594    17.06.2020  rc1.4       David   Feature     SchemaSpy automatisiert ausführen
 
 2596    17.06.2020  rc1.4       Moe     Bug         Bei Löschen einer Lizenz soll auch die Umfrage gelöscht werden
 
