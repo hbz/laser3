@@ -13,4 +13,8 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "klober (modified)", id: "1592465779044-x") {
+		// testing MigrationCallbacks; empty changeSet will be removed next commit
+	}
 }
