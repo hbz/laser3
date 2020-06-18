@@ -88,12 +88,6 @@ class AccessPointController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def list() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
-        [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
-    }
-
     /**
      * Check for existing name in all supported locales and return available suggestions for IP Access Method
      * A simpler solution would be nice
@@ -202,7 +196,7 @@ class AccessPointController extends AbstractDebugController {
             return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
         } else {
             if (!params.accessMethod) {
-                params.accessMethod = RefdataValue.getByValueAndCategory('ip', RDConstants.ACCESS_POINT_TYPE).value
+                params.accessMethod = RDStore.ACCESS_POINT_TYPE_IP.value
             }
             params.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE);
             return params
@@ -231,7 +225,7 @@ class AccessPointController extends AbstractDebugController {
             def accessPoint = new OrgAccessPoint();
             accessPoint.org = orgInstance
             accessPoint.name = params.name
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
+            accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_IP
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
@@ -266,7 +260,7 @@ class AccessPointController extends AbstractDebugController {
             def accessPoint = new OrgAccessPointOA();
             accessPoint.org = orgInstance
             accessPoint.name = params.name
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
+            accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_OA
             accessPoint.entityId = params.entityId
             accessPoint.save(flush: true)
 
@@ -296,7 +290,7 @@ class AccessPointController extends AbstractDebugController {
             def accessPoint = new OrgAccessPoint();
             accessPoint.org = orgInstance
             accessPoint.name = params.name
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
+            accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_PROXY
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
@@ -325,7 +319,7 @@ class AccessPointController extends AbstractDebugController {
             def accessPoint = new OrgAccessPointVpn();
             accessPoint.org = orgInstance
             accessPoint.name = params.name
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
+            accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_VPN
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
@@ -361,7 +355,7 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.url = params.url
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
+            accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_EZPROXY
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
@@ -397,7 +391,7 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.entityId = params.entityId
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
+            accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_SHIBBOLETH
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
@@ -477,7 +471,8 @@ class AccessPointController extends AbstractDebugController {
         Boolean autofocus = (params.autofocus) ? true : false
         Boolean activeChecksOnly = (params.checked == 'false') ? false : true
 
-        ArrayList accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);
+        Map accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
+
 
         orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
 

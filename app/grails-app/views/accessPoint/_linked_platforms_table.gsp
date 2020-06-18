@@ -3,7 +3,7 @@
 <table id="platformTable" class="ui celled la-table table compact">
   <thead>
   <tr>
-    <g:sortableColumn property="platform" title="${message(code: "platform.label")}" />
+    <th>${message(code: "platform.label")}</th>
     <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
       <th>${message(code: "accessPoint.subscriptions.label")}</th>
       <th>${message(code: 'accessPoint.platformLink.action')}</th>

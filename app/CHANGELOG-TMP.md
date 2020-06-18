@@ -2,6 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2599    17.06.2020  hbz-dev     Moe     Bug         Export von Zugangskonfiguration
+
+2258    16.06.2020  hbz-dev     Moe     Bug         Neue Identifikatoren kommen nicht in den ES Index
+
+2331    16.06.2020  hbz-dev     Moe     Feature     Eingegebene IP-Bereiche sortieren
+
+2540    16.06.2020  hbz-dev     David   Feature     News-Bereich der Startseite dynamisch machen
+
+2573    15.06.2020  hbz-dev     Moe     Feature     GlobalData Sync Logs in separate Log führen
+
 2593    12.06.2020  hbz-dev     Andreas Bug         Merkmalstypen von DFG Förderung Höhe und Fachstatistik / Klassifikation auf String geändert
 
 2526    10.06.2020  rc1.4       Ingrid  Bug         Tooltips im Tabellenheader werden nicht mehr überdeckt & Anzeigefehler bei allen Tooltips gefixt

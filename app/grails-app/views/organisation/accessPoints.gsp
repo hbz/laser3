@@ -20,6 +20,12 @@
     <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR')
         || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
         <semui:controlButtons>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="accessPoints"
+                            params="${params + [exportXLSX: true]}">${message(code: 'accessPoint.exportAccessPoints')}</g:link>
+                </semui:exportDropdownItem>
+            </semui:exportDropdown>
             <g:render template="actions" />
         </semui:controlButtons>
     </g:if>

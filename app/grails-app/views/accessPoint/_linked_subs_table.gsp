@@ -4,7 +4,7 @@
   <tr>
     <th>${message(code: "accessPoint.subscription.label")}</th>
     <th>${message(code: "accessPoint.package.label")}</th>
-    <g:sortableColumn property="platform" title="${message(code: "platform.label")}"/>
+    <th>${message(code: "platform.label")}</th>
   </tr>
   </thead>
   <tbody>
