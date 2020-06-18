@@ -5,12 +5,11 @@
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </a>
 
-            <div class="ui dropdown item" >
-                <span role="menuitem" aria-haspopup="true">Alle</span>
-
+            <a class="ui dropdown item" role="menuitem" aria-haspopup="true">
+                Alle
                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                <div class="menu">
+                <div class="menu" role="menu" aria-label="das Menu">
                     <a href="#" class="item"  role="menuitem">Alle Pakete</a>
 
                     <a href="#" class="item" role="menuitem">Alle Titel</a>
@@ -38,13 +37,13 @@
 
                     <a href="#" class="item" role="menuitem" >YGOR</a>
                 </div>
-            </div>
+            </a>
 
             <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                 Meine Objekte
                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                <div class="menu">
+                <div class="menu" role="menu">
 
                     <a href="#" class="item" role="menuitem" >Meine Lizenzen</a>
 
@@ -91,7 +90,7 @@
                 Meine Einrichtung
                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                <div class="menu">
+                <div class="menu" role="menu">
                     <a href="#" class="item" role="menuitem" >Dashboard</a>
 
                     <a href="#" class="item" role="menuitem" >Einrichtungsprofil</a>
@@ -143,7 +142,7 @@
                     Ingrid Bluoss
                     <i aria-hidden="true" class="dropdown icon"></i>
 
-                    <div class="menu">
+                    <div class="menu" role="menu">
 
                         <a href="#" class="item" role="menuitem" >DWI -
                         Leibniz-Institut f&uuml;r Interaktive Materialien (DWI)</a>
