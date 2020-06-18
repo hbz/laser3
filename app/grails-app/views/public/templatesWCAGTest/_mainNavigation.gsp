@@ -9,36 +9,36 @@
                 Alle
                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                <div class="menu" role="menu" aria-label="das Menu">
-                    <a href="#" class="item"  role="menuitem">Alle Pakete</a>
 
-                    <a href="#" class="item" role="menuitem">Alle Titel</a>
-
-                    <a href="#" class="item" role="menuitem" >Alle Organisationen</a>
-
-                    <a href="#" class="item" role="menuitem" >Alle Einrichtungen</a>
-
-                    <a href="#" class="item" role="menuitem" >Alle Anbieter & Lieferanten</a>
-
-                    <a href="#" class="item" role="menuitem" >Alle Plattformen</a>
-
-                    <div class="divider"></div>
-
-                    <div class="item" role="menuitem" >
-                        <div class="disabled" data-tooltip="Die Funktion 'Pakete vergleichen' ist zur Zeit nicht verfügbar!">Pakete
-                        vergleichen</div>
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <a href="#" class="item" role="menuitem" >GASCO-Monitor</a>
-
-                    <a href="#" class="item" role="menuitem" >GOKB</a>
-
-                    <a href="#" class="item" role="menuitem" >YGOR</a>
-                </div>
             </div>
+            <div class="menu" role="menu" aria-label="das Menu">
+                <a href="#" class="item"  role="menuitem">Alle Pakete</a>
 
+                <a href="#" class="item" role="menuitem">Alle Titel</a>
+
+                <a href="#" class="item" role="menuitem" >Alle Organisationen</a>
+
+                <a href="#" class="item" role="menuitem" >Alle Einrichtungen</a>
+
+                <a href="#" class="item" role="menuitem" >Alle Anbieter & Lieferanten</a>
+
+                <a href="#" class="item" role="menuitem" >Alle Plattformen</a>
+
+                <div class="divider"></div>
+
+                <div class="item" role="menuitem" >
+                    <div class="disabled" data-tooltip="Die Funktion 'Pakete vergleichen' ist zur Zeit nicht verfügbar!">Pakete
+                    vergleichen</div>
+                </div>
+
+                <div class="divider"></div>
+
+                <a href="#" class="item" role="menuitem" >GASCO-Monitor</a>
+
+                <a href="#" class="item" role="menuitem" >GOKB</a>
+
+                <a href="#" class="item" role="menuitem" >YGOR</a>
+            </div>
             <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                 Meine Objekte
                 <i aria-hidden="true" class="dropdown icon"></i>
