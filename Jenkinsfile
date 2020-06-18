@@ -89,7 +89,7 @@ pipeline {
             //            sh "${LASER_SCRIPTS_PATH}/schemaSpy.sh"
             //        }
             //    }
-            }
+            //}
         }
         unstable {
             echo 'I am unstable :/'
