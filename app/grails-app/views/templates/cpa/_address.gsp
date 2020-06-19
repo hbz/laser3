@@ -61,3 +61,36 @@
         </div>
 	</div>
 </g:if>
+<g:javascript>
+    function addressedit(id) {
+        var url = '<g:createLink controller="ajax" action="AddressEdit"/>?id='+id;
+        private_address_modal(url)
+    }
+    function private_address_modal(url) {
+        $.ajax({
+            url: url,
+            success: function(result){
+                $("#dynamicModalContainer").empty();
+                $("#addressFormModal").remove();
+
+                $("#dynamicModalContainer").html(result);
+                $("#dynamicModalContainer .ui.modal").modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#addressFormModal');
+                        r2d2.initDynamicXEditableStuff('#addressFormModal');
+
+                        // ajaxPostFunc()
+                    }
+                }).modal('show');
+            }//,
+            // error: function(jpXHR, error, errorThrown){
+            //     alert('Es ist ein Fehler aufgetreten');
+            //     console.log('jpXHR: '+jpXHR);
+            //     console.log('error: '+error);
+            //     console.log('errorThrown: '+errorThrown);
+            //
+            //     $("#flash").val("FEHLER");
+            // }
+        });
+    }
+</g:javascript>

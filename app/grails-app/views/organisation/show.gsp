@@ -209,10 +209,6 @@
                             <dl>
                                 <dt>
                                     <g:message code="org.subjectGroup.label" />
-                                    %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"--}%
-                                          %{--data-content="${message(code: 'org.libraryType.expl')}">--}%
-                                        %{--<i class="question circle icon"></i>--}%
-                                    %{--</span>--}%
                                 </dt>
                                 <dd>
                                     <%
@@ -320,9 +316,7 @@
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            %{--_____________________________________--}%
                             <dt><g:message code="org.addresses.label" default="Addresses"/></dt>
-                            %{--_____________________________________--}%
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${orgInstance?.addresses?.sort { it.type?.getI10n('value') }}" var="a">
@@ -338,54 +332,36 @@
                                         </g:if>
                                     </g:each>
                                 </div>
-                                %{--____________________________--}%
                                 <g:if test="${((((orgInstance.id == contextService.getOrg().id) || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
 
                                     <div class="ui list">
                                         <div class="item">
 
-                                            %{--<input class="ui button" size="35"--}%
-                                                   %{--value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"--}%
-                                                   %{--data-semui="modal"--}%
-                                                   %{--data-href="#addressFormModalPostalAddress"/>--}%
-                                            %{--<g:render template="/address/formModal"--}%
-                                                      %{--model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalPostalAddress', hideType: true]"/>--}%
                                             <% Map model = [:]
                                             model.orgId = orgInstance?.id
                                             model.redirect = '.'
-                                            model.modalId = 'addressFormModalPostalAddress'
                                             model.hideType = true%>
                                             <input class="ui icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
-                                                   onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_POSTAL.id}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                                   onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_POSTAL.id}', '${model.redirect}', '${model.hideType}');"
                                             >
 
-                                            <% model.modalId = 'addressFormModalBillingAddress' %>
                                             <input class="ui icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
-                                                   onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_BILLING.id}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                                   onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_BILLING.id}', '${model.redirect}', '${model.hideType}');"
                                             >
                                         </div>
 
                                         <div class="item">
-
-                                            <% model.modalId = 'addressFormModalLegalPatronAddress' %>
                                             <input class="ui icon button" type="button"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"
-                                                   onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_LEGAL_PATRON.id}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                                   onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_LEGAL_PATRON.id}', '${model.redirect}', '${model.hideType}');"
                                             >
 
-                                            %{-- <input class="ui button" size="35"
-                                                    value="${message(code: 'default.add.label', args: [message(code: 'address.otherAddress')])}"
-                                                    data-semui="modal"
-                                                    data-href="#addressFormModal"/>
-                                             <g:render template="/address/formModal"
-                                                       model="['orgId': orgInstance?.id, 'redirect': '.']"/>--}%
                                         </div>
                                     </div>
 
                                 </g:if>
-                                %{--____________________________--}%
                             </dd>
                         </dl>
                         %{--ERMS:1236
@@ -478,7 +454,6 @@
                                     </g:each>
                                 </g:each>
                             <%-- </div> --%>
-                                %{--_______________________________________--}%
                                 <g:if test="${(((orgInstance.id == contextService.getOrg().id || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <div class="ui list">
                                         <div class="item">
@@ -552,8 +527,7 @@
 
                                         </div>
                                     </div>
-
-                                </g:if>                                %{--_______________________________________--}%
+                                </g:if>
                             </dd>
                         </dl>
                     </div>
@@ -662,12 +636,12 @@
     });
 </r:script>
 <g:javascript>
-        function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {
-            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
+        function addresscreate_org(orgId, typeId, redirect, hideType) {
+            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             private_address_modal(url);
         }
-        function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {
-            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
+        function addresscreate_prs(prsId, typeId, redirect, hideType) {
+            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             private_address_modal(url);
         }
         function addressedit(id) {
@@ -691,14 +665,6 @@
                             // ajaxPostFunc()
                         }
                     }).modal('show');
-                },
-                error: function(jpXHR, error, errorThrown){
-                    alert('Es ist ein Fehler aufgetreten');
-                    console.log('jpXHR: '+jpXHR);
-                    console.log('error: '+error);
-                    console.log('errorThrown: '+errorThrown);
-
-                    $("#flash").val("FEHLER");
                 }
             });
         }

@@ -57,22 +57,22 @@ class AddressController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        String modalId = ''
+        String messageCode
         switch (addressInstance.type){
             case RDStore.ADRESS_TYPE_POSTAL:
-                modalId = "addressFormModalPostalAddress"
+                messageCode = "addressFormModalPostalAddress"
                 break
             case RDStore.ADRESS_TYPE_BILLING:
-                modalId = "addressFormModalBillingAddress"
+                messageCode = "addressFormModalBillingAddress"
                 break
             case RDStore.ADRESS_TYPE_LEGAL_PATRON:
-                modalId = "addressFormModalLegalPatronAddress"
+                messageCode = "addressFormModalLegalPatronAddress"
                 break
             case RDStore.ADRESS_TYPE_DELIVERY:
-                modalId = "addressFormModalDeliveryAddress"
+                messageCode = "addressFormModalDeliveryAddress"
                 break
             case RDStore.ADRESS_TYPE_LIBRARY:
-                modalId = "addressFormModalLibraryAddress"
+                messageCode = "addressFormModalLibraryAddress"
                 break
         }
         Map model = [
@@ -80,12 +80,14 @@ class AddressController extends AbstractDebugController {
             orgId: addressInstance.org?.id,
             prsId: addressInstance.prs?.id,
             typeId: addressInstance.type?.id,
-            modalId: modalId,
+            modalText: messageCode?
+                    message(code: 'default.edit.label', args: [message(code: messageCode)]) :
+                    message(code: 'default.new.label', args: [message(code: 'person.address.label')]),
             editable: addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser()),
             redirect: '.',
             hideType: true
         ]
-        render template: "/address/formModal", model: model
+        render template:"../templates/addresses/formModal", model: model
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

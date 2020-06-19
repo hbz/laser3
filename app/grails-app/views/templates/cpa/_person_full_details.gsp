@@ -56,7 +56,6 @@
                         model.prsId = person?.id
                         model.typeId = RDStore.ADRESS_TYPE_LIBRARY
                         model.redirect = '.'
-                        model.modalId = 'addressFormModal'+ personRole.id
                         model.hideType = true%>
                         <input class="ui mini icon button" type="button"
                                value="${message(code: 'person.addresses.label')}"

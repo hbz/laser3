@@ -122,9 +122,15 @@ ${personInstance}
                                 </g:each>
                             </div>
                             <g:if test="${editable}">
-                                <input class="ui button" type="button" data-semui="modal" data-href="#addressFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}">
-                                <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
+                                <% Map model = [:]
+                                model.prsId = personInstance.id
+                                model.redirect = '.'
+                                model.typeId = RDStore.ADRESS_TYPE_LIBRARY.id
+                                model.hideType = true%>
+                                <input class="ui icon button" type="button"
+                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
+                                       onclick="addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                >
                             </g:if>
                         </dd>
                     </dl>
@@ -431,10 +437,10 @@ ${personInstance}
             %{--var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
             %{--private_address_modal(url);--}%
         %{--}--}%
-        %{--function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {--}%
-            %{--var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
-            %{--private_address_modal(url);--}%
-        %{--}--}%
+        function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {
+            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
+            private_address_modal(url);
+        }
         function addressedit(id) {
             var url = '<g:createLink controller="ajax" action="AddressEdit"/>?id='+id;
             private_address_modal(url)
