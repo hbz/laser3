@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -189,7 +189,7 @@
                         <td></td>
                     </g:if>
                     <%
-                        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, sub.id)
+                        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(sub))
                         Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                         Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
                     %>

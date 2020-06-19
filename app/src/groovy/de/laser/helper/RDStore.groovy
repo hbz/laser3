@@ -41,13 +41,14 @@ class RDStore {
     static final O_STATUS_CURRENT           = getRefdataValue('Current', RDConstants.ORG_STATUS)
     static final O_STATUS_DELETED           = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
 
-    static final CCT_EMAIL          = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
-    static final CCT_PHONE          = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
-    static final CCT_URL            = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_EMAIL                  = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_PHONE                  = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_FAX                    = getRefdataValue('Fax', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_URL                    = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
 
-    static final CIEC_POSITIVE          = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
-    static final CIEC_NEGATIVE          = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
-    static final CIEC_NEUTRAL           = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
+    static final CIEC_POSITIVE              = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
+    static final CIEC_NEGATIVE              = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
+    static final CIEC_NEUTRAL               = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
 
     static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
     static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department', RDConstants.COMBO_TYPE)
@@ -192,11 +193,19 @@ class RDStore {
     static final ADRESS_TYPE_DELIVERY           = getRefdataValue('Delivery address', RDConstants.ADDRESS_TYPE)
     static final ADRESS_TYPE_LIBRARY            = getRefdataValue('Library address', RDConstants.ADDRESS_TYPE)
 
+    static final ACCESS_POINT_TYPE_EZPROXY      = getRefdataValue('ezproxy', RDConstants.ACCESS_POINT_TYPE)
+    static final ACCESS_POINT_TYPE_IP           = getRefdataValue('ip', RDConstants.ACCESS_POINT_TYPE)
+    static final ACCESS_POINT_TYPE_OA           = getRefdataValue('oa', RDConstants.ACCESS_POINT_TYPE)
+    static final ACCESS_POINT_TYPE_PROXY        = getRefdataValue('proxy', RDConstants.ACCESS_POINT_TYPE)
+    static final ACCESS_POINT_TYPE_SHIBBOLETH   = getRefdataValue('shibboleth', RDConstants.ACCESS_POINT_TYPE)
+    static final ACCESS_POINT_TYPE_VPN          = getRefdataValue('vpn', RDConstants.ACCESS_POINT_TYPE)
+
     static final YN_YES         = getRefdataValue('Yes', RDConstants.Y_N)
     static final YN_NO          = getRefdataValue('No', RDConstants.Y_N)
     static final YNO_YES        = getRefdataValue('Yes', RDConstants.Y_N_O)
     static final YNO_NO         = getRefdataValue('No', RDConstants.Y_N_O)
     static final YNO_OTHER      = getRefdataValue('Other', RDConstants.Y_N_O)
+    static final YNU_UNKNOWN    = getRefdataValue('Unknown', RDConstants.Y_N_U)
 
     static final LANGUAGE_DE      = getRefdataValue('de', RDConstants.LANGUAGE)
 

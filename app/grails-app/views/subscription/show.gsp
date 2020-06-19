@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
-<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
@@ -217,9 +217,16 @@
                                                 <td>
                                                     <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
                                                     <g:set var="sdf" value="${new SimpleDateFormat('dd.MM.yyyy')}"/>
-                                                    <g:link controller="subscription" action="show" id="${pair.id}">
-                                                        ${pair.name}
-                                                    </g:link><br>
+                                                    <g:if test="${pair instanceof License}">
+                                                        <g:link controller="license" action="show" id="${pair.id}">
+                                                            ${pair.reference}
+                                                        </g:link>
+                                                    </g:if>
+                                                    <g:elseif test="${pair instanceof Subscription}">
+                                                        <g:link controller="subscription" action="show" id="${pair.id}">
+                                                            ${pair.name}
+                                                        </g:link>
+                                                    </g:elseif><br>
                                                     ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}<br>
                                                     <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
                                                     <g:if test="${comment}">
@@ -234,9 +241,8 @@
                                                                         tmplID:'editLink',
                                                                         tmplModalID:"sub_edit_link_${link.id}",
                                                                         editmode: editable,
-                                                                        context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
-                                                                        link: link,
-                                                                        objectType: "${Subscription.class.name}"
+                                                                        context: subscription,
+                                                                        link: link
                                                               ]}" />
                                                     <g:if test="${editable}">
                                                         <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
@@ -265,8 +271,7 @@
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
                                                 editmode: editable,
-                                                context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
-                                                objectType: "${Subscription.class.name}"
+                                                context: subscription
                                       ]}" />
                         </div>
                     </div>

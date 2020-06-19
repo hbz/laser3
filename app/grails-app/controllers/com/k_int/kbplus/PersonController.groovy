@@ -17,6 +17,7 @@ class PersonController extends AbstractDebugController {
     def addressbookService
     def genericOIDService
     def contextService
+    def formService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -39,28 +40,31 @@ class PersonController extends AbstractDebugController {
         	[personInstance: personInstance, userMemberships: userMemberships]
 			break
 		case 'POST':
-	        def personInstance = new Person(params)
-	        if (!personInstance.save(flush: true)) {
-                flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
-                redirect(url: request.getHeader('referer'))
-	            //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
-	            return
-	        }
-            // processing dynamic form data
-            addPersonRoles(personInstance)
+            if (formService.validateToken(params)) {
 
-            ['contact1', 'contact2', 'contact3'].each{ c ->
-                if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
-
-                    RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
-                    RefdataValue rdvTY = RefdataValue.get(params."${c}_type")
-
-                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: params."${c}_content" )
-                    contact.save(flush: true)
+                def personInstance = new Person(params)
+                if (!personInstance.save(flush: true)) {
+                    flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
+                    redirect(url: request.getHeader('referer'))
+                    //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
+                    return
                 }
+                // processing dynamic form data
+                addPersonRoles(personInstance)
+
+                ['contact1', 'contact2', 'contact3'].each { c ->
+                    if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
+
+                        RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
+                        RefdataValue rdvTY = RefdataValue.get(params."${c}_type")
+
+                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: params."${c}_content")
+                        contact.save(flush: true)
+                    }
+                }
+
+                flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
             }
-            
-			flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
             redirect(url: request.getHeader('referer'))
 			break
 		}

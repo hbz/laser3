@@ -2,9 +2,9 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.AccessService
-import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.EscapeService
+import de.laser.LinksGenerationService
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
 import de.laser.helper.EhcacheWrapper
@@ -38,6 +38,7 @@ class FinanceService {
     AccessService accessService
     EscapeService escapeService
     SpringSecurityService springSecurityService
+    LinksGenerationService linksGenerationService
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
     Map<String,RefdataValue> genericExcludeParams = [deleted:COST_ITEM_DELETED]
 
@@ -1111,6 +1112,9 @@ class FinanceService {
             result.subscription = Subscription.get(subId)
             if(!(result.subscription instanceof Subscription))
                 throw new FinancialDataException("Invalid or no subscription found!")
+            Map navigation = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.subscription))
+            result.navNextSubscription = navigation.nextLink
+            result.navPrevSubscription = navigation.prevLink
         }
         /*
             Decision tree

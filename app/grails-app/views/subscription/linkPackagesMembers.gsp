@@ -84,7 +84,7 @@
                     data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
                     params="[withIE: false]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</g:link>
-            <div class="or"></div>
+            <div class="or" data-text="${message(code:'default.or')}"></div>
             <g:link class="ui button negative js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
@@ -118,7 +118,7 @@
                     data-confirm-term-how="ok" type="submit" name="withIE"
                     value="${false}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
 
-            <div class="or"></div>
+            <div class="or" data-text="${message(code:'default.or')}"></div>
             <button class="ui button js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                     data-confirm-term-how="ok" type="submit" name="withIE"
@@ -157,7 +157,7 @@
                         <button class="ui button" type="submit" name="processOption"
                                 value="linkwithoutIE">${message(code: 'subscription.linkPackagesMembers.linkwithoutIE')}</button>
 
-                        <div class="or"></div>
+                        <div class="or" data-text="${message(code:'default.or')}"></div>
                         <button class="ui button" type="submit" name="processOption"
                                 value="linkwithIE">${message(code: 'subscription.linkPackagesMembers.linkwithIE', args: args.superOrgType)}</button>
 
@@ -170,7 +170,7 @@
                                 type="submit" name="processOption"
                                 value="unlinkwithoutIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
 
-                        <div class="or"></div>
+                        <div class="or" data-text="${message(code:'default.or')}"></div>
                         <button class="ui button negative "
                                 type="submit" name="processOption"
                                 value="unlinkwithIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>

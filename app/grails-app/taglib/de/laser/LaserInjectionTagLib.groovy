@@ -10,9 +10,10 @@ class LaserInjectionTagLib {
         g.set( var:'auditService', bean:'auditService' )
         g.set( var:'cacheService', bean:'cacheService' )
         g.set( var:'contextService', bean:'contextService' )
+        g.set( var:'filterService', bean:'filterService' )
         g.set( var:'genericOIDService', bean:'genericOIDService' )
         g.set( var:'instAdmService', bean:'instAdmService' )
-        g.set( var:'navigationGenerationService', bean:'navigationGenerationService' )
+        g.set( var:'linksGenerationService', bean:'linksGenerationService' )
         g.set( var:'orgDocumentService', bean:'orgDocumentService' )
         g.set( var:'pendingChangeService', bean:'pendingChangeService')
         g.set( var:'springSecurityService', bean:'springSecurityService' )
@@ -22,5 +23,6 @@ class LaserInjectionTagLib {
         g.set( var:'GOKbService', bean:'GOKbService' )
         g.set( var:'yodaService', bean:'yodaService' )
         g.set(var:'escapeService', bean: 'escapeService')
+        g.set( var:'formService', bean:'formService' )
     }
 }
