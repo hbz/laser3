@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2171    19.06.2020  hbz-dev     Anja    Feature     Umbau Adressen / Refactoring
+
 2568    18.06.2020  rc1.4       Moe     Bug         Vertragsfilter "Konsortium" nicht auf GASCO-Konsortien beschränkt
 
 2594    17.06.2020  rc1.4       David   Feature     SchemaSpy automatisiert ausführen
