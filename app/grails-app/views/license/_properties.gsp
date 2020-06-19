@@ -20,7 +20,7 @@
 
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(institution)}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
@@ -105,7 +105,7 @@
 
 
 <g:each in="${authorizedOrgs}" var="authOrg">
-    <g:if test="${authOrg.name == contextOrg?.name}">
+    <g:if test="${authOrg.name == institution.name}">
         <div class="ui card la-dl-no-table la-js-hideable">
             <div class="content">
                 <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>

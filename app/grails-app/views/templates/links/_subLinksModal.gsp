@@ -108,9 +108,10 @@
 <%-- for that one day, we may move away from that ... --%>
 <r:script>
     $(document).ready(function(){
+       console.log("${urlLookup}");
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="lookupSubscriptionsLicenses"/>?status=FETCH_ALL&query={query}&filterMembers=true&ctx=${GenericOIDService.getOID(context)}",
+                url: "<g:createLink controller="ajax" action="${urlLookup}"/>?status=FETCH_ALL&query={query}&filterMembers=${accessService.checkPerm("ORG_CONSORTIUM")}&ctx=${context}",
                 cache: false
             },
             clearable: true,
