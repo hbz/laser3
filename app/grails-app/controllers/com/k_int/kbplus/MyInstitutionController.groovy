@@ -3945,8 +3945,6 @@ AND EXISTS (
             propDefs[it] = itResult
         }
 
-        propDefs << ["${PropertyDefinition.PLA_PROP}": PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.PLA_PROP, null, [sort: 'name'])]
-
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
         result.editable = false
         result.propertyDefinitions = propDefs

@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2622    19.06.2020  rc1.4       David   Feature     Verwaltung von Plattformmerkmalen
+
 2568    18.06.2020  rc1.4       Moe     Bug         Vertragsfilter "Konsortium" nicht auf GASCO-Konsortien beschränkt
 
 2594    17.06.2020  rc1.4       David   Feature     SchemaSpy automatisiert ausführen
