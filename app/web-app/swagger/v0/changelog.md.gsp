@@ -2,6 +2,14 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.108
+
+- (re)added new attribute: `License.status`
+
+#### 0.107
+
+- fixed __/subscription__
+
 #### 0.106
 
 - reworked access to __/oamonitor/*__

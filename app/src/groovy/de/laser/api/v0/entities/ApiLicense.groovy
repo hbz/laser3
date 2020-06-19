@@ -134,7 +134,7 @@ class ApiLicense {
         // RefdataValues
 
         result.licenseCategory  = lic.licenseCategory?.value
-        //result.status           = lic.status?.value
+        result.status           = lic.status?.value
         result.type             = lic.type?.value
 
         // References

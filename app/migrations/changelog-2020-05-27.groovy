@@ -14,5 +14,4 @@ update refdata_value set rdv_value = 'Accepted Author Manuscript (AAM)' where rd
 			rollback {}
 		}
 	}
-
 }
