@@ -82,15 +82,7 @@
                         // ajaxPostFunc()
                     }
                 }).modal('show');
-            }//,
-            // error: function(jpXHR, error, errorThrown){
-            //     alert('Es ist ein Fehler aufgetreten');
-            //     console.log('jpXHR: '+jpXHR);
-            //     console.log('error: '+error);
-            //     console.log('errorThrown: '+errorThrown);
-            //
-            //     $("#flash").val("FEHLER");
-            // }
+            }
         });
     }
 </g:javascript>
