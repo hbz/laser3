@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.109
+
+- added new attribute: `Subscription.kind` for __/statistic/packages__
+
 #### 0.108
 
 - (re)added new attribute: `License.status`
