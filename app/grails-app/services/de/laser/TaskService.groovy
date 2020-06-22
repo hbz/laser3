@@ -250,8 +250,8 @@ class TaskService {
         List validOrgs = []
         List<Map> validOrgsDropdown = []
         if (contextOrg) {
-            boolean isInstitution = (RDStore.OT_INSTITUTION == contextOrg.getCustomerType())
-            boolean isConsortium  = (RDStore.OT_CONSORTIUM == contextOrg.getCustomerType())
+            boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST','ORG_INST_COLLECTIVE'])
+            boolean isConsortium  = (contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
             def params       = [:]
             params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
             def fsq          = filterService.getOrgQuery(params)
