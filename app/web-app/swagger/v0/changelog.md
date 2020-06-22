@@ -2,9 +2,13 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.108
+
+- (re)added new attribute: `License.status`
+
 #### 0.107
 
-- Bugfix 500 response by subscription endpoint
+- fixed __/subscription__
 
 #### 0.106
 

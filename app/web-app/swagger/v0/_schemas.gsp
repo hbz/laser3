@@ -327,6 +327,10 @@
         startDate:
           type: string
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
+        status:
+          type: string
+          description: Mapping RefdataCategory "${RDConstants.LICENSE_STATUS}"
+          enum: <% printRefdataEnum(RDConstants.LICENSE_STATUS, 12) %>
         subscriptions:
           type: array
           items:
