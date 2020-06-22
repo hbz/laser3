@@ -196,6 +196,7 @@ class ApiStatistic {
             }
             else {
                 Map<String, Object> sub = ApiUnsecuredMapReader.getSubscriptionStubMap(subPkg.subscription)
+                sub.kind = subPkg.subscription.kind?.value // TODO : implement sub.kind in stub ??
 
                 List<Org> orgList = []
 

@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      22.06.2020  rc1.4       David   Feature     API 0.109
+
 2622    19.06.2020  rc1.4       David   Feature     Verwaltung von Plattformmerkmalen
 
 2621    19.06.2020  rc1.4       David   Feature     API 0.108: license.status
