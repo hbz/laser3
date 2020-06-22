@@ -181,6 +181,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                    <g:if test="${ ! isOrgBasicMember}">
                         <tr>
                             <td>
                                 <div class="ui checkbox">
@@ -302,6 +303,7 @@
                                 <input type="number" name="remindPeriodForTasks" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_TASKS, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
+                    </g:if>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
