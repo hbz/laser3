@@ -2282,7 +2282,6 @@ class SurveyController {
 
         }
 
-        PropertyDefinition lateCommersProperty = PropertyDefinition.getByNameAndDescr("Späteinsteiger", PropertyDefinition.SUB_PROP)
         def currentParticipantIDs = []
         result.orgsWithMultiYearTermSub = []
         result.orgsLateCommers = []
@@ -2294,22 +2293,6 @@ class SurveyController {
                 result.orgsWithMultiYearTermSub << sub
                 sub.getAllSubscribers().each { org ->
                     orgsWithMultiYearTermOrgsID << org.id
-                }
-            }
-            else if (lateCommersProperty && lateCommersProperty.type == 'class com.k_int.kbplus.RefdataValue') {
-                def subProp = sub.customProperties.find { it.type.id == lateCommersProperty.id }
-                if(subProp.refValue == RefdataValue.getByValueAndCategory('Yes', lateCommersProperty.refdataCategory))
-                {
-                    result.orgsLateCommers << sub
-                    sub.getAllSubscribers().each { org ->
-                        orgsLateCommersOrgsID << org.id
-                    }
-
-                } else
-                {
-                    sub.getAllSubscribers().each { org ->
-                        currentParticipantIDs << org.id
-                    }
                 }
             }
             else
@@ -4176,7 +4159,7 @@ class SurveyController {
 
 
 
-        //MultiYearTerm Subs  //Späteinsteiger Unwichtig
+        //MultiYearTerm Subs
         result.parentSubChilds.each { sub ->
             if (sub.isCurrentMultiYearSubscriptionNew()){
                 sub.getAllSubscribers().each { org ->
@@ -4187,15 +4170,6 @@ class SurveyController {
                     }
                 }
             }
-            /*else if(sub.islateCommer()){
-                sub.getAllSubscribers().each { org ->
-                    if (!(org in result.parentSuccessortParticipantsList)) {
-
-                        countNewSubs++
-                        result.newSubs << processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, false, params)
-                    }
-                }
-            }*/
 
         }
 
