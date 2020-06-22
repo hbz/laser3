@@ -5,7 +5,18 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
+import de.laser.ComparisonService
+import de.laser.ContextService
+import de.laser.EscapeService
+import de.laser.FilterService
+import de.laser.OrgTypeService
 import de.laser.PropertyService
+import de.laser.SubscriptionService
+import de.laser.SubscriptionsQueryService
+import de.laser.SurveyService
+import de.laser.SurveyUpdateService
+import de.laser.TaskService
+import de.laser.batch.SurveyUpdateJob
 import de.laser.domain.IssueEntitlementGroup
 import de.laser.domain.IssueEntitlementGroupItem
 import de.laser.domain.PendingChangeConfiguration
@@ -16,6 +27,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -33,23 +45,23 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
 
-    def springSecurityService
-    def accessService
-    def contextService
-    def subscriptionsQueryService
-    def filterService
-    def docstoreService
-    def orgTypeService
-    def genericOIDService
-    def surveyService
-    def financeService
-    def exportService
-    def taskService
-    def subscriptionService
-    def comparisonService
-    def surveyUpdateService
-    def escapeService
-    def institutionsService
+    SpringSecurityService springSecurityService
+    AccessService accessService
+    ContextService contextService
+    SubscriptionsQueryService subscriptionsQueryService
+    FilterService filterService
+    DocstoreService docstoreService
+    OrgTypeService orgTypeService
+    GenericOIDService genericOIDService
+    SurveyService surveyService
+    FinanceService financeService
+    ExportService exportService
+    TaskService taskService
+    SubscriptionService subscriptionService
+    ComparisonService comparisonService
+    SurveyUpdateService surveyUpdateService
+    EscapeService escapeService
+    InstitutionsService institutionsService
     PropertyService propertyService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
@@ -1561,96 +1573,10 @@ class SurveyController {
 
         result.properties = getSurveyProperties(result.institution)
 
-        result.addSurveyConfigs = params.addSurveyConfigs ?: false
-
         result.language = LocaleContextHolder.getLocale().toString()
 
         result
 
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def changeConfigOrder() {
-        def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        if (result.surveyInfo.surveyConfigs.size() > 0) {
-            def surveyConfig = SurveyConfig.get(params.surveyConfigID)
-
-            if (params.change == 'up') {
-
-                def secoundSurveyConfig = SurveyConfig.findBySurveyInfoAndConfigOrder(result.surveyInfo, surveyConfig.configOrder - 1)
-                secoundSurveyConfig.configOrder = surveyConfig.configOrder
-                secoundSurveyConfig.save(flush: true)
-                surveyConfig.configOrder = surveyConfig.configOrder - 1
-                if (surveyConfig.save(flush: true)) {
-                    //flash.message = g.message(code: 'survey.change.successfull')
-                } else {
-                    flash.error = g.message(code: 'survey.change.fail')
-                }
-
-            }
-
-            if (params.change == 'down') {
-                def secoundSurveyConfig = SurveyConfig.findBySurveyInfoAndConfigOrder(result.surveyInfo, surveyConfig.configOrder + 1)
-                secoundSurveyConfig.configOrder = surveyConfig.configOrder
-                secoundSurveyConfig.save(flush: true)
-                surveyConfig.configOrder = surveyConfig.configOrder + 1
-
-                if (surveyConfig.save(flush: true)) {
-                    //flash.message = g.message(code: 'survey.change.successfull')
-                } else {
-                    flash.error = g.message(code: 'survey.change.fail')
-                }
-            }
-
-        }
-        redirect(url: request.getHeader('referer'))
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def addSurveyConfigs() {
-        def result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
-
-        if (result.surveyInfo && result.editable) {
-
-            if (params.selectedProperty) {
-
-                SurveyConfig surveyConfig = (result.surveyInfo.surveyConfigs.size() > 0) ? result.surveyInfo.surveyConfigs[0] : null
-
-                params.list('selectedProperty').each { propertyID ->
-
-                    if (propertyID) {
-                        PropertyDefinition property = PropertyDefinition.get(Long.parseLong(propertyID))
-                        //Config is Sub
-                        if (surveyConfig) {
-
-                            if (addSurPropToSurvey(surveyConfig, property)) {
-
-                                //flash.message = g.message(code: "surveyConfigs.property.add.successfully")
-
-                            } else {
-                                flash.error = g.message(code: "surveyConfigs.property.exists")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        redirect(url: request.getHeader('referer'))
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
@@ -1683,52 +1609,6 @@ class SurveyController {
                 }
             }
         }
-        redirect(url: request.getHeader('referer'))
-
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def deleteSurveyConfig() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        def surveyConfig = SurveyConfig.get(params.id)
-        def surveyInfo = surveyConfig.surveyInfo
-        //surveyInfo.removeFromSurveyConfigs(surveyConfig)
-
-        result.editable = (surveyInfo && surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
-
-        if (result.editable) {
-            try {
-
-                SurveyConfigProperties.findAllBySurveyConfig(surveyConfig).each {
-                    it.delete(flush: true)
-                }
-
-                SurveyOrg.findAllBySurveyConfig(surveyConfig).each {
-                    it.delete(flush: true)
-                }
-
-                surveyConfig.delete(flush: true)
-
-                //flash.message = g.message(code: "default.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
-            }
-            catch (DataIntegrityViolationException e) {
-                flash.error = g.message(code: "default.not.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
-            }
-        }
-
         redirect(url: request.getHeader('referer'))
 
     }
@@ -4615,112 +4495,6 @@ class SurveyController {
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
-
-    private def exportSurveyParticipantResult(List<SurveyResult> results, String format, Org org) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        List titles = [g.message(code: 'surveyInfo.owner.label'),
-
-                       g.message(code: 'surveyConfigsInfo.comment'),
-                       g.message(code: 'surveyParticipants.label'),
-                       g.message(code: 'org.shortname.label'),
-                       g.message(code: 'surveyProperty.subName'),
-                       g.message(code: 'surveyProperty.subProvider'),
-                       g.message(code: 'surveyProperty.subAgency'),
-                       g.message(code: 'license.label'),
-                       g.message(code: 'subscription.packages.label'),
-                       g.message(code: 'default.status.label'),
-                       g.message(code: 'subscription.type.label'),
-                       g.message(code: 'subscription.kind.label'),
-                       g.message(code: 'subscription.form.label'),
-                       g.message(code: 'subscription.resource.label'),
-
-                       g.message(code: 'surveyConfigsInfo.newPrice'),
-                       g.message(code: 'surveyConfigsInfo.newPrice.comment'),
-
-                       g.message(code: 'surveyProperty.label'),
-                       g.message(code: 'default.type.label'),
-                       g.message(code: 'surveyResult.result'),
-                       g.message(code: 'surveyResult.comment'),
-                       g.message(code: 'surveyResult.finishDate')]
-
-        List surveyData = []
-        results.findAll { it.surveyConfig.type == 'Subscription' }.each { result ->
-            List row = []
-            switch (format) {
-                case "xls":
-                case "xlsx":
-
-                    def sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
-
-                    def surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant),RDStore.COST_ITEM_DELETED)
-
-                    row.add([field: result.owner.name ?: '', style: null])
-                    row.add([field: result.surveyConfig.comment ?: '', style: null])
-                    row.add([field: result.participant.name ?: '', style: null])
-                    row.add([field: result.participant.shortname ?: '', style: null])
-                    row.add([field: sub.name ?: "", style: null])
-
-
-                    row.add([field: sub.providers ? sub.providers.join(", ") : '', style: null])
-                    row.add([field: sub.agencies ? sub.agencies.join(", ") : '', style: null])
-
-                    row.add([field: sub.owner.reference ?: '', style: null])
-                    List packageNames = sub.packages.collect {
-                        it.pkg.name
-                    }
-                    row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
-                    row.add([field: sub.status?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub.type?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub.kind?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub.form?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
-
-                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? surveyCostItem.costInBillingCurrencyAfterTax : '', style: null])
-
-                    row.add([field: surveyCostItem?.costDescription ?: '', style: null])
-
-                    row.add([field: result.type?.getI10n('name') ?: '', style: null])
-                    row.add([field: PropertyDefinition.getLocalizedValue(result.type.type) ?: '', style: null])
-
-                    def value = ""
-
-                    if (result.type.type == Integer.toString()) {
-                        value = result.intValue ? result.intValue.toString() : ""
-                    } else if (result.type.type == String.toString()) {
-                        value = result.stringValue ?: ""
-                    } else if (result.type.type == BigDecimal.toString()) {
-                        value = result.decValue ? result.decValue.toString() : ""
-                    } else if (result.type.type == Date.toString()) {
-                        value = result.dateValue ? sdf.format(result.dateValue) : ""
-                    } else if (result.type.type == URL.toString()) {
-                        value = result.urlValue ? result.urlValue.toString() : ""
-                    } else if (result.type.type == RefdataValue.toString()) {
-                        value = result.refValue ? result.refValue.getI10n('value') : ""
-                    }
-
-                    def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant)
-
-                    if (surveyOrg.existsMultiYearTerm()) {
-                        value = g.message(code: "surveyOrg.perennialTerm.available")
-                    }
-
-                    row.add([field: value ?: '', style: null])
-                    row.add([field: result.comment ?: '', style: null])
-                    row.add([field: result.finishDate ? sdf.format(result.finishDate) : '', style: null])
-
-                    surveyData.add(row)
-                    break
-            }
-        }
-        switch (format) {
-            case 'xls':
-            case 'xlsx':
-                Map sheetData = [:]
-                sheetData[message(code: 'menu.my.surveys')] = [titleRow: titles, columnData: surveyData]
-                return exportService.generateXLSXWorkbook(sheetData)
-        }
-    }
-
     private def exportRenewalResult(Map renewalResult) {
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = [g.message(code: 'org.sortname.label'),
@@ -5007,88 +4781,6 @@ class SurveyController {
         Map sheetData = [:]
         sheetData[message(code: 'renewalexport.renewals')] = [titleRow: titles, columnData: renewalData]
         return exportService.generateXLSXWorkbook(sheetData)
-    }
-
-    private def exportSurveyParticipantResultMin(List<SurveyResult> results, String format, Org org) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        List titles = [
-                g.message(code: 'org.shortname.label'),
-                g.message(code: 'surveyParticipants.label'),
-
-                g.message(code: 'surveyProperty.subName'),
-
-                g.message(code: 'surveyConfigsInfo.newPrice'),
-                g.message(code: 'surveyConfigsInfo.newPrice.comment'),
-                g.message(code: 'surveyResult.finishDate')
-        ]
-
-        results.groupBy {
-            it.type.id
-        }.sort { it.value[0].type.name }.each { property ->
-            titles << PropertyDefinition.get(property.key).getI10n('name')
-            titles << g.message(code: 'surveyResult.participantComment')
-        }
-
-        List surveyData = []
-        results.findAll { it.surveyConfig.type == 'Subscription' }.groupBy { it.participant.id }.each { result ->
-            List row = []
-            switch (format) {
-                case "xls":
-                case "xlsx":
-
-                    def participant = Org.get(result.key)
-
-                    row.add([field: participant.shortname ?: '', style: null])
-                    row.add([field: participant.name ?: '', style: null])
-
-                    row.add([field: result.value[0].surveyConfig?.getConfigNameShort() ?: "", style: null])
-                    def surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(result?.value[0]?.surveyConfig, participant),RDStore.COST_ITEM_DELETED)
-
-                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? surveyCostItem.costInBillingCurrencyAfterTax : '', style: null])
-
-                    row.add([field: surveyCostItem?.costDescription ?: '', style: null])
-
-                    row.add([field: result.value[0].finishDate ? sdf.format(result.value[0].finishDate) : '', style: null])
-
-                    result.value.sort { it.type.name }.each { resultProperty ->
-
-                        def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(resultProperty.surveyConfig, participant)
-
-                        def value = ""
-
-                        if (resultProperty.type.type == Integer.toString()) {
-                            value = resultProperty.intValue ? resultProperty.intValue.toString() : ""
-                        } else if (resultProperty.type.type == String.toString()) {
-                            value = resultProperty.stringValue ?: ""
-                        } else if (resultProperty.type.type == BigDecimal.toString()) {
-                            value = resultProperty.decValue ? resultProperty.decValue.toString() : ""
-                        } else if (resultProperty.type.type == Date.toString()) {
-                            value = resultProperty.dateValue ? sdf.format(resultProperty.dateValue) : ""
-                        } else if (resultProperty.type.type == URL.toString()) {
-                            value = resultProperty.urlValue ? resultProperty.urlValue.toString() : ""
-                        } else if (resultProperty.type.type == RefdataValue.toString()) {
-                            value = resultProperty.refValue ? resultProperty.refValue.getI10n('value') : ""
-                        }
-
-                        if (surveyOrg.existsMultiYearTerm()) {
-                            value = g.message(code: "surveyOrg.perennialTerm.available")
-                        }
-
-                        row.add([field: value ?: '', style: null])
-                        row.add([field: resultProperty.comment ?: '', style: null])
-                    }
-
-                    surveyData.add(row)
-                    break
-            }
-        }
-        switch (format) {
-            case 'xls':
-            case 'xlsx':
-                Map sheetData = [:]
-                sheetData[message(code: 'menu.my.surveys')] = [titleRow: titles, columnData: surveyData]
-                return exportService.generateXLSXWorkbook(sheetData)
-        }
     }
 
     private def exportSurveyCostItems(SurveyConfig surveyConfig, String format, Org org) {
