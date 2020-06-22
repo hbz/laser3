@@ -34,7 +34,7 @@ class ProfileController {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.editable = true
-        result.isOrgBasicMember = contextService.org.getCustomerType() in ['ORG_BASIC_MEMBER']
+        result.isOrgBasicMember = contextService.org.getCustomerType() == 'ORG_BASIC_MEMBER'
         result.availableOrgs  = Org.executeQuery('from Org o where o.sector = ? order by o.sortname', [RDStore.O_SECTOR_HIGHER_EDU])
         result.availableOrgRoles = Role.findAllByRoleType('user')
         result
