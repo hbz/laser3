@@ -54,7 +54,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
             LIC_PROP,
             ORG_CONF,
             SUB_PROP,
-            //SYS_CONF,
+            PLA_PROP,
             ORG_PROP,
             SUR_PROP
     ]
