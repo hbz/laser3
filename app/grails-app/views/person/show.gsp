@@ -1,4 +1,5 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
 <head>
@@ -18,10 +19,8 @@
 <g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.id == RDStore.CONTACT_TYPE_PERSONAL.id}" />
 <br>
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-${personInstance}
+    ${personInstance}
 </h1>
-
-<g:render template="nav" contextPath="."/>
 
 <semui:messages data="${flash}"/>
 
@@ -357,38 +356,63 @@ ${personInstance}
                 </div><!-- .card -->
             </g:if>
 
-                    <g:if test="${personInstance?.tenant && !myPublicContact}">
+            <g:javascript src="properties.js"/>
+            <div class="ui grid">
+                <div class="sixteen wide column">
+                    <div class="la-inline-lists">
                         <div class="ui card">
                             <div class="content">
-                                <dl><dt><g:message code="person.tenant.label" /></dt>
-                                <dd>
-
-                                    <g:if test="${editable /* && personInstance?.tenant?.id == contextService.getOrg().id */ && personInstance?.isPublic}">
-                                        <semui:xEditableRefData owner="${personInstance}" field="tenant"
-                                                                dataController="person" dataAction="getPossibleTenantsAsJson" />
-                                    </g:if>
-                                    <g:else>
-                                        <g:link controller="organisation" action="show"
-                                                id="${personInstance.tenant?.id}">${personInstance.tenant}</g:link>
-                                    </g:else>
-
-                                    <g:if test="${! personInstance.isPublic}">
-                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                            <i class="address card outline icon"></i>
-                                        </span>
-                                        * Kann nicht geändert werden.
-                                    </g:if>
-                                    <g:else>
-                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                            <i class="address card icon"></i>
-                                        </span>
-                                    </g:else>
-
-                                </dd></dl>
+                                <% def org = contextService.getOrg() %>
+                                <div id="custom_props_div_${org.id}">
+                                    <h5 class="ui header">${message(code:'org.properties.private')} ${org.name}</h5>
+                                    <g:render template="../templates/properties/private" model="${[
+                                            prop_desc: PropertyDefinition.PRS_PROP,
+                                            ownobj: personInstance,
+                                            custom_props_div: "custom_props_div_${org.id}",
+                                            tenant: org]}"/>
+                                    <r:script language="JavaScript">
+                                        $(document).ready(function(){
+                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${org.id}", ${org.id});
+                                        });
+                                    </r:script>
+                                </div>
                             </div>
                         </div><!-- .card -->
-                    </g:if>
+                    </div>
+                </div>
+            </div>
 
+            <g:if test="${personInstance?.tenant && !myPublicContact}">
+                <div class="ui card">
+                    <div class="content">
+                        <dl><dt><g:message code="person.tenant.label" /></dt>
+                            <dd>
+
+                                <g:if test="${editable /* && personInstance?.tenant?.id == contextService.getOrg().id */ && personInstance?.isPublic}">
+                                    <semui:xEditableRefData owner="${personInstance}" field="tenant"
+                                                            dataController="person" dataAction="getPossibleTenantsAsJson" />
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="organisation" action="show"
+                                            id="${personInstance.tenant?.id}">${personInstance.tenant}</g:link>
+                                </g:else>
+
+                                <g:if test="${! personInstance.isPublic}">
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
+                                        <i class="address card outline icon"></i>
+                                    </span>
+                                    *&nbsp${message(code: 'default.can.not.be.changed')}
+                                </g:if>
+                                <g:else>
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
+                                        <i class="address card icon"></i>
+                                    </span>
+                                </g:else>
+
+                            </dd></dl>
+                    </div>
+                </div><!-- .card -->
+            </g:if>
             <g:if test="${editable && personInstance?.tenant?.id == contextService.getOrg().id}">
                 <div class="ui card">
                     <div class="content">
