@@ -5,7 +5,7 @@
         </span>
         <div class="content la-space-right">
             <strong>${address.type?.getI10n('value')}:</strong>
-            <div class="item" data-href="#addressFormModal${address.id}" data-semui="modal" >
+            <div class="item" onclick="addressedit(${address.id});" >
                 <g:if test="${address.name}">
                     <br />
                     ${address.name}
@@ -39,9 +39,11 @@
                     <g:if test="${address.pobZipcode || address.pobCity}">, </g:if>
                     ${address.pobZipcode} ${address.pobCity}
                 </g:if>
+%{--
                 <g:if test="${editable}">
                     <g:render template="/address/formModal" model="['addressId': address.id, modalId: 'addressFormModal' + address.id]"/>
                 </g:if>
+--}%
             </div>
         </div>
         <div class="content">
@@ -59,3 +61,28 @@
         </div>
 	</div>
 </g:if>
+<g:javascript>
+    function addressedit(id) {
+        var url = '<g:createLink controller="ajax" action="AddressEdit"/>?id='+id;
+        private_address_modal(url)
+    }
+    function private_address_modal(url) {
+        $.ajax({
+            url: url,
+            success: function(result){
+                $("#dynamicModalContainer").empty();
+                $("#addressFormModal").remove();
+
+                $("#dynamicModalContainer").html(result);
+                $("#dynamicModalContainer .ui.modal").modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#addressFormModal');
+                        r2d2.initDynamicXEditableStuff('#addressFormModal');
+
+                        // ajaxPostFunc()
+                    }
+                }).modal('show');
+            }
+        });
+    }
+</g:javascript>

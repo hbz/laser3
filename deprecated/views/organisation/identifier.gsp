@@ -406,14 +406,14 @@
                                                    data-semui="modal"
                                                    data-href="#addressFormModalPostalAddress"/>
                                             <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalPostalAddress', hideType: true]"/>
+                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalPostalAddress', typeId: RDStore.ADRESS_TYPE_POSTAL.id, hideType: true]"/>
 
                                             <input class="ui button" size="35"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
                                                    data-semui="modal"
                                                    data-href="#addressFormModalBillingAddress"/>
                                             <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalBillingAddress', hideType: true]"/>
+                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalBillingAddress', typeId: RDStore.ADRESS_TYPE_BILLING.id, hideType: true]"/>
                                         </div>
 
                                         <div class="item">
@@ -423,7 +423,7 @@
                                                    data-semui="modal"
                                                    data-href="#addressFormModalLegalPatronAddress"/>
                                             <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', hideType: true]"/>
+                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', typeId: RDStore.ADRESS_TYPE_LEGAL_PATRON.id, hideType: true]"/>
 
                                            %{-- <input class="ui button" size="35"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'address.otherAddress')])}"

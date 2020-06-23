@@ -1,4 +1,5 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
 <head>
@@ -18,10 +19,8 @@
 <g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.id == RDStore.CONTACT_TYPE_PERSONAL.id}" />
 <br>
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-${personInstance}
+    ${personInstance}
 </h1>
-
-<g:render template="nav" contextPath="."/>
 
 <semui:messages data="${flash}"/>
 
@@ -111,7 +110,6 @@ ${personInstance}
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
-
                                     <g:render template="/templates/cpa/address" model="${[
                                             address: a,
                                             tmplShowDeleteButton: true,
@@ -123,9 +121,15 @@ ${personInstance}
                                 </g:each>
                             </div>
                             <g:if test="${editable}">
-                                <input class="ui button" type="button" data-semui="modal" data-href="#addressFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}">
-                                <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
+                                <% Map model = [:]
+                                model.prsId = personInstance.id
+                                model.redirect = '.'
+                                model.typeId = RDStore.ADRESS_TYPE_LIBRARY.id
+                                model.hideType = true%>
+                                <input class="ui icon button" type="button"
+                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
+                                       onclick="addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                >
                             </g:if>
                         </dd>
                     </dl>
@@ -352,38 +356,63 @@ ${personInstance}
                 </div><!-- .card -->
             </g:if>
 
-                    <g:if test="${personInstance?.tenant && !myPublicContact}">
+            <g:javascript src="properties.js"/>
+            <div class="ui grid">
+                <div class="sixteen wide column">
+                    <div class="la-inline-lists">
                         <div class="ui card">
                             <div class="content">
-                                <dl><dt><g:message code="person.tenant.label" /></dt>
-                                <dd>
-
-                                    <g:if test="${editable /* && personInstance?.tenant?.id == contextService.getOrg().id */ && personInstance?.isPublic}">
-                                        <semui:xEditableRefData owner="${personInstance}" field="tenant"
-                                                                dataController="person" dataAction="getPossibleTenantsAsJson" />
-                                    </g:if>
-                                    <g:else>
-                                        <g:link controller="organisation" action="show"
-                                                id="${personInstance.tenant?.id}">${personInstance.tenant}</g:link>
-                                    </g:else>
-
-                                    <g:if test="${! personInstance.isPublic}">
-                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                            <i class="address card outline icon"></i>
-                                        </span>
-                                        * Kann nicht geändert werden.
-                                    </g:if>
-                                    <g:else>
-                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                            <i class="address card icon"></i>
-                                        </span>
-                                    </g:else>
-
-                                </dd></dl>
+                                <% def org = contextService.getOrg() %>
+                                <div id="custom_props_div_${org.id}">
+                                    <h5 class="ui header">${message(code:'org.properties.private')} ${org.name}</h5>
+                                    <g:render template="../templates/properties/private" model="${[
+                                            prop_desc: PropertyDefinition.PRS_PROP,
+                                            ownobj: personInstance,
+                                            custom_props_div: "custom_props_div_${org.id}",
+                                            tenant: org]}"/>
+                                    <r:script language="JavaScript">
+                                        $(document).ready(function(){
+                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${org.id}", ${org.id});
+                                        });
+                                    </r:script>
+                                </div>
                             </div>
                         </div><!-- .card -->
-                    </g:if>
+                    </div>
+                </div>
+            </div>
 
+            <g:if test="${personInstance?.tenant && !myPublicContact}">
+                <div class="ui card">
+                    <div class="content">
+                        <dl><dt><g:message code="person.tenant.label" /></dt>
+                            <dd>
+
+                                <g:if test="${editable /* && personInstance?.tenant?.id == contextService.getOrg().id */ && personInstance?.isPublic}">
+                                    <semui:xEditableRefData owner="${personInstance}" field="tenant"
+                                                            dataController="person" dataAction="getPossibleTenantsAsJson" />
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="organisation" action="show"
+                                            id="${personInstance.tenant?.id}">${personInstance.tenant}</g:link>
+                                </g:else>
+
+                                <g:if test="${! personInstance.isPublic}">
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
+                                        <i class="address card outline icon"></i>
+                                    </span>
+                                    *&nbsp${message(code: 'default.can.not.be.changed')}
+                                </g:if>
+                                <g:else>
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
+                                        <i class="address card icon"></i>
+                                    </span>
+                                </g:else>
+
+                            </dd></dl>
+                    </div>
+                </div><!-- .card -->
+            </g:if>
             <g:if test="${editable && personInstance?.tenant?.id == contextService.getOrg().id}">
                 <div class="ui card">
                     <div class="content">
@@ -427,3 +456,40 @@ ${personInstance}
 
 </body>
 </html>
+<g:javascript>
+        %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
+            %{--var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
+            %{--private_address_modal(url);--}%
+        %{--}--}%
+        function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {
+            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
+            private_address_modal(url);
+        }
+        function addressedit(id) {
+            var url = '<g:createLink controller="ajax" action="AddressEdit"/>?id='+id;
+            private_address_modal(url)
+        }
+
+        function private_address_modal(url) {
+            $.ajax({
+                url: url,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#addressFormModal").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#addressFormModal');
+                            r2d2.initDynamicXEditableStuff('#addressFormModal');
+
+                            // ajaxPostFunc()
+                        }
+                    }).modal('show');
+                },
+                error: function (request, status, error) {
+                    alert(request.status + ": " + request.statusText);
+                }
+            });
+        }
+</g:javascript>
