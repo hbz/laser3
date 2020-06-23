@@ -1,7 +1,7 @@
 
     <nav id="mainMenueTest" class="ui inverted stackable menu" role="menubar" aria-label="${message(code:'aria-label.mainNavigation')}">
         <div class="ui container" role="none">
-            <a href="#" aria-label="Start" class="header item la-logo-item">
+            <a tabindex='0' href="#" aria-label="Start" class="header item la-logo-item">
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </a>
 
@@ -9,11 +9,27 @@
                 Alle
                 <i aria-hidden="true" class="dropdown icon"></i>
 
+%{--                <div class="menu" role="menu" aria-label="das Menu">
+                    <a href="#" tabindex='0' class="item"  role="menuitem" aria-label="Alle Pakete" >Alle Pakete</a>
+                    <a href="#" tabindex='-1' class="item" role="menuitem" aria-label="Alle Titel" >Alle Titel</a>
+                    <a href="#" tabindex='-1' class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</a>
+                </div>--}%
                 <div class="menu" role="menu" aria-label="das Menu">
-                    <div href="#" class="item"  role="menuitem">Alle Pakete</div>
-                    <div href="#" class="item" role="menuitem">Alle Titel</div>
-                    <div href="#" class="item" role="menuitem" >Alle Organisationen</div>
+                    <div tabindex='0' class="item"  role="menuitem" aria-label="Alle Pakete" >Alle Pakete</div>
+                    <div tabindex='-1' class="item" role="menuitem" aria-label="Alle Titel" >Alle Titel</div>
+                    <div href="#" tabindex='-1' class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</div>
                 </div>
+%{--                <ul class="menu" role="menu">
+                    <li class="item" role="menuitem" >
+                        <a href="#" tabindex='-1' aria-hidden="true">Action</a>
+                    </li>
+                    <li class="item" role="menuitem" >
+                        <a href="#" tabindex='-1' aria-hidden="true">Another action</a>
+                    </li>
+                    <li class="item" role="menuitem" >
+                        <a href="#" tabindex='-1'    aria-hidden="true">Something else here</a>
+                    </li>
+                </ul>--}%
             </div>
 
             <div class="ui dropdown item" role="menuitem" aria-haspopup="true">

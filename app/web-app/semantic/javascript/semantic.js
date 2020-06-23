@@ -7160,15 +7160,19 @@ $.fn.dropdown = function(parameters) {
 
               // visible menu keyboard shortcuts
               if( module.is.visible() ) {
+                console.log("module.is.visible");
 
                 // enter (select or open sub-menu)
                 if(pressedKey == keys.enter || delimiterPressed) {
+                  console.log("--- pressedKey == keys.enter || delimiterPressed -----");
                   if(pressedKey == keys.enter && hasSelectedItem && hasSubMenu && !settings.allowCategorySelection) {
+                    console.log("--- pressedKey == keys.enter && hasSelectedItem && hasSubMenu && !settings.allowCategorySelection -----");
                     module.verbose('Pressed enter on unselectable category, opening sub menu');
                     pressedKey = keys.rightArrow;
                   }
                   else if(selectedIsSelectable) {
                     module.verbose('Selecting item from keyboard shortcut', $selectedItem);
+                    console.log("--- else if(selectedIsSelectable) -----");
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
                       // module.remove.searchTerm();
@@ -7244,6 +7248,7 @@ $.fn.dropdown = function(parameters) {
 
                 // down arrow (traverse menu down)
                 if(pressedKey == keys.downArrow) {
+                  console.log('pressedKey == keys.downArrow');
                   $nextItem = (hasSelectedItem && inVisibleMenu)
                     ? $nextItem = $selectedItem.nextAll(selector.item + ':not(' + selector.unselectable + ')').eq(0)
                     : $item.eq(0)
@@ -8019,7 +8024,7 @@ $.fn.dropdown = function(parameters) {
           ariaSelected : function (selectedItem) {
             // console.log("aria-selected WIRD GESETZT");
             // console.log(selectedItem);
-            $(selectedItem).attr('aria-selected', 'true')
+            $(selectedItem).attr('aria-selected', 'true') //"VOX: Menuepunkt ausgewählt"
           },
           filtered: function() {
             var
@@ -8063,7 +8068,7 @@ $.fn.dropdown = function(parameters) {
               console.log('Added tabindex to searchable dropdown')
               module.debug('Added tabindex to searchable dropdown');
               $search
-                .val('')
+                //.val('')
                 .attr('tabindex', 0)
               ;
               $menu
@@ -8073,6 +8078,7 @@ $.fn.dropdown = function(parameters) {
             else {
               module.debug('Added tabindex to dropdown');
               if( $module.attr('tabindex') === undefined) {
+                console.log('$module.attr(tabindex) === undefined')
                 $module
                   .attr('tabindex', 0)
                 ;
@@ -9523,7 +9529,7 @@ $.fn.dropdown = function(parameters) {
 $.fn.dropdown.settings = {
 
   silent                 : false,
-  debug                  : false,
+  debug                  : true,
   verbose                : false,
   performance            : true,
 
