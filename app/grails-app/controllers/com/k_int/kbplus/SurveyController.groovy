@@ -695,6 +695,14 @@ class SurveyController {
                     result.properties << it
                 }
             }*/
+
+            if(result.surveyConfig.subSurveyUseForTransfer) {
+                result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
+
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.customProperties + result.successorSubscription.customProperties, true, true) : null
+            }
+
+
         }
 
         if ( params.exportXLSX ) {
@@ -1551,6 +1559,12 @@ class SurveyController {
             result.costItemSums = [:]
             if (costItems.cons) {
                 result.costItemSums.consCosts = costItems.cons.sums
+            }
+
+            if(result.surveyConfig.subSurveyUseForTransfer) {
+                result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
+
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.customProperties + result.successorSubscription.customProperties, true, true) : null
             }
         }
 

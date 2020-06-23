@@ -2,7 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2620    23.06.2020  hbz-dev     Moe     Bug         Verlängerungsumfrage: Veränderung an zukünftigen Merkmal einblenden
+2620    23.06.2020  hbz-dev     Moe     Feature     Verlängerungsumfrage: Veränderung an zukünftigen Merkmal einblenden
 
 2627    22.06.2020  hbz-dev     Moe     Feature     "Späteinsteiger" & "Mehrjahres ausgewählt" nicht mehr für Logik nutzen
 
