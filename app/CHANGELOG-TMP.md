@@ -2,6 +2,14 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      22.06.2020  rc1.4       Moe     Bug         Wrong using of getCustomerType
+
+--      22.06.2020  rc1.4       David   Feature     API 0.109
+
+2622    19.06.2020  rc1.4       David   Feature     Verwaltung von Plattformmerkmalen
+
+2621    19.06.2020  rc1.4       David   Feature     API 0.108: license.status
+
 2171    19.06.2020  hbz-dev     Anja    Feature     Umbau Adressen / Refactoring
 
 2568    18.06.2020  rc1.4       Moe     Bug         Vertragsfilter "Konsortium" nicht auf GASCO-Konsortien beschränkt
