@@ -34,12 +34,16 @@ class SurveyUpdateService extends AbstractLockableService {
             running = true
             def currentDate = new Date(System.currentTimeMillis())
 
+            Map<String,Object> updatedObjs = [:]
+
             // Ready -> Started
             List readySurveysIds = SurveyInfo.findAllByStatusAndStartDateLessThanEquals(RDStore.SURVEY_READY, currentDate).collect {it.id}
 
             log.info("surveyCheck (Ready to Started) readySurveysIds: " + readySurveysIds)
 
             if (readySurveysIds) {
+
+                updatedObjs << ["readyToStarted (${readySurveysIds.size()})" : readySurveysIds]
 
                 SurveyInfo.executeUpdate(
                         'UPDATE SurveyInfo survey SET survey.status =:status WHERE survey.id in (:ids)',
@@ -59,12 +63,15 @@ class SurveyUpdateService extends AbstractLockableService {
             log.info("surveyCheck (Started to Completed) startedSurveyIds: " + startedSurveyIds)
 
             if (startedSurveyIds) {
+                updatedObjs << ["StartedToCompleted (${startedSurveyIds.size()})" : startedSurveyIds]
 
                 SurveyInfo.executeUpdate(
                         'UPDATE SurveyInfo survey SET survey.status =:status WHERE survey.id in (:ids)',
                         [status: RDStore.SURVEY_SURVEY_COMPLETED, ids: startedSurveyIds]
                 )
             }
+
+            SystemEvent.createEvent('SURVEY_UPDATE_SERVICE_PROCESSING', updatedObjs)
             running = false
             return true
         }
