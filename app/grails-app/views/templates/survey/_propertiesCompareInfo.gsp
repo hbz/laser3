@@ -15,8 +15,8 @@
             <thead>
             <tr>
                 <th>${message(code: 'subscription.properties')}</th>
-                <th>${message(code: 'renewalWithSurvey.parentSubscription')}</th>
-                <th>${message(code: 'renewalWithSurvey.parentSuccessorSubscription')}</th>
+                <th>${message(code: 'survey.subscription.propertiesChange.now')}</th>
+                <th>${message(code: 'survey.subscription.propertiesChange.future')}</th>
             </tr>
             </thead>
             <tbody>
