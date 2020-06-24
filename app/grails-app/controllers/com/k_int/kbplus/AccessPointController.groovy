@@ -9,17 +9,12 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.uni_freiburg.ub.IpRange
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonOutput
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.dao.DataIntegrityViolationException
 
 import java.text.SimpleDateFormat
-
-import static de.laser.helper.RDStore.getCOMBO_TYPE_CONSORTIUM
-import static de.laser.helper.RDStore.getCOMBO_TYPE_DEPARTMENT
-import static de.laser.helper.RDStore.getCOMBO_TYPE_DEPARTMENT
 
 class AccessPointController extends AbstractDebugController {
 

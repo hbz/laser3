@@ -7,7 +7,6 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
-import de.laser.domain.SystemMessage
 import de.laser.domain.SystemProfiler
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants

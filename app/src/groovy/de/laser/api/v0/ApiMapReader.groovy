@@ -1,6 +1,9 @@
 package de.laser.api.v0
 
-import com.k_int.kbplus.*
+
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Person
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import groovy.util.logging.Log4j
 
 @Log4j
