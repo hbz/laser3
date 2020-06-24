@@ -2130,12 +2130,15 @@ AND EXISTS (
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.announcementOffset = 0
+        result.pendingOffset = 0
+        result.acceptedOffset = 0
         result.dashboardDueDatesOffset = 0
         switch(params.view) {
-            case 'announcementsView': result.announcementOffset = result.offset
+            case 'PendingChanges': result.pendingOffset = result.offset
+            break
+            case 'AcceptedChanges': result.acceptedOffset = result.offset
             break
             case 'dueDatesView': result.dashboardDueDatesOffset = result.offset
             break
@@ -2145,7 +2148,7 @@ AND EXISTS (
 
         // changes
 
-        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:0,pending:true,notifications:true]
+        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,pendingOffset:result.pendingOffset,acceptedOffset:result.acceptedOffset,pending:true,notifications:true]
 
         result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 

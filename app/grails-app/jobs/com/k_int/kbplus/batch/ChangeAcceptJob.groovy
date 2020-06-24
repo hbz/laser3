@@ -10,7 +10,7 @@ class ChangeAcceptJob extends AbstractJob {
 
   def pendingChangeService
 
-  static triggers = {
+  /*static triggers = {
    // Delay 20 seconds, run every 10 mins.
    // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
    // Example - every 10 mins 0 0/10 * * * ? 
@@ -24,7 +24,7 @@ class ChangeAcceptJob extends AbstractJob {
    //                  | | `- Hour, 0-23
    //                  | `- Minute, 0-59
    //                  `- Second, 0-59
- }
+ }*/
     static List<String> configFlags = []
 
     boolean isAvailable() {

@@ -62,8 +62,8 @@
         <div class="column">
 
             <g:if test="${entitlements?.size() > 0}">
-                ${message(code: 'subscription.entitlement.plural')} ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (entitlements?.size())), num_sub_rows])}. (
-                <g:if test="${params.mode == 'advanced'}">
+                ${message(code: 'subscription.entitlement.plural')} ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (entitlements?.size())), num_sub_rows])}
+                (<g:if test="${params.mode == 'advanced'}">
                     ${message(code: 'subscription.details.advanced.note')}
                     <g:link controller="subscription" action="index"
                             params="${params + ['mode': 'basic']}">${message(code: 'default.basic')}</g:link>
