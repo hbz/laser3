@@ -16,7 +16,6 @@ import de.laser.SubscriptionsQueryService
 import de.laser.SurveyService
 import de.laser.SurveyUpdateService
 import de.laser.TaskService
-import de.laser.batch.SurveyUpdateJob
 import de.laser.domain.IssueEntitlementGroup
 import de.laser.domain.IssueEntitlementGroupItem
 import de.laser.domain.PendingChangeConfiguration
