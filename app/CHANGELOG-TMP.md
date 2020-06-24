@@ -2,7 +2,31 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2620    23.06.2020  hbz-dev     Moe     Feature     Verlängerungsumfrage: Veränderung an zukünftigen Merkmal einblenden
+
+2627    22.06.2020  hbz-dev     Moe     Feature     "Späteinsteiger" & "Mehrjahres ausgewählt" nicht mehr für Logik nutzen
+
+--      22.06.2020  rc1.4       Moe     Bug         Wrong using of getCustomerType
+
+--      22.06.2020  rc1.4       David   Feature     API 0.109
+
+2622    19.06.2020  rc1.4       David   Feature     Verwaltung von Plattformmerkmalen
+
+2621    19.06.2020  rc1.4       David   Feature     API 0.108: license.status
+
+2171    19.06.2020  hbz-dev     Anja    Feature     Umbau Adressen / Refactoring
+
+2568    18.06.2020  rc1.4       Moe     Bug         Vertragsfilter "Konsortium" nicht auf GASCO-Konsortien beschränkt
+
+2594    17.06.2020  rc1.4       David   Feature     SchemaSpy automatisiert ausführen
+
+2596    17.06.2020  rc1.4       Moe     Bug         Bei Löschen einer Lizenz soll auch die Umfrage gelöscht werden
+
+2600    17.06.2020  hbz-dev     Moe     Bug         Zugangskonfigurationen für Konsorten eintragen
+
 2599    17.06.2020  hbz-dev     Moe     Bug         Export von Zugangskonfiguration
+
+2450    16.06.2020  rc1.4       Moe     Bug         Fehlermeldung im Bereich Zugangskonfiguartion
 
 2258    16.06.2020  hbz-dev     Moe     Bug         Neue Identifikatoren kommen nicht in den ES Index
 
@@ -14,7 +38,13 @@
 
 2593    12.06.2020  hbz-dev     Andreas Bug         Merkmalstypen von DFG Förderung Höhe und Fachstatistik / Klassifikation auf String geändert
 
+2589    10.06.2020  rc1.4       Andreas Bug         Private Merkmale wurden bei Verträgen nicht angezeigt
+
 2526    10.06.2020  rc1.4       Ingrid  Bug         Tooltips im Tabellenheader werden nicht mehr überdeckt & Anzeigefehler bei allen Tooltips gefixt
+
+2588    09.06.2020  rc1.4       Andreas Bug         Verknüpfbare Verträge wurden für Vollnutzer nicht angezeigt
+
+2587    09.06.2020  rc1.4       Andreas Bug         Anzeigeüberprüfung der Nutzungsstatistiken wurde korrigiert
 
 --      09.06.2020  hbz-dev     Ingrid  Feature     change circle size of or-button
 

@@ -46,7 +46,7 @@
         </g:if>
 
         <g:if test="${actionName == 'accessPoints'}">
-            <semui:actionsDropdownItem controller="accessPoint" action="create" message="accessPoint.create"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id]" message="accessPoint.create"/>
         </g:if>
 
 

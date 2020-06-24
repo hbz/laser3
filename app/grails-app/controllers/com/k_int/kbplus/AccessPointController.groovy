@@ -1,13 +1,20 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.AccessPointService
+import de.laser.AccessService
+import de.laser.EscapeService
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.uni_freiburg.ub.IpRange
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonOutput
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.dao.DataIntegrityViolationException
+
+import java.text.SimpleDateFormat
 
 class AccessPointController extends AbstractDebugController {
 
@@ -16,15 +23,12 @@ class AccessPointController extends AbstractDebugController {
 
     def subscriptionsQueryService
     def orgTypeService
+    AccessService accessService
+    AccessPointService accessPointService
+    EscapeService escapeService
 
 
     static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST'], dynamicPlatformList: ['POST']]
-
-
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def index() {
-        redirect action: 'list', params: params
-    }
 
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
@@ -94,10 +98,7 @@ class AccessPointController extends AbstractDebugController {
      * TODO move out of controller
      * @return
      */
-    private def availableIPOptions() {
-
-        Org organisation = contextService.getOrg()
-        params.orgInstance = organisation
+    private def availableOptions(Org org) {
 
         def availableLanguageKeys = ['accessPoint.option.remoteAccess', 'accessPoint.option.woRemoteAccess']
         def supportedLocales = ['en', 'de']
@@ -107,7 +108,7 @@ class AccessPointController extends AbstractDebugController {
                 localizedAccessPointNameSuggestions[message(code : key, locale : locale)] = key
             }
         }
-        def existingOapIpInstances = OrgAccessPoint.findAllByOrgAndAccessMethod(organisation, RefdataValue.getByValue('ip'))
+        def existingOapIpInstances = OrgAccessPoint.findAllByOrgAndAccessMethod(org, RefdataValue.getByValue('ip'))
 
         if (existingOapIpInstances) {
             existingOapIpInstances.each { it ->
@@ -130,8 +131,8 @@ class AccessPointController extends AbstractDebugController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def dynamicSubscriptionList() {
-        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
+        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
         String qry = """
             Select p, sp, s from Platform p
             JOIN p.oapp as oapl
@@ -153,7 +154,7 @@ class AccessPointController extends AbstractDebugController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def dynamicPlatformList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
+        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
 
         def sort = params.sort ?: "LOWER(p.name)"
         def order = params.order ?: "ASC"
@@ -186,20 +187,19 @@ class AccessPointController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def create() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
-        Org organisation = contextService.getOrg()
-        params.orgInstance = organisation
-        params.availableIpOptions = availableIPOptions()
+        Map<String, Object> result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        Org organisation = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
+        result.orgInstance = organisation
+        result.inContextOrg = result.orgInstance.id == contextService.org.id
+        result.availableOptions = availableOptions()
 
         if (params.template) {
             RefdataValue accessMethod = RefdataValue.getByValueAndCategory(params.template, RDConstants.ACCESS_POINT_TYPE)
-            return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
+            return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableOptions : result.availableOptions])
         } else {
-            if (!params.accessMethod) {
-                params.accessMethod = RDStore.ACCESS_POINT_TYPE_IP.value
-            }
-            params.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE);
-            return params
+            result.accessMethod = params.accessMethod ? RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE).value : RDStore.ACCESS_POINT_TYPE_IP.value
+            result
         }
 
     }
@@ -209,7 +209,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_ip() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        Org orgInstance = contextService.getOrg()
+        Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
         def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
         if (! params.name) {
@@ -238,7 +238,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_oa() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        Org orgInstance = contextService.getOrg()
+        Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
         def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
         if (! params.name) {
@@ -274,7 +274,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_proxy() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        Org orgInstance = contextService.getOrg()
+        Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
         def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
         if (! params.name) {
@@ -303,7 +303,8 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_vpn() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        Org orgInstance = contextService.getOrg()
+        Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
+
 
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name', args: [params.name])
@@ -332,7 +333,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_ezproxy() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        Org orgInstance = contextService.getOrg()
+        Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
 
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name', args: [params.name])
@@ -368,7 +369,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_shibboleth() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        Org orgInstance = contextService.getOrg()
+        Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
 
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name')
@@ -466,28 +467,43 @@ class AccessPointController extends AbstractDebugController {
         Org org = orgAccessPoint.org;
         Long orgId = org.id;
 
-        String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4ranges'
-        String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6ranges'
-        Boolean autofocus = (params.autofocus) ? true : false
-        Boolean activeChecksOnly = (params.checked == 'false') ? false : true
+        if (params.exportXLSX) {
+            SXSSFWorkbook wb
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + escapeService.escapeString(orgAccessPoint.name)
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints([orgAccessPoint], contextService.org)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }else {
 
-        Map accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
+            String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4ranges'
+            String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6ranges'
+            Boolean autofocus = (params.autofocus) ? true : false
+            Boolean activeChecksOnly = (params.checked == 'false') ? false : true
+
+            Map accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
 
 
-        orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
+            orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
 
-        String[] ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format.substring(2))
-        String[] ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format.substring(2))
+            String[] ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format.substring(2))
+            String[] ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format.substring(2))
 
-        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
+            List currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
 
-        def sort = params.sort ?: "LOWER(p.name)"
-        def order = params.order ?: "ASC"
+            def sort = params.sort ?: "LOWER(p.name)"
+            def order = params.order ?: "ASC"
 
-        String qry1 = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
-        ArrayList<HashMap> linkedPlatforms = Platform.executeQuery(qry1)
-        linkedPlatforms.each() {
-            String qry2 = """
+            String qry1 = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
+            ArrayList<HashMap> linkedPlatforms = Platform.executeQuery(qry1)
+            linkedPlatforms.each() {
+                String qry2 = """
             SELECT distinct s from Subscription s
             JOIN s.packages as sp
             JOIN sp.pkg as pkg
@@ -498,14 +514,14 @@ class AccessPointController extends AbstractDebugController {
             (SELECT ioapl from OrgAccessPointLink ioapl
                 WHERE ioapl.active=true and ioapl.subPkg=sp and ioapl.oap is null)
 """
-            if (activeChecksOnly){
-                qry2 += " AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}"
+                if (activeChecksOnly) {
+                    qry2 += " AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}"
+                }
+                ArrayList linkedSubs = Subscription.executeQuery(qry2, [currentSubIds: currentSubIds])
+                it['linkedSubs'] = linkedSubs
             }
-            ArrayList linkedSubs = Subscription.executeQuery(qry2, [currentSubIds: currentSubIds])
-            it['linkedSubs'] = linkedSubs
-        }
 
-        String qry3 = """
+            String qry3 = """
             Select p, sp, s from Platform p
             JOIN p.oapp as oapl
             JOIN oapl.subPkg as sp
@@ -516,21 +532,22 @@ class AccessPointController extends AbstractDebugController {
                 where ioapl.subPkg=oapl.subPkg and ioapl.platform=p and ioapl.oap is null)
             AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}    
 """
-        ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry3, [currentSubIds: currentSubIds])
+            ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry3, [currentSubIds: currentSubIds])
 
-        return [
-             accessPoint           : orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId,
-             platformList          : orgAccessPoint.getNotLinkedPlatforms(),
-             linkedPlatforms    : linkedPlatforms,
-             linkedPlatformSubscriptionPackages : linkedPlatformSubscriptionPackages,
-             ip                    : params.ip, editable: true,
-             ipv4Ranges            : ipv4Ranges, ipv4Format: ipv4Format,
-             ipv6Ranges            : ipv6Ranges, ipv6Format: ipv6Format,
-             autofocus             : autofocus,
-             orgInstance           : orgAccessPoint.org,
-             inContextOrg          : orgId == contextService.org.id,
-             activeSubsOnly        : activeChecksOnly,
-        ]
+            return [
+                    accessPoint                       : orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId,
+                    platformList                      : orgAccessPoint.getNotLinkedPlatforms(),
+                    linkedPlatforms                   : linkedPlatforms,
+                    linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
+                    ip                                : params.ip, editable: true,
+                    ipv4Ranges                        : ipv4Ranges, ipv4Format: ipv4Format,
+                    ipv6Ranges                        : ipv6Ranges, ipv6Format: ipv6Format,
+                    autofocus                         : autofocus,
+                    orgInstance                       : orgAccessPoint.org,
+                    inContextOrg                      : orgId == contextService.org.id,
+                    activeSubsOnly                    : activeChecksOnly,
+            ]
+        }
     }
 
     @Secured(closure = {

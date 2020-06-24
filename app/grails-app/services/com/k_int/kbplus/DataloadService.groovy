@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
 import de.laser.SystemEvent
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import groovy.json.JsonOutput
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.DocWriteResponse
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
@@ -43,7 +43,7 @@ class DataloadService {
     def executorService
     def ESWrapperService
     def sessionFactory
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
 
     def es_index

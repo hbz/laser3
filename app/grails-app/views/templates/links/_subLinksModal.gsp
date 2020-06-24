@@ -116,6 +116,7 @@
 <%-- for that one day, we may move away from that ... --%>
 <r:script>
     $(document).ready(function(){
+       console.log("${urlLookup}");
         $("#${selectPair}").dropdown({
             apiSettings: {
                 url: "<g:createLink controller="ajax" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=true&ctx=${GenericOIDService.getOID(context)}",

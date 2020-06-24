@@ -10,7 +10,7 @@ class MigrationCallbacks {
 	void beforeStartMigration(Database Database) {
 
 		println '--------------------------------------------------------------------------------'
-		println 'Database Migration'
+		println 'Database migration'
 		println '   new changesets detected ..'
 		println '   dumping current database ..'
 
@@ -29,7 +29,7 @@ class MigrationCallbacks {
 		println '   target: ' + backupFile
 
 		try {
-			String cmd = "/usr/bin/pg_dump -x " + (config.collect{ '--' + it.key + '=' + it.value }).join(' ')
+			String cmd = '/usr/bin/pg_dump -x ' + (config.collect{ '--' + it.key + '=' + it.value }).join(' ')
 
 			cmd.execute().waitForProcessOutput(System.out, System.err)
 
@@ -41,12 +41,28 @@ class MigrationCallbacks {
 
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
 
-		println '  processing: ' + changelogName
+		println '   processing: ' + changelogName
 	}
 
 	void afterMigrations(Database Database) {
 
-		println '  done ..'
+		println '   done ..'
+
+		if (grailsApplication.config.schemaSpyScriptFile){
+
+			println 'Executing post-migration scripts'
+
+			try {
+				String cmd = 'sh ' + grailsApplication.config.schemaSpyScriptFile
+				println '   ' + cmd
+
+				cmd.execute()
+
+			} catch (Exception e) {
+				println '   error: ' + e.getMessage()
+				e.printStackTrace()
+			}
+		}
 		println '--------------------------------------------------------------------------------'
 	}
 }

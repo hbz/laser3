@@ -1,10 +1,7 @@
 package de.laser.api.v0.special
 
 import com.k_int.kbplus.*
-import de.laser.api.v0.ApiCollectionReader
-import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiToolkit
-import de.laser.api.v0.ApiUnsecuredMapReader
+import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -196,6 +193,7 @@ class ApiStatistic {
             }
             else {
                 Map<String, Object> sub = ApiUnsecuredMapReader.getSubscriptionStubMap(subPkg.subscription)
+                sub.kind = subPkg.subscription.kind?.value // TODO : implement sub.kind in stub ??
 
                 List<Org> orgList = []
 

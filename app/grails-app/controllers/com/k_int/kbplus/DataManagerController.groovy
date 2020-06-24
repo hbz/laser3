@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import de.laser.DeletionService
 import de.laser.YodaService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
@@ -11,8 +10,6 @@ import de.laser.helper.RDConstants
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
-import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
 

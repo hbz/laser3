@@ -8,9 +8,9 @@ import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
 import groovy.json.JsonOutput
 import groovyx.gpars.GParsPool
-import groovyx.net.http.HttpResponseDecorator
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
@@ -26,7 +26,7 @@ class StatsSyncService {
     def executorService
     def sessionFactory
     def factService
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
     def errors = []
     Map<String,List> availableReportCache = [:]

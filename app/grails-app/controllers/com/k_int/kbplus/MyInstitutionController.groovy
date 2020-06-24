@@ -9,14 +9,15 @@ import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDatesService
 import de.laser.LinksGenerationService
 import de.laser.SystemAnnouncement
-
-//import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.AbstractI10nTranslatable
 
 //import de.laser.TaskService //unused for quite a long time
 
+import de.laser.domain.AbstractI10nTranslatable
 import de.laser.helper.*
+
+//import de.laser.TaskService //unused for quite a long time
+
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -2342,6 +2343,13 @@ AND EXISTS (
             if (costItems?.subscr) {
                 result.costItemSums.subscrCosts = costItems.subscr.costItems
             }
+
+            if(result.surveyConfig.subSurveyUseForTransfer) {
+                result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
+
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.customProperties + result.successorSubscription.customProperties, true, true) : null
+            }
+
         }
 
         if ( params.exportXLSX ) {
@@ -3566,8 +3574,6 @@ AND EXISTS (
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!
             propDefs[it] = itResult
         }
-
-        propDefs << ["${PropertyDefinition.PLA_PROP}": PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.PLA_PROP, null, [sort: 'name'])]
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
         result.editable = false

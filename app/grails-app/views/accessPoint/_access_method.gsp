@@ -4,7 +4,7 @@
                   from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues(de.laser.helper.RDConstants.ACCESS_POINT_TYPE)}"
                   optionKey="value"
                   optionValue="value"
-                  value="${accessMethod.value}"
+                  value="${accessMethod}"
                   onchange="${remoteFunction (
                           controller: 'accessPoint',
                           action: 'create',

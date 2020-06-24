@@ -3888,7 +3888,7 @@ class SubscriptionController extends AbstractDebugController {
                     def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
                     result.natStatSupplierId = platform?.stringValue ?: null
                     result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
-                    if (result.institutional_usage_identifier && result.natStatSupplierId && result.statsWibid) {
+                    if (result.institutional_usage_identifier) {
 
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
                         def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
@@ -3908,16 +3908,18 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                        result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
-                        result.usage = fsresult?.usage
-                        result.missingMonths = fsresult?.missingMonths
-                        result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
-                        result.x_axis_labels = fsresult?.x_axis_labels
-                        result.y_axis_labels = fsresult?.y_axis_labels
-                        result.lusage = fsLicenseResult?.usage
-                        result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
-                        result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
-                        result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+                        if(result.statsWibid && result.natStatSupplierId) {
+                            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+                            result.usage = fsresult?.usage
+                            result.missingMonths = fsresult?.missingMonths
+                            result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
+                            result.x_axis_labels = fsresult?.x_axis_labels
+                            result.y_axis_labels = fsresult?.y_axis_labels
+                            result.lusage = fsLicenseResult?.usage
+                            result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
+                            result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
+                            result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+                        }
                     }
                 }
             }

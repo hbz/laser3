@@ -192,8 +192,8 @@ class RDStore {
     static final ADRESS_TYPE_POSTAL             = getRefdataValue('Postal address', RDConstants.ADDRESS_TYPE)
     static final ADRESS_TYPE_BILLING            = getRefdataValue('Billing address', RDConstants.ADDRESS_TYPE)
     static final ADRESS_TYPE_LEGAL_PATRON       = getRefdataValue('Legal patron address', RDConstants.ADDRESS_TYPE)
-    static final ADRESS_TYPE_DELIVERY       = getRefdataValue('Delivery address', RDConstants.ADDRESS_TYPE)
-    static final ADRESS_TYPE_LIBRARY       = getRefdataValue('Library address', RDConstants.ADDRESS_TYPE)
+    static final ADRESS_TYPE_DELIVERY           = getRefdataValue('Delivery address', RDConstants.ADDRESS_TYPE)
+    static final ADRESS_TYPE_LIBRARY            = getRefdataValue('Library address', RDConstants.ADDRESS_TYPE)
 
     static final ACCESS_POINT_TYPE_EZPROXY      = getRefdataValue('ezproxy', RDConstants.ACCESS_POINT_TYPE)
     static final ACCESS_POINT_TYPE_IP           = getRefdataValue('ip', RDConstants.ACCESS_POINT_TYPE)

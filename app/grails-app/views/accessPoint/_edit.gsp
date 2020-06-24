@@ -17,9 +17,17 @@
 <div>
     <g:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
     <br>
-    %{--<semui:controlButtons>
-      <g:render template="actions" />
-    </semui:controlButtons>--}%
+    <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg)
+            || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
+        <semui:controlButtons>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="edit_${accessPoint.accessMethod}"
+                            params="[id: accessPoint.id, exportXLSX: true]">${message(code: 'accessPoint.exportAccessPoint')}</g:link>
+                </semui:exportDropdownItem>
+            </semui:exportDropdown>
+        </semui:controlButtons>
+    </g:if>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
     ${orgInstance.name}
@@ -101,7 +109,7 @@
         </div>
     </div>
     </g:form>
-    <g:if test="${!accessPoint.hasProperty('entityId') && accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR') && inContextOrg)}">
+    <g:if test="${!accessPoint.hasProperty('entityId') && (accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
         <div class="ui card">
             <div class="content">
                 <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" id="${accessPoint.id}"
@@ -120,7 +128,7 @@
                     <table class="ui celled la-table table very compact">
                         <thead>
                         <tr>
-                            <g:sortableColumn property="ipData" title="${message(code: 'accessPoint.ip.data')}"/>
+                            <th>${message(code: 'accessPoint.ip.data')}</th>
                             <th>${message(code: 'default.actions.label')}</th>
                         </tr>
                         </thead>
