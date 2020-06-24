@@ -28,6 +28,7 @@ import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 
 import java.text.SimpleDateFormat
 
@@ -54,7 +55,7 @@ class AdminController extends AbstractDebugController {
     GlobalSourceSyncService globalSourceSyncService
     def GOKbService
     def docstoreService
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     def apiService
 

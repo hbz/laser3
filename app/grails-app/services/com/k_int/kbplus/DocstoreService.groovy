@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils
 import org.apache.http.entity.mime.HttpMultipartMode
 import org.apache.http.entity.mime.MultipartEntity
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -21,7 +22,7 @@ class DocstoreService {
   def grailsApplication
   def genericOIDService
   def sessionFactory
-  def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+  def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
   def uploadStream(source_stream, original_filename, title) {
 

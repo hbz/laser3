@@ -26,6 +26,7 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.rest.RestStatus
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.hibernate.ScrollMode
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 
 import java.util.concurrent.Future
 
@@ -43,7 +44,7 @@ class DataloadService {
     def executorService
     def ESWrapperService
     def sessionFactory
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
 
     def es_index
