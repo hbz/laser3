@@ -135,6 +135,8 @@ class DataloadService {
                     }
                 }
 
+                result.dateCreated = org.dateCreated
+                result.lastUpdated = org.lastUpdated
 
             result
         }
@@ -184,6 +186,10 @@ class DataloadService {
                     }
                     //result.keyTitle = ti.keyTitle
                     //result.normTitle = ti.normTitle
+
+                    result.dateCreated = ti.dateCreated
+                    result.lastUpdated = ti.lastUpdated
+
                 } else {
                     log.warn("Title with no title string - ${ti.id}")
                 }
@@ -234,6 +240,8 @@ class DataloadService {
                         log.error(e)
                     }
                 }
+                result.dateCreated = pkg.dateCreated
+                result.lastUpdated = pkg.lastUpdated
 
 /*                if (pkg.startDate) {
                     GregorianCalendar c = new GregorianCalendar()
@@ -270,6 +278,9 @@ class DataloadService {
                 result.orgId = plat.org?.id
                 result.orgName = plat.org?.name
                 result.titleCountCurrent = plat.getCurrentTipps().size()?:0
+
+                result.dateCreated = plat.dateCreated
+                result.lastUpdated = plat.lastUpdated
 
             result
         }
@@ -331,6 +342,8 @@ class DataloadService {
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
+            result.dateCreated = lic.dateCreated
+            result.lastUpdated = lic.lastUpdated
 
             result
         }
@@ -424,6 +437,9 @@ class DataloadService {
                     }
                 }
 
+                result.dateCreated = sub.dateCreated
+                result.lastUpdated = sub.lastUpdated
+
             result
         }
 
@@ -458,6 +474,9 @@ class DataloadService {
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
+            result.dateCreated = surveyConfig.dateCreated
+            result.lastUpdated = surveyConfig.lastUpdated
+
             result
         }
 
@@ -489,6 +508,9 @@ class DataloadService {
                 c.setTime(surOrg.surveyConfig.surveyInfo.endDate)
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
+
+            result.dateCreated = surOrg.dateCreated
+            result.lastUpdated = surOrg.lastUpdated
 
             result
         }
@@ -537,6 +559,9 @@ class DataloadService {
                 result.objectClassName = task.surveyConfig.getClass().getSimpleName().toLowerCase()
             }
 
+            result.dateCreated = task.dateCreated
+            result.lastUpdated = task.lastUpdated
+
             result
         }
 
@@ -581,6 +606,9 @@ class DataloadService {
                 result.objectName = docCon.surveyConfig.getSurveyName()
                 result.objectClassName = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
             }
+
+            result.dateCreated = docCon.dateCreated
+            result.lastUpdated = docCon.lastUpdated
 
             result
         }
@@ -636,6 +664,9 @@ class DataloadService {
                 c.setTime(ie.accessEndDate)
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
+
+            result.dateCreated = ie.dateCreated
+            result.lastUpdated = ie.lastUpdated
 
             result
         }
@@ -698,6 +729,9 @@ class DataloadService {
                 result.objectClassName = subCustProp.owner.getClass().getSimpleName().toLowerCase()
             }
 
+            result.dateCreated = subCustProp.dateCreated
+            result.lastUpdated = subCustProp.lastUpdated
+
             result
         }
 
@@ -740,6 +774,9 @@ class DataloadService {
                 result.objectTypeId = subPrivProp.owner.type?.id
                 result.objectClassName = subPrivProp.owner.getClass().getSimpleName().toLowerCase()
             }
+
+            result.dateCreated = subPrivProp.dateCreated
+            result.lastUpdated = subPrivProp.lastUpdated
 
             result
         }
@@ -793,6 +830,9 @@ class DataloadService {
                 result.objectClassName = licCustProp.owner.getClass().getSimpleName().toLowerCase()
             }
 
+            result.dateCreated = licCustProp.dateCreated
+            result.lastUpdated = licCustProp.lastUpdated
+
             result
         }
 
@@ -835,6 +875,9 @@ class DataloadService {
                 result.objectTypeId = licPrivProp.owner.type?.id
                 result.objectClassName = licPrivProp.owner.getClass().getSimpleName().toLowerCase()
             }
+
+            result.dateCreated = licPrivProp.dateCreated
+            result.lastUpdated = licPrivProp.lastUpdated
 
             result
         }
