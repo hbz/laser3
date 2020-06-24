@@ -2,7 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2629    23.06.2020  hbz-dev     Moe     Feature     ES: Suche über Erstellungsdatum bzw. Aktualisierungsdatum
+2195    24.06.2020  hbz-dev     Moe     Feature     ES Suche nur mit engl. Datumformat möglich
+
+2170    24.06.2020  hbz-dev     Moe     Feature     aktive Flag für FTControl
+
+2629    24.06.2020  hbz-dev     Moe     Feature     ES: Suche über Erstellungsdatum bzw. Aktualisierungsdatum
 
 2100    23.06.2020  hbz-dev     Moe     Feature     E-Mails mit Umlauten
 

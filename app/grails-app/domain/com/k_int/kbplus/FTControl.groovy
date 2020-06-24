@@ -8,6 +8,8 @@ class FTControl {
   Integer esElements
   Integer dbElements
 
+  boolean active = true
+
   Date dateCreated
   Date lastUpdated
 
@@ -15,5 +17,6 @@ class FTControl {
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true, blank: false)
     dateCreated (nullable: true, blank: false)
+    active (nullable: true, blank: false)
   }
 }

@@ -920,122 +920,126 @@ class DataloadService {
             highest_timestamp = latest_ft_record.lastTimestamp
             //log.debug("Got existing ftcontrol record for ${domain.name} max timestamp is ${highest_timestamp} which is ${new Date(highest_timestamp)}");
         }
+        if(latest_ft_record.active) {
 
-        //log.debug("result of findByDomain: ${latest_ft_record}")
+            //log.debug("result of findByDomain: ${latest_ft_record}")
 
-        log.debug("updateES ${domain.name} since ${new Date(latest_ft_record.lastTimestamp)}")
-        Date from = new Date(latest_ft_record.lastTimestamp)
-        // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
+            log.debug("updateES ${domain.name} since ${new Date(latest_ft_record.lastTimestamp)}")
+            Date from = new Date(latest_ft_record.lastTimestamp)
+            // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
 
-        def c = domain.createCriteria()
-        c.setReadOnly(true)
-        c.setCacheable(false)
-        c.setFetchSize(Integer.MIN_VALUE)
+            def c = domain.createCriteria()
+            c.setReadOnly(true)
+            c.setCacheable(false)
+            c.setFetchSize(Integer.MIN_VALUE)
 
 
-        Class domainClass = grailsApplication.getDomainClass(domain.name).clazz
-        if(org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
-            c.buildCriteria {
-                or {
-                    and {
-                        isNotNull('lastUpdatedCascading')
-                        gt('lastUpdatedCascading', from)
+            Class domainClass = grailsApplication.getDomainClass(domain.name).clazz
+            if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
+                c.buildCriteria {
+                    or {
+                        and {
+                            isNotNull('lastUpdatedCascading')
+                            gt('lastUpdatedCascading', from)
+                        }
+                        gt('lastUpdated', from)
+                        and {
+                            gt('dateCreated', from)
+                            isNull('lastUpdated')
+                        }
                     }
-                    gt('lastUpdated', from)
-                    and {
-                        gt('dateCreated', from)
-                        isNull('lastUpdated')
+                    order("lastUpdated", "asc")
+                }
+            } else {
+                c.buildCriteria {
+                    or {
+                        gt('lastUpdated', from)
+                        and {
+                            gt('dateCreated', from)
+                            isNull('lastUpdated')
+                        }
+                    }
+                    order("lastUpdated", "asc")
+                }
+            }
+
+            def results = c.scroll(ScrollMode.FORWARD_ONLY)
+
+            //log.debug("Query completed .. processing rows ..")
+
+            String rectype
+            while (results.next()) {
+                Object r = results.get(0);
+                def idx_record = recgen_closure(r)
+                def future
+                if (idx_record['_id'] == null) {
+                    log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
+                    continue
+                }
+
+                def recid = idx_record['_id'].toString()
+                idx_record.remove('_id');
+
+                IndexRequest request = new IndexRequest(es_index);
+                request.id(recid);
+                String jsonString = idx_record as JSON
+                //String jsonString = JsonOutput.toJson(idx_record)
+                //println(jsonString)
+                request.source(jsonString, XContentType.JSON)
+
+                IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
+
+                String index = indexResponse.getIndex();
+                String id = indexResponse.getId();
+                if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
+                    //log.debug("CREATED ${domain.name}")
+                } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
+                    //log.debug("UPDATED ${domain.name}")
+                } else {
+                    log.debug("ELSE ${domain.name}: ${indexResponse.getResult()}")
+                }
+                ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
+                if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
+
+                }
+                if (shardInfo.getFailed() > 0) {
+                    for (ReplicationResponse.ShardInfo.Failure failure :
+                            shardInfo.getFailures()) {
+                        String reason = failure.reason();
+                        println(reason)
                     }
                 }
-                order("lastUpdated", "asc")
+
+                //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
+                if (r.lastUpdated?.getTime() > highest_timestamp) {
+                    highest_timestamp = r.lastUpdated?.getTime();
+                }
+
+                count++
+                total++
+                if (count == 100) {
+                    count = 0;
+                    log.debug("processed ${total} records (${domain.name})")
+                    latest_ft_record.lastTimestamp = highest_timestamp
+                    latest_ft_record.esElements = latest_ft_record.esElements ?: 0
+                    latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
+                    latest_ft_record.save(flush: true);
+                    cleanUpGorm();
+                }
             }
+            results.close();
+
+            log.debug("Processed ${total} records for ${domain.name}")
+
+            // update timestamp
+            latest_ft_record.lastTimestamp = highest_timestamp
+
+            latest_ft_record.esElements = latest_ft_record.esElements ?: 0
+            latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
+            latest_ft_record.save(flush: true);
         }else{
-            c.buildCriteria {
-                or {
-                    gt('lastUpdated', from)
-                    and {
-                        gt('dateCreated', from)
-                        isNull('lastUpdated')
-                    }
-                }
-                order("lastUpdated", "asc")
-            }
+            log.debug("updateES ${domain.name}: FTControle is not active")
         }
-
-        def results = c.scroll(ScrollMode.FORWARD_ONLY)
-
-        //log.debug("Query completed .. processing rows ..")
-
-        String rectype
-        while (results.next()) {
-          Object r = results.get(0);
-          def idx_record = recgen_closure(r)
-          def future
-          if(idx_record['_id'] == null) {
-            log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
-            continue
-          }
-
-          def recid = idx_record['_id'].toString()
-          idx_record.remove('_id');
-
-            IndexRequest request = new IndexRequest(es_index);
-            request.id(recid);
-            String jsonString = idx_record as JSON
-            //String jsonString = JsonOutput.toJson(idx_record)
-            //println(jsonString)
-            request.source(jsonString, XContentType.JSON)
-
-            IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
-
-            String index = indexResponse.getIndex();
-            String id = indexResponse.getId();
-            if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
-                //log.debug("CREATED ${domain.name}")
-            } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
-                //log.debug("UPDATED ${domain.name}")
-            }else {
-                log.debug("ELSE ${domain.name}: ${indexResponse.getResult()}")
-            }
-            ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
-            if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
-
-            }
-            if (shardInfo.getFailed() > 0) {
-                for (ReplicationResponse.ShardInfo.Failure failure :
-                        shardInfo.getFailures()) {
-                    String reason = failure.reason();
-                    println(reason)
-                }
-            }
-
-          //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
-          if (r.lastUpdated?.getTime() > highest_timestamp) {
-              highest_timestamp = r.lastUpdated?.getTime();
-          }
-
-          count++
-          total++
-          if ( count == 100 ) {
-            count = 0;
-            log.debug("processed ${total} records (${domain.name})")
-              latest_ft_record.lastTimestamp = highest_timestamp
-              latest_ft_record.esElements = latest_ft_record.esElements ?: 0
-              latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
-            latest_ft_record.save(flush:true);
-            cleanUpGorm();
-          }
-        }
-        results.close();
-
-        log.debug("Processed ${total} records for ${domain.name}")
-
-        // update timestamp
-        latest_ft_record.lastTimestamp = highest_timestamp
-
-        latest_ft_record.esElements = latest_ft_record.esElements ?: 0
-        latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
-        latest_ft_record.save(flush:true);
 
     }
     catch ( Exception e ) {
@@ -1223,43 +1227,45 @@ class DataloadService {
 
         FTControl.list().each { ft ->
 
-            RestHighLevelClient esclient = ESWrapperService.getClient()
+            if(ft.active) {
+                RestHighLevelClient esclient = ESWrapperService.getClient()
 
-            Class domainClass = grailsApplication.getDomainClass(ft.domainClassName).clazz
+                Class domainClass = grailsApplication.getDomainClass(ft.domainClassName).clazz
 
-            String query_str = "rectype: '${ft.domainClassName.replaceAll("com.k_int.kbplus.","")}'"
+                String query_str = "rectype: '${ft.domainClassName.replaceAll("com.k_int.kbplus.", "")}'"
 
-            if (ft.domainClassName.replaceAll("com.k_int.kbplus.","") == 'DocContext'){
-                query_str = "rectype:'Note' OR rectype:'Document'"
+                if (ft.domainClassName.replaceAll("com.k_int.kbplus.", "") == 'DocContext') {
+                    query_str = "rectype:'Note' OR rectype:'Document'"
+                }
+
+                if (ft.domainClassName.replaceAll("com.k_int.kbplus.", "") == 'TitleInstance') {
+                    query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
+                }
+
+                //println(query_str)
+
+                String index = ESWrapperService.getESSettings().indexName
+
+                CountRequest countRequest = new CountRequest(index);
+                SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+                searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
+                countRequest.source(searchSourceBuilder);
+
+                CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
+
+                ft.dbElements = domainClass.findAll().size()
+                ft.esElements = countResponse ? countResponse.getCount().toInteger() : 0
+
+                //println(ft.dbElements +' , '+ ft.esElements)
+
+                if (ft.dbElements != ft.esElements) {
+                    log.debug("****ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} -> RESET lastTimestamp****")
+                    //ft.lastTimestamp = 0
+                }
+
+                ft.save(flush: true)
+                esclient.close()
             }
-
-            if (ft.domainClassName.replaceAll("com.k_int.kbplus.","") == 'TitleInstance'){
-                query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
-            }
-
-            //println(query_str)
-
-            String index = ESWrapperService.getESSettings().indexName
-
-            CountRequest countRequest = new CountRequest(index);
-            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
-            countRequest.source(searchSourceBuilder);
-
-            CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
-
-            ft.dbElements = domainClass.findAll().size()
-            ft.esElements = countResponse ? countResponse.getCount().toInteger() :0
-
-            //println(ft.dbElements +' , '+ ft.esElements)
-
-            if(ft.dbElements != ft.esElements) {
-                log.debug("****ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} -> RESET lastTimestamp****")
-                //ft.lastTimestamp = 0
-            }
-
-            ft.save(flush: true)
-            esclient.close()
 
         }
 
