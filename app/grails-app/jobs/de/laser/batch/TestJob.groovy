@@ -2,10 +2,11 @@ package de.laser.batch
 
 import com.k_int.kbplus.Org
 import de.laser.quartz.AbstractJob
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class TestJob extends AbstractJob {
 
-    def grailsApplication
+    GrailsApplication grailsApplication
     def contextService
 
     static triggers = {
