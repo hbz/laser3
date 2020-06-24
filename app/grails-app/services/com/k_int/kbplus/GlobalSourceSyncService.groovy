@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.EscapeService
+
 import de.laser.SystemEvent
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PendingChangeConfiguration

@@ -309,7 +309,7 @@
                             </div>
                         </div>
 
-
+                        <%--
                         <br>
                         <g:set var="derivedPropDefGroups"
                                value="${subscriptionInstance.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
@@ -377,6 +377,7 @@
                             <g:set var="editable" value="${oldEditable ?: false}" scope="page"/>
                             <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
                         </div>
+                    --%>
 
                     </div>
                 </g:if>

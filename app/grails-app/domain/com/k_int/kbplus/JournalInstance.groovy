@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
-import org.hibernate.Session
 
 class JournalInstance extends TitleInstance {
 

@@ -1,10 +1,6 @@
 package de.laser.api.v0
-
-
-import com.k_int.kbplus.License
 //import com.k_int.kbplus.OnixplLicense
-import com.k_int.kbplus.Org
-import de.laser.api.v0.entities.ApiDoc
+
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 

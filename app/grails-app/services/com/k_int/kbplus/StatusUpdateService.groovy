@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.ClassUtils
 import de.laser.SystemEvent
-import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService

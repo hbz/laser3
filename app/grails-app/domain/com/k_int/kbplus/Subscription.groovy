@@ -11,9 +11,9 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.AuditableSupport
+import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
-import de.laser.interfaces.CalculatedType
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
 import org.apache.commons.logging.Log
@@ -97,7 +97,6 @@ class Subscription
     Date lastUpdated
     Date lastUpdatedCascading
 
-  License owner
   SortedSet issueEntitlements
 
   static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
@@ -139,7 +138,7 @@ class Subscription
         status      column:'sub_status_rv_fk'
         type        column:'sub_type_rv_fk',        index: 'sub_type_idx'
         kind        column:'sub_kind_rv_fk'
-        owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
+        //owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
         name        column:'sub_name'
@@ -177,7 +176,7 @@ class Subscription
         status(nullable:false, blank:false)
         type(nullable:true, blank:false)
         kind(nullable:true, blank:false)
-        owner(nullable:true, blank:false)
+        //owner(nullable:true, blank:false)
         form        (nullable:true, blank:false)
         resource    (nullable:true, blank:false)
         startDate(nullable:true, blank:false, validator: { val, obj ->
@@ -209,9 +208,6 @@ class Subscription
     def afterInsert() {
         static_logger.debug("afterInsert")
         cascadingUpdateService.update(this, dateCreated)
-
-        if(owner != null)
-            subscriptionService.setOrgLicRole(this,owner)
     }
 
     @Override
@@ -407,6 +403,14 @@ class Subscription
 
     String getIsSlavedAsString() {
         isSlaved ? "Yes" : "No"
+    }
+
+    Set<License> getLicenses() {
+        Set<License> result = []
+        Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+            result << genericOIDService.resolveOID(l.source)
+        }
+        result
     }
 
   Org getSubscriber() {

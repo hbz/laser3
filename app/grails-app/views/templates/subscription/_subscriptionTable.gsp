@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;com.k_int.kbplus.License" %>
 <laser:serviceInjection />
 
 <div class="subscription-results subscription-results la-clear-before">
@@ -87,11 +87,13 @@
                                     </g:if>
                                 </g:if>
                             </g:link>
-                            <g:if test="${s.owner && 'showLicense' in tableConfig}">
-                                <div class="la-flexbox">
-                                    <i class="icon balance scale la-list-icon"></i>
-                                    <g:link controller="license" action="show" id="${s.owner.id}">${s.owner?.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}</g:link>
-                                </div>
+                            <g:if test="${'showLicense' in tableConfig}">
+                                <g:each in="${allLinkedLicenses.get(s)}" var="license">
+                                    <div class="la-flexbox">
+                                        <i class="icon balance scale la-list-icon"></i>
+                                        <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
+                                    </div>
+                                </g:each>
                             </g:if>
                         </td>
                         <td>
@@ -240,7 +242,7 @@
                             </g:if>
                             <g:if test="${'showLinking' in tableConfig}">
                             <%--<g:if test="${license in s.licenses}"></g:if>--%>
-                                <g:if test="${license == s.owner}">
+                                <g:if test="${s in linkedSubscriptions}">
                                     <g:link class="ui icon negative button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
                                         <i class="ui minus icon"></i>
                                     </g:link>

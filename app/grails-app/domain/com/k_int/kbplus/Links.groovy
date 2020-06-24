@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.exceptions.CreationException
+
 import javax.persistence.Transient
 
 class Links {
@@ -15,7 +17,6 @@ class Links {
     Long id
     String source
     String destination
-    //String objectType
     RefdataValue linkType
     Org     owner
     Date    dateCreated
@@ -43,6 +44,15 @@ class Links {
         // Nullable is true, because values are already in the database
         dateCreated (nullable: true, blank: false)
 
+    }
+
+    static Links construct(Map<String, Object> configMap) throws CreationException {
+        Links links = new Links(source:configMap.source,destination:configMap.destination,owner:configMap.owner,linkType:configMap.linkType)
+        if(links.save())
+            links
+        else {
+            throw new CreationException(links.errors)
+        }
     }
 
     def getOther(key) {

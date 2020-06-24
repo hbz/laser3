@@ -16,7 +16,6 @@ import de.laser.SubscriptionsQueryService
 import de.laser.SurveyService
 import de.laser.SurveyUpdateService
 import de.laser.TaskService
-import de.laser.batch.SurveyUpdateJob
 import de.laser.domain.IssueEntitlementGroup
 import de.laser.domain.IssueEntitlementGroupItem
 import de.laser.domain.PendingChangeConfiguration
@@ -24,8 +23,8 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
+import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
@@ -40,7 +39,6 @@ import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
@@ -101,7 +99,7 @@ class SurveyController {
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds).sort { it.name }
+        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
@@ -323,7 +321,7 @@ class SurveyController {
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds).sort { it.name }
+        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
@@ -392,7 +390,7 @@ class SurveyController {
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds).sort { it.name }
+        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
@@ -646,7 +644,7 @@ class SurveyController {
             result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : result.surveyInfo.surveyConfigs[0]
 
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo,  result.surveyConfig)
-            result.contextOrg = contextService.getOrg()
+            result.contextOrg = result.institution
 
             if ( result.surveyConfig.type == 'Subscription') {
                 result.authorizedOrgs = result.user.authorizedOrgs
@@ -654,7 +652,7 @@ class SurveyController {
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []
                  result.surveyConfig.subscription.orgRelations.each { or ->
-                    if (!(or.org.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    if (!(or.org.id == result.institution.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                         result.visibleOrgRelations << or
                     }
                 }
@@ -746,7 +744,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.contextOrg = contextService.getOrg()
+        result.contextOrg = result.institution
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -1289,11 +1287,11 @@ class SurveyController {
 
         if(result.subscriptionInstance) {
             result.authorizedOrgs = result.user.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
+            result.contextOrg = result.institution
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations.each { or ->
-                if (!(or.org.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -1541,7 +1539,7 @@ class SurveyController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations.each { or ->
-                if (!(or.org.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org.id == result.institution.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -2593,7 +2591,7 @@ class SurveyController {
 
             List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.org)
 
-            result.providers = Org.findAllByIdInList(orgIds).sort { it.name }
+            result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
 
             def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
             result.filterSet = tmpQ[2]
@@ -2830,7 +2828,7 @@ class SurveyController {
                 //OrgRole
                 baseSub.orgRelations.each { or ->
 
-                    if ((or.org.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    if ((or.org.id == result.institution.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
@@ -3180,12 +3178,12 @@ class SurveyController {
         }
 
         if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, null)) {
+            if(!subscriptionService.setOrgLicRole(newSub, null,false)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
         } else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
+            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner,true)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
@@ -3400,17 +3398,17 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def newSurveyCostItem() {
-
+        result.institution = contextService.getOrg()
         SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
 
         Map<String, Object> result = [:]
         def newCostItem = null
-        result.putAll(financeService.setEditVars(contextService.getOrg()))
+        result.putAll(financeService.setEditVars(result.institution))
 
         try {
             log.debug("SurveyController::newCostItem() ${params}");
 
-            result.institution = contextService.getOrg()
+
             User user = User.get(springSecurityService.principal.id)
             result.error = [] as List
 
@@ -4398,7 +4396,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') && surveyConfig.surveyInfo.owner.id == contextService.getOrg().id)
+        result.editable = (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') && surveyConfig.surveyInfo.owner.id == result.institution.id)
 
         if (!result.editable) {
             return

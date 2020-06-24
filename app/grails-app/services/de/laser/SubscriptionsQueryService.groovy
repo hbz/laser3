@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
@@ -119,8 +120,9 @@ class SubscriptionsQueryService {
         }
 
         if(params.license) {
-            base_qry += " and s.owner = :lic"
-            qry_params.put('lic', License.get(params.license))
+            base_qry += " and concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
+            qry_params.put('lic',"${License.class.name}:${params.license}")
+            qry_params.put('linkType',RDStore.LINKTYPE_LICENSE)
         }
 
         def consortia = params.consortia ? genericOIDService.resolveOID(params.consortia) : null
