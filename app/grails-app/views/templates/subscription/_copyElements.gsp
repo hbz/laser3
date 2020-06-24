@@ -315,15 +315,6 @@
                         </g:if>
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
-                     <td class="center aligned">
-                         <g:if test="${sourceSubscription.owner}">
-                             <div class="ui checkbox la-toggle-radio la-share">
-                                 <input class="ui checkbox" type="checkbox" name="toggleShareOwner" ${AuditConfig.getConfig(sourceSubscription,'owner') ? 'checked': ''} />
-                             </div>
-                         </g:if>
-                     </td>
-                </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
                     <g:if test="${sourceSubscription.owner}">

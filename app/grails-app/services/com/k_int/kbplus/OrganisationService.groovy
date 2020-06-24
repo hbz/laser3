@@ -2452,7 +2452,7 @@ class OrganisationService {
             if(!subInstance) {
                 throw new CreationException("Wrong subscription key inserted: ${subIdentifier}")
             }
-            subscriptionService.setOrgLicRole(subInstance,owner)
+            subscriptionService.setOrgLicRole(subInstance,owner,false)
             /*
             subInstance.owner = owner
             if(member) {

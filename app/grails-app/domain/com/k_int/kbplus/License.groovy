@@ -51,7 +51,7 @@ class License
     def auditService
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
-    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'isPublicForApi' ]
+    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi' ]
 
     License instanceOf
 
@@ -71,9 +71,11 @@ class License
     String reference
     String sortableReference
 
-  String noticePeriod
-  String licenseUrl
-  //String licenseType
+    String noticePeriod
+    String licenseUrl
+
+    @RefdataAnnotation(cat = RDConstants.Y_N_U)
+    RefdataValue openEnded
   //String licenseStatus
 
     //long lastmod
@@ -89,7 +91,7 @@ class License
   static hasMany = [
           ids: Identifier,
           pkgs:         Package,
-          subscriptions:Subscription,
+          //subscriptions:Subscription,
           documents:    DocContext,
           orgLinks:     OrgRole,
           prsLinks:     PersonRole,
@@ -102,7 +104,7 @@ class License
   static mappedBy = [
           ids:           'lic',
           pkgs:          'license',
-          subscriptions: 'owner',
+          //subscriptions: 'owner',
           documents:     'license',
           orgLinks:      'lic',
           prsLinks:      'lic',
@@ -126,7 +128,7 @@ class License
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
          isPublicForApi column:'lic_is_public_for_api'
                isSlaved column:'lic_is_slaved'
-          //licenseType column:'lic_license_type_str'
+              openEnded column:'lic_open_ended_rv_fk'
         //licenseStatus column:'lic_license_status_str'
               //lastmod column:'lic_lastmod'
               documents sort:'owner.id', order:'desc', batchSize: 10
@@ -142,7 +144,7 @@ class License
 
               ids               batchSize: 10
               pkgs              batchSize: 10
-              subscriptions     sort:'name',order:'asc', batchSize: 10
+              //subscriptions     sort:'name',order:'asc', batchSize: 10
               orgLinks          batchSize: 10
               prsLinks          batchSize: 10
               derivedLicenses   batchSize: 10
@@ -159,7 +161,6 @@ class License
         licenseUrl(nullable:true, blank:true)
         instanceOf(nullable:true, blank:false)
         isSlaved    (nullable:false, blank:false)
-        //licenseType(nullable:true, blank:true)
         //licenseStatus(nullable:true, blank:true)
         //lastmod(nullable:true, blank:true)
         //onixplLicense(nullable: true, blank: true)
@@ -302,12 +303,10 @@ class License
     }
 
     Org getLicensingConsortium() {
-        Org result
-        orgLinks.each { or ->
-            if ( or.roleType.value == 'Licensing Consortium' )
-                result = or.org
-            }
-        result
+        Set<Org> consortia = Org.executeQuery("select oo.org from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType = :roleTypeC",[roleTypeC:RDStore.OR_SUBSCRIPTION_CONSORTIA,lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE])
+        if(consortia.size() == 1)
+            consortia[0]
+        else null
     }
 
     Org getLicensor() {
@@ -320,21 +319,14 @@ class License
     }
 
     Org getLicensee() {
-        Org result
-        orgLinks.each { or ->
-            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
-                result = or.org;
-        }
-        result
+        Set<Org> member = Org.executeQuery("select oo.org from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType = (:roleTypes)",[roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIBER],lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE])
+        if(member.size() == 1)
+            member[0]
+        else null
     }
-    List<Org> getAllLicensee() {
-        List<Org> result = []
-        orgLinks.each { or ->
-            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
-                result << or.org
-        }
-        result
-  }
+    Set<Org> getAllLicensee() {
+        Org.executeQuery("select oo.org from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType = (:roleTypes)",[roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIBER],lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE])
+    }
 
   @Transient
   def getLicenseType() {
@@ -392,22 +384,12 @@ class License
 
         if (user.getAuthorizedOrgsIds().contains(contextService.getOrg().id)) {
 
-            OrgRole cons = OrgRole.findByLicAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_LICENSING_CONSORTIUM
-            )
-            OrgRole licseeCons = OrgRole.findByLicAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_LICENSEE_CONS
-            )
-            OrgRole licsee = OrgRole.findByLicAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_LICENSEE
-            )
-
             if (perm == 'view') {
-                return cons || licseeCons || licsee
+                return Links.executeQuery("select l from Links l where l.source = :lic and l.linkType = :linkType and l.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:roleTypes) and oo.org = :ctxOrg)",[lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE,roleTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA],ctxOrg:contextService.org]).size() > 0
             }
             if (perm == 'edit') {
                 if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                    return cons || licsee
+                    return Links.executeQuery("select l from Links l where l.source = :lic and l.linkType = :linkType and l.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:roleTypes) and oo.org = :ctxOrg)",[lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE,roleTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA],ctxOrg:contextService.org]).size() > 0
             }
         }
 

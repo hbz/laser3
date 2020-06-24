@@ -1684,12 +1684,12 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentLicense = result.parentSub.owner
+        result.parentLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.parentSub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }
 
         result.validLicenses = []
 
         def childLicenses = License.where {
-            instanceOf == result.parentLicense
+            instanceOf in result.parentLicenses
         }
 
         childLicenses?.each {
@@ -1759,32 +1759,9 @@ class SubscriptionController extends AbstractDebugController {
         List<GString> changeAccepted = []
         validSubChilds.each { subChild ->
             if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
-                if(params.processOption == 'linkLicense') {
-                    License newLicense = License.get(params.license_All)
-                    /*if (subChild.owner != newLicense) {
-                        subChild.owner = newLicense
-                        if (subChild.save()) {
-                            //OrgRole licenseeRole = new OrgRole(org: subChild.getSubscriber(), lic: newLicense, roleType: licenseeRoleType)
-                            //if (licenseeRole.save())
-
-                        }
-                    }*/
-                    if(subscriptionService.setOrgLicRole(subChild,newLicense))
-                        changeAccepted << "${subChild.name} (${message(code: 'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
-                }
-                else if(params.processOption == 'unlinkLicense') {
-                    //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
-                    //subChild.owner.orgLinks.remove(toDelete)
-                    /*
-                    subChild.owner = null
-                    subChild.save()
-                    if (subChild.save()) {
-                        //toDelete.delete()
-                    }
-                    */
-                    if(subscriptionService.setOrgLicRole(subChild,null))
-                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
-                }
+                License newLicense = License.get(params.license_All)
+                if(subscriptionService.setOrgLicRole(subChild,newLicense,params.processOption == 'unlinkLicense'))
+                    changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
             }
         }
         if (changeAccepted) {
@@ -1810,7 +1787,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentLicense = result.parentSub.owner
+        //result.parentLicense = result.parentSub.owner TODO we need to iterate over ALL linked licenses!
 
         List selectedMembers = params.list("selectedMembers")
 
@@ -1819,13 +1796,11 @@ class SubscriptionController extends AbstractDebugController {
         def removeLic = []
         validSubChilds.each { subChild ->
             if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
-                //keep it, I need to ask Daniel for that
-                //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
-                //subChild.owner.orgLinks.remove(toDelete)
-                //subChild.owner = null
-                if (subscriptionService.setOrgLicRole(subChild,null)) {
-                    //toDelete.delete()
-                    removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subChild),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                    License license = genericOIDService.resolveOID(li.source)
+                    if (subscriptionService.setOrgLicRole(subChild,license,true)) {
+                        removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                    }
                 }
             }
 
@@ -4407,7 +4382,7 @@ class SubscriptionController extends AbstractDebugController {
                             if (params.subscription.takeLinks) {
                                 //License
                                 if(baseSub.owner)
-                                    subscriptionService.setOrgLicRole(newSub,baseSub.owner)
+                                    subscriptionService.setOrgLicRole(newSub,baseSub.owner,false)
                             }
                             //Copy References
                             //OrgRole
@@ -4999,13 +4974,13 @@ class SubscriptionController extends AbstractDebugController {
             AuditConfig.removeConfig(newSub, 'hasPerpetualAccess')
 
         if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, null)) {
+            if(!subscriptionService.setOrgLicRole(newSub, null,true)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
             //isTargetSubChanged = true
         }else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
+            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner,false)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
@@ -5715,7 +5690,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                     if(entry.owner) {
                         License owner = genericOIDService.resolveOID(entry.owner)
-                        subscriptionService.setOrgLicRole(sub,owner)
+                        subscriptionService.setOrgLicRole(sub,owner,true)
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
                     if(!parentRole.save()) {
@@ -5828,6 +5803,7 @@ class SubscriptionController extends AbstractDebugController {
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
+        result.licenses = Links.findAllByDestinationAndLinkType(result.subscription,RDStore.LINKTYPE_LICENSE).collect {Links li -> genericOIDService.resolveOID(li.source)}
 
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.subscription))
         result.navPrevSubscription = links.prevLink

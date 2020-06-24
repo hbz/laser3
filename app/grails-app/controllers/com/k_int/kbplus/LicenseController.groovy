@@ -117,7 +117,7 @@ class LicenseController extends AbstractDebugController {
 
             String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgLinks = OrgRole.executeQuery("select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType.${i10value} asc, oo.org.sortname asc, oo.org.name asc",[license:result.license,context:result.institution,roleTypes:[OR_LICENSEE, OR_LICENSEE_CONS, OR_LICENSING_CONSORTIUM]])
+            //result.visibleOrgLinks = OrgRole.executeQuery("select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType.${i10value} asc, oo.org.sortname asc, oo.org.name asc",[license:result.license,context:result.institution,roleTypes:[OR_LICENSEE, OR_LICENSEE_CONS, OR_LICENSING_CONSORTIUM]])
 
             /*result.license.orgLinks?.each { or ->
                 if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
@@ -251,65 +251,6 @@ class LicenseController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def addMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (! result) {
-            response.sendError(401); return
-        }
-
-            if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                RefdataValue comboType
-                Set<RefdataValue> memberOrgRoleTypes
-                String superOrgType
-
-                if (accessService.checkPerm("ORG_CONSORTIUM")) {
-                    comboType = COMBO_TYPE_CONSORTIUM
-                    memberOrgRoleTypes = [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS]
-                    superOrgType = message(code:'consortium.superOrgType')
-                }
-                else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                    comboType = COMBO_TYPE_DEPARTMENT
-                    memberOrgRoleTypes = [OR_SUBSCRIBER, OR_SUBSCRIBER_COLLECTIVE]
-                    superOrgType = message(code:'collective.superOrgType')
-                }
-
-                //check if everything has been initialised
-                if(comboType && memberOrgRoleTypes && superOrgType) {
-                    List<Org> members = Org.executeQuery(
-                            'select c.fromOrg from Combo as c where c.toOrg = :inst and c.type = :comboType',
-                            [inst:result.institution, comboType:comboType])
-                    List<Subscription> memberSubs = Subscription.executeQuery(
-                            'select distinct sub from Subscription sub join sub.instanceOf cons join cons.owner lic where lic = :license',
-                            [license: result.license])
-                    List<Map<String,Long>> validOrgs = [[id:(long) 0]] // erms-582
-                    if (memberSubs) {
-                        validOrgs = Org.executeQuery(
-                                'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType in (:roleTypes) and ogr.sub in (:subs)',
-                                [orgs: members, roleTypes: memberOrgRoleTypes, subs: memberSubs])
-                    }
-                    // applying filter AFTER valid orgs are found
-                    def fsq = filterService.getOrgQuery([constraint_orgIds: validOrgs.collect({it.id})] << params)
-
-                    result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
-                    result.members_disabled = []
-                    result.superOrgType = superOrgType
-
-                    List<License> memberLics = License.executeQuery('select l from License l where l.instanceOf = :lic', [lic: result.license])
-                    result.members.each { it ->
-                        if (memberLics && OrgRole.executeQuery('' +
-                                'select ogr from OrgRole ogr join ogr.lic lc where lc in :lic and ogr.org = :org',
-                                [lic: memberLics, org: it]
-                        )) {
-                            result.members_disabled << it.id
-                        }
-                    }
-                }
-        }
-        result
-    }
-
     @DebugAnnotation(test = 'hasAffiliation("INST_EDTIOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
@@ -391,6 +332,7 @@ class LicenseController extends AbstractDebugController {
         else redirect action: 'show', params: [id: result.license?.id]
     }
 
+    @Deprecated
     private def getAvailableSubscriptions(license, user) {
         def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
           orgRole.roleType?.value in ["Licensee", "Licensee_Consortial"]
@@ -433,22 +375,24 @@ from Subscription as s where
             allSubscriptions.addAll(result.allSubscriptions)
             action = 'linkLicenseToSubs'
         }
-        License newLicense = params.unlink ? null : result.license
+        License newLicense = result.license
+        boolean unlink = params.unlink == 'true'
         if(params.subscription == "all") {
             allSubscriptions.each { s->
-                subscriptionService.setOrgLicRole(s,newLicense)
+                subscriptionService.setOrgLicRole(s,newLicense,unlink)
             }
         }
         else {
             try {
-                subscriptionService.setOrgLicRole(Subscription.get(Long.parseLong(params.subscription)),newLicense)
+                subscriptionService.setOrgLicRole(Subscription.get(Long.parseLong(params.subscription)),newLicense,unlink)
             }
             catch (NumberFormatException e) {
                 log.error("Invalid identifier supplied!")
             }
         }
         params.remove("unlink")
-        render view: action, model: result
+        //result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
+        redirect action: action, params: params
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -457,6 +401,7 @@ from Subscription as s where
         Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
         result.tableConfig = ['showLinking']
+        result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
         result
     }
 
@@ -469,11 +414,12 @@ from Subscription as s where
         }
         result.subscriptions = []
         result.putAll(setSubscriptionFilterData())
-        if(params.status != "FETCH_ALL")
-            result.subscriptionsForFilter = result.license.subscriptions.findAll { Subscription s -> s.status.id == params.status as Long }
+        if(params.status != "FETCH_ALL") {
+            result.subscriptionsForFilter = Subscription.executeQuery("select s from Subscription s where s.status.id = :status and concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)",[status:params.status as Long,lic:GenericOIDService.getOID(result.license),linkType:RDStore.LINKTYPE_LICENSE])
+        }
         if(result.license.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
-            Map<String,Object> queryParams = [lic:result.license,status:result.status,subscriberRoleTypes:subscriberRoleTypes]
+            Map<String,Object> queryParams = [lic:GenericOIDService.getOID(result.license),status:result.status,subscriberRoleTypes:subscriberRoleTypes,linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
             if(params.status != 'FETCH_ALL') {
                 whereClause += " and s.status.id = :status"
@@ -485,7 +431,7 @@ from Subscription as s where
             }
             result.consAtMember = true
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
-            result.validSubChilds = Subscription.executeQuery("select s from Subscription s join s.orgRelations oo where s.owner = :lic and oo.roleType in :subscriberRoleTypes ${whereClause} order by oo.org.sortname asc, oo.org.name asc, s.name asc, s.startDate asc, s.endDate asc",queryParams)
+            result.validSubChilds = Subscription.executeQuery("select s from Subscription s join s.orgRelations oo where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType in :subscriberRoleTypes ${whereClause} order by oo.org.sortname asc, oo.org.name asc, s.name asc, s.startDate asc, s.endDate asc",queryParams)
             ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
 
             result.validSubChilds.each { sub ->
@@ -554,10 +500,13 @@ from Subscription as s where
         validMemberLicenses.each { License memberLicense ->
             //memberLicense.getAllLicensee().sort{ Org a, Org b -> a.sortname <=> b.sortname }.each { Org org ->
             //if(org.id in filteredOrgIds) {
-            Set<Subscription> subscriptions
-            if(params.validOn)
-                subscriptions = memberLicense.subscriptions.findAll { Subscription s -> (!s.startDate || s.startDate <= result.dateRestriction) && (!s.endDate || s.endDate >= result.dateRestriction) }
-            else subscriptions = memberLicense.subscriptions
+            String dateFilter = ""
+            Map<String,Object> subQueryParams = [lic:GenericOIDService.getOID(memberLicense),linkType:RDStore.LINKTYPE_LICENSE]
+            if(params.validOn) {
+                dateFilter += " and ((s.startDate = null or s.startDate <= :validOn) and (s.endDate = null or s.endDate >= :validOn))"
+                subQueryParams.validOn = result.dateRestriction
+            }
+            Set<Subscription> subscriptions = Subscription.executeQuery("select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)${dateFilter}",subQueryParams)
             if(params.status != 'FETCH_ALL') {
                 subscriptions.removeAll { Subscription s -> s.status.id != params.status as Long }
             }
@@ -576,9 +525,10 @@ from Subscription as s where
             //}
             //}
         }
+        String subQuery = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source in (:licenses) and l.linkType = :linkType)"
         if(params.status == "FETCH_ALL")
-            result.subscriptionsForFilter = Subscription.findAllByOwnerInList(validMemberLicenses)
-        else result.subscriptionsForFilter = Subscription.findAllByOwnerInListAndStatus(validMemberLicenses,RefdataValue.get(params.status as Long))
+            result.subscriptionsForFilter = Subscription.executeQuery(subQuery,[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect { License lic -> GenericOIDService.getOID(lic)}])
+        else result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect{License lic -> GenericOIDService.getOID(lic)},status:RefdataValue.get(params.status as Long)])
         result.validMemberLicenses = filteredMemberLicenses
         result
     }
@@ -588,6 +538,7 @@ from Subscription as s where
     def linkMemberLicensesToSubs() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['onlyMemberSubs']
+        result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
         result
     }
