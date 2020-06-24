@@ -781,7 +781,7 @@ class Org
 
     String dropdownNamingConvention(Org contextOrg){
         String result = ''
-        if (contextOrg?.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST','ORG_INST_COLLECTIVE']){
+        if (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST','ORG_INST_COLLECTIVE']){
             if (name) {
                 result += name
             }
