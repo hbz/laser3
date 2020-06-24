@@ -23,11 +23,10 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
-import javax.servlet.http.HttpServletResponse
+import java.text.SimpleDateFormat
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 

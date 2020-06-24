@@ -8,8 +8,6 @@ import groovy.util.logging.Log4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import javax.persistence.Transient
-
 @Log4j
 class Person extends AbstractBaseDomainWithCalculatedLastUpdated {
 

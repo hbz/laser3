@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.Role
+
 import com.k_int.kbplus.auth.User
 import de.laser.EscapeService
 import de.laser.controller.AbstractDebugController

@@ -8,7 +8,6 @@ import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
 import groovy.json.JsonOutput
 import groovyx.gpars.GParsPool
-import groovyx.net.http.HttpResponseDecorator
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin

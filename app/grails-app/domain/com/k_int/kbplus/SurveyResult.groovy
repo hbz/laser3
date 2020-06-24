@@ -7,9 +7,6 @@ import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import javax.persistence.Transient
-
-
 class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements CalculatedLastUpdated {
 
     static Log static_logger = LogFactory.getLog(SurveyResult)

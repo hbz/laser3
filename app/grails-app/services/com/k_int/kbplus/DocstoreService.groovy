@@ -7,8 +7,8 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.apache.http.entity.mime.HttpMultipartMode
 import org.apache.http.entity.mime.MultipartEntity
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
+import org.codehaus.groovy.runtime.InvokerHelper
 
 import java.nio.file.Files
 import java.nio.file.Path

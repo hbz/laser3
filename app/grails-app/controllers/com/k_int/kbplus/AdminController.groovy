@@ -26,9 +26,9 @@ import grails.util.Holders
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
-import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 
 import java.text.SimpleDateFormat
 
