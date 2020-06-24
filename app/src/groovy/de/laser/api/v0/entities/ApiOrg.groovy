@@ -2,10 +2,7 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
-import de.laser.api.v0.ApiBox
-import de.laser.api.v0.ApiCollectionReader
-import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiToolkit
+import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import grails.converters.JSON
