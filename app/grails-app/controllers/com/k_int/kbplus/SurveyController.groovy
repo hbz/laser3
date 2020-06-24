@@ -101,7 +101,7 @@ class SurveyController {
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'], [sort: 'name'])
+        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
