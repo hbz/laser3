@@ -163,7 +163,7 @@
                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER') && surveyOrg}">
                     <dl>
                         <dt class="control-label">
-                                ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+                            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
                         </dt>
                         <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
 
@@ -190,6 +190,9 @@
             </div>
         </div>
 
+        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+            <g:render template="/templates/survey/propertiesCompareInfo" model="[customProperties: customProperties]"/>
+        </g:if>
 
         <div id="subscription-info" class="la-inline-lists hidden">
 
@@ -724,9 +727,9 @@
         <div class="ui card la-dl-no-table">
             <div class="content">
                 <g:if test="${costItemSums.ownCosts}">
-                    <g:if test="${(!(contextOrg.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id]) && subscriptionInstance.instanceOf) || !subscriptionInstance.instanceOf}">
-                        <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.ownCosts')}</h5>
-                        <g:render template="/subscription/financials" model="[data:costItemSums.ownCosts]"/>
+                    <g:if test="${(!(contextOrg.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id]) && subscriptionInstance.instanceOf) || !subscriptionInstance.instanceOf}">
+                        <h5 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')}</h5>
+                        <g:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
                     </g:if>
                 </g:if>
                 <g:if test="${costItemSums.consCosts}">
@@ -915,7 +918,8 @@
                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">
                                 <g:if test="${refdataValue.getI10n('value')}">
-                                    <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                    <g:set var="refdataValues"
+                                           value="${refdataValues + refdataValue.getI10n('value')}"/>
                                 </g:if>
                             </g:each>
                             <br>

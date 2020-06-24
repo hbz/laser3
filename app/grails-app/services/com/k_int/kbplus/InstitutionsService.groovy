@@ -3,7 +3,6 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
-import de.laser.AuditService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 

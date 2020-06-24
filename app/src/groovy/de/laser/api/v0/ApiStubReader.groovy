@@ -4,7 +4,6 @@ import com.k_int.kbplus.*
 import de.laser.api.v0.entities.ApiLicense
 import de.laser.api.v0.entities.ApiSubscription
 import de.laser.helper.Constants
-import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j

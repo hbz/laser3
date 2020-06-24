@@ -23,9 +23,10 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
+import java.text.SimpleDateFormat
+
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -2647,6 +2648,65 @@ class AjaxController {
 
         render template:"../templates/tasks/modal_create", model: result
 
+    }
+
+    @Secured(['ROLE_USER'])
+    def AddressEdit() {
+        Map model = [:]
+        model.addressInstance = Address.get(params.id)
+        if (model.addressInstance){
+            model.modalId = 'addressFormModal'
+            String messageCode = 'person.address.label'
+            switch (model.addressInstance.type){
+                case RDStore.ADRESS_TYPE_LEGAL_PATRON:
+                    messageCode = 'addressFormModalLegalPatronAddress'
+                    break
+                case RDStore.ADRESS_TYPE_BILLING:
+                    messageCode = 'addressFormModalBillingAddress'
+                    break
+                case RDStore.ADRESS_TYPE_POSTAL:
+                    messageCode = 'addressFormModalPostalAddress'
+                    break
+                case RDStore.ADRESS_TYPE_DELIVERY:
+                    messageCode = 'addressFormModalDeliveryAddress'
+                    break
+                case RDStore.ADRESS_TYPE_LIBRARY:
+                    messageCode = 'addressFormModalLibraryAddress'
+                    break
+            }
+
+            model.typeId = model.addressInstance.type.id
+            model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
+            model.modalMsgSave = message(code: 'default.button.save_changes')
+            model.url = [controller: 'address', action: 'edit']
+            render template:"../templates/addresses/formModal", model: model
+        }
+    }
+
+    @Secured(['ROLE_USER'])
+    def AddressCreate() {
+        Map model = [:]
+        model.orgId = params.orgId
+        model.prsId = params.prsId
+        model.redirect = params.redirect
+        model.typeId = Long.valueOf(params.typeId)
+        model.hideType = params.hideType
+        if (model.orgId && model.typeId) {
+            String messageCode = 'addressFormModalLibraryAddress'
+            if (model.typeId == RDStore.ADRESS_TYPE_LEGAL_PATRON.id)  {messageCode = 'addressFormModalLegalPatronAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_BILLING.id)  {messageCode = 'addressFormModalBillingAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_POSTAL.id)   {messageCode = 'addressFormModalPostalAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_DELIVERY.id) {messageCode = 'addressFormModalDeliveryAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_LIBRARY.id)  {messageCode = 'addressFormModalLibraryAddress'}
+
+            model.modalText = message(code: 'default.create.label', args: [message(code: messageCode)])
+        } else {
+            model.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
+        }
+        model.modalMsgSave = message(code: 'default.button.create.label')
+        model.url = [controller: 'address', action: 'create']
+
+        render template:"../templates/addresses/formModal", model: model
     }
 
     @Secured(['ROLE_USER'])

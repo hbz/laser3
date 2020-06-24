@@ -242,8 +242,10 @@ class DeletionService {
         List oapl           = new ArrayList(sub.packages?.oapls)
         List privateProps   = new ArrayList(sub.privateProperties)
         List customProps    = new ArrayList(sub.customProperties)
-        List surveys        = SurveyConfig.findAllBySubscription(sub)
 
+        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriber(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
+
+        SurveyInfo surveyInfo
         // collecting informations
 
         result.info = []
@@ -269,7 +271,7 @@ class DeletionService {
         result.info << ['OrgAccessPointLink', oapl]
         result.info << ['Private Merkmale', sub.privateProperties]
         result.info << ['Allgemeine Merkmale', sub.customProperties]
-        result.info << ['Umfragen', surveys, FLAG_WARNING]
+        result.info << ['Umfragen', surveys, sub.instanceOf ? FLAG_WARNING : FLAG_BLOCKER]
 
         // checking constraints and/or processing
 
@@ -413,6 +415,46 @@ class DeletionService {
                         tmp.save()
                     }
 
+                    surveys.each{ tmp ->
+
+                        if(tmp instanceof SurveyConfig){
+
+                            SurveyResult.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyConfigProperties.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyOrg.findAllBySurveyConfig(tmp).each { tmp2 ->
+
+                                CostItem.findAllBySurveyOrg(tmp2).each { tmp3 -> tmp3.delete() }
+                                tmp2.delete()
+                            }
+
+                            DocContext.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            Task.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            if(tmp.surveyInfo.surveyConfigs.size() == 1){
+                                surveyInfo = tmp.surveyInfo
+                            }
+
+                            tmp.delete()
+                        }
+
+                        if(tmp instanceof SurveyOrg){
+
+                            CostItem.findAllBySurveyOrg(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
+                            tmp.delete()
+
+                        }
+                    }
+
+                    if (surveyInfo){
+                        surveyInfo.delete()
+                    }
+
                     sub.delete()
                     status.flush()
 
@@ -474,7 +516,6 @@ class DeletionService {
         List pendingChanges     = PendingChange.findAllByOwner(org)
         List tasks              = Task.findAllByOrg(org)
         List tasksResp          = Task.findAllByResponsibleOrg(org)
-        List systemMessages     = SystemMessage.findAllByOrg(org)
         List systemProfilers    = SystemProfiler.findAllByContext(org)
 
         List facts              = Fact.findAllByInst(org)
@@ -530,7 +571,6 @@ class DeletionService {
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_BLOCKER]
         result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
         result.info << ['Aufgaben (responsibility)', tasksResp, FLAG_BLOCKER]
-        result.info << ['SystemMessages', systemMessages, FLAG_BLOCKER]
         result.info << ['SystemProfilers', systemProfilers]
 
         result.info << ['Facts', facts, FLAG_BLOCKER]

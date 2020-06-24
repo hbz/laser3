@@ -14,6 +14,7 @@ import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.I10nTranslation
+import de.laser.domain.SystemMessage
 import de.laser.exceptions.CleanupException
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -25,6 +26,7 @@ import grails.util.Holders
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
@@ -53,7 +55,7 @@ class AdminController extends AbstractDebugController {
     GlobalSourceSyncService globalSourceSyncService
     def GOKbService
     def docstoreService
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     def apiService
 
@@ -1802,7 +1804,6 @@ class AdminController extends AbstractDebugController {
     def titleEnrichment() {
         Map<String, Object> result = [:]
 
-
         if(params.kbartPreselect) {
             CommonsMultipartFile kbartFile = params.kbartPreselect
             Integer count = 0
@@ -1901,6 +1902,39 @@ class AdminController extends AbstractDebugController {
 
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def systemMessages() {
 
+        Map<String, Object> result = [:]
+        result.user = springSecurityService.currentUser
 
+        if (params.create){
+            SystemMessage sm = new SystemMessage(
+                    content_de: params.content_de ?: '',
+                    content_en: params.content_en ?: '',
+                    type: params.type,
+                    isActive: false)
+
+            if (sm.save(flush: true)){
+                flash.message = 'Systemmeldung erstellt'
+            } else {
+                flash.error = 'Systemmeldung wurde nicht erstellt'
+            }
+        }
+
+        result.systemMessages = SystemMessage.executeQuery('select sm from SystemMessage sm order by sm.isActive desc, sm.lastUpdated desc')
+        result.editable = true
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def deleteSystemMessage(Long id) {
+
+        if (SystemMessage.get(id)){
+            SystemMessage.get(id).delete(flush: true)
+            flash.message = 'Systemmeldung wurde gelöscht'
+        }
+
+        redirect(action: 'systemMessages')
+    }
 }

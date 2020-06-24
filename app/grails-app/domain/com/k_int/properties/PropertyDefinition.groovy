@@ -16,10 +16,9 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
+import javax.validation.UnexpectedTypeException
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
-import javax.validation.UnexpectedTypeException
 
 @Log4j
 class PropertyDefinition extends AbstractI10nOverride implements Serializable, Comparable<PropertyDefinition> {
@@ -54,7 +53,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
             LIC_PROP,
             ORG_CONF,
             SUB_PROP,
-            //SYS_CONF,
+            PLA_PROP,
             ORG_PROP,
             SUR_PROP
     ]

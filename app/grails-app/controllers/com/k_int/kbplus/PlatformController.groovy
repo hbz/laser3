@@ -179,7 +179,7 @@ class PlatformController extends AbstractDebugController {
 
         List<Org> authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
-        hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} and oapl.subPkg is null"
+        hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} and oapl.subPkg is null order by LOWER(ap.name)"
         List orgAccessPointList = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
 
         String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "

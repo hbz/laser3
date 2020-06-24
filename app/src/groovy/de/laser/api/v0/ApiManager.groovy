@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.107'
+    static final VERSION = '0.109'
 
     /**
      * @return Object
@@ -49,14 +49,17 @@ class ApiManager {
             return Constants.HTTP_NOT_ACCEPTABLE
         }
 
-        /*
+        /*  ---
             Naming convention
+            ---
 
             ApiObject.findByX()         returning the matching result from db (implicit checking delete status)
 
             ApiObject.requestY()        returning object if access is granted (implicit checked)
 
             ApiObject.getZ()            returing object without access check
+
+            ---
          */
 
         if (checkValidRequest('costItem')) {

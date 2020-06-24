@@ -4,8 +4,9 @@ import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.CalculatedType
+import de.laser.interfaces.DeleteFlag
+
 import javax.persistence.Transient
 import java.time.Year
 

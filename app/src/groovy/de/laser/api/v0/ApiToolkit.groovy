@@ -1,10 +1,8 @@
 package de.laser.api.v0
 
-
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgSettings
 import de.laser.helper.Constants
-import de.laser.helper.DateUtil
 import groovy.util.logging.Log4j
 import org.apache.commons.lang.RandomStringUtils
 import org.springframework.web.context.request.RequestAttributes

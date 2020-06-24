@@ -2,13 +2,7 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
-import de.laser.api.v0.ApiCollectionReader
-import de.laser.api.v0.ApiMapReader
-import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiStubReader
-import de.laser.api.v0.ApiToolkit
-import de.laser.api.v0.ApiUnsecuredMapReader
-import de.laser.domain.IssueEntitlementCoverage
+import de.laser.api.v0.*
 import groovy.util.logging.Log4j
 
 @Log4j

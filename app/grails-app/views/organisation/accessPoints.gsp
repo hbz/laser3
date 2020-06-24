@@ -17,9 +17,15 @@
         </g:if>
     </semui:breadcrumbs>
     <br>
-    <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR')
-        || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
+    <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg)
+        || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
         <semui:controlButtons>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="accessPoints"
+                            params="${params + [exportXLSX: true]}">${message(code: 'accessPoint.exportAccessPoints')}</g:link>
+                </semui:exportDropdownItem>
+            </semui:exportDropdown>
             <g:render template="actions" />
         </semui:controlButtons>
     </g:if>
@@ -59,7 +65,7 @@
                     <th>${message(code: 'accessPoint.name')}</th>
                     <th>${message(code: 'accessMethod.label')}</th>
                     <th>${message(code: 'accessRule.plural')}</th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
+                    <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
                         <th class="la-action-info">${message(code: 'default.actions.label')}</th>
                     </g:if>
                 </tr>
@@ -92,7 +98,7 @@
                                     </g:if>
                                 </div>
                             </td>
-                            <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
+                            <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
                                 <td class="center aligned">
                                     <g:if test="${accessPointListItem['platformLinkCount'] == 0 && accessPointListItem['subscriptionLinkCount'] == 0}">
                                         <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}"

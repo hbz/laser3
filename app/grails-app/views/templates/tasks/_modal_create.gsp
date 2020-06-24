@@ -1,4 +1,4 @@
-<%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; com.k_int.kbplus.Org; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.Task; org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil; de.laser.helper.RDStore;de.laser.helper.RDConstants" %>
+<%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; com.k_int.kbplus.Org; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.Task; org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil; de.laser.helper.RDStore;de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory" %>
 <laser:serviceInjection />
 <semui:modal id="modalCreateTask" message="task.create.new">
 
@@ -134,7 +134,7 @@
                         <g:message code="task.status.label" />
                     </label>
                     <laser:select id="status" name="status.id"
-                                  from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
+                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.getByValueAndCategory("Open", RDConstants.TASK_STATUS).id}"
                                   class="ui dropdown search many-to-one"
