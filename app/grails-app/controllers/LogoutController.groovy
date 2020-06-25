@@ -1,3 +1,5 @@
+//package laser2; //do not remove
+
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.security.access.annotation.Secured
 

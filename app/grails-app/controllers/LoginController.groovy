@@ -1,3 +1,5 @@
+//package laser2; //do not remove
+
 import com.k_int.kbplus.auth.User
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils

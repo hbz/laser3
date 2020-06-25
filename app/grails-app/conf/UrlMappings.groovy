@@ -1,3 +1,5 @@
+//package laser2; //do not remove
+
 class UrlMappings {
 
     static mappings = {
