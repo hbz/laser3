@@ -761,13 +761,13 @@ class FilterService {
         }
 
         if (params.endsAfter) {
-            base_qry += " and (select tc.endDate from TIPPCoverage tc where tc.tipp = tipp order by tc.endDate desc) >= :endDate"
+            base_qry += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= :endDate"
             qry_params.endDate = sdf.parse(params.endsAfter)
             filterSet = true
         }
 
         if (params.startsBefore) {
-            base_qry += " and (select tc.startDate from TIPPCoverage tc where tc.tipp = tipp order by tc.startDate asc) <= :startDate"
+            base_qry += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= :startDate"
             qry_params.startDate = sdf.parse(params.startsBefore)
             filterSet = true
         }
