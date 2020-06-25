@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2630    24.06.2020  rc1.4       Andreas Feature     Steuersätze 5 und 16 % hinzugefügt
+
+2238    24.06.2020  rc1.4       Andreas Bug         fehlende Vertragskategorisierungen nachgereicht
+
 1476    24.06.2020  rc1.4       Andreas Bug         Verschiedene Verbesserungen am Synchronisationsprozess
 
 --      22.06.2020  rc1.4       Moe     Bug         Wrong using of getCustomerType
