@@ -7,12 +7,12 @@ import de.laser.quartz.AbstractJob
 class SurveyUpdateJob extends AbstractJob {
 
     def surveyUpdateService
-/* ----> DISABLED
+/* ----> ENABLED */
     static triggers = {
         cron name:'SurveyUpdateJobTrigger', cronExpression: "0 0 23 * * ?" //Fire at 23:00 every day
     }
 
- */
+
 
     static List<String> configFlags = []
 

@@ -64,7 +64,9 @@
     <%
         def us_dashboard_tab
         switch(params.view) {
-            case "announcementsView": us_dashboard_tab = RefdataValue.getByValueAndCategory('Announcements', RDConstants.USER_SETTING_DASHBOARD_TAB)
+            case "PendingChanges": us_dashboard_tab = RefdataValue.getByValueAndCategory('PendingChanges', RDConstants.USER_SETTING_DASHBOARD_TAB)
+            break
+            case "AcceptedChanges": us_dashboard_tab = RefdataValue.getByValueAndCategory('AcceptedChanges', RDConstants.USER_SETTING_DASHBOARD_TAB)
             break
             default: us_dashboard_tab = user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
             break
@@ -133,7 +135,14 @@
         <g:if test="${editable}">
             <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
                 <div class="la-float-right">
-                    <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
+                    <g:form controller="pendingChange" action="processAll">
+                        <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
+                        <div class="ui buttons">
+                            <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
+                            <div class="or" data-text="${message(code:'default.or')}"></div>
+                            <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
+                        </div>
+                    </g:form>
                 </div>
                 <div class="ui internally celled grid">
                     <div class="row">
@@ -193,6 +202,9 @@
 
                     </g:each>
                 </div><!-- .grid -->
+                <div>
+                    <semui:paginate offset="${pendingOffset ? pendingOffset : '0'}" max="${max}" params="${[view:'PendingChanges']}" total="${pendingCount}"/>
+                </div>
             </div>
         </g:if>
 
@@ -242,6 +254,9 @@
                     </div><!-- .row -->
                 </g:each>
             </div><!-- .grid -->
+            <div>
+                <semui:paginate offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notificationsCount}"/>
+            </div>
         </div>
 
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
