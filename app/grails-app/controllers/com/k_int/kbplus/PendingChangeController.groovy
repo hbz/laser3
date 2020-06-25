@@ -98,10 +98,9 @@ class PendingChangeController extends AbstractDebugController {
     def acceptAll() {
         log.debug("acceptAll - ${params}")
         if(params.OID) {
-            RefdataValue pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
             def owner = genericOIDService.resolveOID(params.OID)
             Collection<PendingChange> pendingChanges = owner?.pendingChanges.findAll {
-                (it.status == pending_change_pending_status) || it.status == null
+                (it.status == RDStore.PENDING_CHANGE_PENDING) || it.status == null
             }
             executorWrapperService.processClosure({
                 pendingChanges.each { pc ->
@@ -116,11 +115,10 @@ class PendingChangeController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def rejectAll() {
         log.debug("rejectAll ${params}")
-        RefdataValue pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
         if(params.OID) {
             def owner = genericOIDService.resolveOID(params.OID)
             Collection<PendingChange> pendingChanges = owner?.pendingChanges.findAll {
-                (it.status == pending_change_pending_status) || it.status == null
+                (it.status == RDStore.PENDING_CHANGE_PENDING) || it.status == null
             }
             executorWrapperService.processClosure({
                 pendingChanges.each { pc ->
