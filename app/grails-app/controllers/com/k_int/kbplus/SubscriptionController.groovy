@@ -534,7 +534,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         int numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
 
-                        int numOfCIsChildSubs = CostItem.findAllBySubscriptionPackageInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs,result.package))
+                        int numOfCIsChildSubs = CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs,result.package)).size()
 
                         if (spChildSubs.size() > 0) {
                             Map conflict_item_pkgChildSubs = [
@@ -3497,28 +3497,28 @@ class SubscriptionController extends AbstractDebugController {
                     executorService.submit({
                         Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
                         try {
+                            globalSourceSyncService.defineMapFields()
                             globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
                             List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
                             Package pkgToLink = Package.findByGokbId(pkgUUID)
-                            Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                            //Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
                             println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
                             if (addType == 'With') {
                                 pkgToLink.addToSubscription(result.subscriptionInstance, true)
 
-                                subInstances.each {
+                                /*subInstances.each {
                                     pkgToLink.addToSubscription(it, true)
-                                }
+                                }*/
                             } else if (addType == 'Without') {
                                 pkgToLink.addToSubscription(result.subscriptionInstance, false)
 
-                                subInstances.each {
+                                /*subInstances.each {
                                     pkgToLink.addToSubscription(it, false)
-                                }
+                                }*/
                             }
-                            globalSourceSyncService.updateIdentifiers(packageRecord.record.metadata.gokb.package)
-                            Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id+"_pendingChanges")
-                            globalSourceSyncService.notifyDependencies([tippsToNotify])
-                            globalSourceSyncService.cleanUpGorm()
+                            //Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id+"_pendingChanges")
+                            //globalSourceSyncService.notifyDependencies([tippsToNotify])
+                            //globalSourceSyncService.cleanUpGorm()
                         }
                         catch (Exception e) {
                             log.error("sync job has failed, please consult stacktrace as follows: ")
@@ -3528,20 +3528,20 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 else {
                     Package pkgToLink = Package.findByGokbId(pkgUUID)
-                    Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                    //Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
                     println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
                     if (addType == 'With') {
                         pkgToLink.addToSubscription(result.subscriptionInstance, true)
 
-                        subInstances.each {
+                        /*subInstances.each {
                             pkgToLink.addToSubscription(it, true)
-                        }
+                        }*/
                     } else if (addType == 'Without') {
                         pkgToLink.addToSubscription(result.subscriptionInstance, false)
 
-                        subInstances.each {
+                        /*subInstances.each {
                             pkgToLink.addToSubscription(it, false)
-                        }
+                        }*/
                     }
                 }
                 switch(params.addType) {

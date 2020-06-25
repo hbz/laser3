@@ -65,22 +65,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     void doSync() {
         running = true
-        //define map fields
-        RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS).each { RefdataValue rdv ->
-            tippStatus.put(rdv.value,rdv)
-        }
-        RefdataCategory.getAllRefdataValues(RDConstants.TITLE_STATUS).each { RefdataValue rdv ->
-            titleStatus.put(rdv.value,rdv)
-        }
-        RefdataCategory.getAllRefdataValues(RDConstants.TITLE_MEDIUM).each { RefdataValue rdv ->
-            titleMedium.put(rdv.value,rdv)
-        }
-        RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS).each { RefdataValue rdv ->
-            packageStatus.put(rdv.value,rdv)
-        }
-        RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS).each { RefdataValue rdv ->
-            orgStatus.put(rdv.value,rdv)
-        }
+        defineMapFields()
         //we need to consider that there may be several sources per instance
         List<GlobalRecordSource> jobs = GlobalRecordSource.findAll()
         jobs.each { source ->
@@ -1224,6 +1209,25 @@ class GlobalSourceSyncService extends AbstractLockableService {
         catch(HttpResponseException e) {
             e.printStackTrace()
             null
+        }
+    }
+
+    void defineMapFields() {
+        //define map fields
+        RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS).each { RefdataValue rdv ->
+            tippStatus.put(rdv.value,rdv)
+        }
+        RefdataCategory.getAllRefdataValues(RDConstants.TITLE_STATUS).each { RefdataValue rdv ->
+            titleStatus.put(rdv.value,rdv)
+        }
+        RefdataCategory.getAllRefdataValues(RDConstants.TITLE_MEDIUM).each { RefdataValue rdv ->
+            titleMedium.put(rdv.value,rdv)
+        }
+        RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS).each { RefdataValue rdv ->
+            packageStatus.put(rdv.value,rdv)
+        }
+        RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS).each { RefdataValue rdv ->
+            orgStatus.put(rdv.value,rdv)
         }
     }
 
