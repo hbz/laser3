@@ -28,6 +28,13 @@ abstract class AbstractCoverage {
             'coverageDepth',
             'coverageNote',
     ]
+    @Transient
+    private static Set<String> equivalencyProperties = [
+            'startDate',
+            'startVolume',
+            'endDate',
+            'endVolume'
+    ]
 
     Set<Map<String,Object>> compareWith(Map<String,Object> covB) {
         Set<Map<String,Object>> diffs = []
@@ -68,7 +75,7 @@ abstract class AbstractCoverage {
 
     AbstractCoverage findEquivalent(Collection<AbstractCoverage> list) {
         AbstractCoverage equivalent
-        for (String k : controlledProperties) {
+        for (String k : equivalencyProperties) {
             equivalent = list.find { it[k] == this[k] }
             if (equivalent) {
                 println "Coverage statement ${equivalent.id} considered as equivalent to ${this.id}"
