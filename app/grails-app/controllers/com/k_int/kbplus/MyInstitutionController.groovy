@@ -310,12 +310,11 @@ class MyInstitutionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentLicenses() {
 
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def date_restriction = null
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -636,7 +635,7 @@ class MyInstitutionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def emptyLicense() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -677,8 +676,7 @@ class MyInstitutionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
-
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
 
@@ -777,8 +775,8 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
+        Map<String, Object> result = setResultGenerics()
 
-        def result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
         result.tableConfig = ['showActions','showLicense']
@@ -979,10 +977,8 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def emptySubscription() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -1019,7 +1015,7 @@ join sub.orgRelations or_sub where
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processEmptySubscription() {
         log.debug(params)
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER
         RefdataValue role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
@@ -1285,7 +1281,7 @@ join sub.orgRelations or_sub where
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteLicense(params) {
         log.debug("deleteLicense ${params}");
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
@@ -1324,7 +1320,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
-        Map result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         result
     }
 
@@ -1886,8 +1882,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def dashboard() {
-
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
@@ -1896,8 +1891,6 @@ AND EXISTS (
         }
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.announcementOffset = 0
@@ -1936,7 +1929,7 @@ AND EXISTS (
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
 
-        result.dueDates = de.laser.DashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDates = DashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
         result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
@@ -1960,8 +1953,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def modal_create() {
-
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
@@ -1978,7 +1970,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -1990,7 +1982,7 @@ AND EXISTS (
     //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     @Secured(['ROLE_ADMIN'])
     def announcements() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         result.itemsTimeWindow = 365
         result.recentAnnouncements = Doc.executeQuery(
@@ -2004,7 +1996,7 @@ AND EXISTS (
 
     @Secured(['ROLE_YODA'])
     def changeLog() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         def exporting = ( params.format == 'csv' ? true : false )
 
@@ -2077,7 +2069,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def financeImport() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         result.mappingCols = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
                               "currency","exchangeRate","taxType","taxRate","value","subscription","package",
                               "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
@@ -2123,7 +2115,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processFinanceImport() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         CommonsMultipartFile tsvFile = params.tsvFile
         if(tsvFile && tsvFile.size > 0) {
             String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
@@ -2154,7 +2146,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def subscriptionImport() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         result.mappingCols = ["name","owner","status","type","form","resource","provider","agency","startDate","endDate","instanceOf",
                               "manualCancellationDate","member","customProperties","privateProperties","notes"]
         result
@@ -2165,7 +2157,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processSubscriptionImport() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         CommonsMultipartFile tsvFile = params.tsvFile
         if(tsvFile && tsvFile.size > 0) {
             String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
@@ -2198,11 +2190,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def currentSurveys() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        Map<String, Object> result = setResultGenerics()
 
         //result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         //result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -2267,22 +2255,11 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfos() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
+        Map<String, Object> result = setResultGenerics()
         result.contextOrg = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : result.surveyInfo.surveyConfigs[0]
-
-        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
 
@@ -2292,7 +2269,6 @@ AND EXISTS (
             result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
             result.subscription = result.subscriptionInstance
             result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance?.orgRelations?.each { or ->
@@ -2346,16 +2322,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfosIssueEntitlements() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        Map<String, Object> result = setResultGenerics()
 
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
@@ -2392,9 +2359,6 @@ AND EXISTS (
             }
             result.visibleOrgRelations.sort { it.org.sortname }
         }
-
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
-
         result
     }
 
@@ -2404,11 +2368,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfoFinish() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        Map<String, Object> result = setResultGenerics()
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2495,11 +2455,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyResultFinish() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        Map<String, Object> result = setResultGenerics()
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2528,7 +2484,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tip() {
-      def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
       log.debug("tip :: ${params}")
       result.tip = TitleInstitutionProvider.get(params.id)
@@ -2565,9 +2521,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def userList() {
-        Map result = setResultGenerics()
-        //overwrite
-        result.editable = result.user.hasRole('ROLE_ADMIN') || result.user.hasAffiliation('INST_ADM')
+        Map<String, Object> result = setResultGenerics()
 
         Map filterParams = params
         filterParams.status = UserOrg.STATUS_APPROVED
@@ -2615,7 +2569,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def userCreate() {
-        Map result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         result.orgInstance = result.institution
         result.editor = result.user
         result.inContextOrg = true
@@ -2662,15 +2616,12 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
-
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         result.propList =
                 PropertyDefinition.findAllWhere(
@@ -2687,16 +2638,13 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def myPublicContacts() {
-
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         params.org = result.institution
         List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         result.propList =
                 PropertyDefinition.findAllWhere(
@@ -2716,8 +2664,6 @@ AND EXISTS (
     })
     Map<String, Object> budgetCodes() {
         Map<String, Object> result = setResultGenerics()
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         if (result.editable) {
 
@@ -2759,7 +2705,7 @@ AND EXISTS (
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if (params.deleteId) {
             Task dTask = Task.get(params.deleteId)
@@ -2791,7 +2737,6 @@ AND EXISTS (
         result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         def preCon = taskService.getPreconditions(contextService.getOrg())
         result << preCon
 
@@ -2803,7 +2748,7 @@ AND EXISTS (
     @DebugAnnotation(perm="ORG_INST_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def addMembers() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         // new: filter preset
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
@@ -2882,7 +2827,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def manageMembers() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
         du.setBenchmark('start')
@@ -3364,7 +3309,7 @@ AND EXISTS (
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
     def manageParticipantSurveys() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
         du.setBenchmark('filterService')
@@ -3541,7 +3486,6 @@ AND EXISTS (
         }
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
-        result.editable = false
         result.propertyDefinitions = propDefs
         //result.attrMap = attrMap
         //result.usedPdList = usedPdList
@@ -3660,23 +3604,11 @@ AND EXISTS (
         messages
     }
 
-    private Map<String, Object> setResultGenerics() {
-
-        Map<String, Object> result = [:]
-        result.user         = contextService.getUser()
-        //result.institution  = Org.findByShortcode(params.shortcode)
-        result.institution  = contextService.getOrg()
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
-        result
-    }
-
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def ajaxEmptySubscription() {
+        Map<String, Object> result = setResultGenerics()
 
-        def result = setResultGenerics()
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
             if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
@@ -3725,7 +3657,7 @@ AND EXISTS (
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def copyLicense() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if(params.id)
         {
@@ -3753,7 +3685,6 @@ AND EXISTS (
                 return;
             }
         }
-
     }
 
     private def getSurveyParticipantCounts(Org participant){
@@ -3762,7 +3693,6 @@ AND EXISTS (
         result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                  participant: participant]).groupBy {it.id[1]}.size()
-
 
         result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
@@ -3774,8 +3704,6 @@ AND EXISTS (
         result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
                 [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
                  participant: participant]).groupBy {it.id[1]}.size()
-
-
         return result
     }
 
@@ -3789,7 +3717,6 @@ AND EXISTS (
                     [status: RDStore.SURVEY_SURVEY_STARTED,
                      org   : participant,
                      owner : contextOrg]).groupBy { it.id[1] }.size()
-
 
             result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null)) and surInfo.owner = :owner",
                     [status: RDStore.SURVEY_SURVEY_STARTED,
@@ -3812,7 +3739,6 @@ AND EXISTS (
                     [status: RDStore.SURVEY_SURVEY_STARTED,
                      org   : participant]).groupBy { it.id[1] }.size()
 
-
             result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null))",
                     [status: RDStore.SURVEY_SURVEY_STARTED,
                      org   : participant]).groupBy { it.id[1] }.size()
@@ -3829,8 +3755,62 @@ AND EXISTS (
                     [status : [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
                      org    : participant]).groupBy { it.id[1] }.size()
         }
-
-
         return result
     }
+
+    private Map<String, Object> setResultGenerics() {
+        Map<String, Object> result = [:]
+        switch(params.action){
+            case 'currentSurveys':
+            case 'surveyInfos':
+            case 'surveyInfoFinish':
+            case 'surveyInfosIssueEntitlements':
+            case 'surveyResultFinish':
+                result.user = User.get(springSecurityService.principal.id)
+                break
+            default:
+                result.user = contextService.getUser()
+        }
+        //result.institution  = Org.findByShortcode(params.shortcode)
+        result.institution  = contextService.getOrg()
+        result.editable = checkIsEditable(result.user, result.institution)
+        result
+    }
+
+    private boolean checkIsEditable(User user, Org org){
+        boolean isEditable
+        switch(params.action){
+            case 'ajaxEmptySubscription':
+            case 'currentLicenses':
+            case 'currentSurveys':
+            case 'dashboard':
+            case 'emptySubscription':
+            case 'surveyInfoFinish':
+            case 'surveyResultFinish':
+                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')
+                break
+            case 'addressbook':
+            case 'budgetCodes':
+            case 'tasks':
+            case 'myPublicContacts':
+                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                break
+            case 'surveyInfos':
+                isEditable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
+                break
+            case 'surveyInfosIssueEntitlements':
+                isEditable = surveyService.isEditableIssueEntitlementsSurvey(org, SurveyConfig.get(params.id))
+                break
+            case 'userList':
+                isEditable = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')
+                break
+            case 'managePropertyDefinitions':
+                isEditable = false
+                break
+            default:
+                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
+        }
+        isEditable
+    }
+
 }
