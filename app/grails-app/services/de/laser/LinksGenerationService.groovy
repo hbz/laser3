@@ -126,4 +126,19 @@ class LinksGenerationService {
         errors
     }
 
+    boolean deleteLink(String oid) {
+        Links obj = genericOIDService.resolveOID(oid)
+        if (obj) {
+            DocContext comment = DocContext.findByLink(obj)
+            if(comment) {
+                Doc commentContent = comment.owner
+                comment.delete()
+                commentContent.delete()
+            }
+            obj.delete()
+            true
+        }
+        else false
+    }
+
 }

@@ -49,6 +49,7 @@
                     </td>
                     <g:if test="${isConsortialSubs}">
                         <td class="center aligned">
+                            <%-- TODO show that startDate and endDate are meani! --%>
                             <div class="ui checkbox la-toggle-radio la-share">
                                 <input class="ui checkbox" type="checkbox" name="toggleShareStartDate" ${AuditConfig.getConfig(sourceSubscription,'startDate') ? 'checked': ''} />
                             </div>
@@ -305,42 +306,55 @@
                 </td>
             </tr>
             <tr>
-                <td  name="subscription.takeOwner.source">
+                <td name="subscription.takeLicenses.source">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
-                        <g:if test="${sourceSubscription.owner}">
-                            <g:link controller="license" action="show" target="_blank" id="${sourceSubscription.owner.id}">
-                                ${sourceSubscription.owner}
+                        <g:each in="${sourceLicenses}" var="license">
+                            <g:link controller="license" action="show" target="_blank" id="${license.id}">
+                                <div value="${GenericOIDService.getOID(license)}" class="la-multi-sources">
+                                    <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:</b>
+                                    ${license.reference}
+                                    <br>
+                                </div>
                             </g:link>
-                        </g:if>
+                        </g:each>
                     </div>
                 </td>
+                <g:if test="${isConsortialSubs}">
+                    <td class="center aligned">
+
+                    </td>
+                </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
-                    <g:if test="${sourceSubscription.owner}">
+                    <g:each in="${sourceLicenses}" var="license">
                         <div class="ui checkbox la-toggle-radio la-replace">
-                            <g:checkBox name="subscription.takeOwner" data-action="copy" checked="${true}" />
+                            <g:checkBox name="subscription.takeLicenses" data-action="copy" value="${GenericOIDService.getOID(license)}" checked="${true}" />
                         </div>
-                    </g:if>
+                    </g:each>
                 </td>
 
-                <td  name="subscription.takeOwner.target">
+                <td  name="subscription.takeLicenses.target">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
-                        <g:if test="${targetSubscription?.owner}">
-                            <g:link controller="license" action="show" target="_blank" id="${targetSubscription?.owner?.id}">
-                                ${targetSubscription?.owner}
-                            </g:link>
-                        </g:if>
+                        <g:each in="${targetLicenses}" var="license">
+                            <div value="${GenericOIDService.getOID(license)}">
+                                <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:</b>
+                                <g:link controller="license" action="show" target="_blank" id="${license.id}">
+                                    ${license.reference}
+                                </g:link>
+                                <br>
+                            </div>
+                        </g:each>
                     </div>
                 </td>
 
                 <td>
-                    <g:if test="${targetSubscription?.owner}">
+                    <g:each in="${targetLicenses}" var="license">
                         <div class="ui checkbox la-toggle-radio la-noChange">
-                            <g:checkBox name="subscription.deleteOwner" data-action="delete" />
+                            <g:checkBox name="subscription.deleteLicenses" data-action="delete" value="${GenericOIDService.getOID(license)}" checked="${false}"/>
                         </div>
-                    </g:if>
+                    </g:each>
                 </td>
             </tr>
             <tr>
@@ -351,7 +365,7 @@
                         </g:if>
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
                             <g:if test="${source_role.org}">
-                                <div value="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
+                                <div value="${GenericOIDService.getOID(source_role)}" class="la-multi-sources">
                                     <b><i class="university icon"></i>&nbsp${source_role?.roleType?.getI10n("value")}:</b>
                                     <g:link controller="organisation" action="show" target="_blank" id="${source_role.org.id}">
                                         ${source_role?.org?.name}
@@ -383,7 +397,7 @@
                     <g:each in="${source_visibleOrgRelations}" var="source_role">
                         <g:if test="${source_role.org}">
                             <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="subscription.takeOrgRelations" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}" />
+                                <g:checkBox name="subscription.takeOrgRelations" data-action="copy" value="${GenericOIDService.getOID(source_role)}" checked="${true}" />
                             </div>
                         </g:if>
                     </g:each>
@@ -396,7 +410,7 @@
                         </g:if>
                         <g:each in="${target_visibleOrgRelations}" var="target_role">
                             <g:if test="${target_role.org}">
-                                <div value="${genericOIDService.getOID(target_role)}">
+                                <div value="${GenericOIDService.getOID(target_role)}">
                                     <b><i class="university icon"></i>&nbsp${target_role?.roleType?.getI10n("value")}:</b>
                                     <g:link controller="organisation" action="show" target="_blank" id="${target_role.org.id}">
                                         ${target_role?.org?.name}
@@ -427,7 +441,7 @@
                     <g:each in="${target_visibleOrgRelations}" var="target_role">
                         <g:if test="${target_role.org}">
                             <div class="ui checkbox la-toggle-radio la-noChange">
-                                <g:checkBox name="subscription.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
+                                <g:checkBox name="subscription.deleteOrgRelations" data-action="delete" value="${GenericOIDService.getOID(target_role)}" checked="${false}"/>
                             </div>
                             <br/>
                         </g:if>
@@ -521,8 +535,8 @@
             $deletePublicForApi: $('input:checkbox[name="subscription.deletePublicForApi"]'),
             $takePerpetualAccess: $('input:checkbox[name="subscription.takePerpetualAccess"]'),
             $deletePerpetualAccess: $('input:checkbox[name="subscription.deletePerpetualAccess"]'),
-            $takeOwner: $('input:checkbox[name="subscription.takeOwner"]'),
-            $deleteOwner: $('input:checkbox[name="subscription.deleteOwner"]'),
+            $takeLicenses: $('input:checkbox[name="subscription.takeLicenses"]'),
+            $deleteLicenses: $('input:checkbox[name="subscription.deleteLicenses"]'),
             $takeOrgRelations: $('input:checkbox[name="subscription.takeOrgRelations"]'),
             $deleteOrgRelations: $('input:checkbox[name="subscription.deleteOrgRelations"]')
         },
@@ -586,12 +600,12 @@
                 subCopyController.deletePerpetualAccess(this);
             }).trigger('change')
 
-            ref.$takeOwner.change( function(event) {
-                subCopyController.takeOwner(this);
+            ref.$takeLicenses.change( function(event) {
+                subCopyController.takeLicenses(this);
             }).trigger('change')
 
-            ref.$deleteOwner.change( function(event) {
-                subCopyController.deleteOwner(this);
+            ref.$deleteLicenses.change( function(event) {
+                subCopyController.deleteLicenses(this);
             }).trigger('change')
 
             ref.$takeOrgRelations.change( function(event) {
@@ -743,23 +757,24 @@
             }
         },
 
-        takeOwner: function(elem) {
+        takeLicenses: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay');
-                $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplaced');
+                $('.table tr td[name="subscription.takeLicenses.source"] div div[value="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takeLicenses.target"] div div').addClass('willStay');
             }
             else {
-                $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay');
-                $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced');
+                $('.table tr td[name="subscription.takeLicenses.source"] div div[value="' + elem.value + '"]').removeClass('willStay');
+                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeLicenses') < 1) {
+                    $('.table tr td[name="subscription.takeLicenses.target"] div div').removeClass('willStay');
+                }
             }
         },
 
-        deleteOwner: function(elem) {
+        deleteLicenses: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplacedStrong');
-            }
-            else {
-                $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplacedStrong');
+                $('.table tr td[name="subscription.takeLicenses.target"] div div[value="' + elem.value + '"]').addClass('willBeReplacedStrong');
+            } else {
+                $('.table tr td[name="subscription.takeLicenses.target"] div div[value="' + elem.value + '"]').removeClass('willBeReplacedStrong');
             }
         },
 

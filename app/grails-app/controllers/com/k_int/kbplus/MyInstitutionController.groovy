@@ -321,9 +321,9 @@ class MyInstitutionController extends AbstractDebugController {
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
 
-        RefdataValue subscr_role           = RDStore.OR_SUBSCRIBER
-        RefdataValue subscriber_cons_role  = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue sub_cons_role         = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue licensee_role           = RDStore.OR_LICENSEE
+        RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
+        RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
 
         String base_qry
         Map qry_params
@@ -334,41 +334,48 @@ class MyInstitutionController extends AbstractDebugController {
 
         if (accessService.checkPerm("ORG_INST")) {
             base_qry = """from License as l where (
-                exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.org = :lic_org and oo.roleType in (:roleTypes)) ) 
+                exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [linkType:RDStore.LINKTYPE_LICENSE, roleTypes:[subscr_role,subscriber_cons_role], lic_org:result.institution]
+            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
             if(result.editable)
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"
         }
         else if (accessService.checkPerm("ORG_CONSORTIUM")) {
             base_qry = """from License as l where (
-                    exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.sub.instanceOf = null and oo.org = :lic_org and oo.roleType = :roleTypeC) ) 
-            )"""
-            qry_params = [linkType:RDStore.LINKTYPE_LICENSE, roleTypeC:sub_cons_role, lic_org:result.institution]
+                    exists ( select o from l.orgLinks as o where ( 
+                    ( o.roleType = :roleTypeC 
+                        AND o.org = :lic_org 
+                        AND l.instanceOf is null
+                        AND NOT exists (
+                        select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+                    )
+                )
+            )))"""
+            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
             licenseFilterTable << "memberLicenses"
             if(result.editable)
                 licenseFilterTable << "action"
         }
         else {
             base_qry = """from License as l where (
-                exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType = :roleType AND oo.org = :lic_org ) ) 
+                exists ( select o from l.orgLinks as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [linkType:RDStore.LINKTYPE_LICENSE, roleType:subscriber_cons_role, lic_org:result.institution]
+            qry_params = [roleType:licensee_cons_role, lic_org:result.institution]
             licenseFilterTable << "licensingConsortium"
         }
         result.licenseFilterTable = licenseFilterTable
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
             base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
-            + " or exists ( select s from Subscription as s where s.owner = l and genfunc_filter_matcher(s.name, :name_filter) = true ) " // filter by subscription
+            + " or exists ( select s from Subscription as s where concat('${Subscription.class.name}:',s.id) in (select li.destination from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType) and genfunc_filter_matcher(s.name, :name_filter) = true ) " // filter by subscription
             + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
             + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
             + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
             + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
             + " ) ) " // filter by Anbieter, Konsortium, Agency
             +  " ) ")
-            qry_params += [name_filter:"${params['keyword-search']}"]
+            qry_params += [linkType:RDStore.LINKTYPE_LICENSE, name_filter:"${params['keyword-search']}"]
             result.keyWord = params['keyword-search']
         }
 
@@ -838,44 +845,47 @@ join sub.orgRelations or_sub where
         }
         Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
-        Map<Subscription,Set> providers = [:]
-        Map<Subscription,Set> agencies = [:]
-        Map<Subscription,Set> identifiers = [:]
+        Map<Subscription,Set> providers = [:], agencies = [:], identifiers = [:], licenseReferences = [:]
         Map costItemCounts = [:]
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         List allIdentifiers = Identifier.findAllBySubIsNotNull()
+        List allLicenses = Links.executeQuery("select li.source from Links li where li.destination in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions.collect{ Subscription sub -> GenericOIDService.getOID(sub) },linkType:RDStore.LINKTYPE_LICENSE])
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
-        allProviders.each { provider ->
-            Set subProviders
-            if(providers.get(provider.sub)) {
-                subProviders = providers.get(provider.sub)
-            }
-            else subProviders = new TreeSet()
+        allProviders.each { OrgRole provider ->
+            Set subProviders = providers.get(provider.sub)
+            if(!providers.get(provider.sub))
+                subProviders = new TreeSet()
             String providerName = provider.org.name ? provider.org.name : ' '
             subProviders.add(providerName)
             providers.put(provider.sub,subProviders)
         }
-        allAgencies.each { agency ->
-            Set subAgencies
-            if(agencies.get(agency.sub)) {
-                subAgencies = agencies.get(agency.sub)
-            }
-            else subAgencies = new TreeSet()
+        allAgencies.each { OrgRole agency ->
+            Set subAgencies = agencies.get(agency.sub)
+            if(!agencies.get(agency.sub))
+                subAgencies = new TreeSet()
             String agencyName = agency.org.name ? agency.org.name : ' '
             subAgencies.add(agencyName)
             agencies.put(agency.sub,subAgencies)
         }
-        allIdentifiers.each { identifier ->
-            Set subIdentifiers
-            if(identifiers.get(identifier.sub))
-                subIdentifiers = identifiers.get(identifier.sub)
-            else subIdentifiers = new TreeSet()
+        allIdentifiers.each { Identifier identifier ->
+            Set subIdentifiers = identifiers.get(identifier.sub)
+            if(!identifiers.get(identifier.sub))
+                subIdentifiers = new TreeSet()
             subIdentifiers.add("(${identifier.ns.ns}) ${identifier.value}")
             identifiers.put(identifier.sub,subIdentifiers)
         }
         allCostItems.each { row ->
             costItemCounts.put(row[1],row[0])
+        }
+        allLicenses.each { Links row ->
+            Subscription s = genericOIDService.resolveOID(row.destination)
+            License l = genericOIDService.resolveOID(row.source)
+            Set subLicenses = licenseReferences.get(s)
+            if(!subLicenses)
+                subLicenses = new TreeSet()
+            subLicenses.add(l.reference)
+            licenseReferences.put(s,subLicenses)
         }
         List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf != null group by s.instanceOf.id')
         Map subscriptionMembers = [:]
@@ -883,17 +893,14 @@ join sub.orgRelations or_sub where
             subscriptionMembers.put(row[1],row[0])
         }
         List subscriptionData = []
-        subscriptions.each { sub ->
+        subscriptions.each { Subscription sub ->
             List row = []
             switch (format) {
                 case "xls":
                 case "xlsx":
                     row.add([field: sub.name ?: "", style: 'bold'])
                     row.add([field: sub.globalUID, style: null])
-                    List ownerReferences = sub.owner?.collect {
-                        it.reference
-                    }
-                    row.add([field: ownerReferences ? ownerReferences.join(", ") : '', style: null])
+                    row.add([field: licenseReferences.get(sub) ? licenseReferences.get(sub).join(", ") : '', style: null])
                     List packageNames = sub.packages?.collect {
                         it.pkg.name
                     }
@@ -922,10 +929,7 @@ join sub.orgRelations or_sub where
                 case "csv":
                     row.add(sub.name ? sub.name.replaceAll(',',' ') : "")
                     row.add(sub.globalUID)
-                    List ownerReferences = sub.owner?.collect {
-                        it.reference
-                    }
-                    row.add(ownerReferences ? ownerReferences.join("; ") : '')
+                    row.add(licenseReferences.get(sub) ? licenseReferences.get(sub).join("; ") : '')
                     List packageNames = sub.packages?.collect {
                         it.pkg.name
                     }
@@ -1147,14 +1151,14 @@ join sub.orgRelations or_sub where
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name])
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
-            return;
+            return
         }
 
-        def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
+        def baseLicense = params.baselicense ? License.get(params.baselicense) : null
         //Nur wenn von Vorlage ist
         if (baseLicense) {
             if (!baseLicense?.hasPerm("view", user)) {
-                log.debug("return 401....");
+                log.debug("return 401....")
                 flash.error = message(code: 'myinst.newLicense.error')
                 response.sendError(401)
             }
@@ -1163,14 +1167,14 @@ join sub.orgRelations or_sub where
                         baseLicense, params, InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD)
 
                 if (copyLicense.hasErrors()) {
-                    log.error("Problem saving license ${copyLicense.errors}");
+                    log.error("Problem saving license ${copyLicense.errors}")
                     render view: 'editLicense', model: [licenseInstance: copyLicense]
                 } else {
                     copyLicense.reference = params.licenseName
                     copyLicense.startDate = DateUtil.parseDateGeneric(params.licenseStartDate)
                     copyLicense.endDate = DateUtil.parseDateGeneric(params.licenseEndDate)
 
-                    if (copyLicense.save(flush: true)) {
+                    if (copyLicense.save()) {
                         flash.message = message(code: 'license.createdfromTemplate.message')
                     }
 
@@ -1192,20 +1196,21 @@ join sub.orgRelations or_sub where
         License licenseInstance = new License(type: license_type, reference: params.licenseName,
                 startDate:params.licenseStartDate ? DateUtil.parseDateGeneric(params.licenseStartDate) : null,
                 endDate: params.licenseEndDate ? DateUtil.parseDateGeneric(params.licenseEndDate) : null,
-                status: RefdataValue.get(params.status)
+                status: RefdataValue.get(params.status),
+                openEnded: RDStore.YNU_UNKNOWN
         )
 
-        if (!licenseInstance.save(flush: true)) {
+        if (!licenseInstance.save()) {
             log.error(licenseInstance.errors)
             flash.error = message(code:'license.create.error')
             redirect action: 'emptyLicense'
         }
         else {
-            log.debug("Save ok");
+            log.debug("Save ok")
             RefdataValue licensee_role = RDStore.OR_LICENSEE
             RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
-            log.debug("adding org link to new license");
+            log.debug("adding org link to new license")
 
 
             OrgRole orgRole
@@ -1215,15 +1220,8 @@ join sub.orgRelations or_sub where
                 orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: licensee_role)
             }
 
-            if (orgRole.save(flush: true)) {
-            } else {
-                log.error("Problem saving org links to license ${org.errors}");
-            }
-            if(params.sub) {
-                Subscription subInstance = Subscription.get(params.sub)
-                subscriptionService.setOrgLicRole(subInstance,licenseInstance,false)
-                /*subInstance.owner = licenseInstance
-                subInstance.save(flush: true)*/
+            if (!orgRole.save()) {
+                log.error("Problem saving org links to license ${orgRole.errors}");
             }
 
             redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
@@ -1235,6 +1233,7 @@ join sub.orgRelations or_sub where
      *
      * @return void, redirects to main page
      */
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def linkObjects() {
         //error when no pair is given!
@@ -1289,13 +1288,26 @@ join sub.orgRelations or_sub where
                     configMap.destination = params.context
                 }
             }
-            else if(!params["linkType_new"]) {
+            else if(params["linkType_sl_new"]) {
+                configMap.linkType = RDStore.LINKTYPE_LICENSE
+                configMap.commentContent = params.linkComment_sl_new
+                configMap.source = params.pair_sl_new
+                configMap.destination = params.context
+            }
+            else if(!params["linkType_new"] && !params["linkType_sl_new"]) {
                 flash.error = message(code:'default.linking.linkTypeError')
             }
         }
         def error = linksGenerationService.createOrUpdateLink(configMap)
         if(error != false)
             flash.error = error
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def unlinkObjects() {
+        linksGenerationService.deleteLink(params.oid)
         redirect(url: request.getHeader('referer'))
     }
 

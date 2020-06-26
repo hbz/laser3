@@ -1961,17 +1961,6 @@ class AjaxController {
       switch(params.cmd) {
         case 'deletePersonRole': deletePersonRole()
         break
-        case 'deleteLink': Links obj = genericOIDService.resolveOID(params.oid)
-          if (obj) {
-            DocContext comment = DocContext.findByLink(obj)
-            if(comment) {
-              Doc commentContent = comment.owner
-              comment.delete()
-              commentContent.delete()
-            }
-            obj.delete()
-          }
-        break
         default: def obj = genericOIDService.resolveOID(params.oid)
           if (obj) {
             obj.delete()
