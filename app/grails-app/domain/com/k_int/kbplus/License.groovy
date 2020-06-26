@@ -808,4 +808,12 @@ AND lower(l.reference) LIKE (:ref)
 
         return result
     }
+
+    Set<Subscription> getSubscriptions() {
+        Set<Subscription> result = []
+        Links.findAllBySourceAndLinkType(GenericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+            result << genericOIDService.resolveOID(l.destination)
+        }
+        result
+    }
 }
