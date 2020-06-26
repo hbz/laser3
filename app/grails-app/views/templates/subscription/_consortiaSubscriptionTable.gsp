@@ -69,7 +69,8 @@
         <g:if test="${'withCostItems' in tableConfig}">
             <tr>
                 <%-- sorting over links table is problematic because of complicated join over oid and n:n relation, needs ticket --%>
-                <%--<g:sortableColumn property="subK.owner.reference" params="${params}" title="${message(code:'license.label')}" class="la-smaller-table-head" />--%><th class="la-smaller-table-head">${message(code:'license.label')}</th>
+                <%--<g:sortableColumn property="licenseName" params="${params}" title="${message(code:'license.label')}" class="la-smaller-table-head" />--%>
+                <th class="la-smaller-table-head">${message(code:'license.label')}</th>
             </tr>
         </g:if>
         </thead>

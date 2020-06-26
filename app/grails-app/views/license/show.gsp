@@ -34,7 +34,7 @@
 
         <%--<semui:objectStatus object="${license}" status="${license.status}" />--%>
 
-        <g:if test="${license.instanceOf && (institution?.id == license.getLicensingConsortium()?.id)}">
+        <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
             <div class="ui negative message">
                 <div class="header"><g:message code="myinst.message.attention" /></div>
                 <p>
@@ -122,14 +122,14 @@
 
                                         <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
                                     </dl>
-                                    <dl>
+                                    <%--<dl>
                                         <dt class="control-label">
                                             ${message(code:'license.details.linktoLicense.pendingChange')}
                                         </dt>
                                         <dd>
                                             <semui:xEditableBoolean owner="${license}" field="isSlaved" />
                                         </dd>
-                                    </dl>
+                                    </dl>--%>
                                 </g:if>
 
                                 <dl>
