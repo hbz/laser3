@@ -311,7 +311,7 @@
                         <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
                         <g:each in="${sourceLicenses}" var="license">
                             <g:link controller="license" action="show" target="_blank" id="${license.id}">
-                                <div value="${GenericOIDService.getOID(license)}" class="la-multi-sources">
+                                <div data-oid="${GenericOIDService.getOID(license)}" class="la-multi-sources">
                                     <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:</b>
                                     ${license.reference}
                                     <br>
@@ -338,7 +338,7 @@
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
                         <g:each in="${targetLicenses}" var="license">
-                            <div value="${GenericOIDService.getOID(license)}">
+                            <div data-oid="${GenericOIDService.getOID(license)}">
                                 <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:</b>
                                 <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                     ${license.reference}
@@ -365,7 +365,7 @@
                         </g:if>
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
                             <g:if test="${source_role.org}">
-                                <div value="${GenericOIDService.getOID(source_role)}" class="la-multi-sources">
+                                <div data-oid="${GenericOIDService.getOID(source_role)}" class="la-multi-sources">
                                     <b><i class="university icon"></i>&nbsp${source_role?.roleType?.getI10n("value")}:</b>
                                     <g:link controller="organisation" action="show" target="_blank" id="${source_role.org.id}">
                                         ${source_role?.org?.name}
@@ -410,7 +410,7 @@
                         </g:if>
                         <g:each in="${target_visibleOrgRelations}" var="target_role">
                             <g:if test="${target_role.org}">
-                                <div value="${GenericOIDService.getOID(target_role)}">
+                                <div data-oid="${GenericOIDService.getOID(target_role)}">
                                     <b><i class="university icon"></i>&nbsp${target_role?.roleType?.getI10n("value")}:</b>
                                     <g:link controller="organisation" action="show" target="_blank" id="${target_role.org.id}">
                                         ${target_role?.org?.name}
@@ -759,11 +759,11 @@
 
         takeLicenses: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takeLicenses.source"] div div[value="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
                 $('.table tr td[name="subscription.takeLicenses.target"] div div').addClass('willStay');
             }
             else {
-                $('.table tr td[name="subscription.takeLicenses.source"] div div[value="' + elem.value + '"]').removeClass('willStay');
+                $('.table tr td[name="subscription.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
                 if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeLicenses') < 1) {
                     $('.table tr td[name="subscription.takeLicenses.target"] div div').removeClass('willStay');
                 }
@@ -772,19 +772,19 @@
 
         deleteLicenses: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takeLicenses.target"] div div[value="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                $('.table tr td[name="subscription.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
             } else {
-                $('.table tr td[name="subscription.takeLicenses.target"] div div[value="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                $('.table tr td[name="subscription.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
             }
         },
 
         takeOrgRelations: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
                 $('.table tr td[name="subscription.takeOrgRelations.target"] div div').addClass('willStay');
             }
             else {
-                $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="' + elem.value + '"]').removeClass('willStay');
+                $('.table tr td[name="subscription.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
                 if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeOrgRelations') < 1) {
                     $('.table tr td[name="subscription.takeOrgRelations.target"] div div').removeClass('willStay');
                 }
@@ -793,9 +793,9 @@
 
         deleteOrgRelations: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takeOrgRelations.target"] div div[value="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                $('.table tr td[name="subscription.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
             } else {
-                $('.table tr td[name="subscription.takeOrgRelations.target"] div div[value="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                $('.table tr td[name="subscription.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
             }
         },
 
