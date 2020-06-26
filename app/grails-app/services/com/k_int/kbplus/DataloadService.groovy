@@ -1237,11 +1237,11 @@ class DataloadService {
 
                 String query_str = "rectype: '${ft.domainClassName.replaceAll("com.k_int.kbplus.", "")}'"
 
-                if (ft.domainClassName.replaceAll("com.k_int.kbplus.", "") == 'DocContext') {
+                if (ft.domainClassName == DocContext.name) {
                     query_str = "rectype:'Note' OR rectype:'Document'"
                 }
 
-                if (ft.domainClassName.replaceAll("com.k_int.kbplus.", "") == 'TitleInstance') {
+                if (ft.domainClassName == TitleInstance.name) {
                     query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
                 }
 
