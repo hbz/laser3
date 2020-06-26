@@ -82,7 +82,7 @@ grails.project.dependency.resolution = {
         runtime 'org.elasticsearch.client:transport:jar:5.6.16'*/
         runtime 'org.apache.logging.log4j:log4j-core:jar:2.11.1'
 
-        compile 'joda-time:joda-time:2.9.9'
+        // compile 'joda-time:joda-time:2.9.9' ; removed 2020-06-26
 
         runtime 'gov.loc:bagit:4.0'
         //runtime 'org.apache.poi:poi:3.8'
@@ -112,7 +112,7 @@ grails.project.dependency.resolution = {
         // compile 'cglib:cglib:2.2.2'
         // compile "com.lowagie:itext:2.1.7" NO USAGE YET ..
 
-        compile 'org.codehaus.groovy:groovy-ant:2.5.0'
+        // compile 'org.codehaus.groovy:groovy-ant:2.5.0' ; removed 2020-06-26
 
         compile 'org.apache.commons:commons-lang3:3.7'
 
@@ -169,9 +169,9 @@ grails.project.dependency.resolution = {
         //compile ':spring-security-shibboleth-native-sp:1.0.3'
 
         runtime ":jquery:1.11.1"
-        runtime ":audit-logging:1.0.3" // 1.0.3
-        runtime ":executor:0.3"
-        runtime ":markdown:1.1.1"
+        runtime ":audit-logging:1.0.3"
+        // runtime ":executor:0.3" ; removed 2020-06-26
+        // runtime ":markdown:1.1.1" ; removed 2020-06-26
         runtime ":quartz:1.0.2"
         compile ":jsonp:0.2"
 
