@@ -190,7 +190,7 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermTypeAffiliation("ORG_CONSORTIUM", "Consortium", "INST_USER")
     })
     Map listInstitution() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         params.orgType   = OT_INSTITUTION.id.toString()
         params.orgSector = O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
@@ -637,7 +637,7 @@ class OrganisationController extends AbstractDebugController {
         DebugUtil du = new DebugUtil()
         du.setBenchmark('this-n-that')
 
-        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         if (! result) {
             response.sendError(401)
             return
@@ -744,7 +744,7 @@ class OrganisationController extends AbstractDebugController {
         DebugUtil du = new DebugUtil()
         du.setBenchmark('this-n-that')
 
-        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
             response.sendError(401)
             return
@@ -879,7 +879,7 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def documents() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
             response.sendError(401)
             return
@@ -890,7 +890,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
             response.sendError(401)
             return
@@ -964,7 +964,7 @@ class OrganisationController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         Org orgInstance = Org.get(params.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = checkIsEditable(result.user, orgInstance)
 
         if (!orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -1011,7 +1011,7 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+        result.editable = checkIsEditable(result.user, orgInstance)
 
         if (! result.editable) {
             boolean instAdminExists = orgInstance.getAllValidInstAdmins().size() > 0
@@ -1058,7 +1058,8 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def userEdit() {
-        Map result = [user: User.get(params.id), editor: contextService.user, editable: true, orgInstance: contextService.org, manipulateAffiliations: false]
+        Map result = [user: User.get(params.id), editor: contextService.user, orgInstance: contextService.org, manipulateAffiliations: false]
+        result.editable = checkIsEditable(result.user, result.orgInstance)
 
         render view: '/templates/user/_edit', model: result
     }
@@ -1066,7 +1067,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def userCreate() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         result.availableOrgs = Org.get(params.id)
         result.availableOrgRoles = Role.findAllByRoleType('user')
         result.editor = result.user
@@ -1113,8 +1114,8 @@ class OrganisationController extends AbstractDebugController {
     def _delete() {
         Map<String, Object> result = [:]
 
-        result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_ORG_EDITOR,ROLE_ADMIN")
         result.orgInstance = Org.get(params.id)
+        result.editable = checkIsEditable(User.get(springSecurityService.principal.id), orgInstance)
 
         if (result.orgInstance) {
             if (params.process  && result.editable) {
@@ -1195,13 +1196,11 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
             response.sendError(401)
             return
         }
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         if (! result.institution) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -1233,12 +1232,11 @@ class OrganisationController extends AbstractDebugController {
                 ])
     })
     def readerNumber() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
             response.sendError(401)
             return
         }
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         params.sort = params.sort ?: 'dueDate'
         params.order = params.order ?: 'desc'
@@ -1259,12 +1257,11 @@ class OrganisationController extends AbstractDebugController {
         ])
     })
     def accessPoints() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
             response.sendError(401)
             return
         }
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
         if (! result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -1307,12 +1304,7 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
-            result.editable = true
-        }
-        else {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
-        }
+        result.editable = checkIsEditable(result.user, orgInstance)
 
         if(result.editable)
         {
@@ -1334,12 +1326,7 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
-            result.editable = true
-        }
-        else {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
-        }
+        result.editable = checkIsEditable(result.user, orgInstance)
 
         if(result.editable)
         {
@@ -1370,11 +1357,7 @@ class OrganisationController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
-            result.editable = true
-        } else {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR')
-        }
+        result.editable = checkIsEditable(result.user, orgInstance)
 
         if (result.editable){
             orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
@@ -1394,12 +1377,7 @@ class OrganisationController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
-            result.editable = true
-        } else {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR')
-        }
-
+        result.isEditable = checkIsEditable(result.user, orgInstance)
         if(result.editable) {
             def osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
             orgInstance.removeFromSubjectGroup(osg)
@@ -1410,42 +1388,10 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    private Map<String, Object> setResultGenericsAndCheckAccess(params) {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = contextService.org
-        Map<String, Object> result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN'),inContextOrg:true,institutionalView:false,departmentalView:false]
-
-        if (params.id) {
-            result.orgInstance = Org.get(params.id)
-            result.inContextOrg = result.orgInstance?.id == org.id
-            //this is a flag to check whether the page has been called for a consortia or inner-organisation member
-            Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
-            if(checkCombo) {
-                if(checkCombo.type == COMBO_TYPE_CONSORTIUM)
-                    result.institutionalView = true
-                else if(checkCombo.type == COMBO_TYPE_DEPARTMENT)
-                    result.departmentalView = true
-            }
-            //restrictions hold if viewed org is not the context org
-            if(!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
-                //restrictions further concern only single users, not consortia
-                if(accessService.checkPerm("ORG_INST") && !result.departmentalView) {
-                    if(result.orgInstance.hasPerm("ORG_INST,ORG_INST_COLLECTIVE")) {
-                        return null
-                    }
-                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE") && Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT)) {
-                        return null
-                    }
-                }
-            }
-        }
-        result
-    }
-
     @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR")
     @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ORG_EDITOR") })
     def toggleCombo() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
             response.sendError(401)
             return
@@ -1486,5 +1432,74 @@ class OrganisationController extends AbstractDebugController {
                 break
         }
         redirect action: 'listInstitution'
+    }
+    private Map<String, Object> setResultGenericsAndCheckAccess() {
+        User user = User.get(springSecurityService.principal.id)
+        Org org = contextService.org
+        boolean isEditable = checkIsEditable(user, org)
+        Map<String, Object> result = [user:user,institution:org,editable:isEditable,inContextOrg:true,institutionalView:false,departmentalView:false]
+
+        if (params.id) {
+            result.orgInstance = Org.get(params.id)
+            result.inContextOrg = result.orgInstance?.id == org.id
+            //this is a flag to check whether the page has been called for a consortia or inner-organisation member
+            Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
+            if(checkCombo) {
+                if(checkCombo.type == COMBO_TYPE_CONSORTIUM)
+                    result.institutionalView = true
+                else if(checkCombo.type == COMBO_TYPE_DEPARTMENT)
+                    result.departmentalView = true
+            }
+            //restrictions hold if viewed org is not the context org
+            if(!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
+                //restrictions further concern only single users, not consortia
+                if(accessService.checkPerm("ORG_INST") && !result.departmentalView) {
+                    if(result.orgInstance.hasPerm("ORG_INST,ORG_INST_COLLECTIVE")) {
+                        return null
+                    }
+                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE") && Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT)) {
+                        return null
+                    }
+                }
+            }
+        }
+        result
+    }
+
+
+    private boolean checkIsEditable(User user, Org org) {
+        boolean isEditable
+        switch(params.action){
+            case 'userEdit':
+                isEditable = true
+                break
+            case '_delete':
+                isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN')
+                break
+            case 'addressbook':
+                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                break
+            case 'properties':
+            case 'accessPoints':
+                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+                break
+            case 'addSubjectGroup':
+            case 'deleteSubjectGroup':
+                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+                break
+            case 'readerNumber':
+                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+                break
+            case 'users':
+                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                break
+            case 'addOrgType':
+            case 'deleteOrgType':
+                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+                break
+            default:
+                isEditable = accessService.checkMinUserOrgRole(user, org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+        }
+        isEditable
     }
 }
