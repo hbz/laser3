@@ -3639,16 +3639,6 @@ AND EXISTS (
         messages
     }
 
-    private Map<String, Object> setResultGenerics() {
-
-        Map<String, Object> result = [:]
-        result.user         = contextService.getUser()
-        //result.institution  = Org.findByShortcode(params.shortcode)
-        result.institution  = contextService.getOrg()
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
-        result
-    }
-
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
