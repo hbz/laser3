@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
-import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -17,12 +16,6 @@ class FilterService {
     def genericOIDService
     def contextService
     def messageSource
-    Locale locale
-
-    @PostConstruct
-    void init() {
-        locale = LocaleContextHolder.getLocale()
-    }
 
     Map<String, Object> getOrgQuery(Map params) {
         Map<String, Object> result = [:]
@@ -728,6 +721,7 @@ class FilterService {
     }
 
     Map<String,Object> generateBasePackageQuery(params, qry_params, showDeletedTipps, asAt, forBase) {
+        Locale locale = LocaleContextHolder.getLocale()
         String base_qry
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
         boolean filterSet = false
@@ -766,13 +760,13 @@ class FilterService {
         }
 
         if (params.endsAfter) {
-            base_qry += " and tipp.endDate >= :endDate"
+            base_qry += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= :endDate"
             qry_params.endDate = sdf.parse(params.endsAfter)
             filterSet = true
         }
 
         if (params.startsBefore) {
-            base_qry += " and tipp.startDate <= :startDate"
+            base_qry += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= :startDate"
             qry_params.startDate = sdf.parse(params.startsBefore)
             filterSet = true
         }

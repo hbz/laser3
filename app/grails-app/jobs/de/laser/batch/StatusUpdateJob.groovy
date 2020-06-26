@@ -7,13 +7,13 @@ import de.laser.quartz.AbstractJob
 class StatusUpdateJob extends AbstractJob {
 
     def statusUpdateService
-/*
+
     static triggers = {
        cron name:'StatusUpdateTrigger', cronExpression: "0 0 3 * * ?" //Fire at 03:00 every day
 //        cron name:'StatusUpdateTrigger', cronExpression: "0 /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
 //        cron name:'StatusUpdateTrigger', cronExpression: "0 /3 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every three minutes
     }
-*/
+
     static List<String> configFlags = []
 
     boolean isAvailable() {
@@ -34,7 +34,7 @@ class StatusUpdateJob extends AbstractJob {
         try {
             log.info("Execute::SubscriptionUpdateJob - Start")
 
-            if (! statusUpdateService.subscriptionCheck() || statusUpdateService.licenseCheck() ) {
+            if (!statusUpdateService.subscriptionCheck() || !statusUpdateService.licenseCheck() ) {
                 log.warn( 'Failed. Maybe ignored due blocked statusUpdateService')
             }
 

@@ -3,7 +3,6 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
-import de.laser.AuditConfig
 import de.laser.interfaces.AuditableSupport
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement

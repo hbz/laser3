@@ -1,3 +1,6 @@
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Subscription
+
 databaseChangeLog = {
 
 	changeSet(author: "klober (modified)", id: "1592202212497-1") {
@@ -67,5 +70,27 @@ If you have further questions to the LAS:eR service or would like to use LAS:eR 
 			}
 			rollback {}
 		}
+	}
+
+	changeSet(author: "galffy (generated)", id: "1592202212497-7") {
+		addColumn(schemaName: "public", tableName: "license") {
+			column(name: "lic_open_ended_rv_fk", type: "int8")
+		}
+	}
+
+	changeSet(author: "galffy (modified)", id: "1592202212497-8") {
+		grailsChange {
+			change {
+				sql.execute("update license set lic_open_ended_rv_fk = (select rdv_id from refdata_value left join refdata_category on rdv_owner = rdc_id where rdc_description = 'y.n.u' and rdv_value = 'Unknown') where lic_open_ended_rv_fk is null;")
+			}
+		}
+	}
+
+	changeSet(author: "galffy (modified)", id: "1592202212497-9") {
+		addNotNullConstraint(columnDataType: "int8", columnName: "lic_open_ended_rv_fk", tableName: "license")
+	}
+
+	changeSet(author: "galffy (generated)", id: "1592202212497-10") {
+		addForeignKeyConstraint(baseColumnNames: "lic_open_ended_rv_fk", baseTableName: "license", baseTableSchemaName: "public", constraintName: "FK9F084417F199EB0", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
 }

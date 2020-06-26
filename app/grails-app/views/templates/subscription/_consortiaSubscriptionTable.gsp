@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.Links;com.k_int.kbplus.GenericOIDService;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
 <g:if test="${params.member}">
@@ -68,7 +68,8 @@
         </tr>
         <g:if test="${'withCostItems' in tableConfig}">
             <tr>
-                <g:sortableColumn property="subK.owner.reference" params="${params}" title="${message(code:'license.label')}" class="la-smaller-table-head" />
+                <%-- sorting over links table is problematic because of complicated join over oid and n:n relation, needs ticket --%>
+                <%--<g:sortableColumn property="subK.owner.reference" params="${params}" title="${message(code:'license.label')}" class="la-smaller-table-head" />--%><th class="la-smaller-table-head">${message(code:'license.label')}</th>
             </tr>
         </g:if>
         </thead>
@@ -122,12 +123,14 @@
                             </span>
                         </g:if>
                     </div>
-                    <g:if test="${subCons.owner}">
+                    <g:set var="linkedLicenses" value="${Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE)}"/>
+                    <g:each in="${linkedLicenses}" var="link">
+                        <g:set var="license" value="${genericOIDService.resolveOID(link.source)}"/>
                         <div class="la-flexbox">
                             <i class="icon balance scale la-list-icon"></i>
-                            <g:link controller="license" action="show" id="${subCons.owner.id}">${subCons.owner.reference}</g:link>
+                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
                         </div>
-                    </g:if>
+                    </g:each>
                 </td>
                 <td>
                     <g:each in="${subCons.packages}" var="subPkg">
@@ -224,7 +227,7 @@
                 </td>
                 <g:if test="${'onlyMemberSubs' in tableConfig}">
                     <td>
-                        <g:if test="${license == subCons.owner}">
+                        <g:if test="${subCons in linkedSubscriptions}">
                             <g:link class="ui icon negative button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:subCons.id]}">
                                 <i class="ui minus icon"></i>
                             </g:link>

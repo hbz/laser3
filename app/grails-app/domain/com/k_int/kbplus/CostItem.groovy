@@ -4,8 +4,9 @@ import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.CalculatedType
+import de.laser.interfaces.DeleteFlag
+
 import javax.persistence.Transient
 import java.time.Year
 
@@ -16,6 +17,8 @@ class CostItem
     static enum TAX_TYPES {
         TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),
         TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),19,true),
+        TAXABLE_5          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),5,true),
+        TAXABLE_16         (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),16,true),
         TAX_EXEMPT         (RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE),0,true),
         TAX_NOT_TAXABLE    (RefdataValue.getByValueAndCategory('not taxable', RDConstants.TAX_TYPE),0,true),
         TAX_NOT_APPLICABLE (RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE),0,true),

@@ -1,7 +1,6 @@
 package de.laser.domain
 
-import com.k_int.kbplus.IssueEntitlement
-import com.k_int.kbplus.Org
+
 import com.k_int.kbplus.Subscription
 
 class IssueEntitlementGroup {

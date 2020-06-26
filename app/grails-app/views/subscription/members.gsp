@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.CostItem; com.k_int.kbplus.Links; com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -207,12 +207,14 @@
                     </td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
-                            <g:if test="${sub?.owner?.id}">
-                                <g:link controller="license" action="show" id="${sub?.owner?.id}"><i class=" inverted circular balance scale green link icon"></i></g:link>
-                            </g:if>
-                            <g:else>
+                            <g:set var="licenses" value="${Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)}"/>
+                            <g:each in="${licenses}" var="row">
+                                <g:set var="license" value="${genericOIDService.resolveOID(row.source)}"/>
+                                <g:link class="ui right labeled icon button green link" controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license.licenseCategory.getI10n("value")}</g:link>
+                            </g:each>
+                            <g:if test="${!licenses}">
                                 <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon button"><i class="write icon"></i></g:link>
-                            </g:else>
+                            </g:if>
                         </td>
                     </g:if>
                     <td>${sub.status.getI10n('value')}</td>

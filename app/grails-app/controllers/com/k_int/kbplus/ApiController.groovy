@@ -9,8 +9,6 @@ import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
-import java.text.SimpleDateFormat
-
 @Secured(['permitAll']) // TODO
 class ApiController {
 

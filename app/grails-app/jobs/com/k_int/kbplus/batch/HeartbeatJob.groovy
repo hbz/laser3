@@ -2,10 +2,11 @@ package com.k_int.kbplus.batch
 
 import de.laser.domain.ActivityProfiler
 import de.laser.quartz.AbstractJob
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class HeartbeatJob extends AbstractJob {
 
-    def grailsApplication
+    GrailsApplication grailsApplication
     def cacheService
     def yodaService
 

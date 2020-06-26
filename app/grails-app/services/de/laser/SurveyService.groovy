@@ -377,7 +377,12 @@ class SurveyService {
                     row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
-                    row.add([field: subscription?.owner?.reference ?: '', style: null])
+                    List licenseNames = []
+                    Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                        License l = genericOIDService.resolveOID(li.destination)
+                        licenseNames << l.reference
+                    }
+                    row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
                     List packageNames = subscription?.packages?.collect {
                         it.pkg.name
                     }
@@ -723,7 +728,13 @@ class SurveyService {
                             row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                             row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
-                            row.add([field: subscription?.owner?.reference ?: '', style: null])
+                            List licenseNames = []
+                            Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                                License l = genericOIDService.resolveOID(li.destination)
+                                licenseNames << l.reference
+                            }
+                            row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
+
                             List packageNames = subscription?.packages?.collect {
                                 it.pkg.name
                             }

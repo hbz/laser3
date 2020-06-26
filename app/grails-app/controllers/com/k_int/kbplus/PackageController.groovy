@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.Role
+
 import com.k_int.kbplus.auth.User
 import de.laser.EscapeService
 import de.laser.controller.AbstractDebugController
@@ -826,23 +826,7 @@ class PackageController extends AbstractDebugController {
         globalSourceSyncService.source = source
         GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:pkg.gokbId])
         if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
-            executorService.submit({
-                Thread.currentThread().setName("PackageSync_"+sub.id)
-                try {
-                    globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
-                    Package.withNewSession {
-                        List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
-                    }
-                    globalSourceSyncService.notifyDependencies([tippsToNotify])
-                    //globalSourceSyncService.cleanUpGorm()
-                    println "Sync done, adding package to subscription ${sub}, with entitlements?: ${add_entitlements}"
-                    pkg.addToSubscription(sub, add_entitlements)
-                }
-                catch (Exception e) {
-                    log.error("sync job has failed, please consult stacktrace as follows: ")
-                    e.printStackTrace()
-                }
-            } as Callable)
+            pkg.addToSubscription(sub, add_entitlements)
             if(add_entitlements) {
                 flash.message = message(code:'subscription.details.link.processingWithEntitlements')
                 redirect controller: 'subscription', action: 'index', id: params.subid
@@ -1037,7 +1021,7 @@ class PackageController extends AbstractDebugController {
 
         // postgresql migration
         String subQuery = 'select cast(id as string) from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
-        def subQueryResult = AuditLogEvent.executeQuery(subQuery, [pkgid: params.id])
+        def subQueryResult = TitleInstancePackagePlatform.executeQuery(subQuery, [pkgid: params.id])
 
         //def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string)) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'
         //def query_params = [ pkgcls:'com.k_int.kbplus.Package', tippcls:'com.k_int.kbplus.TitleInstancePackagePlatform', pkgid:params.id, subQueryResult:subQueryResult]

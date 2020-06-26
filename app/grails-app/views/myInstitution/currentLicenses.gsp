@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.Links;com.k_int.kbplus.GenericOIDService" %>
 <!doctype html>
 <html>
   <head>
@@ -148,21 +148,16 @@
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>
-                              <%--<g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">--%>
-                                  <g:each in="${l.subscriptions}" var="sub">
-                                      <g:if test="${sub.status.id == RDStore.SUBSCRIPTION_CURRENT.id}">
-                                          <g:if test="${institution.id in sub.orgRelations.org.id || accessService.checkPerm("ORG_CONSORTIUM")}">
-                                              <div class="la-flexbox">
-                                                  <i class="icon clipboard outline outline la-list-icon"></i>
-                                                  <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
-                                              </div>
-                                          </g:if>
+                              <g:each in="${allLinkedSubscriptions.get(l)}" var="sub">
+                                  <g:if test="${sub.status.id == RDStore.SUBSCRIPTION_CURRENT.id}">
+                                      <g:if test="${institution.id in sub.orgRelations.org.id/* || accessService.checkPerm("ORG_CONSORTIUM")*/}">
+                                          <div class="la-flexbox">
+                                              <i class="icon clipboard outline outline la-list-icon"></i>
+                                              <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
+                                          </div>
                                       </g:if>
-                                  </g:each>
-                              <%--</g:if>--%>
-                              <%--<g:else>
-                                  <br>${message(code:'myinst.currentLicenses.no_subs')}
-                              </g:else>--%>
+                                  </g:if>
+                              </g:each>
                           </td>
                           <g:if test="${'memberLicenses' in licenseFilterTable}">
                               <td>

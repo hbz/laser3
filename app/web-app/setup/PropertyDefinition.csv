@@ -195,7 +195,6 @@ Subscription Property,Partial payment,Teilzahlung,Partial payment,class com.k_in
 Subscription Property,Payment target,Zahlungsziel,Payment target,class java.lang.String,,,,,Wieviele Tage sind bis zum Zahlungsziel gegeben?,,,,,
 Subscription Property,PDA/EBS model,PDA/EBS-Programm,PDA/EBS model,class java.lang.String,,,,,"Basiert die Lizenz auf einem PDA-, EBS- oder EBA-Modell?",,,,,
 Subscription Property,Perennial term,Mehrjahreslaufzeit,Perennial term,class com.k_int.kbplus.RefdataValue,y.n,,,,Ist für die Lizenz eine Mehrjahreslaufzeit entschieden?,Has a multi-year term been decided for the subscription?,,,,
-Subscription Property,Perennial term checked,Mehrjahreslaufzeit ausgewählt,Perennial term checked,class com.k_int.kbplus.RefdataValue,y.n,,,true,Hat der Teilnehmer sich für eine Mehrjahreslaufzeit entschieden?,,,,,
 Subscription Property,Perpetual access,Archivzugriff,Perpetual access,class com.k_int.kbplus.RefdataValue,y.n,,,,Gibt es einen Archivzugriff?,,,,,
 Subscription Property,Pick&Choose package,Pick&Choose-Paket,Pick&Choose package,class java.lang.String,,,,,Handelt es sich um ein Paket mit Einzeltitelauswahl (Pick & Choose)?,,,,,
 Subscription Property,Price advantage kind,Preisvorteil Art,Price advantage kind,class java.lang.String,,,true,,Was für einen Preisvorteil gibt es?,,,,,

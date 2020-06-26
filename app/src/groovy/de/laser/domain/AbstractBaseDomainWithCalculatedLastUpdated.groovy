@@ -5,8 +5,6 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 
-import javax.persistence.Transient
-
 /**
  *  class Test extends AbstractBaseDomain
  *

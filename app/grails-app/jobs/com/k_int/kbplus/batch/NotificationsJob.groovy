@@ -1,11 +1,12 @@
 package com.k_int.kbplus.batch
 
 import de.laser.quartz.AbstractJob
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class NotificationsJob extends AbstractJob {
 
     def changeNotificationService
-    def grailsApplication
+    GrailsApplication grailsApplication
 
     /* ----> DISABLED
     

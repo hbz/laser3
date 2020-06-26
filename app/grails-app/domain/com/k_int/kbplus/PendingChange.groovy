@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.User
+
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.TIPPCoverage
@@ -141,11 +141,10 @@ class PendingChange {
         if((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem)) {
             PendingChange pc = new PendingChange()
             if(configMap.prop) {
-                executeUpdate('update PendingChange pc set status = :superseded where :target in (subscription,license,costItem) and targetProperty = :prop',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,prop:configMap.prop])
-                pc.targetProperty = configMap.prop
+                executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.oid = :oid and pc.targetProperty = :prop',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,oid:configMap.oid,prop:configMap.prop])
             }
             else {
-                executeUpdate('update PendingChange pc set status = :superseded where :target in (subscription,license,costItem) and oid = :oid and msgToken = :msgToken',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,oid:configMap.oid,msgToken:configMap.msgToken])
+                executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.oid = :oid and pc.msgToken = :msgToken',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,oid:configMap.oid,msgToken:configMap.msgToken])
             }
             if(configMap.target instanceof Subscription)
                 pc.subscription = (Subscription) configMap.target
@@ -265,10 +264,9 @@ class PendingChange {
             case PendingChangeConfiguration.COVERAGE_DELETED:
                 if(target instanceof IssueEntitlementCoverage) {
                     IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
-                    if(targetCov.delete()) {
-                        done = true
-                    }
-                    else throw new ChangeAcceptException("problems when deleting coverage statement - pending change not accepted: ${targetCov.errors}")
+                    //no way to check whether object could actually be deleted or not
+                    targetCov.delete()
+                    done = true
                 }
                 else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${oid}! Pending change is void!")
                 break

@@ -3,11 +3,12 @@ package de.laser.batch
 
 import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class DashboardDueDatesJob extends AbstractJob {
 
     def dashboardDueDatesService
-    def grailsApplication
+    GrailsApplication grailsApplication
 
     static triggers = {
         cron name:'DashboardDueDatesTrigger', cronExpression: "0 0 22 * * ?" //Fire at 22:00 every day

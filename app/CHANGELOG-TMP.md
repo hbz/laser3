@@ -2,6 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2630    24.06.2020  rc1.4       Andreas Feature     Steuersätze 5 und 16 % hinzugefügt
+
+2238    24.06.2020  rc1.4       Andreas Bug         fehlende Vertragskategorisierungen nachgereicht
+
+1476    24.06.2020  rc1.4       Andreas Bug         Verschiedene Verbesserungen am Synchronisationsprozess
+
+2620    23.06.2020  hbz-dev     Moe     Feature     Verlängerungsumfrage: Veränderung an zukünftigen Merkmal einblenden
+
+2627    22.06.2020  hbz-dev     Moe     Feature     "Späteinsteiger" & "Mehrjahres ausgewählt" nicht mehr für Logik nutzen
+
 --      22.06.2020  rc1.4       Moe     Bug         Wrong using of getCustomerType
 
 --      22.06.2020  rc1.4       David   Feature     API 0.109

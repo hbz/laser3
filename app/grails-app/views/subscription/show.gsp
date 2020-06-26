@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
-<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License" %>
-<%@ page import="com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
@@ -210,24 +210,19 @@
                         <g:if test="${links.entrySet()}">
                             <table class="ui three column table">
                                 <g:each in="${links.entrySet().toSorted()}" var="linkTypes">
-                                    <g:if test="${linkTypes.getValue().size() > 0}">
+                                    <g:if test="${linkTypes.getValue().size() > 0 && linkTypes.getKey() != GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}">
                                         <g:each in="${linkTypes.getValue()}" var="link">
                                             <tr>
-                                                <th scope="row" class="control-label la-js-dont-hide-this-card">${linkTypes.getKey()}</th>
+                                                <%
+                                                    int perspectiveIndex = GenericOIDService.getOID(subscriptionInstance) == link.source ? 0 : 1
+                                                %>
+                                                <th scope="row" class="control-label la-js-dont-hide-this-card">${genericOIDService.resolveOID(linkTypes.getKey()).getI10n("value").split("\\|")[perspectiveIndex]}</th>
                                                 <td>
                                                     <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
-                                                    <g:set var="sdf" value="${new SimpleDateFormat('dd.MM.yyyy')}"/>
-                                                    <g:if test="${pair instanceof License}">
-                                                        <g:link controller="license" action="show" id="${pair.id}">
-                                                            ${pair.reference}
-                                                        </g:link>
-                                                    </g:if>
-                                                    <g:elseif test="${pair instanceof Subscription}">
-                                                        <g:link controller="subscription" action="show" id="${pair.id}">
-                                                            ${pair.name}
-                                                        </g:link>
-                                                    </g:elseif><br>
-                                                    ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}<br>
+                                                    <g:link controller="subscription" action="show" id="${pair.id}">
+                                                        ${pair.name}
+                                                    </g:link><br>
+                                                    <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>–<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
                                                     <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
                                                     <g:if test="${comment}">
                                                         <em>${comment.owner.content}</em>
@@ -477,74 +472,98 @@
 
                 <div class="ui card la-js-hideable hidden">
                     <div class="content">
+                        <h5 class="ui header">
+                            <g:message code="license.plural"/>
+                        </h5>
+                        <g:if test="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
+                            <table class="ui three column table">
+                                <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="${link}">
+                                    <tr>
+                                        <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
+                                        <th scope="row" class="control-label la-js-dont-hide-this-card">${pair.licenseCategory?.getI10n("value")}</th>
+                                        <td>
+                                            <g:link controller="license" action="show" id="${pair.id}">
+                                                ${pair.reference}
+                                            </g:link><br>
+                                            <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                                            <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
+                                            <g:if test="${comment}">
+                                                <em>${comment.owner.content}</em>
+                                            </g:if>
+                                        </td>
+                                        <td class="right aligned">
+                                            <g:render template="/templates/links/subLinksModal"
+                                                      model="${[tmplText:message(code:'subscription.details.editLink'),
+                                                                tmplIcon:'write',
+                                                                tmplCss: 'icon la-selectable-button',
+                                                                tmplID:'editLicenseLink',
+                                                                tmplModalID:"sub_edit_link_${link.id}",
+                                                                editmode: editable,
+                                                                context: subscription,
+                                                                link: link
+                                                      ]}" />
+                                            <g:if test="${editable}">
+                                                <div class="ui icon negative buttons">
+                                                    pseudocode call: subscriptionService.setOrgLicRole(subscriptionInstance,links.source,true)
+                                                </div>
+                                                <br />
+                                            </g:if>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <%-- to be transposed to AJAX
+                                            <g:set var="derivedPropDefGroups" value="${subscriptionInstance.owner?.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
-                        <table class="ui three column table">
-                            <tr>
-                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license.label')}</th>
-                                <td>
-                                    <g:if test="${subscriptionInstance.owner == null}">
-                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscription" dataAction="possibleLicensesForSubscription" />
-                                    </g:if>
-                                    <g:else>
-                                        <g:link controller="license" action="show" id="${subscriptionInstance.owner.id}">
-                                            ${subscriptionInstance.owner}
-                                        </g:link>
-                                    </g:else>
-                                    %{-- <g:if test="${subscriptionInstance.owner != null}">
-                                         [<g:link controller="license" action="show" id="${subscriptionInstance.owner.id}">
-                                             <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
-                                         </g:link>]
-                                     </g:if>--}%
-                                </td>
-                                <td class="right aligned">
-                                    <g:if test="${editable && subscriptionInstance.owner}">
-                                        <div class="ui icon negative buttons">
-                                            <a href="?cmd=unlinkLicense" class="ui button la-selectable-button">
-                                                <i class="unlink icon"></i>
-                                            </a>
-                                        </div>
-                                        <br />
-                                    </g:if>
-                                </td>
-                            </tr>
-                        </table>
+                                            <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.orphanedProperties}">
+                                                <div class="ui la-vertical buttons">
+                                                    <button id="derived-license-properties-toggle" class="ui button la-js-dont-hide-button">Vertragsmerkmale anzeigen</button>
+                                                    <script>
+                                                        $('#derived-license-properties-toggle').on('click', function() {
+                                                            $('#derived-license-properties').toggleClass('hidden')
+                                                            if ($('#derived-license-properties').hasClass('hidden')) {
+                                                                $(this).text('Vertragsmerkmale anzeigen')
+                                                            } else {
+                                                                $(this).text('Vertragsmerkmale ausblenden')
+                                                            }
+                                                        })
+                                                    </script>
 
-                        <g:if test="${editable}">
-                            <g:if test="${subscriptionInstance.owner == null}">
-                                <g:link controller="myInstitution" class="ui button la-new-item" action="emptyLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}</g:link>
-                            </g:if>
+                                                    <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.orphanedProperties}">
+                                                        <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
+
+                                                            <g:render template="licProp" model="${[
+                                                                    license: subscriptionInstance.owner,
+                                                                    derivedPropDefGroups: derivedPropDefGroups
+                                                            ]}" />
+                                                        </div>
+                                                    </g:if>
+                                                </div>
+                                            </g:if>--%>
+                                        </td>
+                                    </tr>
+                                </g:each>
+                            </table>
                         </g:if>
 
-                        <g:set var="derivedPropDefGroups" value="${subscriptionInstance.owner?.getCalculatedPropDefGroups(contextService.getOrg())}" />
-
-                        <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.orphanedProperties}">
+                        <g:if test="${editable}">
                             <div class="ui la-vertical buttons">
-                                <button id="derived-license-properties-toggle" class="ui button la-js-dont-hide-button">Vertragsmerkmale anzeigen</button>
-                                <script>
-                                    $('#derived-license-properties-toggle').on('click', function() {
-                                        $('#derived-license-properties').toggleClass('hidden')
-                                        if ($('#derived-license-properties').hasClass('hidden')) {
-                                            $(this).text('Vertragsmerkmale anzeigen')
-                                        } else {
-                                            $(this).text('Vertragsmerkmale ausblenden')
-                                        }
-                                    })
-                                </script>
+                                <g:render template="/templates/links/subLinksModal"
+                                          model="${[tmplText:message(code:'license.details.addLink'),
+                                                    tmplID:'addLicenseLink',
+                                                    tmplButtonText:message(code:'license.details.addLink'),
+                                                    tmplModalID:'sub_add_license_link',
+                                                    editmode: editable,
+                                                    subscriptionLicenseLink: true,
+                                                    context: subscription
+                                          ]}" />
                             </div>
                         </g:if>
 
+
+
                     </div><!-- .content -->
                 </div>
-
-                <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.orphanedProperties}">
-                    <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
-
-                        <g:render template="licProp" model="${[
-                                license: subscriptionInstance.owner,
-                                derivedPropDefGroups: derivedPropDefGroups
-                        ]}" />
-                    </div>
-                </g:if>
 
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>

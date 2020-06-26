@@ -7,7 +7,6 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
-import de.laser.domain.SystemMessage
 import de.laser.domain.SystemProfiler
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
@@ -65,7 +64,7 @@ class DeletionService {
         result.info = []
         result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
 
-        result.info << ['Links: Verträge', links]
+        result.info << ['Links: Verträge bzw. Lizenzen', links]
         result.info << ['Aufgaben', tasks]
         result.info << ['Merkmalsgruppen', propDefGroupBindings]
         result.info << ['Lizenzen', subs]
@@ -134,11 +133,6 @@ class DeletionService {
                     // packages
                     packages.each{ tmp ->
                         tmp.license = null
-                        tmp.save(flush:true)
-                    }
-                    // subscription
-                    subs.each{ tmp ->
-                        tmp.owner = null
                         tmp.save(flush:true)
                     }
 

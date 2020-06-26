@@ -164,10 +164,6 @@ class SubscriptionController extends AbstractDebugController {
             result.pendingChanges = pendingChanges
         }
 
-        if (params.mode == "advanced") {
-            params.asAt = null
-        }
-
         String base_qry = null
         Map<String,Object> qry_params = [subscription: result.subscriptionInstance]
 
@@ -177,17 +173,11 @@ class SubscriptionController extends AbstractDebugController {
             date_filter = sdf.parse(params.asAt)
             result.as_at_date = date_filter
             result.editable = false
-        } else {
-            date_filter = new Date()
-            result.as_at_date = date_filter
         }
-        // We dont want this filter to reach SQL query as it will break it. TODO: why?
-        boolean core_status_filter = params.sort == 'core_status'
-        if (core_status_filter) params.remove('sort')
 
         if (params.filter) {
             base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-            if (params.mode != 'advanced') {
+            if (date_filter) {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 // qry_params.add(deleted_ie);
@@ -201,13 +191,13 @@ class SubscriptionController extends AbstractDebugController {
             filterSet = true
         } else {
             base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-            if (params.mode != 'advanced') {
+            /*if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
                 base_qry += " and ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null)  or (ie.subscription.hasPerpetualAccess = true) ) ) "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
-            }
+            }*/
         }
         if(params.mode != 'advanced') {
             base_qry += " and ie.status = :current "
@@ -295,13 +285,6 @@ class SubscriptionController extends AbstractDebugController {
             deletedSPs.each { sp ->
                 result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/gokb/resource/show/${sp.pkg.gokbId}"]
             }
-        }
-
-        // Now we add back the sort so that the sortable column will recognize asc/desc
-        // Ignore the sorting if we are doing an export
-        if (core_status_filter) {
-            params.put('sort', 'core_status');
-            if (params.format == 'html' || params.format == null) sortOnCoreStatus(result, params);
         }
 
         exportService.printDuration(verystarttime, "Querying")
@@ -545,7 +528,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         int numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
 
-                        int numOfCIsChildSubs = CostItem.findAllBySubscriptionPackageInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs,result.package))
+                        int numOfCIsChildSubs = CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs,result.package)).size()
 
                         if (spChildSubs.size() > 0) {
                             Map conflict_item_pkgChildSubs = [
@@ -1684,12 +1667,12 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentLicense = result.parentSub.owner
+        result.parentLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.parentSub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }
 
         result.validLicenses = []
 
         def childLicenses = License.where {
-            instanceOf == result.parentLicense
+            instanceOf in result.parentLicenses
         }
 
         childLicenses?.each {
@@ -1759,32 +1742,9 @@ class SubscriptionController extends AbstractDebugController {
         List<GString> changeAccepted = []
         validSubChilds.each { subChild ->
             if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
-                if(params.processOption == 'linkLicense') {
-                    License newLicense = License.get(params.license_All)
-                    /*if (subChild.owner != newLicense) {
-                        subChild.owner = newLicense
-                        if (subChild.save()) {
-                            //OrgRole licenseeRole = new OrgRole(org: subChild.getSubscriber(), lic: newLicense, roleType: licenseeRoleType)
-                            //if (licenseeRole.save())
-
-                        }
-                    }*/
-                    if(subscriptionService.setOrgLicRole(subChild,newLicense))
-                        changeAccepted << "${subChild.name} (${message(code: 'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
-                }
-                else if(params.processOption == 'unlinkLicense') {
-                    //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
-                    //subChild.owner.orgLinks.remove(toDelete)
-                    /*
-                    subChild.owner = null
-                    subChild.save()
-                    if (subChild.save()) {
-                        //toDelete.delete()
-                    }
-                    */
-                    if(subscriptionService.setOrgLicRole(subChild,null))
-                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
-                }
+                License newLicense = License.get(params.license_All)
+                if(subscriptionService.setOrgLicRole(subChild,newLicense,params.processOption == 'unlinkLicense'))
+                    changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
             }
         }
         if (changeAccepted) {
@@ -1810,7 +1770,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentLicense = result.parentSub.owner
+        //result.parentLicense = result.parentSub.owner TODO we need to iterate over ALL linked licenses!
 
         List selectedMembers = params.list("selectedMembers")
 
@@ -1819,13 +1779,11 @@ class SubscriptionController extends AbstractDebugController {
         def removeLic = []
         validSubChilds.each { subChild ->
             if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
-                //keep it, I need to ask Daniel for that
-                //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
-                //subChild.owner.orgLinks.remove(toDelete)
-                //subChild.owner = null
-                if (subscriptionService.setOrgLicRole(subChild,null)) {
-                    //toDelete.delete()
-                    removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subChild),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                    License license = genericOIDService.resolveOID(li.source)
+                    if (subscriptionService.setOrgLicRole(subChild,license,true)) {
+                        removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                    }
                 }
             }
 
@@ -3460,42 +3418,63 @@ class SubscriptionController extends AbstractDebugController {
             String addType = params.addType
             GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:params.addUUID])
             if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
-                executorService.submit({
-                    Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
-                    try {
-                        globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
-                        List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
-                        Package pkgToLink = Package.findByGokbId(pkgUUID)
-                        Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                        println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
-                        if (addType == 'With') {
-                            pkgToLink.addToSubscription(result.subscriptionInstance, true)
+                if(!Package.findByGokbId(pkgUUID)) {
+                    executorService.submit({
+                        Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
+                        try {
+                            globalSourceSyncService.defineMapFields()
+                            globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
+                            List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
+                            Package pkgToLink = Package.findByGokbId(pkgUUID)
+                            //Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                            println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
+                            if (addType == 'With') {
+                                pkgToLink.addToSubscription(result.subscriptionInstance, true)
 
-                            subInstances.each {
-                                pkgToLink.addToSubscription(it, true)
-                            }
-                        } else if (addType == 'Without') {
-                            pkgToLink.addToSubscription(result.subscriptionInstance, false)
+                                /*subInstances.each {
+                                    pkgToLink.addToSubscription(it, true)
+                                }*/
+                            } else if (addType == 'Without') {
+                                pkgToLink.addToSubscription(result.subscriptionInstance, false)
 
-                            subInstances.each {
-                                pkgToLink.addToSubscription(it, false)
+                                /*subInstances.each {
+                                    pkgToLink.addToSubscription(it, false)
+                                }*/
                             }
+                            //Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id+"_pendingChanges")
+                            //globalSourceSyncService.notifyDependencies([tippsToNotify])
+                            //globalSourceSyncService.cleanUpGorm()
                         }
-                        Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id+"_pendingChanges")
-                        globalSourceSyncService.notifyDependencies([tippsToNotify])
-                        globalSourceSyncService.cleanUpGorm()
+                        catch (Exception e) {
+                            log.error("sync job has failed, please consult stacktrace as follows: ")
+                            e.printStackTrace()
+                        }
+                    } as Callable)
+                }
+                else {
+                    Package pkgToLink = Package.findByGokbId(pkgUUID)
+                    //Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                    println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
+                    if (addType == 'With') {
+                        pkgToLink.addToSubscription(result.subscriptionInstance, true)
+
+                        /*subInstances.each {
+                            pkgToLink.addToSubscription(it, true)
+                        }*/
+                    } else if (addType == 'Without') {
+                        pkgToLink.addToSubscription(result.subscriptionInstance, false)
+
+                        /*subInstances.each {
+                            pkgToLink.addToSubscription(it, false)
+                        }*/
                     }
-                    catch (Exception e) {
-                        log.error("sync job has failed, please consult stacktrace as follows: ")
-                        e.printStackTrace()
-                    }
-                } as Callable)
+                }
                 switch(params.addType) {
                     case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
                         redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                         break
                     case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
-                        redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: packageRecord.record.metadata.gokb.package.name] //TODO [ticket=1410,1807,1808,1819] impId -> gokbId
+                        redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: packageRecord.record.metadata.gokb.package.name]
                         break
                 }
             }
@@ -4407,7 +4386,7 @@ class SubscriptionController extends AbstractDebugController {
                             if (params.subscription.takeLinks) {
                                 //License
                                 if(baseSub.owner)
-                                    subscriptionService.setOrgLicRole(newSub,baseSub.owner)
+                                    subscriptionService.setOrgLicRole(newSub,baseSub.owner,false)
                             }
                             //Copy References
                             //OrgRole
@@ -4999,13 +4978,13 @@ class SubscriptionController extends AbstractDebugController {
             AuditConfig.removeConfig(newSub, 'hasPerpetualAccess')
 
         if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, null)) {
+            if(!subscriptionService.setOrgLicRole(newSub, null,true)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
             //isTargetSubChanged = true
         }else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
+            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner,false)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
@@ -5715,7 +5694,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                     if(entry.owner) {
                         License owner = genericOIDService.resolveOID(entry.owner)
-                        subscriptionService.setOrgLicRole(sub,owner)
+                        subscriptionService.setOrgLicRole(sub,owner,true)
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
                     if(!parentRole.save()) {
@@ -5828,6 +5807,7 @@ class SubscriptionController extends AbstractDebugController {
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
+        result.licenses = Links.findAllByDestinationAndLinkType(result.subscription,RDStore.LINKTYPE_LICENSE).collect {Links li -> genericOIDService.resolveOID(li.source)}
 
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.subscription))
         result.navPrevSubscription = links.prevLink
