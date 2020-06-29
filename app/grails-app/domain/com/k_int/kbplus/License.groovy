@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
 import com.k_int.kbplus.auth.Role
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
@@ -17,6 +16,7 @@ import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -417,7 +417,8 @@ class License
 
   @Override
   boolean equals (Object o) {
-    def obj = ClassUtils.deproxy(o)
+    //def obj = ClassUtils.deproxy(o)
+    def obj = GrailsHibernateUtil.unwrapIfProxy(o)
     if (obj != null) {
       if ( obj instanceof License ) {
         return obj.id == id

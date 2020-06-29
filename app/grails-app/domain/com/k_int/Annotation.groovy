@@ -1,6 +1,6 @@
 package com.k_int
 
-import com.k_int.ClassUtils
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 class Annotation {
     
@@ -29,7 +29,8 @@ class Annotation {
     private static String createCacheKey (Object object, String propertyName, String viewType) {
       
       // Ensure it isn't proxy.
-      object = ClassUtils.deproxy(object)
+      //object = ClassUtils.deproxy(object)
+        object = GrailsHibernateUtil.unwrapIfProxy(object)
       
       // Now create the key.
       String key = "${object.class.name}::${propertyName}::${viewType}"
