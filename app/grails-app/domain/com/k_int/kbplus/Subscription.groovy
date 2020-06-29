@@ -4,8 +4,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
-import de.laser.domain.IssueEntitlementGroup
+import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

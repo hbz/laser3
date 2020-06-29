@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
-import de.laser.domain.IssueEntitlementGroup
+import de.laser.base.AbstractBaseDomain
+import de.laser.IssueEntitlementGroup
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.CalculatedType

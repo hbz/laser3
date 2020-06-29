@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
+import de.laser.base.AbstractBaseDomain
 
 class Creator extends AbstractBaseDomain{
 

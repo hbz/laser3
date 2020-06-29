@@ -1,4 +1,4 @@
-package de.laser.domain
+package de.laser
 
 import org.springframework.context.i18n.LocaleContextHolder
 

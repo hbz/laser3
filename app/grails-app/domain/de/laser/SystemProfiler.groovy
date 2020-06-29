@@ -1,7 +1,6 @@
-package de.laser.domain
+package de.laser
 
 import com.k_int.kbplus.Org
-import de.laser.ContextService
 import grails.util.Holders
 
 class SystemProfiler {

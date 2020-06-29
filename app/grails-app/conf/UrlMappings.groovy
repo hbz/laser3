@@ -1,4 +1,4 @@
-//package laser2; //do not remove
+//package laser2; grails-upgrade: do not remove
 
 class UrlMappings {
 

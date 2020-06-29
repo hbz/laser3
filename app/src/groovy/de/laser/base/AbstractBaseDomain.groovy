@@ -1,4 +1,4 @@
-package de.laser.domain
+package de.laser.base
 
 /**
  *  class Test extends AbstractBaseDomain

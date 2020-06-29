@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType

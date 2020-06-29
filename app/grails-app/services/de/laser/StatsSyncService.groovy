@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import de.laser.domain.StatsTripleCursor
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.usage.StatsSyncServiceOptions

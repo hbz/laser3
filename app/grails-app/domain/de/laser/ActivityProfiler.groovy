@@ -1,6 +1,6 @@
-package de.laser.domain
+package de.laser
 
-import de.laser.YodaService
+
 import grails.util.Holders
 
 class ActivityProfiler {

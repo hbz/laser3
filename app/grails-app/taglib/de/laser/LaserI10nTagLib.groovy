@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.domain.I10nTranslation
+
 import org.springframework.context.i18n.LocaleContextHolder
 
 class LaserI10nTagLib {

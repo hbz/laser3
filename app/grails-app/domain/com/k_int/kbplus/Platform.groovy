@@ -3,7 +3,7 @@ package com.k_int.kbplus
 import com.k_int.ClassUtils
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation

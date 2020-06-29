@@ -1,4 +1,4 @@
-<%@ page import="de.laser.domain.MailTemplate;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.MailTemplate; de.laser.domain.MailTemplate;de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
 <head>
@@ -59,7 +59,7 @@
 
                     <td>
                         <button type="button" class="ui icon button la-popup-tooltip la-delay"
-                                data-mailTemplateTarget="${de.laser.domain.MailTemplate.class.name}:${template.id}"
+                                data-mailTemplateTarget="${de.laser.MailTemplate.class.name}:${template.id}"
                                 data-mailTemplateName="${template.name}"
                                 data-mailTemplateSubject="${template.subject}"
                                 data-mailTemplateText="${template.text}"

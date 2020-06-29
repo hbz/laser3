@@ -3,7 +3,7 @@ package com.k_int.properties
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import de.laser.CacheService
-import de.laser.domain.I10nTranslation
+import de.laser.I10nTranslation
 import de.laser.helper.EhcacheWrapper
 import grails.util.Holders
 import groovy.util.logging.Log4j

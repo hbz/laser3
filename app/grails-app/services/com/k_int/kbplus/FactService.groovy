@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
-import de.laser.domain.StatsTripleCursor
+import de.laser.StatsTripleCursor
 import de.laser.helper.RDConstants
 import org.hibernate.criterion.CriteriaSpecification
 

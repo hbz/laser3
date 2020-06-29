@@ -1,4 +1,4 @@
-package de.laser.domain
+package de.laser.base
 
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
