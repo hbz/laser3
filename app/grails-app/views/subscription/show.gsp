@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
 <%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License; com.k_int.kbplus.GenericOIDService" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
 
@@ -369,8 +369,8 @@
                                                   </dt>
                                               </g:if>
                                           </dl>
-                                          <g:set var="excludes" value="${[de.laser.PendingChangeConfiguration.PACKAGE_PROP,de.laser.PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                                          <g:each in="${de.laser.PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
+                                          <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                                          <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                                               <dl>
                                                   <dt class="control-label">
                                                       <g:message code="subscription.packages.${settingKey}"/>
