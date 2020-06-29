@@ -3,7 +3,7 @@
 
 ##### Dependencies
 
-- Hibernate 5.1.5 (now the default version of Hibernate for new applications)
+- Hibernate 5.1.5 (4 supported)
 - Spring Framework 4.3.9
 - Spring Boot 1.5.4
 - Gradle 3.5
@@ -24,7 +24,3 @@ sdk i groovy 2.4.17
 git init  
 git add \*     
 git commit  
-
-##### Migration
-
-sh ./migrate.sh
