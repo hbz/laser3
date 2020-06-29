@@ -143,7 +143,7 @@ class ApiLicense {
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
-                result.subscriptions = ApiStubReader.getStubCollection(lic.subscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+                result.subscriptions = ApiStubReader.getStubCollection(lic.getSubscriptions(), ApiReader.SUBSCRIPTION_STUB, context)
             }
             if (ignoreRelation != ApiReader.IGNORE_LICENSE) {
                 def allOrgRoles = []

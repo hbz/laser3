@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.FormService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -12,6 +14,7 @@ class ContactController extends AbstractDebugController {
 	def springSecurityService
 	def addressbookService
 	def contextService
+	FormService formService
 
     static allowedMethods = [create: ['GET', 'POST'], delete: 'POST']
 
@@ -30,6 +33,15 @@ class ContactController extends AbstractDebugController {
 			break
 		case 'POST':
 				Contact contactInstance = new Contact(params)
+
+				if(RDStore.CCT_EMAIL == contactInstance.contentType){
+					if ( !formService.validateEmailAddress(contactInstance.content) ) {
+						flash.error = message(code:'contact.create.email.error')
+						redirect(url: request.getHeader('referer'))
+						return
+					}
+				}
+
 	        if (! contactInstance.save(flush: true)) {
 				if (params.redirect) {
 					redirect(url: request.getHeader('referer'), params: params)

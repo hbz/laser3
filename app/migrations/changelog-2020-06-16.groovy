@@ -20,11 +20,4 @@ databaseChangeLog = {
 		dropColumn(columnName: "sub_owner_license_fk", tableName: "subscription")
 	}
 
-	changeSet(author: "galffy (hand-coded)", id: "1592285771248-4") {
-		grailsChange {
-			change {
-				sql.execute("delete from org_role where or_roleType_fk in (select rdv_id from refdata_value join refdata_category on rdv_owner = rdc_id where rdc_description = 'organisational.role' and rdv_value in ('Licensing Consortium','Licensee','Licensee_Consortial','Licensee_Collective'));")
-			}
-		}
-	}
 }

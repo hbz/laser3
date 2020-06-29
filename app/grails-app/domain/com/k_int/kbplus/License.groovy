@@ -303,10 +303,12 @@ class License
     }
 
     Org getLicensingConsortium() {
-        Set<Org> consortia = Org.executeQuery("select oo.org from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType = :roleTypeC",[roleTypeC:RDStore.OR_SUBSCRIPTION_CONSORTIA,lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE])
-        if(consortia.size() == 1)
-            consortia[0]
-        else null
+        Org result
+        orgLinks.each { or ->
+            if ( or.roleType.value == 'Licensing Consortium' )
+                result = or.org
+            }
+        result
     }
 
     Org getLicensor() {
@@ -319,14 +321,21 @@ class License
     }
 
     Org getLicensee() {
-        Set<Org> member = Org.executeQuery("select oo.org from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType = (:roleTypes)",[roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIBER],lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE])
-        if(member.size() == 1)
-            member[0]
-        else null
+        Org result
+        orgLinks.each { or ->
+            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
+                result = or.org;
+        }
+        result
     }
-    Set<Org> getAllLicensee() {
-        Org.executeQuery("select oo.org from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType = (:roleTypes)",[roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIBER],lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE])
-    }
+    List<Org> getAllLicensee() {
+        List<Org> result = []
+        orgLinks.each { or ->
+            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
+                result << or.org
+        }
+        result
+  }
 
   @Transient
   def getLicenseType() {
@@ -384,12 +393,22 @@ class License
 
         if (user.getAuthorizedOrgsIds().contains(contextService.getOrg().id)) {
 
+            OrgRole cons = OrgRole.findByLicAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_LICENSING_CONSORTIUM
+            )
+            OrgRole licseeCons = OrgRole.findByLicAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_LICENSEE_CONS
+            )
+            OrgRole licsee = OrgRole.findByLicAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_LICENSEE
+            )
+
             if (perm == 'view') {
-                return Links.executeQuery("select l from Links l where l.source = :lic and l.linkType = :linkType and l.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:roleTypes) and oo.org = :ctxOrg)",[lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE,roleTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA],ctxOrg:contextService.org]).size() > 0
+                return cons || licseeCons || licsee
             }
             if (perm == 'edit') {
                 if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                    return Links.executeQuery("select l from Links l where l.source = :lic and l.linkType = :linkType and l.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:roleTypes) and oo.org = :ctxOrg)",[lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE,roleTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA],ctxOrg:contextService.org]).size() > 0
+                    return cons || licsee
             }
         }
 
@@ -807,5 +826,13 @@ AND lower(l.reference) LIKE (:ref)
         }
 
         return result
+    }
+
+    Set<Subscription> getSubscriptions() {
+        Set<Subscription> result = []
+        Links.findAllBySourceAndLinkType(GenericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+            result << genericOIDService.resolveOID(l.destination)
+        }
+        result
     }
 }

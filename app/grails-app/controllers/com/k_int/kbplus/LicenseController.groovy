@@ -117,7 +117,7 @@ class LicenseController extends AbstractDebugController {
 
             String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
             // restrict visible for templates/links/orgLinksAsList
-            //result.visibleOrgLinks = OrgRole.executeQuery("select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType.${i10value} asc, oo.org.sortname asc, oo.org.name asc",[license:result.license,context:result.institution,roleTypes:[OR_LICENSEE, OR_LICENSEE_CONS, OR_LICENSING_CONSORTIUM]])
+            result.visibleOrgLinks = OrgRole.executeQuery("select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType.${i10value} asc, oo.org.sortname asc, oo.org.name asc",[license:result.license,context:result.institution,roleTypes:[OR_LICENSEE, OR_LICENSEE_CONS, OR_LICENSING_CONSORTIUM]])
 
             /*result.license.orgLinks?.each { or ->
                 if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
@@ -331,30 +331,6 @@ class LicenseController extends AbstractDebugController {
             redirect action: 'show', params: [id: licenseCopy.id]
         else redirect action: 'show', params: [id: result.license?.id]
     }
-
-    @Deprecated
-    private def getAvailableSubscriptions(license, user) {
-        def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
-          orgRole.roleType?.value in ["Licensee", "Licensee_Consortial"]
-        }?.collect{  accessService.checkMinUserOrgRole(user, it.org, 'INST_EDITOR ') ? it.org : null  }
-
-    def subscriptions = null
-    if(licenseInstitutions){
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        Date date_restriction =  new Date(System.currentTimeMillis())
-
-        String base_qry = """
-from Subscription as s where 
-  ( ( exists ( select o from s.orgRelations as o where (o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial') and o.org in (:orgs) ) ) ) 
-  AND (s.owner = null) 
-"""
-      def qry_params = [orgs:licenseInstitutions]
-      base_qry += " and s.startDate <= (:start) and s.endDate >= (:start) "
-      qry_params.putAll([start:date_restriction])
-      subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params)
-    }
-    return subscriptions
-  }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })

@@ -9,12 +9,10 @@ class RDStore {
 
     static final GENERIC_NULL_VALUE         = getRefdataValue('generic.null.value','filter.fake.values')
 
-    /*
     static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', RDConstants.ORGANISATIONAL_ROLE)
     static final OR_LICENSEE                = getRefdataValue('Licensee', RDConstants.ORGANISATIONAL_ROLE)
     static final OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial', RDConstants.ORGANISATIONAL_ROLE)
     static final OR_LICENSEE_COLL           = getRefdataValue('Licensee_Collective', RDConstants.ORGANISATIONAL_ROLE)
-     */
 
     static final OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia', RDConstants.ORGANISATIONAL_ROLE)
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber', RDConstants.ORGANISATIONAL_ROLE)

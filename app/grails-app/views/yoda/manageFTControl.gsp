@@ -26,6 +26,7 @@
             <th>dbElements</th>
             <th>lastTimestamp</th>
             <th>lastTimestamp in Date</th>
+            <th>Active</th>
           </tr>
         </thead>
         <tbody>
@@ -46,6 +47,9 @@
               </td>
               <td>
                 <g:formatDate date="${new Date(ftControl.lastTimestamp)}" format="${message(code:'default.date.format.noZ')}"/>
+              </td>
+              <td>
+                <semui:xEditableBoolean owner="${ftControl}" field="active"/>
               </td>
             </tr>
           </g:each>
