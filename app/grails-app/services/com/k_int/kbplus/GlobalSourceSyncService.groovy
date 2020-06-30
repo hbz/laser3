@@ -540,7 +540,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     TitleInstance createOrUpdateTitle(String titleUUID) throws SyncException {
         GPathResult titleOAI = fetchRecord(source.uri,'titles',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:titleUUID])
         if(titleOAI) {
-            TitleInstance.withNewSession { Session session ->
+            TitleInstance.withSession { Session session ->
                 GPathResult titleRecord = titleOAI.record.metadata.gokb.title
                 log.info("title record loaded, converting XML record and reconciling title record for UUID ${titleUUID} ...")
                 TitleInstance titleInstance = TitleInstance.findByGokbId(titleUUID)
@@ -594,6 +594,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         SystemEvent.createEvent('GSSS_OAI_WARNING',[titleInstance:titleInstance.gokbId,errorType:"titleTypeMismatch"])
                     }
                     //this is taken only if object has been persisted because of other transaction
+                    log.debug("processing ${titleInstance.title} before update")
                     titleInstance.title = titleRecord.name.text()
                     titleInstance.medium = medium
                     titleInstance.status = status
@@ -601,7 +602,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(titleInstance.save()) {
                         log.debug("title name before refresh: ${titleInstance.title}")
                         //titleInstance.refresh()
-                        //log.debug("processing ${titleInstance.title} after refresh")
                         if(titleRecord.publishers) {
                             OrgRole.executeUpdate('delete from OrgRole oo where oo.title = :titleInstance',[titleInstance: titleInstance])
                             titleRecord.publishers.publisher.each { pubData ->
