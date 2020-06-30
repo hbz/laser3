@@ -1474,6 +1474,7 @@ $.fn.dropdown = function(parameters) {
                     $nextItem
                       .addClass(className.selected)
                     ;
+                    $search.attr('aria-activedescendant', $nextItem[0].id)
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
                       module.set.selectedItem($nextItem);
@@ -1502,6 +1503,7 @@ $.fn.dropdown = function(parameters) {
                     $nextItem
                       .addClass(className.selected)
                     ;
+                    $search.attr('aria-activedescendant', $nextItem[0].id)
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
                       module.set.selectedItem($nextItem);
@@ -2054,7 +2056,7 @@ $.fn.dropdown = function(parameters) {
             else {
               module.debug('Restoring default text', defaultText);
               module.set.text(defaultText);
-              module.set.activedescendant();
+              module.set.activedescendantMainMenu();
             }
           },
           placeholderText: function() {
@@ -2252,14 +2254,13 @@ $.fn.dropdown = function(parameters) {
         },
 
         set: {
-          activedescendant: function(selectedItemID){
-            // console.log("aria-activedescendant WIRD GESETZT");
-            // console.log(selectedItemID);
+          activedescendantMainMenu: function(selectedItemID){
+            $module.attr('aria-activedescendant', selectedItemID) // a11y
+          },
+          activedescendantSearch: function(selectedItemID){
             $search.attr('aria-activedescendant', selectedItemID) // a11y
           },
           ariaSelected : function (selectedItem) {
-            // console.log("aria-selected WIRD GESETZT");
-            // console.log(selectedItem);
             $(selectedItem).attr('aria-selected', 'true') //"VOX: Menuepunkt ausgewählt"
           },
           filtered: function() {
@@ -2635,7 +2636,7 @@ $.fn.dropdown = function(parameters) {
                     module.save.remoteData(selectedText, selectedValue);
                   }
                   module.set.text(selectedText);
-                  module.set.activedescendant($selectedItem[0].id);
+                  //module.set.activedescendantSearch($selectedItem[0].id);
                   module.set.ariaSelected($selectedItem);
                   module.set.value(selectedValue, selectedText, $selected);
                   $selected
@@ -3777,7 +3778,7 @@ $.fn.dropdown.settings = {
   clearable              : false,      // whether the value of the dropdown can be cleared
 
   apiSettings            : false,
-  selectOnKeydown        : true,       // Whether selection should occur automatically when keyboard shortcuts used
+  selectOnKeydown        : false,       // Whether selection should occur automatically when keyboard shortcuts used
   minCharacters          : 0,          // Minimum characters required to trigger API call
 
   filterRemoteData       : false,      // Whether API results should be filtered after being returned for query term
@@ -3796,7 +3797,7 @@ $.fn.dropdown.settings = {
   preserveHTML           : false,       // preserve html when selecting value
   sortSelect             : false,      // sort selection on init
 
-  forceSelection         : true,       // force a choice on blur with search selection
+  forceSelection         : false,       // force a choice on blur with search selection
 
   allowAdditions         : false,      // whether multiple select should allow user added values
   ignoreCase             : false,       // whether to consider values not matching in case to be the same

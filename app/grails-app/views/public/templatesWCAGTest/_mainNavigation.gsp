@@ -15,9 +15,9 @@
                     <a href="#" tabindex='-1' class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</a>
                 </div>--}%
                 <div class="menu" role="menu" aria-label="das Menu">
-                    <div tabindex='0' class="item"  role="menuitem" aria-label="Alle Pakete" >Alle Pakete</div>
-                    <div tabindex='-1' class="item" role="menuitem" aria-label="Alle Titel" >Alle Titel</div>
-                    <div href="#" tabindex='-1' class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</div>
+                    <div id="1" tabindex='0'  class="item"  role="menuitem" aria-label="Alle Pakete" >Alle Pakete</div>
+                    <div id="2" tabindex='-1' class="item" role="menuitem" aria-label="Alle Titel" >Alle Titel</div>
+                    <div id="3" href="#" tabindex='-1' class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</div>
                 </div>
 %{--                <ul class="menu" role="menu">
                     <li class="item" role="menuitem" >
@@ -38,43 +38,20 @@
 
                 <div class="menu" role="menu">
 
-                    <a href="#" class="item" role="menuitem" >Meine Lizenzen</a>
+                    <a id="4" href="#" class="item" role="menuitem" >Meine Lizenzen</a>
 
-                    <a href="#" class="item" role="menuitem" >Meine Verträge</a>
+                    <a id="5" href="#" class="item" role="menuitem" >Meine Verträge</a>
 
-                    <a href="#" class="item" role="menuitem" >Meine Anbieter & Lieferanten</a>
+                    <a id="6"  href="#" class="item" role="menuitem" >Meine Anbieter & Lieferanten</a>
 
-                    <a href="#" class="item" role="menuitem" >Meine Plattformen</a>
+                    <a id="7" href="#" class="item" role="menuitem" >Meine Plattformen</a>
 
-                    <a href="#" class="item" role="menuitem" >Meine Pakete</a>
+                    <a id="8" href="#" class="item" role="menuitem" >Meine Pakete</a>
 
-                    <a href="#" class="item" role="menuitem" >Meine Titel</a>
+                    <a id="9" href="#" class="item" role="menuitem" >Meine Titel</a>
 
-                    <a href="#" class="item" role="menuitem" >Meine Dokumente</a>
+                    <a id="10" href="#" class="item" role="menuitem" >Meine Dokumente</a>
 
-                    <div class="divider"></div>
-                    <a href="#" class="item" role="menuitem" >Meine Umfragen</a>
-
-                    <div class="divider"></div>
-
-                    <a href="#" class="item" role="menuitem" >Meine Teilnehmer</a>
-
-                    <a href="#" class="item" role="menuitem" >Meine Lizenzen pro Teilnehmer</a>
-
-                    <div class="divider"></div>
-
-                    <a href="#" class="item" role="menuitem" >Neue Lizenz</a>
-
-                    <div class="item" role="menuitem" >
-                        <div class="disabled" data-tooltip="Die Funktion 'Lizenzen vergleichen' ist zur Zeit nicht verfügbar!">
-                            Lizenzen vergleichen</div>
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <a href="#" class="item" role="menuitem" >Neuer Vertrag</a>
-
-                    <a href="#" class="item" role="menuitem" >Verträge vergleichen</a>
 
                 </div>
             </div>
