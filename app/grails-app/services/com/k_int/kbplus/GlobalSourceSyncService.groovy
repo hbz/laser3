@@ -597,8 +597,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     titleInstance.title = titleRecord.name.text()
                     titleInstance.medium = medium
                     titleInstance.status = status
+                    log.debug("title name before save: ${titleInstance.title}")
                     if(titleInstance.save()) {
-                        titleInstance.refresh()
+                        log.debug("title name before refresh: ${titleInstance.title}")
+                        //titleInstance.refresh()
+                        //log.debug("processing ${titleInstance.title} after refresh")
                         if(titleRecord.publishers) {
                             OrgRole.executeUpdate('delete from OrgRole oo where oo.title = :titleInstance',[titleInstance: titleInstance])
                             titleRecord.publishers.publisher.each { pubData ->
