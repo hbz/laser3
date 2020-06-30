@@ -37,4 +37,9 @@ class FormService {
         return false
     }
 
+    boolean validateEmailAddress(String email) {
+        def mailPattern = /[_A-Za-z0-9-]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})/
+        return ( email ==~ mailPattern )
+    }
+
 }

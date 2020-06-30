@@ -51,7 +51,7 @@ class License
     def auditService
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
-    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'isPublicForApi' ]
+    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi' ]
 
     License instanceOf
 
@@ -71,9 +71,11 @@ class License
     String reference
     String sortableReference
 
-  String noticePeriod
-  String licenseUrl
-  //String licenseType
+    String noticePeriod
+    String licenseUrl
+
+    @RefdataAnnotation(cat = RDConstants.Y_N_U)
+    RefdataValue openEnded
   //String licenseStatus
 
     //long lastmod
@@ -89,7 +91,7 @@ class License
   static hasMany = [
           ids: Identifier,
           pkgs:         Package,
-          subscriptions:Subscription,
+          //subscriptions:Subscription,
           documents:    DocContext,
           orgLinks:     OrgRole,
           prsLinks:     PersonRole,
@@ -102,7 +104,7 @@ class License
   static mappedBy = [
           ids:           'lic',
           pkgs:          'license',
-          subscriptions: 'owner',
+          //subscriptions: 'owner',
           documents:     'license',
           orgLinks:      'lic',
           prsLinks:      'lic',
@@ -126,7 +128,7 @@ class License
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
          isPublicForApi column:'lic_is_public_for_api'
                isSlaved column:'lic_is_slaved'
-          //licenseType column:'lic_license_type_str'
+              openEnded column:'lic_open_ended_rv_fk'
         //licenseStatus column:'lic_license_status_str'
               //lastmod column:'lic_lastmod'
               documents sort:'owner.id', order:'desc', batchSize: 10
@@ -142,7 +144,7 @@ class License
 
               ids               batchSize: 10
               pkgs              batchSize: 10
-              subscriptions     sort:'name',order:'asc', batchSize: 10
+              //subscriptions     sort:'name',order:'asc', batchSize: 10
               orgLinks          batchSize: 10
               prsLinks          batchSize: 10
               derivedLicenses   batchSize: 10
@@ -159,7 +161,6 @@ class License
         licenseUrl(nullable:true, blank:true)
         instanceOf(nullable:true, blank:false)
         isSlaved    (nullable:false, blank:false)
-        //licenseType(nullable:true, blank:true)
         //licenseStatus(nullable:true, blank:true)
         //lastmod(nullable:true, blank:true)
         //onixplLicense(nullable: true, blank: true)
@@ -825,5 +826,13 @@ AND lower(l.reference) LIKE (:ref)
         }
 
         return result
+    }
+
+    Set<Subscription> getSubscriptions() {
+        Set<Subscription> result = []
+        Links.findAllBySourceAndLinkType(GenericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+            result << genericOIDService.resolveOID(l.destination)
+        }
+        result
     }
 }

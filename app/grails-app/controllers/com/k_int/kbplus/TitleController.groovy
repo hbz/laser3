@@ -291,15 +291,6 @@ class TitleController extends AbstractDebugController {
   }
 
   @Secured(['ROLE_ADMIN'])
-  def availability() {
-    Map<String, Object> result = [:]
-    result.ti = TitleInstance.get(params.id)
-    result.availability = IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.tipp.title = ?",[result.ti]);
-
-    result
-  }
-
-  @Secured(['ROLE_ADMIN'])
   def dmIndex() {
     log.debug("dmIndex ${params}");
 

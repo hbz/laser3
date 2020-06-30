@@ -13,6 +13,7 @@ import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.domain.TIPPCoverage
+import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugUtil
@@ -109,10 +110,21 @@ class SubscriptionService {
             subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
         }
         result.allSubscriptions = subscriptions
+        result.allLinkedLicenses = [:]
+        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        allLinkedLicenses.each { Links li ->
+            Subscription s = genericOIDService.resolveOID(li.destination)
+            License l = genericOIDService.resolveOID(li.source)
+            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
+            if(!linkedLicenses)
+                linkedLicenses = []
+            linkedLicenses << l
+            result.allLinkedLicenses.put(s,linkedLicenses)
+        }
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
 
-        result.date_restriction = date_restriction;
+        result.date_restriction = date_restriction
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
         if (OrgSettings.get(contextOrg, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
@@ -807,19 +819,19 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
-    /*
-    boolean deleteOwner(Subscription targetSub, def flash) {
-        targetSub.owner = null
-        return save(targetSub, flash)
+
+    boolean deleteLicenses(List<License> toDeleteLicenses, Subscription targetSub, def flash) {
+        toDeleteLicenses.each { License lic ->
+            setOrgLicRole(targetSub,lic,true)
+        }
     }
 
 
-    boolean copyOwner(Subscription sourceSub, Subscription targetSub, def flash) {
-        //Vertrag/License
-        targetSub.owner = sourceSub.owner ?: null
-        return save(targetSub, flash)
+    boolean copyLicenses(List<License> toCopyLicenses, Subscription targetSub, def flash) {
+        toCopyLicenses.each { License lic ->
+            setOrgLicRole(targetSub,lic,false)
+        }
     }
-    */
 
 
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
@@ -1530,47 +1542,55 @@ class SubscriptionService {
         }
     }
 
-    boolean setOrgLicRole(Subscription sub, License newOwner) {
+    boolean setOrgLicRole(Subscription sub, License newLicense, boolean unlink) {
         boolean success = false
-        if(sub.owner != newOwner) {
-            Org subscr = sub.getSubscriber()
-            if(newOwner == null) {
-                Map<String,Object> licParams = [lic:sub.owner,subscriber:subscr]
-                Set<Subscription> linkedSubs = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.owner = :lic and oo.org = :subscriber and oo.roleType in (:roleTypes)',licParams+[roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIBER_COLLECTIVE]])
-                //size == 1 is correct because this is the last subscription to be linked for that org
-                if(linkedSubs.size() == 1) {
-                    log.info("no more license <-> subscription links between org -> removing licensee role")
-                    if(OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams))
-                        success = true
-                }
-            }
-            else if(newOwner != null) {
-                RefdataValue licRole
-                if(sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
-                    licRole = RDStore.OR_LICENSEE_CONS
-                else if(sub.getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE,CalculatedType.TYPE_LOCAL])
-                    licRole = RDStore.OR_LICENSEE
-                else if(sub.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-                    licRole = RDStore.OR_LICENSING_CONSORTIUM
-                if(licRole) {
-                    OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newOwner,subscr,licRole)
-                    if(!orgLicRole){
-                        orgLicRole = OrgRole.findByLicAndOrgAndRoleType(sub.owner,subscr,licRole)
-                        if(orgLicRole && orgLicRole.lic != newOwner) {
-                            orgLicRole.lic = newOwner
+        Links curLink = Links.findBySourceAndDestinationAndLinkType(GenericOIDService.getOID(newLicense),GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)
+        Org subscr = sub.getSubscriber()
+        if(!unlink && !curLink) {
+            try {
+                if(Links.construct([source: GenericOIDService.getOID(newLicense), destination: GenericOIDService.getOID(sub), linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
+                    RefdataValue licRole
+                    if(sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
+                        licRole = RDStore.OR_LICENSEE_CONS
+                    else if(sub.getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE,CalculatedType.TYPE_LOCAL])
+                        licRole = RDStore.OR_LICENSEE
+                    else if(sub.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+                        licRole = RDStore.OR_LICENSING_CONSORTIUM
+                    if(licRole) {
+                        OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
+                        if(!orgLicRole){
+                            orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
+                            if(orgLicRole && orgLicRole.lic != newLicense) {
+                                orgLicRole.lic = newLicense
+                            }
+                            else {
+                                orgLicRole = new OrgRole(lic: newLicense,org: subscr,roleType: licRole)
+                            }
+                            if(!orgLicRole.save())
+                                log.error(orgLicRole.errors)
                         }
-                        else {
-                            orgLicRole = new OrgRole(lic: newOwner,org: subscr,roleType: licRole)
-                        }
-                        if(orgLicRole.save())
-                            success = true
                     }
+                    success = true
                 }
             }
-            sub.owner = newOwner
-            success && sub.save()
+            catch (CreationException e) {
+                log.error(e)
+            }
         }
-        else success
+        else if(unlink && curLink) {
+            String sourceOID = curLink.source
+            License lic = genericOIDService.resolveOID(sourceOID)
+            curLink.delete() //delete() is void, no way to check whether errors occurred or not
+            if(sub.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+                Set<Links> linkedSubs = Links.executeQuery("select li from Links li where li.source = :lic and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:subscrTypes) and oo.org = :subscr)", [lic: sourceOID, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])
+                if (linkedSubs.size() < 1) {
+                    log.info("no more license <-> subscription links between org -> removing licensee role")
+                    OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber", [lic: lic, subscriber: subscr])
+                }
+            }
+            success = true
+        }
+        success
     }
 
     Map subscriptionImport(CommonsMultipartFile tsvFile) {
@@ -2104,5 +2124,4 @@ class SubscriptionService {
 
         return [issueEntitlements: issueEntitlements.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
     }
-
 }

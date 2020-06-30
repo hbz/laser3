@@ -933,7 +933,11 @@ class SurveyController {
                 switch (taxType.id) {
                     case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
                         switch (taxRate) {
+                            case 5: tax_key = CostItem.TAX_TYPES.TAXABLE_5
+                                break
                             case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
+                                break
+                            case 16: tax_key = CostItem.TAX_TYPES.TAXABLE_16
                                 break
                             case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
                                 break
@@ -3178,12 +3182,12 @@ class SurveyController {
         }
 
         if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, null)) {
+            if(!subscriptionService.setOrgLicRole(newSub, null,false)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
         } else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
+            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner,true)) {
                 Object[] args = [newSub]
                 flash.error += message(code:'default.save.error.message',args:args)
             }

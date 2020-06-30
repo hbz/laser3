@@ -303,21 +303,20 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             "from SubscriptionPackage where subscription = ? and pkg = ?", [subscription, this])
 
     if (!dupe){
-        SubscriptionPackage new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save();
+        SubscriptionPackage new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save()
       // Step 3 - If createEntitlements ...
 
       if ( createEntitlements ) {
-        def live_issue_entitlement = RDStore.TIPP_STATUS_CURRENT
-        TitleInstancePackagePlatform.findAllByPkg(this).each { tipp ->
-          if(tipp.status?.value == "Current"){
+        TitleInstancePackagePlatform.findAllByPkg(this).each { TitleInstancePackagePlatform tipp ->
               IssueEntitlement new_ie = new IssueEntitlement(
-                                              status: live_issue_entitlement,
+                                              status: tipp.status,
                                               subscription: subscription,
                                               tipp: tipp,
                                               accessStartDate:tipp.accessStartDate,
                                               accessEndDate:tipp.accessEndDate,
                                               acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED)
-              if(new_ie.save(flush:true)) {
+              if(new_ie.save()) {
+                  log.debug("${new_ie} saved")
                   tipp.coverages.each { covStmt ->
                       IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
                               startDate:covStmt.startDate,
@@ -331,10 +330,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                               coverageNote:covStmt.coverageNote,
                               issueEntitlement: new_ie
                       )
-                      ieCoverage.save(flush:true)
+                      ieCoverage.save()
                   }
-              }
-          }
+            }
         }
       }
 

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License;com.k_int.kbplus.Subscription;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
+<%@ page import="com.k_int.kbplus.License;com.k_int.kbplus.Subscription;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;com.k_int.kbplus.GenericOIDService" %>
 <!doctype html>
 <%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
@@ -34,7 +34,7 @@
 
         <%--<semui:objectStatus object="${license}" status="${license.status}" />--%>
 
-        <g:if test="${license.instanceOf && (institution?.id == license.getLicensingConsortium()?.id)}">
+        <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
             <div class="ui negative message">
                 <div class="header"><g:message code="myinst.message.attention" /></div>
                 <p>
@@ -84,6 +84,15 @@
                                         <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'endDate']" /></dd>
                                     </g:if>
                                 </dl>
+                                <dl>
+                                    <dt class="control-label">${message(code: 'license.openEnded')}</dt>
+                                    <dd>
+                                        <semui:xEditableRefData owner="${license}" field="openEnded" config="${RDConstants.Y_N_U}"/>
+                                    </dd>
+                                    <g:if test="${editable}">
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'openEnded']" /></dd>
+                                    </g:if>
+                                </dl>
                             </div>
                         </div>
                         <div class="ui card ">
@@ -113,14 +122,14 @@
 
                                         <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
                                     </dl>
-                                    <dl>
+                                    <%--<dl>
                                         <dt class="control-label">
                                             ${message(code:'license.details.linktoLicense.pendingChange')}
                                         </dt>
                                         <dd>
                                             <semui:xEditableBoolean owner="${license}" field="isSlaved" />
                                         </dd>
-                                    </dl>
+                                    </dl>--%>
                                 </g:if>
 
                                 <dl>
@@ -143,13 +152,12 @@
                             <g:if test="${links.entrySet()}">
                                 <table class="ui three column table">
                                     <g:each in="${links.entrySet().toSorted()}" var="linkTypes">
-                                        <g:if test="${linkTypes.getValue().size() > 0}">
+                                        <g:if test="${linkTypes.getValue().size() > 0 && linkTypes.getKey() != GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}">
                                             <g:each in="${linkTypes.getValue()}" var="link">
                                                 <tr>
                                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${linkTypes.getKey()}</th>
                                                     <td>
                                                         <g:set var="pair" value="${link.getOther(license)}"/>
-                                                        <g:set var="sdf" value="${ de.laser.helper.DateUtil.getSDF_dmy()}"/>
                                                         <g:if test="${pair instanceof License}">
                                                             <g:link controller="license" action="show" id="${pair.id}">
                                                                 ${pair.reference}
@@ -160,7 +168,7 @@
                                                                 ${pair.name}
                                                             </g:link>
                                                         </g:elseif><br>
-                                                        ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}<br>
+                                                        <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
                                                         <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
                                                         <g:if test="${comment}">
                                                             <em>${comment.owner.content}</em>
@@ -168,14 +176,15 @@
                                                     </td>
                                                     <td class="right aligned">
                                                         <g:render template="/templates/links/subLinksModal"
-                                                                  model="${[tmplText:message(code:'license.details.editLink'),
-                                                                            tmplIcon:'write',
-                                                                            tmplCss: 'icon la-selectable-button',
-                                                                            tmplID:'editLink',
-                                                                            tmplModalID:"sub_edit_link_${link.id}",
-                                                                            editmode: editable,
-                                                                            context: license,
-                                                                            link: link
+                                                                  model="${[tmplText               :message(code:'license.details.editLink'),
+                                                                            tmplIcon               :'write',
+                                                                            tmplCss                : 'icon la-selectable-button',
+                                                                            tmplID                 :'editLink',
+                                                                            tmplModalID            :"sub_edit_link_${link.id}",
+                                                                            editmode               : editable,
+                                                                            context                : license,
+                                                                            subscriptionLicenseLink: true,
+                                                                            link                   : link
                                                                   ]}" />
                                                         <g:if test="${editable}">
                                                             <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
@@ -204,6 +213,7 @@
                                                     tmplButtonText:message(code:'license.details.addLink'),
                                                     tmplModalID:'sub_add_link',
                                                     editmode: editable,
+                                                    subscriptionLicenseLink: true,
                                                     context: license
                                           ]}" />
                             </div>

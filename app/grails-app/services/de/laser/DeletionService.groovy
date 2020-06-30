@@ -64,7 +64,7 @@ class DeletionService {
         result.info = []
         result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
 
-        result.info << ['Links: Verträge', links]
+        result.info << ['Links: Verträge bzw. Lizenzen', links]
         result.info << ['Aufgaben', tasks]
         result.info << ['Merkmalsgruppen', propDefGroupBindings]
         result.info << ['Lizenzen', subs]
@@ -133,11 +133,6 @@ class DeletionService {
                     // packages
                     packages.each{ tmp ->
                         tmp.license = null
-                        tmp.save(flush:true)
-                    }
-                    // subscription
-                    subs.each{ tmp ->
-                        tmp.owner = null
                         tmp.save(flush:true)
                     }
 
