@@ -1,12 +1,11 @@
-package de.laser.base
+package de.laser.traits
 
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.springframework.beans.factory.annotation.Autowired
 
 /**
- *  class Test extends AbstractBaseDomain
+ *  class Test implements BaseTrait
  *
  *  static mapping     = { globalUID column:'test_guid' .. }
  *  static constraints = { globalUID(nullable:true, blank:false, unique:true, maxSize:255) .. }
@@ -16,16 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired
  *
  */
 
-abstract class AbstractBaseDomainWithCalculatedLastUpdated
-        extends AbstractBaseDomain
-        implements CalculatedLastUpdated {
+trait BaseTraitWithCalculatedLastUpdated
+        implements BaseTrait, CalculatedLastUpdated {
 
-    @Autowired
+    //@Autowired
     def cascadingUpdateService // DO NOT OVERRIDE IN SUB CLASSES
 
-    static Log static_logger = LogFactory.getLog(AbstractBaseDomainWithCalculatedLastUpdated)
+    static Log static_logger = LogFactory.getLog(BaseTraitWithCalculatedLastUpdated)
 
-    String globalUID // from AbstractBaseDomain
+    String globalUID // from BaseTrait
 
     def setGlobalUID() {
         if (! globalUID) {

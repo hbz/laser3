@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.traits.BaseTraitWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -12,7 +12,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.persistence.Transient
 
-class Platform extends AbstractBaseDomainWithCalculatedLastUpdated {
+class Platform implements BaseTraitWithCalculatedLastUpdated {
 
   @Transient
   def grailsApplication

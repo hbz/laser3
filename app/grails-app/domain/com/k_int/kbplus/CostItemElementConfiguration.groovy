@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseDomain
+import de.laser.traits.BaseTrait
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 
-class CostItemElementConfiguration extends AbstractBaseDomain {
+class CostItemElementConfiguration implements BaseTrait {
 
     @RefdataAnnotation(cat = RDConstants.COST_ITEM_ELEMENT)
     RefdataValue costItemElement

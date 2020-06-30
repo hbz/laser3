@@ -1,11 +1,11 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseDomain
+import de.laser.traits.BaseTrait
 import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 
 @Log4j
-class AccessPointData extends AbstractBaseDomain {
+class AccessPointData implements BaseTrait {
     
     OrgAccessPoint orgAccessPoint
     String datatype

@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseDomain
+import de.laser.traits.BaseTrait
 import de.laser.IssueEntitlementCoverage
 import de.laser.IssueEntitlementGroupItem
 import de.laser.PriceItem
@@ -12,7 +12,7 @@ import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 
-class IssueEntitlement extends AbstractBaseDomain implements Comparable {
+class IssueEntitlement implements BaseTrait, Comparable {
 
     @Transient
     def deletionService

@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseDomain
+import de.laser.traits.BaseTrait
 import de.laser.IssueEntitlementGroup
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
@@ -11,8 +11,7 @@ import javax.persistence.Transient
 import java.time.Year
 
 class CostItem
-        extends AbstractBaseDomain
-        implements DeleteFlag, CalculatedType  {
+        implements BaseTrait, DeleteFlag, CalculatedType  {
 
     static enum TAX_TYPES {
         TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),

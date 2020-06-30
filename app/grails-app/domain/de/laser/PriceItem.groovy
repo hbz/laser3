@@ -2,11 +2,11 @@ package de.laser
 
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.RefdataValue
-import de.laser.base.AbstractBaseDomain
+import de.laser.traits.BaseTrait
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
-class PriceItem extends AbstractBaseDomain {
+class PriceItem implements BaseTrait {
 
     @RefdataAnnotation(cat = RDConstants.CURRENCY)
     RefdataValue listCurrency

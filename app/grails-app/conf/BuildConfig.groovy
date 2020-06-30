@@ -170,7 +170,7 @@ grails.project.dependency.resolution = {
 
         runtime ":jquery:1.11.1"
         runtime ":audit-logging:1.0.3"
-        // runtime ":executor:0.3" ; removed 2020-06-26
+        runtime ":executor:0.3"
         // runtime ":markdown:1.1.1" ; removed 2020-06-26
         runtime ":quartz:1.0.2"
         compile ":jsonp:0.2"

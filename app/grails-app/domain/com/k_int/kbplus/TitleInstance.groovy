@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.traits.BaseTraitWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
@@ -13,7 +13,7 @@ import java.text.Normalizer
 import java.util.regex.Pattern
 
 @Log4j
-class TitleInstance extends AbstractBaseDomainWithCalculatedLastUpdated {
+class TitleInstance implements BaseTraitWithCalculatedLastUpdated {
 
     @Transient
     def grailsApplication

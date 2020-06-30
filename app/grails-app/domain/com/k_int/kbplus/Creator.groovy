@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseDomain
+import de.laser.traits.BaseTrait
 
-class Creator extends AbstractBaseDomain{
+class Creator implements BaseTrait{
 
     String firstname
     String middlename

@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseDomain
+import de.laser.traits.BaseTrait
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
 
 @Log4j
-class PlatformAccessMethod extends AbstractBaseDomain {
+class PlatformAccessMethod implements BaseTrait {
 
     Date validFrom
     Date validTo

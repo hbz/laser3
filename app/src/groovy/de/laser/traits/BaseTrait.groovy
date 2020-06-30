@@ -1,7 +1,7 @@
-package de.laser.base
+package de.laser.traits
 
 /**
- *  class Test extends AbstractBaseDomain
+ *  class Test implements BaseTrait
  *
  *  static mapping     = { globalUID column:'test_guid' .. }
  *  static constraints = { globalUID(nullable:true, blank:false, unique:true, maxSize:255) .. }
@@ -16,7 +16,7 @@ package de.laser.base
  *  => MySQL has a prefix limitation of 767 bytes in InnoDB
  */
 
-abstract class AbstractBaseDomain {
+trait BaseTrait {
 
     String globalUID
 

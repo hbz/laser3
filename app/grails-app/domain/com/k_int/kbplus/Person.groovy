@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.traits.BaseTraitWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 @Log4j
-class Person extends AbstractBaseDomainWithCalculatedLastUpdated {
+class Person implements BaseTraitWithCalculatedLastUpdated {
 
     static Log static_logger = LogFactory.getLog(Person)
 

@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 
-import de.laser.base.AbstractBaseDomain
+import de.laser.traits.BaseTrait
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -11,7 +11,7 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 
 @Log4j
-class OrgAccessPoint extends AbstractBaseDomain {
+class OrgAccessPoint implements BaseTrait {
 
     String name
     Org org

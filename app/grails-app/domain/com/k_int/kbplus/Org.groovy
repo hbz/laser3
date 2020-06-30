@@ -8,7 +8,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.traits.BaseTraitWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -25,8 +25,7 @@ import java.text.SimpleDateFormat
 
 @Log4j
 class Org
-        extends AbstractBaseDomainWithCalculatedLastUpdated
-        implements DeleteFlag {
+        implements BaseTraitWithCalculatedLastUpdated, DeleteFlag {
 
     static Log static_logger = LogFactory.getLog(Org)
 

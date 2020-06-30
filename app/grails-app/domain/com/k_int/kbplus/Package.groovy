@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.traits.BaseTraitWithCalculatedLastUpdated
 import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration
 import de.laser.PriceItem
@@ -17,7 +17,7 @@ import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class Package extends AbstractBaseDomainWithCalculatedLastUpdated {
+class Package implements BaseTraitWithCalculatedLastUpdated {
         //implements ShareSupport {
 
     static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]

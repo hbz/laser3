@@ -4,7 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.traits.BaseTraitWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -24,8 +24,7 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 class License
-        extends AbstractBaseDomainWithCalculatedLastUpdated
-        implements CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
+        implements BaseTraitWithCalculatedLastUpdated, CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
 
     static Log static_logger = LogFactory.getLog(License)
 

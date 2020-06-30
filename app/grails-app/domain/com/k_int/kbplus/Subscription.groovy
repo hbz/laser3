@@ -4,7 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.traits.BaseTraitWithCalculatedLastUpdated
 import de.laser.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
@@ -24,8 +24,7 @@ import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
 class Subscription
-        extends AbstractBaseDomainWithCalculatedLastUpdated
-        implements CalculatedType, Permissions, AuditableSupport, ShareSupport {
+        implements BaseTraitWithCalculatedLastUpdated, CalculatedType, Permissions, AuditableSupport, ShareSupport {
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
