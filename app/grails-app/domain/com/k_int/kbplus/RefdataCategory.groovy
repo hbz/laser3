@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractI10nOverride
+import de.laser.traits.I10nOverrideTrait
 import de.laser.I10nTranslation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
-class RefdataCategory extends AbstractI10nOverride {
+class RefdataCategory extends I10nOverrideTrait {
 
     static Log static_logger = LogFactory.getLog(RefdataCategory)
 

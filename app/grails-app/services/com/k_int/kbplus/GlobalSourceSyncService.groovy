@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.SystemEvent
-import de.laser.base.AbstractCoverage
+import de.laser.traits.CoverageTrait
 import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration
 import de.laser.TIPPCoverage
@@ -1036,7 +1036,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Contrary to {@link AbstractCoverage}.findEquivalent(), this method locates a non-persisted coverage statement an equivalent from the given {@link Collection}
+     * Contrary to {@link CoverageTrait}.findEquivalent(), this method locates a non-persisted coverage statement an equivalent from the given {@link Collection}
      * @param covB - a {@link Map}, reflecting the OAI coverage node
      * @param listA - a {@link Collection} on {@link TIPPCoverage} statements, the list to be updated
      * @return the equivalent LAS:eR {@link TIPPCoverage} from the collection

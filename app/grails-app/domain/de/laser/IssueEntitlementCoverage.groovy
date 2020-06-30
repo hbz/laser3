@@ -1,9 +1,9 @@
 package de.laser
 
 import com.k_int.kbplus.IssueEntitlement
-import de.laser.base.AbstractCoverage
+import de.laser.traits.CoverageTrait
 
-class IssueEntitlementCoverage extends AbstractCoverage {
+class IssueEntitlementCoverage extends CoverageTrait {
 
     Date dateCreated
     Date lastUpdated

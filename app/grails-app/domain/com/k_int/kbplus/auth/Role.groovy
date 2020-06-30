@@ -1,8 +1,8 @@
 package com.k_int.kbplus.auth
 
-import de.laser.base.AbstractI10nTranslatable
+import de.laser.traits.I10nTranslatableTrait
 
-class Role extends AbstractI10nTranslatable {
+class Role extends I10nTranslatableTrait {
 
     String authority
     String roleType

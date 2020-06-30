@@ -1,9 +1,9 @@
 package de.laser
 
 import com.k_int.kbplus.TitleInstancePackagePlatform
-import de.laser.base.AbstractCoverage
+import de.laser.traits.CoverageTrait
 
-class TIPPCoverage extends AbstractCoverage {
+class TIPPCoverage extends CoverageTrait {
 
     Date dateCreated
     Date lastUpdated

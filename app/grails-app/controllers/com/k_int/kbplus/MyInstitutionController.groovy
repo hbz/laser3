@@ -10,7 +10,7 @@ import de.laser.DashboardDueDatesService
 import de.laser.LinksGenerationService
 import de.laser.SystemAnnouncement
 import de.laser.controller.AbstractDebugController
-import de.laser.base.AbstractI10nTranslatable
+import de.laser.traits.I10nTranslatableTrait
 import de.laser.helper.*
 
 //import de.laser.TaskService //unused for quite a long time
@@ -3501,7 +3501,7 @@ AND EXISTS (
         else if('delete' == params.cmd) {
             flash.message = deletePrivatePropertyDefinition(params)
         }
-        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
+        result.languageSuffix = I10nTranslatableTrait.getLanguageSuffix()
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
@@ -3525,7 +3525,7 @@ AND EXISTS (
     Object managePropertyDefinitions() {
         Map<String,Object> result = setResultGenerics()
 
-        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
+        result.languageSuffix = I10nTranslatableTrait.getLanguageSuffix()
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!

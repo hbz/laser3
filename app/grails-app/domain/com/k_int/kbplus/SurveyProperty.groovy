@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractI10nTranslatable
+import de.laser.traits.I10nTranslatableTrait
 import de.laser.I10nTranslation
 import groovy.util.logging.Log4j
 import org.springframework.context.i18n.LocaleContextHolder
@@ -9,7 +9,7 @@ import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
-class SurveyProperty extends AbstractI10nTranslatable {
+class SurveyProperty extends I10nTranslatableTrait {
 
     String name
     String type

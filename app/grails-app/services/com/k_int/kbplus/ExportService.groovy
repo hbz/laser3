@@ -3,7 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
-import de.laser.base.AbstractCoverage
+import de.laser.traits.CoverageTrait
 import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage
 import de.laser.helper.DateUtil
@@ -294,7 +294,7 @@ class ExportService {
 				entitlement = (TitleInstancePackagePlatform) ieObj
 			}
 			if(entitlement) {
-				entitlement.coverages.each { AbstractCoverage covStmt ->
+				entitlement.coverages.each { CoverageTrait covStmt ->
 					allRows << covStmt
 				}
 				if(!entitlement.coverages)
@@ -305,7 +305,7 @@ class ExportService {
 		allRows.each { rowData ->
 			IssueEntitlement entitlement = null
 			TitleInstancePackagePlatform tipp = null
-			AbstractCoverage covStmt = null
+			CoverageTrait covStmt = null
 			if(rowData instanceof IssueEntitlement) {
 				entitlement = (IssueEntitlement) rowData
 				tipp = entitlement.tipp

@@ -1,9 +1,9 @@
-package de.laser.base
+package de.laser.traits
 
 
 import javax.persistence.Transient
 
-abstract class AbstractCoverage {
+abstract class CoverageTrait {
 
     Long id
     Date startDate
@@ -73,8 +73,8 @@ abstract class AbstractCoverage {
         diffs
     }
 
-    AbstractCoverage findEquivalent(Collection<AbstractCoverage> list) {
-        AbstractCoverage equivalent
+    CoverageTrait findEquivalent(Collection<CoverageTrait> list) {
+        CoverageTrait equivalent
         for (String k : equivalencyProperties) {
             equivalent = list.find { it[k] == this[k] }
             if (equivalent) {
