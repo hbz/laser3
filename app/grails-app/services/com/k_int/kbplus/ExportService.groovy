@@ -3,9 +3,9 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
-import de.laser.domain.AbstractCoverage
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.TIPPCoverage
+import de.laser.base.AbstractCoverage
+import de.laser.IssueEntitlementCoverage
+import de.laser.TIPPCoverage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.apache.poi.POIXMLProperties

@@ -1,11 +1,10 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.IssueEntitlementGroupItem
-import de.laser.domain.PriceItem
-import de.laser.domain.TIPPCoverage
-import de.laser.exceptions.CreationException
+import de.laser.base.AbstractBaseDomain
+import de.laser.IssueEntitlementCoverage
+import de.laser.IssueEntitlementGroupItem
+import de.laser.PriceItem
+import de.laser.TIPPCoverage
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

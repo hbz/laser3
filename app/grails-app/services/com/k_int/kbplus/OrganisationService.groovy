@@ -10,7 +10,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AuditConfig
 import de.laser.ContextService
-import de.laser.domain.IssueEntitlementCoverage
+import de.laser.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

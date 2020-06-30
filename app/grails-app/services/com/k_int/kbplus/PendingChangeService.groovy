@@ -3,9 +3,9 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.AuditConfig
 import de.laser.SubscriptionService
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.TIPPCoverage
+import de.laser.IssueEntitlementCoverage
+import de.laser.PendingChangeConfiguration
+import de.laser.TIPPCoverage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

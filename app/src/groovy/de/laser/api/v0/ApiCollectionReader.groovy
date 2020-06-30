@@ -4,7 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
-import de.laser.domain.IssueEntitlementCoverage
+import de.laser.IssueEntitlementCoverage
 import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 

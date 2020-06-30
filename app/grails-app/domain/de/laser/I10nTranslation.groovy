@@ -1,4 +1,4 @@
-package de.laser.domain
+package de.laser
 
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 

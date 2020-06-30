@@ -1,5 +1,6 @@
 package com.k_int
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.grails.plugin.resource.ResourceTagLib
 /**
  * @author Steve Osguthorpe
@@ -9,7 +10,7 @@ import org.grails.plugin.resource.ResourceTagLib
 
 class TreeSelectTagLib {
   static defaultEncodeAs = 'raw'
-  def grailsApplication
+  GrailsApplication grailsApplication
   
   private void addRequirements (props) {
     

@@ -10,7 +10,7 @@ import de.laser.DashboardDueDatesService
 import de.laser.LinksGenerationService
 import de.laser.SystemAnnouncement
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.AbstractI10nTranslatable
+import de.laser.base.AbstractI10nTranslatable
 import de.laser.helper.*
 
 //import de.laser.TaskService //unused for quite a long time

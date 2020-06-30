@@ -1,6 +1,6 @@
 package com.k_int.kbplus.auth
 
-import de.laser.domain.AbstractI10nTranslatable
+import de.laser.base.AbstractI10nTranslatable
 
 class Role extends AbstractI10nTranslatable {
 

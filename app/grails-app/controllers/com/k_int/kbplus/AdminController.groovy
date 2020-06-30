@@ -13,8 +13,8 @@ import de.laser.SystemAnnouncement
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.I10nTranslation
-import de.laser.domain.SystemMessage
+import de.laser.I10nTranslation
+import de.laser.SystemMessage
 import de.laser.exceptions.CleanupException
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore

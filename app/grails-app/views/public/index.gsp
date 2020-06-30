@@ -1,4 +1,4 @@
-<%@ page import="de.laser.domain.SystemMessage" %>
+<%@ page import="de.laser.SystemMessage" %>
 <!doctype html>
 <html>
 <head>
