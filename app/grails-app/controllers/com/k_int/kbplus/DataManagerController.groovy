@@ -4,7 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.YodaService
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.MailTemplate
+import de.laser.MailTemplate
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.SessionCacheWrapper

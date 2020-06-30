@@ -7,11 +7,11 @@ import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.IssueEntitlementGroup
-import de.laser.domain.IssueEntitlementGroupItem
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.PriceItem
+import de.laser.IssueEntitlementCoverage
+import de.laser.IssueEntitlementGroup
+import de.laser.IssueEntitlementGroupItem
+import de.laser.PendingChangeConfiguration
+import de.laser.PriceItem
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*

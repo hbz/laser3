@@ -5,8 +5,8 @@ import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.ContextService
 import de.laser.SystemEvent
-import de.laser.domain.I10nTranslation
-import de.laser.domain.SystemMessage
+import de.laser.I10nTranslation
+import de.laser.SystemMessage
 import de.laser.helper.RDConstants
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition

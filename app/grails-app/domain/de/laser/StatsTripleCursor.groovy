@@ -1,4 +1,4 @@
-package de.laser.domain
+package de.laser
 
 import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.RefdataValue

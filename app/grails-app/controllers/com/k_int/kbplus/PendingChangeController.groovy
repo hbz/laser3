@@ -1,13 +1,12 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.TIPPCoverage
+import de.laser.IssueEntitlementCoverage
+import de.laser.TIPPCoverage
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 
-import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])

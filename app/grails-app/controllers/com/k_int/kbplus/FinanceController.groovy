@@ -2,8 +2,8 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.IssueEntitlementGroup
-import de.laser.domain.PendingChangeConfiguration
+import de.laser.IssueEntitlementGroup
+import de.laser.PendingChangeConfiguration
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil

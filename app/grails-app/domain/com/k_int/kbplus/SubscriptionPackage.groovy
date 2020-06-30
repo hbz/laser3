@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.domain.PendingChangeConfiguration
+import de.laser.PendingChangeConfiguration
 import de.laser.helper.RDStore
 
 import javax.persistence.Transient

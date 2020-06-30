@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
-import de.laser.domain.I10nTranslation
+import de.laser.I10nTranslation
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import grails.util.Holders

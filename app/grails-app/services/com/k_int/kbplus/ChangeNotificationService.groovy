@@ -3,7 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.AuditConfig
 import de.laser.ContextService
-import de.laser.domain.PendingChangeConfiguration
+import de.laser.PendingChangeConfiguration
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService

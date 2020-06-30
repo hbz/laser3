@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
 import de.laser.SystemEvent
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.json.JSONElement
 
 class StatusUpdateService extends AbstractLockableService {
@@ -322,7 +322,8 @@ class StatusUpdateService extends AbstractLockableService {
         Map<Subscription,Set<JSONElement>> currentPendingChanges = [:]
         List<PendingChange> list = PendingChange.findAllBySubscriptionIsNotNullAndStatus(RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS))
         list.each { pc ->
-            Subscription subscription = ClassUtils.deproxy(pc.subscription)
+            //Subscription subscription = ClassUtils.deproxy(pc.subscription)
+            Subscription subscription = GrailsHibernateUtil.unwrapIfProxy(pc.subscription)
             if(subscription.status != RDStore.SUBSCRIPTION_EXPIRED) {
                 Set currSubChanges = currentPendingChanges.get(subscription) ?: []
                 currSubChanges.add(JSON.parse(pc.payload).changeDoc)
