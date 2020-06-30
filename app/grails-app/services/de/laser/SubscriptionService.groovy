@@ -516,7 +516,7 @@ class SubscriptionService {
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                        [sub: subscription, del: TIPP_STATUS_DELETED])
+                        [sub: subscription, del: RDStore.TIPP_STATUS_DELETED])
                 : []
         ies.sort {it.tipp.title.title}
         ies

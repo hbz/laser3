@@ -4556,7 +4556,7 @@ class SubscriptionController extends AbstractDebugController {
 
         Subscription baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSub), LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
@@ -4593,7 +4593,7 @@ class SubscriptionController extends AbstractDebugController {
                     isPublicForApi: sub_isPublicForApi*/
             )
 
-            if (!newSub.save(flush: true)) {
+            if (!newSub.save()) {
                 log.error("Problem saving subscription ${newSub.errors}");
                 return newSub
             } else {
@@ -4617,12 +4617,12 @@ class SubscriptionController extends AbstractDebugController {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
-                        newOrgRole.save(flush: true)
+                        newOrgRole.save()
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
-                if (!prevLink.save(flush: true)) {
+                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(baseSub), linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
+                if (!prevLink.save()) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
                 result.newSub = newSub
@@ -4666,7 +4666,6 @@ class SubscriptionController extends AbstractDebugController {
                                  sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
                                  sub_name     : subscription.name,
                                  sub_id       : subscription.id,
-                                 sub_license  : subscription?.owner?.reference ?: '',
                                  sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
                                  sub_type     : subscription.type?.id.toString(),
                                  sub_form     : subscription.form?.id.toString(),
