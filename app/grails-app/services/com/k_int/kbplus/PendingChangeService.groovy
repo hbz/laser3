@@ -433,22 +433,30 @@ class PendingChangeService extends AbstractLockableService {
             queryClauses << "pc.ts > :time"
             queryParams.time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
         }
+        if(configMap.consortialView) {
+            queryClauses << "(pc.subscription = null or pc.subscription.instanceOf = null)"
+        }
         if(queryClauses) {
             queryOwn += ' and ' + queryClauses.join(" and ")
             //queryCount += ' and ' + queryClauses.join(" and ")
         }
-        Set<PendingChange> result = PendingChange.executeQuery("${queryOwn} and pc.status in (:queryStatus) order by pc.ts desc",queryParams+[queryStatus: queryStatus])
+        Set<PendingChange> result = []
+        Set<PendingChange> pending = PendingChange.executeQuery("${queryOwn} and pc.status = :queryStatus order by pc.ts desc",queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING])
+        Set<PendingChange> accepted = PendingChange.executeQuery("${queryOwn} and pc.status = :queryStatus order by pc.ts desc",queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])
         //int pendingCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING])[0]
         //int notificationsCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])[0]
         Set<SubscriptionPackage> pendingChangePackages = []
         if(!configMap.consortialView) {
-            String queryMember = "select pc from PendingChange pc join pc.subscription sub join sub.orgRelations oo where oo.roleType in :subRoleTypes and oo.org = :contextOrg "
+            String queryMember = "select pc from PendingChange pc join pc.subscription sub join sub.orgRelations oo where oo.roleType = :subRoleType and oo.org = :contextOrg "
             if(queryClauses)
                 queryMember += ' and '+queryClauses.join(" and ")
-            Set<PendingChange> memberPCs = PendingChange.executeQuery("${queryMember} and pc.status in (:queryStatus)",queryParams+[subRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE],queryStatus: queryStatus])
-            result.addAll(memberPCs)
+            Set<PendingChange> memberPCs = PendingChange.executeQuery("${queryMember} and pc.status = :queryStatus",queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_PENDING])
+            Set<PendingChange> memberACs = PendingChange.executeQuery("${queryMember} and pc.status = :queryStatus",queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])
+            pending.addAll(memberPCs)
+            accepted.addAll(memberACs)
         }
-        //int pendingIndex = 0, acceptedIndex = 0
+        result.addAll(pending.drop(configMap.pendingOffset).take(configMap.max))
+        result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
         result.each { PendingChange change ->
                 //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
                 if(change.subscription) {
@@ -472,47 +480,15 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     //child subscription
                     if(change.subscription.instanceOf) {
-                        if(configMap.consortialView) {
-                            //in case collective view is going to be reimplemented, we need to distinguish here the calculated types!
-                            Map<String,Object> entryOfParent
-                            if(change.status == RDStore.PENDING_CHANGE_PENDING)
-                                entryOfParent = pendingChanges.find{it.target == change.subscription.instanceOf && it.msgToken == change.msgToken && it.oid == change.oid && it.targetProperty == change.targetProperty}
-                            else if(change.status == RDStore.PENDING_CHANGE_ACCEPTED)
-                                entryOfParent = acceptedChanges.find{it.target == change.subscription.instanceOf && it.msgToken == change.msgToken && it.oid == change.oid && it.targetProperty == change.targetProperty}
-                            if(entryOfParent) {
-                                if(!entryOfParent.memberSubscriptions)
-                                    entryOfParent.memberSubscriptions = [change]
-                                else entryOfParent.memberSubscriptions << change
-                            }
-                            else {
-                                //the change is a mere dummy
-                                SubscriptionPackage targetSp
-                                if(targetPkg)
-                                    targetSp = SubscriptionPackage.findBySubscriptionAndPkg(change.subscription.instanceOf,targetPkg)
+                        if(targetPkg) {
+                            SubscriptionPackage targetSp = SubscriptionPackage.findBySubscriptionAndPkg(change.subscription.instanceOf,targetPkg)
+                            PendingChangeConfiguration pcc = PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(targetSp,change.msgToken)
+                            if(AuditConfig.getConfig(change.subscription.instanceOf,change.msgToken)) {
                                 if(change.status == RDStore.PENDING_CHANGE_PENDING) {
-                                    if(targetSp)
-                                        pendingChangePackages << targetSp
-
-                                    pendingChanges << [target:change.subscription.instanceOf,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,memberSubscriptions:[change],change:change]
+                                    pendingChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
                                 }
-                                else if(change.status == RDStore.PENDING_CHANGE_ACCEPTED) {
-                                    PendingChangeConfiguration pcc = PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(targetSp,change.msgToken)
-                                    if(pcc && pcc.withNotification || !pcc)
-                                        acceptedChanges << [target:change.subscription.instanceOf,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,memberSubscriptions:[change],change:change]
-                                }
-                            }
-                        }
-                        else {
-                            if(targetPkg) {
-                                SubscriptionPackage targetSp = SubscriptionPackage.findBySubscriptionAndPkg(change.subscription.instanceOf,targetPkg)
-                                PendingChangeConfiguration pcc = PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(targetSp,change.msgToken)
-                                if(AuditConfig.getConfig(change.subscription.instanceOf,change.msgToken)) {
-                                    if(change.status == RDStore.PENDING_CHANGE_PENDING) {
-                                        pendingChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
-                                    }
-                                    else if(change.status == RDStore.PENDING_CHANGE_ACCEPTED && (!pcc || (pcc && pcc.withNotification))) {
-                                        acceptedChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
-                                    }
+                                else if(change.status == RDStore.PENDING_CHANGE_ACCEPTED && (!pcc || (pcc && pcc.withNotification))) {
+                                    acceptedChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
                                 }
                             }
                         }
@@ -548,9 +524,9 @@ class PendingChangeService extends AbstractLockableService {
                         acceptedChanges << entry
                 }
             }
-        int pendingCount = pendingChanges.size()
-        int notificationsCount = acceptedChanges.size()
-        [pending:pendingChanges.drop(configMap.pendingOffset).take(configMap.max),packages:pendingChangePackages,pendingCount:pendingCount,notifications:acceptedChanges.drop(configMap.acceptedOffset).take(configMap.max),notificationsCount:notificationsCount]
+        int pendingCount = pending.size()
+        int notificationsCount = accepted.size()
+        [pending:pendingChanges,packages:pendingChangePackages,pendingCount:pendingCount,notifications:acceptedChanges,notificationsCount:notificationsCount]
     }
 
     //called from: dashboard.gsp, pendingChanges.gsp, accepetdChanges.gsp

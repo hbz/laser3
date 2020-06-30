@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1710    30.06.2020  rc1.4       Andreas Bug         Performanz bei Laden der Änderungen verbessert
+
 2636    30.06.2020  rc1.4       Andreas Bug         Weitere Korrektur zur Nichtprozessierung von Titeldaten im Sync
 
 2630    24.06.2020  rc1.4       Andreas Feature     Steuersätze 5 und 16 % hinzugefügt
