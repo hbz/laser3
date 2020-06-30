@@ -1483,7 +1483,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkLicense() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if(!result) {
             response.sendError(401)
             return
@@ -5425,21 +5425,24 @@ class SubscriptionController extends AbstractDebugController {
                     resource: params.subscription.resource ? baseSubscription.resource : null,
                     form: params.subscription.form ? baseSubscription.form : null,
             )
-            //Copy License
-            if (params.subscription.copyLicense) {
-                newSubscriptionInstance.owner = baseSubscription.owner ?: null
-            }
             //Copy InstanceOf
             if (params.subscription.copylinktoSubscription) {
                 newSubscriptionInstance.instanceOf = baseSubscription?.instanceOf ?: null
             }
 
 
-            if (!newSubscriptionInstance.save(flush: true)) {
+            if (!newSubscriptionInstance.save()) {
                 log.error("Problem saving subscription ${newSubscriptionInstance.errors}");
                 return newSubscriptionInstance
             } else {
                 log.debug("Save ok")
+                //Copy License
+                if (params.subscription.copyLicense) {
+                    Set<Links> baseSubscriptionLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSubscription),RDStore.LINKTYPE_LICENSE)
+                    baseSubscriptionLicenses.each { Links link ->
+                        subscriptionService.setOrgLicRole(newSubscriptionInstance,genericOIDService.resolveOID(link.source),false)
+                    }
+                }
 
                 baseSubscription.documents?.each { dctx ->
 

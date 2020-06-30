@@ -508,7 +508,7 @@
                                                     <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                             data-confirm-term-how="unlink"
-                                                            action="unlinkLicense" params="${[licenseOID: link.source]}">
+                                                            action="unlinkLicense" params="${[licenseOID: link.source, id:subscription.id]}">
                                                         <i class="unlink icon"></i>
                                                     </g:link>
                                                 </div>

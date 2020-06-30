@@ -16,6 +16,7 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.ExecutorService
 
 class StatsSyncService {
 
@@ -23,7 +24,7 @@ class StatsSyncService {
     static final SYNC_STATS_FROM = '2012-01-01'
 
     def grailsApplication
-    def executorService
+    ExecutorService executorService
     def sessionFactory
     def factService
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
