@@ -83,66 +83,36 @@
 
                 <div class="field">
                     <label><g:message code="myinst.copyLicense"/></label>
-                    <g:if test="${subscriptionInstance.owner}">
-                        <g:if test="${subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE && institution.id == subscriptionInstance.getCollective().id}">
-                            <div class="ui radio checkbox">
-                                <input class="hidden" type="radio" name="attachToParticipationLic" value="true">
-                                <label><g:message code="myinst.attachToParticipationLic"/></label>
-                            </div>
-                            <div class="ui radio checkbox">
-                                <input class="hidden" type="radio" name="attachToParticipationLic" value="false" checked="checked">
-                                <label><g:message code="myinst.noAttachmentToParticipationLic"/></label>
-                            </div>
-                        </g:if>
-                        <g:else>
-                            <div class="ui radio checkbox">
-                                <g:if test="${subscriptionInstance.owner.derivedLicenses}">
-                                    <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no">
-                                </g:if>
-                                <g:else>
-                                    <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no"
-                                           checked="checked">
-                                </g:else>
-                                <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
-                            </div>
+                    <g:if test="${memberLicenses}">
+                        <div class="ui radio checkbox">
+                            <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no">
+                            <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
+                        </div>
+                        <br>
+                        <div class="ui radio checkbox">
+                            <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics" value="all">
+                            <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
+                        </div>
+                        <br>
+                        <div class="ui radio checkbox">
+                            <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics" value="partial" checked="checked">
+                            <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_partial')}</label>
+                        </div>
+                        <div class="generateSlavedLicsReference-wrapper hidden">
                             <br>
-                            <div class="ui radio checkbox">
-                                <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics"
-                                       value="shared">
-                                <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_shared')}</label>
-                            </div>
-                            <br>
-                            <div class="ui radio checkbox">
-                                <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics"
-                                       value="explicit">
-                                <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_explicit')}</label>
-                            </div>
-                            <br>
-                            <g:if test="${subscriptionInstance.owner.derivedLicenses}">
-                                <div class="ui radio checkbox">
-                                    <input class="hidden" type="radio" id="generateSlavedLics3" name="generateSlavedLics"
-                                           value="reference" checked="checked">
-                                    <label for="generateSlavedLics3">${message(code: 'myinst.separate_lics_reference')}</label>
-                                </div>
-
-                                <div class="generateSlavedLicsReference-wrapper hidden">
-                                    <br/>
-                                    <g:select from="${subscriptionInstance.owner?.derivedLicenses}"
-                                              class="ui search dropdown hide"
-                                              optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
-                                              optionValue="${{ it.reference }}"
-                                              name="generateSlavedLicsReference"/>
-                                </div>
-                                <r:script>
-                                    $('*[name=generateSlavedLics]').change(function () {
-                                        $('*[name=generateSlavedLics][value=reference]').prop('checked') ?
-                                                $('.generateSlavedLicsReference-wrapper').removeClass('hidden') :
-                                                $('.generateSlavedLicsReference-wrapper').addClass('hidden');
-                                    })
-                                    $('*[name=generateSlavedLics]').trigger('change')
-                                </r:script>
-                            </g:if>
-                        </g:else>
+                            <g:select from="${memberLicenses}"
+                                      class="ui fluid search multiple dropdown hide"
+                                      optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
+                                      optionValue="${{ it.reference }}"
+                                      noSelection="${['' : message(code:'default.select.all.label')]}"
+                                      name="generateSlavedLicsReference"/>
+                        </div>
+                        <r:script>
+                            $('*[name=generateSlavedLics]').change(function () {
+                                $('*[name=generateSlavedLics][value=partial]').prop('checked') ? $('.generateSlavedLicsReference-wrapper').removeClass('hidden') : $('.generateSlavedLicsReference-wrapper').addClass('hidden');
+                            })
+                            $('*[name=generateSlavedLics]').trigger('change')
+                        </r:script>
                     </g:if>
                     <g:else>
                         <semui:msg class="info" text="${message(code:'myinst.noSubscriptionOwner')}"/>

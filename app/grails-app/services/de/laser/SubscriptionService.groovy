@@ -481,7 +481,7 @@ class SubscriptionService {
     List getValidSurveySubChilds(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
-                [SUBSCRIPTION_CURRENT, SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
+                [RDStore.SUBSCRIPTION_CURRENT, RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
         )
         if(validSubChilds) {
             validSubChilds = validSubChilds?.sort { a, b ->
@@ -496,7 +496,7 @@ class SubscriptionService {
     List getValidSurveySubChildOrgs(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
-                [SUBSCRIPTION_CURRENT, SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
+                [RDStore.SUBSCRIPTION_CURRENT, RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
         )
 
         List orgs = OrgRole.findAllBySubInListAndRoleType(validSubChilds, RDStore.OR_SUBSCRIBER_CONS)
@@ -1594,11 +1594,7 @@ class SubscriptionService {
         String[] parentSubType
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             comboType = RDStore.COMBO_TYPE_CONSORTIUM
-            parentSubType = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.getI10n('value')]
-        }
-        else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-            comboType = RDStore.COMBO_TYPE_DEPARTMENT
-            parentSubType = [RDStore.SUBSCRIPTION_TYPE_LOCAL.getI10n('value')]
+            parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
         }
         Map colMap = [:]
         Map<String, Map> propMap = [:]
@@ -1618,13 +1614,13 @@ class SubscriptionService {
                 case "teilnehmer": colMap.member = c
                     break
                 case "vertrag":
-                case "license": colMap.owner = c
+                case "license": colMap.licenses = c
                     break
                 case "elternlizenz":
                 case "konsortiallizenz":
                 case "parent subscription":
                 case "consortial subscription":
-                    if(accessService.checkPerm("ORG_INST_COLLECTIVE, ORG_CONSORTIUM"))
+                    if(accessService.checkPerm("ORG_CONSORTIUM"))
                         colMap.instanceOf = c
                     break
                 case "status": colMap.status = c
@@ -1641,7 +1637,7 @@ class SubscriptionService {
                     break
                 case "lizenztyp":
                 case "subscription type":
-                case "type": colMap.type = c
+                case "type": colMap.kind = c
                     break
                 case "lizenzform":
                 case "subscription form":
@@ -1668,8 +1664,8 @@ class SubscriptionService {
                         isNotesCol = true
                         propDefString = headerCol.split('\\$\\$')[0].toLowerCase()
                     }
-                    Map queryParams = [propDef:propDefString,pdClass:PropertyDefinition.class.name,contextOrg:contextOrg]
-                    List<PropertyDefinition> possiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd, I10nTranslation i where i.referenceId = pd.id and i.referenceClass = :pdClass and (lower(i.valueDe) = :propDef or lower(i.valueEn) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
+                    Map queryParams = [propDef:propDefString,contextOrg:contextOrg]
+                    List<PropertyDefinition> possiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where (lower(pd.name_de) = :propDef or lower(pd.name_en) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
                     if(possiblePropDefs.size() == 1) {
                         PropertyDefinition propDef = possiblePropDefs[0]
                         if(isNotesCol) {
@@ -1736,28 +1732,29 @@ class SubscriptionService {
                 if(name)
                     candidate.name = name
             }
-            //owner(nullable:true, blank:false) -> to license
-            if(colMap.owner != null) {
-                String ownerKey = cols[colMap.owner].trim()
-                if(ownerKey) {
-                    List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:ownerKey,roleTypes:[OR_LICENSEE_CONS,OR_LICENSING_CONSORTIUM,OR_LICENSEE],contextOrg:contextOrg])
+            //licenses
+            if(colMap.licenses != null) {
+                List<String> licenseKeys = cols[colMap.licenses].split(',')
+                candidate.licenses = []
+                licenseKeys.each { String licenseKey ->
+                    List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:licenseKey,roleTypes:[RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE],contextOrg:contextOrg])
                     if(licCandidates.size() == 1) {
-                        License owner = licCandidates[0]
-                        candidate.owner = "${owner.class.name}:${owner.id}"
+                        License license = licCandidates[0]
+                        candidate.licenses << GenericOIDService.getOID(license)
                     }
                     else if(licCandidates.size() > 1)
-                        mappingErrorBag.multipleLicenseError = ownerKey
+                        mappingErrorBag.multipleLicenseError << licenseKey
                     else
-                        mappingErrorBag.noValidLicense = ownerKey
+                        mappingErrorBag.noValidLicense << licenseKey
                 }
             }
             //type(nullable:true, blank:false) -> to type
-            if(colMap.type != null) {
-                String typeKey = cols[colMap.type].trim()
+            if(colMap.kind != null) {
+                String typeKey = cols[colMap.kind].trim()
                 if(typeKey) {
-                    String type = refdataService.retrieveRefdataValueOID(typeKey, RDConstants.SUBSCRIPTION_TYPE)
+                    String type = refdataService.retrieveRefdataValueOID(typeKey, RDConstants.SUBSCRIPTION_KIND)
                     if(type) {
-                        candidate.type = type
+                        candidate.kind = type
                     }
                     else {
                         mappingErrorBag.noValidType = typeKey

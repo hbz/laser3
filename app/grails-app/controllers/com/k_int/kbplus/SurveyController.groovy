@@ -521,7 +521,7 @@ class SurveyController {
         if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
             SurveyConfig surveyConfig = new SurveyConfig(
                     subscription: subscription,
-                    configOrder: surveyInfo.surveyConfigs.size() ? surveyInfo.surveyConfigs.size() + 1 : 1,
+                    configOrder: surveyInfo.surveyConfigs ? surveyInfo.surveyConfigs.size() + 1 : 1,
                     type: 'Subscription',
                     surveyInfo: surveyInfo,
                     subSurveyUseForTransfer: subSurveyUseForTransfer
@@ -1954,7 +1954,7 @@ class SurveyController {
             result.surveyInfo.save(flush: true)
             flash.message = g.message(code: "openSurveyNow.successfully")
 
-            surveyUpdateService.emailsToSurveyUsers([result.surveyInfo.id])
+            //surveyUpdateService.emailsToSurveyUsers([result.surveyInfo.id])
 
         }
 
@@ -2749,7 +2749,6 @@ class SurveyController {
                                  sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
                                  sub_name     : subscription.name,
                                  sub_id       : subscription.id,
-                                 sub_license  : subscription.owner?.reference ?: '',
                                  sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
                                  sub_type     : subscription.type?.id.toString(),
                                  sub_form     : subscription.form?.id.toString(),
@@ -2777,7 +2776,7 @@ class SurveyController {
 
         Subscription baseSub = Subscription.get(params.parentSub ?: null)
 
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSub), RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
@@ -2836,12 +2835,12 @@ class SurveyController {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
-                        newOrgRole.save(flush: true)
+                        newOrgRole.save()
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-                if (!prevLink.save(flush: true)) {
+                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                if (!prevLink.save()) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
                 result.newSub = newSub
@@ -3048,21 +3047,21 @@ class SurveyController {
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         boolean isTargetSubChanged = false
-        if (params.subscription.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.deletePackages(packagesToDelete, newSub, flash)
             isTargetSubChanged = true
         }
-        if (params.subscription.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.copyPackages(packagesToTake, newSub, flash)
             isTargetSubChanged = true
         }
-        if(params.subscription.deletePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
+        if(params.subscription?.deletePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
             List<SubscriptionPackage> packageSettingsToDelete = params.list('subscription.deletePackageSettings').collect {
                 genericOIDService.resolveOID(it)
             }
@@ -3075,7 +3074,7 @@ class SurveyController {
             }
             isTargetSubChanged = true
         }
-        if(params.subscription.takePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
+        if(params.subscription?.takePackageSettings && isBothSubscriptionsSet(baseSub, newSub)) {
             List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect {
                 genericOIDService.resolveOID(it)
             }
@@ -3085,14 +3084,14 @@ class SurveyController {
             isTargetSubChanged = true
         }
 
-        if (params.subscription.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToDelete = params.list('subscription.deleteEntitlementIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.deleteEntitlements(entitlementsToDelete, newSub, flash)
             isTargetSubChanged = true
         }
-        if (params.subscription.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect {
                 genericOIDService.resolveOID(it)
             }
@@ -3181,16 +3180,12 @@ class SurveyController {
             //isTargetSubChanged = true
         }
 
-        if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, null,false)) {
-                Object[] args = [newSub]
-                flash.error += message(code:'default.save.error.message',args:args)
-            }
-        } else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner,true)) {
-                Object[] args = [newSub]
-                flash.error += message(code:'default.save.error.message',args:args)
-            }
+        if (params.subscription?.deleteLicenses && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<License> toDeleteLicenses = params.list('subscription.deleteLicenses').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.deleteLicenses(toDeleteLicenses, newSub, flash)
+        }else if (params.subscription?.takeLicenses && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<License> toCopyLicenses = params.list('subscription.takeLicenses').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.copyLicenses(toCopyLicenses, newSub, flash)
         }
 
         if (params.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -3224,6 +3219,20 @@ class SurveyController {
             }
         }
 
+        if (params.subscription?.deleteIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toDeleteIdentifiers =  []
+            params.list('subscription.deleteIdentifierIds').each{ identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
+            subscriptionService.deleteIdentifiers(toDeleteIdentifiers, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
+        if (params.subscription?.takeIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toCopyIdentifiers =  []
+            params.list('subscription.takeIdentifierIds').each{ identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
+            subscriptionService.copyIdentifiers(baseSub, toCopyIdentifiers, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
         /*if (isTargetSubChanged) {
             newSub = newSub.refresh()
         }*/
@@ -3237,7 +3246,23 @@ class SurveyController {
         def result = setResultGenericsAndCheckAccessforSub(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
-
+        result.sourceIdentifiers = baseSub.ids?.sort { x, y ->
+            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
+                x.value <=> y.value
+            } else {
+                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+            }
+        }
+        result.targetIdentifiers = newSub?.ids?.sort { x, y ->
+            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
+                x.value <=> y.value
+            } else {
+                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+            }
+        }
+        result.sourceLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc",[sub:GenericOIDService.getOID(baseSub),linkType:RDStore.LINKTYPE_LICENSE])
+        if(newSub)
+            result.targetLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc",[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
@@ -4471,7 +4496,7 @@ class SurveyController {
 
     private static def getfilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
 
-        if (!(orgIDs.size() > 0)) {
+        if (!(orgIDs?.size() > 0)) {
             return []
         }
         def tmpQuery = query

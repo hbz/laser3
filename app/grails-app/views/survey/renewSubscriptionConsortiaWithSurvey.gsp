@@ -106,23 +106,6 @@ ${surveyInfo.name}
                 </td>
             </tr>
             <tr>
-                <th>${message(code: 'subscription.type.label')}</th>
-                <td>
-                    <g:set var="rdcSubType" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_TYPE)}"/>
-                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)}" class="ui dropdown"
-                              optionKey="id"
-                              optionValue="${{ it.getI10n('value') }}"
-                              name="subType"
-                              value="${permissionInfo?.sub_type}"
-                              />
-                </td>
-                <td class="center aligned">
-                    <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="type" ${AuditConfig.getConfig(subscription, 'type') ? 'checked': ''} />
-                    </div>
-                </td>
-            </tr>
-            <tr>
                 <th>${message(code: 'subscription.kind.label')}</th>
                 <td>
                     <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" class="ui dropdown"

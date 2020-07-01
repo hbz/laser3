@@ -2497,27 +2497,19 @@ class SubscriptionController extends AbstractDebugController {
 
         result.superOrgType = []
         result.memberType = []
-        if (accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
-            if(accessService.checkPerm('ORG_CONSORTIUM')) {
-                params.comboType = COMBO_TYPE_CONSORTIUM.value
-                result.superOrgType << message(code:'consortium.superOrgType')
-                result.memberType << message(code:'consortium.subscriber')
+        params.comboType = COMBO_TYPE_CONSORTIUM.value
+        result.superOrgType << message(code:'consortium.superOrgType')
+        result.memberType << message(code:'consortium.subscriber')
+        def fsq = filterService.getOrgComboQuery(params, result.institution)
+        result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.members_disabled = []
+        result.members.each { it ->
+            if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?", [result.subscriptionInstance, it.id])) {
+                result.members_disabled << it.id
             }
-            if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-                params.comboType = COMBO_TYPE_DEPARTMENT.value
-                result.superOrgType << message(code:'collective.superOrgType')
-                result.memberType << message(code:'collective.member.plural')
-            }
-            def fsq = filterService.getOrgComboQuery(params, result.institution)
-            result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
-            result.members_disabled = []
-            result.members.each { it ->
-                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?", [result.subscriptionInstance, it.id])) {
-                    result.members_disabled << it.id
-                }
-            }
-            result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
         }
+        result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
+        result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
 
         result
     }
@@ -2545,8 +2537,6 @@ class SubscriptionController extends AbstractDebugController {
         RefdataValue role_sub_coll = OR_SUBSCRIPTION_COLLECTIVE
         RefdataValue role_sub_hidden = OR_SUBSCRIBER_CONS_HIDDEN
         RefdataValue role_lic = OR_LICENSEE_CONS
-        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            role_lic = OR_LICENSEE_COLL
         RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
 
         RefdataValue role_provider = OR_PROVIDER
@@ -2562,10 +2552,8 @@ class SubscriptionController extends AbstractDebugController {
                     members << Org.findById(Long.valueOf(it))
                 }
 
-                def subLicense = result.subscriptionInstance.owner
-
                 List<Subscription> synShareTargetList = []
-
+                List<License> licensesToProcess = []
                 Set<Package> packagesToProcess = []
 
                 //copy package data
@@ -2580,37 +2568,19 @@ class SubscriptionController extends AbstractDebugController {
                         packagesToProcess << SubscriptionPackage.get(spId).pkg
                     }
                 }
+                if(params.generateSlavedLics == "all") {
+                    licensesToProcess.addAll(License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE]))
+                }
+                else if(params.generateSlavedLics == "partial") {
+                    List<String> licenseKeys = params.list("generateSlavedLicsReference")
+                    licenseKeys.each { String licenseKey ->
+                        licensesToProcess << genericOIDService.resolveOID(licenseKey)
+                    }
+                }
 
                 Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
 
-                members.each { cm ->
-
-                    if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                        def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
-
-                        if (subLicense) {
-                            def subLicenseParams = [
-                                    lic_name     : "${subLicense.reference} (${postfix})",
-                                    isSlaved     : params.isSlaved,
-                                    asOrgType: orgType,
-                                    copyStartEnd : true
-                            ]
-
-                            if (params.generateSlavedLics == 'explicit') {
-                                licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            }
-                            else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                                licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            }
-                            else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
-                                licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
-                            }
-
-                            if (licenseCopy) {
-                                new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
-                            }
-                        }
-                    }
+                members.each { Org cm ->
 
 
                     //ERMS-1155
@@ -2635,7 +2605,6 @@ class SubscriptionController extends AbstractDebugController {
                                 identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
                                 isSlaved: true,
-                                owner: licenseCopy,
                                 resource: result.subscriptionInstance.resource ?: null,
                                 form: result.subscriptionInstance.form ?: null,
                                 isMultiYear: params.checkSubRunTimeMultiYear ?: false
@@ -2646,7 +2615,7 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         if (!memberSub.save()) {
-                            memberSub?.errors.each { e ->
+                            memberSub.errors.each { e ->
                                 log.debug("Problem creating new sub: ${e}")
                             }
                             flash.error = memberSub.errors
@@ -2660,19 +2629,8 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                                 else {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
-                                    if(cm.hasPerm("ORG_INST_COLLECTIVE")) {
-                                        new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
-                                    }
                                 }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
-
-                                /*
-                                todo: IGNORED for 0.20
-
-                                if (cm.getCustomerType() == 'ORG_INST_COLLECTIVE') {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
-                                }
-                                */
                             }
                             else {
                                 new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
@@ -2702,11 +2660,15 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             }
 
-                            packagesToProcess.each { pkg ->
+                            packagesToProcess.each { Package pkg ->
                                 if(params.linkWithEntitlements)
                                     pkg.addToSubscriptionCurrentStock(memberSub, result.subscriptionInstance)
                                 else
                                     pkg.addToSubscription(memberSub, false)
+                            }
+
+                            licensesToProcess.each { License lic ->
+                                subscriptionService.setOrgLicRole(memberSub,lic,false)
                             }
 
                         }
@@ -5645,16 +5607,16 @@ class SubscriptionController extends AbstractDebugController {
                 //create object itself
                 Subscription sub = new Subscription(name: entry.name,
                         status: genericOIDService.resolveOID(entry.status),
-                        type: genericOIDService.resolveOID(entry.type),
+                        kind: genericOIDService.resolveOID(entry.kind),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
+                /* TODO [ticket=2276]
                 if(sub.type == SUBSCRIPTION_TYPE_ADMINISTRATIVE)
-                    sub.administrative = true
-                //sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
+                    sub.administrative = true*/
                 sub.instanceOf = entry.instanceOf ? genericOIDService.resolveOID(entry.instanceOf) : null
                 Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
                 Org provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
@@ -5664,28 +5626,15 @@ class SubscriptionController extends AbstractDebugController {
                 if(sub.save()) {
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
-                    switch(sub.type) {
-                        case SUBSCRIPTION_TYPE_CONSORTIAL:
-                            parentRoleType = OR_SUBSCRIPTION_CONSORTIA
-                            memberRoleType = OR_SUBSCRIBER_CONS
-                            break
-                        case SUBSCRIPTION_TYPE_ADMINISTRATIVE:
-                            parentRoleType = OR_SUBSCRIPTION_CONSORTIA
-                            memberRoleType = OR_SUBSCRIBER_CONS_HIDDEN
-                            break
-                        default:
-                            if (contextOrg.getCustomerType() == 'ORG_INST_COLLECTIVE') {
-                                parentRoleType = OR_SUBSCRIPTION_COLLECTIVE
-                                memberRoleType = OR_SUBSCRIBER_COLLECTIVE
-                            }
-                            else {
-                                parentRoleType = OR_SUBSCRIBER
-                            }
-                            break
+                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                        parentRoleType = OR_SUBSCRIPTION_CONSORTIA
+                        memberRoleType = OR_SUBSCRIBER_CONS
                     }
-                    if(entry.owner) {
-                        License owner = genericOIDService.resolveOID(entry.owner)
-                        subscriptionService.setOrgLicRole(sub,owner,true)
+                    else
+                        parentRoleType = OR_SUBSCRIBER
+                    entry.licenses.each { String licenseOID ->
+                        License license = genericOIDService.resolveOID(licenseOID)
+                        subscriptionService.setOrgLicRole(sub,license,false)
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
                     if(!parentRole.save()) {
@@ -5726,7 +5675,7 @@ class SubscriptionController extends AbstractDebugController {
                             //in most cases, valueList is a list with one entry
                             valueList.each { value ->
                                 try {
-                                    createProperty(propDef,sub,contextOrg,value,v.propNote)
+                                    createProperty(propDef,sub,contextOrg,value.trim(),v.propNote)
                                 }
                                 catch (Exception e) {
                                     withErrors = true
