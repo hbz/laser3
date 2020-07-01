@@ -4,7 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -23,8 +23,7 @@ import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class License
-        extends AbstractBaseDomainWithCalculatedLastUpdated
+class License extends AbstractBaseWithCalculatedLastUpdated
         implements CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
 
     static Log static_logger = LogFactory.getLog(License)
@@ -181,10 +180,17 @@ class License
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        super.afterDeleteHandler()
 
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
     }
 
     @Transient
@@ -562,7 +568,7 @@ class License
          if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
         }
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
 
     @Override
@@ -570,7 +576,7 @@ class License
         if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
         }
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
 
 
