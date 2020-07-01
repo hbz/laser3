@@ -16,25 +16,25 @@ abstract class AbstractBaseWithCalculatedLastUpdated extends AbstractBase
         implements CalculatedLastUpdated {
 
     //@Autowired
-    //def cascadingUpdateService // DO NOT OVERRIDE IN SUB CLASSES
+    def cascadingUpdateService // DO NOT OVERRIDE IN SUB CLASSES
 
     static Log static_logger = LogFactory.getLog(AbstractBaseWithCalculatedLastUpdated)
 
     protected def afterInsertHandler() {
         static_logger.debug("afterInsertHandler")
-        println("afterInsertHandler")
+        //println("afterInsertHandler")
         cascadingUpdateService.update(this, dateCreated)
     }
 
     protected def afterUpdateHandler() {
         static_logger.debug("afterUpdateHandler")
-        println("afterUpdateHandler")
+        //println("afterUpdateHandler")
         cascadingUpdateService.update(this, lastUpdated)
     }
 
     protected def afterDeleteHandler() {
         static_logger.debug("afterDeleteHandler")
-        println("afterDeleteHandler")
+        //println("afterDeleteHandler")
         cascadingUpdateService.update(this, new Date())
     }
 
