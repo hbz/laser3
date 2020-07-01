@@ -652,35 +652,6 @@ class OrganisationController extends AbstractDebugController {
 
         du.setBenchmark('orgRoles & editable')
 
-        RefdataValue orgSector = O_SECTOR_PUBLISHER
-        RefdataValue orgType = OT_PROVIDER
-
-        //IF ORG is a Provider
-        if(result.orgInstance.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
-            du.setBenchmark('editable2')
-            result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
-                    accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
-        }
-        else {
-            du.setBenchmark('editable2')
-            if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                List<Long> consortia = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
-                    it.toOrg.id
-                }
-                if(consortia.size() == 1 && consortia.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
-                    result.editable = true
-            }
-            else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                List<Long> department = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_DEPARTMENT,result.orgInstance).collect { it ->
-                    it.toOrg.id
-                }
-                if (department.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))
-                    result.editable = true
-            }
-            else
-                result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
-        }
-        
       if (!result.orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
         redirect action: 'list'
@@ -1436,11 +1407,11 @@ class OrganisationController extends AbstractDebugController {
     private Map<String, Object> setResultGenericsAndCheckAccess() {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
-        boolean isEditable = checkIsEditable(user, org)
-        Map<String, Object> result = [user:user,institution:org,editable:isEditable,inContextOrg:true,institutionalView:false,departmentalView:false]
+        Map<String, Object> result = [user:user,institution:org,inContextOrg:true,institutionalView:false,departmentalView:false]
 
         if (params.id) {
             result.orgInstance = Org.get(params.id)
+            result.isEditable = checkIsEditable(user, result.orgInstance)
             result.inContextOrg = result.orgInstance?.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
@@ -1462,6 +1433,8 @@ class OrganisationController extends AbstractDebugController {
                     }
                 }
             }
+        } else {
+            result.isEditable = checkIsEditable(user, org)
         }
         result
     }
@@ -1496,6 +1469,39 @@ class OrganisationController extends AbstractDebugController {
             case 'addOrgType':
             case 'deleteOrgType':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+                break
+            case 'show':
+                Org contextOrg = contextService.org
+                Org orgInstance = org
+                boolean inContextOrg =  orgInstance?.id == contextOrg.id
+                boolean userHasEditableRights = user.hasRole('ROLE_ADMIN') ||user.hasRole('ROLE_ORG_EDITOR') || user.hasAffiliation('INST_EDITOR')
+                if (inContextOrg) {
+                    isEditable = userHasEditableRights
+                } else {
+                    switch (contextOrg.getCustomerType()){
+                        case 'ORG_BASIC_MEMBER':
+                            switch (orgInstance.getCustomerType()){
+                                case 'ORG_INST':            isEditable = false; break
+                                case 'ORG_CONSORTIUM':      isEditable = false; break
+                                case 'ORG_PROVIDER':        isEditable = false; break
+                            }
+                            break
+                        case 'ORG_INST':
+                            switch (orgInstance.getCustomerType()){
+                                case 'ORG_INST':            isEditable = false; break
+                                case 'ORG_CONSORTIUM':      isEditable = false; break
+                                case 'ORG_PROVIDER':        isEditable = userHasEditableRights; break
+                            }
+                            break
+                        case 'ORG_CONSORTIUM':
+                            switch (orgInstance.getCustomerType()){
+                                case 'ORG_INST':            isEditable = true; break
+                                case 'ORG_CONSORTIUM':      isEditable = false; break
+                                case 'ORG_PROVIDER':        isEditable = userHasEditableRights; break
+                            }
+                            break
+                    }
+                }
                 break
             default:
                 isEditable = accessService.checkMinUserOrgRole(user, org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
