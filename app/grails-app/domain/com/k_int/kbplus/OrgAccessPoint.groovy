@@ -148,16 +148,16 @@ class OrgAccessPoint extends AbstractBase {
 
             if (accPD.datatype == 'ipv4') {
                 apd.id = accPD.id
-                apd.ipRange = accPD.getRangeString()
-                apd.ipCidr = accPD.getCidrString()
-                apd.ipInput = accPD.getInputString()
+                apd.ipRange = accPD.getIPString('range')
+                apd.ipCidr = accPD.getIPString('cidr')
+                apd.ipInput = accPD.getIPString('input')
                 accessPointIpRanges.ipv4Ranges << apd
             }
             if (accPD.datatype == 'ipv6') {
                 apd.id = accPD.id
-                apd.ipRange = accPD.getRangeString()
-                apd.ipCidr = accPD.getCidrString()
-                apd.ipInput = accPD.getInputString()
+                apd.ipRange = accPD.getIPString('range')
+                apd.ipCidr = accPD.getIPString('cidr')
+                apd.ipInput = accPD.getIPString('input')
                 accessPointIpRanges.ipv6Ranges << apd
             }
         }

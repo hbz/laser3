@@ -57,33 +57,25 @@ class AccessPointData extends AbstractBase {
         super.beforeUpdateHandler()
     }
 
-    String getInputString() {
+    String getIPString(String format) {
         if(datatype in ['ipv4', 'ipv6']) {
             def jsonSluper = new JsonSlurper();
             def o = jsonSluper.parseText(data)
             IpRange ipRange = IpRange.parseIpRange(o.getAt('inputStr'))
 
-            ipRange.toInputString()
-        }
-    }
-
-    String getRangeString() {
-        if(datatype in ['ipv4', 'ipv6']) {
-            def jsonSluper = new JsonSlurper();
-            def o = jsonSluper.parseText(data)
-            IpRange ipRange = IpRange.parseIpRange(o.getAt('inputStr'))
-
-            ipRange.toRangeString()
-        }
-    }
-
-    String getCidrString() {
-        if(datatype in ['ipv4', 'ipv6']) {
-            def jsonSluper = new JsonSlurper();
-            def o = jsonSluper.parseText(data)
-            IpRange ipRange = IpRange.parseIpRange(o.getAt('inputStr'))
-
-            ipRange.toCidr().join(', ')
+            switch (format) {
+                case 'cidr':
+                    return ipRange.toCidr().join(', ')
+                    break
+                case 'range':
+                    return ipRange.toRangeString()
+                    break
+                case 'input':
+                    return ipRange.toInputString()
+                    break
+                default:
+                    return ''
+            }
         }
     }
 }

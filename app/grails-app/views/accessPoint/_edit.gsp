@@ -39,7 +39,7 @@
 
     <g:form class="ui form" url="[controller: 'accessPoint', action: 'edit_' + accessPoint.accessMethod]"
             id="${accessPoint.id}" method="GET">
-        <g:hiddenField name="id" value="${accessPoint?.id}"/>
+        <g:hiddenField name="id" value="${accessPoint.id}"/>
         <div class="la-inline-lists">
             <div class="ui card">
                 <div class="content">

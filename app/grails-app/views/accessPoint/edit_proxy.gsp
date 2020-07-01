@@ -104,7 +104,7 @@
             <div class="content">
                 <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" id="${accessPoint.id}"
                         method="POST">
-                    <g:hiddenField name="id" value="${accessPoint?.id}"/>
+                    <g:hiddenField name="id" value="${accessPoint.id}"/>
                     <g:hiddenField name="ipv4Format" value="${ipv4Format}"/>
                     <g:hiddenField name="ipv6Format" value="${ipv6Format}"/>
                     <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>
@@ -176,7 +176,7 @@
         <div class="content">
             <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" id="${accessPoint.id}"
                     method="POST">
-                <g:hiddenField name="id" value="${accessPoint?.id}"/>
+                <g:hiddenField name="id" value="${accessPoint.id}"/>
                 <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>
 
                 <div class="ui form">
