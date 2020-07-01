@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.traits.BaseTrait
+import de.laser.base.AbstractBase
 import de.laser.IssueEntitlementGroup
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
@@ -10,8 +10,8 @@ import de.laser.interfaces.DeleteFlag
 import javax.persistence.Transient
 import java.time.Year
 
-class CostItem
-        implements BaseTrait, DeleteFlag, CalculatedType  {
+class CostItem extends AbstractBase
+        implements DeleteFlag, CalculatedType  {
 
     static enum TAX_TYPES {
         TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),
@@ -199,12 +199,13 @@ class CostItem
         return false
     }
 
+    @Override
     def beforeInsert() {
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
-
+    @Override
     def beforeUpdate() {
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
 
     @Override

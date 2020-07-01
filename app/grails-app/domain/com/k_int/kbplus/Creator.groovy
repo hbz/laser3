@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
-import de.laser.traits.BaseTrait
+import de.laser.base.AbstractBase
 
-class Creator implements BaseTrait{
+class Creator extends AbstractBase {
 
     String firstname
     String middlename
@@ -13,11 +13,9 @@ class Creator implements BaseTrait{
 
     static hasMany = [
             title:  CreatorTitle,
-
     ]
 
     static mapping = {
-
         id column: 'cre_id'
         version column: 'cre_version'
         firstname column: 'cre_firstname'
@@ -31,10 +29,17 @@ class Creator implements BaseTrait{
     }
 
     static constraints = {
-
         firstname   (nullable:true, blank:false);
         middlename  (nullable:true, blank:false);
         globalUID   (nullable:true, blank:false, unique:true, maxSize:255)
         title       (nullable:true)
+    }
+
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
     }
 }

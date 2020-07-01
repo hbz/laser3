@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
-import de.laser.traits.BaseTrait
+import de.laser.base.AbstractBase
 
-class OrgAccessPointLink implements BaseTrait {
+class OrgAccessPointLink extends AbstractBase {
 
     OrgAccessPoint oap
     Platform platform
@@ -24,4 +24,12 @@ class OrgAccessPointLink implements BaseTrait {
         subPkg(nullable:true, blank:false) //intentional, null used in program logic
     }
 
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
+    }
 }

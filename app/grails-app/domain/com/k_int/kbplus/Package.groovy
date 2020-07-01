@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.traits.BaseTraitWithCalculatedLastUpdated
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration
 import de.laser.PriceItem
@@ -17,7 +17,7 @@ import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class Package implements BaseTraitWithCalculatedLastUpdated {
+class Package extends AbstractBaseWithCalculatedLastUpdated {
         //implements ShareSupport {
 
     static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
@@ -155,10 +155,17 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        super.afterDeleteHandler()
 
         //deletionService.deleteDocumentFromIndex(this.globalUID) ES not connected, reactivate as soon as ES works again
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
     }
 
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
@@ -680,7 +687,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             sortName = generateSortName(name)
         }
 
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
 
     @Override
@@ -688,7 +695,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         if ( name != null ) {
             sortName = generateSortName(name)
         }
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
 
   def checkAndAddMissingIdentifier(ns,value) {

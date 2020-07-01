@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
-import de.laser.traits.BaseTrait
+import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
 
 @Log4j
-class PlatformAccessMethod implements BaseTrait {
+class PlatformAccessMethod extends AbstractBase {
 
     Date validFrom
     Date validTo
@@ -38,6 +38,13 @@ class PlatformAccessMethod implements BaseTrait {
     static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
-    
-    
+
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
+    }
 }

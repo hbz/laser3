@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.traits.I10nOverrideTrait
+import de.laser.base.AbstractI10nOverride
 import de.laser.I10nTranslation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -9,7 +9,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
-class RefdataValue extends I10nOverrideTrait implements Comparable<RefdataValue> {
+class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataValue> {
 
     static Log static_logger = LogFactory.getLog(RefdataValue)
 

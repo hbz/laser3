@@ -10,8 +10,8 @@ import de.laser.AuditConfig
 import de.laser.DashboardDueDate
 import de.laser.DashboardDueDatesService
 import de.laser.DueDateObject
-import de.laser.traits.I10nOverrideTrait
-import de.laser.traits.I10nTranslatableTrait
+import de.laser.base.AbstractI10nOverride
+import de.laser.base.AbstractI10nTranslatable
 import de.laser.I10nTranslation
 import de.laser.SystemProfiler
 import de.laser.helper.*
@@ -615,10 +615,10 @@ class AjaxController {
         rq.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
-            if ( it instanceof I10nTranslatableTrait) {
+            if ( it instanceof AbstractI10nTranslatable) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
-            else if ( it instanceof I10nOverrideTrait) {
+            else if ( it instanceof AbstractI10nOverride) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
             else {
@@ -766,10 +766,10 @@ class AjaxController {
           }
           // default ..
           else {
-              if (it instanceof I10nTranslatableTrait) {
+              if (it instanceof AbstractI10nTranslatable) {
                   result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
               }
-              else if (it instanceof I10nOverrideTrait) {
+              else if (it instanceof AbstractI10nOverride) {
                   result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
               }
               else {

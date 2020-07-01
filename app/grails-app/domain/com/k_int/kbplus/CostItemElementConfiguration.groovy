@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
-import de.laser.traits.BaseTrait
+import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 
-class CostItemElementConfiguration implements BaseTrait {
+class CostItemElementConfiguration extends AbstractBase {
 
     @RefdataAnnotation(cat = RDConstants.COST_ITEM_ELEMENT)
     RefdataValue costItemElement
@@ -39,11 +39,12 @@ class CostItemElementConfiguration implements BaseTrait {
         forOrganisation     (nullable: false, blank: false)
     }
 
+    @Override
     def beforeInsert() {
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
-
+    @Override
     def beforeUpdate() {
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
 }

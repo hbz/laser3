@@ -2,11 +2,11 @@ package de.laser
 
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.RefdataValue
-import de.laser.traits.BaseTrait
+import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
-class PriceItem implements BaseTrait {
+class PriceItem extends AbstractBase {
 
     @RefdataAnnotation(cat = RDConstants.CURRENCY)
     RefdataValue listCurrency
@@ -47,6 +47,15 @@ class PriceItem implements BaseTrait {
         issueEntitlement    (nullable: false, blank: false)
         lastUpdated         (nullable: true, blank: false)
         dateCreated         (nullable: true, blank: false)
+    }
+
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
     }
 
 }
