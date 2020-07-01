@@ -18,8 +18,8 @@
                 <input type="Submit" class="ui tiny button" value="${message(code: 'accessPoint.button.linkPlatform')}"
                        onClick="this.form.submit()" class="ui button"/>
             </g:if>
-            <g:hiddenField name="accessPointId" value="${accessPoint?.id}"/>
-            <g:hiddenField name="accessMethod" value="${accessPoint?.accessMethod}"/>
+            <g:hiddenField name="accessPointId" value="${accessPoint.id}"/>
+            <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>
         </g:form>
         <g:render template="linked_platforms_wrapper"/>
     </div>

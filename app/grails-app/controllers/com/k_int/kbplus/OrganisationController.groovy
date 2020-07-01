@@ -1269,9 +1269,7 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        def orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance)
-        result.orgAccessPointList = orgAccessPointList
-
+        result.orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance).groupBy {it.oap.accessMethod.value}.sort {it.key}
 
         if (params.exportXLSX) {
 

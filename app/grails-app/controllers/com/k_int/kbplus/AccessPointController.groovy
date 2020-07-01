@@ -41,8 +41,8 @@ class AccessPointController extends AbstractDebugController {
         // in that context (would need to fake a post request), similar for deleteIpRange method.
         def validRanges = []
         def invalidRanges = []
-        // allow multiple ip ranges as input (must be separated by whitespaces)
-        def ipCol = params.ip.replaceAll("\\s+", " ").split(" ");
+        // allow multiple ip ranges as input (must be separated by comma)
+        def ipCol = params.ip.replaceAll("\\s+", " ").split(",");
         for (range in ipCol) {
             try {
                 // check if given input string is a valid ip range
@@ -73,7 +73,7 @@ class AccessPointController extends AbstractDebugController {
                     endValue  : ipRange.upperLimit.toHexString()]
             )
 
-            AccessPointData accessPointData = new AccessPointData(params)
+            AccessPointData accessPointData = new AccessPointData()
             accessPointData.orgAccessPoint = orgAccessPoint
             accessPointData.datatype = 'ip' + ipRange.getIpVersion()
             accessPointData.data = jsonData
@@ -86,9 +86,9 @@ class AccessPointController extends AbstractDebugController {
         if (invalidRanges) {
             // return only those input strings to UI which represent a invalid ip range
             flash.error = message(code: 'accessPoint.invalid.ip', args: [invalidRanges.join(' ')])
-            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [ip: invalidRanges.join(' '), ipv4Format: params.ipv4Format, ipv6Format: params.ipv6Format]
+            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [ip: invalidRanges.join(' ')]
         } else {
-            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [ipv4Format: params.ipv4Format, ipv6Format: params.ipv6Format, autofocus: true]
+            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [autofocus: true]
         }
     }
 
@@ -100,7 +100,7 @@ class AccessPointController extends AbstractDebugController {
      */
     private def availableOptions(Org org) {
 
-        def availableLanguageKeys = ['accessPoint.option.remoteAccess', 'accessPoint.option.woRemoteAccess']
+        def availableLanguageKeys = ['accessPoint.option.remoteAccess', 'accessPoint.option.woRemoteAccess', 'accessPoint.option.vpn']
         def supportedLocales = ['en', 'de']
         Map localizedAccessPointNameSuggestions = [:]
         supportedLocales.each { locale ->
@@ -212,6 +212,8 @@ class AccessPointController extends AbstractDebugController {
         Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
         def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
+        params.accessMethod = RDStore.ACCESS_POINT_TYPE_IP.value
+
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name', args: [params.name])
             redirect(controller: "accessPoint", action: "create", params: params)
@@ -240,6 +242,8 @@ class AccessPointController extends AbstractDebugController {
         // without the org somehow passed we can only create AccessPoints for the context org
         Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
         def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
+
+        params.accessMethod = RDStore.ACCESS_POINT_TYPE_OA.value
 
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name', args: [params.name])
@@ -277,6 +281,8 @@ class AccessPointController extends AbstractDebugController {
         Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
         def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
+        params.accessMethod = RDStore.ACCESS_POINT_TYPE_PROXY.value
+
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name', args: [params.name])
             redirect(controller: "accessPoint", action: "create", params: params)
@@ -305,6 +311,7 @@ class AccessPointController extends AbstractDebugController {
         // without the org somehow passed we can only create AccessPoints for the context org
         Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
 
+        params.accessMethod = RDStore.ACCESS_POINT_TYPE_VPN.value
 
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name', args: [params.name])
@@ -334,6 +341,8 @@ class AccessPointController extends AbstractDebugController {
     def create_ezproxy() {
         // without the org somehow passed we can only create AccessPoints for the context org
         Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
+
+        params.accessMethod = RDStore.ACCESS_POINT_TYPE_EZPROXY.value
 
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name', args: [params.name])
@@ -370,6 +379,8 @@ class AccessPointController extends AbstractDebugController {
     def create_shibboleth() {
         // without the org somehow passed we can only create AccessPoints for the context org
         Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
+
+        params.accessMethod = RDStore.ACCESS_POINT_TYPE_SHIBBOLETH.value
 
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name')
@@ -434,7 +445,87 @@ class AccessPointController extends AbstractDebugController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit_ip() {
-        _edit()
+        OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
+        Org org = orgAccessPoint.org;
+        Long orgId = org.id;
+
+        if (params.exportXLSX) {
+            SXSSFWorkbook wb
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + escapeService.escapeString(orgAccessPoint.name)
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints([orgAccessPoint], contextService.org)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }else {
+
+            Boolean autofocus = (params.autofocus) ? true : false
+            Boolean activeChecksOnly = (params.checked == 'false') ? false : true
+
+            Map accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
+
+            orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
+
+
+            List currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
+
+            def sort = params.sort ?: "LOWER(p.name)"
+            def order = params.order ?: "ASC"
+
+            String qry1 = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
+            ArrayList<HashMap> linkedPlatforms = Platform.executeQuery(qry1)
+            linkedPlatforms.each() {
+                String qry2 = """
+            SELECT distinct s from Subscription s
+            JOIN s.packages as sp
+            JOIN sp.pkg as pkg
+            JOIN pkg.tipps as tipps
+            WHERE s.id in (:currentSubIds)
+            AND tipps.platform.id = ${it.platform.id}
+            AND NOT EXISTS 
+            (SELECT ioapl from OrgAccessPointLink ioapl
+                WHERE ioapl.active=true and ioapl.subPkg=sp and ioapl.oap is null)
+"""
+                if (activeChecksOnly) {
+                    qry2 += " AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}"
+                }
+                ArrayList linkedSubs = Subscription.executeQuery(qry2, [currentSubIds: currentSubIds])
+                it['linkedSubs'] = linkedSubs
+            }
+
+            String qry3 = """
+            Select p, sp, s from Platform p
+            JOIN p.oapp as oapl
+            JOIN oapl.subPkg as sp
+            JOIN sp.subscription as s
+            WHERE oapl.active=true and oapl.oap=${orgAccessPoint.id}
+            AND s.id in (:currentSubIds) 
+            AND EXISTS (SELECT 1 FROM OrgAccessPointLink ioapl 
+                where ioapl.subPkg=oapl.subPkg and ioapl.platform=p and ioapl.oap is null)
+            AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}    
+"""
+            ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry3, [currentSubIds: currentSubIds])
+
+            return [
+                    accessPoint                       : orgAccessPoint,
+                    accessPointDataList               : accessPointDataList,
+                    orgId                             : orgId,
+                    platformList                      : orgAccessPoint.getNotLinkedPlatforms(),
+                    linkedPlatforms                   : linkedPlatforms,
+                    linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
+                    ip                                : params.ip,
+                    editable                          : true,
+                    autofocus                         : autofocus,
+                    orgInstance                       : orgAccessPoint.org,
+                    inContextOrg                      : orgId == contextService.org.id,
+                    activeSubsOnly                    : activeChecksOnly,
+            ]
+        }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
