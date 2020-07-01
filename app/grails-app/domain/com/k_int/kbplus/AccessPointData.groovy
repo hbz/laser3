@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.base.AbstractBase
+import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 
@@ -54,5 +55,35 @@ class AccessPointData extends AbstractBase {
     @Override
     def beforeUpdate() {
         super.beforeUpdateHandler()
+    }
+
+    String getInputString() {
+        if(datatype in ['ipv4', 'ipv6']) {
+            def jsonSluper = new JsonSlurper();
+            def o = jsonSluper.parseText(data)
+            IpRange ipRange = IpRange.parseIpRange(o.getAt('inputStr'))
+
+            ipRange.toInputString()
+        }
+    }
+
+    String getRangeString() {
+        if(datatype in ['ipv4', 'ipv6']) {
+            def jsonSluper = new JsonSlurper();
+            def o = jsonSluper.parseText(data)
+            IpRange ipRange = IpRange.parseIpRange(o.getAt('inputStr'))
+
+            ipRange.toRangeString()
+        }
+    }
+
+    String getCidrString() {
+        if(datatype in ['ipv4', 'ipv6']) {
+            def jsonSluper = new JsonSlurper();
+            def o = jsonSluper.parseText(data)
+            IpRange ipRange = IpRange.parseIpRange(o.getAt('inputStr'))
+
+            ipRange.toCidr().join(', ')
+        }
     }
 }

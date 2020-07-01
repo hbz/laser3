@@ -1,6 +1,6 @@
 <semui:form>
     <g:form action="create_${accessMethod}" controller="accessPoint" id="${orgInstance.id}" method="post" class="ui form">
-        <g:render template="access_method" model="${[accessMethod: accessMethod]}"/>
+
         <div required="" class="field required">
             <label>${message(code: 'accessPoint.shibboleth.name.label')}
                 <span class="la-long-tooltip la-popup-tooltip la-delay"
