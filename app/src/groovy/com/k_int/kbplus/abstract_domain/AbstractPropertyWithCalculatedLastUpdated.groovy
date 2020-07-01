@@ -13,7 +13,7 @@ import javax.persistence.Transient
 abstract class AbstractPropertyWithCalculatedLastUpdated
         implements CalculatedLastUpdated, Serializable {
 
-    @Autowired
+    //@Autowired
     def cascadingUpdateService // DO NOT OVERRIDE IN SUB CLASSES
 
     static Log static_logger = LogFactory.getLog(AbstractPropertyWithCalculatedLastUpdated)
@@ -45,20 +45,29 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true, blank: false)
     }
 
-    def afterInsert() {
-        static_logger.debug("afterInsert")
+    def afterInsertHandler() {
+        static_logger.debug("afterInsertHandler")
+        //println("afterInsertHandler")
         cascadingUpdateService.update(this, dateCreated)
     }
 
-    def afterUpdate() {
-        static_logger.debug("afterUpdate")
+    def afterUpdateHandler() {
+        static_logger.debug("afterUpdateHandler")
+        //println("afterUpdateHandler")
         cascadingUpdateService.update(this, lastUpdated)
     }
 
-    def afterDelete() {
-        static_logger.debug("afterDelete")
+    def afterDeleteHandler() {
+        static_logger.debug("afterDeleteHandler")
+        //println("afterDeleteHandler")
         cascadingUpdateService.update(this, new Date())
     }
+
+    abstract def afterInsert() /* { afterInsertHandler() } */
+
+    abstract def afterUpdate() /* { afterUpdateHandler() } */
+
+    abstract def afterDelete() /* { afterDeleteHandler() } */
 
     Date getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
