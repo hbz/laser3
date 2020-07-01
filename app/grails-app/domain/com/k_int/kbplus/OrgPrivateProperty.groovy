@@ -40,4 +40,17 @@ class OrgPrivateProperty extends PrivateProperty {
         type:   PropertyDefinition,
         owner:  Org
     ]
+
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
+    }
 }

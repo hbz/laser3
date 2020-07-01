@@ -11,7 +11,7 @@ import javax.persistence.Transient
 class SystemEvent {
 
     @Transient
-    MessageSource messageSource
+    def messageSource
 
     @Transient
     private String i18n

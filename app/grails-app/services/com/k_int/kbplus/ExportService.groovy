@@ -40,7 +40,7 @@ import java.util.List
 class ExportService {
 
 	SimpleDateFormat formatter = DateUtil.getSDF_ymd()
-	MessageSource messageSource
+	def messageSource
 
 	/**
 		new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV

@@ -34,7 +34,7 @@ class FinanceService {
 
     ContextService contextService
     GenericOIDService genericOIDService
-    MessageSource messageSource
+    def messageSource
     AccessService accessService
     EscapeService escapeService
     SpringSecurityService springSecurityService

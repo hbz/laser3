@@ -16,7 +16,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 class LinksGenerationService {
 
     GenericOIDService genericOIDService
-    MessageSource messageSource
+    def messageSource
 
     LinkedHashMap<String,List> generateNavigation(String contextOID) {
         List prevLink = []

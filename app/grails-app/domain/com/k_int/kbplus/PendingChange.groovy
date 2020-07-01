@@ -41,7 +41,7 @@ class PendingChange {
     final static MSG_SU02 = 'pendingChange.message_SU02'
 
     @Transient
-    MessageSource messageSource
+    def messageSource
 
     Subscription subscription
     License license

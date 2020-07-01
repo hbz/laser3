@@ -131,7 +131,18 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         {
             return refValue ? refValue?.getI10n('value') : ""
         }
-
     }
 
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
+    }
 }

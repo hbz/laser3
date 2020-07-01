@@ -28,7 +28,7 @@ class PendingChangeService extends AbstractLockableService {
     def springSecurityService
     SubscriptionService subscriptionService
     LinkGenerator grailsLinkGenerator
-    MessageSource messageSource
+    def messageSource
 
 
     final static EVENT_OBJECT_NEW = 'New Object'
