@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
@@ -13,7 +13,7 @@ import java.text.Normalizer
 import java.util.regex.Pattern
 
 @Log4j
-class TitleInstance extends AbstractBaseDomainWithCalculatedLastUpdated {
+class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
 
     @Transient
     def grailsApplication
@@ -111,10 +111,25 @@ class TitleInstance extends AbstractBaseDomainWithCalculatedLastUpdated {
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        super.afterDeleteHandler()
 
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
+    }
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
     }
 
   String getIdentifierValue(String idtype) {
