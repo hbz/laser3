@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1710    30.06.2020  rc1.4       Andreas Bug         Performanz bei Laden der Änderungen verbessert
+
+2636    30.06.2020  rc1.4       Andreas Bug         Weitere Korrektur zur Nichtprozessierung von Titeldaten im Sync
+
 2641    26.06.2020  hbz-dev     David   Feature     API 0.110 - Neue Vertrags-/Lizenz-Struktur anpassen
 
 2195    24.06.2020  hbz-dev     Moe     Feature     ES Suche nur mit engl. Datumformat möglich
