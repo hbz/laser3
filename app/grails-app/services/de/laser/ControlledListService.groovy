@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import de.laser.domain.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
@@ -218,8 +217,9 @@ class ControlledListService {
     Map getLicenses(Map params) {
         Org org = contextService.getOrg()
         LinkedHashMap licenses = [results:[]]
+        List<License> result = []
         String licFilter = ''
-        LinkedHashMap linkParams = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS],linkType:RDStore.LINKTYPE_LICENSE], filterParams = [:]
+        LinkedHashMap filterParams = [org:org,orgRoles:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS]]
         if(params.query && params.query.length() > 0) {
             licFilter = ' and genfunc_filter_matcher(l.reference,:query) = true '
             filterParams.put('query',params.query)
@@ -230,15 +230,13 @@ class ControlledListService {
             licFilter += " and l != :ctx "
         }
         if(params.filterMembers) {
-            linkParams.orgRoles.removeAll([RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS])
+            filterParams.orgRoles.removeAll([RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS])
         }
-        List<Links> result = Links.executeQuery("select l.source from Links as l where l.linkType = :linkType and l.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:orgRoles))",linkParams)
-        if(result) {
-            filterParams.availableLicenses = result
-            Set<License> licenseSet = License.executeQuery("select l from License where concat('${License.class.name}':,l.id) in (:availableLicenses)${licFilter}",filterParams)
+        result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
+        if(result.size() > 0) {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             log.debug("licenses found")
-            licenseSet.each { License res ->
+            result.each { res ->
                 licenses.results += ([name:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})",value:res.class.name+":"+res.id])
             }
         }

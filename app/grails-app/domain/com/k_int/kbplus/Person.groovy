@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 @Log4j
-class Person extends AbstractBaseDomainWithCalculatedLastUpdated {
+class Person extends AbstractBaseWithCalculatedLastUpdated {
 
     static Log static_logger = LogFactory.getLog(Person)
 
@@ -276,4 +276,25 @@ class Person extends AbstractBaseDomainWithCalculatedLastUpdated {
     def getCustomPropByName(name){
       return privateProperties.find{it.type.name == name}
     }*/
+
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
+    }
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
+    }
 }

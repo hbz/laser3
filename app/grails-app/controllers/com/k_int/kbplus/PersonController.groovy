@@ -5,6 +5,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -57,6 +58,13 @@ class PersonController extends AbstractDebugController {
 
                         RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
                         RefdataValue rdvTY = RefdataValue.get(params."${c}_type")
+
+                        if(RDStore.CCT_EMAIL == rdvCT){
+                            if ( !formService.validateEmailAddress(params."${c}_content") ) {
+                                flash.error = message(code:'contact.create.email.error')
+                                return
+                            }
+                        }
 
                         Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: params."${c}_content")
                         contact.save(flush: true)

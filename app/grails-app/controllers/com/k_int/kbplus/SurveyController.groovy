@@ -16,9 +16,9 @@ import de.laser.SubscriptionsQueryService
 import de.laser.SurveyService
 import de.laser.SurveyUpdateService
 import de.laser.TaskService
-import de.laser.domain.IssueEntitlementGroup
-import de.laser.domain.IssueEntitlementGroupItem
-import de.laser.domain.PendingChangeConfiguration
+import de.laser.IssueEntitlementGroup
+import de.laser.IssueEntitlementGroupItem
+import de.laser.PendingChangeConfiguration
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants

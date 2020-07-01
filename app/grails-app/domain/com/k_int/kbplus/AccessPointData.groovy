@@ -1,11 +1,11 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
+import de.laser.base.AbstractBase
 import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 
 @Log4j
-class AccessPointData extends AbstractBaseDomain {
+class AccessPointData extends AbstractBase {
     
     OrgAccessPoint orgAccessPoint
     String datatype
@@ -47,4 +47,12 @@ class AccessPointData extends AbstractBaseDomain {
         return jsonSluper.parseText(data).getAt('inputStr');
     }
 
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
+    }
 }

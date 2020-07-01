@@ -10,10 +10,10 @@ import de.laser.AuditConfig
 import de.laser.DashboardDueDate
 import de.laser.DashboardDueDatesService
 import de.laser.DueDateObject
-import de.laser.domain.AbstractI10nOverride
-import de.laser.domain.AbstractI10nTranslatable
-import de.laser.domain.I10nTranslation
-import de.laser.domain.SystemProfiler
+import de.laser.base.AbstractI10nOverride
+import de.laser.base.AbstractI10nTranslatable
+import de.laser.I10nTranslation
+import de.laser.SystemProfiler
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
@@ -1960,17 +1960,6 @@ class AjaxController {
     def delete() {
       switch(params.cmd) {
         case 'deletePersonRole': deletePersonRole()
-        break
-        case 'deleteLink': Links obj = genericOIDService.resolveOID(params.oid)
-          if (obj) {
-            DocContext comment = DocContext.findByLink(obj)
-            if(comment) {
-              Doc commentContent = comment.owner
-              comment.delete()
-              commentContent.delete()
-            }
-            obj.delete()
-          }
         break
         default: def obj = genericOIDService.resolveOID(params.oid)
           if (obj) {

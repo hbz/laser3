@@ -5,8 +5,8 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ContextService
-import de.laser.domain.AbstractI10nOverride
-import de.laser.domain.I10nTranslation
+import de.laser.base.AbstractI10nOverride
+import de.laser.I10nTranslation
 import de.laser.helper.SwissKnife
 import grails.util.Holders
 import groovy.util.logging.Log4j

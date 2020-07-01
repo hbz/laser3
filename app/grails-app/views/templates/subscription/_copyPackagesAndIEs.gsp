@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; de.laser.domain.PendingChangeConfiguration; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
+<%@ page import="de.laser.PendingChangeConfiguration; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
 <laser:serviceInjection />
 
 <semui:form>
@@ -42,7 +42,7 @@
             </thead>
             <tbody class="top aligned">
             <tr>
-                <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
                     <b>${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">

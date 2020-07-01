@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DateUtil
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
@@ -171,6 +172,11 @@ class ESSearchService{
           sw.write("${params.q}")
           sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
         }else{
+
+          if(DateUtil.isDate(params.q)){
+            params.q = DateUtil.parseDateGeneric(params.q).format("yyyy-MM-dd").toString()
+          }
+
           params.q = params.q.replaceAll('\\"', '')
           sw.write("${params.q}")
           sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")

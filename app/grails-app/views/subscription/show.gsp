@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
 <%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License; com.k_int.kbplus.GenericOIDService" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
 
@@ -243,7 +243,7 @@
                                                         <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                                 data-confirm-term-how="unlink"
-                                                                controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
+                                                                controller="myInstitution" action="unlinkObjects" params="${[oid : link.class.name+':'+link.id]}">
                                                             <i class="unlink icon"></i>
                                                         </g:link>
                                                     </g:if>
@@ -369,8 +369,8 @@
                                                   </dt>
                                               </g:if>
                                           </dl>
-                                          <g:set var="excludes" value="${[de.laser.domain.PendingChangeConfiguration.PACKAGE_PROP,de.laser.domain.PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                                          <g:each in="${de.laser.domain.PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
+                                          <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                                          <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                                               <dl>
                                                   <dt class="control-label">
                                                       <g:message code="subscription.packages.${settingKey}"/>
@@ -499,12 +499,18 @@
                                                                 tmplID:'editLicenseLink',
                                                                 tmplModalID:"sub_edit_link_${link.id}",
                                                                 editmode: editable,
+                                                                subscriptionLicenseLink: true,
                                                                 context: subscription,
                                                                 link: link
                                                       ]}" />
                                             <g:if test="${editable}">
                                                 <div class="ui icon negative buttons">
-                                                    pseudocode call: subscriptionService.setOrgLicRole(subscriptionInstance,links.source,true)
+                                                    <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
+                                                            data-confirm-term-how="unlink"
+                                                            action="unlinkLicense" params="${[licenseOID: link.source]}">
+                                                        <i class="unlink icon"></i>
+                                                    </g:link>
                                                 </div>
                                                 <br />
                                             </g:if>

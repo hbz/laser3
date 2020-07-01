@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
-import de.laser.domain.TIPPCoverage
+import de.laser.base.AbstractBase
+import de.laser.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -13,7 +13,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
-class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements AuditableTrait*/ {
+class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTrait*/ {
   @Transient
   def grailsLinkGenerator
 
@@ -165,14 +165,12 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     @Override
     def beforeUpdate(){
         touchPkgLastUpdated()
-
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
     @Override
     def beforeInsert() {
         touchPkgLastUpdated()
-
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
 
   @Transient

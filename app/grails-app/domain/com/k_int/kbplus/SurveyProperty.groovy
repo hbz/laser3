@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractI10nTranslatable
-import de.laser.domain.I10nTranslation
+import de.laser.base.AbstractI10nTranslatable
+import de.laser.I10nTranslation
 import groovy.util.logging.Log4j
 import org.springframework.context.i18n.LocaleContextHolder
 

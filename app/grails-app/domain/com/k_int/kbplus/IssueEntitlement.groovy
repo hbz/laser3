@@ -1,11 +1,10 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.IssueEntitlementGroupItem
-import de.laser.domain.PriceItem
-import de.laser.domain.TIPPCoverage
-import de.laser.exceptions.CreationException
+import de.laser.base.AbstractBase
+import de.laser.IssueEntitlementCoverage
+import de.laser.IssueEntitlementGroupItem
+import de.laser.PriceItem
+import de.laser.TIPPCoverage
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -13,7 +12,7 @@ import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 
-class IssueEntitlement extends AbstractBaseDomain implements Comparable {
+class IssueEntitlement extends AbstractBase implements Comparable {
 
     @Transient
     def deletionService
@@ -162,6 +161,15 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     }
     else throw new EntitlementCreationException("Issue entitlement creation attempt without valid subscription and TIPP references! This is not allowed!")
   }
+
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
+    }
 
   void afterDelete() {
     deletionService.deleteDocumentFromIndex(this.globalUID)

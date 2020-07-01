@@ -11,15 +11,26 @@
 </g:if>
 
 <%
-    String header, thisString, lookupName
+    String header, thisString, lookupName, instanceType
     switch(context.class.name) {
-        case Subscription.class.name: header = message(code:"subscription.linking.header")
-            thisString = message(code:"subscription.linking.this")
-            lookupName = "lookupSubscriptions"
+        case Subscription.class.name:
+            if(subscriptionLicenseLink) {
+                header = message(code:"subscription.linking.headerLicense")
+                thisString = message(code:"subscription.linking.this")
+                lookupName = "lookupLicenses"
+                instanceType = message(code:'license')
+            }
+            else {
+                header = message(code:"subscription.linking.header")
+                thisString = message(code:"subscription.linking.this")
+                lookupName = "lookupSubscriptions"
+                instanceType = controllerName
+            }
             break
         case License.class.name: header = message(code:"license.linking.header")
             thisString = message(code:"license.linking.this")
             lookupName = "lookupLicenses"
+            instanceType = controllerName
             break
     }
 %>
@@ -29,10 +40,7 @@
         <input type="hidden" name="context" value="${GenericOIDService.getOID(context)}"/>
         <%
             LinkedHashMap linkTypes = [:]
-            if(subscriptionLicenseLink) {
-
-            }
-            else {
+            if(!subscriptionLicenseLink) {
                 List<RefdataValue> refdataValues = RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE
                 refdataValues.each { rv ->
                     String[] linkArray = rv.getI10n("value").split("\\|")
@@ -67,6 +75,11 @@
                 <input type="hidden" name="commentID" value="${comment.owner.class.name}:${comment.owner.id}" />
             </g:if>
         </g:if>
+        <g:elseif test="${subscriptionLicenseLink}">
+            <g:set var="selectPair" value="pair_sl_new"/>
+            <g:set var="selectLink" value="linkType_sl_new"/>
+            <g:set var="linkComment" value="linkComment_sl_new"/>
+        </g:elseif>
         <g:else>
             <g:set var="selectPair" value="pair_new"/>
             <g:set var="selectLink" value="linkType_new"/>
@@ -84,21 +97,32 @@
                         ${thisString}
                     </div>
                     <div class="twelve wide column">
-                        <g:select class="ui dropdown select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
-                                  optionValue="${{it.value}}" value="${linkType ?: null}" noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                        <g:if test="${subscriptionLicenseLink}">
+                            <g:hiddenField name="${selectLink}" value="${RDStore.LINKTYPE_LICENSE.id}"/>
+                            ${RDStore.LINKTYPE_LICENSE.getI10n("value").split("\\|")[1]}
+                        </g:if>
+                        <g:else>
+                            <g:select class="ui dropdown select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
+                                      optionValue="${{it.value}}" value="${linkType ?: null}" noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                        </g:else>
                     </div>
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <g:message code="${controllerName}" />
+                        <g:message code="${instanceType}" />
                     </div>
                     <div class="twelve wide column">
-                        <div class="ui search selection dropdown la-full-width" id="${selectPair}">
-                            <input type="hidden" name="${selectPair}"/>
-                            <i class="dropdown icon"></i>
-                            <input type="text" class="search"/>
-                            <div class="default text"></div>
-                        </div>
+                        <g:if test="${link}">
+                            ${pair}
+                        </g:if>
+                        <g:else>
+                            <div class="ui search selection dropdown la-full-width" id="${selectPair}">
+                                <input type="hidden" name="${selectPair}"/>
+                                <i class="dropdown icon"></i>
+                                <input type="text" class="search"/>
+                                <div class="default text"></div>
+                            </div>
+                        </g:else>
                     </div>
                 </div>
                 <div class="row">
@@ -113,10 +137,11 @@
         </div>
     </g:form>
 </semui:modal>
+<g:if test="${!link}">
 <%-- for that one day, we may move away from that ... --%>
-<r:script>
+    <r:script>
     $(document).ready(function(){
-       console.log("${urlLookup}");
+       console.log("${lookupName}");
         $("#${selectPair}").dropdown({
             apiSettings: {
                 url: "<g:createLink controller="ajax" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=true&ctx=${GenericOIDService.getOID(context)}",
@@ -126,4 +151,5 @@
             minCharacters: 1
         });
     });
-</r:script>
+    </r:script>
+</g:if>

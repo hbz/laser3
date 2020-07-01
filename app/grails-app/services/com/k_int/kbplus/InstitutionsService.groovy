@@ -24,15 +24,14 @@ class InstitutionsService {
 
         String lic_name = params.lic_name ?: "Kopie von ${base.reference}"
 
-        boolean slavedBool = true //params.isSlaved is never settable; may be subject of change
-
         License licenseInstance = new License(
                 reference: lic_name,
                 status: base.status,
                 noticePeriod: base.noticePeriod,
                 licenseUrl: base.licenseUrl,
                 instanceOf: base,
-                isSlaved: slavedBool
+                openEnded: base.openEnded,
+                isSlaved: true //is default as of June 25th with ticket ERMS-2635
         )
 
         Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceId(License.class.name,base.id)

@@ -1,18 +1,18 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.persistence.Transient
 
-class Platform extends AbstractBaseDomainWithCalculatedLastUpdated {
+class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
   @Transient
   def grailsApplication
@@ -93,10 +93,25 @@ class Platform extends AbstractBaseDomainWithCalculatedLastUpdated {
 
   @Override
   def afterDelete() {
-    static_logger.debug("afterDelete")
-    cascadingUpdateService.update(this, new Date())
+    super.afterDeleteHandler()
 
     deletionService.deleteDocumentFromIndex(this.globalUID)
+  }
+  @Override
+  def afterInsert() {
+    super.afterInsertHandler()
+  }
+  @Override
+  def afterUpdate() {
+    super.afterUpdateHandler()
+  }
+  @Override
+  def beforeInsert() {
+    super.beforeInsertHandler()
+  }
+  @Override
+  def beforeUpdate() {
+    super.beforeUpdateHandler()
   }
 
   @Deprecated
@@ -233,7 +248,8 @@ class Platform extends AbstractBaseDomainWithCalculatedLastUpdated {
 
   @Override
   boolean equals (Object o) {
-    def obj = ClassUtils.deproxy(o)
+    //def obj = ClassUtils.deproxy(o)
+    def obj = GrailsHibernateUtil.unwrapIfProxy(o)
     if (obj != null) {
       if ( obj instanceof Platform ) {
         return obj.id == id

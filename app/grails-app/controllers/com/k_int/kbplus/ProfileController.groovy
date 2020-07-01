@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.DeletionService
+import de.laser.FormService
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -28,6 +29,7 @@ class ProfileController {
     def propertyService
     def instAdmService
     def deletionService
+    FormService formService
 
     @Secured(['ROLE_USER'])
     def index() {
@@ -148,11 +150,6 @@ class ProfileController {
         render view: 'deleteProfile', model: result
     }
 
-    private validateEmailAddress(String email) {
-        def mailPattern = /[_A-Za-z0-9-]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})/
-        return ( email ==~ mailPattern )
-    }
-
   @Secured(['ROLE_USER'])
   def updateProfile() {
     User user = User.get(springSecurityService.principal.id)
@@ -165,7 +162,7 @@ class ProfileController {
     }
 
     if ( user.email != params.email ) {
-      if ( validateEmailAddress(params.email) ) {
+      if ( formService.validateEmailAddress(params.email) ) {
         user.email = params.email
         flash.message += message(code:'profile.updateProfile.updated.email')
       }
@@ -246,7 +243,7 @@ class ProfileController {
         if ( params.isRemindCCByEmail && ( ! params.remindCCEmailaddress) ) {
             flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.noCCEmailAddressError')
         } else {
-            if (params.remindCCEmailaddress == null || params.remindCCEmailaddress.trim() == '' || validateEmailAddress(params.remindCCEmailaddress)){
+            if (params.remindCCEmailaddress == null || params.remindCCEmailaddress.trim() == '' || formService.validateEmailAddress(params.remindCCEmailaddress)){
                 changeValue(user.getSetting(REMIND_CC_EMAILADDRESS, null),       params.remindCCEmailaddress,     'profile.updateProfile.updated.remindCCEmailaddress')
             } else {
                 flash.error += message(code:'profile.updateProfile.updated.email.error')
@@ -294,7 +291,7 @@ class ProfileController {
                 flash.error += message(code:'profile.updateProfile.updated.isNotificationCCByEmail.noCCEmailAddressError')
             } else {
                 if (params.notificationCCEmailaddress){
-                    if (validateEmailAddress(params.notificationCCEmailaddress)){
+                    if (formService.validateEmailAddress(params.notificationCCEmailaddress)){
                         changeValue(user.getSetting(NOTIFICATION_CC_EMAILADDRESS, null),       params.notificationCCEmailaddress,     'profile.updateProfile.updated.notificationCCEmailaddress')
                     } else {
                         flash.error += message(code:'profile.updateProfile.updated.email.error')

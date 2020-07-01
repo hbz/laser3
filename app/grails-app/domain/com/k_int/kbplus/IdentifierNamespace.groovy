@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractI10nOverride
+import de.laser.base.AbstractI10nOverride
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory

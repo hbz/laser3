@@ -6,6 +6,20 @@
 
 1771    26.06.2020  dev         Anja    Feature     Org: Rechteprüfung normieren
 
+1710    30.06.2020  rc1.4       Andreas Bug         Performanz bei Laden der Änderungen verbessert
+
+2636    30.06.2020  rc1.4       Andreas Bug         Weitere Korrektur zur Nichtprozessierung von Titeldaten im Sync
+
+2641    26.06.2020  hbz-dev     David   Feature     API 0.110 - Neue Vertrags-/Lizenz-Struktur anpassen
+
+2195    24.06.2020  hbz-dev     Moe     Feature     ES Suche nur mit engl. Datumformat möglich
+
+2170    24.06.2020  hbz-dev     Moe     Feature     aktive Flag für FTControl
+
+2629    24.06.2020  hbz-dev     Moe     Feature     ES: Suche über Erstellungsdatum bzw. Aktualisierungsdatum
+
+2100    23.06.2020  hbz-dev     Moe     Feature     E-Mails mit Umlauten
+
 2630    24.06.2020  rc1.4       Andreas Feature     Steuersätze 5 und 16 % hinzugefügt
 
 2238    24.06.2020  rc1.4       Andreas Bug         fehlende Vertragskategorisierungen nachgereicht

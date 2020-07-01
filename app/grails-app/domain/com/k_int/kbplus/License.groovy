@@ -1,11 +1,10 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
 import com.k_int.kbplus.auth.Role
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -17,14 +16,14 @@ import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class License
-        extends AbstractBaseDomainWithCalculatedLastUpdated
+class License extends AbstractBaseWithCalculatedLastUpdated
         implements CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
 
     static Log static_logger = LogFactory.getLog(License)
@@ -181,10 +180,17 @@ class License
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        super.afterDeleteHandler()
 
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
     }
 
     @Transient
@@ -303,10 +309,12 @@ class License
     }
 
     Org getLicensingConsortium() {
-        Set<Org> consortia = Org.executeQuery("select oo.org from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType = :roleTypeC",[roleTypeC:RDStore.OR_SUBSCRIPTION_CONSORTIA,lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE])
-        if(consortia.size() == 1)
-            consortia[0]
-        else null
+        Org result
+        orgLinks.each { or ->
+            if ( or.roleType.value == 'Licensing Consortium' )
+                result = or.org
+            }
+        result
     }
 
     Org getLicensor() {
@@ -319,14 +327,21 @@ class License
     }
 
     Org getLicensee() {
-        Set<Org> member = Org.executeQuery("select oo.org from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType = (:roleTypes)",[roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIBER],lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE])
-        if(member.size() == 1)
-            member[0]
-        else null
+        Org result
+        orgLinks.each { or ->
+            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
+                result = or.org;
+        }
+        result
     }
-    Set<Org> getAllLicensee() {
-        Org.executeQuery("select oo.org from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType = (:roleTypes)",[roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIBER],lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE])
-    }
+    List<Org> getAllLicensee() {
+        List<Org> result = []
+        orgLinks.each { or ->
+            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
+                result << or.org
+        }
+        result
+  }
 
   @Transient
   def getLicenseType() {
@@ -384,12 +399,22 @@ class License
 
         if (user.getAuthorizedOrgsIds().contains(contextService.getOrg().id)) {
 
+            OrgRole cons = OrgRole.findByLicAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_LICENSING_CONSORTIUM
+            )
+            OrgRole licseeCons = OrgRole.findByLicAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_LICENSEE_CONS
+            )
+            OrgRole licsee = OrgRole.findByLicAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_LICENSEE
+            )
+
             if (perm == 'view') {
-                return Links.executeQuery("select l from Links l where l.source = :lic and l.linkType = :linkType and l.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:roleTypes) and oo.org = :ctxOrg)",[lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE,roleTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA],ctxOrg:contextService.org]).size() > 0
+                return cons || licseeCons || licsee
             }
             if (perm == 'edit') {
                 if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                    return Links.executeQuery("select l from Links l where l.source = :lic and l.linkType = :linkType and l.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:roleTypes) and oo.org = :ctxOrg)",[lic:GenericOIDService.getOID(this),linkType:RDStore.LINKTYPE_LICENSE,roleTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA],ctxOrg:contextService.org]).size() > 0
+                    return cons || licsee
             }
         }
 
@@ -398,7 +423,8 @@ class License
 
   @Override
   boolean equals (Object o) {
-    def obj = ClassUtils.deproxy(o)
+    //def obj = ClassUtils.deproxy(o)
+    def obj = GrailsHibernateUtil.unwrapIfProxy(o)
     if (obj != null) {
       if ( obj instanceof License ) {
         return obj.id == id
@@ -542,7 +568,7 @@ class License
          if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
         }
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
 
     @Override
@@ -550,7 +576,7 @@ class License
         if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
         }
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
 
 
@@ -807,5 +833,13 @@ AND lower(l.reference) LIKE (:ref)
         }
 
         return result
+    }
+
+    Set<Subscription> getSubscriptions() {
+        Set<Subscription> result = []
+        Links.findAllBySourceAndLinkType(GenericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+            result << genericOIDService.resolveOID(l.destination)
+        }
+        result
     }
 }
