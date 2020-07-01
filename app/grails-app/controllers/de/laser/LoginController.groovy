@@ -1,4 +1,4 @@
-//package laser2; grails-upgrade: do not remove
+package de.laser
 
 import com.k_int.kbplus.auth.User
 import grails.converters.JSON
