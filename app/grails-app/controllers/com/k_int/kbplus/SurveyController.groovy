@@ -1954,7 +1954,7 @@ class SurveyController {
             result.surveyInfo.save(flush: true)
             flash.message = g.message(code: "openSurveyNow.successfully")
 
-            //surveyUpdateService.emailsToSurveyUsers([result.surveyInfo.id])
+            surveyUpdateService.emailsToSurveyUsers([result.surveyInfo.id])
 
         }
 
