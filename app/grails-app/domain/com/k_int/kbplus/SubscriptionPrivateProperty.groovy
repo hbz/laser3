@@ -34,13 +34,6 @@ class SubscriptionPrivateProperty extends PrivateProperty {
             owner: Subscription
     ]
 
-    def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
-
-        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
-    }
-
     static constraints = {
         importFrom AbstractPropertyWithCalculatedLastUpdated
 
@@ -50,5 +43,20 @@ class SubscriptionPrivateProperty extends PrivateProperty {
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
+    }
+
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
+
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
     }
 }

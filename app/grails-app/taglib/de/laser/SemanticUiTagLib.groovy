@@ -733,7 +733,7 @@ class SemanticUiTagLib {
         def label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
         def name = attrs.name ? "${message(code: attrs.name)}" : ''
         def id = attrs.id ? "${message(code: attrs.id)}" : ''
-        def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
+        def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : "${message(code: 'default.date.label')}"
 
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def value = ''

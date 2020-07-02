@@ -42,6 +42,19 @@ class PersonPrivateProperty extends PrivateProperty {
         owner:  Person
     ]
 
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
+    }
+
     static findAllByDateValueBetweenForOrgAndIsNotPulbic(java.sql.Date dateValueFrom, java.sql.Date dateValueTo, Org org){
         executeQuery("SELECT distinct(s) FROM PersonPrivateProperty as s " +
             "WHERE (dateValue >= :fromDate and dateValue <= :toDate) " +

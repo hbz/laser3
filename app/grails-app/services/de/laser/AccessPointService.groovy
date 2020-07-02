@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat
 @Transactional
 class AccessPointService {
 
-    MessageSource messageSource
+    def messageSource
     ExportService exportService
     Locale locale
     EscapeService escapeService

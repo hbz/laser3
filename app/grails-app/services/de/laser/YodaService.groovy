@@ -30,7 +30,6 @@ import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
-import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
 //@CompileStatic
@@ -44,7 +43,6 @@ class YodaService {
     GOKbService gokbService = Holders.grailsApplication.mainContext.getBean('GOKbService')
     GenericOIDService genericOIDService = Holders.grailsApplication.mainContext.getBean('genericOIDService')
     ChangeNotificationService changeNotificationService = Holders.grailsApplication.mainContext.getBean('changeNotificationService')
-    MessageSource messageSource = Holders.grailsApplication.parentContext
     LinkGenerator grailsLinkGenerator = Holders.grailsApplication.mainContext.getBean(LinkGenerator)
 
     // gsp:

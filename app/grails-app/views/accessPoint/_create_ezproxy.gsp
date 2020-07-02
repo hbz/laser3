@@ -1,6 +1,6 @@
 <semui:form>
     <g:form action="create_${accessMethod}" controller="accessPoint" id="${orgInstance.id}" method="post" class="ui form">
-        <g:render template="access_method" model="${[accessMethod: accessMethod]}"/>
+
         <g:render template="name" model="${[nameOptions: [], name: '']}"/>
         <div class="field required">
             <label>URL</label>
