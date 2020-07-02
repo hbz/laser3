@@ -37,8 +37,8 @@ class SubscriptionPrivateProperty extends PrivateProperty {
     static constraints = {
         importFrom AbstractPropertyWithCalculatedLastUpdated
 
-        type    (nullable:false, blank:false)
-        owner   (nullable:false, blank:false)
+        type    (blank:false)
+        owner   (blank:false)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)

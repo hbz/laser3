@@ -38,7 +38,7 @@ class RefdataCategory extends AbstractI10nOverride {
     }
 
     static constraints = {
-        isHardData (nullable:false, blank:false)
+        isHardData (blank:false)
 
         // Nullable is true, because values are already in the database
         desc_de (nullable: true, blank: false)

@@ -131,7 +131,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        gokbId (nullable:false, blank:false, unique: true, maxSize:511)
+        gokbId (blank:false, unique: true, maxSize:511)
         //originEditUrl(nullable:true, blank:false)
         status(nullable:true, blank:false)
         delayedOA(nullable:true, blank:false)

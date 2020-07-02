@@ -19,9 +19,9 @@ class Annotation {
     }
 
     static constraints = {
-      componentType (nullable:false,  blank:false)
-      viewType      (nullable:false,  blank:false)
-      propertyName  (nullable:false,  blank:false)
+      componentType (blank:false)
+      viewType      (blank:false)
+      propertyName  (blank:false)
       value         (nullable:true,   blank:false)
     }
     

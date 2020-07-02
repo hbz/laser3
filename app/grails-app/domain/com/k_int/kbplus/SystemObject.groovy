@@ -21,7 +21,7 @@ class SystemObject {
   }
 
   static constraints = {
-    sysId(nullable:false, blank:false)
+    sysId(blank:false)
     announcementsForumId(nullable:true, blank:false)
 
     // Nullable is true, because values are already in the database

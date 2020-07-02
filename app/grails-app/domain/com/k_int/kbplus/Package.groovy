@@ -141,16 +141,16 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  startDate(nullable:true, blank:false)
                    endDate(nullable:true, blank:false)
                    license(nullable:true, blank:false)
-                  isPublic(nullable:false, blank:false)
+                  isPublic(blank:false)
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
-                    gokbId(nullable:false, blank:false, unique: true, maxSize: 511)
+                    gokbId(blank:false, unique: true, maxSize: 511)
            //originEditUrl(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
-      listVerifiedDate(nullable:true, blank:false)
-      lastUpdatedCascading (nullable: true, blank: false)
+      listVerifiedDate    (nullable:true, blank:false)
+      lastUpdatedCascading(nullable:true, blank: false)
   }
 
     @Override

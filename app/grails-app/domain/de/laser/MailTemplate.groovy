@@ -22,7 +22,7 @@ class MailTemplate {
     static constraints = {
         owner (nullable: true, blank: false)
         text (nullable: true, blank: false)
-        sentBySystem (nullable: false, blank: false)
+        sentBySystem (blank: false)
     }
 
     static mapping = {

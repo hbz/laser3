@@ -26,12 +26,12 @@ class StatsTripleCursor {
     }
 
     static constraints = {
-        titleId(nullable:false, blank:false,maxSize:32)
-        supplierId(nullable:false, blank:false,maxSize:32)
-        customerId(nullable:false, blank:false,maxSize:32)
-        availFrom(nullable:false, blank:false)
+        titleId(blank:false,maxSize:32)
+        supplierId(blank:false,maxSize:32)
+        customerId(blank:false,maxSize:32)
+        availFrom(blank:false)
         availTo(nullable:true, blank: false)
-        numFacts(nullable:false, blank:false,maxSize:11)
+        numFacts(blank:false,maxSize:11)
         jerror(nullable:true, blank:true)
     }
 }

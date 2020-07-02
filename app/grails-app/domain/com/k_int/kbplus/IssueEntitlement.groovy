@@ -101,8 +101,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
   static constraints = {
     globalUID      (nullable:true, blank:false, unique:true, maxSize:255)
     status         (nullable:true, blank:false)
-    subscription   (nullable:false, blank:false)
-    tipp           (nullable:false, blank:false)
+    subscription   (blank:false)
+    tipp           (blank:false)
     ieReason       (nullable:true, blank:true)
     medium         (nullable:true, blank:true)
     priceItem      (nullable:true, blank:true)
@@ -111,7 +111,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     coreStatus     (nullable:true, blank:true)
     coreStatusStart(nullable:true, blank:true)
     coreStatusEnd  (nullable:true, blank:true)
-    acceptStatus  (nullable:true, blank:true)
+    acceptStatus   (nullable:true, blank:true)
       /*
       startDate     (nullable:true, blank:true)
       startVolume   (nullable:true, blank:true)

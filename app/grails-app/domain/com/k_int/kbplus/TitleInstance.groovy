@@ -93,7 +93,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
   }
 
     static constraints = {
-        globalUID(nullable:false, blank:false, unique:true, maxSize:255)
+        globalUID(blank:false, unique:true, maxSize:255)
         status(nullable:true, blank:false)
         //type(nullable:true, blank:false)
         medium(nullable:true, blank:false)
@@ -102,7 +102,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
         sortTitle(nullable:true, blank:false,maxSize:2048)
         keyTitle(nullable:true, blank:false,maxSize:2048)
         creators(nullable:true, blank:false)
-        gokbId (nullable:false, blank:false, unique: true, maxSize:511)
+        gokbId (blank:false, unique: true, maxSize:511)
         seriesName(nullable:true, blank:false)
         subjectReference(nullable:true, blank:false)
         //originEditUrl(nullable:true, blank:false)
