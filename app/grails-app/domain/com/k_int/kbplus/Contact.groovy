@@ -43,7 +43,6 @@ class Contact implements Comparable<Contact>{
     static constraints = {
         content     (nullable:true, blank:true)
         contentType (nullable:true, blank:true)
-        type        ()
         prs         (nullable:true)
         org         (nullable:true)
 

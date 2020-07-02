@@ -74,7 +74,6 @@ class Address {
         name            (nullable:true,  blank:false)
         additionFirst   (nullable:true,  blank:false)
         additionSecond  (nullable:true,  blank:false)
-        type     ()
         prs      (nullable:true)
         org      (nullable:true)
 
