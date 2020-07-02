@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SubscriptionCustomProperty; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
+<%@ page import="com.k_int.kbplus.SubscriptionCustomProperty; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -15,6 +15,26 @@
     ]}" />
 
 </semui:modal>
+
+<g:if test="${subscriptionInstance.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
+    <div class="ui card la-dl-no-table ">
+        <div class="content">
+            <h5 class="ui header">${message(code:'subscription.properties.consortium')}</h5>
+            <div id="member_props_div">
+                <g:render template="/templates/properties/members" model="${[
+                        prop_desc: PropertyDefinition.SUB_PROP,
+                        ownobj: subscriptionInstance,
+                        custom_props_div: "member_props_div"]}"/>
+
+                <%--<r:script language="JavaScript">
+                    $(document).ready(function(){
+                           c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
+                    });
+                </r:script>--%>
+            </div>
+        </div>
+    </div>
+</g:if>
 
 <!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
 <div class="ui card la-dl-no-table">
@@ -103,30 +123,24 @@
 
 <%-- private properties --%>
 
-<g:each in="${authorizedOrgs}" var="authOrg">
-    <g:if test="${authOrg.name == contextOrg?.name && accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')}">
-        <!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
-        <div class="ui card la-dl-no-table ">
-            <div class="content">
+<!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
+<div class="ui card la-dl-no-table ">
+    <div class="content">
+        <h5 class="ui header">${message(code:'subscription.properties.private')} ${institution.name}</h5>
+        <div id="custom_props_div_${institution.id}">
+            <g:render template="/templates/properties/private" model="${[
+                    prop_desc: PropertyDefinition.SUB_PROP,
+                    ownobj: subscriptionInstance,
+                    custom_props_div: "custom_props_div_${institution.id}",
+                    tenant: institution]}"/>
 
-                <h5 class="ui header">${message(code:'subscription.properties.private')} ${authOrg.name}</h5>
-
-                <div id="custom_props_div_${authOrg.id}">
-                    <g:render template="/templates/properties/private" model="${[
-                            prop_desc: PropertyDefinition.SUB_PROP,
-                            ownobj: subscriptionInstance,
-                            custom_props_div: "custom_props_div_${authOrg.id}",
-                            tenant: authOrg]}"/>
-
-                    <r:script language="JavaScript">
-                        $(document).ready(function(){
-                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                        });
-                    </r:script>
-                </div>
-            </div>
+            <r:script language="JavaScript">
+                    $(document).ready(function(){
+                           c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
+                    });
+            </r:script>
         </div>
-    </g:if>
-</g:each>
+    </div>
+</div>
 
 <!-- _properties -->
