@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
@@ -43,13 +44,10 @@ import java.util.concurrent.ExecutorService
 
 import static de.laser.helper.RDStore.*
 
-// 2.0
-
-//For Transform
-
-@Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SubscriptionController extends AbstractDebugController {
+class SubscriptionController
+        extends AbstractDebugController
+        implements PendingChangeControllerTrait {
 
     def springSecurityService
     def contextService

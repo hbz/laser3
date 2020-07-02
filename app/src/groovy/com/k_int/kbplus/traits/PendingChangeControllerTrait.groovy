@@ -1,14 +1,11 @@
-package com.k_int.kbplus.mixins
+package com.k_int.kbplus.traits
 
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 
-// 2.0
-
-class PendingChangeMixin {
-
+trait PendingChangeControllerTrait {
 
   def processAcceptChange(params, targetObject, genericOIDService) {
     User user = User.get(springSecurityService.principal.id)
