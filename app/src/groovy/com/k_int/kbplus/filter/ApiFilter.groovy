@@ -25,6 +25,8 @@ class ApiFilter extends GenericFilterBean {
     @Override
     void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
+        // TODO: grails-upgrade: http://docs.grails.org/latest/guide/theWebLayer.html#interceptors
+
         HttpServletRequest request = (HttpServletRequest) servletRequest
         HttpServletResponse response = (HttpServletResponse) servletResponse
 

@@ -8,6 +8,8 @@ class LaserFilters {
 
     def filters = {
 
+        // TODO: grails-upgrade: http://docs.grails.org/latest/guide/theWebLayer.html#interceptors
+
         globalUIDFilter(controller:'*', action:'*') {
 
             before = {
