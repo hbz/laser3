@@ -421,7 +421,7 @@
 
 
 
-    <g:if test="${issueEntitlementInstance.tipp.title?.tipps}">
+    <g:if test="${issueEntitlementInstance.tipp.title.tipps}">
         <br/>
 
         <div class="ui card">
