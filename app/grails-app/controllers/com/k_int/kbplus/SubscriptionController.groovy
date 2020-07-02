@@ -32,6 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -1675,14 +1676,15 @@ class SubscriptionController
 
         result.validLicenses = []
 
-        def childLicenses = License.where {
-            instanceOf in result.parentLicenses
-        }
+        if(result.parentLicenses) {
+            def childLicenses = License.where {
+                instanceOf in result.parentLicenses
+            }
 
-        childLicenses?.each {
-            result.validLicenses << it
+            childLicenses?.each {
+                result.validLicenses << it
+            }
         }
-
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
@@ -2033,27 +2035,32 @@ class SubscriptionController
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE && result.institution.id == result.subscription.getCollective().id)
-            result.propList = result.parentSub.privateProperties.type
-        else
-            result.propList = result.parentSub.privateProperties.type + result.parentSub.customProperties.type
-
-
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-        //Sortieren
-        result.validSubChilds = validSubChilds.sort { a, b ->
+        Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
+        /*Sortieren
+        result.validSubChilds = validSubChilds.sort { Subscription a, Subscription b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }
+        }*/
+        result.validSubChilds = validSubChildren
+
+        /*String localizedName
+        switch(LocaleContextHolder.getLocale()) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }*/
+        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        result.propList = result.parentSub.privateProperties.type + result.parentSub.customProperties.type + SubscriptionCustomProperty.executeQuery("select distinct(scp.type) from SubscriptionCustomProperty scp where scp.owner in (:subscriptionSet)",[subscriptionSet:validSubChildren])
 
         def oldID = params.id
         params.id = result.parentSub.id
 
         ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
         result.filteredSubChilds = new ArrayList<Subscription>()
-        result.validSubChilds.each { sub ->
+        result.validSubChilds.each { Subscription sub ->
             List<Org> subscr = sub.getAllSubscribers()
             def filteredSubscr = []
             subscr.each { Org subOrg ->
@@ -3927,6 +3934,23 @@ class SubscriptionController
         //}
 
         result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscriptionInstance, 'Specific subscription editor')
+
+        if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
+            du.setBenchmark('non-inherited member properties')
+            List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+                String localizedName
+                switch(LocaleContextHolder.getLocale()) {
+                    case Locale.GERMANY:
+                    case Locale.GERMAN: localizedName = "name_de"
+                        break
+                    default: localizedName = "name_en"
+                        break
+                }
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery("select scp.type from SubscriptionCustomProperty scp where scp.owner in (:subscriptionSet) order by scp.type.${localizedName} asc",[subscriptionSet:childSubs])
+                result.memberProperties = memberProperties
+            }
+        }
 
         List bm = du.stopBenchmark()
         result.benchMark = bm
