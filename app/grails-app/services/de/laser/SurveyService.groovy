@@ -23,7 +23,7 @@ class SurveyService {
 
     AccessService accessService
     ContextService contextService
-    MessageSource messageSource
+    def messageSource
     ExportService exportService
     Locale locale
     MailService mailService

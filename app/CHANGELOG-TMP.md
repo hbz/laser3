@@ -4,7 +4,11 @@
 
 1896    01.07.2020  hbz-dev     Moe     Feature     Show Seite für IE umbauen
 
+2301    01.07.2020  dev         Anja    Feature     Org Views: Views and Permissions
+
 2647    01.07.2020  hbz-dev     Moe     Feature     Umbauen der Zugangskonfiguration
+
+1771    26.06.2020  dev         Anja    Feature     Org: Rechteprüfung normieren
 
 1710    30.06.2020  rc1.4       Andreas Bug         Performanz bei Laden der Änderungen verbessert
 

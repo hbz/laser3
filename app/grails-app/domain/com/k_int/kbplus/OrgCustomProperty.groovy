@@ -30,4 +30,17 @@ class OrgCustomProperty extends CustomProperty {
         type : PropertyDefinition,
         owner: Org
     ]
+
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
+    }
 }

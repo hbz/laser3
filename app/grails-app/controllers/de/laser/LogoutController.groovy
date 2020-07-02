@@ -1,4 +1,4 @@
-//package laser2; grails-upgrade: do not remove
+package de.laser
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.security.access.annotation.Secured

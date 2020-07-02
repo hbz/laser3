@@ -12,7 +12,7 @@ import javax.persistence.Transient
 class PendingChangeConfiguration {
 
     @Transient
-    MessageSource messageSource
+    def messageSource
 
     static final String NEW_TITLE = "pendingChange.message_TP01"
     static final String TITLE_UPDATED = "pendingChange.message_TP02"
