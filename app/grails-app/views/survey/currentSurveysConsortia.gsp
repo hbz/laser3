@@ -369,7 +369,7 @@
                         </g:if>
                         <g:else>
                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]"
+                                    params="[surveyConfigID: surveyConfig.id]"
                                     class="ui icon button">
                                 <i class="icon blue chart pie"></i>
                                 </div>
@@ -377,7 +377,7 @@
                         </g:else>
                     </td>
                     <td>
-                        <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button icon">
+                        <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button icon">
                             <i class="pencil icon"></i>
                         </g:link>
                     </td>
