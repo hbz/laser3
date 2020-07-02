@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1896    01.07.2020  hbz-dev     Moe     Feature     Show Seite für IE umbauen
+
 2301    01.07.2020  dev         Anja    Feature     Org Views: Views and Permissions
 
 2647    01.07.2020  hbz-dev     Moe     Feature     Umbauen der Zugangskonfiguration
