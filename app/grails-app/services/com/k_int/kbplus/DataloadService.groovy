@@ -27,6 +27,7 @@ import org.elasticsearch.rest.RestStatus
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.hibernate.ScrollMode
 
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
 class DataloadService {
@@ -40,7 +41,7 @@ class DataloadService {
         'License Data'
     ]
 
-    def executorService
+    ExecutorService executorService
     def ESWrapperService
     def sessionFactory
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP

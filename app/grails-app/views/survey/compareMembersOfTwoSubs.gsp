@@ -585,7 +585,7 @@ ${surveyInfo?.name}
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics"
                                        value="shared">
-                                <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_shared', args: superOrgType)}</label>
+                                <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all', args: superOrgType)}</label>
                             </div>
 
                             <div class="ui radio checkbox">
@@ -599,7 +599,7 @@ ${surveyInfo?.name}
                                     <input class="hidden" type="radio" id="generateSlavedLics3"
                                            name="generateSlavedLics"
                                            value="reference" checked="checked">
-                                    <label for="generateSlavedLics3">${message(code: 'myinst.separate_lics_reference')}</label>
+                                    <label for="generateSlavedLics3">${message(code: 'myinst.separate_lics_partial')}</label>
                                 </div>
 
                                 <div class="generateSlavedLicsReference-wrapper hidden">

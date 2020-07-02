@@ -231,18 +231,20 @@
                     </td>
 
                     <td>
-                        <g:link controller="survey" action="show" id="${surveyInfo.id}" class="la-main-object">
+                            <g:link controller="survey" action="show" id="${surveyInfo.id}" class="la-main-object">
                                 ${surveyConfig ? surveyConfig.getSurveyName() : surveyInfo.name}
-                        </g:link>
-                            <g:if test="${surveyConfig.subscription}">
+                            </g:link>
+                            <g:if test="${surveyConfig?.subscription}">
                                 <g:set var="providers" value="${surveyConfig.subscription.getProviders()}"/>
                                 <g:if test="${providers}">
 
                                     <div class="la-flexbox">
-                                    (<g:each in="${providers}" var="provider">${provider.name}</g:each>)
+                                        (<g:each in="${providers}" var="provider">${provider.name}</g:each>)
                                     </div>
                                 </g:if>
                             </g:if>
+
+
                     </td>
 
                     <td class="center aligned">

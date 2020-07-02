@@ -117,13 +117,16 @@
                 <th><g:checkBox name="subscription.copyLicense" value="${true}" /></th>
                 <th>${message(code:'subscription.copyLicense')}</th>
                 <td>
-                    <b>${message(code:'subscription.linktoLicense')}:</b>
-                    <g:if test="${subscription.owner}">
-                        <g:link controller="license" action="show" target="_blank" id="${subscription.owner?.id}">${subscription.owner?.reference}</g:link>
-                    </g:if>
-                    <g:else>
+                    <g:each in="${licenses}" var="license">
+                        <b>${message(code:'subscription.linktoLicense')}:</b>
+                        <g:link controller="license" action="show" target="_blank" id="${license.id}">${license.reference}</g:link>
+                        <g:if test="${license.licenseCategory}">
+                            (${license.licenseCategory.getI10n("value")})
+                        </g:if><br>
+                    </g:each>
+                    <g:if test="${!licenses}">
                         ${message(code:'subscription.linktoLicenseEmpty')}
-                    </g:else>
+                    </g:if>
                 </td>
             </tr>
             <tr>
