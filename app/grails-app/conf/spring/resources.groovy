@@ -1,8 +1,15 @@
+import de.laser.dbm.MigrationCallbacks
+import de.laser.web.ApiFilter
+import de.laser.web.AuthSuccessHandler
+import grails.plugin.springsecurity.SpringSecurityUtils
+import org.springframework.security.core.session.SessionRegistryImpl
+import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
+import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy
 import org.springframework.security.web.session.ConcurrentSessionFilter
-import org.springframework.security.core.session.SessionRegistryImpl
-import grails.plugin.springsecurity.SpringSecurityUtils
-import de.laser.dbm.MigrationCallbacks
+import org.springframework.security.web.context.SecurityContextPersistenceFilter
+import grails.plugin.springsecurity.userdetails.GormUserDetailsService
 
 beans = {
 
@@ -24,7 +31,7 @@ beans = {
     // .. ]
 
     // [ supporting initMandatorySettings for users ..
-    authenticationSuccessHandler(de.laser.helper.AuthSuccessHandler) {
+    authenticationSuccessHandler(AuthSuccessHandler) {
         // Reusing the security configuration
         def conf = SpringSecurityUtils.securityConfig
         // Configuring the bean ..
@@ -42,23 +49,23 @@ beans = {
     //    defaultLocale = new java.util.Locale('de', 'DE')
     //}
 
-    userDetailsService(grails.plugin.springsecurity.userdetails.GormUserDetailsService) { // 2.0
+    userDetailsService(GormUserDetailsService) {
         //userDetailsService(org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService) {
         grailsApplication = ref('grailsApplication')
     }
   
-    userDetailsByNameServiceWrapper(org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper) {
+    userDetailsByNameServiceWrapper(UserDetailsByNameServiceWrapper) {
         userDetailsService = ref('userDetailsService')
     }
 
-    preAuthenticatedAuthenticationProvider(org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider) {
+    preAuthenticatedAuthenticationProvider(PreAuthenticatedAuthenticationProvider) {
         preAuthenticatedUserDetailsService = ref('userDetailsByNameServiceWrapper')
     }
 
-    securityContextPersistenceFilter(org.springframework.security.web.context.SecurityContextPersistenceFilter){}
+    securityContextPersistenceFilter(SecurityContextPersistenceFilter){}
 
     // [ controls api access via hmac ..
-    apiFilter(com.k_int.kbplus.filter.ApiFilter){}
+    apiFilter(ApiFilter){}
     // .. ]
 
     //ediAuthTokenMap(java.util.HashMap) {
@@ -76,7 +83,7 @@ beans = {
     //   springSecurityService = ref("springSecurityService")
     //}
 
-    //preAuthFilter(org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter) {
+    //preAuthFilter(RequestHeaderAuthenticationFilter) {
     //  principalRequestHeader = 'remoteUser'
     //  authenticationManager = ref('authenticationManager')
     //}

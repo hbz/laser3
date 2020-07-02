@@ -1,4 +1,4 @@
-package com.k_int.kbplus.filter
+package de.laser.web
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgSettings

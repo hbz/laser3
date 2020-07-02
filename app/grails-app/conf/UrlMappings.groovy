@@ -1,5 +1,3 @@
-//package laser2; grails-upgrade: do not remove
-
 class UrlMappings {
 
     static mappings = {
@@ -10,7 +8,6 @@ class UrlMappings {
         }
 
         "/lic/$action?/$id?"        (controller: 'license')
-
         "/org/$action?/$id?"        (controller: 'organisation')
 
         //"/myInstitution/tipview/$id"    (controller: 'myInstitution', action: 'tip')
@@ -34,8 +31,6 @@ class UrlMappings {
 
         "/"                     (controller: 'public', action: 'index')
         "/gasco"                (controller: 'public', action: 'gasco')
-
-        "/oai/$id"(controller: 'oai', action: 'index')
 
         "500"(view: '/serverCodes/error')
         "401"(view: '/serverCodes/forbidden')
