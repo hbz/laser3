@@ -1,10 +1,6 @@
 <%@ page import="org.codehaus.groovy.grails.plugins.codecs.HTMLCodec; org.springframework.web.util.HtmlUtils" %>
 <g:if test="${address}">
 	<div class="ui item address-details">
-        %{--<span class="la-popup-tooltip la-delay"  data-content="${message(code:'adress.icon.label.adress')}" data-position="top right" data-variation="tiny">--}%
-            %{--<i class="ui icon building map marker alternate la-list-icon"></i>--}%
-        %{--</span>--s}%
-        %{--<% String url = 'https://www.google.com/maps/place/'--}%
         <% String url = ''
         if (address.name) url += address.name
         url += (url.length()>0 && address.street_1)? '+' : ''

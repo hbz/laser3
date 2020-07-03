@@ -326,7 +326,7 @@
                                         <g:if test="pr">
                                         %{--Workaround wg NPE bei CacheEntry.getValue--}%
                                             <% com.k_int.kbplus.Person prs = PersonRole.get(pr.id).prs%>
-                                            <g:render template="/templates/cpa/person_full_details_new" model="${[
+                                            <g:render template="/templates/cpa/person_full_details" model="${[
                                                     person              : prs,
                                                     personRole          : pr,
                                                     personContext       : orgInstance,
