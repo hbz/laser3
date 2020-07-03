@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDConstants;com.k_int.kbplus.Org;de.laser.domain.I10nTranslation; java.text.SimpleDateFormat;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDConstants;com.k_int.kbplus.Org;de.laser.I10nTranslation; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection />
 <%
     SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()

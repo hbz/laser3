@@ -107,9 +107,9 @@ class SystemEvent {
 
     static constraints = {
         token       (nullable:true)
-        payload     (nullable:true,  blank:true)
-        category    (nullable:false, blank:false)
-        relevance   (nullable:false, blank:false)
+        payload     (nullable:true, blank:true)
+        category    (blank:false)
+        relevance   (blank:false)
         created     (nullable:true)
     }
 

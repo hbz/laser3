@@ -101,8 +101,8 @@ class UserSettings {
     }
 
     static constraints = {
-        user       (nullable: false, unique: 'key')
-        key        (nullable: false, unique: 'user')
+        user       (unique: 'key')
+        key        (unique: 'user')
         strValue   (nullable: true)
         rdValue    (nullable: true)
         orgValue   (nullable: true)

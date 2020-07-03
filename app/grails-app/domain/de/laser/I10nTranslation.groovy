@@ -37,14 +37,14 @@ class I10nTranslation {
     }
 
     static constraints = {
-        referenceId     (nullable:false, blank:false)
-        referenceClass  (nullable:false, blank:false, maxSize:255)
-        referenceField  (nullable:false, blank:false, maxSize:255)
+        referenceId     (blank:false)
+        referenceClass  (blank:false, maxSize:255)
+        referenceField  (blank:false, maxSize:255)
         valueDe         (nullable:true,  blank:false)
         valueEn         (nullable:true,  blank:false)
         valueFr         (nullable:true,  blank:false)
-        lastUpdated     (nullable: true, blank: false)
-        dateCreated     (nullable: true, blank: false)
+        lastUpdated     (nullable:true, blank: false)
+        dateCreated     (nullable:true, blank: false)
 
         referenceId(unique: ['referenceClass', 'referenceField'])
     }

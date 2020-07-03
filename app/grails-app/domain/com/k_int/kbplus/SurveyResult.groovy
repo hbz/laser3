@@ -41,7 +41,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         endDate (nullable:true, blank:false)
         participantComment (nullable:true, blank:false)
         ownerComment (nullable:true, blank:false)
-        isRequired (nullable:false, blank:false)
+        isRequired (blank:false)
     }
 
     static mapping = {

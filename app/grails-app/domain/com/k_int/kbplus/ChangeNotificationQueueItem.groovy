@@ -19,9 +19,9 @@ class ChangeNotificationQueueItem {
   }
 
   static constraints = {
-    oid(nullable:false, blank:false);
-    changeDocument(nullable:false, blank:false);
-    ts(nullable:false, blank:false);
+    oid           (blank:false)
+    changeDocument(blank:false)
+    ts            (blank:false)
 
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true, blank: false)

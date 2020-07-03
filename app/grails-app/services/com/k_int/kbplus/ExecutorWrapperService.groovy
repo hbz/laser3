@@ -1,10 +1,11 @@
 package com.k_int.kbplus
 
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ExecutorService
 
 class ExecutorWrapperService {
 
-	def executorService
+	ExecutorService executorService
 	def genericOIDService
 	ConcurrentHashMap<Object,java.util.concurrent.FutureTask> activeFuture = [:]
 

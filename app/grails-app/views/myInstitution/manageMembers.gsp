@@ -55,9 +55,6 @@
             </semui:exportDropdownItem>
         </g:else>
     </semui:exportDropdown>
-    <%
-        editable = (editable && accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')
-    %>
     <g:if test="${editable}">
         <g:render template="actions"/>
     </g:if>

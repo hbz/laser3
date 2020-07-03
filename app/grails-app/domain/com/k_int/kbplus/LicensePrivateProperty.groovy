@@ -42,7 +42,7 @@ class LicensePrivateProperty extends PrivateProperty {
         importFrom AbstractPropertyWithCalculatedLastUpdated
 
         paragraph (nullable:true)
-        owner     (nullable:false, blank:false)
+        owner     (blank:false)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)

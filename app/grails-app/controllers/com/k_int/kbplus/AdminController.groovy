@@ -723,7 +723,7 @@ class AdminController extends AbstractDebugController {
             if ( request.method.equalsIgnoreCase("post")) {
                 contentItem.content = params.content
                 contentItem.save(flush:true)
-                messageService.update(key,locale)
+                messageService.update(key,locale) // TODO: refactoring legacy
                 redirect(action:'manageContentItems');
             }
         }

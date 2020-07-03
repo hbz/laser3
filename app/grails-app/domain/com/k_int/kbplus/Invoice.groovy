@@ -36,10 +36,10 @@ class Invoice {
           dateOfInvoice(nullable:true, blank:false)
           dateOfPayment(nullable:true, blank:false)
     datePassedToFinance(nullable:true, blank:false)
-          invoiceNumber(nullable:false, blank:false)
+          invoiceNumber(blank:false)
               startDate(nullable:true, blank:false)
                 endDate(nullable:true, blank:false)
-                  owner(nullable:false, blank:false)
+                  owner(blank:false)
             description(nullable: true, blank: false)
 
       // Nullable is true, because values are already in the database

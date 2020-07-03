@@ -36,15 +36,7 @@
                     switch(mpg) {
                         case 'status': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collect { it -> it.getI10n('value') })
                             break
-                        case 'instanceOf':
-                            List<String> parentSubscriptionType = []
-                            if(accessService.checkPerm("ORG_CONSORTIUM"))
-                                parentSubscriptionType << SUBSCRIPTION_TYPE_CONSORTIAL.getI10n('value')
-                            else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                                parentSubscriptionType << SUBSCRIPTION_TYPE_LOCAL.getI10n('value')
-                            args.addAll(parentSubscriptionType)
-                            break
-                        case 'type': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).collect { it -> it.getI10n('value') })
+                        case 'type': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).collect { it -> it.getI10n('value') })
                             break
                         case 'form': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM).collect { it -> it.getI10n('value') })
                             break

@@ -28,7 +28,7 @@ class SystemProfiler {
     }
 
     static constraints = {
-        uri     (nullable:false, blank:false)
+        uri     (blank:false)
         params  (nullable:true,  blank:true)
         context (nullable:true,  blank:false)
         ms      (nullable:true,  blank:false)

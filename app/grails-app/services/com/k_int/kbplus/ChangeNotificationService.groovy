@@ -11,10 +11,11 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 
 import java.sql.Timestamp
+import java.util.concurrent.ExecutorService
 
 class ChangeNotificationService extends AbstractLockableService {
 
-    def executorService
+    ExecutorService executorService
     def genericOIDService
     def sessionFactory
     ContextService contextService

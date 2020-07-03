@@ -1,4 +1,4 @@
-package com.k_int.kbplus.filter
+package de.laser.web
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgSettings
@@ -24,6 +24,8 @@ class ApiFilter extends GenericFilterBean {
     @Transactional
     @Override
     void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+
+        // TODO: grails-upgrade: http://docs.grails.org/latest/guide/theWebLayer.html#interceptors
 
         HttpServletRequest request = (HttpServletRequest) servletRequest
         HttpServletResponse response = (HttpServletResponse) servletResponse

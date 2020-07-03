@@ -210,7 +210,7 @@
                             <g:set var="licenses" value="${Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)}"/>
                             <g:each in="${licenses}" var="row">
                                 <g:set var="license" value="${genericOIDService.resolveOID(row.source)}"/>
-                                <g:link class="ui right labeled icon button green link" controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license.licenseCategory.getI10n("value")}</g:link>
+                                <g:link class="ui right labeled icon button green link" controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license.licenseCategory?.getI10n("value")}</g:link>
                             </g:each>
                             <g:if test="${!licenses}">
                                 <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon button"><i class="write icon"></i></g:link>

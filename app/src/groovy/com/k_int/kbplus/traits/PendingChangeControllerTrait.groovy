@@ -1,14 +1,11 @@
-package com.k_int.kbplus.mixins
+package com.k_int.kbplus.traits
 
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 
-// 2.0
-
-class PendingChangeMixin {
-
+trait PendingChangeControllerTrait {
 
   def processAcceptChange(params, targetObject, genericOIDService) {
     User user = User.get(springSecurityService.principal.id)
@@ -52,16 +49,21 @@ class PendingChangeMixin {
 
 
   def expungePendingChange(targetObject, pc) {
-    log.debug("Expunging pending change, looking up change context doc=${pc.doc?.id}, targetObject=${targetObject.id}");
+    log.debug("Expunging pending change, looking up change context doc=${pc.doc?.id}, targetObject=${targetObject.id}")
 
     // def this_change_ctx = DocContext.findByOwnerAndLicense(pc.doc, license)
-    def this_change_ctx_qry
-    if ( targetObject instanceof Subscription ) 
-      this_change_ctx_qry = DocContext.where { owner == pc.doc && subscription == targetObject }
-    else
-      this_change_ctx_qry = DocContext.where { owner == pc.doc && license == targetObject }
+    // def this_change_ctx_qry
+    DocContext this_change_ctx
+    if ( targetObject instanceof Subscription ) {
+      //this_change_ctx_qry = DocContext.where { owner == pc.doc && subscription == targetObject }
+      this_change_ctx = DocContext.findByOwnerAndSubscription(pc.doc, targetObject)
+    }
+    else {
+      //this_change_ctx_qry = DocContext.where { owner == pc.doc && license == targetObject }
+      this_change_ctx = DocContext.findByOwnerAndLicense(pc.doc, targetObject)
+    }
 
-    def this_change_ctx = this_change_ctx_qry.find()
+    //def this_change_ctx = this_change_ctx_qry.find()
 
     pc.delete(flush:true);
 

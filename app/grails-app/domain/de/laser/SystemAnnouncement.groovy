@@ -40,11 +40,11 @@ class SystemAnnouncement {
     }
 
     static constraints = {
-        user        (nullable:false, blank:false)
-        title       (nullable:false, blank:false)
-        content     (nullable:false, blank:false)
-        status      (nullable:true,  blank:false)
-        isPublished (nullable:false, blank:false)
+        user        (blank:false)
+        title       (blank:false)
+        content     (blank:false)
+        status      (nullable:true, blank:false)
+        isPublished (blank:false)
         lastPublishingDate (nullable:true, blank:false)
         dateCreated (nullable:true, blank:false)
         lastUpdated (nullable:true, blank:false)

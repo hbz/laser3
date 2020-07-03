@@ -25,8 +25,8 @@ class Setting {
     }
 
     static constraints = {
-        name        (nullable:false, blank:false)
-        tp          (nullable:false, blank:false)
+        name        (blank:false)
+        tp          (blank:false)
         defvalue    (nullable:true, blank:true, maxSize:1024)
         value       (nullable:true, blank:true, maxSize:1024)
 

@@ -42,13 +42,18 @@
                                     <g:set var="sub" value="${row.getKey()}"/>
                                     <g:set var="errors" value="${row.getValue()}"/>
                                     <li><g:message code="default.name.label"/>: ${sub.name}</li>
-                                    <li><g:message code="license.label"/>: ${genericOIDService.resolveOID(sub.owner)}</li>
-                                    <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && sub.instanceOf && sub.member}">
+                                    <li><g:message code="license.label"/>:
+                                        <g:each in="${sub.licenses}" var="licenseKey">
+                                            <g:set var="license" value="${genericOIDService.resolveOID(licenseKey)}"/>
+                                            ${license.reference}
+                                        </g:each>
+                                    </li>
+                                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM") && sub.instanceOf && sub.member}">
                                         <li><g:message code="myinst.subscriptionImport.instanceOf" args="${parentSubType}"/>: ${genericOIDService.resolveOID(sub.instanceOf)}</li>
                                         <li><g:message code="myinst.subscriptionImport.member"/>: ${genericOIDService.resolveOID(sub.member)}</li>
                                     </g:if>
                                     <li><g:message code="default.status.label"/>: ${genericOIDService.resolveOID(sub.status)?.getI10n('value')}</li>
-                                    <li><g:message code="myinst.subscriptionImport.type"/>: ${genericOIDService.resolveOID(sub.type)?.getI10n('value')}</li>
+                                    <li><g:message code="myinst.subscriptionImport.type"/>: ${genericOIDService.resolveOID(sub.kind)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.form"/>: ${genericOIDService.resolveOID(sub.form)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.resource"/>: ${genericOIDService.resolveOID(sub.resource)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.provider"/>: ${genericOIDService.resolveOID(sub.provider)}</li>

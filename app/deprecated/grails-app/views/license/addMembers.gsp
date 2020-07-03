@@ -96,7 +96,7 @@
                         <label>Vertrag kopieren</label>
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" name="generateSlavedLics" value="shared" checked="checked">
-                            <label><g:message code="myinst.separate_lics_shared"/></label>
+                            <label><g:message code="myinst.separate_lics_all"/></label>
                         </div>
 
                         <div class="ui radio checkbox">
@@ -107,7 +107,7 @@
                         <g:if test="${license.derivedLicenses}">
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" name="generateSlavedLics" value="reference">
-                                <label><g:message code="myinst.separate_lics_reference"/></label>
+                                <label><g:message code="myinst.separate_lics_partial"/></label>
                             </div>
 
                             <div class="generateSlavedLicsReference-wrapper hidden">

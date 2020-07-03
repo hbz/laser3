@@ -30,8 +30,8 @@ class SystemMessage {
     static constraints = {
         content_de  (nullable:true,  blank:true)
         content_en  (nullable:true,  blank:true)
-        type        (nullable:false, blank:false)
-        isActive    (nullable:false, blank:false)
+        type        (blank:false)
+        isActive    (blank:false)
     }
 
     static getTypes() {
