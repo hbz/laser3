@@ -927,10 +927,10 @@ $.fn.dropdown = function(parameters) {
           else {
             if(settings.allowAdditions) {
               module.set.selected(module.get.query());
-              // module.remove.searchTerm(); // a11y
+               module.remove.searchTerm(); // a11y
             }
             else {
-              // module.remove.searchTerm(); // a11y
+               module.remove.searchTerm(); // a11y
             }
           }
         },
@@ -1390,7 +1390,7 @@ $.fn.dropdown = function(parameters) {
                 module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                 module.event.item.click.call($selectedItem, event);
                 if(module.is.searchSelection()) {
-                  // module.remove.searchTerm();
+                   module.remove.searchTerm();
                 }
               }
 
@@ -1411,7 +1411,7 @@ $.fn.dropdown = function(parameters) {
                     console.log("--- else if(selectedIsSelectable) -----");
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
-                      // module.remove.searchTerm();
+                       module.remove.searchTerm();
                     }
                   }
                   event.preventDefault();
@@ -1849,7 +1849,6 @@ $.fn.dropdown = function(parameters) {
             }
           },
           choiceValue: function($choice, choiceText) {
-
             choiceText = choiceText || module.get.choiceText($choice);
             if(!$choice) {
               return false;
@@ -2305,7 +2304,7 @@ $.fn.dropdown = function(parameters) {
               console.log('Added tabindex to searchable dropdown')
               module.debug('Added tabindex to searchable dropdown');
               $search
-                //.val('')
+                .val('')
                 .attr('tabindex', 0)
               ;
               $menu
@@ -2408,14 +2407,14 @@ $.fn.dropdown = function(parameters) {
                 if(settings.preserveHTML) {
                   console.log("html wird gesetzt in set.text")
                   console.log($search)
-                  //$text.html(text);
-                  $search.val(text); // a11y
+                  $text.html(text);
+                  //$search.val(text); // a11y
                 }
                 else {
                   console.log("tex wird gesetzt set.text")
 
                   $text.text(text);
-                  $search.val(text); // a11y
+                  //$search.val(text); // a11y
                 }
               }
             }
@@ -2649,7 +2648,7 @@ $.fn.dropdown = function(parameters) {
           },
           clearable: function() {
             $icon.addClass(className.clear);
-          },
+          }
         },
 
         add: {
@@ -2847,7 +2846,7 @@ $.fn.dropdown = function(parameters) {
             }
             module.set.value(newValue, addedValue, addedText, $selectedItem);
             module.check.maxSelections();
-          },
+          }
         },
 
         remove: {
@@ -3087,7 +3086,7 @@ $.fn.dropdown = function(parameters) {
           },
           clearable: function() {
             $icon.removeClass(className.clear);
-            $search.val('');
+            //$search.val('');
           }
         },
 
@@ -3526,7 +3525,7 @@ $.fn.dropdown = function(parameters) {
         },
 
         hideAndClear: function() {
-          // module.remove.searchTerm(); // a11y
+          module.remove.searchTerm(); // a11y
           if( module.has.maxSelections() ) {
             return;
           }
@@ -3778,7 +3777,7 @@ $.fn.dropdown.settings = {
   clearable              : false,      // whether the value of the dropdown can be cleared
 
   apiSettings            : false,
-  selectOnKeydown        : false,       // Whether selection should occur automatically when keyboard shortcuts used
+  selectOnKeydown        : true,       // Whether selection should occur automatically when keyboard shortcuts used
   minCharacters          : 0,          // Minimum characters required to trigger API call
 
   filterRemoteData       : false,      // Whether API results should be filtered after being returned for query term
@@ -3794,10 +3793,10 @@ $.fn.dropdown.settings = {
   fullTextSearch         : false,      // search anywhere in value (set to 'exact' to require exact matches)
 
   placeholder            : 'auto',     // whether to convert blank <select> values to placeholder text
-  preserveHTML           : false,       // preserve html when selecting value
+  preserveHTML           : true,       // preserve html when selecting value
   sortSelect             : false,      // sort selection on init
 
-  forceSelection         : false,       // force a choice on blur with search selection
+  forceSelection         : true,       // force a choice on blur with search selection
 
   allowAdditions         : false,      // whether multiple select should allow user added values
   ignoreCase             : false,       // whether to consider values not matching in case to be the same
@@ -4005,7 +4004,7 @@ $.fn.dropdown.settings.templates = {
 
   // generates label for multiselect
   label: function(value, text) {
-    return text + '<i aria-hidden="true" class="delete icon" ></i>';
+    return text + '<i aria-hidden="true" class="delete icon"></i>';
   },
 
 
