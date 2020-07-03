@@ -1,8 +1,30 @@
+<%@ page import="org.codehaus.groovy.grails.plugins.codecs.HTMLCodec; org.springframework.web.util.HtmlUtils" %>
 <g:if test="${address}">
 	<div class="ui item address-details">
-        <span class="la-popup-tooltip la-delay"  data-content="${message(code:'adress.icon.label.adress')}" data-position="top right" data-variation="tiny">
+        %{--<span class="la-popup-tooltip la-delay"  data-content="${message(code:'adress.icon.label.adress')}" data-position="top right" data-variation="tiny">--}%
+            %{--<i class="ui icon building map marker alternate la-list-icon"></i>--}%
+        %{--</span>--s}%
+        %{--<% String url = 'https://www.google.com/maps/place/'--}%
+        <% String url = ''
+        if (address.name) url += address.name
+        url += (url.length()>0 && address.street_1)? '+' : ''
+        if (address.street_1) url += address.street_1
+        url += (url.length()>0 && address.street_2)? '+' : ''
+        if (address.street_2) url += address.street_2
+        url += (url.length()>0 && address.zipcode)? '+' : ''
+        if (address.zipcode) url += address.zipcode
+        url += (url.length()>0 && address.city)? '+' : ''
+        if (address.city) url += address.city
+        url += (url.length()>0 && address.country)? '+' : ''
+        if (address.country) url += address.country
+        url = url.replace(' ', '+')
+//        String encodedUrl = URLEncoder.encode(url)
+        url = 'https://maps.google.com/?q='+url
+//        url = 'https://www.google.com/maps/search/?api:1&query='+encodedUrl
+        %>
+        <a href="${url}" target="_blank">
             <i class="ui icon building map marker alternate la-list-icon"></i>
-        </span>
+        </a>
         <div class="content la-space-right">
             <strong>${address.type?.getI10n('value')}:</strong>
             <div class="item" onclick="addressedit(${address.id});" >
