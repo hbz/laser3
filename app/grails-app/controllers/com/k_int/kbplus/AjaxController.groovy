@@ -671,7 +671,7 @@ class AjaxController {
                 else {
                     switch(params.domain) {
                         case 'currentSubscriptions':
-                        case 'manageConsortiaSubscriptions': values = SubscriptionCustomProperty.executeQuery('select scp from SubscriptionCustomProperty scp join scp.owner s join s.orgRelations oo where scp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select scp from SubscriptionProperty scp join scp.owner s join s.orgRelations oo where scp.type = :propDef and oo.org = :tenant',[propDef:propDef, tenant:contextService.org])
                             break
                         case 'currentLicenses': values = LicenseCustomProperty.executeQuery('select lcp from LicenseCustomProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
                             break

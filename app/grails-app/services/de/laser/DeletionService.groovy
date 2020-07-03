@@ -307,7 +307,7 @@ class DeletionService {
                     }
                     // custom properties
                     customProps.each{ tmp ->
-                        List changeList = SubscriptionCustomProperty.findAllByInstanceOf(tmp)
+                        List changeList = SubscriptionProperty.findAllByInstanceOf(tmp)
                         changeList.each { tmp2 ->
                             tmp2.instanceOf = null
                             tmp2.save()

@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.interfaces.AuditableSupport
 import grails.converters.JSON
@@ -9,7 +8,7 @@ import org.codehaus.groovy.grails.web.json.JSONElement
 
 import javax.persistence.Transient
 
-class SubscriptionCustomProperty extends CustomProperty implements AuditableSupport {
+class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated implements AuditableSupport {
 
     @Transient
     def genericOIDService
@@ -29,17 +28,33 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
 
     PropertyDefinition type
     Subscription owner
-    SubscriptionCustomProperty instanceOf
+    SubscriptionProperty instanceOf
+
+    //to be transposed to AbstractPropertyWithCalculatedLastUpdated once migration is complete
+    Org tenant
+    boolean isPublic = false
 
     Date dateCreated
     Date lastUpdated
 
     static mapping = {
-        includes    AbstractPropertyWithCalculatedLastUpdated.mapping
-        owner       index:'scp_owner_idx'
-
-        dateCreated column: 'scp_date_created'
-        lastUpdated column: 'scp_last_updated'
+        id          column: 'sp_id'
+        version     column: 'sp_version'
+        stringValue column: 'sp_string_value'
+        intValue    column: 'sp_int_value'
+        decValue    column: 'sp_dec_value'
+        refValue    column: 'sp_ref_value_rv_fk'
+        urlValue    column: 'sp_url_value'
+        note        column: 'sp_note'
+        dateValue   column: 'sp_date_value'
+        instanceOf  column: 'sp_instance_of_fk', index: 'sp_instance_of_idx'
+        owner       column: 'sp_owner_fk', index: 'sp_owner_idx'
+        type        column: 'sp_type_fk', index: 'sp_type_idx'
+        tenant      column: 'sp_tenant_fk', index: 'sp_tenant_idx'
+        isPublic    column: 'sp_is_public'
+        dateCreated column: 'sp_date_created'
+        lastUpdated column: 'sp_last_updated'
+        lastUpdatedCascading column: 'sp_last_updated_cascaded'
     }
 
     static constraints = {
@@ -106,7 +121,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableSupp
 
             List<PendingChange> slavedPendingChanges = []
 
-            List<SubscriptionCustomProperty> depedingProps = SubscriptionCustomProperty.findAllByInstanceOf( this )
+            List<SubscriptionProperty> depedingProps = SubscriptionProperty.findAllByInstanceOf( this )
             depedingProps.each{ scp ->
 
                 String definedType = 'text'
