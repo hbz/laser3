@@ -114,7 +114,7 @@
             <td class="center aligned">
                 <g:if test="${propValues.containsKey(sourceSubscription)}">
                     <g:each var="propValue" in="${propValuesForSourceSub}">
-                        <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
+                        <g:if test="${propValue instanceof SubscriptionProperty}">
                             <div class="ui checkbox la-toggle-radio la-inherit">
                                 <input type="checkbox" name="auditProperties" value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked' }/>
                             </div>
@@ -177,7 +177,7 @@
                         </div>
 
                         <g:if test="${isConsortialSubs}">
-                            <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
+                            <g:if test="${propValue instanceof SubscriptionProperty}">
                                 <div class="la-copyElements-flex-item">
                                     <g:if test="${! AuditConfig.getConfig(propValue)}">
                                         <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.on.tooltip')}">

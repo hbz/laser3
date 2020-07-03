@@ -13,7 +13,13 @@
 </g:if>
 
 <table class="ui la-table-small la-table-inCard table">
-    <g:if test="${ownobj.privateProperties}">
+    <g:if test="${ownobj.hasProperty('privateProperties')}">
+        <g:set var="privateProperties" value="${ownobj.privateProperties}"/>
+    </g:if>
+    <g:else>
+        <g:set var="privateProperties" value="${ownobj.customProperties.findAll { cp -> cp.tenant == institution && cp.isPublic == false }}"/>
+    </g:else>
+    <g:if test="${privateProperties}">
         <colgroup>
             <col style="width: 129px;">
             <col style="width: 96px;">
@@ -36,7 +42,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${ownobj.privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+        <g:each in="${privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
@@ -120,7 +126,7 @@
     <g:if test="${overwriteEditable}">
         <tfoot>
             <tr>
-                <g:if test="${ownobj.privateProperties}">
+                <g:if test="${privateProperties}">
                     <td colspan="4">
                 </g:if>
                 <g:else>

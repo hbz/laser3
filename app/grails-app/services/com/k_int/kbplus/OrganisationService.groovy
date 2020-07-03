@@ -2184,7 +2184,7 @@ class OrganisationService {
                                 // causing a session mismatch
                                 // AbstractProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY,obj,PropertyDefinition.get(v.type))
                                 v.each { property ->
-                                    SubscriptionCustomProperty newProp = new SubscriptionCustomProperty(owner:obj,type:PropertyDefinition.get(property.type))
+                                    SubscriptionProperty newProp = new SubscriptionProperty(owner:obj,type:PropertyDefinition.get(property.type))
                                     newProp.note = property.note ?: null
                                     if(property.stringValue) {
                                         newProp.stringValue = property.stringValue
@@ -2281,11 +2281,11 @@ class OrganisationService {
                                             throw new CreationException(providerAgencyRole.errors)
                                     }
                                     synShareTargetList.add(consSub)
-                                    SubscriptionCustomProperty.findAllByOwner(obj).each { scp ->
+                                    SubscriptionProperty.findAllByOwner(obj).each { scp ->
                                         AuditConfig ac = AuditConfig.getConfig(scp)
                                         if(ac) {
                                             //I do not understand what the difference in SubscriptionController is, so, I will not distinct here between multipleOccurrence or not
-                                            AbstractPropertyWithCalculatedLastUpdated prop = new SubscriptionCustomProperty(owner:consSub,type:scp.type)
+                                            AbstractPropertyWithCalculatedLastUpdated prop = new SubscriptionProperty(owner:consSub,type:scp.type)
                                             prop = scp.copyInto(prop)
                                             prop.instanceOf = scp
                                             prop.save()
@@ -2412,11 +2412,11 @@ class OrganisationService {
             case 'Subscription':
                 if(obj.instanceOf) {
                     List<Subscription> synShareTargetList = [obj]
-                    SubscriptionCustomProperty.findAllByOwner(obj.instanceOf).each { scp ->
+                    SubscriptionProperty.findAllByOwner(obj.instanceOf).each { scp ->
                         AuditConfig ac = AuditConfig.getConfig(scp)
                         if(ac) {
                             //I do not understand what the difference in SubscriptionController is, so, I will not distinct here between multipleOccurrence or not
-                            AbstractPropertyWithCalculatedLastUpdated prop = new SubscriptionCustomProperty(owner:obj,type:scp.type)
+                            AbstractPropertyWithCalculatedLastUpdated prop = new SubscriptionProperty(owner:obj,type:scp.type)
                             prop = scp.copyInto(prop)
                             prop.instanceOf = scp
                             prop.save()

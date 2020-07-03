@@ -4359,7 +4359,7 @@ class SurveyController {
 
                         }
 
-                        SubscriptionCustomProperty.findAllByOwner(newParentSub).each { scp ->
+                        SubscriptionProperty.findAllByOwner(newParentSub).each { scp ->
                             AuditConfig ac = AuditConfig.getConfig(scp)
 
                             if (ac) {
