@@ -5553,8 +5553,8 @@ class SubscriptionController extends AbstractDebugController {
                     isSlaved: baseSubscription.isSlaved,
                     startDate: params.subscription.copyDates ? baseSubscription.startDate : null,
                     endDate: params.subscription.copyDates ? baseSubscription.endDate : null,
-                    resource: params.subscription.resource ? baseSubscription.resource : null,
-                    form: params.subscription.form ? baseSubscription.form : null,
+                    resource: params.subscription.copyResource ? baseSubscription.resource : null,
+                    form: params.subscription.copyForm ? baseSubscription.form : null,
             )
             //Copy License
             if (params.subscription.copyLicense) {
