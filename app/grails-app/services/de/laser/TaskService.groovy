@@ -255,15 +255,15 @@ class TaskService {
             def params       = [:]
             params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
             def fsq          = filterService.getOrgQuery(params)
-            validOrgs = Org.executeQuery('select o.id, o.name, o.shortname, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
+            //validOrgs = Org.executeQuery('select o.id, o.name, o.shortname, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
 
-            String comboQuery = 'select o.id, o.name, o.shortname, o.sortname, c.id from Org o, Combo c join org o on c.fromOrg = o.org_id where c.toOrg = :toOrg and c.type = :type order by '+params.sort
+            String comboQuery = 'select o.id, o.name, o.shortname, o.sortname from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort
             if (isConsortium){
-                validOrgs << Combo.executeQuery(comboQuery,
+                validOrgs = Combo.executeQuery(comboQuery,
                         [toOrg: contextOrg,
                         type:  RDStore.COMBO_TYPE_CONSORTIUM])
             } else if (isInstitution){
-                validOrgs << Combo.executeQuery(comboQuery,
+                validOrgs = Combo.executeQuery(comboQuery,
                         [toOrg: contextOrg,
                         type:  RDStore.COMBO_TYPE_DEPARTMENT])
             }
