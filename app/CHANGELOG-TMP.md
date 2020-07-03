@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2645    03.06.2020  rc1.4       Moe     Bug         Blocker: /myInstitution/tasks nicht aufrufbar
+
 --      22.06.2020  rc1.4       Moe     Bug         Wrong using of getCustomerType
 
 --      22.06.2020  rc1.4       David   Feature     API 0.109
