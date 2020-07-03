@@ -395,6 +395,9 @@ grails.cache.config = {
 grails.gorm.default.mapping = {
    id generator: 'identity'
 }
+//grails.gorm.default.constraints = {
+//    '*'(nullable: false)  <- default!
+//}
 
 // URL Mapping Cache Max Size, defaults to 5000
 //grails.urlmapping.cache.maxsize = 1000

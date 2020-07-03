@@ -16,7 +16,7 @@ class ActivityProfiler {
     }
 
     static constraints = {
-        userCount   (nullable:false, blank:false)
+        userCount   (blank:false)
     }
 
     static void update() {

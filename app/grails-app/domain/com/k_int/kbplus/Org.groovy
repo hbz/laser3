@@ -193,7 +193,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     static constraints = {
            globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-                name(nullable:false, blank:false, maxSize:255)
+                name(blank:false, maxSize:255)
            shortname(nullable:true, blank:true, maxSize:255)
             sortname(nullable:true, blank:true, maxSize:255)
      legalPatronName(nullable:true, blank:true, maxSize:255)

@@ -34,9 +34,9 @@ class CostItemElementConfiguration extends AbstractBase {
 
     static constraints = {
         globalUID           (nullable: true, blank: false, unique: true, maxSize: 255)
-        costItemElement     (nullable: false, blank: false)
-        elementSign         (nullable: false, blank: false)
-        forOrganisation     (nullable: false, blank: false)
+        costItemElement     (blank: false)
+        elementSign         (blank: false)
+        forOrganisation     (blank: false)
     }
 
     @Override

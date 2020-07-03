@@ -41,7 +41,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
         introduction(nullable: true, blank: false)
         comment(nullable: true, blank: false)
         expl(nullable: true, blank: false)
-        isHardData(nullable: false, blank: false)
+        isHardData(blank: false)
         refdataCategory(nullable: true, blank: false)
     }
 

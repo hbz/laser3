@@ -22,8 +22,8 @@ class Order {
   }
 
   static constraints = {
-    orderNumber(nullable:false, blank:false);
-          owner(nullable:false, blank:false);
+    orderNumber (blank:false)
+          owner (blank:false)
 
       // Nullable is true, because values are already in the database
       lastUpdated (nullable: true, blank: false)

@@ -150,19 +150,19 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     }
 
     static constraints = {
-        name                (nullable: false, blank: false)
+        name                (blank: false)
         name_de             (nullable: true, blank: false)
         name_en             (nullable: true, blank: false)
         expl_de             (nullable: true, blank: false)
         expl_en             (nullable: true, blank: false)
         descr               (nullable: true,  blank: false)
-        type                (nullable: false, blank: false)
+        type                (blank: false)
         refdataCategory     (nullable: true)
         tenant              (nullable: true,  blank: true)
         multipleOccurrence  (nullable: true,  blank: true)
-        mandatory           (nullable: false, blank: false)
-        isHardData          (nullable: false, blank: false)
-        isUsedForLogic      (nullable: false, blank: false)
+        mandatory           (blank: false)
+        isHardData          (blank: false)
+        isUsedForLogic      (blank: false)
         lastUpdated         (nullable: true, blank: false)
         dateCreated         (nullable: true, blank: false)
     }

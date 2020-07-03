@@ -151,15 +151,15 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:false, blank:false)
+        status(blank:false)
         type(nullable:true, blank:false)
-        reference(nullable:false, blank:false)
+        reference(blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
         isPublicForApi (nullable:true, blank:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
         instanceOf(nullable:true, blank:false)
-        isSlaved    (nullable:false, blank:false)
+        isSlaved    (blank:false)
         //licenseStatus(nullable:true, blank:true)
         //lastmod(nullable:true, blank:true)
         //onixplLicense(nullable: true, blank: true)

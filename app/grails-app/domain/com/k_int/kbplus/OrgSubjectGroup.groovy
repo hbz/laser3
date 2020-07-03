@@ -24,8 +24,6 @@ class OrgSubjectGroup {
         lastUpdated  column: 'osg_last_updated'
     }
     static constraints = {
-        org          (nullable:false)
-        subjectGroup (nullable:false)
         lastUpdated  (nullable: true, blank: false)
         dateCreated  (nullable: true, blank: false)
     }
