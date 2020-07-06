@@ -97,8 +97,8 @@ $.fn.dropdown = function(parameters) {
             module.setup.reference();
           }
           else {
-
-            module.setup.layout();
+            module.create.id();
+            module.setup.layout(id);
 
             if(settings.values) {
               module.change.values(settings.values);
@@ -109,7 +109,7 @@ $.fn.dropdown = function(parameters) {
             module.save.defaults();
             module.restore.selected();
 
-            module.create.id();
+
             module.bind.events();
 
             module.observeChanges();
@@ -239,10 +239,10 @@ $.fn.dropdown = function(parameters) {
               });
             }
           },
-          menu: function() {
+          menu: function(id) {
             $menu = $('<div />')
               .addClass(className.menu)
-                .attr('id','listBox')
+                .attr('id', id + '_listBox')
 
               .appendTo($module)
             ;
@@ -316,13 +316,13 @@ $.fn.dropdown = function(parameters) {
               .api(apiSettings)
             ;
           },
-          layout: function() {
+          layout: function(id) {
             if( $module.is('select') ) {
-              module.setup.select();
+              module.setup.select(id);
               module.setup.returnedObject();
             }
             if( !module.has.menu() ) {
-              module.create.menu();
+              module.create.menu(id);
             }
             if( module.is.search() && !module.has.search() ) {
               module.verbose('Adding search input');
@@ -330,7 +330,7 @@ $.fn.dropdown = function(parameters) {
                 .addClass(className.search)
                 .prop('autocomplete', 'off')
                   .attr('aria-autocomplete','list') // a11y
-                  .attr('aria-controls','listBox') // a11y
+                  .attr('aria-controls',id+'_listBox') // a11y
                 .insertBefore($text)
               ;
             }
@@ -341,7 +341,7 @@ $.fn.dropdown = function(parameters) {
               module.set.tabbable();
             }
           },
-          select: function() {
+          select: function(id) {
             var
               selectValues  = module.get.selectValues()
             ;
@@ -354,7 +354,7 @@ $.fn.dropdown = function(parameters) {
               module.debug('UI dropdown already exists. Creating dropdown menu only');
               $module = $input.closest(selector.dropdown);
               if( !module.has.menu() ) {
-                module.create.menu();
+                module.create.menu(id);
               }
               $menu = $module.children(selector.menu);
               module.setup.menu(selectValues);
@@ -367,10 +367,9 @@ $.fn.dropdown = function(parameters) {
                 .addClass(className.dropdown)
                   .attr('role', 'combobox') //a11y
                   .attr('aria-haspopup','listbox') //a11y
-                  .attr('aria-owns','listBox') //a11y
-                  .attr('id','test') //a11y
+                  .attr('aria-owns',id + '_listBox') //a11y
 
-                .html( templates.dropdown(selectValues) )
+                .html( templates.dropdown(selectValues,id) )
                 .insertBefore($input)
               ;
               if($input.hasClass(className.multiple) && $input.prop('multiple') === false) {
@@ -1138,7 +1137,7 @@ $.fn.dropdown = function(parameters) {
               if(isSelectMutation) {
                 module.disconnect.selectObserver();
                 module.refresh();
-                module.setup.select();
+                module.setup.select(id);
                 module.set.selected();
                 module.observe.select();
               }
@@ -2074,7 +2073,7 @@ $.fn.dropdown = function(parameters) {
               else {
                 module.remove.activeItem();
                 module.remove.selectedItem();
-                module.remove.ariaSelected()
+                module.remove.ariaSelected();
               }
             }
           },
@@ -2298,6 +2297,7 @@ $.fn.dropdown = function(parameters) {
             module.debug('Setting placeholder text', text);
             module.set.text(text);
             $text.addClass(className.placeholder);
+            module.remove.activedescendant();
           },
           tabbable: function() {
             if( module.is.searchSelection() ) {
@@ -3956,7 +3956,7 @@ $.fn.dropdown.settings = {
 $.fn.dropdown.settings.templates = {
 
   // generates dropdown from select values
-  dropdown: function(select) {
+  dropdown: function(select,id) {
     var
       placeholder = select.placeholder || false,
       values      = select.values || {},
@@ -3969,11 +3969,11 @@ $.fn.dropdown.settings.templates = {
     else {
       html += '<div class="text" ></div>';
     }
-    html += '<div class="menu" id="listBox" role="listbox">';
+    html += '<div class="menu" id="'+id +'_listBox" role="listbox">';
     $.each(select.values, function(index, option) {
       html += (option.disabled)
-        ? '<div id="' + option.value + '" class="disabled item" data-value="' + option.value + '">' + option.name + '</div>'
-        : '<div id="' + option.value + '"  class="item" role="option" data-value="' + option.value + '">' + option.name + '</div>'
+        ? '<div id="' + id +'_' + option.value + '" class="disabled item" data-value="' + option.value + '">' + option.name + '</div>'
+        : '<div id="' + id +'_' +  option.value + '"  class="item" role="option" data-value="' + option.value + '">' + option.name + '</div>'
       ;
     });
     html += '</div>';
