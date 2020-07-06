@@ -141,6 +141,8 @@
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         finalCostRounding:
           type: string
+        isVisibleForSubscriber:
+          type: string
         invoiceDate:
           type: string
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>

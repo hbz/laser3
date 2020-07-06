@@ -80,7 +80,7 @@ class ApiCostItem {
         boolean hasAccess = isInvoiceTool || (owner.id == context.id)
         if (hasAccess) {
             // TODO
-            result = CostItem.findAllByOwnerAndCostItemStatusNotEqual(owner, RDStore.COST_ITEM_DELETED).globalUID
+            result = CostItem.findAllByOwner(owner).globalUID
             result = ApiToolkit.cleanUp(result, true, true)
         }
 
@@ -99,7 +99,7 @@ class ApiCostItem {
             Timestamp ts= new Timestamp(Long.parseLong(timestamp))
             Date apiDate= new Date(ts.getTime());
             def today = new Date()
-            result = CostItem.findAllByOwnerAndLastUpdatedBetweenAndCostItemStatusNotEqual(owner, apiDate, today, RDStore.COST_ITEM_DELETED).globalUID
+            result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
             result = ApiToolkit.cleanUp(result, true, true)
         }
 
@@ -135,6 +135,8 @@ class ApiCostItem {
         result.reference           = costItem.reference
         result.startDate           = ApiToolkit.formatInternalDate(costItem.startDate)
         result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : costItem.taxRate)
+
+        result.isVisibleForSubscriber = costItem.isVisibleForSubscriber
 
         // erms-888
         result.calculatedType      = costItem.getCalculatedType()
