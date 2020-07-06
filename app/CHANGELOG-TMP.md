@@ -2,17 +2,17 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2660    06.06.2020  rc1.4       Moe     Bug         API Endpunkt CostItemList muss alle CostItems zurückgeben
+2660    06.07.2020  rc1.4       Moe     Bug         API Endpunkt CostItemList muss alle CostItems zurückgeben
 
-2661    06.06.2020  rc1.4       Moe     Bug         API CostItem gibt kein isVisibleForSubscriber zurück
+2661    06.07.2020  rc1.4       Moe     Bug         API CostItem gibt kein isVisibleForSubscriber zurück
 
-2642    06.06.2020  rc1.4       Moe     Bug         Falsche Bezeichnung bei Alle Anbieter & Lieferanten
+2642    06.07.2020  rc1.4       Moe     Bug         Falsche Bezeichnung bei Alle Anbieter & Lieferanten
 
-2644    06.06.2020  rc1.4       Moe     Bug         "Fällige Termine"-Mailbenachrichtigung hat englischen Betreff "Due Dates"
+2644    06.07.2020  rc1.4       Moe     Bug         "Fällige Termine"-Mailbenachrichtigung hat englischen Betreff "Due Dates"
 
-2651    03.06.2020  rc1.4       Moe     Bug         Lizenz kopieren: Ressourcentyp und Lizenzform werden nicht mitkopiert
+2651    03.07.2020  rc1.4       Moe     Bug         Lizenz kopieren: Ressourcentyp und Lizenzform werden nicht mitkopiert
 
-2645    03.06.2020  rc1.4       Moe     Bug         Blocker: /myInstitution/tasks nicht aufrufbar
+2645    03.07.2020  rc1.4       Moe     Bug         Blocker: /myInstitution/tasks nicht aufrufbar
 
 1710    30.06.2020  rc1.4       Andreas Bug         Performanz bei Laden der Änderungen verbessert
 
