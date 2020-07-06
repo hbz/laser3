@@ -1679,8 +1679,9 @@ class YodaController {
                 "AND (pp.note IS null OR pp.note = '') "
         )
 
-        def lpp = LicensePrivateProperty.executeQuery(
-                "SELECT pp FROM LicensePrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+        def lpp = LicenseProperty.executeQuery(
+                "SELECT pp FROM LicenseProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.isPublic = false " +
                         "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') " +
@@ -1711,7 +1712,7 @@ class YodaController {
 
             println lpp.collect{ it.id }
             if (lpp.size() > 0) {
-                LicensePrivateProperty.executeUpdate('DELETE FROM LicensePrivateProperty lpp WHERE lpp.id in :idList',
+                LicenseProperty.executeUpdate('DELETE FROM LicenseProperty lpp WHERE lpp.id in :idList',
                         [idList: lpp.collect { it.id }]
                 )
             }
@@ -1724,7 +1725,7 @@ class YodaController {
             }
         }
 
-        result.candidates = [OrgPrivateProperty: opp, SubscriptionProperty: spp, LicensePrivateProperty: lpp, PersonPrivateProperty: ppp]
+        result.candidates = [OrgPrivateProperty: opp, SubscriptionProperty: spp, LicenseProperty: lpp, PersonPrivateProperty: ppp]
 
         render view: 'databaseMigration', model: result
     }

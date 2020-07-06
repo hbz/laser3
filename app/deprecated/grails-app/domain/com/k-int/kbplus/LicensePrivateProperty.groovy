@@ -79,10 +79,10 @@ class LicensePrivateProperty extends PrivateProperty {
 
     @Transient
     def onDelete = { oldMap ->
-        log.debug("onDelete LicensePrivateProperty")
+        log.debug("onDelete LicenseProperty")
         def oid = "${this.owner.class.name}:${this.owner.id}"
         Map<String, Object> changeDoc = [ OID: oid,
-                                          event:'LicensePrivateProperty.deleted',
+                                          event:'LicenseProperty.deleted',
                                           prop: "${this.type.name}",
                                           old: "",
                                           new: "property removed",

@@ -2338,7 +2338,7 @@ class OrganisationService {
                                 // causing a session mismatch
                                 // AbstractProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY,obj,PropertyDefinition.get(v.type))
                                 v.each { property ->
-                                    LicenseCustomProperty newProp = new LicenseCustomProperty(owner:obj,type:PropertyDefinition.get(property.type))
+                                    LicenseProperty newProp = new LicenseProperty(owner:obj,type:PropertyDefinition.get(property.type))
                                     if(property.stringValue) {
                                         newProp.stringValue = property.stringValue
                                     }

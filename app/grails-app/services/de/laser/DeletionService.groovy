@@ -120,7 +120,7 @@ class DeletionService {
                     }
                     // custom properties
                     customProps.each{ tmp ->
-                        List changeList = LicenseCustomProperty.findAllByInstanceOf(tmp)
+                        List changeList = LicenseProperty.findAllByInstanceOf(tmp)
                         changeList.each { tmp2 ->
                             tmp2.instanceOf = null
                             tmp2.save(flush:true)

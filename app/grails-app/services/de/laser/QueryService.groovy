@@ -121,13 +121,13 @@ class QueryService {
         }
         if (propertyClass.simpleName.toLowerCase().contains("private")) {
             queryParams << [myOrg:contextOrg]
-            query += "and exists (select pd from PropertyDefinition as pd where prop.type = pd AND pd.tenant = :myOrg) "
+            query += "and exists (select pd from PropertyDefinition as pd where prop.type = pd AND prop.tenant = :myOrg AND prop.isPublic = false AND pd.tenant = :myOrg) "
         }
         if (SubscriptionProperty.class.equals(propertyClass)) {
             def tmpQuery = getMySubscriptionsQuery(contextOrg)
             queryParams << tmpQuery.queryParams
             query += "and owner in ( " + tmpQuery.query + " )"
-        }else if (LicenseCustomProperty.class.equals(propertyClass) || LicensePrivateProperty.class.equals(propertyClass)){
+        }else if (LicenseProperty.class.equals(propertyClass)){
             def tmpQuery = getMyLicensesQuery(contextOrg)
             queryParams << tmpQuery.queryParams
             query += "and owner in ( " + tmpQuery.query + " )"
@@ -142,9 +142,9 @@ class QueryService {
         SubscriptionProperty.executeQuery(query.query, query.queryParams)
     }
 
-    List<LicenseCustomProperty> getDueLicenseCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def query = getQuery(LicenseCustomProperty.class, contextOrg, fromDateValue, toDateValue)
-        LicenseCustomProperty.executeQuery(query.query, query.queryParams)
+    List<LicenseProperty> getDueLicenseCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+        def query = getQuery(LicenseProperty.class, contextOrg, fromDateValue, toDateValue)
+        LicenseProperty.executeQuery(query.query, query.queryParams)
     }
 
     List<OrgPrivateProperty> getDueOrgPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue) {
@@ -157,9 +157,9 @@ class QueryService {
         SubscriptionProperty.executeQuery(query.query, query.queryParams)
     }
 
-    List<LicensePrivateProperty> getDueLicensePrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def query = getQuery(LicensePrivateProperty.class, contextOrg, fromDateValue, toDateValue)
-        LicensePrivateProperty.executeQuery(query.query, query.queryParams)
+    List<LicenseProperty> getDueLicensePrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+        def query = getQuery(LicenseProperty.class, contextOrg, fromDateValue, toDateValue)
+        LicenseProperty.executeQuery(query.query, query.queryParams)
     }
 
     private Map getMySubscriptionsQuery(Org contextOrg){

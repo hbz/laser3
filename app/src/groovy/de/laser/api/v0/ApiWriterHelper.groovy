@@ -211,11 +211,12 @@ class ApiWriterHelper {
                     )
                 }
                 else if (owner instanceof License) {
-                    property = new LicensePrivateProperty(
+                    property = new LicenseProperty(
                             owner:     owner,
                             tenant:    contextOrg,
                             paragraph: it.paragraph,
-                            note:      it.note
+                            note:      it.note,
+                            isPublic: it.isPublic
                     )
                 }
 
@@ -240,7 +241,7 @@ class ApiWriterHelper {
                     )
                 }
                 else if (owner instanceof License) {
-                    property = new LicenseCustomProperty(
+                    property = new LicenseProperty(
                             owner:     owner,
                             note:      it.note,
                             paragraph: it.paragraph

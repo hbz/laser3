@@ -658,7 +658,7 @@ class AjaxController {
                         case 'currentSubscriptions':
                         case 'manageConsortiaSubscriptions': values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
-                        case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
+                        case 'currentLicenses': values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
                         case 'listProvider':
                         case 'currentProviders':
@@ -673,7 +673,7 @@ class AjaxController {
                         case 'currentSubscriptions':
                         case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.type = :propDef and sp.tenant = :tenant and sp.isPublic = true',[propDef:propDef, tenant:contextService.org])
                             break
-                        case 'currentLicenses': values = LicenseCustomProperty.executeQuery('select lcp from LicenseCustomProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                        case 'currentLicenses': values = LicenseProperty.executeQuery('select lcp from LicenseProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef, tenant:contextService.org])
                             break
                         case 'listProvider':
                         case 'currentProviders':

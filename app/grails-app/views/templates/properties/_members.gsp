@@ -17,7 +17,7 @@
         <g:each in="${memberProperties}" var="propType">
             <tr>
                 <td>
-                    <g:if test="${editable == true}">
+                    <g:if test="${editable == true && subscription}">
                         <g:link action="propertiesMembers" params="${[id:subscription.id,filterPropDef:GenericOIDService.getOID(propType)]}" >
                             <g:if test="${propType.getI10n('expl') != null && !propType.getI10n('expl').contains(' °')}">
                                 ${propType.getI10n('name')}

@@ -176,7 +176,7 @@ class ApiCollectionReader {
                 tmp.refdataCategory = it.type.refdataCategory
             }
 
-            if (it instanceof LicenseCustomProperty) {
+            if (it instanceof LicenseProperty) {
                 tmp.paragraph = it.paragraph
             }
             tmp = ApiToolkit.cleanUp(tmp, true, false)
@@ -299,7 +299,7 @@ class ApiCollectionReader {
     static Collection<Object> getPrivatePropertyCollection(Collection list, Org context) {
         Collection<Object> result = []
 
-        list.findAll{ it.owner.id == context.id || it.type.tenant?.id == context.id}?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
+        list.findAll{ (it.owner.id == context.id || it.type.tenant?.id == context.id) && it.tenant?.id == context.id && it.isPublic == false }?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
             Map<String, Object> tmp = [:]
 
             tmp.token   = it.type.name     // com.k_int.kbplus.PropertyDefinition.String
@@ -323,7 +323,7 @@ class ApiCollectionReader {
             //tmp.dateCreated = ApiToolkit.formatInternalDate(it.dateCreated)
             //tmp.lastUpdated = ApiToolkit.formatInternalDate(it.getCalculatedLastUpdated())
 
-            if (it instanceof LicensePrivateProperty) {
+            if (it instanceof LicenseProperty) {
                 tmp.paragraph = it.paragraph
             }
 
@@ -337,7 +337,7 @@ class ApiCollectionReader {
 
     static Collection<Object> getPropertyCollection(Object generic, Org context, def ignoreFlag) {
         Collection<Object> cp = getCustomPropertyCollection(generic.customProperties, generic, context)
-        Collection<Object> pp = getPrivatePropertyCollection(generic.privateProperties, context)
+        Collection<Object> pp = getPrivatePropertyCollection(generic.customProperties, context)
 
         if (ignoreFlag == ApiReader.IGNORE_CUSTOM_PROPERTIES) {
             return pp

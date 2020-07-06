@@ -1,21 +1,17 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.interfaces.AuditableSupport
-import grails.converters.JSON
 
 import javax.persistence.Transient
 
-class LicenseCustomProperty extends CustomProperty implements AuditableSupport {
+class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implements AuditableSupport {
 
     @Transient
     def genericOIDService
     @Transient
     def changeNotificationService
-    @Transient
-    def grailsApplication
     @Transient
     def messageSource
     @Transient
@@ -30,19 +26,34 @@ class LicenseCustomProperty extends CustomProperty implements AuditableSupport {
 
     PropertyDefinition type
     License owner
-    LicenseCustomProperty instanceOf
+    LicenseProperty instanceOf
     String paragraph
+
+    //to be transposed to AbstractPropertyWithCalculatedLastUpdated once migration is complete
+    Org tenant
+    boolean isPublic = false
 
     Date dateCreated
     Date lastUpdated
 
     static mapping = {
-        includes   AbstractPropertyWithCalculatedLastUpdated.mapping
-        paragraph  type: 'text'
-        owner      index:'lcp_owner_idx'
-
-        dateCreated column: 'lcp_date_created'
-        lastUpdated column: 'lcp_last_updated'
+        id          column: 'lp_id'
+        version     column: 'lp_version'
+        stringValue column: 'lp_string_value'
+        intValue    column: 'lp_int_value'
+        decValue    column: 'lp_dec_value'
+        refValue    column: 'lp_ref_value_rv_fk'
+        urlValue    column: 'lp_url_value'
+        note        column: 'lp_note'
+        dateValue   column: 'lp_date_value'
+        instanceOf  column: 'lp_instance_of_fk', index: 'lp_instance_of_idx'
+        paragraph   column: 'lp_paragraph', type: 'text'
+        owner       column: 'lp_owner_fk', index:'lcp_owner_idx'
+        type        column: 'lp_type_fk', index: 'lp_type_idx'
+        tenant      column: 'lp_tenant_fk', index: 'lp_tenant_idx'
+        isPublic    column: 'lp_is_public'
+        dateCreated column: 'lp_date_created'
+        lastUpdated column: 'lp_last_updated'
     }
 
     static constraints = {
@@ -126,7 +137,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableSupport {
 
             List<PendingChange> slavedPendingChanges = []
 
-            def depedingProps = LicenseCustomProperty.findAllByInstanceOf( this )
+            def depedingProps = LicenseProperty.findAllByInstanceOf( this )
             depedingProps.each{ lcp ->
 
                 String definedType = 'text'
