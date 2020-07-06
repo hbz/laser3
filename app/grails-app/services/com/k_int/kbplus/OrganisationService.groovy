@@ -12,6 +12,7 @@ import de.laser.AuditConfig
 import de.laser.ContextService
 import de.laser.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
@@ -2498,7 +2499,7 @@ class OrganisationService {
 
     void createDocument(entry, obj) throws CreationException {
         try {
-            String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+            String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
             Doc originalDoc = Doc.findByUuid(entry.docstoreUUID)
             Path source = Paths.get("${fPath}/${originalDoc.uuid}")
             Doc docContent = new Doc()

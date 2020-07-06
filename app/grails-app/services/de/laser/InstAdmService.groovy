@@ -6,6 +6,7 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import grails.util.Holders
@@ -134,7 +135,7 @@ class InstAdmService {
                 to      user.email
                 from    grailsApplication.config.notifications.email.from
                 replyTo grailsApplication.config.notifications.email.replyTo
-                subject grailsApplication.config.laserSystemId + ' - ' + subj
+                subject ConfigUtils.getLaserSystemId() + ' - ' + subj
                 body    view: view, model: model
             }
         }

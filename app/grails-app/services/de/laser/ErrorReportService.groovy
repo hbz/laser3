@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.SystemTicket
+import de.laser.helper.ConfigUtils
 import groovy.json.JsonBuilder
 import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
@@ -72,7 +73,7 @@ class ErrorReportService {
         SimpleDateFormat sdf = new SimpleDateFormat('yMMdd:HHmmss')
         Date dd = sdf.format(new Date())
 
-        String filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email} - ${dd}"
+        String filename = (ConfigUtils.getLaserSystemId() ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email} - ${dd}"
 
         MultipartEntityBuilder meb = MultipartEntityBuilder.create()
         meb.addPart('file', new ByteArrayBody( jb.toPrettyString().getBytes(), filename.replace('/', '') ))
@@ -105,7 +106,7 @@ class ErrorReportService {
         )
 
         def meta = [
-                system:  grailsApplication.config.laserSystemId,
+                system:  ConfigUtils.getLaserSystemId(),
                 version: grailsApplication.metadata['app.version'],
                 build:   grailsApplication.metadata['repository.revision.number']
         ]

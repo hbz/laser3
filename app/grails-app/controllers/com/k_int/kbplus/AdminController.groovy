@@ -16,6 +16,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.I10nTranslation
 import de.laser.SystemMessage
 import de.laser.exceptions.CleanupException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
@@ -596,7 +597,7 @@ class AdminController extends AbstractDebugController {
     def fileConsistency() {
         Map<String, Object> result = [:]
 
-        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+        result.filePath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Closure fileCheck = { Doc doc ->
 
@@ -1248,7 +1249,7 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def orgsImport() {
-        File basicDataDir = new File("${grailsApplication.config.documentStorageLocation}/basic_data_dumps/")
+        File basicDataDir = new File(ConfigUtils.getDocumentStorageLocation() + "/basic_data_dumps/")
         List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
             @Override
             boolean accept(File dir, String name) {

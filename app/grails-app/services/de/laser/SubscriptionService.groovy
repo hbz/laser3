@@ -11,6 +11,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugUtil
 import de.laser.helper.FactoryResult
@@ -1251,7 +1252,7 @@ class SubscriptionService {
                         newDocContext.owner = newDoc
                         save(newDocContext, flash)
 
-                        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                        String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                         Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                         Path target = new File("${fPath}/${newDoc.uuid}").toPath()

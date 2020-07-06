@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.SystemEvent
 import de.laser.I10nTranslation
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.ServerUtils
 import grails.converters.JSON
@@ -38,16 +39,16 @@ class BootStrap {
 
     def init = { servletContext ->
 
-        log.info("SystemId: ${grailsApplication.config.laserSystemId}")
+        log.info("SystemId: " + ConfigUtils.getLaserSystemId())
         log.info("Database: ${grailsApplication.config.dataSource.url}")
         log.info("Database datasource dbCreate: ${grailsApplication.config.dataSource.dbCreate}")
         log.info("Database migration plugin updateOnStart: ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}")
-        log.info("Documents: ${grailsApplication.config.documentStorageLocation}")
+        log.info("Documents: " + ConfigUtils.getDocumentStorageLocation())
 
         log.info("--------------------------------------------------------------------------------")
 
-        if (grailsApplication.config.laserSystemId != null) {
-            SystemObject system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
+        if (ConfigUtils.getLaserSystemId() != null) {
+            SystemObject system_object = SystemObject.findBySysId(ConfigUtils.getLaserSystemId().toString()) ?: new SystemObject(sysId: ConfigUtils.getLaserSystemId()).save(flush: true)
         }
 
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')

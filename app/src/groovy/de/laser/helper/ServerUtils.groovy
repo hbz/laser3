@@ -1,8 +1,5 @@
 package de.laser.helper
 
-import de.laser.ContextService
-import grails.util.Holders
-
 class ServerUtils {
 
     static final SERVER_LOCAL = 'SERVER_LOCAL'
@@ -13,7 +10,7 @@ class ServerUtils {
     static String getCurrentServer() {
         // laserSystemId mapping for runtime check; do not delete
 
-        switch (Holders.grailsApplication.config.laserSystemId) {
+        switch (ConfigUtils.getLaserSystemId()) {
             case 'LAS:eR-Dev':
                 return SERVER_DEV
                 break
