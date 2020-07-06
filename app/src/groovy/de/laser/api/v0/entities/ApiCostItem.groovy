@@ -80,7 +80,11 @@ class ApiCostItem {
         boolean hasAccess = isInvoiceTool || (owner.id == context.id)
         if (hasAccess) {
             // TODO
-            result = CostItem.findAllByOwner(owner).globalUID
+            if(isInvoiceTool){
+                result = CostItem.findAllByOwner(owner).globalUID
+            }else {
+                result = CostItem.findAllByOwnerAndCostItemStatusNotEqual(owner, RDStore.COST_ITEM_DELETED).globalUID
+            }
             result = ApiToolkit.cleanUp(result, true, true)
         }
 
@@ -99,7 +103,11 @@ class ApiCostItem {
             Timestamp ts= new Timestamp(Long.parseLong(timestamp))
             Date apiDate= new Date(ts.getTime());
             def today = new Date()
-            result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
+            if(isInvoiceTool) {
+                result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
+            }else{
+                result = CostItem.findAllByOwnerAndLastUpdatedBetweenAndCostItemStatusNotEqual(owner, apiDate, today, RDStore.COST_ITEM_DELETED).globalUID
+            }
             result = ApiToolkit.cleanUp(result, true, true)
         }
 
