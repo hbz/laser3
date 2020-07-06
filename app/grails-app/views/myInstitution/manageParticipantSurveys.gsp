@@ -148,18 +148,21 @@
 
         <semui:tabs actionName="${actionName}">
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                            params="${[id: params.id, tab: 'new']}" text="neu" tab="new"
+                            params="${[id: params.id, tab: 'new']}" text="${message(code: "surveys.tabs.new")}" tab="new"
                             counts="${countSurveys?.new}"/>
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                            params="${[id: params.id, tab: 'processed']}" text="bearbeitet" tab="processed"
+                            params="${[id: params.id, tab: 'processed']}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
                             counts="${countSurveys?.processed}"/>
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                            params="${[id: params.id, tab: 'finish']}" text="abgeschlossen" tab="finish"
+                            params="${[id: params.id, tab: 'finish']}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
                             counts="${countSurveys?.finish}"/>
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui red"
                             countsClass="red"
-                            params="${[id: params.id, tab: 'notFinish']}" text="vorsorgliche Kündigungen"
-                            tab="notFinish"
+                            params="${[id: params.id, tab: 'termination']}" text="${message(code: "surveys.tabs.termination")}"
+                            tab="termination"
+                            counts="${countSurveys?.termination}"/>
+            <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui orange" countsClass="orange"
+                            params="${[id: params.id, tab: 'notFinish']}" text="${message(code: "surveys.tabs.notFinish")}" tab="notFinish"
                             counts="${countSurveys?.notFinish}"/>
         </semui:tabs>
 
