@@ -39,6 +39,10 @@ class BootStrap {
 
     def init = { servletContext ->
 
+        ConfigUtils.validate()
+
+        log.info("--------------------------------------------------------------------------------")
+
         log.info("SystemId: " + ConfigUtils.getLaserSystemId())
         log.info("Database: ${grailsApplication.config.dataSource.url}")
         log.info("Database datasource dbCreate: ${grailsApplication.config.dataSource.dbCreate}")
@@ -124,7 +128,7 @@ class BootStrap {
 
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
             log.debug("database is probably empty; setting up essential data ..")
-            File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
+            File f = new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getBasicDataFileName()}")
             if(f.exists())
                 apiService.setupBasicData(f)
             else {

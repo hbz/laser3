@@ -5,12 +5,25 @@ import org.apache.commons.logging.LogFactory
 
 class ConfigUtils {
 
-    static final DEPLOY_BACKUP_LOCATION     = 'deployBackupLocation'
-    static final DOCUMENT_STORAGE_LOCATION  = 'documentStorageLocation'
-    static final LASER_SYSTEM_ID            = 'laserSystemId'
+    static final BASIC_DATA_FILE_NAME           = 'basicDataFileName'
+    static final BASIC_DATA_PATH                = 'basicDataPath'
+
+    static final DEPLOY_BACKUP_LOCATION         = 'deployBackupLocation'
+    static final DOCUMENT_STORAGE_LOCATION      = 'documentStorageLocation'
+
+    static final LASER_SYSTEM_ID                = 'laserSystemId'
+
+    static final ORG_DUMP_FILE_NAME_PATTERN     = 'orgDumpFileNamePattern'
+    static final ORG_DUMP_FILE_EXTENSION        = 'orgDumpFileExtension'
 
     // -- comfortable --
 
+    static String getBasicDataFileName() {
+        getConfig(ConfigUtils.BASIC_DATA_FILE_NAME)
+    }
+    static String getBasicDataPath() {
+        getConfig(ConfigUtils.BASIC_DATA_PATH)
+    }
     static String getDeployBackupLocation() {
         getConfig(ConfigUtils.DEPLOY_BACKUP_LOCATION)
     }
@@ -20,16 +33,25 @@ class ConfigUtils {
     static String getLaserSystemId() {
         getConfig(ConfigUtils.LASER_SYSTEM_ID)
     }
-
-    // -- check --
-
-    static void check() {
-        getDeployBackupLocation()
-        getDocumentStorageLocation()
-        getLaserSystemId()
+    static String getOrgDumpFileExtension() {
+        getConfig(ConfigUtils.ORG_DUMP_FILE_EXTENSION)
+    }
+    static String getOrgDumpFileNamePattern() {
+        getConfig(ConfigUtils.ORG_DUMP_FILE_NAME_PATTERN)
     }
 
     // -- raw --
+
+    static void validate() {
+
+        getBasicDataFileName()
+        getBasicDataPath()
+        getDeployBackupLocation()
+        getDocumentStorageLocation()
+        getLaserSystemId()
+        getOrgDumpFileExtension()
+        getOrgDumpFileNamePattern()
+    }
 
     static def getConfig(String key) {
         def result
