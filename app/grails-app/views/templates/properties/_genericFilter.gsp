@@ -96,7 +96,6 @@
                                 clearable: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
-                                preserveHTML:false,
                                 onChange: function (value, text, $selectedItem) {
                                     value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
                                 }
@@ -136,7 +135,6 @@
                                 showOnFocus: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
-                                preserveHTML:false,
                                 onChange: function (value, text, $selectedItem) {
                                     value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
                                 }
@@ -165,7 +163,6 @@
                         showOnFocus: true,
                         forceSelection: false,
                         selectOnKeydown: false,
-                        preserveHTML:false,
                         onChange: function (value, text, $selectedItem) {
                             if ((typeof $selectedItem != 'undefined')){
                                 var selOpt = $selectedItem;

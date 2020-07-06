@@ -491,7 +491,6 @@ r2d2 = {
             transition: 'fade',
             forceSelection: false,
             selectOnKeydown: false,
-            preserveHTML:false,
             apiSettings: {
                     cache: false
                 }
@@ -502,28 +501,24 @@ r2d2 = {
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
-            preserveHTML:false,
             clearable: true
         });
 
         $(ctxSel + ' .ui.dropdown.la-clearable').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
-            preserveHTML:false,
             clearable: true
         });
 
         $(ctxSel + ' .ui.search.dropdown:not(.la-not-clearable)').dropdown({ // default behaviour
             forceSelection: false,
             selectOnKeydown: false,
-            preserveHTML:false,
             fullTextSearch: 'exact',
             clearable: true
         });
         $(ctxSel + ' .ui.search.dropdown.la-not-clearable').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
-            preserveHTML:false,
             fullTextSearch: 'exact'
         });
 
