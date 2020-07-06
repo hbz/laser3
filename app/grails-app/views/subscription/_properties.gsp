@@ -23,7 +23,7 @@
             <div id="member_props_div">
                 <g:render template="/templates/properties/members" model="${[
                         prop_desc: PropertyDefinition.SUB_PROP,
-                        ownobj: license,
+                        ownobj: subscriptionInstance,
                         custom_props_div: "member_props_div"]}"/>
 
                 <%--<r:script language="JavaScript">
