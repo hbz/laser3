@@ -70,7 +70,7 @@
     </div>
 </g:if>
 
-<g:if test="${ServerUtils.getCurrentServer() == contextService.SERVER_DEV}">
+<g:if test="${ServerUtils.getCurrentServer() == ServerUtils.SERVER_DEV}">
     <g:renderException exception="${exception}"/>
 </g:if>
 <g:elseif env="development">
