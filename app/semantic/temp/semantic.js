@@ -5861,8 +5861,8 @@ $.fn.dropdown = function(parameters) {
             module.setup.reference();
           }
           else {
-
-            module.setup.layout();
+            module.create.id();
+            module.setup.layout(id);
 
             if(settings.values) {
               module.change.values(settings.values);
@@ -5873,7 +5873,7 @@ $.fn.dropdown = function(parameters) {
             module.save.defaults();
             module.restore.selected();
 
-            module.create.id();
+
             module.bind.events();
 
             module.observeChanges();
@@ -6003,10 +6003,10 @@ $.fn.dropdown = function(parameters) {
               });
             }
           },
-          menu: function() {
+          menu: function(id) {
             $menu = $('<div />')
               .addClass(className.menu)
-                .attr('id','listBox')
+                .attr('id', id + '_listBox')
 
               .appendTo($module)
             ;
@@ -6080,13 +6080,13 @@ $.fn.dropdown = function(parameters) {
               .api(apiSettings)
             ;
           },
-          layout: function() {
+          layout: function(id) {
             if( $module.is('select') ) {
-              module.setup.select();
+              module.setup.select(id);
               module.setup.returnedObject();
             }
             if( !module.has.menu() ) {
-              module.create.menu();
+              module.create.menu(id);
             }
             if( module.is.search() && !module.has.search() ) {
               module.verbose('Adding search input');
@@ -6094,7 +6094,7 @@ $.fn.dropdown = function(parameters) {
                 .addClass(className.search)
                 .prop('autocomplete', 'off')
                   .attr('aria-autocomplete','list') // a11y
-                  .attr('aria-controls','listBox') // a11y
+                  .attr('aria-controls',id+'_listBox') // a11y
                 .insertBefore($text)
               ;
             }
@@ -6105,7 +6105,7 @@ $.fn.dropdown = function(parameters) {
               module.set.tabbable();
             }
           },
-          select: function() {
+          select: function(id) {
             var
               selectValues  = module.get.selectValues()
             ;
@@ -6118,7 +6118,7 @@ $.fn.dropdown = function(parameters) {
               module.debug('UI dropdown already exists. Creating dropdown menu only');
               $module = $input.closest(selector.dropdown);
               if( !module.has.menu() ) {
-                module.create.menu();
+                module.create.menu(id);
               }
               $menu = $module.children(selector.menu);
               module.setup.menu(selectValues);
@@ -6131,10 +6131,9 @@ $.fn.dropdown = function(parameters) {
                 .addClass(className.dropdown)
                   .attr('role', 'combobox') //a11y
                   .attr('aria-haspopup','listbox') //a11y
-                  .attr('aria-owns','listBox') //a11y
-                  .attr('id','test') //a11y
+                  .attr('aria-owns',id + '_listBox') //a11y
 
-                .html( templates.dropdown(selectValues) )
+                .html( templates.dropdown(selectValues,id) )
                 .insertBefore($input)
               ;
               if($input.hasClass(className.multiple) && $input.prop('multiple') === false) {
@@ -6691,10 +6690,10 @@ $.fn.dropdown = function(parameters) {
           else {
             if(settings.allowAdditions) {
               module.set.selected(module.get.query());
-              // module.remove.searchTerm(); // a11y
+               module.remove.searchTerm(); // a11y
             }
             else {
-              // module.remove.searchTerm(); // a11y
+               module.remove.searchTerm(); // a11y
             }
           }
         },
@@ -6902,7 +6901,7 @@ $.fn.dropdown = function(parameters) {
               if(isSelectMutation) {
                 module.disconnect.selectObserver();
                 module.refresh();
-                module.setup.select();
+                module.setup.select(id);
                 module.set.selected();
                 module.observe.select();
               }
@@ -7154,7 +7153,7 @@ $.fn.dropdown = function(parameters) {
                 module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                 module.event.item.click.call($selectedItem, event);
                 if(module.is.searchSelection()) {
-                  // module.remove.searchTerm();
+                   module.remove.searchTerm();
                 }
               }
 
@@ -7175,7 +7174,7 @@ $.fn.dropdown = function(parameters) {
                     console.log("--- else if(selectedIsSelectable) -----");
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
-                      // module.remove.searchTerm();
+                       module.remove.searchTerm();
                     }
                   }
                   event.preventDefault();
@@ -7613,7 +7612,6 @@ $.fn.dropdown = function(parameters) {
             }
           },
           choiceValue: function($choice, choiceText) {
-
             choiceText = choiceText || module.get.choiceText($choice);
             if(!$choice) {
               return false;
@@ -7839,7 +7837,7 @@ $.fn.dropdown = function(parameters) {
               else {
                 module.remove.activeItem();
                 module.remove.selectedItem();
-                module.remove.ariaSelected()
+                module.remove.ariaSelected();
               }
             }
           },
@@ -8063,13 +8061,14 @@ $.fn.dropdown = function(parameters) {
             module.debug('Setting placeholder text', text);
             module.set.text(text);
             $text.addClass(className.placeholder);
+            module.remove.activedescendant();
           },
           tabbable: function() {
             if( module.is.searchSelection() ) {
               console.log('Added tabindex to searchable dropdown')
               module.debug('Added tabindex to searchable dropdown');
               $search
-                //.val('')
+                .val('')
                 .attr('tabindex', 0)
               ;
               $menu
@@ -8172,14 +8171,14 @@ $.fn.dropdown = function(parameters) {
                 if(settings.preserveHTML) {
                   console.log("html wird gesetzt in set.text")
                   console.log($search)
-                  //$text.html(text);
-                  $search.val(text); // a11y
+                  $text.html(text);
+                  //$search.val(text); // a11y
                 }
                 else {
                   console.log("tex wird gesetzt set.text")
 
                   $text.text(text);
-                  $search.val(text); // a11y
+                  //$search.val(text); // a11y
                 }
               }
             }
@@ -8413,7 +8412,7 @@ $.fn.dropdown = function(parameters) {
           },
           clearable: function() {
             $icon.addClass(className.clear);
-          },
+          }
         },
 
         add: {
@@ -8611,7 +8610,7 @@ $.fn.dropdown = function(parameters) {
             }
             module.set.value(newValue, addedValue, addedText, $selectedItem);
             module.check.maxSelections();
-          },
+          }
         },
 
         remove: {
@@ -8851,7 +8850,7 @@ $.fn.dropdown = function(parameters) {
           },
           clearable: function() {
             $icon.removeClass(className.clear);
-            $search.val('');
+            //$search.val('');
           }
         },
 
@@ -9290,7 +9289,7 @@ $.fn.dropdown = function(parameters) {
         },
 
         hideAndClear: function() {
-          // module.remove.searchTerm(); // a11y
+          module.remove.searchTerm(); // a11y
           if( module.has.maxSelections() ) {
             return;
           }
@@ -9542,7 +9541,7 @@ $.fn.dropdown.settings = {
   clearable              : false,      // whether the value of the dropdown can be cleared
 
   apiSettings            : false,
-  selectOnKeydown        : false,       // Whether selection should occur automatically when keyboard shortcuts used
+  selectOnKeydown        : true,       // Whether selection should occur automatically when keyboard shortcuts used
   minCharacters          : 0,          // Minimum characters required to trigger API call
 
   filterRemoteData       : false,      // Whether API results should be filtered after being returned for query term
@@ -9558,10 +9557,10 @@ $.fn.dropdown.settings = {
   fullTextSearch         : false,      // search anywhere in value (set to 'exact' to require exact matches)
 
   placeholder            : 'auto',     // whether to convert blank <select> values to placeholder text
-  preserveHTML           : false,       // preserve html when selecting value
+  preserveHTML           : true,       // preserve html when selecting value
   sortSelect             : false,      // sort selection on init
 
-  forceSelection         : false,       // force a choice on blur with search selection
+  forceSelection         : true,       // force a choice on blur with search selection
 
   allowAdditions         : false,      // whether multiple select should allow user added values
   ignoreCase             : false,       // whether to consider values not matching in case to be the same
@@ -9721,7 +9720,7 @@ $.fn.dropdown.settings = {
 $.fn.dropdown.settings.templates = {
 
   // generates dropdown from select values
-  dropdown: function(select) {
+  dropdown: function(select,id) {
     var
       placeholder = select.placeholder || false,
       values      = select.values || {},
@@ -9734,11 +9733,11 @@ $.fn.dropdown.settings.templates = {
     else {
       html += '<div class="text" ></div>';
     }
-    html += '<div class="menu" id="listBox" role="listbox">';
+    html += '<div class="menu" id="'+id +'_listBox" role="listbox">';
     $.each(select.values, function(index, option) {
       html += (option.disabled)
-        ? '<div id="' + option.value + '" class="disabled item" data-value="' + option.value + '">' + option.name + '</div>'
-        : '<div id="' + option.value + '"  class="item" role="option" data-value="' + option.value + '">' + option.name + '</div>'
+        ? '<div id="' + id +'_' + option.value + '" class="disabled item" data-value="' + option.value + '">' + option.name + '</div>'
+        : '<div id="' + id +'_' +  option.value + '"  class="item" role="option" data-value="' + option.value + '">' + option.name + '</div>'
       ;
     });
     html += '</div>';
@@ -9769,7 +9768,7 @@ $.fn.dropdown.settings.templates = {
 
   // generates label for multiselect
   label: function(value, text) {
-    return text + '<i aria-hidden="true" class="delete icon" ></i>';
+    return text + '<i aria-hidden="true" class="delete icon"></i>';
   },
 
 
