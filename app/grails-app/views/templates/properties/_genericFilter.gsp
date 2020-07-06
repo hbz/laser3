@@ -94,6 +94,9 @@
                                 duration: 150,
                                 transition: 'fade',
                                 clearable: true,
+                                forceSelection: false,
+                                selectOnKeydown: false,
+                                preserveHTML:false,
                                 onChange: function (value, text, $selectedItem) {
                                     value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
                                 }
@@ -130,6 +133,10 @@
                                 duration: 150,
                                 transition: 'fade',
                                 clearable: true,
+                                showOnFocus: true,
+                                forceSelection: false,
+                                selectOnKeydown: false,
+                                preserveHTML:false,
                                 onChange: function (value, text, $selectedItem) {
                                     value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
                                 }
@@ -155,6 +162,10 @@
                 $(document).ready(function() {
                     $(".la-filterPropDef").dropdown({
                         clearable: true,
+                        showOnFocus: true,
+                        forceSelection: false,
+                        selectOnKeydown: false,
+                        preserveHTML:false,
                         onChange: function (value, text, $selectedItem) {
                             if ((typeof $selectedItem != 'undefined')){
                                 var selOpt = $selectedItem;
