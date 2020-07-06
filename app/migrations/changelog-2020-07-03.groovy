@@ -235,4 +235,29 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "galffy (modified)", id: "1593768046016-34") {
+		grailsChange {
+			change {
+				sql.execute("update audit_config set auc_reference_class = 'com.k_int.kbplus.SubscriptionProperty' where auc_reference_class = 'com.k_int.kbplus.SubscriptionCustomProperty';")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "galffy (generated)", id: "1593774690657-35") {
+		dropForeignKeyConstraint(baseTableName: "subscription_private_property", baseTableSchemaName: "public", constraintName: "fk229733f32992a286")
+	}
+
+	changeSet(author: "galffy (generated)", id: "1593774690657-36") {
+		dropForeignKeyConstraint(baseTableName: "subscription_private_property", baseTableSchemaName: "public", constraintName: "fk229733f3831290f7")
+	}
+
+	changeSet(author: "galffy (generated)", id: "1593774690657-37") {
+		dropForeignKeyConstraint(baseTableName: "subscription_private_property", baseTableSchemaName: "public", constraintName: "fk229733f390e864a1")
+	}
+
+	changeSet(author: "galffy (generated)", id: "1593774690657-38") {
+		dropTable(tableName: "subscription_private_property")
+	}
 }

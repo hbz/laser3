@@ -186,7 +186,7 @@ class PropertyService {
     List<CustomProperty> getOrphanedProperties(Object obj, List<List> sorted) {
 
         List<CustomProperty> result = []
-        List orphanedIds = obj.customProperties.collect{ it.id }
+        List orphanedIds = obj.customProperties.findAll{!it.hasProperty("isPublic") || it.isPublic == true}.collect{ it.id }
 
         sorted.each{ entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
 

@@ -982,9 +982,9 @@ class SubscriptionService {
     void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
         targetSub.refresh()
         List<Subscription> targetChildSubs = getValidSubChilds(targetSub)
-        subscriptionToTake.each { subMember ->
+        subscriptionToTake.each { Subscription subMember ->
             //Gibt es mich schon in der Ziellizenz?
-            Org found = targetChildSubs?.find { targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
+            Org found = targetChildSubs?.find { Subscription targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
 
             if (found) {
                 // mich gibts schon! Fehlermeldung ausgeben!
@@ -1031,12 +1031,13 @@ class SubscriptionService {
                     if (subMember.customProperties) {
                         //customProperties
                         for (prop in subMember.customProperties) {
-                            def copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription)
+                            SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.save()
                             //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                         }
                     }
+                    /*
                     if (subMember.privateProperties) {
                         //privatProperties
                         List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]]).collect {
@@ -1044,13 +1045,14 @@ class SubscriptionService {
                         }
                         subMember.privateProperties?.each { prop ->
                             if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
-                                def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
+                                def copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.save()
                                 //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                             }
                         }
                     }
+                    */
 
                     if (subMember.packages && targetSub.packages) {
                         //Package
@@ -1268,27 +1270,18 @@ class SubscriptionService {
 
 
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
-        Org contextOrg = contextService.getOrg()
-        def targetProp
+        SubscriptionProperty targetProp
 
 
-        properties?.each { sourceProp ->
-            if (sourceProp instanceof CustomProperty) {
-                targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
-            }
-            if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
-                targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
-            }
+        properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
+            targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId && sourceProp.tenant.id == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
-                if (sourceProp instanceof CustomProperty) {
-                    targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)
-                } else {
-                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
-                }
+                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)
                 targetProp = sourceProp.copyInto(targetProp)
+                targetProp.isPublic = sourceProp.isPublic //provisoric, should be moved into copyInto once migration is complete
                 save(targetProp, flash)
-                if (((sourceProp.id.toString() in auditProperties)) && targetProp instanceof CustomProperty) {
+                if (((sourceProp.id.toString() in auditProperties)) && targetProp.isPublic) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
                         def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
@@ -1303,7 +1296,7 @@ class SubscriptionService {
                     }
                 }
             } else {
-                Object[] args = [sourceProp?.type?.getI10n("name") ?: sourceProp.class.getSimpleName()]
+                Object[] args = [sourceProp.type.getI10n("name") ?: sourceProp.class.getSimpleName()]
                 flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
             }
         }
@@ -1316,8 +1309,8 @@ class SubscriptionService {
                 AuditConfig.removeAllConfigs(prop)
             }
         }
-        int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties)",[properties: properties])
-        int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
+        int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = true",[properties: properties, org: contextService.org])
+        int anzPP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = false",[properties: properties, org: contextService.org])
     }
 
     private boolean delete(obj, flash) {

@@ -123,7 +123,7 @@ class QueryService {
             queryParams << [myOrg:contextOrg]
             query += "and exists (select pd from PropertyDefinition as pd where prop.type = pd AND pd.tenant = :myOrg) "
         }
-        if (SubscriptionProperty.class.equals(propertyClass) || SubscriptionPrivateProperty.class.equals(propertyClass)) {
+        if (SubscriptionProperty.class.equals(propertyClass)) {
             def tmpQuery = getMySubscriptionsQuery(contextOrg)
             queryParams << tmpQuery.queryParams
             query += "and owner in ( " + tmpQuery.query + " )"
@@ -152,9 +152,9 @@ class QueryService {
         OrgPrivateProperty.executeQuery(query.query, query.queryParams)
     }
 
-    List<SubscriptionPrivateProperty> getDueSubscriptionPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def query = getQuery(SubscriptionPrivateProperty.class, contextOrg, fromDateValue, toDateValue)
-        SubscriptionPrivateProperty.executeQuery(query.query, query.queryParams)
+    List<SubscriptionProperty> getDueSubscriptionPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+        def query = getQuery(SubscriptionProperty.class, contextOrg, fromDateValue, toDateValue)
+        SubscriptionProperty.executeQuery(query.query, query.queryParams)
     }
 
     List<LicensePrivateProperty> getDueLicensePrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
