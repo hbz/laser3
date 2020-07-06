@@ -14,7 +14,6 @@ import grails.plugin.mail.MailService
 import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -157,7 +156,7 @@ class SurveyService {
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ((!targetProp) || isAddNewProp) {
                 if (sourceProp instanceof CustomProperty) {
-                    targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
+                    targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)
                 } else {
                     targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
                 }
@@ -166,7 +165,7 @@ class SurveyService {
                 if ((sourceProp.id.toString() in auditProperties) && targetProp instanceof CustomProperty) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
                                 //All ReferenceFields were copied!
@@ -192,7 +191,7 @@ class SurveyService {
             AuditConfig.removeAllConfigs(prop)
         }
 
-        int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)", [properties: properties])
+        int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties)", [properties: properties])
         int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)", [properties: properties])
     }
 

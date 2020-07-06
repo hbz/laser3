@@ -675,7 +675,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.SubscriptionCustomProperty.class) { subCustProp ->
+        updateES(SubscriptionProperty.class) { subCustProp ->
             def result = [:]
 
             result._id = subCustProp.getClass().getSimpleName().toLowerCase()+":"+subCustProp.id

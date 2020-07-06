@@ -196,7 +196,7 @@ class PropertyService {
                 result = LicenseCustomProperty.findAllByIdInList(orphanedIds)
                 break
             case Subscription.class.simpleName:
-                result = SubscriptionCustomProperty.findAllByIdInList(orphanedIds)
+                result = SubscriptionProperty.findAllByIdInList(orphanedIds)
                 break
             case Org.class.simpleName:
                 result = OrgCustomProperty.findAllByIdInList(orphanedIds)

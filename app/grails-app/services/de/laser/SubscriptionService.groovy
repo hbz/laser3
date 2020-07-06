@@ -1031,7 +1031,7 @@ class SubscriptionService {
                     if (subMember.customProperties) {
                         //customProperties
                         for (prop in subMember.customProperties) {
-                            def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
+                            def copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.save()
                             //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
@@ -1282,7 +1282,7 @@ class SubscriptionService {
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
                 if (sourceProp instanceof CustomProperty) {
-                    targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
+                    targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)
                 } else {
                     targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
                 }
@@ -1291,7 +1291,7 @@ class SubscriptionService {
                 if (((sourceProp.id.toString() in auditProperties)) && targetProp instanceof CustomProperty) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
                                 //All ReferenceFields were copied!
@@ -1316,7 +1316,7 @@ class SubscriptionService {
                 AuditConfig.removeAllConfigs(prop)
             }
         }
-        int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)",[properties: properties])
+        int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties)",[properties: properties])
         int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
     }
 

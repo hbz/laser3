@@ -109,8 +109,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                      prsLinks: PersonRole,
                      derivedSubscriptions: Subscription,
                      pendingChanges: PendingChange,
-                     customProperties: SubscriptionCustomProperty,
-                     privateProperties: SubscriptionPrivateProperty,
+                     customProperties: SubscriptionProperty,
+                     //privateProperties: SubscriptionPrivateProperty,
                      costItems: CostItem,
                      ieGroups: IssueEntitlementGroup
   ]
@@ -126,7 +126,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       pendingChanges: 'subscription',
                       costItems: 'sub',
                       customProperties: 'owner',
-                      privateProperties: 'owner',
+                      //privateProperties: 'owner',
                       ]
 
     static mapping = {
@@ -166,7 +166,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         prsLinks            batchSize: 10
         derivedSubscriptions    batchSize: 10
         customProperties    batchSize: 10
-        privateProperties   batchSize: 10
+        //privateProperties   batchSize: 10
         costItems           batchSize: 10
     }
 
