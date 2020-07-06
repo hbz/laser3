@@ -1,4 +1,44 @@
 
+// The following 2 entries make the app use basic auth by default
+// grails.plugins.springsecurity.useBasicAuth = true
+// grails.plugins.springsecurity.basic.realmName = "KBPlus"
+
+
+// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
+
+/* remove this line
+ // GSP settings
+ grails {
+ views {
+ gsp {
+ encoding = 'UTF-8'
+ htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
+ codecs {
+ expression = 'html' // escapes values inside null
+ scriptlet = 'none' // escapes output from scriptlets in GSPs
+ taglib = 'none' // escapes output from taglibs
+ staticparts = 'none' // escapes output from static template parts
+ }
+ }
+ // escapes all not-encoded output at final stage of outputting
+ filteringCodecForContentType {
+ //'text/html' = 'html'
+ }
+ }
+ }
+ remove this line */
+
+// II : This doesn't work because we are calling registerFilter to install the ediauth filter.. need to find a different solution, which is annoying
+// See http://jira.grails.org/browse/GPSPRINGSECURITYCORE-210
+// This stanza then says everything should use form apart from /api
+// More info: http://stackoverflow.com/questions/7065089/how-to-configure-grails-spring-authentication-scheme-per-url
+// grails.plugins.springsecurity.filterChain.chainMap = [
+//    '/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
+//    '/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
+// ]
+
+
+
 onix = [
         "codelist" : "ONIX_PublicationsLicense_CodeLists.xsd",
         "comparisonPoints" : [

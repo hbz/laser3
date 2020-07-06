@@ -4,16 +4,115 @@
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apache.log4j.RollingFileAppender
 
+
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
+
+appDefaultPrefs {
+    globalDatepickerFormat    = 'yyyy-mm-dd'
+    globalDateFormat          = 'yyyy-MM-dd'
+    globalDateFormatSQL       = '%Y-%m-%d'
+}
+
+System.out.println("!  local config override: ${grails.config.locations}")
+
+//
+// --- database migration plugin ---
+//
+
+grails.plugin.databasemigration.updateOnStart = false
+grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
+grails.plugin.databasemigration.changelogLocation = "./migrations"
+
+//
+// --- audit logging plugin ---
+//
+
+auditLog {
+    logFullClassName = true
+    stampEnabled = false // 1.1.3
+    stampAlways = false // 1.1.3
+    cacheDisabled = true // 1.1.3
+
+    actorClosure = { request, session ->
+
+        if (request.applicationContext.springSecurityService.principal instanceof java.lang.String) {
+            return request.applicationContext.springSecurityService.principal
+        }
+
+        String username = request.applicationContext.springSecurityService.principal?.username
+
+        if (SpringSecurityUtils.isSwitched()){
+            username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username
+        }
+
+        return (username in [null, 'anonymousUser', 'system']) ? username : 'anonymised'
+    }
+}
+
+//
+// --- spring security core plugin
+//
+
+grails.gsp.tldScanPattern                                      = 'classpath*:/META-INF/*.tld,/WEB-INF/tld/*.tld'
+grails.plugin.springsecurity.userLookup.userDomainClassName    = 'com.k_int.kbplus.auth.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbplus.auth.UserRole'
+grails.plugin.springsecurity.userLookup.usernamePropertyName   = 'username'
+grails.plugin.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
+grails.plugin.springsecurity.securityConfigType                = "Annotation"
+grails.plugin.springsecurity.successHandler.alwaysUseDefault   = false //Change on 09.08.18 from true to false MD
+grails.plugin.springsecurity.successHandler.defaultTargetUrl   = '/home/index'
+grails.plugin.springsecurity.password.algorithm                = 'SHA-256' // default: 'bcrypt'
+grails.plugin.springsecurity.password.hash.iterations          = 1
+
+//grails.plugin.springsecurity.useSessionFixationPrevention      = false // 2.0
+
+grails.plugin.springsecurity.providerNames = [
+        'preAuthenticatedAuthenticationProvider',
+        'daoAuthenticationProvider' //,
+        // 'anonymousAuthenticationProvider' //,
+        // 'rememberMeAuthenticationProvider'
+]
+
+grails.plugin.springsecurity.roleHierarchy = '''
+    ROLE_YODA > ROLE_ADMIN
+    ROLE_ADMIN > ROLE_GLOBAL_DATA
+    ROLE_GLOBAL_DATA > ROLE_USER
+'''
+
+grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+        [pattern: '/monitoring',                access: ['ROLE_YODA']],
+        [pattern: '/swagger/v0/laser.yaml.gsp', access: ['permitAll']]
+]
+
+//
+// --- custom ---
+//
 
 laserSystemId = 'local'
 documentStorageLocation = '/tmp/laser' // for uploaded documents
 deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // for database backups in context of deploys
 
+basicDataFileName = 'basicDataDump.xml'
+orgDumpFileNamePattern = 'orgDump_'
+orgDumpFileExtension = '.xml'
+
+systemEmail = 'laser@hbz-nrw.de'
+notifications.email.from = 'laser@hbz-nrw.de'
+notifications.email.replyTo = 'laser@hbz-nrw.de'
+notifications.email.genericTemplate = true // if enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
+
 //featureSurvey = false
 //notificationsJobActive = true
 //activateTestJob = true
+
+financials.currency = "EUR|GBP|USD|CHF" // list in priority of order
+
+isUpdateDashboardTableInDatabase = true
+isSendEmailsForDueDatesOfAllUsers = true
+
+quartzHeartbeat = 'Never'
+//showDebugInfo = false
 
 /*globalDataSync = [
   "replaceLocalImpIds": [
@@ -25,22 +124,37 @@ deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // for da
   ]
 ]*/
 
-//showDebugInfo = false
-
 // @NotificationsJob
 // - enable notification
 // - enable reminder
 
-isUpdateDashboardTableInDatabase = true
-isSendEmailsForDueDatesOfAllUsers = true
+//
+// ---  cache, gorm & database ---
+//
+
+grails.cache.enabled = true
+
+grails.cache.config = {
+    // affects only cache-plugin caches
+    cache {
+        name = 'laser_static_pages'
+    }
+    cache {
+        name 'message'
+    }
+}
+
+grails.gorm.default.mapping = {
+    id generator: 'identity' // postgresql sequences for primary keys
+}
+//grails.gorm.default.constraints = {
+//    '*'(nullable: false)  <- default!
+//}
 
 
-// Database Migration Plugin
-grails.plugin.databasemigration.updateOnStart = false
-grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
-grails.plugin.databasemigration.changelogLocation = "./migrations"
-
-System.out.println("!  local config override: ${grails.config.locations}")
+//
+// --- grails ---
+//
 
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -58,30 +172,6 @@ grails.mime.types = [
         form:   'application/x-www-form-urlencoded',
         multipartForm: 'multipart/form-data'
 ]
-
-grails {
-    cache {
-        enabled = true
-    }
-}
-
-grails.cache.config = {
-    // affects only cache-plugin caches
-    cache {
-        name = 'laser_static_pages'
-    }
-    cache {
-        name 'message'
-    }
-}
-
-// postgresql sequences for primary keys
-grails.gorm.default.mapping = {
-   id generator: 'identity'
-}
-//grails.gorm.default.constraints = {
-//    '*'(nullable: false)  <- default!
-//}
 
 // URL Mapping Cache Max Size, defaults to 5000
 //grails.urlmapping.cache.maxsize = 1000
@@ -119,6 +209,20 @@ grails.exceptionresolver.params.exclude = ['password']
 
 grails.project.dependency.resolver = "maven"
 
+grails.plugins.remotepagination.enableBootstrap = true // Finance
+
+//grails.mail.default.from = "server@yourhost.com" //override system wide
+grails.mail.disabled = false //System wide
+grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (prereq = async true)
+//grails.mail.overrideAddress="ryan@k-int.com" //Test env only, overrides to and from address
+//grails.mail.port = 30//TODO: Diese Zeile fürs Deploy entfernen!!!
+
+// grails.databinding.dateFormats = ['MMddyyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
+
+//
+// --- logging ---
+//
+
 // Log directory/created in current working dir if tomcat var not found.
 File logWatchFile
 // GlobalDataSyncLog directory/created in current working dir if tomcat var not found.
@@ -143,17 +247,12 @@ environments {
     }
 }
 
-basicDataFileName = 'basicDataDump.xml'
-orgDumpFileNamePattern = 'orgDump_'
-orgDumpFileExtension = '.xml'
-
 
 // Log file variable.
 def logFile = logWatchFile.canonicalPath
 def globalDataSyncFile = globalDataSyncLogWatchFile.canonicalPath
 
 //System.out.println("~ using log file location: ${logFile}")
-
 
 grails {
     fileViewer {
@@ -233,119 +332,3 @@ log4j = {
 
   // info   'com.linkedin.grails'
 }
-
-// Added by the Spring Security Core plugin:
-grails.gsp.tldScanPattern                                      = 'classpath*:/META-INF/*.tld,/WEB-INF/tld/*.tld'
-grails.plugin.springsecurity.userLookup.userDomainClassName    = 'com.k_int.kbplus.auth.User'
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbplus.auth.UserRole'
-grails.plugin.springsecurity.userLookup.usernamePropertyName   = 'username'
-grails.plugin.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
-grails.plugin.springsecurity.securityConfigType                = "Annotation"
-grails.plugin.springsecurity.successHandler.alwaysUseDefault   = false //Change on 09.08.18 from true to false MD
-grails.plugin.springsecurity.successHandler.defaultTargetUrl   = '/home/index'
-grails.plugin.springsecurity.password.algorithm                = 'SHA-256' // default: 'bcrypt'
-grails.plugin.springsecurity.password.hash.iterations          = 1
-
-//grails.plugin.springsecurity.
-//grails.plugin.springsecurity.useSessionFixationPrevention      = false // 2.0
-
-grails.plugin.springsecurity.providerNames = [
-        'preAuthenticatedAuthenticationProvider',
-        'daoAuthenticationProvider' //,
-        // 'anonymousAuthenticationProvider' //,
-        // 'rememberMeAuthenticationProvider'
-]
-
-grails.plugin.springsecurity.roleHierarchy = '''
-    ROLE_YODA > ROLE_ADMIN
-    ROLE_ADMIN > ROLE_GLOBAL_DATA
-    ROLE_GLOBAL_DATA > ROLE_USER
-'''
-
-grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-        [pattern: '/monitoring',                access: ['ROLE_YODA']],
-        [pattern: '/swagger/v0/laser.yaml.gsp', access: ['permitAll']]
-]
-
-auditLog {
-    logFullClassName = true
-    stampEnabled = false // 1.1.3
-    stampAlways = false // 1.1.3
-    cacheDisabled = true // 1.1.3
-
-  actorClosure = { request, session ->
-
-    if (request.applicationContext.springSecurityService.principal instanceof java.lang.String) {
-      return request.applicationContext.springSecurityService.principal
-    }
-
-    String username = request.applicationContext.springSecurityService.principal?.username
-
-    if (SpringSecurityUtils.isSwitched()){
-      username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username
-    }
-
-      return (username in [null, 'anonymousUser', 'system']) ? username : 'anonymised'
-  }
-}
-
-
-appDefaultPrefs {
-    globalDatepickerFormat    = 'yyyy-mm-dd'
-    globalDateFormat          = 'yyyy-MM-dd'
-    globalDateFormatSQL       = '%Y-%m-%d'
-}
-
-// The following 2 entries make the app use basic auth by default
-// grails.plugins.springsecurity.useBasicAuth = true
-// grails.plugins.springsecurity.basic.realmName = "KBPlus"
-
-// II : This doesn't work because we are calling registerFilter to install the ediauth filter.. need to find a different solution, which is annoying
-// See http://jira.grails.org/browse/GPSPRINGSECURITYCORE-210
-// This stanza then says everything should use form apart from /api
-// More info: http://stackoverflow.com/questions/7065089/how-to-configure-grails-spring-authentication-scheme-per-url
-// grails.plugins.springsecurity.filterChain.chainMap = [
-//    '/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
-//    '/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
-// ]
-
-// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
-
-/* remove this line
- // GSP settings
- grails {
- views {
- gsp {
- encoding = 'UTF-8'
- htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
- codecs {
- expression = 'html' // escapes values inside null
- scriptlet = 'none' // escapes output from scriptlets in GSPs
- taglib = 'none' // escapes output from taglibs
- staticparts = 'none' // escapes output from static template parts
- }
- }
- // escapes all not-encoded output at final stage of outputting
- filteringCodecForContentType {
- //'text/html' = 'html'
- }
- }
- }
- remove this line */
-
-quartzHeartbeat = 'Never'
-// grails.databinding.dateFormats = ['MMddyyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
-
-//grails.mail.default.from = "server@yourhost.com" //override system wide
-grails.mail.disabled = false //System wide
-grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (prereq = async true)
-//grails.mail.overrideAddress="ryan@k-int.com" //Test env only, overrides to and from address
-//grails.mail.port = 30//TODO: Diese Zeile fürs Deploy entfernen!!!
-notifications.email.from = 'laser@hbz-nrw.de'
-notifications.email.replyTo = 'laser@hbz-nrw.de'
-notifications.email.genericTemplate = true //If enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
-systemEmail = 'laser@hbz-nrw.de'
-
-//Finance
-grails.plugins.remotepagination.enableBootstrap = true
-financials.currency = "EUR|GBP|USD|CHF" //List in priority of order
