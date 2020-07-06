@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.License
-import com.k_int.kbplus.LicenseCustomProperty
+import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionProperty
@@ -65,7 +65,7 @@ class AuditService {
                 ]
                 changeNotificationService.fireEvent(changeDoc)
             }
-            else if (obj instanceof LicenseCustomProperty) {
+            else if (obj instanceof LicenseProperty) {
 
                 Map<String, Object> changeDoc = [ OID: oid,
                         event:'LicenseCustomProperty.deleted',

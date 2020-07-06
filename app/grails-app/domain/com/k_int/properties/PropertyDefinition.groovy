@@ -1,6 +1,7 @@
 package com.k_int.properties
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
@@ -307,7 +308,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
         boolean isPublic
 
-        if(owner.class.name == Subscription.class.name) {
+        if(owner.class.name in [Subscription.class.name, License.class.name]) {
             ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
             if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
                 isPublic = true
@@ -474,7 +475,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     @Transient
     void removeProperty() {
         log.debug("Remove");
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseCustomProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicensePrivateProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgCustomProperty c where c.type = ?', [this])

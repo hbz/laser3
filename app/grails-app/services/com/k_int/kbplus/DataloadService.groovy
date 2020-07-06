@@ -789,7 +789,7 @@ class DataloadService {
         }
          */
 
-        updateES(com.k_int.kbplus.LicenseCustomProperty.class) { licCustProp ->
+        updateES(LicenseProperty.class) { licCustProp ->
             def result = [:]
 
             result._id = licCustProp.getClass().getSimpleName().toLowerCase()+":"+licCustProp.id

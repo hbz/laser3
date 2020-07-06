@@ -127,7 +127,7 @@ class QueryService {
             def tmpQuery = getMySubscriptionsQuery(contextOrg)
             queryParams << tmpQuery.queryParams
             query += "and owner in ( " + tmpQuery.query + " )"
-        }else if (LicenseCustomProperty.class.equals(propertyClass) || LicensePrivateProperty.class.equals(propertyClass)){
+        }else if (LicenseProperty.class.equals(propertyClass) || LicensePrivateProperty.class.equals(propertyClass)){
             def tmpQuery = getMyLicensesQuery(contextOrg)
             queryParams << tmpQuery.queryParams
             query += "and owner in ( " + tmpQuery.query + " )"
@@ -142,9 +142,9 @@ class QueryService {
         SubscriptionProperty.executeQuery(query.query, query.queryParams)
     }
 
-    List<LicenseCustomProperty> getDueLicenseCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def query = getQuery(LicenseCustomProperty.class, contextOrg, fromDateValue, toDateValue)
-        LicenseCustomProperty.executeQuery(query.query, query.queryParams)
+    List<LicenseProperty> getDueLicenseCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+        def query = getQuery(LicenseProperty.class, contextOrg, fromDateValue, toDateValue)
+        LicenseProperty.executeQuery(query.query, query.queryParams)
     }
 
     List<OrgPrivateProperty> getDueOrgPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue) {

@@ -155,6 +155,23 @@ class LicenseController
                 }
             }
 
+            if(result.license.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) {
+                du.setBenchmark('non-inherited member properties')
+                Set<License> childLics = result.license.getDerivedLicenses()
+                if(childLics) {
+                    String localizedName
+                    switch(LocaleContextHolder.getLocale()) {
+                        case Locale.GERMANY:
+                        case Locale.GERMAN: localizedName = "name_de"
+                            break
+                        default: localizedName = "name_en"
+                            break
+                    }
+                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery("select lp.type from LicenseProperty lp where lp.owner in (:licenseSet) and lp.instanceOf = null order by lp.type.${localizedName} asc",[licenseSet:childLics])
+                    result.memberProperties = memberProperties
+                }
+            }
+
             du.setBenchmark('links')
 
             result.links = linksGenerationService.getSourcesAndDestinations(result.license,result.user)
@@ -654,7 +671,7 @@ class LicenseController
 
         // postgresql migration
         String subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
-        def subQueryResult = LicenseCustomProperty.executeQuery(subQuery, [owner: result.license])
+        def subQueryResult = LicenseProperty.executeQuery(subQuery, [owner: result.license])
 
         //def qry_params = [licClass:result.license.class.name, prop:LicenseCustomProperty.class.name,owner:result.license, licId:"${result.license.id}"]
         //result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where (( className=:licClass and persistedObjectId=:licId ) or (className = :prop and persistedObjectId in (select lp.id from LicenseCustomProperty as lp where lp.owner=:owner))) order by e.dateCreated desc", qry_params, [max:result.max, offset:result.offset]);
@@ -665,7 +682,7 @@ class LicenseController
         // postgresql migration
         if (subQueryResult) {
             base_query += ' or (className = :prop and persistedObjectId in (:subQueryResult)) ) order by e.dateCreated desc'
-            query_params.'prop' = LicenseCustomProperty.class.name
+            query_params.'prop' = LicenseProperty.class.name
             query_params.'subQueryResult' = subQueryResult
         }
         else {
@@ -680,7 +697,7 @@ class LicenseController
     
     result.historyLines?.each{
       if(it.className == query_params.prop ){
-        def propertyName = LicenseCustomProperty.executeQuery(propertyNameHql,[it.persistedObjectId.toLong()])[0]
+        def propertyName = LicenseProperty.executeQuery(propertyNameHql,[it.persistedObjectId.toLong()])[0]
         it.propertyName = propertyName
       }
     }
@@ -1056,7 +1073,7 @@ class LicenseController
                     if(params.license.copyCustomProperties) {
                         //customProperties
                         for (prop in baseLicense.customProperties) {
-                            LicenseCustomProperty copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                            LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.instanceOf = null
                             copiedProp.save(flush: true)

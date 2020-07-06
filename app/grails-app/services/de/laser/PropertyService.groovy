@@ -193,7 +193,7 @@ class PropertyService {
         switch (obj.class.simpleName) {
 
             case License.class.simpleName:
-                result = LicenseCustomProperty.findAllByIdInList(orphanedIds)
+                result = LicenseProperty.findAllByIdInList(orphanedIds)
                 break
             case Subscription.class.simpleName:
                 result = SubscriptionProperty.findAllByIdInList(orphanedIds)

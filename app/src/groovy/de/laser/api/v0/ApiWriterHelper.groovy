@@ -240,7 +240,7 @@ class ApiWriterHelper {
                     )
                 }
                 else if (owner instanceof License) {
-                    property = new LicenseCustomProperty(
+                    property = new LicenseProperty(
                             owner:     owner,
                             note:      it.note,
                             paragraph: it.paragraph
