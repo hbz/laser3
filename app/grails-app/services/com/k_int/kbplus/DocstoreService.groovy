@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.ConfigUtils
 import gov.loc.repository.bagit.BagFactory
 import gov.loc.repository.bagit.PreBag
 import groovy.xml.MarkupBuilder
@@ -383,7 +384,7 @@ class DocstoreService {
         newDocContext.owner = newDoc
         newDocContext.save(flush: true)
 
-        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+        String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Path sourceFile = new File("${fPath}/${it.owner.uuid}").toPath()
         Path targetFile = new File("${fPath}/${newDoc.uuid}").toPath()

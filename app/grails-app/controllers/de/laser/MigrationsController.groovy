@@ -7,6 +7,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.TitleInstance
+import de.laser.helper.ConfigUtils
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -134,7 +135,7 @@ class MigrationsController {
 
         result += code([
                 "# ${grailsApplication.config.grails.serverURL}",
-                "# ${grailsApplication.config.laserSystemId}",
+                "# " + ConfigUtils.getLaserSystemId(),
                 "# Processing time: ${System.currentTimeMillis() - ts} ms"
         ])
 

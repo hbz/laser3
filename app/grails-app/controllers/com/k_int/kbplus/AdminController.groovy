@@ -16,6 +16,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.I10nTranslation
 import de.laser.SystemMessage
 import de.laser.exceptions.CleanupException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
@@ -596,7 +597,7 @@ class AdminController extends AbstractDebugController {
     def fileConsistency() {
         Map<String, Object> result = [:]
 
-        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+        result.filePath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Closure fileCheck = { Doc doc ->
 
@@ -827,7 +828,7 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def orgsExport() {
         Date now = new Date()
-        File basicDataDir = new File(grailsApplication.config.basicDataPath)
+        File basicDataDir = new File(ConfigUtils.getBasicDataPath())
         if(basicDataDir) {
             GPathResult oldBase
             XmlSlurper slurper = new XmlSlurper()
@@ -835,7 +836,7 @@ class AdminController extends AbstractDebugController {
             List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
                 @Override
                 boolean accept(File dir, String name) {
-                    return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
+                    return name.matches("${ConfigUtils.getOrgDumpFileNamePattern()}.*")
                 }
             })
             if(dumpFiles.size() > 0) {
@@ -847,7 +848,7 @@ class AdminController extends AbstractDebugController {
                 oldBase = slurper.parse(lastDump)
             }
             else {
-                File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
+                File f = new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getBasicDataFileName()}")
                 lastDumpDate = new Date(f.lastModified())
                 if(f.exists()) {
                     //complicated way - determine most recent org and user creation dates
@@ -887,7 +888,7 @@ class AdminController extends AbstractDebugController {
                 //data collected: prepare export!
                 if(newOrgData || newUserData) {
                     //List<Person> newPersonData = Person.executeQuery('select pr.prs from PersonRole pr where pr.org in :org',[org:newOrgData])
-                    File newDump = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.orgDumpFileNamePattern}${now.format("yyyy-MM-dd")}${grailsApplication.config.orgDumpFileExtension}")
+                    File newDump = new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getOrgDumpFileNamePattern()}${now.format("yyyy-MM-dd")}${ConfigUtils.getOrgDumpFileExtension()}")
                     StringBuilder exportReport = new StringBuilder()
                     exportReport.append("<p>Folgende Organisationen wurden erfolgreich exportiert: <ul><li>")
                     newDump.withWriter { writer ->
@@ -1248,11 +1249,11 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def orgsImport() {
-        File basicDataDir = new File("${grailsApplication.config.documentStorageLocation}/basic_data_dumps/")
+        File basicDataDir = new File(ConfigUtils.getDocumentStorageLocation() + "/basic_data_dumps/")
         List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
             @Override
             boolean accept(File dir, String name) {
-                return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
+                return name.matches("${ConfigUtils.getOrgDumpFileNamePattern()}.*")
             }
         })
         if(dumpFiles.size() > 0) {

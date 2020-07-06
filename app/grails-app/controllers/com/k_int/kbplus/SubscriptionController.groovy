@@ -4267,7 +4267,7 @@ class SubscriptionController
                                     newDocContext.owner = newDoc
                                     newDocContext.save(flush: true)
 
-                                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                                     Path target = new File("${fPath}/${newDoc.uuid}").toPath()

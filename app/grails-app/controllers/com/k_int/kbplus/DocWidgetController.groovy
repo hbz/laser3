@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
@@ -89,7 +90,7 @@ class DocWidgetController extends AbstractDebugController {
 
                     File new_File
                     try {
-                        def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                        def fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
                         def fName = doc_content.uuid
 
                         File folder = new File("${fPath}")
@@ -137,7 +138,7 @@ class DocWidgetController extends AbstractDebugController {
                                 log.debug(doc_content2)
 
                                 try {
-                                    def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                                    def fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
                                     def fName = doc_content2.uuid
 
                                     File folder = new File("${fPath}")

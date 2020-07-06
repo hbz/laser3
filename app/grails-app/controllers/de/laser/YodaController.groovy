@@ -6,6 +6,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -1159,11 +1160,11 @@ class YodaController {
     def makeshiftLaserOrgExport() {
         log.info("Export institutions in XML, structure follows LAS:eR-DB-structure")
         try {
-            File dir = new File(grailsApplication.config.basicDataPath)
+            File dir = new File(ConfigUtils.getBasicDataPath())
             if(!dir.exists()) {
                 dir.mkdir()
             }
-            new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}").withWriter { writer ->
+            new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getBasicDataFileName()}").withWriter { writer ->
                 MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
                 orgDataBuilder.data {
                     organisations {

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.ConfigUtils" %>
 <footer class="ui inverted vertical footer segment la-footer">
     <div class="ui container">
 
@@ -92,7 +93,7 @@
                             ${message(code: 'landingpage.footer.4.link1')}
                        </a>
                    </div>
-                <g:if test="${grailsApplication.config?.laserSystemId == 'LAS:eR-Productive' || grailsApplication.config?.laserSystemId == 'local'}">
+                <g:if test="${ConfigUtils.getLaserSystemId() == 'LAS:eR-Productive' || ConfigUtils.getLaserSystemId() == 'local'}">
                    <div class="item">
                         <i class="universal access icon"></i>
                        <g:link controller="public" action="wcagFeedbackForm" class="content">
