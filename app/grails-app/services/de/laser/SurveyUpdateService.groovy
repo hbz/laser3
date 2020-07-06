@@ -6,6 +6,7 @@ import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.interfaces.AbstractLockableService
@@ -144,7 +145,7 @@ class SurveyUpdateService extends AbstractLockableService {
 
             String emailReceiver = user.getEmail()
             String currentServer = ServerUtils.getCurrentServer()
-            String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+            String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
 
             surveyEntries.each { survey ->
                 try {
