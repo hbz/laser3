@@ -14,6 +14,7 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import de.laser.interfaces.ShareSupport
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -2539,7 +2540,7 @@ class OrganisationService {
     }
 
     void createOrgsFromScratch() {
-        def currentServer = grailsApplication.config.getCurrentServer()
+        def currentServer = ServerUtils.getCurrentServer()
         Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_BASIC_MEMBER'),
                                           institut:Role.findByAuthority('ORG_BASIC_MEMBER'),
                                           singlenutzer:Role.findByAuthority('ORG_INST'),
@@ -2565,7 +2566,7 @@ class OrganisationService {
                 //log.error(e.getStackTrace())
             }
         }
-        if(currentServer == ContextService.SERVER_QA) { //include SERVER_LOCAL when testing in local environment
+        if(currentServer == ServerUtils.SERVER_QA) { //include SERVER_LOCAL when testing in local environment
             Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
                                          institut: [name:'Musterinstitut',orgType: [department]],
                                          singlenutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
@@ -2606,7 +2607,7 @@ class OrganisationService {
                 userService.setupAdminAccounts(orgMap)
             }
         }
-        else if(currentServer == ContextService.SERVER_DEV) {
+        else if(currentServer == ServerUtils.SERVER_DEV) {
             userService.setupAdminAccounts([konsortium:hbz])
         }
     }

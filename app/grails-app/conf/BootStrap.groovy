@@ -3,11 +3,10 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
-import de.laser.ContextService
 import de.laser.SystemEvent
 import de.laser.I10nTranslation
-import de.laser.SystemMessage
 import de.laser.helper.RDConstants
+import de.laser.helper.ServerUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -234,7 +233,7 @@ class BootStrap {
 
     def setupAdminUsers = {
 
-        if (grailsApplication.config.getCurrentServer() == ContextService.SERVER_QA) {
+        if (ServerUtils.getCurrentServer() == ServerUtils.SERVER_QA) {
             log.debug("check if all user accounts are existing on QA ...")
 
             Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),

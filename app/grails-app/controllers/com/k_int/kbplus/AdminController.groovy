@@ -18,6 +18,7 @@ import de.laser.SystemMessage
 import de.laser.exceptions.CleanupException
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import de.laser.helper.SessionCacheWrapper
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -517,7 +518,7 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def updateQASubscriptionDates() {
-        if (grailsApplication.config.getCurrentServer() in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) {
+        if (ServerUtils.getCurrentServer() in [ServerUtils.SERVER_QA, ServerUtils.SERVER_LOCAL]) {
             def updateReport = statusUpdateService.updateQASubscriptionDates()
             if(updateReport instanceof Boolean)
                 flash.message = message(code:'subscription.qaTestDateUpdate.success')

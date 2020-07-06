@@ -4,6 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
+import de.laser.helper.ServerUtils
 import grails.plugin.mail.MailService
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -162,10 +163,11 @@ class DashboardDueDatesService {
     }
 
     private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
-        def emailReceiver = user.getEmail()
-        def currentServer = grailsApplication.config.getCurrentServer()
-        String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+        String emailReceiver = user.getEmail()
+        String currentServer = ServerUtils.getCurrentServer()
+        String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
         String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, locale) + " (" + org.name + ")")
+
         if (emailReceiver == null || emailReceiver.isEmpty()) {
             log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);
         } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
