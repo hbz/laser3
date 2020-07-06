@@ -813,7 +813,7 @@ String period
                                     <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>--%>
-                            <g:if test="${hit.getSourceAsMap().rectype == 'LicenseCustomProperty'}">
+                            <g:if test="${hit.getSourceAsMap().rectype == 'LicenseProperty'}">
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
@@ -840,6 +840,7 @@ String period
                                     <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
+                            <%--
                             <g:if test="${hit.getSourceAsMap().rectype == 'LicensePrivateProperty'}">
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
@@ -867,6 +868,7 @@ String period
                                     <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
+                            --%>
                         </tr>
                     </g:each>
                 </table>

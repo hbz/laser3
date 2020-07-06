@@ -658,7 +658,7 @@ class AjaxController {
                         case 'currentSubscriptions':
                         case 'manageConsortiaSubscriptions': values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
-                        case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
+                        case 'currentLicenses': values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
                         case 'listProvider':
                         case 'currentProviders':

@@ -144,8 +144,8 @@ class LicenseController
 
             mandatories.each { pd ->
                 //TODO [ticket=2436]
-                if (!LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
-                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd)
+                if (!LicenseProperty.findWhere(owner: result.license, type: pd, tenant: result.institution, isPublic: false)) {
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd, result.institution)
 
                     if (newProp.hasErrors()) {
                         log.error(newProp.errors)
@@ -799,16 +799,16 @@ class LicenseController
 
         // create mandatory LicensePrivateProperties if not existing
 
-        def mandatories = []
+        List<PropertyDefinition> mandatories = []
         result.user?.authorizedOrgs?.each{ org ->
             List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, org)
             if (ppd) {
                 mandatories << ppd
             }
         }
-        mandatories.flatten().each{ pd ->
-            if (! LicensePrivateProperty.findWhere(owner: result.licenseInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.licenseInstance, pd)
+        mandatories.flatten().each{ PropertyDefinition pd ->
+            if (! LicenseProperty.findWhere(owner: result.licenseInstance, type: pd, tenant: result.institution, isPublic: false)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.licenseInstance, pd, result.institution)
 
                 if (newProp.hasErrors()) {
                     log.error(newProp.errors)
@@ -980,14 +980,14 @@ class LicenseController
             )
 
 
-            if (!licenseInstance.save(flush: true)) {
-                log.error("Problem saving license ${licenseInstance.errors}");
+            if (!licenseInstance.save()) {
+                log.error("Problem saving license ${licenseInstance.errors}")
                 return licenseInstance
             }
             else {
-                   log.debug("Save ok");
+                   log.debug("Save ok")
 
-                    baseLicense.documents?.each { dctx ->
+                    baseLicense.documents?.each { DocContext dctx ->
 
                         //Copy Docs
                         if (params.license.copyDocs) {
@@ -1019,7 +1019,7 @@ class LicenseController
                         }
                         //Copy Announcements
                         if (params.license.copyAnnouncements) {
-                            if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                            if ((dctx.owner.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
                                 Doc clonedContents = new Doc(
                                         blobContent: dctx.owner.blobContent,
                                         status: dctx.owner.status,
@@ -1054,17 +1054,17 @@ class LicenseController
                             InvokerHelper.setProperties(newTask, task.properties)
                             newTask.systemCreateDate = new Date()
                             newTask.license = licenseInstance
-                            newTask.save(flush:true)
+                            newTask.save()
                         }
 
                     }
                     //Copy References
-                        baseLicense.orgLinks?.each { or ->
-                            if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
+                        baseLicense.orgLinks.each { OrgRole or ->
+                            if ((or.org.id == result.institution.id) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.lic = licenseInstance
-                            newOrgRole.save(flush:true)
+                            newOrgRole.save()
 
                             }
 
@@ -1072,26 +1072,20 @@ class LicenseController
 
                     if(params.license.copyCustomProperties) {
                         //customProperties
-                        for (prop in baseLicense.customProperties) {
-                            LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
+                        baseLicense.customProperties.findAll{ LicenseProperty prop -> prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
+                            LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.instanceOf = null
-                            copiedProp.save(flush: true)
-                            //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
+                            copiedProp.save()
                         }
                     }
                     if(params.license.copyPrivateProperties){
                         //privatProperties
-                        Org contextOrg = contextService.getOrg()
 
-                        baseLicense.privateProperties.each { prop ->
-                            if(prop.type?.tenant?.id == contextOrg?.id)
-                            {
-                                LicensePrivateProperty copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
-                                copiedProp = prop.copyInto(copiedProp)
-                                copiedProp.save(flush: true)
-                                //licenseInstance.addToPrivateProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
-                            }
+                        baseLicense.customProperties.findAll{ LicenseProperty prop -> prop.type.tenant.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
+                            LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
+                            copiedProp = prop.copyInto(copiedProp)
+                            copiedProp.save()
                         }
                     }
                 redirect controller: 'license', action: 'show', params: [id: licenseInstance.id]

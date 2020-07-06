@@ -143,7 +143,7 @@
             ]
         }
         */
-        else if (hit.getSourceAsMap().rectype == 'LicenseCustomProperty') {
+        else if (hit.getSourceAsMap().rectype == 'LicenseProperty') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
                     "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"show", id:"${hit.getSourceAsMap().objectId}"),
@@ -151,6 +151,7 @@
                     "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
             ]
         }
+        /*
         else if (hit.getSourceAsMap().rectype == 'LicensePrivateProperty') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
@@ -159,7 +160,7 @@
                     "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
             ]
         }
-
+        */
     }
 %>
 {

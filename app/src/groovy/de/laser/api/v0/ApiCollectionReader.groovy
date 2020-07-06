@@ -323,7 +323,7 @@ class ApiCollectionReader {
             //tmp.dateCreated = ApiToolkit.formatInternalDate(it.dateCreated)
             //tmp.lastUpdated = ApiToolkit.formatInternalDate(it.getCalculatedLastUpdated())
 
-            if (it instanceof LicensePrivateProperty) {
+            if (it instanceof LicenseProperty) {
                 tmp.paragraph = it.paragraph
             }
 

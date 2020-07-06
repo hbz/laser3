@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.112
+
+- internal refactoring
+
 #### 0.111
 
 - internal refactoring
