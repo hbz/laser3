@@ -2053,7 +2053,8 @@ class SubscriptionController
                 break
         }*/
         //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        result.propList = result.parentSub.customProperties.type + SubscriptionProperty.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet)",[subscriptionSet:validSubChildren])
+        Set<PropertyDefinition> propList = result.parentSub.customProperties.type + SubscriptionProperty.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.instanceOf = null",[subscriptionSet:validSubChildren])
+        result.propList = propList
 
         def oldID = params.id
         params.id = result.parentSub.id
@@ -2179,15 +2180,15 @@ class SubscriptionController
                         Subscription subChild = Subscription.get(subId)
                     if (propDef?.tenant != null) {
                         //private Property
-                        def owner = subChild
+                        Subscription owner = subChild
 
-                        def existingProps = owner.privateProperties.findAll {
-                            it.owner.id == owner.id &&  it.type.id == propDef.id
+                        def existingProps = owner.customProperties.findAll {
+                            it.owner.id == owner.id &&  it.type.id == propDef.id && it.tenant.id == result.institution && !it.isPublic
                         }
                         existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
                         if (existingProps.size() == 0 || propDef.multipleOccurrence) {
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef)
+                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef, result.institution)
                             if (newProp.hasErrors()) {
                                 log.error(newProp.errors)
                             } else {
@@ -2198,8 +2199,8 @@ class SubscriptionController
                             }
                         }
 
-                        if (existingProps?.size() == 1){
-                            def privateProp = SubscriptionPrivateProperty.get(existingProps[0].id)
+                        if (existingProps.size() == 1){
+                            def privateProp = SubscriptionProperty.get(existingProps[0].id)
                             changeProperties++
                             def prop = setProperty(privateProp, params.filterPropValue)
 
@@ -2214,7 +2215,7 @@ class SubscriptionController
                         }
 
                         if (existingProp == null || propDef.multipleOccurrence) {
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef)
+                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef, result.institution)
                             if (newProp.hasErrors()) {
                                 log.error(newProp.errors)
                             } else {
@@ -2397,35 +2398,32 @@ class SubscriptionController
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+        List<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         if (params.filterPropDef) {
 
             def filterPropDef = params.filterPropDef
-            def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
+            PropertyDefinition propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
 
-            def deletedProperties = 0
+            int deletedProperties = 0
 
             if (propDef) {
-                validSubChilds.each { subChild ->
+                validSubChilds.each { Subscription subChild ->
 
-                    if (propDef?.tenant != null) {
+                    if (propDef.tenant != null) {
                         //private Property
-                        def owner = subChild
 
-                        def existingProps = owner.privateProperties.findAll {
-                            it.owner.id == owner.id &&  it.type.id == propDef.id
+                        List<SubscriptionProperty> existingProps = subChild.customProperties.findAll {
+                            it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id && !it.isPublic
                         }
                         existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
 
-                        if (existingProps?.size() == 1 ){
-                            def privateProp = SubscriptionPrivateProperty.get(existingProps[0].id)
+                        if (existingProps.size() == 1 ){
+                            SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
 
                             try {
-                                owner.privateProperties.remove(privateProp)
-                                owner.refresh()
-                                privateProp?.delete(failOnError: true, flush: true)
+                                privateProp.delete()
                                 deletedProperties++
                             } catch (Exception e)
                             {
@@ -2436,10 +2434,9 @@ class SubscriptionController
 
                     } else {
                         //custom Property
-                        def owner = subChild
 
-                        def existingProp = owner.customProperties.find {
-                            it.type.id == propDef.id && it.owner.id == owner.id
+                        def existingProp = subChild.customProperties.find {
+                            it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id && it.isPublic
                         }
 
 
@@ -2447,11 +2444,7 @@ class SubscriptionController
                             SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
 
                             try {
-                                customProp?.owner = null
-                                customProp.save()
-                                owner.customProperties.remove(customProp)
-                                customProp?.delete(failOnError: true, flush: true)
-                                owner.refresh()
+                                customProp.delete()
                                 deletedProperties++
                             } catch (Exception e){
                                 log.error(e)
@@ -3803,8 +3796,8 @@ class SubscriptionController
 
             List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.contextOrg)
 
-            mandatories.each { pd ->
-                if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
+            mandatories.each { PropertyDefinition pd ->
+                if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscriptionInstance, pd, result.institution, false)) {
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
 
                     if (newProp.hasErrors()) {
@@ -3947,7 +3940,7 @@ class SubscriptionController
                     default: localizedName = "name_en"
                         break
                 }
-                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) order by sp.type.${localizedName} asc",[subscriptionSet:childSubs])
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.instanceOf = null order by sp.type.${localizedName} asc",[subscriptionSet:childSubs])
                 result.memberProperties = memberProperties
             }
         }
@@ -4133,13 +4126,14 @@ class SubscriptionController
                         if (subMember.customProperties) {
                             //customProperties
                             for (prop in subMember.customProperties) {
-                                SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription)
+                                SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.instanceOf = null
-                                copiedProp.save(flush: true)
+                                copiedProp.save()
                                 //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
                         }
+                        /*
                         if (subMember.privateProperties) {
                             //privatProperties
 
@@ -4155,6 +4149,7 @@ class SubscriptionController
                                 }
                             }
                         }
+                        */
 
                         if (subMember.packages && newSubConsortia.packages) {
                             //Package
@@ -4453,28 +4448,24 @@ class SubscriptionController
 
                             }
 
-
                             if (params.subscription.takeCustomProperties) {
                                 //customProperties
-                                for (prop in baseSub.customProperties) {
-                                    def copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
+                                baseSub.customProperties.findAll{ it.tenant == result.institution && it.isPublic }.each { SubscriptionProperty prop ->
+                                    SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.instanceOf = null
-                                    copiedProp.save(flush: true)
+                                    copiedProp.save()
                                     //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                                 }
                             }
                             if (params.subscription.takePrivateProperties) {
                                 //privatProperties
-                                Org contextOrg = contextService.getOrg()
 
-                                baseSub.privateProperties.each { prop ->
-                                    if (prop.type?.tenant?.id == contextOrg?.id) {
-                                        def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
-                                        copiedProp = prop.copyInto(copiedProp)
-                                        copiedProp.save(flush: true)
-                                        //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-                                    }
+                                baseSub.customProperties.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                                    SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
+                                    copiedProp = prop.copyInto(copiedProp)
+                                    copiedProp.save()
+                                    //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                                 }
                             }
 
@@ -5317,9 +5308,8 @@ class SubscriptionController
         }
 
         // tasks
-        Org contextOrg = contextService.getOrg()
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-        def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
+        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.subscriptionInstance)
+        def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
         result << preCon
 
 
@@ -5332,21 +5322,19 @@ class SubscriptionController
 
         // -- private properties
 
-        result.authorizedOrgs = result.user?.authorizedOrgs
-        result.contextOrg = contextService.getOrg()
+        //result.authorizedOrgs = result.user?.authorizedOrgs
+        //result.contextOrg = contextService.getOrg()
 
         // create mandatory OrgPrivateProperties if not existing
 
-        def mandatories = []
-        result.user?.authorizedOrgs?.each { org ->
-            List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, org)
-            if (ppd) {
-                mandatories << ppd
-            }
+        Set<PropertyDefinition> mandatories = []
+        List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.institution)
+        if (ppd) {
+            mandatories << ppd
         }
         mandatories.flatten().each { pd ->
-            if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
+            if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscriptionInstance, pd, result.institution, false)) {
+                SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
 
                 if (newProp.hasErrors()) {
                     log.error(newProp.errors)
@@ -5405,8 +5393,8 @@ class SubscriptionController
                     isSlaved: baseSubscription.isSlaved,
                     startDate: params.subscription.copyDates ? baseSubscription.startDate : null,
                     endDate: params.subscription.copyDates ? baseSubscription.endDate : null,
-                    resource: params.subscription.resource ? baseSubscription.resource : null,
-                    form: params.subscription.form ? baseSubscription.form : null,
+                    resource: params.subscription.copyResource ? baseSubscription.resource : null,
+                    form: params.subscription.copyForm ? baseSubscription.form : null,
             )
             //Copy InstanceOf
             if (params.subscription.copylinktoSubscription) {
@@ -5584,8 +5572,8 @@ class SubscriptionController
 
                 if (params.subscription.copyCustomProperties) {
                     //customProperties
-                    for (prop in baseSubscription.customProperties) {
-                        def copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance)
+                    baseSubscription.customProperties.findAll{ it.isPublic && it.tenant.id == result.institution.id }.each{ SubscriptionProperty prop ->
+                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.instanceOf = null
                         copiedProp.save()
@@ -5594,15 +5582,12 @@ class SubscriptionController
                 }
                 if (params.subscription.copyPrivateProperties) {
                     //privatProperties
-                    Org contextOrg = contextService.getOrg()
 
-                    baseSubscription.privateProperties.each { prop ->
-                        if (prop.type?.tenant?.id == contextOrg?.id) {
-                            def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscriptionInstance)
-                            copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.save()
-                            //newSubscriptionInstance.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-                        }
+                    baseSubscription.customProperties.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance, isPublic: prop.isPublic, tenant: prop.tenant)
+                        copiedProp = prop.copyInto(copiedProp)
+                        copiedProp.save()
+                        //newSubscriptionInstance.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                     }
                 }
 
@@ -6111,12 +6096,6 @@ class SubscriptionController
     private def setProperty(def property, def value) {
 
         def field = null
-
-
-        if(property instanceof SubscriptionProperty || property instanceof SubscriptionPrivateProperty)
-        {
-
-        }
 
         if(property.type.type == Integer.toString()) {
             field = "intValue"

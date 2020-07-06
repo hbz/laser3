@@ -759,7 +759,7 @@ String period
 
                                 </td>
                             </g:if>
-                            <g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionCustomProperty'}">
+                            <g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionProperty'}">
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
@@ -786,7 +786,7 @@ String period
                                     <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
-                            <g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionPrivateProperty'}">
+                            <%--<g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionPrivateProperty'}">
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
@@ -812,7 +812,7 @@ String period
                                     <br>
                                     <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
-                            </g:if>
+                            </g:if>--%>
                             <g:if test="${hit.getSourceAsMap().rectype == 'LicenseCustomProperty'}">
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"

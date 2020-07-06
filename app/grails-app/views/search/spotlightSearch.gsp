@@ -125,7 +125,7 @@
                     "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
             ]
         }
-        else if (hit.getSourceAsMap().rectype == 'SubscriptionCustomProperty') {
+        else if (hit.getSourceAsMap().rectype == 'SubscriptionProperty') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
                     "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"show", id:"${hit.getSourceAsMap().objectId}"),
@@ -133,6 +133,7 @@
                     "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
             ]
         }
+        /*
         else if (hit.getSourceAsMap().rectype == 'SubscriptionPrivateProperty') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
@@ -141,6 +142,7 @@
                     "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
             ]
         }
+        */
         else if (hit.getSourceAsMap().rectype == 'LicenseCustomProperty') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",

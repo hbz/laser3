@@ -3,6 +3,7 @@ package com.k_int.properties
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ContextService
 import de.laser.base.AbstractI10nOverride
@@ -98,6 +99,9 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
 
     Date dateCreated
     Date lastUpdated
+
+    @Transient
+    def contextService
 
     //Map keys can change and they wont affect any of the functionality
     @Deprecated
@@ -298,19 +302,31 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
      *
      * @param owner: The class that will hold the property, e.g License
      */
-    static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(def flag, def owner, PropertyDefinition type) {
+    static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(def flag, def owner, PropertyDefinition type, Org contextOrg) {
         String classString = owner.getClass().toString()
         def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
+        boolean isPublic
 
-        if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
-            ownerClassName = "com.k_int.kbplus.${ownerClassName}CustomProperty"
+        if(owner.class.name == Subscription.class.name) {
+            ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
+            if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
+                isPublic = true
+            }
+            else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
+                isPublic = false
+            }
         }
-        else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
-            ownerClassName = "com.k_int.kbplus.${ownerClassName}PrivateProperty"
+        else {
+            if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
+                ownerClassName = "com.k_int.kbplus.${ownerClassName}CustomProperty"
+            }
+            else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
+                ownerClassName = "com.k_int.kbplus.${ownerClassName}PrivateProperty"
+            }
         }
 
         //def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner)
-        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner)
+        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: isPublic, tenant: contextOrg)
         newProp.setNote("")
 
         /*

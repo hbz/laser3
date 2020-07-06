@@ -17,7 +17,7 @@
         <g:set var="privateProperties" value="${ownobj.privateProperties}"/>
     </g:if>
     <g:else>
-        <g:set var="privateProperties" value="${ownobj.customProperties.findAll { cp -> cp.tenant == institution && cp.isPublic == false }}"/>
+        <g:set var="privateProperties" value="${ownobj.customProperties.findAll { cp -> cp.tenant.id == institution.id && cp.isPublic == false }}"/>
     </g:else>
     <g:if test="${privateProperties}">
         <colgroup>
