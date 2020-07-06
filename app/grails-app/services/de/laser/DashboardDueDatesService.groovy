@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import grails.plugin.mail.MailService
@@ -156,6 +157,7 @@ class DashboardDueDatesService {
 
             flash.message += messageSource.getMessage('menu.admin.sendEmailsForDueDates.successful', null, locale)
         } catch (Exception e) {
+            println(e)
             flash.error += messageSource.getMessage('menu.admin.sendEmailsForDueDates.error', null, locale)
         }
         flash
@@ -163,9 +165,10 @@ class DashboardDueDatesService {
 
     private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         def emailReceiver = user.getEmail()
+        Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
         def currentServer = grailsApplication.config.getCurrentServer()
         String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
-        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, locale) + " (" + org.name + ")")
+        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, language) + " (" + org.name + ")")
         if (emailReceiver == null || emailReceiver.isEmpty()) {
             log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);
         } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {

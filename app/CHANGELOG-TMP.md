@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2644    06.06.2020  rc1.4       Moe     Bug         "Fällige Termine"-Mailbenachrichtigung hat englischen Betreff "Due Dates"
+
 2651    03.06.2020  rc1.4       Moe     Bug         Lizenz kopieren: Ressourcentyp und Lizenzform werden nicht mitkopiert
 
 2645    03.06.2020  rc1.4       Moe     Bug         Blocker: /myInstitution/tasks nicht aufrufbar
