@@ -658,6 +658,42 @@ class OrganisationController extends AbstractDebugController {
         return
       }
 
+        du.setBenchmark('PersonRoles')
+        List<PersonRole> allPRs = PersonRole.executeQuery("select distinct(pr) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic = true", [org: result.orgInstance])
+        Map<RefdataValue, List<PersonRole>> allPRMap = [:]
+        List<RefdataValue> usedRDV = []
+
+        allPRs.each { PersonRole pr ->
+            if (pr.functionType) {
+                List l = allPRMap.get(pr.functionType.id) ?: []
+                l.add(pr)
+                allPRMap.put(pr.functionType.id, l)
+                usedRDV.add(pr.functionType)
+            }
+            if (pr.positionType) {
+                List l = allPRMap.get(pr.positionType.id) ?: []
+                l.add(pr)
+                allPRMap.put(pr.positionType.id, l)
+                usedRDV.add(pr.positionType)
+            }
+            if (pr.responsibilityType) {
+                List l = allPRMap.get(pr.responsibilityType.id) ?: []
+                l.add(pr)
+                allPRMap.put(pr.responsibilityType.id, l)
+                usedRDV.add(pr.responsibilityType)
+            }
+        }
+        usedRDV.unique().sort{it.getI10n('value')}
+
+        usedRDV.removeAll([RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN])
+        usedRDV.add(0, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN)
+        usedRDV.add(0, RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
+        usedRDV.add(0, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS)
+        usedRDV.add(0, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
+
+        result.usedRDV = usedRDV
+        result.allPRMap = allPRMap
+
         du.setBenchmark('properties')
 
         result.authorizedOrgs = result.user?.authorizedOrgs

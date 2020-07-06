@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import grails.util.Holders
 import net.sf.json.JSON
 
@@ -127,8 +128,8 @@ class SystemAnnouncement {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
 
-        String currentServer = grailsApplication.config.getCurrentServer()
-        String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+        String currentServer = ServerUtils.getCurrentServer()
+        String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
         String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', null, locale)
 
         boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES

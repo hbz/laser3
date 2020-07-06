@@ -7,6 +7,7 @@ import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import de.laser.interfaces.AbstractLockableService
 import grails.transaction.Transactional
 import grails.util.Holders
@@ -141,10 +142,9 @@ class SurveyUpdateService extends AbstractLockableService {
             println 'surveyUpdateService.sendEmail() failed due grailsApplication.config.grails.mail.disabled = true'
         }else {
 
-            def emailReceiver = user.getEmail()
-            def currentServer = grailsApplication.config.getCurrentServer()
-            def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
-
+            String emailReceiver = user.getEmail()
+            String currentServer = ServerUtils.getCurrentServer()
+            String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
 
             surveyEntries.each { survey ->
                 try {
