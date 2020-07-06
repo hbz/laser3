@@ -220,8 +220,8 @@ databaseChangeLog = {
 	changeSet(author: "galffy (modified)", id: "1593768046016-32") {
 		grailsChange {
 			change {
-				sql.execute("insert into subscription_property (sp_version, sp_date_value, sp_dec_value, sp_int_value, sp_note, sp_owner_fk, sp_ref_value_rv_fk, sp_string_value, sp_type_fk, sp_url_value, sp_tenant_fk, sp_is_public) " +
-						"select spp.spp_version, spp.date_value, spp.dec_value, spp.int_value, spp.note, spp.spp_owner_fk, spp.ref_value_id, spp.string_value, spp.spp_type_fk, spp.url_value, pd.pd_tenant_fk, false from subscription_private_property as spp join property_definition pd on spp.spp_type_fk = pd.pd_id;")
+				sql.execute("insert into subscription_property (sp_version, sp_date_value, sp_dec_value, sp_int_value, sp_note, sp_owner_fk, sp_ref_value_rv_fk, sp_string_value, sp_type_fk, sp_url_value, sp_tenant_fk, sp_is_public, sp_date_created, sp_last_updated, sp_last_updated_cascading) " +
+						"select spp.spp_version, spp.date_value, spp.dec_value, spp.int_value, spp.note, spp.spp_owner_fk, spp.ref_value_id, spp.string_value, spp.spp_type_fk, spp.url_value, pd.pd_tenant_fk, false, spp.spp_date_created, spp.spp_last_updated, spp.last_updated_cascading from subscription_private_property as spp join property_definition pd on spp.spp_type_fk = pd.pd_id;")
 			}
 			rollback {}
 		}
