@@ -260,4 +260,23 @@ databaseChangeLog = {
 	changeSet(author: "galffy (generated)", id: "1594019505211-35") {
 		dropTable(tableName: "license_private_property")
 	}
+
+    changeSet(author: "galffy (modified)", id: "1594019505211-36") {
+        grailsChange {
+            change {
+                sql.execute("ALTER TABLE license_custom_property RENAME id  TO lp_id;")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "galffy (modified)", id: "1594019505211-37") {
+        grailsChange {
+            change {
+                sql.execute("ALTER TABLE license_custom_property RENAME version  TO lp_version;")
+            }
+            rollback {}
+        }
+    }
+
 }
