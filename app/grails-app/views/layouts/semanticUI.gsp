@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Setting; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;de.laser.SystemMessage" %>
+<%@ page import="de.laser.helper.ServerUtils; com.k_int.kbplus.Setting; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;de.laser.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -44,12 +44,12 @@
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">
 
-    <g:if test="${currentServer == contextService.SERVER_DEV}">
+    <g:if test="${currentServer == ServerUtils.SERVER_DEV}">
         <div class="ui green label big la-server-label" aria-label="Sie befinden sich im Developer-System">
             <span>DEV</span>
         </div>
     </g:if>
-    <g:if test="${currentServer == contextService.SERVER_QA}">
+    <g:if test="${currentServer == ServerUtils.SERVER_QA}">
         <div class="ui red label big la-server-label">
             <span>QA</span>
         </div>

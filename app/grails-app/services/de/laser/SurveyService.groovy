@@ -9,6 +9,7 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import grails.plugin.mail.MailService
 import grails.transaction.Transactional
 import grails.util.Holders
@@ -609,9 +610,9 @@ class SurveyService {
 
                     User user = userOrg.user
 
-                    def emailReceiver = user.getEmail()
-                    def currentServer = grailsApplication.config.getCurrentServer()
-                    def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+                    String emailReceiver = user.getEmail()
+                    String currentServer = ServerUtils.getCurrentServer()
+                    String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
                     String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, locale) +  " (" + participationFinish.sortname + ")")
 
                         try {

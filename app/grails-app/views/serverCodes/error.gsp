@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.web.errors.ExceptionUtils" %>
+<%@ page import="de.laser.helper.ServerUtils; org.codehaus.groovy.grails.web.errors.ExceptionUtils" %>
 <laser:serviceInjection />
 <%
     Throwable exception = (Throwable) exception
@@ -70,7 +70,7 @@
     </div>
 </g:if>
 
-<g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_DEV}">
+<g:if test="${ServerUtils.getCurrentServer() == ServerUtils.SERVER_DEV}">
     <g:renderException exception="${exception}"/>
 </g:if>
 <g:elseif env="development">
