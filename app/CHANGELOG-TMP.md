@@ -6,6 +6,8 @@
 
 2661    06.07.2020  rc1.4       Moe     Bug         API CostItem gibt kein isVisibleForSubscriber zurück
 
+--      06.07.2020  rc1.4       Andreas Bug         Meine Pakete konnte wegen falschen Aufrufs nicht aufgerufen werden
+
 2642    06.07.2020  rc1.4       Moe     Bug         Falsche Bezeichnung bei Alle Anbieter & Lieferanten
 
 2644    06.07.2020  rc1.4       Moe     Bug         "Fällige Termine"-Mailbenachrichtigung hat englischen Betreff "Due Dates"
