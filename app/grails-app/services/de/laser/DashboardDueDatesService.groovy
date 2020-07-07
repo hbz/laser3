@@ -28,8 +28,8 @@ class DashboardDueDatesService {
 
     @javax.annotation.PostConstruct
     void init() {
-        from = grailsApplication.config.notifications.email.from
-        replyTo = grailsApplication.config.notifications.email.replyTo
+        from = ConfigUtils.getNotificationsEmailFrom()
+        replyTo = ConfigUtils.getNotificationsEmailReplyTo()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         log.debug("Initialised DashboardDueDatesService...")

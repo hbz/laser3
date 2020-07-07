@@ -8,12 +8,6 @@ import org.apache.log4j.RollingFileAppender
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
-appDefaultPrefs {
-    globalDatepickerFormat    = 'yyyy-mm-dd'
-    globalDateFormat          = 'yyyy-MM-dd'
-    globalDateFormatSQL       = '%Y-%m-%d'
-}
-
 System.out.println("!  local config override: ${grails.config.locations}")
 
 //
@@ -102,14 +96,12 @@ notifications.email.from = 'laser@hbz-nrw.de'
 notifications.email.replyTo = 'laser@hbz-nrw.de'
 notifications.email.genericTemplate = true // if enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
 
-//featureSurvey = false
-//notificationsJobActive = true
-//activateTestJob = true
-
 financials.currency = "EUR|GBP|USD|CHF" // list in priority of order
 
 isUpdateDashboardTableInDatabase = true
 isSendEmailsForDueDatesOfAllUsers = true
+//notificationsJobActive = true
+//activateTestJob = true
 
 quartzHeartbeat = 'Never'
 //showDebugInfo = false
@@ -123,6 +115,12 @@ quartzHeartbeat = 'Never'
     "TIPP": true
   ]
 ]*/
+
+appDefaultPrefs {
+    globalDatepickerFormat    = 'yyyy-mm-dd'
+    globalDateFormat          = 'yyyy-MM-dd'
+    globalDateFormatSQL       = '%Y-%m-%d'
+}
 
 // @NotificationsJob
 // - enable notification
