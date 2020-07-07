@@ -5593,6 +5593,12 @@ class SubscriptionController extends AbstractDebugController {
                                     owner: dctx.owner.owner
                             ).save()
 
+                            String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                            Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                            Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                            Files.copy(source, target)
+
                             DocContext ndc = new DocContext(
                                     owner: clonedContents,
                                     subscription: newSubscriptionInstance,
