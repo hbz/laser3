@@ -198,8 +198,8 @@ class ESSearchService{
                   "AND ( NOT rectype:\"SurveyOrg\" ) AND ( NOT rectype:\"SurveyConfig\" ) " +
                   "AND ( NOT rectype:\"Task\" ) AND ( NOT rectype:\"Note\" ) AND ( NOT rectype:\"Document\" ) " +
                   "AND ( NOT rectype:\"IssueEntitlement\" )" +
-                  "AND ( NOT rectype:\"SubscriptionCustomProperty\" ) AND ( NOT rectype:\"SubscriptionPrivateProperty\" ) " +
-                  "AND ( NOT rectype:\"LicenseCustomProperty\" ) AND ( NOT rectype:\"LicensePrivateProperty\" )" +
+                  "AND ( NOT rectype:\"SubscriptionProperty\" ) " +
+                  "AND ( NOT rectype:\"LicenseProperty\" )" +
                   ") ")
 
           params[mapping.key].each { p ->

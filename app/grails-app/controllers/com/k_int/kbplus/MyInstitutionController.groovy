@@ -3563,12 +3563,12 @@ AND EXISTS (
     private List addPrivatePropertyDefinition(params) {
         log.debug("trying to add private property definition for institution: " + params)
 
-        def tenant = GrailsHibernateUtil.unwrapIfProxy(contextService.getOrg())
+        Org tenant = contextService.getOrg()
 
         def privatePropDef = PropertyDefinition.findWhere(
                 name:   params.pd_name,
                 descr:  params.pd_descr,
-               // type:   params.pd_type,
+                //type:   params.pd_type,
                 tenant: tenant,
         )
 
@@ -3595,7 +3595,7 @@ AND EXISTS (
                             expl_de: params.pd_expl?.trim(),
                             expl_en: params.pd_expl?.trim()
                     ],
-                    tenant      : tenant?.globalUID
+                    tenant      : tenant.globalUID
             ]
 
             privatePropDef = PropertyDefinition.construct(map)

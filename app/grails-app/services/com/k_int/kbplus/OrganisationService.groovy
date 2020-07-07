@@ -2183,10 +2183,14 @@ class OrganisationService {
                                 break
                             //beware: this switch processes only custom properties which are NOT shared by a consortial parent subscription!
                             case 'customProperties':
+                            case 'privateProperties':
+                                boolean isPublic = false
+                                if(k == 'customProperties')
+                                    isPublic = true
                                 // causing a session mismatch
                                 // AbstractProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY,obj,PropertyDefinition.get(v.type))
                                 v.each { property ->
-                                    SubscriptionProperty newProp = new SubscriptionProperty(owner:obj,type:PropertyDefinition.get(property.type))
+                                    SubscriptionProperty newProp = new SubscriptionProperty(owner:obj,type:PropertyDefinition.get(property.type),isPublic:isPublic)
                                     newProp.note = property.note ?: null
                                     if(property.stringValue) {
                                         newProp.stringValue = property.stringValue
@@ -2212,7 +2216,7 @@ class OrganisationService {
                                         AuditConfig.addConfig(newProp,AuditConfig.COMPLETE_OBJECT)
                                 }
                                 break
-                            case 'privateProperties':
+                            /*case 'privateProperties':
                                 v.each { property ->
                                     SubscriptionPrivateProperty newProp = new SubscriptionPrivateProperty(owner:obj,type:PropertyDefinition.get(property.type))
                                     newProp.note = property.note ?: null
@@ -2237,7 +2241,7 @@ class OrganisationService {
                                     if(!newProp.save())
                                         throw new CreationException(newProp.errors)
                                 }
-                                break
+                                break*/
                             case 'subscriptionMembers':
                                 List synShareTargetList = []
                                 v.each { entry ->
@@ -2334,7 +2338,7 @@ class OrganisationService {
                                 // causing a session mismatch
                                 // AbstractProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY,obj,PropertyDefinition.get(v.type))
                                 v.each { property ->
-                                    LicenseCustomProperty newProp = new LicenseCustomProperty(owner:obj,type:PropertyDefinition.get(property.type))
+                                    LicenseProperty newProp = new LicenseProperty(owner:obj,type:PropertyDefinition.get(property.type))
                                     if(property.stringValue) {
                                         newProp.stringValue = property.stringValue
                                     }

@@ -675,71 +675,75 @@ class DataloadService {
             result
         }
 
-        updateES(SubscriptionProperty.class) { subCustProp ->
+        updateES(SubscriptionProperty.class) { SubscriptionProperty subProp ->
             def result = [:]
 
-            result._id = subCustProp.getClass().getSimpleName().toLowerCase()+":"+subCustProp.id
+            result._id = subProp.getClass().getSimpleName().toLowerCase()+":"+subProp.id
             result.priority = 45
-            result.dbId = subCustProp.id
-            result.name = subCustProp.type?.name
+            result.dbId = subProp.id
+            result.name = subProp.type?.name
 
             result.visible = 'Private'
-            result.rectype = subCustProp.getClass().getSimpleName()
+            result.rectype = subProp.getClass().getSimpleName()
 
-            if(subCustProp.type.type == Integer.toString()){
-                result.description = subCustProp.intValue
+            if(subProp.type.type == Integer.toString()){
+                result.description = subProp.intValue
             }
-            else if(subCustProp.type.type == String.toString()){
-                result.description = subCustProp.stringValue
+            else if(subProp.type.type == String.toString()){
+                result.description = subProp.stringValue
             }
-            else if(subCustProp.type.type == BigDecimal.toString()){
-                result.description = subCustProp.decValue
+            else if(subProp.type.type == BigDecimal.toString()){
+                result.description = subProp.decValue
             }
-            else if(subCustProp.type.type == Date.toString()){
-                result.description = subCustProp.dateValue
+            else if(subProp.type.type == Date.toString()){
+                result.description = subProp.dateValue
             }
-            else if(subCustProp.type.type == URL.toString()){
-                result.description = subCustProp.urlValue
+            else if(subProp.type.type == URL.toString()){
+                result.description = subProp.urlValue
             }
-            else if(subCustProp.type.type == RefdataValue.toString()){
-                result.description = subCustProp.refValue?.value
-            }
-
-            switch (subCustProp.owner.getCalculatedType()) {
-                case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_PARTICIPATION:
-                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value, RDStore.OR_SUBSCRIBER_COLLECTIVE.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_COLLECTIVE:
-                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value]}?.org?.id
-                    break
-            /*              case CalculatedType.TYPE_ADMINISTRATIVE:
-                              result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
-                              break*/
-                case CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE:
-                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value, RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
-                    break
+            else if(subProp.type.type == RefdataValue.toString()){
+                result.description = subProp.refValue?.value
             }
 
-            if(subCustProp.owner){
-                result.objectId = subCustProp.owner.id
-                result.objectName = subCustProp.owner.name
-                result.objectTypeId = subCustProp.owner.type?.id
-                result.objectClassName = subCustProp.owner.getClass().getSimpleName().toLowerCase()
+            if(subProp.isPublic) {
+                switch (subProp.owner.getCalculatedType()) {
+                    case CalculatedType.TYPE_CONSORTIAL:
+                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
+                        break
+                    case CalculatedType.TYPE_PARTICIPATION:
+                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value, RDStore.OR_SUBSCRIBER_COLLECTIVE.value]}?.org?.id
+                        break
+                    case CalculatedType.TYPE_COLLECTIVE:
+                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value]}?.org?.id
+                        break
+                /*              case CalculatedType.TYPE_ADMINISTRATIVE:
+                                  result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                                  break*/
+                    case CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE:
+                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value, RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                        break
+                    case CalculatedType.TYPE_LOCAL:
+                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                        break
+                }
+            }
+            else result.availableToOrgs = [subProp.type.tenant?.id ?: 0]
+
+            if(subProp.owner){
+                result.objectId = subProp.owner.id
+                result.objectName = subProp.owner.name
+                result.objectTypeId = subProp.owner.type?.id
+                result.objectClassName = subProp.owner.getClass().getSimpleName().toLowerCase()
             }
 
-            result.dateCreated = subCustProp.dateCreated
-            result.lastUpdated = subCustProp.lastUpdated
+            result.dateCreated = subProp.dateCreated
+            result.lastUpdated = subProp.lastUpdated
 
             result
         }
 
-        updateES(com.k_int.kbplus.SubscriptionPrivateProperty.class) { subPrivProp ->
+        /*
+        updateES(SubscriptionPrivateProperty.class) { subPrivProp ->
             def result = [:]
 
             result._id = subPrivProp.getClass().getSimpleName().toLowerCase()+":"+subPrivProp.id
@@ -769,7 +773,6 @@ class DataloadService {
                 result.description = subPrivProp.refValue?.value
             }
 
-            result.availableToOrgs = [subPrivProp.type.tenant?.id ?: 0]
 
 
             if(subPrivProp.owner){
@@ -784,63 +787,68 @@ class DataloadService {
 
             result
         }
+         */
 
-        updateES(com.k_int.kbplus.LicenseCustomProperty.class) { licCustProp ->
+        updateES(LicenseProperty.class) { LicenseProperty licProp ->
             def result = [:]
 
-            result._id = licCustProp.getClass().getSimpleName().toLowerCase()+":"+licCustProp.id
+            result._id = licProp.getClass().getSimpleName().toLowerCase()+":"+licProp.id
             result.priority = 45
-            result.dbId = licCustProp.id
-            result.name = licCustProp.type?.name
+            result.dbId = licProp.id
+            result.name = licProp.type?.name
 
             result.visible = 'Private'
-            result.rectype = licCustProp.getClass().getSimpleName()
+            result.rectype = licProp.getClass().getSimpleName()
 
-            if(licCustProp.type.type == Integer.toString()){
-                result.description = licCustProp.intValue
+            if(licProp.type.type == Integer.toString()){
+                result.description = licProp.intValue
             }
-            else if(licCustProp.type.type == String.toString()){
-                result.description = licCustProp.stringValue
+            else if(licProp.type.type == String.toString()){
+                result.description = licProp.stringValue
             }
-            else if(licCustProp.type.type == BigDecimal.toString()){
-                result.description = licCustProp.decValue
+            else if(licProp.type.type == BigDecimal.toString()){
+                result.description = licProp.decValue
             }
-            else if(licCustProp.type.type == Date.toString()){
-                result.description = licCustProp.dateValue
+            else if(licProp.type.type == Date.toString()){
+                result.description = licProp.dateValue
             }
-            else if(licCustProp.type.type == URL.toString()){
-                result.description = licCustProp.urlValue
+            else if(licProp.type.type == URL.toString()){
+                result.description = licProp.urlValue
             }
-            else if(licCustProp.type.type == RefdataValue.toString()){
-                result.description = licCustProp.refValue?.value
-            }
-
-            switch(licCustProp.owner.getCalculatedType()) {
-                case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_PARTICIPATION:
-                    result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
-                    break
+            else if(licProp.type.type == RefdataValue.toString()){
+                result.description = licProp.refValue?.value
             }
 
-            if(licCustProp.owner){
-                result.objectId = licCustProp.owner.id
-                result.objectName = licCustProp.owner.reference
-                result.objectTypeId = licCustProp.owner.type?.id
-                result.objectClassName = licCustProp.owner.getClass().getSimpleName().toLowerCase()
+            if(licProp.isPublic) {
+                switch(licProp.owner.getCalculatedType()) {
+                    case CalculatedType.TYPE_CONSORTIAL:
+                        result.availableToOrgs = licProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
+                        break
+                    case CalculatedType.TYPE_PARTICIPATION:
+                        result.availableToOrgs = licProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
+                        break
+                    case CalculatedType.TYPE_LOCAL:
+                        result.availableToOrgs = licProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                        break
+                }
+            }
+            else result.availableToOrgs = [licProp.type.tenant?.id ?: 0]
+
+            if(licProp.owner){
+                result.objectId = licProp.owner.id
+                result.objectName = licProp.owner.reference
+                result.objectTypeId = licProp.owner.type?.id
+                result.objectClassName = licProp.owner.getClass().getSimpleName().toLowerCase()
             }
 
-            result.dateCreated = licCustProp.dateCreated
-            result.lastUpdated = licCustProp.lastUpdated
+            result.dateCreated = licProp.dateCreated
+            result.lastUpdated = licProp.lastUpdated
 
             result
         }
 
-        updateES( com.k_int.kbplus.LicensePrivateProperty.class) { licPrivProp ->
+        /*
+        updateES( LicensePrivateProperty.class) { licPrivProp ->
             def result = [:]
 
             result._id = licPrivProp.getClass().getSimpleName().toLowerCase()+":"+licPrivProp.id
@@ -885,6 +893,7 @@ class DataloadService {
 
             result
         }
+        */
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
         update_running = false

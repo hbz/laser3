@@ -656,9 +656,9 @@ class AjaxController {
                 if(propDef.tenant) {
                     switch(params.domain) {
                         case 'currentSubscriptions':
-                        case 'manageConsortiaSubscriptions': values = SubscriptionPrivateProperty.findAllByType(propDef)
+                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
-                        case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
+                        case 'currentLicenses': values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
                         case 'listProvider':
                         case 'currentProviders':
@@ -671,9 +671,9 @@ class AjaxController {
                 else {
                     switch(params.domain) {
                         case 'currentSubscriptions':
-                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select scp from SubscriptionProperty scp join scp.owner s join s.orgRelations oo where scp.type = :propDef and oo.org = :tenant',[propDef:propDef, tenant:contextService.org])
+                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.type = :propDef and sp.tenant = :tenant and sp.isPublic = true',[propDef:propDef, tenant:contextService.org])
                             break
-                        case 'currentLicenses': values = LicenseCustomProperty.executeQuery('select lcp from LicenseCustomProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                        case 'currentLicenses': values = LicenseProperty.executeQuery('select lcp from LicenseProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef, tenant:contextService.org])
                             break
                         case 'listProvider':
                         case 'currentProviders':
@@ -1298,7 +1298,7 @@ class AjaxController {
       def existingProp = owner.customProperties.find { it.type.name == type.name }
 
       if (existingProp == null || type.multipleOccurrence) {
-        newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type)
+        newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type, contextService.getOrg())
         if (newProp.hasErrors()) {
           log.error(newProp.errors)
         } else {
@@ -1421,15 +1421,22 @@ class AjaxController {
           error = message(code:'propertyDefinition.private.deactivated')
         }
         else {
-          def existingProps = owner.privateProperties.findAll {
-            it.owner.id == owner.id &&
-            it.type.id == type.id // this sucks due lazy proxy problem
-          }
+            Set<AbstractPropertyWithCalculatedLastUpdated> existingProps
+            if(owner.hasProperty("privateProperties")) {
+                existingProps = owner.privateProperties.findAll {
+                    it.owner.id == owner.id && it.type.id == type.id // this sucks due lazy proxy problem
+                }
+            }
+            else {
+                existingProps = owner.customProperties.findAll { AbstractPropertyWithCalculatedLastUpdated prop ->
+                    prop.owner.id == owner.id && prop.type.id == type.id && prop.tenant.id == tenant.id && prop.isPublic == false
+                }
+            }
           existingProps.removeAll { it.type.name != type.name } // dubious fix
 
 
           if (existingProps.size() == 0 || type.multipleOccurrence) {
-            newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
+            newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type, contextService.getOrg())
             if (newProp.hasErrors()) {
               log.error(newProp.errors)
             } else {
@@ -1448,12 +1455,13 @@ class AjaxController {
                 tenant: tenant,
                 newProp: newProp,
                 error: error,
+                institution: contextService.org,
                 custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
                 prop_desc: type?.descr // form data
         ])
       }
       else  {
-        log.error("Form submitted with mising values")
+        log.error("Form submitted with missing values")
       }
     }
 
@@ -1671,7 +1679,7 @@ class AjaxController {
 
                     // multi occurrence props; add one additional with backref
                     if (property.type.multipleOccurrence) {
-                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
+                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextService.getOrg())
                         additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
                         additionalProp.save(flush: true)
@@ -1791,7 +1799,7 @@ class AjaxController {
     def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
     def prop_desc = property.getType().getDescr()
 
-    owner.privateProperties.remove(property)
+    owner.customProperties.remove(property)
     property.delete(flush:true)
 
     if(property.hasErrors()){
@@ -1804,6 +1812,7 @@ class AjaxController {
             ownobj: owner,
             tenant: tenant,
             newProp: property,
+            institution: contextService.org,
             custom_props_div: "custom_props_div_${tenant.id}",  // JS markup id
             prop_desc: prop_desc // form data
     ])

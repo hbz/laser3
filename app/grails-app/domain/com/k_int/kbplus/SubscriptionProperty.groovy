@@ -54,7 +54,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
         isPublic    column: 'sp_is_public'
         dateCreated column: 'sp_date_created'
         lastUpdated column: 'sp_last_updated'
-        lastUpdatedCascading column: 'sp_last_updated_cascaded'
+        lastUpdatedCascading column: 'sp_last_updated_cascading'
     }
 
     static constraints = {

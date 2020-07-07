@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SubscriptionCustomProperty; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*; de.laser.interfaces.CalculatedType" %>
+<%@ page import="com.k_int.kbplus.SubscriptionProperty; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -19,7 +19,7 @@
 <g:if test="${subscriptionInstance.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
     <div class="ui card la-dl-no-table ">
         <div class="content">
-            <h5 class="ui header">${message(code:'subscription.properties.consortium')}</h5>
+            <h5 class="ui header">${message(code:'license.properties.consortium')}</h5>
             <div id="member_props_div">
                 <g:render template="/templates/properties/members" model="${[
                         prop_desc: PropertyDefinition.SUB_PROP,
