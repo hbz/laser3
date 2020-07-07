@@ -1,6 +1,7 @@
 package de.laser.batch
 
 import com.k_int.kbplus.Org
+import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -32,7 +33,7 @@ class TestJob extends AbstractJob {
     }
 
     def execute() {
-        if (grailsApplication.config.activateTestJob) {
+        if (ConfigUtils.getActivateTestJob()) {
             if (! isAvailable()) {
                 return false
             }

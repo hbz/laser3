@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.ApiSource; com.k_int.kbplus.BookInstance; com.k_int.kbplus.JournalInstance;" %>
+<%@ page import="de.laser.helper.ConfigUtils; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.ApiSource; com.k_int.kbplus.BookInstance; com.k_int.kbplus.JournalInstance;" %>
 <!doctype html>
 <html>
 <head>
@@ -284,7 +284,7 @@
             <div class="content">
                 <span class="la-float-right">
                     <laser:statsLink class="ui basic negative"
-                                     base="${grailsApplication.config.statsApiUrl}"
+                                     base="${ConfigUtils.getStatsApiUrl()}"
                                      module="statistics"
                                      controller="default"
                                      action="select"
@@ -341,7 +341,7 @@
                             <g:each in="${v}" status="i" var="v2">
                                 <td>
                                     <laser:statsLink
-                                            base="${grailsApplication.config.statsApiUrl}"
+                                            base="${ConfigUtils.getStatsApiUrl()}"
                                             module="statistics"
                                             controller="default"
                                             action="select"

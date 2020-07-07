@@ -133,8 +133,8 @@ class InstAdmService {
 
             mailService.sendMail {
                 to      user.email
-                from    grailsApplication.config.notifications.email.from
-                replyTo grailsApplication.config.notifications.email.replyTo
+                from    ConfigUtils.getNotificationsEmailFrom()
+                replyTo ConfigUtils.getNotificationsEmailReplyTo()
                 subject ConfigUtils.getLaserSystemId() + ' - ' + subj
                 body    view: view, model: model
             }

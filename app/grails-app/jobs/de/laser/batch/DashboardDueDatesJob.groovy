@@ -2,6 +2,7 @@ package de.laser.batch
 
 
 import de.laser.SystemEvent
+import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -30,14 +31,14 @@ class DashboardDueDatesJob extends AbstractJob {
         setJobStart()
 
         try {
-            if (grailsApplication.config.isUpdateDashboardTableInDatabase || grailsApplication.config.isSendEmailsForDueDatesOfAllUsers) {
+            if (ConfigUtils.getIsUpdateDashboardTableInDatabase() || ConfigUtils.getIsSendEmailsForDueDatesOfAllUsers()) {
                 log.info("Execute::dashboardDueDatesJob - Start");
 
                 SystemEvent.createEvent('DBDD_JOB_START')
 
                 if (! dashboardDueDatesService.takeCareOfDueDates(
-                        grailsApplication.config.isUpdateDashboardTableInDatabase,
-                        grailsApplication.config.isSendEmailsForDueDatesOfAllUsers,
+                        ConfigUtils.getIsUpdateDashboardTableInDatabase(),
+                        ConfigUtils.getIsSendEmailsForDueDatesOfAllUsers(),
                         [:]
                 )) {
                     log.warn( 'Failed. Maybe ignored due blocked dashboardDueDatesService')

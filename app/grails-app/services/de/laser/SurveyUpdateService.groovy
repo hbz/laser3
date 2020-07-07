@@ -26,8 +26,8 @@ class SurveyUpdateService extends AbstractLockableService {
 
     @javax.annotation.PostConstruct
     void init() {
-        from = grailsApplication.config.notifications.email.from
-        //replyTo = grailsApplication.config.notifications.email.replyTo
+        from = ConfigUtils.getNotificationsEmailFrom()
+        //replyTo = ConfigUtils.getNotificationsEmailReplyTo()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         log.debug("Initialised SurveyUpdateService...")
     }
