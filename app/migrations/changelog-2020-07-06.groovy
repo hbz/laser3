@@ -282,22 +282,4 @@ databaseChangeLog = {
            rollback {}
       }
   }
-
-    changeSet(author: "galffy (modified)", id: "1594019505211-38") {
-        grailsChange {
-            change {
-                sql.execute("ALTER TABLE license_custom_property RENAME id  TO lp_id;")
-            }
-            rollback {}
-        }
-    }
-
-    changeSet(author: "galffy (modified)", id: "1594019505211-39") {
-        grailsChange {
-            change {
-                sql.execute("ALTER TABLE license_custom_property RENAME version  TO lp_version;")
-            }
-            rollback {}
-        }
-    }
 }
