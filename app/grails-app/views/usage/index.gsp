@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.ConfigUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -71,8 +72,8 @@
 <h3 class="ui header">${message(code: 'default.usage.adminPage.infoHeader')}</h3>
 <table class="ui celled la-table table compact">
     <tr><td>SUSHI API Url</td><td>
-        <g:if test="${grailsApplication.config.statsApiUrl}">
-            ${grailsApplication.config.statsApiUrl}
+        <g:if test="${ConfigUtils.getStatsApiUrl()}">
+            ${ConfigUtils.getStatsApiUrl()}
         </g:if>
         <g:else>
             <div class="ui red basic label">SUSHI API Url required</div>

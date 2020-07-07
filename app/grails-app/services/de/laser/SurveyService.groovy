@@ -36,7 +36,7 @@ class SurveyService {
 
     @javax.annotation.PostConstruct
     void init() {
-        from = grailsApplication.config.notifications.email.from
+        from = ConfigUtils.getNotificationsEmailFrom()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
     }

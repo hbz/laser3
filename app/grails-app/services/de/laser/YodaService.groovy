@@ -20,6 +20,7 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.exceptions.CleanupException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
@@ -51,7 +52,7 @@ class YodaService {
 
     boolean showDebugInfo() {
         //enhanced as of ERMS-829
-        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || grailsApplication.config.showDebugInfo )
+        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigUtils.getShowDebugInfo() )
     }
 
     int getNumberOfActiveUsers() {
