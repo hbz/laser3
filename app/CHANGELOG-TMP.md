@@ -2,7 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2459    07.07.2020  rc1.4       Moe     Bug         Beim Kopieren Objekten werden Dokumenten nicht richtig kopiert
+2459    07.07.2020  rc1.4       Moe     Bug         Beim Kopieren von Objekten werden Dokumenten nicht richtig kopiert
 
 2660    06.07.2020  rc1.4       Moe     Bug         API Endpunkt CostItemList muss alle CostItems zurückgeben
 
