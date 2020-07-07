@@ -31,7 +31,7 @@ class PublicController {
 
             mailService.sendMail {
                 to 'barrierefreiheitsbelange@hbz-nrw.de'
-                from grailsApplication.config.notifications.email.from
+                from ConfigUtils.getNotificationsEmailFrom()
                 subject ConfigUtils.getLaserSystemId() + ' - Feedback-Mechanismus Barrierefreiheit'
                 body (view: '/mailTemplates/text/wcagFeedback', model: [name:params.name, email:params.email,url:params.url, comment:escapeService.replaceUmlaute(params.comment)])
 

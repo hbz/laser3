@@ -1,4 +1,5 @@
 import com.k_int.kbplus.auth.User
+import de.laser.helper.ConfigUtils
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -52,7 +53,7 @@ class LaserFilters {
                 }
 
                 if ( session.sessionPreferences == null ) {
-                    session.sessionPreferences = grailsApplication.config.appDefaultPrefs
+                    session.sessionPreferences = ConfigUtils.getAppDefaultPrefs()
                 }
                 else {
                 }

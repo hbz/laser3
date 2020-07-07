@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.usage.StatsSyncServiceOptions
@@ -105,7 +106,7 @@ class StatsSyncService {
     void internalDoSync() {
         try {
             log.debug("create thread pool")
-            String statsApi = grailsApplication.config.statsApiUrl ?: ''
+            String statsApi = ConfigUtils.getStatsApiUrl() ?: ''
             if (statsApi == '') {
                 log.error("Stats API URL not set in config")
                 errors.add("Stats API URL not set in config")
@@ -155,7 +156,7 @@ class StatsSyncService {
             return availableReportCache[queryParamsHash]
         }
         try {
-            URIBuilder uri = new URIBuilder(grailsApplication.config.statsApiUrl)
+            URIBuilder uri = new URIBuilder(ConfigUtils.getStatsApiUrl())
             String baseUrl = uri.getScheme() + "://" + uri.getHost()
             String basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
             String path = basePath + 'Sushiservice/reports'

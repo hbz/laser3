@@ -144,9 +144,9 @@ class SystemAnnouncement {
         if (isRemindCCbyEmail && ccAddress) {
             mailService.sendMail {
                 to      user.getEmail()
-                from    grailsApplication.config.notifications.email.from
+                from    ConfigUtils.getNotificationsEmailFrom()
                 cc      ccAddress
-                replyTo grailsApplication.config.notifications.email.replyTo
+                replyTo ConfigUtils.getNotificationsEmailReplyTo()
                 subject mailSubject
                 body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: this])
             }
@@ -154,8 +154,8 @@ class SystemAnnouncement {
         else {
             mailService.sendMail {
                 to      user.getEmail()
-                from    grailsApplication.config.notifications.email.from
-                replyTo grailsApplication.config.notifications.email.replyTo
+                from    ConfigUtils.getNotificationsEmailFrom()
+                replyTo ConfigUtils.getNotificationsEmailReplyTo()
                 subject mailSubject
                 body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: this])
             }

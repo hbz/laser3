@@ -49,12 +49,12 @@ class MigrationCallbacks {
 
 		println '   done ..'
 
-		if (grailsApplication.config.schemaSpyScriptFile){
+		if (ConfigUtils.getSchemaSpyScriptFile()){
 
 			println 'Executing post-migration scripts'
 
 			try {
-				String cmd = 'sh ' + grailsApplication.config.schemaSpyScriptFile
+				String cmd = 'sh ' + ConfigUtils.getSchemaSpyScriptFile()
 				println '   ' + cmd
 
 				cmd.execute()

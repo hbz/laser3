@@ -1,6 +1,7 @@
 package de.laser.batch
 
 import de.laser.SystemEvent
+import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -43,7 +44,7 @@ class StatsSyncJob extends AbstractJob {
         try {
             log.debug("Execute::statsSyncJob")
 
-            if ( grailsApplication.config.StatsSyncJobActiv == true ) {
+            if (ConfigUtils.getStatsSyncJobActiv()) {
                 log.debug("Running Stats SYNC batch job")
                 SystemEvent.createEvent('STATS_SYNC_JOB_START')
 

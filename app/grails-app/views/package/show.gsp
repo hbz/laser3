@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants;com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
+<%@ page import="de.laser.helper.ConfigUtils; de.laser.helper.RDStore; de.laser.helper.RDConstants;com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
 <laser:serviceInjection/>
 <!doctype html>
 <r:require module="datatables" />
@@ -192,7 +192,7 @@
                                <dt><g:message code="package.show.usage"/></dt>
                                <dd>
                                     <laser:statsLink class="ui basic negative"
-                                                     base="${grailsApplication.config.statsApiUrl}"
+                                                     base="${ConfigUtils.getStatsApiUrl()}"
                                                      module="statistics"
                                                      controller="default"
                                                      action="select"

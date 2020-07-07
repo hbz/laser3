@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2657    07.07.2020  hbz-dev     David   Feature     Refactoring: Wrapper für Konfigurationszugriff
+
 2358    02.07.2020  hbz-dev     Andreas Feature     neue Sicht für Merkmale in Teilnehmerlizenzen eingesetzt
 
 1896    01.07.2020  hbz-dev     Moe     Feature     Show Seite für IE umbauen
