@@ -4,7 +4,7 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 #### 0.110
 
-- fiexed __/costItemList__
+- internal refactoring __/costItemList__
 
 #### 0.109
 

@@ -136,7 +136,7 @@ class ApiCostItem {
         result.dateCreated         = ApiToolkit.formatInternalDate(costItem.dateCreated)
         result.datePaid            = ApiToolkit.formatInternalDate(costItem.datePaid)
         result.endDate             = ApiToolkit.formatInternalDate(costItem.endDate)
-        result.finalCostRounding   = costItem.finalCostRounding
+        result.finalCostRounding   = costItem.finalCostRounding ? 'Yes' : 'No'
         result.invoiceDate         = ApiToolkit.formatInternalDate(costItem.invoiceDate)
         result.lastUpdated         = ApiToolkit.formatInternalDate(costItem.lastUpdated)
 
@@ -144,7 +144,7 @@ class ApiCostItem {
         result.startDate           = ApiToolkit.formatInternalDate(costItem.startDate)
         result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : costItem.taxRate)
 
-        result.isVisibleForSubscriber = costItem.isVisibleForSubscriber
+        result.isVisibleForSubscriber = costItem.isVisibleForSubscriber ? 'Yes' : 'No'
 
         // erms-888
         result.calculatedType      = costItem.getCalculatedType()
