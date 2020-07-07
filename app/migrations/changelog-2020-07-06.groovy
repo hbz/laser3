@@ -260,4 +260,26 @@ databaseChangeLog = {
 	changeSet(author: "galffy (generated)", id: "1594019505211-35") {
 		dropTable(tableName: "license_private_property")
 	}
+
+	changeSet(author: "klober (modified)", id: "1594019505211-36") {
+		grailsChange {
+			change {
+				sql.execute(""" update change_notification_queue_item
+ set cnqi_change_document = replace(cnqi_change_document, 'de.laser.domain.', 'de.laser.')
+ where cnqi_change_document like '%de.laser.domain.%'; """)
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "klober (modified)", id: "1594019505211-37") {
+		grailsChange {
+			change {
+				sql.execute(""" update pending_change
+ set pc_payload = replace(pc_payload, 'de.laser.domain.', 'de.laser.')
+ where pc_payload like '%de.laser.domain.%'; """)
+			}
+			rollback {}
+		}
+	}
 }
