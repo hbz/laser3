@@ -69,6 +69,9 @@ class ConfigUtils {
     static String getOrgDumpFileNamePattern() {
         readConfig('orgDumpFileNamePattern')
     }
+    static String getSchemaSpyScriptFile() {
+        readConfig('schemaSpyScriptFile')
+    }
     static boolean getShowDebugInfo() {
         readConfig('showDebugInfo')
     }
@@ -77,6 +80,9 @@ class ConfigUtils {
     }
     static String getStatsApiUrl() {
         readConfig('statsApiUrl')
+    }
+    static boolean getStatsSyncJobActiv() {
+        readConfig('StatsSyncJobActiv')
     }
     static String getSystemEmail() {
         readConfig('systemEmail')
@@ -106,9 +112,11 @@ class ConfigUtils {
         getNotificationsJobActive()
         getOrgDumpFileExtension()
         getOrgDumpFileNamePattern()
+        getSchemaSpyScriptFile() // QA only
         getShowDebugInfo()
         getShowSystemInfo()
         getStatsApiUrl()
+        getStatsSyncJobActiv()
         getSystemEmail()
     }
 
