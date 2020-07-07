@@ -1,6 +1,7 @@
 package com.k_int.kbplus.batch
 
 import de.laser.SystemEvent
+import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -43,7 +44,7 @@ class GlobalDataSyncJob extends AbstractJob {
         try {
             log.debug("GlobalDataSyncJob");
 
-            if ( grailsApplication.config.globalDataSyncJobActiv == true ) {
+            if ( ConfigUtils.getGlobalDataSyncJobActiv() ) {
                 log.debug("Running GlobalDataSyncJob batch job")
                 SystemEvent.createEvent('GD_SYNC_JOB_START')
 

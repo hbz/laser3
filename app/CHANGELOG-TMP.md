@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2664    07.07.2020  hbz-dev     Andreas Feature     Vorbelegung von auszuwählenden Lizenzen für Finanzmodal per Checkbox
+
+2657    07.07.2020  hbz-dev     David   Feature     Refactoring: Wrapper für Konfigurationszugriff
+
 2659    06.07.2020  hbz-dev     Moe     Feature     Sortierung "Nicht abgeschlossen" auch für Konsortialsicht bauen bei Teilnehmer-Umfragen
 
 2358    02.07.2020  hbz-dev     Andreas Feature     neue Sicht für Merkmale in Teilnehmerlizenzen eingesetzt

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.ConfigUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -29,7 +30,7 @@
         <tr><td>JVM version</td><td> ${System.getProperty('java.version')}</td></tr>
         <tr><td>Reloading active</td><td> ${grails.util.Environment.reloadingAgentEnabled}</td></tr>
         <tr><td>Session Timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
-        <tr><td>Last Quartz Heartbeat</td><td>${grailsApplication.config.quartzHeartbeat}</td></tr>
+        <tr><td>Last Quartz Heartbeat</td><td>${ConfigUtils.getQuartzHeartbeat()}</td></tr>
     </table>
 
     <table class="ui celled la-table table">

@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.ConfigUtils
 import org.apache.http.HttpHost
 import org.codehaus.groovy.grails.web.json.parser.JSONParser
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest
@@ -31,9 +32,9 @@ class ESWrapperService {
     def init() {
         log.debug("ESWrapperService::init");
 
-        es_cluster_name = grailsApplication.config.aggr_es_cluster  ?: ESWrapperService.ES_CLUSTER
-        es_index_name   = grailsApplication.config.aggr_es_index    ?: ESWrapperService.ES_INDEX
-        es_host         = grailsApplication.config.aggr_es_hostname ?: ESWrapperService.ES_HOST
+        es_cluster_name = ConfigUtils.getAggrEsCluster()  ?: ESWrapperService.ES_CLUSTER
+        es_index_name   = ConfigUtils.getAggrEsIndex()    ?: ESWrapperService.ES_INDEX
+        es_host         = ConfigUtils.getAggrEsHostname() ?: ESWrapperService.ES_HOST
 
         log.debug("es_cluster = ${es_cluster_name}")
         log.debug("es_index_name = ${es_index_name}")
