@@ -108,11 +108,16 @@
                         isClicked = true;
                         $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
                         $('#dynamicModalContainer').empty();
+                        let preselectedSubscriptions = []
+                        for(let i = 0;i < $("[name='selectedCostItems']:checked").length;i++) {
+                            preselectedSubscriptions.push($("[name='selectedCostItems']:checked").get(i).value);
+                        }
                         $.ajax({
                                url: "<g:createLink controller='finance' action='newCostItem'/>",
                                data: {
                                    sub: "${fixedSubscription?.id}",
-                                   showView: "${showView}"
+                                   showView: "${showView}",
+                                   preselectedSubscriptions: JSON.stringify(preselectedSubscriptions)
                                }
                         }).done(function (data) {
                             $('#dynamicModalContainer').html(data);
@@ -122,6 +127,7 @@
                                        r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
                                        ajaxPostFunc();
                                        setupCalendar();
+                                       preselectMembers();
                                        },
                                    detachable: true,
                                    closable: false,
