@@ -41,7 +41,7 @@ class BootStrap {
 
         log.info("--------------------------------------------------------------------------------")
 
-        ConfigUtils.validate()
+        ConfigUtils.checkConfig()
 
         log.info("SystemId: " + ConfigUtils.getLaserSystemId())
         log.info("Database: ${grailsApplication.config.dataSource.url}")

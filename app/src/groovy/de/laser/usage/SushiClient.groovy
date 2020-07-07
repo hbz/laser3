@@ -1,6 +1,6 @@
 package de.laser.usage
 
-
+import de.laser.helper.ConfigUtils
 import groovy.util.logging.Log4j
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
@@ -21,7 +21,7 @@ class SushiClient {
     }
 
     def getUri() {
-        new URIBuilder(grails.util.Holders.grailsApplication.config.statsApiUrl)
+        new URIBuilder(ConfigUtils.getStatsApiUrl())
     }
 
     def getBaseUrl() {
