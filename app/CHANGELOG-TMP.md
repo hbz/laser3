@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2660    06.07.2020  rc1.4       Moe     Bug         API Endpunkt CostItemList muss alle CostItems zurückgeben
+
+2661    06.07.2020  rc1.4       Moe     Bug         API CostItem gibt kein isVisibleForSubscriber zurück
+
 --      06.07.2020  rc1.4       Andreas Bug         Meine Pakete konnte wegen falschen Aufrufs nicht aufgerufen werden
 
 2642    06.07.2020  rc1.4       Moe     Bug         Falsche Bezeichnung bei Alle Anbieter & Lieferanten
