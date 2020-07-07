@@ -153,7 +153,7 @@ databaseChangeLog = {
 
 	changeSet(author: "galffy (modified)", id: "1593768046016-20") {
 		addColumn(schemaName: "public", tableName: "subscription_custom_property") {
-			column(name: "sp_is_public", type: "bool")
+			column(name: "sp_is_public", type: "text")
 		}
 	}
 
