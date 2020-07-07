@@ -4,7 +4,8 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 #### 0.110
 
-- internal refactoring __/costItemList__
+- added new attribute: `CostItem.isVisibleForSubscriber`
+- modified attribute: `CostItem.finalCostRounding`
 
 #### 0.109
 
