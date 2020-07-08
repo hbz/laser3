@@ -702,8 +702,8 @@ class OrganisationController extends AbstractDebugController {
 
         List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.ORG_PROP, true, result.institution)
 
-        mandatories.each { pd ->
-            if (!OrgPrivateProperty.findWhere(owner: result.orgInstance, type: pd)) {
+        mandatories.each { PropertyDefinition pd ->
+            if (!OrgProperty.findWhere(owner: result.orgInstance, type: pd)) {
                 def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.orgInstance, pd)
 
 
@@ -981,16 +981,10 @@ class OrganisationController extends AbstractDebugController {
 
         // create mandatory OrgPrivateProperties if not existing
 
-        def mandatories = []
-        result.user?.authorizedOrgs?.each{ org ->
-            List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.ORG_PROP, true, org)
-            if(ppd){
-                mandatories << ppd
-            }
-        }
+        List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.ORG_PROP, true, contextService.org)
         mandatories.flatten().each{ pd ->
-            if (! OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
+            if (! OrgProperty.findWhere(owner: orgInstance, type: pd, isPublic: false, tenant: contextService.org)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd, contextService.org)
 
                 if (newProp.hasErrors()) {
                     log.error(newProp.errors)

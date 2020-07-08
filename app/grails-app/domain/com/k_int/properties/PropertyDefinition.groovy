@@ -308,7 +308,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
         boolean isPublic
 
-        if(owner.class.name in [Subscription.class.name, License.class.name]) {
+        if(!owner.hasProperty("privateProperties")) {
             ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
             if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
                 isPublic = true
@@ -477,8 +477,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         log.debug("Remove")
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgCustomProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgPrivateProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonPrivateProperty c where c.type = ?', [this])
         this.delete();
     }

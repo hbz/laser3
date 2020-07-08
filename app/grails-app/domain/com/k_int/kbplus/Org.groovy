@@ -108,7 +108,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         addresses:          'org',
         affiliations:       'org',
         customProperties:   'owner',
-        privateProperties:  'owner',
+        //privateProperties:  'owner',
         documents:          'org',
         hasCreated:         'createdBy',
         hasLegallyObliged:  'legallyObligedBy'
@@ -124,8 +124,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         contacts:           Contact,
         addresses:          Address,
         affiliations:       UserOrg,
-        customProperties:   OrgCustomProperty,
-        privateProperties:  OrgPrivateProperty,
+        customProperties:   OrgProperty,
+        //privateProperties:  OrgPrivateProperty,
         orgType:            RefdataValue,
         documents:          DocContext,
         platforms:          Platform,
@@ -184,7 +184,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         prsLinks            batchSize: 10
         affiliations        batchSize: 10
         customProperties    batchSize: 10
-        privateProperties   batchSize: 10
+        //privateProperties   batchSize: 10
         documents           batchSize: 10
         platforms           batchSize: 10
         hasCreated          batchSize: 10

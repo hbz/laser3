@@ -258,26 +258,26 @@ class ApiService {
                 }
 
                 if (type) {
-                    OrgPrivateProperty opp
+                    OrgProperty op
                     String check = "private property: " + name + " : " + pp.text()
 
                     if (type.refdataCategory) {
                         def rdv = RefdataValue.getByCategoryDescAndI10nValueDe(type.refdataCategory, pp.text())
                         if (rdv) {
-                            opp = OrgPrivateProperty.findWhere(type: type, owner: org, refValue: rdv)
-                            if (! opp) {
-                                opp = new OrgPrivateProperty(type: type, owner: org, refValue: rdv)
-                                opp.save() ? (check += " > OK") : (check += " > FAIL")
+                            op = OrgProperty.findWhere(type: type, owner: org, refValue: rdv)
+                            if (! op) {
+                                op = new OrgProperty(type: type, owner: org, refValue: rdv, isPublic: false)
+                                op.save() ? (check += " > OK") : (check += " > FAIL")
                             } else {
                                 check = "ignored existing " + check
                             }
                         }
                     }
                     else {
-                        opp = OrgPrivateProperty.findWhere(type: type, owner: org, stringValue: pp.text())
-                        if (! opp) {
-                            opp = new OrgPrivateProperty(type: type, owner: org, stringValue: pp.text())
-                            opp.save() ? (check += " > OK") : (check += " > FAIL")
+                        op = OrgProperty.findWhere(type: type, owner: org, stringValue: pp.text())
+                        if (! op) {
+                            op = new OrgProperty(type: type, owner: org, stringValue: pp.text(), isPublic: false)
+                            op.save() ? (check += " > OK") : (check += " > FAIL")
                         } else {
                             check = "ignored existing " + check
                         }

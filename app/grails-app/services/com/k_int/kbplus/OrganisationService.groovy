@@ -9,7 +9,6 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AuditConfig
-import de.laser.ContextService
 import de.laser.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
 import de.laser.helper.ConfigUtils
@@ -1004,9 +1003,9 @@ class OrganisationService {
                 return false
             }
             modelMember.setDefaultCustomerType()
-            OrgPrivateProperty opp = new OrgPrivateProperty(owner: modelMember, type: privateProperties.get('BGA'), refValue: RDStore.YN_YES)
-            if(!opp.save()) {
-                errors.add(opp.errors.toString())
+            OrgProperty op = new OrgProperty(owner: modelMember, type: privateProperties.get('BGA'), refValue: RDStore.YN_YES, tenant: modelMember, isPublic: false)
+            if(!op.save()) {
+                errors.add(op.errors.toString())
                 return false
             }
             Map legalPatronAddressMap = [type:RefdataValue.getByValueAndCategory('Legal patron address', RDConstants.ADDRESS_TYPE),
