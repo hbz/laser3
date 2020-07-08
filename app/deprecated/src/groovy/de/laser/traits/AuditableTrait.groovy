@@ -3,7 +3,7 @@ package de.laser.traits
 import com.k_int.kbplus.License
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
-import CustomProperty
+import com.k_int.kbplus.abstract_domain.CustomProperty
 
 import javax.persistence.Transient
 

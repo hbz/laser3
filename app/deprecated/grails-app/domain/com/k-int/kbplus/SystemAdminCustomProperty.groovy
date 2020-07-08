@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
-import CustomProperty
+import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 
 /**SystemAdmin custom properties are used to store system related settings and options**/
