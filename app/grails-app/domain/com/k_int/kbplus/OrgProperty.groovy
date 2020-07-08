@@ -15,21 +15,22 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
     Date lastUpdated
 
     static mapping = {
-        id          column: 'op_id'
-        version     column: 'op_version'
-        stringValue column: 'op_string_value'
-        intValue    column: 'op_int_value'
-        decValue    column: 'op_dec_value'
-        refValue    column: 'op_ref_value_rv_fk'
-        urlValue    column: 'op_url_value'
-        note        column: 'op_note'
-        dateValue   column: 'op_date_value'
-        type        column: 'op_type_fk', index:'op_type_idx'
-        tenant      column: 'op_tenant_fk', index:'op_tenant_idx'
-        owner       column: 'op_owner_fk', index:'op_owner_idx'
-        isPublic    column: 'op_is_public'
-        dateCreated column: 'op_date_created'
-        lastUpdated column: 'op_last_updated'
+        id                   column: 'op_id'
+        version              column: 'op_version'
+        stringValue          column: 'op_string_value'
+        intValue             column: 'op_int_value'
+        decValue             column: 'op_dec_value'
+        refValue             column: 'op_ref_value_rv_fk'
+        urlValue             column: 'op_url_value'
+        note                 column: 'op_note'
+        dateValue            column: 'op_date_value'
+        type                 column: 'op_type_fk', index:'op_type_idx'
+        tenant               column: 'op_tenant_fk', index:'op_tenant_idx'
+        owner                column: 'op_owner_fk', index:'op_owner_idx'
+        isPublic             column: 'op_is_public'
+        dateCreated          column: 'op_date_created'
+        lastUpdated          column: 'op_last_updated'
+        lastUpdatedCascading column: 'op_last_updated_cascading'
     }
 
     static constraints = {

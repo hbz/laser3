@@ -54,6 +54,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         isPublic    column: 'lp_is_public'
         dateCreated column: 'lp_date_created'
         lastUpdated column: 'lp_last_updated'
+        lastUpdatedCascading column: 'lp_last_updated_cascading'
     }
 
     static constraints = {
