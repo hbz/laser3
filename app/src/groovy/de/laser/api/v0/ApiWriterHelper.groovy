@@ -195,7 +195,7 @@ class ApiWriterHelper {
             def property
 
             // Private Property
-            if (! it.isPublic) {
+            if (it.tenant == contextOrg) {
                 if (owner instanceof Org) {
                     property = new OrgProperty(
                             owner:  owner,
@@ -234,13 +234,13 @@ class ApiWriterHelper {
 
             }
             // Custom Property
-            else {
+            else if(!it.tenant) {
                 if (owner instanceof Org) {
                     property = new OrgProperty(
                             owner: owner,
                             note:  it.note,
                             tenant: it.tenant,
-                            isPublic: true
+                            isPublic: it.isPublic
                     )
                 }
                 else if (owner instanceof License) {
@@ -249,7 +249,7 @@ class ApiWriterHelper {
                             note:      it.note,
                             paragraph: it.paragraph,
                             tenant: it.tenant,
-                            isPublic: true
+                            isPublic: it.isPublic
                     )
                 }
 

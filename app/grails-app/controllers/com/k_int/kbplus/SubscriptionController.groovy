@@ -1584,8 +1584,8 @@ class SubscriptionController
                     org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
-                    org.customProperties = subscr.customProperties
-                    org.privateProperties = subscr.customProperties
+                    org.customProperties = subscr.customProperties.findAll{ it.type.tenant == null && it.tenant.id == result.institution.id && it.isPublic }
+                    org.privateProperties = subscr.customProperties.findAll{ it.type.tenant.id == result.institution.id && it.tenant.id == result.institution.id && !it.isPublic }
                     Set generalContacts = []
                     if (publicContacts.get(subscr))
                         generalContacts.addAll(publicContacts.get(subscr))
