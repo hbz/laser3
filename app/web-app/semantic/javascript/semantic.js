@@ -6044,6 +6044,9 @@ $.fn.dropdown = function(parameters) {
                 .eq(0)
                 .addClass(className.selected)
             ;
+            if ( $item.length > 0 ) {
+              $search.attr('aria-activedescendant', $item[0].id);
+            }
           },
           nextAvailable: function($selected) {
             $selected = $selected.eq(0);
@@ -6055,10 +6058,12 @@ $.fn.dropdown = function(parameters) {
             if(hasNext) {
               module.verbose('Moving selection to', $nextAvailable);
               $nextAvailable.addClass(className.selected);
+              $search.attr('aria-activedescendant', $nextAvailable[0].id);
             }
             else {
               module.verbose('Moving selection to', $prevAvailable);
               $prevAvailable.addClass(className.selected);
+              $search.attr('aria-activedescendant', $prevAvailable[0].id);
             }
           }
         },
@@ -6095,6 +6100,7 @@ $.fn.dropdown = function(parameters) {
                 .prop('autocomplete', 'off')
                   .attr('aria-autocomplete','list') // a11y
                   .attr('aria-controls',id+'_listBox') // a11y
+                  .attr('aria-labelledby',id+'_formLabel')
                 .insertBefore($text)
               ;
             }
@@ -6136,6 +6142,9 @@ $.fn.dropdown = function(parameters) {
                 .html( templates.dropdown(selectValues,id) )
                 .insertBefore($input)
               ;
+
+               $module.prev('label').attr('id' , id+'_formLabel');
+
               if($input.hasClass(className.multiple) && $input.prop('multiple') === false) {
                 module.error(error.missingMultiple);
                 $input.prop('multiple', true);
@@ -6365,7 +6374,7 @@ $.fn.dropdown = function(parameters) {
                 .on('mouseup'   + eventNamespace, selector.menu,   module.event.menu.mouseup)
                 .on('click'     + eventNamespace, selector.icon,   module.event.icon.click)
                 .on('focus'     + eventNamespace, selector.search, module.event.search.focus)
-                .on('click'     + eventNamespace, selector.search, module.event.search.focus)
+                .on('click'     + eventNamespace, selector.search, module.event.search.click)
                 .on('blur'      + eventNamespace, selector.search, module.event.search.blur)
                 .on('click'     + eventNamespace, selector.text,   module.event.text.focus)
               ;
@@ -6768,7 +6777,7 @@ $.fn.dropdown = function(parameters) {
             }
           },
           search: {
-            focus: function() {
+            click: function() {
               activated = true;
               if(module.is.multiple()) {
                 module.remove.activeLabel();
@@ -6777,12 +6786,17 @@ $.fn.dropdown = function(parameters) {
                 module.search();
               }
             },
+            focus: function() {
+              //activated = true;
+              if(module.is.multiple()) {
+                module.remove.activeLabel();
+              }
+            },
             blur: function(event) {
               pageLostFocus = (document.activeElement === this);
               if(module.is.searchSelection() && !willRefocus) {
                 if(!itemActivated && !pageLostFocus) {
                   if(settings.forceSelection) {
-                    // alert('settings.forceSelection bei blur');
                     module.forceSelection();
                   }
                   module.hide();
@@ -6804,7 +6818,10 @@ $.fn.dropdown = function(parameters) {
           text: {
             focus: function(event) {
               activated = true;
-              module.focusSearch();
+              //module.focusSearch();
+              if(settings.showOnFocus) {
+                module.show();
+              }
             }
           },
           input: function(event) {
@@ -7159,19 +7176,15 @@ $.fn.dropdown = function(parameters) {
 
               // visible menu keyboard shortcuts
               if( module.is.visible() ) {
-                console.log("module.is.visible");
 
                 // enter (select or open sub-menu)
                 if(pressedKey == keys.enter || delimiterPressed) {
-                  console.log("--- pressedKey == keys.enter || delimiterPressed -----");
                   if(pressedKey == keys.enter && hasSelectedItem && hasSubMenu && !settings.allowCategorySelection) {
-                    console.log("--- pressedKey == keys.enter && hasSelectedItem && hasSubMenu && !settings.allowCategorySelection -----");
                     module.verbose('Pressed enter on unselectable category, opening sub menu');
                     pressedKey = keys.rightArrow;
                   }
                   else if(selectedIsSelectable) {
                     module.verbose('Selecting item from keyboard shortcut', $selectedItem);
-                    console.log("--- else if(selectedIsSelectable) -----");
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
                        module.remove.searchTerm();
@@ -7237,7 +7250,7 @@ $.fn.dropdown = function(parameters) {
                     $nextItem
                       .addClass(className.selected)
                     ;
-                    $search.attr('aria-activedescendant', $nextItem[0].id)
+                    $search.attr('aria-activedescendant', $nextItem[0].id);
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
                       module.set.selectedItem($nextItem);
@@ -7248,7 +7261,6 @@ $.fn.dropdown = function(parameters) {
 
                 // down arrow (traverse menu down)
                 if(pressedKey == keys.downArrow) {
-                  console.log('pressedKey == keys.downArrow');
                   $nextItem = (hasSelectedItem && inVisibleMenu)
                     ? $nextItem = $selectedItem.nextAll(selector.item + ':not(' + selector.unselectable + ')').eq(0)
                     : $item.eq(0)
@@ -7266,7 +7278,7 @@ $.fn.dropdown = function(parameters) {
                     $nextItem
                       .addClass(className.selected)
                     ;
-                    $search.attr('aria-activedescendant', $nextItem[0].id)
+                    $search.attr('aria-activedescendant', $nextItem[0].id);
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
                       module.set.selectedItem($nextItem);
@@ -7401,7 +7413,6 @@ $.fn.dropdown = function(parameters) {
                 return;
               }
               else {
-                // alert('ich wertde ausgeführt');
                 module.hideAndClear();
               }
             }
@@ -7462,7 +7473,6 @@ $.fn.dropdown = function(parameters) {
             return $.trim($search.val());
           },
           searchWidth: function(value) {
-            console.log('bin in SEarchWidth')
             value = (value !== undefined)
               ? value
               : $search.val()
@@ -7532,7 +7542,6 @@ $.fn.dropdown = function(parameters) {
             }
           },
           value: function() {
-            console.log('Bin in value')
             var
               value = ($input.length > 0)
                 ? $input.val()
@@ -7595,12 +7604,8 @@ $.fn.dropdown = function(parameters) {
                 $choice.find(selector.menu).remove();
                 $choice.find(selector.menuIcon).remove();
               }
-              console.log("$choice");
-              console.log($choice);
               if($choice.children().hasClass('description')) {
-                console.log("$choice.hasClass('description')");
                 // remove all the inner text from this span tag with the class description
-                console.log($choice.children().remove('.description'));
                 $choice.children().remove('.description')
               }
               return ($choice.data(metadata.text) !== undefined)
@@ -8019,9 +8024,6 @@ $.fn.dropdown = function(parameters) {
           activedescendantMainMenu: function(selectedItemID){
             $module.attr('aria-activedescendant', selectedItemID) // a11y
           },
-          activedescendantSearch: function(selectedItemID){
-            $search.attr('aria-activedescendant', selectedItemID) // a11y
-          },
           ariaSelected : function (selectedItem) {
             $(selectedItem).attr('aria-selected', 'true') //"VOX: Menuepunkt ausgewählt"
           },
@@ -8065,7 +8067,6 @@ $.fn.dropdown = function(parameters) {
           },
           tabbable: function() {
             if( module.is.searchSelection() ) {
-              console.log('Added tabindex to searchable dropdown')
               module.debug('Added tabindex to searchable dropdown');
               $search
                 .val('')
@@ -8078,7 +8079,6 @@ $.fn.dropdown = function(parameters) {
             else {
               module.debug('Added tabindex to dropdown');
               if( $module.attr('tabindex') === undefined) {
-                console.log('$module.attr(tabindex) === undefined')
                 $module
                   .attr('tabindex', 0)
                 ;
@@ -8104,7 +8104,6 @@ $.fn.dropdown = function(parameters) {
             var
               length = module.get.query().length
             ;
-            console.log('Bin in partialSearch')
             $search.val( text.substr(0, length));
           },
           scrollPosition: function($item, forceScroll) {
@@ -8169,14 +8168,10 @@ $.fn.dropdown = function(parameters) {
                   .removeClass(className.filtered)
                 ;
                 if(settings.preserveHTML) {
-                  console.log("html wird gesetzt in set.text")
-                  console.log($search)
                   $text.html(text);
                   //$search.val(text); // a11y
                 }
                 else {
-                  console.log("tex wird gesetzt set.text")
-
                   $text.text(text);
                   //$search.val(text); // a11y
                 }
@@ -8260,7 +8255,6 @@ $.fn.dropdown = function(parameters) {
             $element.addClass(className.leftward);
           },
           value: function(value, text, $selected) {
-            console.log("set.value wird ausgeführt");
             var
               escapedValue = module.escape.value(value),
               hasInput     = ($input.length > 0),
@@ -8284,7 +8278,6 @@ $.fn.dropdown = function(parameters) {
               }
               module.debug('Updating input value', escapedValue, currentValue);
               internalChange = true;
-              console.log("set.value wird ausgeführt UND   $input.val(escapedValue");
               $input.val(escapedValue);
               if(settings.fireOnInit === false && module.is.initialLoad()) {
                 module.debug('Input native change event ignored on initial load');
@@ -8325,8 +8318,8 @@ $.fn.dropdown = function(parameters) {
             $module.addClass(className.multiple);
           },
           visible: function() {
-            $module.addClass(className.visible);
             $module.attr("aria-expanded","true"); // a11y
+            $module.addClass(className.visible);
           },
           exactly: function(value, $selectedItem) {
             module.debug('Setting selected to exact values');
@@ -8399,7 +8392,6 @@ $.fn.dropdown = function(parameters) {
                     module.save.remoteData(selectedText, selectedValue);
                   }
                   module.set.text(selectedText);
-                  //module.set.activedescendantSearch($selectedItem[0].id);
                   module.set.ariaSelected($selectedItem);
                   module.set.value(selectedValue, selectedText, $selected);
                   $selected
@@ -8615,9 +8607,8 @@ $.fn.dropdown = function(parameters) {
 
         remove: {
           activedescendant: function(selectedItemID){
-            // console.log("aria-activedescendant WIRD ENTFERNT");
-            // console.log(selectedItemID);
-            $search.removeAttr('aria-activedescendant', selectedItemID)
+          $search.removeAttr('aria-activedescendant', selectedItemID);
+
           },
           active: function() {
             $module.removeClass(className.active);
@@ -8691,7 +8682,6 @@ $.fn.dropdown = function(parameters) {
             $search.css('width', '');
           },
           searchTerm: function() {
-            console.log('Cleared search term')
             module.verbose('Cleared search term');
             $search.val('');
             module.set.filtered();
@@ -8748,8 +8738,6 @@ $.fn.dropdown = function(parameters) {
             $item.removeClass(className.selected);
           },
           ariaSelected: function() {
-            // console.log("aria-selected WIRD ENTFERNT");
-            // console.log($item);
             $item.removeAttr('aria-selected');
           },
           value: function(removedValue, removedText, $removedItem) {
@@ -9529,7 +9517,7 @@ $.fn.dropdown = function(parameters) {
 $.fn.dropdown.settings = {
 
   silent                 : false,
-  debug                  : true,
+  debug                  : false,
   verbose                : false,
   performance            : true,
 
@@ -9731,7 +9719,7 @@ $.fn.dropdown.settings.templates = {
       html += '<div class="default text">' + placeholder + '</div>';
     }
     else {
-      html += '<div class="text" ></div>';
+      html += '<div class="text"></div>';
     }
     html += '<div class="menu" id="'+id +'_listBox" role="listbox">';
     $.each(select.values, function(index, option) {
