@@ -336,6 +336,7 @@ $.fn.dropdown = function(parameters) {
                 .prop('autocomplete', 'off')
                   .attr('aria-autocomplete','list') // a11y
                   .attr('aria-controls',id+'_listBox') // a11y
+                  .attr('aria-labelledby',id+'_formLabel')
                 .insertBefore($text)
               ;
             }
@@ -377,6 +378,9 @@ $.fn.dropdown = function(parameters) {
                 .html( templates.dropdown(selectValues,id) )
                 .insertBefore($input)
               ;
+
+               $module.prev('label').attr('id' , id+'_formLabel');
+
               if($input.hasClass(className.multiple) && $input.prop('multiple') === false) {
                 module.error(error.missingMultiple);
                 $input.prop('multiple', true);
@@ -909,7 +913,7 @@ $.fn.dropdown = function(parameters) {
               $module.on('focus'  + eventNamespace, selector.search, module.event.search.focus);
             }
             else {
-              $module.focus();
+              $search.focus();
             }
           }
         },
@@ -3951,7 +3955,7 @@ $.fn.dropdown.settings.templates = {
       html += '<div class="default text">' + placeholder + '</div>';
     }
     else {
-      html += '<div class="text" ></div>';
+      html += '<div class="text"></div>';
     }
     html += '<div class="menu" id="'+id +'_listBox" role="listbox">';
     $.each(select.values, function(index, option) {
