@@ -6,6 +6,9 @@ import de.laser.AuditConfig
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 
+import java.nio.file.Files
+import java.nio.file.Path
+
 class InstitutionsService {
 
     def contextService
@@ -111,6 +114,12 @@ class InstitutionsService {
                             user: dctx.owner.user,
                             migrated: dctx.owner.migrated
                     ).save()
+
+                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                    Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                    Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                    Files.copy(source, target)
 
                     DocContext ndc = new DocContext(
                             owner: clonedContents,
@@ -224,6 +233,12 @@ class InstitutionsService {
                         mimeType: dctx.owner.mimeType,
                         user: dctx.owner.user,
                         migrated: dctx.owner.migrated).save()
+
+                String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                Files.copy(source, target)
 
                 DocContext ndc = new DocContext(owner: clonedContents,
                         license: licenseInstance,
