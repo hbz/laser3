@@ -606,7 +606,7 @@ $.fn.dropdown = function(parameters) {
                 .on('mouseup'   + eventNamespace, selector.menu,   module.event.menu.mouseup)
                 .on('click'     + eventNamespace, selector.icon,   module.event.icon.click)
                 .on('focus'     + eventNamespace, selector.search, module.event.search.focus)
-                .on('click'     + eventNamespace, selector.search, module.event.search.focus)
+                .on('click'     + eventNamespace, selector.search, module.event.search.click)
                 .on('blur'      + eventNamespace, selector.search, module.event.search.blur)
                 .on('click'     + eventNamespace, selector.text,   module.event.text.focus)
               ;
@@ -909,7 +909,7 @@ $.fn.dropdown = function(parameters) {
               $module.on('focus'  + eventNamespace, selector.search, module.event.search.focus);
             }
             else {
-              $search.focus();
+              $module.focus();
             }
           }
         },
@@ -1009,7 +1009,7 @@ $.fn.dropdown = function(parameters) {
             }
           },
           search: {
-            focus: function() {
+            click: function() {
               activated = true;
               if(module.is.multiple()) {
                 module.remove.activeLabel();
@@ -1018,12 +1018,17 @@ $.fn.dropdown = function(parameters) {
                 module.search();
               }
             },
+            focus: function() {
+              //activated = true;
+              if(module.is.multiple()) {
+                module.remove.activeLabel();
+              }
+            },
             blur: function(event) {
               pageLostFocus = (document.activeElement === this);
               if(module.is.searchSelection() && !willRefocus) {
                 if(!itemActivated && !pageLostFocus) {
                   if(settings.forceSelection) {
-                    // alert('settings.forceSelection bei blur');
                     module.forceSelection();
                   }
                   module.hide();
@@ -1045,7 +1050,10 @@ $.fn.dropdown = function(parameters) {
           text: {
             focus: function(event) {
               activated = true;
-              module.focusSearch();
+              //module.focusSearch();
+              if(settings.showOnFocus) {
+                module.show();
+              }
             }
           },
           input: function(event) {
@@ -1637,7 +1645,6 @@ $.fn.dropdown = function(parameters) {
                 return;
               }
               else {
-                // alert('ich wertde ausgeführt');
                 module.hideAndClear();
               }
             }
@@ -2543,8 +2550,8 @@ $.fn.dropdown = function(parameters) {
             $module.addClass(className.multiple);
           },
           visible: function() {
-            $module.addClass(className.visible);
             $module.attr("aria-expanded","true"); // a11y
+            $module.addClass(className.visible);
           },
           exactly: function(value, $selectedItem) {
             module.debug('Setting selected to exact values');
@@ -3742,7 +3749,7 @@ $.fn.dropdown = function(parameters) {
 $.fn.dropdown.settings = {
 
   silent                 : false,
-  debug                  : true,
+  debug                  : false,
   verbose                : false,
   performance            : true,
 
