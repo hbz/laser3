@@ -764,36 +764,36 @@ class YodaController {
     def migrateNatStatSettings() {
         Map<String, Object> result = [:]
 
-        List<OrgCustomProperty> ocpList = OrgCustomProperty.executeQuery(
-                'select ocp from OrgCustomProperty ocp join ocp.type pd where pd.descr = :orgConf', [
+        List<OrgProperty> opList = OrgProperty.executeQuery(
+                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf', [
                 orgConf: PropertyDefinition.ORG_CONF
         ])
 
-        ocpList.each { ocp ->
-            if (ocp.type.name == 'API Key') {
-                def oss = OrgSettings.get(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)
+        opList.each { OrgProperty op ->
+            if (op.type.name == 'API Key') {
+                def oss = OrgSettings.get(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)
 
                 if (oss == OrgSettings.SETTING_NOT_FOUND) {
-                    OrgSettings.add(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY, ocp.getValue())
+                    OrgSettings.add(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY, op.getValue())
                 }
                 else {
-                    oss.setValue(ocp)
+                    oss.setValue(op)
                 }
             }
-            else if (ocp.type.name == 'RequestorID') {
-                def oss = OrgSettings.get(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+            else if (op.type.name == 'RequestorID') {
+                def oss = OrgSettings.get(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
 
                 if (oss == OrgSettings.SETTING_NOT_FOUND) {
-                    OrgSettings.add(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, ocp.getValue())
+                    OrgSettings.add(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, op.getValue())
                 }
                 else {
-                    oss.setValue(ocp)
+                    oss.setValue(op)
                 }
             }
         }
 
-        OrgCustomProperty.executeQuery(
-                'select ocp from OrgCustomProperty ocp join ocp.type pd where pd.descr = :orgConf '
+        OrgProperty.executeQuery(
+                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf '
                 + 'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' )',
                 [orgConf: PropertyDefinition.ORG_CONF]
         ).each{ it.delete() }
@@ -1664,8 +1664,9 @@ class YodaController {
     def dbmFixPrivateProperties() {
         Map<String, Object> result = [:]
 
-        def opp = OrgPrivateProperty.executeQuery(
-                "SELECT pp FROM OrgPrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+        def opp = OrgProperty.executeQuery(
+                "SELECT pp FROM OrgProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.isPublic = false " +
                         "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') "
@@ -1698,7 +1699,7 @@ class YodaController {
         if (params.cmd == 'doIt') {
             println opp.collect{ it.id }
             if (opp.size() > 0) {
-                OrgPrivateProperty.executeUpdate('DELETE FROM OrgPrivateProperty opp WHERE opp.id in :idList',
+                OrgProperty.executeUpdate('DELETE FROM OrgProperty opp WHERE opp.id in :idList',
                         [idList: opp.collect { it.id }]
                 )
             }
@@ -1725,7 +1726,7 @@ class YodaController {
             }
         }
 
-        result.candidates = [OrgPrivateProperty: opp, SubscriptionProperty: spp, LicenseProperty: lpp, PersonPrivateProperty: ppp]
+        result.candidates = [OrgProperty: opp, SubscriptionProperty: spp, LicenseProperty: lpp, PersonPrivateProperty: ppp]
 
         render view: 'databaseMigration', model: result
     }

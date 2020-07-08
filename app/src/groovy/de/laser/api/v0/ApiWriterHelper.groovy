@@ -197,10 +197,11 @@ class ApiWriterHelper {
             // Private Property
             if (! it.isPublic) {
                 if (owner instanceof Org) {
-                    property = new OrgPrivateProperty(
+                    property = new OrgProperty(
                             owner:  owner,
                             tenant: contextOrg,
-                            note:   it.note
+                            note:   it.note,
+                            isPublic: it.isPublic
                     )
                 }
                 else if (owner instanceof Person) {
@@ -235,16 +236,20 @@ class ApiWriterHelper {
             // Custom Property
             else {
                 if (owner instanceof Org) {
-                    property = new OrgCustomProperty(
+                    property = new OrgProperty(
                             owner: owner,
-                            note:  it.note
+                            note:  it.note,
+                            tenant: it.tenant,
+                            isPublic: true
                     )
                 }
                 else if (owner instanceof License) {
                     property = new LicenseProperty(
                             owner:     owner,
                             note:      it.note,
-                            paragraph: it.paragraph
+                            paragraph: it.paragraph,
+                            tenant: it.tenant,
+                            isPublic: true
                     )
                 }
 

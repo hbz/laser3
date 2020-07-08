@@ -662,7 +662,7 @@ class AjaxController {
                             break
                         case 'listProvider':
                         case 'currentProviders':
-                        case 'manageMembers': values = OrgPrivateProperty.findAllByType(propDef)
+                        case 'manageMembers': values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
                         case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
                             break
@@ -677,21 +677,21 @@ class AjaxController {
                             break
                         case 'listProvider':
                         case 'currentProviders':
-                        case 'manageMembers': values = OrgCustomProperty.executeQuery('select ocp from OrgCustomProperty ocp where ocp.type = :propDef',[propDef:propDef])
+                        case 'manageMembers': values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and op.tenant = :tenant and op.isPublic = true',[propDef:propDef,tenant:contextService.org])
                             break
                     }
                 }
 
                 if(values) {
                     if(propDef.type == Integer.toString()) {
-                        values.each { v ->
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.intValue != null)
                                 result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
                         }
                         result = result.sort { x, y -> x.text.compareTo y.text}
                     }
                     else {
-                        values.each { v ->
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.getValue() != null)
                                 result.add([value:v.getValue(),text:v.getValue()])
                         }
