@@ -1584,8 +1584,8 @@ class SubscriptionController
                     org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
-                    org.customProperties = subscr.customProperties
-                    org.privateProperties = subscr.privateProperties
+                    org.customProperties = subscr.customProperties.findAll{ it.type.tenant == null && it.tenant.id == result.institution.id && it.isPublic }
+                    org.privateProperties = subscr.customProperties.findAll{ it.type.tenant.id == result.institution.id && it.tenant.id == result.institution.id && !it.isPublic }
                     Set generalContacts = []
                     if (publicContacts.get(subscr))
                         generalContacts.addAll(publicContacts.get(subscr))
@@ -3844,7 +3844,7 @@ class SubscriptionController
                     log.debug('Found different content platforms for this subscription, cannot show usage')
                 } else {
                     def supplier_id = suppliers[0]
-                    def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+                    def platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
                     result.natStatSupplierId = platform?.stringValue ?: null
                     result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                     if (result.institutional_usage_identifier) {

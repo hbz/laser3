@@ -362,17 +362,16 @@
                     <div class="la-inline-lists">
                         <div class="ui card">
                             <div class="content">
-                                <% def org = contextService.getOrg() %>
-                                <div id="custom_props_div_${org.id}">
-                                    <h5 class="ui header">${message(code:'org.properties.private')} ${org.name}</h5>
+                                <div id="custom_props_div_${institution.id}">
+                                    <h5 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h5>
                                     <g:render template="../templates/properties/private" model="${[
                                             prop_desc: PropertyDefinition.PRS_PROP,
                                             ownobj: personInstance,
-                                            custom_props_div: "custom_props_div_${org.id}",
-                                            tenant: org]}"/>
+                                            custom_props_div: "custom_props_div_${institution.id}",
+                                            tenant: institution]}"/>
                                     <r:script language="JavaScript">
                                         $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${org.id}", ${org.id});
+                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
                                         });
                                     </r:script>
                                 </div>

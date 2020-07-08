@@ -664,7 +664,7 @@ class AjaxController {
                         case 'currentProviders':
                         case 'manageMembers': values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
-                        case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
+                        case 'addressbook': values = PersonProperty.findAllByType(propDef)
                             break
                     }
                 }
@@ -1435,7 +1435,7 @@ class AjaxController {
         else {
             Set<AbstractPropertyWithCalculatedLastUpdated> existingProps
             if(owner.hasProperty("privateProperties")) {
-                existingProps = owner.privateProperties.findAll {
+                existingProps = owner.customProperties.findAll {
                     it.owner.id == owner.id && it.type.id == type.id // this sucks due lazy proxy problem
                 }
             }

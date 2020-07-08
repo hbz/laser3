@@ -1,8 +1,6 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
@@ -206,7 +204,7 @@ class ExportService {
 						value = prop.getValue() ?: ' '
 				}
 			}
-            if(target.hasProperty("privateProperties")) {
+            /*if(target.hasProperty("privateProperties")) {
                 target.privateProperties.each{ PrivateProperty prop ->
                     if(prop.type.descr == pd.descr && prop.type == pd && prop.value) {
                         if(prop.refValue)
@@ -215,7 +213,7 @@ class ExportService {
                             value = prop.getValue() ?: ' '
                     }
                 }
-            }
+            }*/
 			def cell
 			switch(format) {
 				case "xls":

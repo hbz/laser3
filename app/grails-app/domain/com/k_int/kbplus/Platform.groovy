@@ -53,7 +53,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   static hasMany = [
       tipps: TitleInstancePackagePlatform,
       oapp: OrgAccessPointLink,
-      customProperties:   PlatformCustomProperty,
+      customProperties:   PlatformProperty,
   ]
 
   static mapping = {
