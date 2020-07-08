@@ -79,7 +79,7 @@ class QueryService {
             dueObjects.addAll(getDueLicensePrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP)))
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_PERSON_PRIVATE_PROP)==YN_YES) {
-            dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP), contextOrg))
+            dueObjects.addAll(PersonProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP), contextOrg))
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_ORG_CUSTOM_PROP)==YN_YES) {
             dueObjects.addAll(OrgProperty.findAllByDateValueBetweenAndTenantAndIsPublic(today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_ORG_CUSTOM_PROP),contextOrg,true))

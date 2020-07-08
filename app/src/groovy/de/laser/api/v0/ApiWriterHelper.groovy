@@ -97,7 +97,7 @@ class ApiWriterHelper {
             person.contacts  = getContacts(it.contacts, null, person)
 
             def properties = getProperties(it.properties, person, contextOrg)
-            person.privateProperties = properties['private']
+            person.customProperties = properties['private']
 
             // PersonRoles
             it.roles?.each { it2 ->
@@ -205,7 +205,7 @@ class ApiWriterHelper {
                     )
                 }
                 else if (owner instanceof Person) {
-                    property = new PersonPrivateProperty(
+                    property = new PersonProperty(
                             owner:  owner,
                             tenant: contextOrg,
                             note:   it.note

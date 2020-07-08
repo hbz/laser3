@@ -2,8 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition

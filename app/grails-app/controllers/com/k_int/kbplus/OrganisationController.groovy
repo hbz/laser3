@@ -704,7 +704,7 @@ class OrganisationController extends AbstractDebugController {
 
         mandatories.each { PropertyDefinition pd ->
             if (!OrgProperty.findWhere(owner: result.orgInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.orgInstance, pd)
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.orgInstance, pd, result.institution)
 
 
                 if (newProp.hasErrors()) {

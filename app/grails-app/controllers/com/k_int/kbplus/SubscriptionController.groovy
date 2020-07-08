@@ -1585,7 +1585,7 @@ class SubscriptionController
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
                     org.customProperties = subscr.customProperties
-                    org.privateProperties = subscr.privateProperties
+                    org.privateProperties = subscr.customProperties
                     Set generalContacts = []
                     if (publicContacts.get(subscr))
                         generalContacts.addAll(publicContacts.get(subscr))
