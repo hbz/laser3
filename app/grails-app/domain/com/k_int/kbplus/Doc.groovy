@@ -129,8 +129,8 @@ class Doc {
     // erms-790
     def beforeInsert = {
         if (contentType in [CONTENT_TYPE_BLOB, CONTENT_TYPE_DOCSTORE]) {
-            log.info('generating new uuid')
             uuid = java.util.UUID.randomUUID().toString()
+            log.info('generating new uuid: '+ uuid)
         }
     }
 }
