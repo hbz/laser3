@@ -29,10 +29,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     LicenseProperty instanceOf
     String paragraph
 
-    //to be transposed to AbstractPropertyWithCalculatedLastUpdated once migration is complete
-    Org tenant
-    boolean isPublic = false
-
     Date dateCreated
     Date lastUpdated
 

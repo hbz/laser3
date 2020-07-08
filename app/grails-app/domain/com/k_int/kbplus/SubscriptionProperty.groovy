@@ -30,10 +30,6 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     Subscription owner
     SubscriptionProperty instanceOf
 
-    //to be transposed to AbstractPropertyWithCalculatedLastUpdated once migration is complete
-    Org tenant
-    boolean isPublic = false
-
     Date dateCreated
     Date lastUpdated
 

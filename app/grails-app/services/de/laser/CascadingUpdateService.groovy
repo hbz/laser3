@@ -11,7 +11,6 @@ import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SurveyResult
 import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
 import grails.transaction.Transactional
 
 @Transactional
@@ -50,18 +49,6 @@ class CascadingUpdateService {
     }
 
     void update(AbstractPropertyWithCalculatedLastUpdated obj, Date luc) {
-        log(obj, luc)
-
-        obj.class.executeUpdate("update ${obj.class.simpleName} cp set cp.lastUpdatedCascading = :luc where cp = :obj", [
-                luc: luc, obj: obj
-        ])
-
-        if (obj.owner) {
-            update(obj.owner, luc)
-        }
-    }
-
-    void update(CustomProperty obj, Date luc) {
         log(obj, luc)
 
         obj.class.executeUpdate("update ${obj.class.simpleName} cp set cp.lastUpdatedCascading = :luc where cp = :obj", [
