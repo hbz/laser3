@@ -672,7 +672,7 @@ class LicenseController
         }
 
         // postgresql migration
-        String subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
+        String subQuery = 'select cast(lp.id as string) from LicenseProperty as lp where lp.owner = :owner'
         def subQueryResult = LicenseProperty.executeQuery(subQuery, [owner: result.license])
 
         //def qry_params = [licClass:result.license.class.name, prop:LicenseCustomProperty.class.name,owner:result.license, licId:"${result.license.id}"]
@@ -695,7 +695,7 @@ class LicenseController
                 base_query, query_params, [max:result.max, offset:result.offset]
         )
 
-    def propertyNameHql = "select pd.name from LicenseCustomProperty as licP, PropertyDefinition as pd where licP.id= ? and licP.type = pd"
+    def propertyNameHql = "select pd.name from LicenseProperty as licP, PropertyDefinition as pd where licP.id= ? and licP.type = pd"
     
     result.historyLines?.each{
       if(it.className == query_params.prop ){

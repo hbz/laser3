@@ -9,7 +9,7 @@ class DueDateObject {
     String attribute_value_de
     String attribute_value_en
     Date date
-    /** Subscription, CustomProperty, PrivateProperty oder Task*/
+    /** Subscription, AbstractProperty oder Task*/
     String oid
     boolean isDone = false
     Date lastUpdated

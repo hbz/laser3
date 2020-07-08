@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 
 /**Org custom properties are used to store Org related settings and options**/
@@ -9,8 +8,6 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     PropertyDefinition type
     Org owner
-    Org tenant
-    boolean isPublic = false
     Date dateCreated
     Date lastUpdated
 

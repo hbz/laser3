@@ -5,7 +5,6 @@ import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionProperty
-import com.k_int.kbplus.abstract_domain.CustomProperty
 import de.laser.interfaces.AuditableSupport
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -105,7 +104,7 @@ class AuditService {
 
                         log.debug("notifyChangeEvent() " + obj + " : " + clazz)
 
-                        if (obj instanceof CustomProperty) {
+                        if (!obj.type.tenant && obj.isPublic == true) {
 
                             if (getAuditConfig(obj)) {
 

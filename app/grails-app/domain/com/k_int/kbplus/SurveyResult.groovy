@@ -33,7 +33,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
 
     static constraints = {
         importFrom AbstractPropertyWithCalculatedLastUpdated
-
+        tenant (nullable: true, blank: false)
         finishDate (nullable:true, blank:false)
         comment (nullable:true, blank:false)
         resultValues (nullable:true, blank:false)
@@ -45,23 +45,29 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     }
 
     static mapping = {
-        includes AbstractPropertyWithCalculatedLastUpdated.mapping
 
         id column: 'surre_id'
         version column: 'surre_version'
 
         dateCreated column: 'surre_date_created'
         lastUpdated column: 'surre_last_updated'
-
+        lastUpdatedCascading column: 'surre_last_updated_cascading'
+        stringValue column: 'surre_string_value'
+        intValue    column: 'surre_int_value'
+        decValue    column: 'surre_dec_value'
+        refValue    column: 'surre_ref_value_rv_fk'
+        urlValue    column: 'surre_url_value'
+        note        column: 'surre_note'
+        dateValue   column: 'surre_date_value'
         resultValues column: 'surre_result_values'
 
         startDate column: 'surre_start_date'
         endDate column: 'surre_end_date'
         finishDate column: 'surre_finish_date'
-
+        tenant        column: 'surre_tenant_fk' //never set, is for mapping of superclass
         owner column: 'surre_owner_fk'
         participant column: 'surre_participant_fk'
-
+        isPublic    column: 'surre_is_public'
         type column: 'surre_type_fk'
         surveyConfig column: 'surre_survey_config_fk'
 

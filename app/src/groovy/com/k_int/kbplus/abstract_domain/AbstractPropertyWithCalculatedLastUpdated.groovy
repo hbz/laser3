@@ -1,6 +1,6 @@
 package com.k_int.kbplus.abstract_domain
 
-
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.DateUtil
 import de.laser.interfaces.CalculatedLastUpdated
@@ -25,6 +25,8 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     URL              urlValue
     String           note = ""
     Date             dateValue
+    Org              tenant
+    boolean          isPublic = false
 
     Date lastUpdatedCascading
 

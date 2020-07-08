@@ -8,8 +8,6 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     PropertyDefinition type
     Person owner
-    Org tenant
-    boolean isPublic = false
     Date dateCreated
     Date lastUpdated
 
