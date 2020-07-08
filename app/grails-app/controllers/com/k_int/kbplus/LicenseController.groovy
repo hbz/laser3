@@ -21,6 +21,8 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.SimpleDateFormat
 
 import static de.laser.helper.RDStore.*
@@ -1007,6 +1009,12 @@ class LicenseController
                                         migrated: dctx.owner.migrated,
                                         owner: dctx.owner.owner
                                 ).save()
+
+                                String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                                Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                                Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                                Files.copy(source, target)
 
                                 DocContext ndc = new DocContext(
                                         owner: clonedContents,

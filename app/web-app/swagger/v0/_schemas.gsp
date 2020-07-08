@@ -140,7 +140,13 @@
           type: string
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         finalCostRounding:
-          type: string
+          type: string #mapped to boolean
+          description: Mapping RefdataCategory "${RDConstants.Y_N}"
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        isVisibleForSubscriber:
+          type: string #mapped to boolean
+          description: Mapping RefdataCategory "${RDConstants.Y_N}"
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         invoiceDate:
           type: string
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>

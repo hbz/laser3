@@ -74,7 +74,11 @@ class ApiCostItem {
         boolean hasAccess = isInvoiceTool || (owner.id == context.id)
         if (hasAccess) {
             // TODO
-            result = CostItem.findAllByOwnerAndCostItemStatusNotEqual(owner, RDStore.COST_ITEM_DELETED).globalUID
+            if(isInvoiceTool){
+                result = CostItem.findAllByOwner(owner).globalUID
+            }else {
+                result = CostItem.findAllByOwnerAndCostItemStatusNotEqual(owner, RDStore.COST_ITEM_DELETED).globalUID
+            }
             result = ApiToolkit.cleanUp(result, true, true)
         }
 
@@ -93,7 +97,11 @@ class ApiCostItem {
             Timestamp ts= new Timestamp(Long.parseLong(timestamp))
             Date apiDate= new Date(ts.getTime());
             def today = new Date()
-            result = CostItem.findAllByOwnerAndLastUpdatedBetweenAndCostItemStatusNotEqual(owner, apiDate, today, RDStore.COST_ITEM_DELETED).globalUID
+            if(isInvoiceTool) {
+                result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
+            }else{
+                result = CostItem.findAllByOwnerAndLastUpdatedBetweenAndCostItemStatusNotEqual(owner, apiDate, today, RDStore.COST_ITEM_DELETED).globalUID
+            }
             result = ApiToolkit.cleanUp(result, true, true)
         }
 
@@ -122,13 +130,15 @@ class ApiCostItem {
         result.dateCreated         = ApiToolkit.formatInternalDate(costItem.dateCreated)
         result.datePaid            = ApiToolkit.formatInternalDate(costItem.datePaid)
         result.endDate             = ApiToolkit.formatInternalDate(costItem.endDate)
-        result.finalCostRounding   = costItem.finalCostRounding
+        result.finalCostRounding   = costItem.finalCostRounding ? 'Yes' : 'No'
         result.invoiceDate         = ApiToolkit.formatInternalDate(costItem.invoiceDate)
         result.lastUpdated         = ApiToolkit.formatInternalDate(costItem.lastUpdated)
 
         result.reference           = costItem.reference
         result.startDate           = ApiToolkit.formatInternalDate(costItem.startDate)
         result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : costItem.taxRate)
+
+        result.isVisibleForSubscriber = costItem.isVisibleForSubscriber ? 'Yes' : 'No'
 
         // erms-888
         result.calculatedType      = costItem.getCalculatedType()
