@@ -6,7 +6,23 @@
 
 2657    07.07.2020  hbz-dev     David   Feature     Refactoring: Wrapper für Konfigurationszugriff
 
+2459    07.07.2020  rc1.4       Moe     Bug         Beim Kopieren von Objekten werden Dokumenten nicht richtig kopiert
+
 2659    06.07.2020  hbz-dev     Moe     Feature     Sortierung "Nicht abgeschlossen" auch für Konsortialsicht bauen bei Teilnehmer-Umfragen
+
+2660    06.07.2020  rc1.4       Moe     Bug         API Endpunkt CostItemList muss alle CostItems zurückgeben
+
+2661    06.07.2020  rc1.4       Moe     Bug         API CostItem gibt kein isVisibleForSubscriber zurück
+
+--      06.07.2020  rc1.4       Andreas Bug         Meine Pakete konnte wegen falschen Aufrufs nicht aufgerufen werden
+
+2642    06.07.2020  rc1.4       Moe     Bug         Falsche Bezeichnung bei Alle Anbieter & Lieferanten
+
+2644    06.07.2020  rc1.4       Moe     Bug         "Fällige Termine"-Mailbenachrichtigung hat englischen Betreff "Due Dates"
+
+2651    03.07.2020  rc1.4       Moe     Bug         Lizenz kopieren: Ressourcentyp und Lizenzform werden nicht mitkopiert
+
+2645    03.07.2020  rc1.4       Moe     Bug         Blocker: /myInstitution/tasks nicht aufrufbar
 
 2358    02.07.2020  hbz-dev     Andreas Feature     neue Sicht für Merkmale in Teilnehmerlizenzen eingesetzt
 
@@ -16,11 +32,11 @@
 
 2647    01.07.2020  hbz-dev     Moe     Feature     Umbauen der Zugangskonfiguration
 
-1771    26.06.2020  hbz-dev     Anja    Feature     Org: Rechteprüfung normieren
-
 1710    30.06.2020  rc1.4       Andreas Bug         Performanz bei Laden der Änderungen verbessert
 
 2636    30.06.2020  rc1.4       Andreas Bug         Weitere Korrektur zur Nichtprozessierung von Titeldaten im Sync
+
+1771    26.06.2020  hbz-dev     Anja    Feature     Org: Rechteprüfung normieren
 
 2641    26.06.2020  hbz-dev     David   Feature     API 0.110 - Neue Vertrags-/Lizenz-Struktur anpassen
 

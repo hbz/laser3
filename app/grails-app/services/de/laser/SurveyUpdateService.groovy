@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.UserSettings
@@ -170,8 +171,9 @@ class SurveyUpdateService extends AbstractLockableService {
 
                         replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
                         Object[] args = ["${survey.type.getI10n('value')}"]
-                        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, locale) + " (" + org.name + ")")
+                        Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
+
+                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, language) + " (" + org.name + ")")
 
                         if (isNotificationCCbyEmail && ccAddress) {
                             mailService.sendMail {
