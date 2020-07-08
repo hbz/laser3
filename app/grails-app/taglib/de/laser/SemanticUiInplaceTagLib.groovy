@@ -327,4 +327,121 @@ class SemanticUiInplaceTagLib {
 
         result
     }
+
+    /**
+     *   Attributes:
+     *   owner - Object
+     *   field - property
+     *   type - type of input
+     *   validation - trigger js validation
+     *   id [optional] -
+     *   class [optional] - additional classes
+     *   overwriteEditable - if existing, value overwrites global editable
+     */
+    def xEditableAsIcon = { attrs, body ->
+
+        // TODO: data-type="combodate" data-value="1984-05-15" data-format="YYYY-MM-DD" data-viewformat="DD/MM/YYYY" data-template="D / MMM / YYYY"
+
+        boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
+
+        if (editable == true) {
+
+            def oid           = "${attrs.owner.class.name}:${attrs.owner.id}"
+            def id            = attrs.id ?: "${oid}:${attrs.field}"
+            def default_empty = message(code:'default.button.edit.label')
+            def data_link     = null
+
+            out << "<a href=\"#\" id=\"${id}\" "
+            if(attrs.owner instanceof SurveyResult){
+                out << "data-onblur=\"submit\" "
+            }else {
+                out << "data-onblur=\"ignore\" "
+            }
+            out << "class=\"xEditableValue ${attrs.class ?: ''}\""
+
+            if (attrs.type == "date") {
+                out << " data-type=\"text\"" // combodate | date
+                def df = "${message(code:'default.date.format.notime').toUpperCase()}"
+                out << " data-format=\"${df}\""
+                out << " data-viewformat=\"${df}\""
+                out << " data-template=\"${df}\""
+
+                default_empty = message(code:'default.date.format.notime.normal')
+
+            } else {
+                out << " data-type=\"${attrs.type?:'text'}\""
+            }
+            out << " data-pk=\"${oid}\""
+            out << " data-name=\"${attrs.field}\""
+
+
+            if (attrs.validation) {
+                out << " data-validation=\"${attrs.validation}\" "
+            }
+
+            switch (attrs.type) {
+                case 'date':
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime')}"]).encodeAsHTML()
+                    break
+                case 'url':
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'url']).encodeAsHTML()
+                    break
+                default:
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
+                    break
+            }
+
+            if (attrs?.emptytext)
+                out << " data-emptytext=\"${attrs.emptytext}\""
+            else {
+                out << " data-emptytext=\"${default_empty}\""
+            }
+
+            if (attrs.type == "date" && attrs.language) {
+                out << "data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\" "
+            }
+
+            out << " data-url=\"${data_link}\""
+
+                def oldValue = ''
+                if (attrs.owner[attrs.field] && attrs.type=='date') {
+                    SimpleDateFormat sdf = new SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime'))
+                    oldValue = sdf.format(attrs.owner[attrs.field])
+                }
+                else {
+                    if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
+                    }
+                    else {
+                        oldValue = attrs.owner[attrs.field].encodeAsHTML()
+                    }
+                }
+            out << " data-oldvalue=\"${oldValue}\" "
+            out << " data-value=\"${oldValue}\" data-autotext=\"never\">"
+            out << "<span class=\"la-popup-tooltip la-delay \" data-position=\"\" data-content=\""
+            out << oldValue
+            out << "\"><i class=\"${attrs.iconClass ?: 'question'} icon\"></i>"
+            out << '</span>'
+
+            out << "</a>"
+        }
+        // !editable
+        else {
+
+            if (attrs.owner[attrs.field]) {
+                out << "<span class=\"la-popup-tooltip la-delay ui icon\" data-position=\"top right\" data-content=\""
+
+                if (attrs.owner[attrs.field] && attrs.type == 'date') {
+                    SimpleDateFormat sdf = new SimpleDateFormat(attrs.format ?: message(code: 'default.date.format.notime'))
+                    out << sdf.format(attrs.owner[attrs.field])
+                } else {
+                    if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length() == 0)) {
+                    } else {
+                        out << attrs.owner[attrs.field]
+                    }
+                }
+                out << "\"><i class=\"${attrs.iconClass ?: 'question'} icon\"></i>"
+                out << '</span>'
+            }
+        }
+    }
 }
