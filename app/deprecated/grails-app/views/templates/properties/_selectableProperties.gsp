@@ -2,7 +2,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="com.k_int.kbplus.abstract_domain.PrivateProperty; com.k_int.kbplus.abstract_domain.CustomProperty; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; java.net.URL; com.k_int.kbplus.License; de.laser.AuditConfig; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; java.net.URL; com.k_int.kbplus.License; de.laser.AuditConfig; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection />
 
 <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->

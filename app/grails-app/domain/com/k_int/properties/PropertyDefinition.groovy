@@ -308,7 +308,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
         boolean isPublic
 
-        if(!owner.hasProperty("privateProperties")) {
+        //if(!owner.hasProperty("privateProperties")) {
             ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
             if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
                 isPublic = true
@@ -316,7 +316,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
             else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
                 isPublic = false
             }
-        }
+        /*}
         else {
             if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
                 ownerClassName = "com.k_int.kbplus.${ownerClassName}CustomProperty"
@@ -324,7 +324,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
             else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
                 ownerClassName = "com.k_int.kbplus.${ownerClassName}PrivateProperty"
             }
-        }
+        }*/
 
         //def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner)
         def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: isPublic, tenant: contextOrg)
@@ -401,10 +401,12 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         result
     }
 
+    @Deprecated
     String getImplClass(String customOrPrivate) {
         getImplClass(this.descr, customOrPrivate)
     }
 
+    @Deprecated
     static String getImplClass(String descr, String customOrPrivate) {
         String result
         String[] parts = descr.split(" ")
@@ -430,11 +432,11 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         result
     }
 
-    def countUsages() {
-        def table = getImplClass('private')?.minus('com.k_int.kbplus.')
+    int countUsages() {
+        String table = this.descr.minus('com.k_int.kbplus.').replace(" ","")
 
         if (table) {
-            def c = PropertyDefinition.executeQuery("select count(c) from " + table + " as c where c.type = ?", [this])
+            int[] c = executeQuery("select count(c) from " + table + " as c where c.type = ?", [this])
             return c[0]
         }
         return 0
@@ -478,7 +480,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonPrivateProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = ?', [this])
         this.delete();
     }
 
