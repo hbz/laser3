@@ -3,7 +3,7 @@ package com.k_int.properties
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import de.laser.CacheService
-import de.laser.domain.I10nTranslation
+import de.laser.I10nTranslation
 import de.laser.helper.EhcacheWrapper
 import grails.util.Holders
 import groovy.util.logging.Log4j
@@ -48,11 +48,11 @@ class PropertyDefinitionGroup {
     }
 
     static constraints = {
-        name        (nullable: false, blank: false)
+        name        (blank: false)
         description (nullable: true,  blank: true)
         tenant      (nullable: true, blank: false)
-        ownerType   (nullable: false, blank: false)
-        isVisible   (nullable: false, blank: false)
+        ownerType   (blank: false)
+        isVisible   (blank: false)
         lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
     }

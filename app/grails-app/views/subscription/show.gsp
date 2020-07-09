@@ -1,7 +1,7 @@
-<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
+<%@ page import="de.laser.helper.ConfigUtils; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
 <%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License; com.k_int.kbplus.GenericOIDService" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
 
@@ -369,8 +369,8 @@
                                                   </dt>
                                               </g:if>
                                           </dl>
-                                          <g:set var="excludes" value="${[de.laser.domain.PendingChangeConfiguration.PACKAGE_PROP,de.laser.domain.PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                                          <g:each in="${de.laser.domain.PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
+                                          <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                                          <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                                               <dl>
                                                   <dt class="control-label">
                                                       <g:message code="subscription.packages.${settingKey}"/>
@@ -508,7 +508,7 @@
                                                     <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                             data-confirm-term-how="unlink"
-                                                            action="unlinkLicense" params="${[licenseOID: link.source]}">
+                                                            action="unlinkLicense" params="${[licenseOID: link.source, id:subscription.id]}">
                                                         <i class="unlink icon"></i>
                                                     </g:link>
                                                 </div>
@@ -681,7 +681,7 @@
                                                 <g:each in="${v}" status="i" var="v2">
                                                     <td>
                                                         <laser:statsLink
-                                                            base="${grailsApplication.config.statsApiUrl}"
+                                                            base="${ConfigUtils.getStatsApiUrl()}"
                                                             module="statistics"
                                                             controller="default"
                                                             action="select"

@@ -8,7 +8,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -24,8 +24,7 @@ import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
 @Log4j
-class Org
-        extends AbstractBaseDomainWithCalculatedLastUpdated
+class Org extends AbstractBaseWithCalculatedLastUpdated
         implements DeleteFlag {
 
     static Log static_logger = LogFactory.getLog(Org)
@@ -109,7 +108,7 @@ class Org
         addresses:          'org',
         affiliations:       'org',
         customProperties:   'owner',
-        privateProperties:  'owner',
+        //privateProperties:  'owner',
         documents:          'org',
         hasCreated:         'createdBy',
         hasLegallyObliged:  'legallyObligedBy'
@@ -125,8 +124,8 @@ class Org
         contacts:           Contact,
         addresses:          Address,
         affiliations:       UserOrg,
-        customProperties:   OrgCustomProperty,
-        privateProperties:  OrgPrivateProperty,
+        customProperties:   OrgProperty,
+        //privateProperties:  OrgPrivateProperty,
         orgType:            RefdataValue,
         documents:          DocContext,
         platforms:          Platform,
@@ -185,7 +184,7 @@ class Org
         prsLinks            batchSize: 10
         affiliations        batchSize: 10
         customProperties    batchSize: 10
-        privateProperties   batchSize: 10
+        //privateProperties   batchSize: 10
         documents           batchSize: 10
         platforms           batchSize: 10
         hasCreated          batchSize: 10
@@ -194,7 +193,7 @@ class Org
 
     static constraints = {
            globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-                name(nullable:false, blank:false, maxSize:255)
+                name(blank:false, maxSize:255)
            shortname(nullable:true, blank:true, maxSize:255)
             sortname(nullable:true, blank:true, maxSize:255)
      legalPatronName(nullable:true, blank:true, maxSize:255)
@@ -250,15 +249,22 @@ class Org
             }
         }
 
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        super.afterDeleteHandler()
 
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
     }
 
     boolean setDefaultCustomerType() {
@@ -325,7 +331,7 @@ class Org
         if ( !shortcode ) {
             shortcode = generateShortcode(name);
         }
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
 
     static String generateShortcodeFunction(name) {

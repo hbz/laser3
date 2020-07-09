@@ -20,8 +20,8 @@ class BudgetCode {
     }
 
     static constraints = {
-        owner (nullable:false, blank:false)
-        value (nullable:false, blank:false, unique: 'owner')
+        owner (blank:false)
+        value (blank:false, unique: 'owner')
         descr (nullable:true,  blank:true, maxSize:2048)
 
         // Nullable is true, because values are already in the database

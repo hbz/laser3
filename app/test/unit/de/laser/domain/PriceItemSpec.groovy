@@ -1,5 +1,6 @@
 package de.laser.domain
 
+import de.laser.PriceItem
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 

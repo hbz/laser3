@@ -35,11 +35,11 @@ class Links {
     }
 
     static constraints = {
-        source        (nullable: false, blank: false)
-        destination   (nullable: false, blank: false)
-        //objectType    (nullable: false, blank: false)
-        linkType      (nullable: false, blank: false)
-        owner         (nullable: false, blank: false)
+        source        (blank: false)
+        destination   (blank: false)
+        //objectType    (blank: false)
+        linkType      (blank: false)
+        owner         (blank: false)
 
         // Nullable is true, because values are already in the database
         dateCreated (nullable: true, blank: false)

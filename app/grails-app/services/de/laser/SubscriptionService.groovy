@@ -2,26 +2,20 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.PriceItem
-import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugUtil
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
-import grails.converters.JSON
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -486,7 +480,7 @@ class SubscriptionService {
     List getValidSurveySubChilds(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
-                [SUBSCRIPTION_CURRENT, SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
+                [RDStore.SUBSCRIPTION_CURRENT, RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
         )
         if(validSubChilds) {
             validSubChilds = validSubChilds?.sort { a, b ->
@@ -501,7 +495,7 @@ class SubscriptionService {
     List getValidSurveySubChildOrgs(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
-                [SUBSCRIPTION_CURRENT, SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
+                [RDStore.SUBSCRIPTION_CURRENT, RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
         )
 
         List orgs = OrgRole.findAllBySubInListAndRoleType(validSubChilds, RDStore.OR_SUBSCRIBER_CONS)
@@ -516,7 +510,7 @@ class SubscriptionService {
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                        [sub: subscription, del: TIPP_STATUS_DELETED])
+                        [sub: subscription, del: RDStore.TIPP_STATUS_DELETED])
                 : []
         ies.sort {it.tipp.title.title}
         ies
@@ -987,9 +981,9 @@ class SubscriptionService {
     void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
         targetSub.refresh()
         List<Subscription> targetChildSubs = getValidSubChilds(targetSub)
-        subscriptionToTake.each { subMember ->
+        subscriptionToTake.each { Subscription subMember ->
             //Gibt es mich schon in der Ziellizenz?
-            Org found = targetChildSubs?.find { targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
+            Org found = targetChildSubs?.find { Subscription targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
 
             if (found) {
                 // mich gibts schon! Fehlermeldung ausgeben!
@@ -1036,12 +1030,13 @@ class SubscriptionService {
                     if (subMember.customProperties) {
                         //customProperties
                         for (prop in subMember.customProperties) {
-                            def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
+                            SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.save()
                             //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                         }
                     }
+                    /*
                     if (subMember.privateProperties) {
                         //privatProperties
                         List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]]).collect {
@@ -1049,13 +1044,14 @@ class SubscriptionService {
                         }
                         subMember.privateProperties?.each { prop ->
                             if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
-                                def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
+                                def copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.save()
                                 //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                             }
                         }
                     }
+                    */
 
                     if (subMember.packages && targetSub.packages) {
                         //Package
@@ -1256,7 +1252,7 @@ class SubscriptionService {
                         newDocContext.owner = newDoc
                         save(newDocContext, flash)
 
-                        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                        String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                         Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                         Path target = new File("${fPath}/${newDoc.uuid}").toPath()
@@ -1273,30 +1269,21 @@ class SubscriptionService {
 
 
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
-        Org contextOrg = contextService.getOrg()
-        def targetProp
+        SubscriptionProperty targetProp
 
 
-        properties?.each { sourceProp ->
-            if (sourceProp instanceof CustomProperty) {
-                targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
-            }
-            if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
-                targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
-            }
+        properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
+            targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId && sourceProp.tenant.id == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
-                if (sourceProp instanceof CustomProperty) {
-                    targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
-                } else {
-                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
-                }
+                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)
                 targetProp = sourceProp.copyInto(targetProp)
+                targetProp.isPublic = sourceProp.isPublic //provisoric, should be moved into copyInto once migration is complete
                 save(targetProp, flash)
-                if (((sourceProp.id.toString() in auditProperties)) && targetProp instanceof CustomProperty) {
+                if (((sourceProp.id.toString() in auditProperties)) && targetProp.isPublic) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
                                 //All ReferenceFields were copied!
@@ -1308,7 +1295,7 @@ class SubscriptionService {
                     }
                 }
             } else {
-                Object[] args = [sourceProp?.type?.getI10n("name") ?: sourceProp.class.getSimpleName()]
+                Object[] args = [sourceProp.type.getI10n("name") ?: sourceProp.class.getSimpleName()]
                 flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
             }
         }
@@ -1321,8 +1308,8 @@ class SubscriptionService {
                 AuditConfig.removeAllConfigs(prop)
             }
         }
-        int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)",[properties: properties])
-        int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
+        int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = true",[properties: properties, org: contextService.org])
+        int anzPP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = false",[properties: properties, org: contextService.org])
     }
 
     private boolean delete(obj, flash) {
@@ -1599,11 +1586,7 @@ class SubscriptionService {
         String[] parentSubType
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             comboType = RDStore.COMBO_TYPE_CONSORTIUM
-            parentSubType = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.getI10n('value')]
-        }
-        else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-            comboType = RDStore.COMBO_TYPE_DEPARTMENT
-            parentSubType = [RDStore.SUBSCRIPTION_TYPE_LOCAL.getI10n('value')]
+            parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
         }
         Map colMap = [:]
         Map<String, Map> propMap = [:]
@@ -1623,13 +1606,13 @@ class SubscriptionService {
                 case "teilnehmer": colMap.member = c
                     break
                 case "vertrag":
-                case "license": colMap.owner = c
+                case "license": colMap.licenses = c
                     break
                 case "elternlizenz":
                 case "konsortiallizenz":
                 case "parent subscription":
                 case "consortial subscription":
-                    if(accessService.checkPerm("ORG_INST_COLLECTIVE, ORG_CONSORTIUM"))
+                    if(accessService.checkPerm("ORG_CONSORTIUM"))
                         colMap.instanceOf = c
                     break
                 case "status": colMap.status = c
@@ -1646,7 +1629,7 @@ class SubscriptionService {
                     break
                 case "lizenztyp":
                 case "subscription type":
-                case "type": colMap.type = c
+                case "type": colMap.kind = c
                     break
                 case "lizenzform":
                 case "subscription form":
@@ -1673,8 +1656,8 @@ class SubscriptionService {
                         isNotesCol = true
                         propDefString = headerCol.split('\\$\\$')[0].toLowerCase()
                     }
-                    Map queryParams = [propDef:propDefString,pdClass:PropertyDefinition.class.name,contextOrg:contextOrg]
-                    List<PropertyDefinition> possiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd, I10nTranslation i where i.referenceId = pd.id and i.referenceClass = :pdClass and (lower(i.valueDe) = :propDef or lower(i.valueEn) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
+                    Map queryParams = [propDef:propDefString,contextOrg:contextOrg]
+                    List<PropertyDefinition> possiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where (lower(pd.name_de) = :propDef or lower(pd.name_en) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
                     if(possiblePropDefs.size() == 1) {
                         PropertyDefinition propDef = possiblePropDefs[0]
                         if(isNotesCol) {
@@ -1741,28 +1724,29 @@ class SubscriptionService {
                 if(name)
                     candidate.name = name
             }
-            //owner(nullable:true, blank:false) -> to license
-            if(colMap.owner != null) {
-                String ownerKey = cols[colMap.owner].trim()
-                if(ownerKey) {
-                    List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:ownerKey,roleTypes:[OR_LICENSEE_CONS,OR_LICENSING_CONSORTIUM,OR_LICENSEE],contextOrg:contextOrg])
+            //licenses
+            if(colMap.licenses != null) {
+                List<String> licenseKeys = cols[colMap.licenses].split(',')
+                candidate.licenses = []
+                licenseKeys.each { String licenseKey ->
+                    List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:licenseKey,roleTypes:[RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE],contextOrg:contextOrg])
                     if(licCandidates.size() == 1) {
-                        License owner = licCandidates[0]
-                        candidate.owner = "${owner.class.name}:${owner.id}"
+                        License license = licCandidates[0]
+                        candidate.licenses << GenericOIDService.getOID(license)
                     }
                     else if(licCandidates.size() > 1)
-                        mappingErrorBag.multipleLicenseError = ownerKey
+                        mappingErrorBag.multipleLicenseError << licenseKey
                     else
-                        mappingErrorBag.noValidLicense = ownerKey
+                        mappingErrorBag.noValidLicense << licenseKey
                 }
             }
             //type(nullable:true, blank:false) -> to type
-            if(colMap.type != null) {
-                String typeKey = cols[colMap.type].trim()
+            if(colMap.kind != null) {
+                String typeKey = cols[colMap.kind].trim()
                 if(typeKey) {
-                    String type = refdataService.retrieveRefdataValueOID(typeKey, RDConstants.SUBSCRIPTION_TYPE)
+                    String type = refdataService.retrieveRefdataValueOID(typeKey, RDConstants.SUBSCRIPTION_KIND)
                     if(type) {
-                        candidate.type = type
+                        candidate.kind = type
                     }
                     else {
                         mappingErrorBag.noValidType = typeKey

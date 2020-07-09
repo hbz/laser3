@@ -257,7 +257,8 @@
                             <input class="la-full-width" readonly="readonly" value="${contextSub.getSubscriber().sortname}" />
                         </g:if>
                         <g:else>
-                            <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown search"
+                            <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget" class="ui button la-full-width" onclick="$('#newLicenseeTarget').parent('div').toggle();" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
+                            <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown multiple search"
                                       from="${validSubChilds}"
                                       optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
                                       optionKey="${{"com.k_int.kbplus.Subscription:" + it.id}}"
@@ -272,7 +273,7 @@
 
                 <div id="newPackageWrapper">
                     <div class="field">
-                        <label>${message(code:'package.label')}</label>
+                        <label>${message(code:'financials.newCosts.package')}</label>
                         <g:if test="${costItem?.sub}">
                             <g:select name="newPackage" id="newPackage" class="ui dropdown search"
                                       from="${[{}] + costItem?.sub?.packages}"
@@ -361,11 +362,12 @@
     </g:form>
 
     <script>
-        /*var costSelectors = {
-            lc:   "#newCostInLocalCurrency",
-            rate: "#newCostCurrencyRate",
-            bc:   "#newCostInBillingCurrency"
-        }*/
+
+    /*var costSelectors = {
+        lc:   "#newCostInLocalCurrency",
+        rate: "#newCostCurrencyRate",
+        bc:   "#newCostInBillingCurrency"
+    }*/
 
             var costItemElementConfigurations = ${raw(orgConfigurations as String)};
             console.log(costItemElementConfigurations);
@@ -470,9 +472,10 @@
             });
 
             $("#editCost").submit(function(e){
+                //console.log("eee");
                 e.preventDefault();
                 if($("[name='newCostCurrency']").val() != 0) {
-                    var valuesCorrect = checkValues();
+                    let valuesCorrect = checkValues();
                     if(valuesCorrect) {
                         $("#newCostCurrency").parent(".field").removeClass("error");
                         if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
@@ -513,9 +516,16 @@
             });
 
             function onSubscriptionUpdate() {
-                var context = $("[name='newSubscription']").val();
-                if($("[name='newLicenseeTarget']").length > 0 && !$("[name='newLicenseeTarget']").val().match(/:null|:for/))
-                    context = $("[name='newLicenseeTarget']").val();
+                let context;
+                //console.log($("[name='newLicenseeTarget']~a").length);
+                if($("[name='newLicenseeTarget']~a").length === 1){
+                    let values = collect($("[name='newLicenseeTarget']~a"));
+                    if(!values[0].match(/:null|:for/)) {
+                        context = values[0];
+                    }
+                }
+                else if($("[name='newLicenseeTarget']").length === 0)
+                    context = $("[name='newSubscription']").val();
                 selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+context;
                 selLinks.newTitleGroup = "${createLink([controller:"ajax",action:"lookupTitleGroups"])}?query={query}&sub="+context;
                 selLinks.newPackage = "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?query={query}&ctx="+context;
@@ -526,9 +536,15 @@
             }
 
             $("#newPackage").change(function(){
-                var context = $("[name='newSubscription']").val();
-                if($("[name='newLicenseeTarget']").length > 0 && !$("[name='newLicenseeTarget']").val().match(/:null|:for/))
-                    context = $("[name='newLicenseeTarget']").val();
+                let context;
+                if($("[name='newLicenseeTarget']~a").length === 1) {
+                    let values = collect($("[name='newLicenseeTarget']~a"));
+                    if(!values[0].match(/:null|:for/)) {
+                        context = values[0];
+                    }
+                }
+                else if($("[name='newLicenseeTarget']").length === 0)
+                    context = $("[name='newSubscription']").val();
                 selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+$("[name='newPackage']").val();
                 $("#newIE").dropdown('clear');
                 ajaxPostFunc();
@@ -588,22 +604,34 @@
 
             function checkPackageBelongings() {
                 var subscription = $("[name='newSubscription'], #pickedSubscription").val();
-                if($("[name='newLicenseeTarget']").length > 0 && !$("[name='newLicenseeTarget']").val().match(/:null|:for/)) {
-                    subscription = $("[name='newLicenseeTarget']").val();
+                let values = collect($("[name='newLicenseeTarget']~a"))
+                if(values.length === 1) {
+                    subscription = values[0];
+                    $.ajax({
+                        url: "<g:createLink controller="ajax" action="checkCascade"/>?subscription="+subscription+"&package="+$("[name='newPackage']").val()+"&issueEntitlement="+$("[name='newIE']").val(),
+                    }).done(function (response) {
+                        //console.log("function ran through w/o errors, please continue implementing! Response from server is: "+JSON.stringify(response))
+                        if(!response.sub) $("#newSubscription").addClass("error");
+                        else $("#newSubscription").removeClass("error");
+                        if(!response.subPkg) $("#newPackage").addClass("error");
+                        else $("#newPackage").removeClass("error");
+                        if(!response.ie) $("#newIE").addClass("error");
+                        else $("#newIE").removeClass("error");
+                    }).fail(function () {
+                        console.log("AJAX error! Please check logs!");
+                    });
                 }
-                $.ajax({
-                    url: "<g:createLink controller="ajax" action="checkCascade"/>?subscription="+subscription+"&package="+$("[name='newPackage']").val()+"&issueEntitlement="+$("[name='newIE']").val(),
-                }).done(function (response) {
-                    //console.log("function ran through w/o errors, please continue implementing! Response from server is: "+JSON.stringify(response))
-                    if(!response.sub) $("#newSubscription").addClass("error");
-                    else $("#newSubscription").removeClass("error");
-                    if(!response.subPkg) $("#newPackage").addClass("error");
-                    else $("#newPackage").removeClass("error");
-                    if(!response.ie) $("#newIE").addClass("error");
-                    else $("#newIE").removeClass("error");
-                }).fail(function () {
-                    console.log("AJAX error! Please check logs!");
-                });
+            }
+
+            function collect(fields) {
+                let values = [];
+                for(let i = 0;i < fields.length;i++) {
+                    let value = fields[i];
+                    if(!value.getAttribute("data-value").match(/:null|:for/))
+                        values.push(value.getAttribute("data-value"));
+                }
+                //console.log(values);
+                return values;
             }
 
             function convertDouble(input) {
@@ -633,6 +661,16 @@
                     //console.log("string input parsed, output is: "+output);
                 }
                 return output;
+            }
+
+            function preselectMembers() {
+                <g:if test="${pickedSubscriptions}">
+                    $("#newLicenseeTarget").dropdown("set selected",[${raw(pickedSubscriptions.join(','))}]);
+                    <g:if test="${pickedSubscriptions.size() > 9}">
+                        $("#newLicenseeTarget").parent('div').toggle();
+                    </g:if>
+                </g:if>
+
             }
 
     </script>

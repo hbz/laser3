@@ -60,7 +60,6 @@ class PersonRole implements Comparable<PersonRole>{
         positionType        (nullable:true)
         functionType        (nullable:true)
         responsibilityType  (nullable:true)
-        prs         (nullable:false)
         lic         (nullable:true)
         org         (nullable:true)
         cluster     (nullable:true)

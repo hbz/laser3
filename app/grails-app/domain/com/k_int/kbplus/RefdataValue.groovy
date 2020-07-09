@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
-import de.laser.domain.AbstractI10nOverride
-import de.laser.domain.I10nTranslation
+import de.laser.base.AbstractI10nOverride
+import de.laser.I10nTranslation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -65,7 +65,7 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
     static constraints = {
         icon     (nullable:true)
         group    (nullable:true,  blank:false)
-        isHardData (nullable:false, blank:false)
+        isHardData (blank:false)
         order    (nullable:true,  blank: false)
         value_de (nullable: true, blank: false)
         value_en (nullable: true, blank: false)
@@ -207,7 +207,8 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
     **/
     @Override
     boolean equals (Object o) {
-        def obj = ClassUtils.deproxy(o)
+        //def obj = ClassUtils.deproxy(o)
+        def obj = GrailsHibernateUtil.unwrapIfProxy(o)
         if (obj != null) {
             if ( obj instanceof RefdataValue ) {
                 return obj.id == id

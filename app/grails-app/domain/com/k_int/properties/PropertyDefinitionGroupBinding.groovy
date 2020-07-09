@@ -38,9 +38,9 @@ class PropertyDefinitionGroupBinding {
         lic                         (nullable: true, unique: ['propDefGroup'])
         org                         (nullable: true, unique: ['propDefGroup'])
         sub                         (nullable: true, unique: ['propDefGroup'])
-        propDefGroup                (nullable: false, blank: false)
-        isVisible                   (nullable: false, blank: false)
-        isVisibleForConsortiaMembers(nullable: false, blank: false)
+        propDefGroup                (blank: false)
+        isVisible                   (blank: false)
+        isVisibleForConsortiaMembers(blank: false)
         lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
     }

@@ -9,11 +9,12 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AuditConfig
-import de.laser.ContextService
-import de.laser.domain.IssueEntitlementCoverage
+import de.laser.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import de.laser.interfaces.ShareSupport
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -1002,9 +1003,9 @@ class OrganisationService {
                 return false
             }
             modelMember.setDefaultCustomerType()
-            OrgPrivateProperty opp = new OrgPrivateProperty(owner: modelMember, type: privateProperties.get('BGA'), refValue: RDStore.YN_YES)
-            if(!opp.save()) {
-                errors.add(opp.errors.toString())
+            OrgProperty op = new OrgProperty(owner: modelMember, type: privateProperties.get('BGA'), refValue: RDStore.YN_YES, tenant: modelMember, isPublic: false)
+            if(!op.save()) {
+                errors.add(op.errors.toString())
                 return false
             }
             Map legalPatronAddressMap = [type:RefdataValue.getByValueAndCategory('Legal patron address', RDConstants.ADDRESS_TYPE),
@@ -2181,10 +2182,14 @@ class OrganisationService {
                                 break
                             //beware: this switch processes only custom properties which are NOT shared by a consortial parent subscription!
                             case 'customProperties':
+                            case 'privateProperties':
+                                boolean isPublic = false
+                                if(k == 'customProperties')
+                                    isPublic = true
                                 // causing a session mismatch
                                 // AbstractProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY,obj,PropertyDefinition.get(v.type))
                                 v.each { property ->
-                                    SubscriptionCustomProperty newProp = new SubscriptionCustomProperty(owner:obj,type:PropertyDefinition.get(property.type))
+                                    SubscriptionProperty newProp = new SubscriptionProperty(owner:obj,type:PropertyDefinition.get(property.type),isPublic:isPublic)
                                     newProp.note = property.note ?: null
                                     if(property.stringValue) {
                                         newProp.stringValue = property.stringValue
@@ -2210,7 +2215,7 @@ class OrganisationService {
                                         AuditConfig.addConfig(newProp,AuditConfig.COMPLETE_OBJECT)
                                 }
                                 break
-                            case 'privateProperties':
+                            /*case 'privateProperties':
                                 v.each { property ->
                                     SubscriptionPrivateProperty newProp = new SubscriptionPrivateProperty(owner:obj,type:PropertyDefinition.get(property.type))
                                     newProp.note = property.note ?: null
@@ -2235,7 +2240,7 @@ class OrganisationService {
                                     if(!newProp.save())
                                         throw new CreationException(newProp.errors)
                                 }
-                                break
+                                break*/
                             case 'subscriptionMembers':
                                 List synShareTargetList = []
                                 v.each { entry ->
@@ -2281,11 +2286,11 @@ class OrganisationService {
                                             throw new CreationException(providerAgencyRole.errors)
                                     }
                                     synShareTargetList.add(consSub)
-                                    SubscriptionCustomProperty.findAllByOwner(obj).each { scp ->
+                                    SubscriptionProperty.findAllByOwner(obj).each { scp ->
                                         AuditConfig ac = AuditConfig.getConfig(scp)
                                         if(ac) {
                                             //I do not understand what the difference in SubscriptionController is, so, I will not distinct here between multipleOccurrence or not
-                                            AbstractPropertyWithCalculatedLastUpdated prop = new SubscriptionCustomProperty(owner:consSub,type:scp.type)
+                                            AbstractPropertyWithCalculatedLastUpdated prop = new SubscriptionProperty(owner:consSub,type:scp.type)
                                             prop = scp.copyInto(prop)
                                             prop.instanceOf = scp
                                             prop.save()
@@ -2332,7 +2337,7 @@ class OrganisationService {
                                 // causing a session mismatch
                                 // AbstractProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY,obj,PropertyDefinition.get(v.type))
                                 v.each { property ->
-                                    LicenseCustomProperty newProp = new LicenseCustomProperty(owner:obj,type:PropertyDefinition.get(property.type))
+                                    LicenseProperty newProp = new LicenseProperty(owner:obj,type:PropertyDefinition.get(property.type))
                                     if(property.stringValue) {
                                         newProp.stringValue = property.stringValue
                                     }
@@ -2412,11 +2417,11 @@ class OrganisationService {
             case 'Subscription':
                 if(obj.instanceOf) {
                     List<Subscription> synShareTargetList = [obj]
-                    SubscriptionCustomProperty.findAllByOwner(obj.instanceOf).each { scp ->
+                    SubscriptionProperty.findAllByOwner(obj.instanceOf).each { scp ->
                         AuditConfig ac = AuditConfig.getConfig(scp)
                         if(ac) {
                             //I do not understand what the difference in SubscriptionController is, so, I will not distinct here between multipleOccurrence or not
-                            AbstractPropertyWithCalculatedLastUpdated prop = new SubscriptionCustomProperty(owner:obj,type:scp.type)
+                            AbstractPropertyWithCalculatedLastUpdated prop = new SubscriptionProperty(owner:obj,type:scp.type)
                             prop = scp.copyInto(prop)
                             prop.instanceOf = scp
                             prop.save()
@@ -2497,7 +2502,7 @@ class OrganisationService {
 
     void createDocument(entry, obj) throws CreationException {
         try {
-            String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+            String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
             Doc originalDoc = Doc.findByUuid(entry.docstoreUUID)
             Path source = Paths.get("${fPath}/${originalDoc.uuid}")
             Doc docContent = new Doc()
@@ -2539,7 +2544,7 @@ class OrganisationService {
     }
 
     void createOrgsFromScratch() {
-        def currentServer = grailsApplication.config.getCurrentServer()
+        def currentServer = ServerUtils.getCurrentServer()
         Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_BASIC_MEMBER'),
                                           institut:Role.findByAuthority('ORG_BASIC_MEMBER'),
                                           singlenutzer:Role.findByAuthority('ORG_INST'),
@@ -2565,7 +2570,7 @@ class OrganisationService {
                 //log.error(e.getStackTrace())
             }
         }
-        if(currentServer == ContextService.SERVER_QA) { //include SERVER_LOCAL when testing in local environment
+        if(currentServer == ServerUtils.SERVER_QA) { //include SERVER_LOCAL when testing in local environment
             Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
                                          institut: [name:'Musterinstitut',orgType: [department]],
                                          singlenutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
@@ -2606,7 +2611,7 @@ class OrganisationService {
                 userService.setupAdminAccounts(orgMap)
             }
         }
-        else if(currentServer == ContextService.SERVER_DEV) {
+        else if(currentServer == ServerUtils.SERVER_DEV) {
             userService.setupAdminAccounts([konsortium:hbz])
         }
     }

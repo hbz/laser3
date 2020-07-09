@@ -4,8 +4,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
-import de.laser.domain.IssueEntitlementGroup
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -23,8 +23,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
-class Subscription
-        extends AbstractBaseDomainWithCalculatedLastUpdated
+class Subscription extends AbstractBaseWithCalculatedLastUpdated
         implements CalculatedType, Permissions, AuditableSupport, ShareSupport {
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
@@ -110,8 +109,8 @@ class Subscription
                      prsLinks: PersonRole,
                      derivedSubscriptions: Subscription,
                      pendingChanges: PendingChange,
-                     customProperties: SubscriptionCustomProperty,
-                     privateProperties: SubscriptionPrivateProperty,
+                     customProperties: SubscriptionProperty,
+                     //privateProperties: SubscriptionPrivateProperty,
                      costItems: CostItem,
                      ieGroups: IssueEntitlementGroup
   ]
@@ -127,7 +126,7 @@ class Subscription
                       pendingChanges: 'subscription',
                       costItems: 'sub',
                       customProperties: 'owner',
-                      privateProperties: 'owner',
+                      //privateProperties: 'owner',
                       ]
 
     static mapping = {
@@ -167,13 +166,13 @@ class Subscription
         prsLinks            batchSize: 10
         derivedSubscriptions    batchSize: 10
         customProperties    batchSize: 10
-        privateProperties   batchSize: 10
+        //privateProperties   batchSize: 10
         costItems           batchSize: 10
     }
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:false, blank:false)
+        status(blank:false)
         type(nullable:true, blank:false)
         kind(nullable:true, blank:false)
         //owner(nullable:true, blank:false)
@@ -192,30 +191,39 @@ class Subscription
         manualRenewalDate(nullable:true, blank:false)
         manualCancellationDate(nullable:true, blank:false)
         instanceOf(nullable:true, blank:false)
-        administrative(nullable:false, blank:false)
+        administrative(blank:false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
-        isSlaved    (nullable:false, blank:false)
+        isSlaved    (blank:false)
         noticePeriod(nullable:true, blank:true)
-        isPublicForApi (nullable:false, blank:false)
+        isPublicForApi (blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
         lastUpdatedCascading (nullable: true, blank: false)
         isMultiYear(nullable: true, blank: false)
-        hasPerpetualAccess(nullable: false, blank: false)
-    }
-
-    @Override
-    def afterInsert() {
-        static_logger.debug("afterInsert")
-        cascadingUpdateService.update(this, dateCreated)
+        hasPerpetualAccess(blank: false)
     }
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        super.afterDeleteHandler()
 
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
+    }
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
     }
 
     @Transient

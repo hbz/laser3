@@ -46,7 +46,11 @@
         </g:if>
 
         <g:if test="${actionName == 'accessPoints'}">
-            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id]" message="accessPoint.create"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'ip']" message="accessPoint.create_ip"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'proxy']" message="accessPoint.create_proxy"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'ezproxy']" message="accessPoint.create_ezproxy"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'oa']" message="accessPoint.create_openAthens"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'shibboleth']" message="accessPoint.create_shibboleth"/>
         </g:if>
 
 

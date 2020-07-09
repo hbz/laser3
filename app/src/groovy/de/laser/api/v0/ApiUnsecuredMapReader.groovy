@@ -1,7 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import de.laser.domain.IssueEntitlementCoverage
+import de.laser.IssueEntitlementCoverage
 import groovy.util.logging.Log4j
 
 @Log4j

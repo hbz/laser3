@@ -13,11 +13,13 @@ import de.laser.SystemAnnouncement
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.I10nTranslation
-import de.laser.domain.SystemMessage
+import de.laser.I10nTranslation
+import de.laser.SystemMessage
 import de.laser.exceptions.CleanupException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import de.laser.helper.SessionCacheWrapper
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -30,6 +32,8 @@ import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -517,7 +521,7 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def updateQASubscriptionDates() {
-        if (grailsApplication.config.getCurrentServer() in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) {
+        if (ServerUtils.getCurrentServer() in [ServerUtils.SERVER_QA, ServerUtils.SERVER_LOCAL]) {
             def updateReport = statusUpdateService.updateQASubscriptionDates()
             if(updateReport instanceof Boolean)
                 flash.message = message(code:'subscription.qaTestDateUpdate.success')
@@ -595,7 +599,7 @@ class AdminController extends AbstractDebugController {
     def fileConsistency() {
         Map<String, Object> result = [:]
 
-        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+        result.filePath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Closure fileCheck = { Doc doc ->
 
@@ -684,6 +688,90 @@ class AdminController extends AbstractDebugController {
         result
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def recoveryDoc() {
+        Map<String, Object> result = [:]
+
+        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+        Closure fileCheck = { Doc doc ->
+
+            try {
+                File test = new File("${result.filePath}/${doc.uuid}")
+                if (test.exists() && test.isFile()) {
+                    return true
+                }
+            }
+            catch (Exception e) {
+                return false
+            }
+        }
+
+        Doc doc = Doc.get(Long.parseLong(params.docID))
+
+        if (!fileCheck(doc)) {
+            result.doc = doc
+
+            List docs = Doc.findAllWhere(
+                    blobContent: doc.blobContent,
+                    status: doc.status,
+                    type: doc.type,
+                    content: doc.content,
+                    contentType: doc.contentType,
+                    title: doc.title,
+                    creator: doc.creator,
+                    filename: doc.filename,
+                    mimeType: doc.mimeType,
+                    user: doc.user,
+                    migrated: doc.migrated,
+                    owner: doc.owner
+            )
+            result.docsToRecovery = docs
+        }
+        result
+
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def processRecoveryDoc() {
+        Map<String, Object> result = [:]
+
+        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+        Closure fileCheck = { Doc doc ->
+
+            try {
+                File test = new File("${result.filePath}/${doc.uuid}")
+                if (test.exists() && test.isFile()) {
+                    return true
+                }
+            }
+            catch (Exception e) {
+                return false
+            }
+        }
+
+        Doc docWithoutFile = Doc.get(Long.parseLong(params.sourceDoc))
+        Doc docWithFile = Doc.get(Long.parseLong(params.targetDoc))
+
+        if (!fileCheck(docWithoutFile) && fileCheck(docWithFile)) {
+
+            Path source = new File("${result.filePath}/${docWithFile.uuid}").toPath()
+            Path target = new File("${result.filePath}/${docWithoutFile.uuid}").toPath()
+            Files.copy(source, target)
+
+            if(fileCheck(docWithoutFile)){
+                flash.message = "Datei erfolgreich wiederhergestellt!"
+            }else{
+                flash.error = "Datei nicht erfolgreich wiederhergestellt!"
+            }
+        }else {
+            flash.error = "Keine Quell-Datei gefunden um Wiederherzustellen!"
+        }
+        redirect(action:'recoveryDoc', params: ['docID': docWithoutFile.id])
+
+    }
+
   @Secured(['ROLE_ADMIN'])
   def newContentItem() {
     Map<String, Object> result = [:]
@@ -723,7 +811,7 @@ class AdminController extends AbstractDebugController {
             if ( request.method.equalsIgnoreCase("post")) {
                 contentItem.content = params.content
                 contentItem.save(flush:true)
-                messageService.update(key,locale)
+                messageService.update(key,locale) // TODO: refactoring legacy
                 redirect(action:'manageContentItems');
             }
         }
@@ -826,7 +914,7 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def orgsExport() {
         Date now = new Date()
-        File basicDataDir = new File(grailsApplication.config.basicDataPath)
+        File basicDataDir = new File(ConfigUtils.getBasicDataPath())
         if(basicDataDir) {
             GPathResult oldBase
             XmlSlurper slurper = new XmlSlurper()
@@ -834,7 +922,7 @@ class AdminController extends AbstractDebugController {
             List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
                 @Override
                 boolean accept(File dir, String name) {
-                    return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
+                    return name.matches("${ConfigUtils.getOrgDumpFileNamePattern()}.*")
                 }
             })
             if(dumpFiles.size() > 0) {
@@ -846,7 +934,7 @@ class AdminController extends AbstractDebugController {
                 oldBase = slurper.parse(lastDump)
             }
             else {
-                File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
+                File f = new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getBasicDataFileName()}")
                 lastDumpDate = new Date(f.lastModified())
                 if(f.exists()) {
                     //complicated way - determine most recent org and user creation dates
@@ -886,7 +974,7 @@ class AdminController extends AbstractDebugController {
                 //data collected: prepare export!
                 if(newOrgData || newUserData) {
                     //List<Person> newPersonData = Person.executeQuery('select pr.prs from PersonRole pr where pr.org in :org',[org:newOrgData])
-                    File newDump = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.orgDumpFileNamePattern}${now.format("yyyy-MM-dd")}${grailsApplication.config.orgDumpFileExtension}")
+                    File newDump = new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getOrgDumpFileNamePattern()}${now.format("yyyy-MM-dd")}${ConfigUtils.getOrgDumpFileExtension()}")
                     StringBuilder exportReport = new StringBuilder()
                     exportReport.append("<p>Folgende Organisationen wurden erfolgreich exportiert: <ul><li>")
                     newDump.withWriter { writer ->
@@ -1247,11 +1335,11 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def orgsImport() {
-        File basicDataDir = new File("${grailsApplication.config.documentStorageLocation}/basic_data_dumps/")
+        File basicDataDir = new File(ConfigUtils.getDocumentStorageLocation() + "/basic_data_dumps/")
         List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
             @Override
             boolean accept(File dir, String name) {
-                return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
+                return name.matches("${ConfigUtils.getOrgDumpFileNamePattern()}.*")
             }
         })
         if(dumpFiles.size() > 0) {

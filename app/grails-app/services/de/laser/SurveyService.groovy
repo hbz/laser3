@@ -2,18 +2,17 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import grails.plugin.mail.MailService
 import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -23,7 +22,7 @@ class SurveyService {
 
     AccessService accessService
     ContextService contextService
-    MessageSource messageSource
+    def messageSource
     ExportService exportService
     Locale locale
     MailService mailService
@@ -35,7 +34,7 @@ class SurveyService {
 
     @javax.annotation.PostConstruct
     void init() {
-        from = grailsApplication.config.notifications.email.from
+        from = ConfigUtils.getNotificationsEmailFrom()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
     }
@@ -142,30 +141,21 @@ class SurveyService {
     }
 
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
-        Org contextOrg = contextService.getOrg()
-        def targetProp
+        SubscriptionProperty targetProp
 
 
-        properties?.each { sourceProp ->
-            if (sourceProp instanceof CustomProperty) {
-                targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
-            }
-            if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
-                targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
-            }
-            boolean isAddNewProp = sourceProp.type?.multipleOccurrence
+        properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
+            targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
+            boolean isAddNewProp = sourceProp.type.multipleOccurrence
             if ((!targetProp) || isAddNewProp) {
-                if (sourceProp instanceof CustomProperty) {
-                    targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
-                } else {
-                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
-                }
+                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)
                 targetProp = sourceProp.copyInto(targetProp)
+                targetProp.isPublic = sourceProp.isPublic
                 save(targetProp, flash)
-                if ((sourceProp.id.toString() in auditProperties) && targetProp instanceof CustomProperty) {
+                if ((sourceProp.id.toString() in auditProperties) && targetProp.isPublic) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
                                 //All ReferenceFields were copied!
@@ -178,7 +168,7 @@ class SurveyService {
 
                 }
             } else {
-                Object[] args = [sourceProp?.type?.getI10n("name") ?: sourceProp.class.getSimpleName()]
+                Object[] args = [sourceProp.type.getI10n("name") ?: sourceProp.class.getSimpleName()]
                 flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
             }
         }
@@ -191,8 +181,8 @@ class SurveyService {
             AuditConfig.removeAllConfigs(prop)
         }
 
-        int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)", [properties: properties])
-        int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)", [properties: properties])
+        int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = true", [properties: properties, org: contextService.org])
+        int anzPP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = false", [properties: properties, org: contextService.org])
     }
 
     private boolean save(obj, flash) {
@@ -618,11 +608,11 @@ class SurveyService {
                 {
 
                     User user = userOrg.user
-
-                    def emailReceiver = user.getEmail()
-                    def currentServer = grailsApplication.config.getCurrentServer()
-                    def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
-                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, locale) +  " (" + participationFinish.sortname + ")")
+                    Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
+                    String emailReceiver = user.getEmail()
+                    String currentServer = ServerUtils.getCurrentServer()
+                    String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, language) +  " (" + participationFinish.sortname + ")")
 
                         try {
                             if (emailReceiver == null || emailReceiver.isEmpty()) {

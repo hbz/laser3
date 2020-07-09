@@ -42,8 +42,8 @@ class SurveyInfo {
         endDate (nullable:true, blank:false)
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
-        isSubscriptionSurvey  (nullable:false, blank:false)
-        isMandatory           (nullable:false, blank:false)
+        isSubscriptionSurvey  (blank:false)
+        isMandatory           (blank:false)
 
     }
 

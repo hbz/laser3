@@ -10,7 +10,7 @@ import de.laser.DashboardDueDatesService
 import de.laser.LinksGenerationService
 import de.laser.SystemAnnouncement
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.AbstractI10nTranslatable
+import de.laser.base.AbstractI10nTranslatable
 import de.laser.helper.*
 
 //import de.laser.TaskService //unused for quite a long time
@@ -850,7 +850,7 @@ join sub.orgRelations or_sub where
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         List allIdentifiers = Identifier.findAllBySubIsNotNull()
-        List allLicenses = Links.executeQuery("select li.source from Links li where li.destination in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions.collect{ Subscription sub -> GenericOIDService.getOID(sub) },linkType:RDStore.LINKTYPE_LICENSE])
+        List allLicenses = Links.executeQuery("select li from Links li where li.destination in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions.collect{ Subscription sub -> GenericOIDService.getOID(sub) },linkType:RDStore.LINKTYPE_LICENSE])
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { OrgRole provider ->
             Set subProviders = providers.get(provider.sub)
@@ -3563,12 +3563,12 @@ AND EXISTS (
     private List addPrivatePropertyDefinition(params) {
         log.debug("trying to add private property definition for institution: " + params)
 
-        def tenant = GrailsHibernateUtil.unwrapIfProxy(contextService.getOrg())
+        Org tenant = contextService.getOrg()
 
         def privatePropDef = PropertyDefinition.findWhere(
                 name:   params.pd_name,
                 descr:  params.pd_descr,
-               // type:   params.pd_type,
+                //type:   params.pd_type,
                 tenant: tenant,
         )
 
@@ -3595,7 +3595,7 @@ AND EXISTS (
                             expl_de: params.pd_expl?.trim(),
                             expl_en: params.pd_expl?.trim()
                     ],
-                    tenant      : tenant?.globalUID
+                    tenant      : tenant.globalUID
             ]
 
             privatePropDef = PropertyDefinition.construct(map)

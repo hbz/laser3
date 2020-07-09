@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
+import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 
-class CostItemElementConfiguration extends AbstractBaseDomain {
+class CostItemElementConfiguration extends AbstractBase {
 
     @RefdataAnnotation(cat = RDConstants.COST_ITEM_ELEMENT)
     RefdataValue costItemElement
@@ -34,16 +34,17 @@ class CostItemElementConfiguration extends AbstractBaseDomain {
 
     static constraints = {
         globalUID           (nullable: true, blank: false, unique: true, maxSize: 255)
-        costItemElement     (nullable: false, blank: false)
-        elementSign         (nullable: false, blank: false)
-        forOrganisation     (nullable: false, blank: false)
+        costItemElement     (blank: false)
+        elementSign         (blank: false)
+        forOrganisation     (blank: false)
     }
 
+    @Override
     def beforeInsert() {
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
-
+    @Override
     def beforeUpdate() {
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
 }

@@ -1,9 +1,9 @@
 package com.k_int.kbplus
 
 
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.TIPPCoverage
+import de.laser.IssueEntitlementCoverage
+import de.laser.PendingChangeConfiguration
+import de.laser.TIPPCoverage
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.exceptions.CreationException
 import de.laser.helper.DateUtil
@@ -41,7 +41,7 @@ class PendingChange {
     final static MSG_SU02 = 'pendingChange.message_SU02'
 
     @Transient
-    MessageSource messageSource
+    def messageSource
 
     Subscription subscription
     License license

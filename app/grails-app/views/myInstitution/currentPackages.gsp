@@ -81,7 +81,7 @@
             </td>
 
             <td>
-                <g:each in="${pkg.orgs.findAll{it.roleType == de.laser.helper.RDStore.OR_CONTENT_PROVIDER}.sort{it.name}}" var="role">
+                <g:each in="${pkg.orgs.findAll{it.roleType == de.laser.helper.RDStore.OR_CONTENT_PROVIDER}.sort{it.org.name}}" var="role">
                     <g:link controller="organisation" action="show" id="${role.org.id}">${role?.org?.name}</g:link><br />
                 </g:each>
             </td>

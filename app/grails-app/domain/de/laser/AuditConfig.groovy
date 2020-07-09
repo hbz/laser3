@@ -31,9 +31,9 @@ class AuditConfig {
     }
 
     static constraints = {
-        referenceId     (nullable:false, blank:false)
-        referenceClass  (nullable:false, blank:false, maxSize:255)
-        referenceField  (nullable:false, blank:false, maxSize:255)
+        referenceId     (blank:false)
+        referenceClass  (blank:false, maxSize:255)
+        referenceField  (blank:false, maxSize:255)
         lastUpdated     (nullable: true, blank: false)
         dateCreated     (nullable: true, blank: false)
     }

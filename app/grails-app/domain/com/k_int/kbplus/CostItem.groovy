@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
-import de.laser.domain.IssueEntitlementGroup
+import de.laser.base.AbstractBase
+import de.laser.IssueEntitlementGroup
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.CalculatedType
@@ -10,8 +10,7 @@ import de.laser.interfaces.DeleteFlag
 import javax.persistence.Transient
 import java.time.Year
 
-class CostItem
-        extends AbstractBaseDomain
+class CostItem extends AbstractBase
         implements DeleteFlag, CalculatedType  {
 
     static enum TAX_TYPES {
@@ -151,7 +150,7 @@ class CostItem
 
     static constraints = {
         globalUID(nullable: true, blank: false, unique: true, maxSize: 255)
-        owner(nullable: false, blank: false)
+        owner(blank: false)
         type(nullable: true, blank: false)
         sub(nullable: true, blank: false)
         issueEntitlementGroup(nullable: true, blank: false)
@@ -168,23 +167,23 @@ class CostItem
         surveyOrg       (nullable: true, blank: false)
         order(nullable: true, blank: false)
         invoice(nullable: true, blank: false)
-        billingCurrency(nullable: false, blank: false)
+        billingCurrency(blank: false)
         costDescription(nullable: true, blank: false)
         costTitle(nullable: true, blank: false)
         costInBillingCurrency(nullable: true, blank: false)
         datePaid(nullable: true, blank: false)
         costInLocalCurrency(nullable: true, blank: false)
         currencyRate(nullable: true, blank: false)
-        finalCostRounding       (nullable: false, blank: false)
+        finalCostRounding       (blank: false)
         taxCode(nullable: true, blank: false)
         taxRate(nullable: true, blank: false)
         taxKey(nullable: true, blank: false)
         invoiceDate(nullable: true, blank: false)
         financialYear(nullable: true, blank: false)
-        isVisibleForSubscriber  (nullable: false, blank: false)
-        //includeInSubscription   (nullable: false, blank: false)
+        isVisibleForSubscriber  (blank: false)
+        //includeInSubscription   (blank: false)
         costItemCategory(nullable: true, blank: false)
-        costItemStatus(nullable: false, blank: false)
+        costItemStatus(blank: false)
         costItemElement(nullable: true, blank: false)
         costItemElementConfiguration(nullable: true, blank: false)
         reference(nullable: true, blank: false)
@@ -200,12 +199,13 @@ class CostItem
         return false
     }
 
+    @Override
     def beforeInsert() {
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
-
+    @Override
     def beforeUpdate() {
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
 
     @Override

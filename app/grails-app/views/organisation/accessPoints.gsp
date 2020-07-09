@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.helper.RDConstants;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -58,49 +58,67 @@
     </semui:filter>
 --}%
 
-        <g:form class="ui form" url="[controller: 'accessPoint', action: 'create']" method="POST">
-            <table  class="ui celled la-table table">
-                <thead>
-                <tr>
-                    <th>${message(code: 'accessPoint.name')}</th>
-                    <th>${message(code: 'accessMethod.label')}</th>
-                    <th>${message(code: 'accessRule.plural')}</th>
-                    <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
-                        <th class="la-action-info">${message(code: 'default.actions.label')}</th>
-                    </g:if>
-                </tr>
-                </thead>
-                <tbody>
-                    <g:each in="${orgAccessPointList}" var="accessPointListItem">
-                        <g:set var="accessPoint" value="${accessPointListItem.oap}"/>
+    <div class="la-inline-lists">
+
+<g:each in="${orgAccessPointList}" var="accessPointListItem">
+        <div class="ui card">
+            <div class="content">
+                <div class="header">
+                    <h4>${RDStore.getRefdataValue(accessPointListItem.key, RDConstants.ACCESS_POINT_TYPE).getI10n('value')}</h4></div>
+            </div>
+            <div class="content">
+
+                <table  class="ui celled la-table table">
+                    <thead>
+                    <tr>
+                            <th>${message(code: 'accessPoint.name')}</th>
+                        <g:if test="${accessPointListItem.key in ['ip', 'proxy']}">
+                            <th>IPv4</th>
+                            <th>IPv6</th>
+                        </g:if>
+                        <g:else>
+                            <th>${message(code: 'accessRule.plural')}</th>
+                        </g:else>
+                        <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
+                            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+                        </g:if>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <g:each in="${accessPointListItem.value}" var="accessPointItem">
+                        <g:set var="accessPoint" value="${accessPointItem.oap}"/>
                         <tr>
-                        <td class="la-main-object" >
-                        <g:link controller="accessPoint" action="edit_${accessPoint.accessMethod.value.toLowerCase()}" id="${accessPoint.id}">
-                            ${accessPoint.name}
-                        </g:link>
-                        </td>
-                            <td>${accessPoint.accessMethod.getI10n('value')}</td>
+                            <td class="la-main-object" >
+                                <g:link controller="accessPoint" action="edit_${accessPoint.accessMethod.value.toLowerCase()}" id="${accessPoint.id}">
+                                    ${accessPoint.name}
+                                </g:link>
+                            </td>
+                        <g:if test="${accessPointListItem.key in ['ip', 'proxy']}">
                             <td>
                                 <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
                                     <div >${ipv4Range}</div>
                                 </g:each>
+                            </td>
+                            <td>
                                 <g:each in="${accessPoint.getIpRangeStrings('ipv6', 'ranges')}" var="ipv6Range">
                                     <div >${ipv6Range}</div>
                                 </g:each>
-                                <div>
+                            </td>
+                        </g:if>
+                        <g:else>
+                            <td>
                                     <g:if test="${accessPoint.hasProperty('url')}">
                                         URL: ${accessPoint.url}
                                     </g:if>
-                                </div>
-                                <div>
+
                                     <g:if test="${accessPoint.hasProperty('entityId')}">
                                         EntityId: ${accessPoint.entityId}
                                     </g:if>
-                                </div>
                             </td>
+                        </g:else>
                             <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
                                 <td class="center aligned">
-                                    <g:if test="${accessPointListItem['platformLinkCount'] == 0 && accessPointListItem['subscriptionLinkCount'] == 0}">
+                                    <g:if test="${accessPointItem['platformLinkCount'] == 0 && accessPointItem['subscriptionLinkCount'] == 0}">
                                         <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}"
                                                 class="ui negative icon button js-open-confirm-modal"
                                                 data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
@@ -109,10 +127,10 @@
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <div data-tooltip="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointListItem['platformLinkCount'], accessPointListItem['subscriptionLinkCount']])}" data-position="bottom center">
-                                        <div class="ui icon button disabled">
-                                            <i class="trash alternate icon"></i>
-                                        </div>
+                                        <div data-tooltip="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}" data-position="bottom center">
+                                            <div class="ui icon button disabled">
+                                                <i class="trash alternate icon"></i>
+                                            </div>
                                         </div>
                                     </g:else>
 
@@ -120,8 +138,18 @@
                             </g:if>
                         </tr>
                     </g:each>
-                 </tbody>
-            </table>
-        </g:form>
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+</g:each>
+    </div>
+
+
+
+
+
     </body>
 </html>

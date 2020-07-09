@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.EscapeService
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.annotation.Secured
@@ -30,8 +31,8 @@ class PublicController {
 
             mailService.sendMail {
                 to 'barrierefreiheitsbelange@hbz-nrw.de'
-                from grailsApplication.config.notifications.email.from
-                subject grailsApplication.config.laserSystemId + ' - ' + 'Feedback-Mechanismus Barrierefreiheit'
+                from ConfigUtils.getNotificationsEmailFrom()
+                subject ConfigUtils.getLaserSystemId() + ' - Feedback-Mechanismus Barrierefreiheit'
                 body (view: '/mailTemplates/text/wcagFeedback', model: [name:params.name, email:params.email,url:params.url, comment:escapeService.replaceUmlaute(params.comment)])
 
             }
@@ -228,7 +229,7 @@ class PublicController {
             SubscriptionPackage sp  = SubscriptionPackage.get(params.long('id'))
             def sub = sp?.subscription
             def pkg = sp?.pkg
-            SubscriptionCustomProperty scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
+            SubscriptionProperty scp = SubscriptionProperty.findByOwnerAndTypeAndRefValue(
                     sub,
                     PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
                     RDStore.YN_YES

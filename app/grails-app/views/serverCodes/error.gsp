@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.web.errors.ExceptionUtils" %>
+<%@ page import="de.laser.helper.ConfigUtils; de.laser.helper.ServerUtils; org.codehaus.groovy.grails.web.errors.ExceptionUtils" %>
 <laser:serviceInjection />
 <%
     Throwable exception = (Throwable) exception
@@ -10,11 +10,11 @@
 
     String nl = "%0D%0A"
 
-    String mailString   = "mailto:laser@hbz-nrw.de?subject=Fehlerbericht - ${grailsApplication.config.laserSystemId}" +
+    String mailString   = "mailto:laser@hbz-nrw.de?subject=Fehlerbericht - " + ConfigUtils.getLaserSystemId() +
                         "&body=Ihre Fehlerbeschreibung (bitte angeben): " + nl + nl +
                         "URI: ${request.forwardURI} " + nl +
                         "Zeitpunkt: ${new Date()} " + nl +
-                        "System: ${grailsApplication.config?.laserSystemId} " + nl +
+                        "System: " + ConfigUtils.getLaserSystemId() + " " + nl +
                         "Branch: ${grailsApplication.metadata['repository.branch']} " + nl +
                         "Commit: ${grailsApplication.metadata['repository.revision.number']} " + nl +
                         "Class: ${root?.getClass()?.name ?: exception.getClass().name} " + nl +
@@ -70,7 +70,7 @@
     </div>
 </g:if>
 
-<g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_DEV}">
+<g:if test="${ServerUtils.getCurrentServer() == ServerUtils.SERVER_DEV}">
     <g:renderException exception="${exception}"/>
 </g:if>
 <g:elseif env="development">

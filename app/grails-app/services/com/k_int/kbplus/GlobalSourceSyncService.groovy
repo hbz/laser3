@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
 import de.laser.SystemEvent
-import de.laser.domain.AbstractCoverage
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.TIPPCoverage
+import de.laser.base.AbstractCoverage
+import de.laser.IssueEntitlementCoverage
+import de.laser.PendingChangeConfiguration
+import de.laser.TIPPCoverage
 import de.laser.exceptions.SyncException
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
@@ -200,7 +200,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * created with the given remote record data, otherwise, the local record is going to be updated. The {@link TitleInstancePackagePlatform records}
      * in the {@link Package} will be checked for differences and if there are such, the according fields updated. Same counts for the {@link TIPPCoverage} records
      * in the {@link TitleInstancePackagePlatform}s. If {@link Subscription}s are linked to the {@link Package}, the {@link IssueEntitlement}s (just as their
-     * {@link de.laser.domain.IssueEntitlementCoverage}s) are going to be notified; it is up to the respective subscription tenants to accept the changes or not.
+     * {@link IssueEntitlementCoverage}s) are going to be notified; it is up to the respective subscription tenants to accept the changes or not.
      * Replaces the method GokbDiffEngine.diff and the onNewTipp, onUpdatedTipp and onUnchangedTipp closures
      *
      * @param packageData - A {@link NodeChildren} list containing a OAI-PMH record extract for a given package
@@ -540,7 +540,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     TitleInstance createOrUpdateTitle(String titleUUID) throws SyncException {
         GPathResult titleOAI = fetchRecord(source.uri,'titles',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:titleUUID])
         if(titleOAI) {
-            TitleInstance.withNewSession { Session session ->
+            TitleInstance.withSession { Session session ->
                 GPathResult titleRecord = titleOAI.record.metadata.gokb.title
                 log.info("title record loaded, converting XML record and reconciling title record for UUID ${titleUUID} ...")
                 TitleInstance titleInstance = TitleInstance.findByGokbId(titleUUID)
@@ -594,11 +594,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         SystemEvent.createEvent('GSSS_OAI_WARNING',[titleInstance:titleInstance.gokbId,errorType:"titleTypeMismatch"])
                     }
                     //this is taken only if object has been persisted because of other transaction
+                    log.debug("processing ${titleInstance.title} before update")
                     titleInstance.title = titleRecord.name.text()
                     titleInstance.medium = medium
                     titleInstance.status = status
+                    log.debug("title name before save: ${titleInstance.title}")
                     if(titleInstance.save()) {
-                        titleInstance.refresh()
+                        log.debug("title name before refresh: ${titleInstance.title}")
+                        //titleInstance.refresh()
                         if(titleRecord.publishers) {
                             OrgRole.executeUpdate('delete from OrgRole oo where oo.title = :titleInstance',[titleInstance: titleInstance])
                             titleRecord.publishers.publisher.each { pubData ->

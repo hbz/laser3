@@ -1,5 +1,5 @@
-<%@ page import="com.k_int.kbplus.ApiSource; de.laser.helper.RDStore; com.k_int.kbplus.IdentifierNamespace" %>
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Package; com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.ApiSource; de.laser.helper.RDStore; com.k_int.kbplus.IdentifierNamespace" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Package; com.k_int.kbplus.Subscription; com.k_int.kbplus.IssueEntitlement" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 
@@ -18,7 +18,7 @@
 
                 <g:if test="${! objIsOrgAndInst}"><%-- hidden if org.institution--%>
 
-                    <g:if test="${!(object instanceof License) && !(object instanceof Subscription)}">
+                    <g:if test="${!(object instanceof License) && !(object instanceof Subscription) && !(object instanceof IssueEntitlement)}">
 
                     <dt><g:message code="org.gokbId.label" default="GOKB UUID"/></dt>
                     <dd>
@@ -56,6 +56,7 @@
                     </g:if>
                 </g:if><%-- hidden if org.institution--%>
 
+                <g:if test="${object.hasProperty('ids')}">
                 <dt>
                     <g:message code="org.ids.label"/>
                 </dt>
@@ -104,6 +105,7 @@
                         </tbody>
                     </table>
                 </dd>
+                </g:if>
 
                 <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
 

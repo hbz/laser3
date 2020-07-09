@@ -11,7 +11,7 @@ import javax.persistence.Transient
 class SystemEvent {
 
     @Transient
-    MessageSource messageSource
+    def messageSource
 
     @Transient
     private String i18n
@@ -107,9 +107,9 @@ class SystemEvent {
 
     static constraints = {
         token       (nullable:true)
-        payload     (nullable:true,  blank:true)
-        category    (nullable:false, blank:false)
-        relevance   (nullable:false, blank:false)
+        payload     (nullable:true, blank:true)
+        category    (blank:false)
+        relevance   (blank:false)
         created     (nullable:true)
     }
 

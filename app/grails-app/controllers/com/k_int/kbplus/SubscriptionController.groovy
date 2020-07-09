@@ -2,16 +2,17 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.IssueEntitlementGroup
-import de.laser.domain.IssueEntitlementGroupItem
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.PriceItem
+import de.laser.IssueEntitlementCoverage
+import de.laser.IssueEntitlementGroup
+import de.laser.IssueEntitlementGroupItem
+import de.laser.PendingChangeConfiguration
+import de.laser.PriceItem
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
@@ -31,6 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -43,13 +45,10 @@ import java.util.concurrent.ExecutorService
 
 import static de.laser.helper.RDStore.*
 
-// 2.0
-
-//For Transform
-
-@Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SubscriptionController extends AbstractDebugController {
+class SubscriptionController
+        extends AbstractDebugController
+        implements PendingChangeControllerTrait {
 
     def springSecurityService
     def contextService
@@ -1483,7 +1482,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkLicense() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if(!result) {
             response.sendError(401)
             return
@@ -1585,8 +1584,8 @@ class SubscriptionController extends AbstractDebugController {
                     org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
-                    org.customProperties = subscr.customProperties
-                    org.privateProperties = subscr.privateProperties
+                    org.customProperties = subscr.customProperties.findAll{ it.type.tenant == null && it.tenant.id == result.institution.id && it.isPublic }
+                    org.privateProperties = subscr.customProperties.findAll{ it.type.tenant.id == result.institution.id && it.tenant.id == result.institution.id && !it.isPublic }
                     Set generalContacts = []
                     if (publicContacts.get(subscr))
                         generalContacts.addAll(publicContacts.get(subscr))
@@ -1677,14 +1676,15 @@ class SubscriptionController extends AbstractDebugController {
 
         result.validLicenses = []
 
-        def childLicenses = License.where {
-            instanceOf in result.parentLicenses
-        }
+        if(result.parentLicenses) {
+            def childLicenses = License.where {
+                instanceOf in result.parentLicenses
+            }
 
-        childLicenses?.each {
-            result.validLicenses << it
+            childLicenses?.each {
+                result.validLicenses << it
+            }
         }
-
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
@@ -2035,27 +2035,33 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE && result.institution.id == result.subscription.getCollective().id)
-            result.propList = result.parentSub.privateProperties.type
-        else
-            result.propList = result.parentSub.privateProperties.type + result.parentSub.customProperties.type
-
-
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-        //Sortieren
-        result.validSubChilds = validSubChilds.sort { a, b ->
+        Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
+        /*Sortieren
+        result.validSubChilds = validSubChilds.sort { Subscription a, Subscription b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }
+        }*/
+        result.validSubChilds = validSubChildren
+
+        /*String localizedName
+        switch(LocaleContextHolder.getLocale()) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }*/
+        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        Set<PropertyDefinition> propList = result.parentSub.customProperties.type + SubscriptionProperty.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.instanceOf = null",[subscriptionSet:validSubChildren])
+        result.propList = propList
 
         def oldID = params.id
         params.id = result.parentSub.id
 
         ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
         result.filteredSubChilds = new ArrayList<Subscription>()
-        result.validSubChilds.each { sub ->
+        result.validSubChilds.each { Subscription sub ->
             List<Org> subscr = sub.getAllSubscribers()
             def filteredSubscr = []
             subscr.each { Org subOrg ->
@@ -2174,15 +2180,15 @@ class SubscriptionController extends AbstractDebugController {
                         Subscription subChild = Subscription.get(subId)
                     if (propDef?.tenant != null) {
                         //private Property
-                        def owner = subChild
+                        Subscription owner = subChild
 
-                        def existingProps = owner.privateProperties.findAll {
-                            it.owner.id == owner.id &&  it.type.id == propDef.id
+                        def existingProps = owner.customProperties.findAll {
+                            it.owner.id == owner.id &&  it.type.id == propDef.id && it.tenant.id == result.institution && !it.isPublic
                         }
                         existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
                         if (existingProps.size() == 0 || propDef.multipleOccurrence) {
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef)
+                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef, result.institution)
                             if (newProp.hasErrors()) {
                                 log.error(newProp.errors)
                             } else {
@@ -2193,8 +2199,8 @@ class SubscriptionController extends AbstractDebugController {
                             }
                         }
 
-                        if (existingProps?.size() == 1){
-                            def privateProp = SubscriptionPrivateProperty.get(existingProps[0].id)
+                        if (existingProps.size() == 1){
+                            def privateProp = SubscriptionProperty.get(existingProps[0].id)
                             changeProperties++
                             def prop = setProperty(privateProp, params.filterPropValue)
 
@@ -2209,7 +2215,7 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         if (existingProp == null || propDef.multipleOccurrence) {
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef)
+                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef, result.institution)
                             if (newProp.hasErrors()) {
                                 log.error(newProp.errors)
                             } else {
@@ -2220,7 +2226,7 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         if (existingProp){
-                            SubscriptionCustomProperty customProp = SubscriptionCustomProperty.get(existingProp.id)
+                            SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
                             changeProperties++
                             def prop = setProperty(customProp, params.filterPropValue)
 
@@ -2392,35 +2398,32 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+        List<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         if (params.filterPropDef) {
 
             def filterPropDef = params.filterPropDef
-            def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
+            PropertyDefinition propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
 
-            def deletedProperties = 0
+            int deletedProperties = 0
 
             if (propDef) {
-                validSubChilds.each { subChild ->
+                validSubChilds.each { Subscription subChild ->
 
-                    if (propDef?.tenant != null) {
+                    if (propDef.tenant != null) {
                         //private Property
-                        def owner = subChild
 
-                        def existingProps = owner.privateProperties.findAll {
-                            it.owner.id == owner.id &&  it.type.id == propDef.id
+                        List<SubscriptionProperty> existingProps = subChild.customProperties.findAll {
+                            it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id && !it.isPublic
                         }
                         existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
 
-                        if (existingProps?.size() == 1 ){
-                            def privateProp = SubscriptionPrivateProperty.get(existingProps[0].id)
+                        if (existingProps.size() == 1 ){
+                            SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
 
                             try {
-                                owner.privateProperties.remove(privateProp)
-                                owner.refresh()
-                                privateProp?.delete(failOnError: true, flush: true)
+                                privateProp.delete()
                                 deletedProperties++
                             } catch (Exception e)
                             {
@@ -2431,22 +2434,17 @@ class SubscriptionController extends AbstractDebugController {
 
                     } else {
                         //custom Property
-                        def owner = subChild
 
-                        def existingProp = owner.customProperties.find {
-                            it.type.id == propDef.id && it.owner.id == owner.id
+                        def existingProp = subChild.customProperties.find {
+                            it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id && it.isPublic
                         }
 
 
                         if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
-                            SubscriptionCustomProperty customProp = SubscriptionCustomProperty.get(existingProp.id)
+                            SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
 
                             try {
-                                customProp?.owner = null
-                                customProp.save()
-                                owner.customProperties.remove(customProp)
-                                customProp?.delete(failOnError: true, flush: true)
-                                owner.refresh()
+                                customProp.delete()
                                 deletedProperties++
                             } catch (Exception e){
                                 log.error(e)
@@ -2497,27 +2495,19 @@ class SubscriptionController extends AbstractDebugController {
 
         result.superOrgType = []
         result.memberType = []
-        if (accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
-            if(accessService.checkPerm('ORG_CONSORTIUM')) {
-                params.comboType = COMBO_TYPE_CONSORTIUM.value
-                result.superOrgType << message(code:'consortium.superOrgType')
-                result.memberType << message(code:'consortium.subscriber')
+        params.comboType = COMBO_TYPE_CONSORTIUM.value
+        result.superOrgType << message(code:'consortium.superOrgType')
+        result.memberType << message(code:'consortium.subscriber')
+        def fsq = filterService.getOrgComboQuery(params, result.institution)
+        result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.members_disabled = []
+        result.members.each { it ->
+            if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?", [result.subscriptionInstance, it.id])) {
+                result.members_disabled << it.id
             }
-            if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-                params.comboType = COMBO_TYPE_DEPARTMENT.value
-                result.superOrgType << message(code:'collective.superOrgType')
-                result.memberType << message(code:'collective.member.plural')
-            }
-            def fsq = filterService.getOrgComboQuery(params, result.institution)
-            result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
-            result.members_disabled = []
-            result.members.each { it ->
-                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?", [result.subscriptionInstance, it.id])) {
-                    result.members_disabled << it.id
-                }
-            }
-            result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
         }
+        result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
+        result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
 
         result
     }
@@ -2545,8 +2535,6 @@ class SubscriptionController extends AbstractDebugController {
         RefdataValue role_sub_coll = OR_SUBSCRIPTION_COLLECTIVE
         RefdataValue role_sub_hidden = OR_SUBSCRIBER_CONS_HIDDEN
         RefdataValue role_lic = OR_LICENSEE_CONS
-        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            role_lic = OR_LICENSEE_COLL
         RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
 
         RefdataValue role_provider = OR_PROVIDER
@@ -2562,10 +2550,8 @@ class SubscriptionController extends AbstractDebugController {
                     members << Org.findById(Long.valueOf(it))
                 }
 
-                def subLicense = result.subscriptionInstance.owner
-
                 List<Subscription> synShareTargetList = []
-
+                List<License> licensesToProcess = []
                 Set<Package> packagesToProcess = []
 
                 //copy package data
@@ -2580,37 +2566,19 @@ class SubscriptionController extends AbstractDebugController {
                         packagesToProcess << SubscriptionPackage.get(spId).pkg
                     }
                 }
+                if(params.generateSlavedLics == "all") {
+                    licensesToProcess.addAll(License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE]))
+                }
+                else if(params.generateSlavedLics == "partial") {
+                    List<String> licenseKeys = params.list("generateSlavedLicsReference")
+                    licenseKeys.each { String licenseKey ->
+                        licensesToProcess << genericOIDService.resolveOID(licenseKey)
+                    }
+                }
 
                 Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
 
-                members.each { cm ->
-
-                    if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                        def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
-
-                        if (subLicense) {
-                            def subLicenseParams = [
-                                    lic_name     : "${subLicense.reference} (${postfix})",
-                                    isSlaved     : params.isSlaved,
-                                    asOrgType: orgType,
-                                    copyStartEnd : true
-                            ]
-
-                            if (params.generateSlavedLics == 'explicit') {
-                                licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            }
-                            else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                                licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            }
-                            else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
-                                licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
-                            }
-
-                            if (licenseCopy) {
-                                new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
-                            }
-                        }
-                    }
+                members.each { Org cm ->
 
 
                     //ERMS-1155
@@ -2635,7 +2603,6 @@ class SubscriptionController extends AbstractDebugController {
                                 identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
                                 isSlaved: true,
-                                owner: licenseCopy,
                                 resource: result.subscriptionInstance.resource ?: null,
                                 form: result.subscriptionInstance.form ?: null,
                                 isMultiYear: params.checkSubRunTimeMultiYear ?: false
@@ -2646,7 +2613,7 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         if (!memberSub.save()) {
-                            memberSub?.errors.each { e ->
+                            memberSub.errors.each { e ->
                                 log.debug("Problem creating new sub: ${e}")
                             }
                             flash.error = memberSub.errors
@@ -2660,19 +2627,8 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                                 else {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
-                                    if(cm.hasPerm("ORG_INST_COLLECTIVE")) {
-                                        new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
-                                    }
                                 }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
-
-                                /*
-                                todo: IGNORED for 0.20
-
-                                if (cm.getCustomerType() == 'ORG_INST_COLLECTIVE') {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
-                                }
-                                */
                             }
                             else {
                                 new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
@@ -2681,7 +2637,7 @@ class SubscriptionController extends AbstractDebugController {
 
                             synShareTargetList.add(memberSub)
 
-                            SubscriptionCustomProperty.findAllByOwner(result.subscriptionInstance).each { scp ->
+                            SubscriptionProperty.findAllByOwner(result.subscriptionInstance).each { scp ->
                                 AuditConfig ac = AuditConfig.getConfig(scp)
 
                                 if (ac) {
@@ -2702,11 +2658,15 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             }
 
-                            packagesToProcess.each { pkg ->
+                            packagesToProcess.each { Package pkg ->
                                 if(params.linkWithEntitlements)
                                     pkg.addToSubscriptionCurrentStock(memberSub, result.subscriptionInstance)
                                 else
                                     pkg.addToSubscription(memberSub, false)
+                            }
+
+                            licensesToProcess.each { License lic ->
+                                subscriptionService.setOrgLicRole(memberSub,lic,false)
                             }
 
                         }
@@ -3836,8 +3796,8 @@ class SubscriptionController extends AbstractDebugController {
 
             List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.contextOrg)
 
-            mandatories.each { pd ->
-                if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
+            mandatories.each { PropertyDefinition pd ->
+                if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscriptionInstance, pd, result.institution, false)) {
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
 
                     if (newProp.hasErrors()) {
@@ -3884,7 +3844,7 @@ class SubscriptionController extends AbstractDebugController {
                     log.debug('Found different content platforms for this subscription, cannot show usage')
                 } else {
                     def supplier_id = suppliers[0]
-                    def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+                    def platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
                     result.natStatSupplierId = platform?.stringValue ?: null
                     result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                     if (result.institutional_usage_identifier) {
@@ -3967,6 +3927,23 @@ class SubscriptionController extends AbstractDebugController {
         //}
 
         result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscriptionInstance, 'Specific subscription editor')
+
+        if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
+            du.setBenchmark('non-inherited member properties')
+            List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+                String localizedName
+                switch(LocaleContextHolder.getLocale()) {
+                    case Locale.GERMANY:
+                    case Locale.GERMAN: localizedName = "name_de"
+                        break
+                    default: localizedName = "name_en"
+                        break
+                }
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.instanceOf = null order by sp.type.${localizedName} asc",[subscriptionSet:childSubs])
+                result.memberProperties = memberProperties
+            }
+        }
 
         List bm = du.stopBenchmark()
         result.benchMark = bm
@@ -4149,13 +4126,14 @@ class SubscriptionController extends AbstractDebugController {
                         if (subMember.customProperties) {
                             //customProperties
                             for (prop in subMember.customProperties) {
-                                SubscriptionCustomProperty copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
+                                SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.instanceOf = null
-                                copiedProp.save(flush: true)
+                                copiedProp.save()
                                 //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
                         }
+                        /*
                         if (subMember.privateProperties) {
                             //privatProperties
 
@@ -4171,6 +4149,7 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             }
                         }
+                        */
 
                         if (subMember.packages && newSubConsortia.packages) {
                             //Package
@@ -4288,7 +4267,7 @@ class SubscriptionController extends AbstractDebugController {
                                     newDocContext.owner = newDoc
                                     newDocContext.save(flush: true)
 
-                                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                                     Path target = new File("${fPath}/${newDoc.uuid}").toPath()
@@ -4469,28 +4448,24 @@ class SubscriptionController extends AbstractDebugController {
 
                             }
 
-
                             if (params.subscription.takeCustomProperties) {
                                 //customProperties
-                                for (prop in baseSub.customProperties) {
-                                    def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
+                                baseSub.customProperties.findAll{ it.tenant == result.institution && it.isPublic }.each { SubscriptionProperty prop ->
+                                    SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.instanceOf = null
-                                    copiedProp.save(flush: true)
+                                    copiedProp.save()
                                     //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                                 }
                             }
                             if (params.subscription.takePrivateProperties) {
                                 //privatProperties
-                                Org contextOrg = contextService.getOrg()
 
-                                baseSub.privateProperties.each { prop ->
-                                    if (prop.type?.tenant?.id == contextOrg?.id) {
-                                        def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
-                                        copiedProp = prop.copyInto(copiedProp)
-                                        copiedProp.save(flush: true)
-                                        //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-                                    }
+                                baseSub.customProperties.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                                    SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
+                                    copiedProp = prop.copyInto(copiedProp)
+                                    copiedProp.save()
+                                    //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                                 }
                             }
 
@@ -4556,7 +4531,7 @@ class SubscriptionController extends AbstractDebugController {
 
         Subscription baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSub), LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
@@ -4593,7 +4568,7 @@ class SubscriptionController extends AbstractDebugController {
                     isPublicForApi: sub_isPublicForApi*/
             )
 
-            if (!newSub.save(flush: true)) {
+            if (!newSub.save()) {
                 log.error("Problem saving subscription ${newSub.errors}");
                 return newSub
             } else {
@@ -4617,12 +4592,12 @@ class SubscriptionController extends AbstractDebugController {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
-                        newOrgRole.save(flush: true)
+                        newOrgRole.save()
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
-                if (!prevLink.save(flush: true)) {
+                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(baseSub), linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
+                if (!prevLink.save()) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
                 result.newSub = newSub
@@ -4666,7 +4641,6 @@ class SubscriptionController extends AbstractDebugController {
                                  sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
                                  sub_name     : subscription.name,
                                  sub_id       : subscription.id,
-                                 sub_license  : subscription?.owner?.reference ?: '',
                                  sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
                                  sub_type     : subscription.type?.id.toString(),
                                  sub_form     : subscription.form?.id.toString(),
@@ -5334,9 +5308,8 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         // tasks
-        Org contextOrg = contextService.getOrg()
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-        def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
+        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.subscriptionInstance)
+        def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
         result << preCon
 
 
@@ -5349,21 +5322,19 @@ class SubscriptionController extends AbstractDebugController {
 
         // -- private properties
 
-        result.authorizedOrgs = result.user?.authorizedOrgs
-        result.contextOrg = contextService.getOrg()
+        //result.authorizedOrgs = result.user?.authorizedOrgs
+        //result.contextOrg = contextService.getOrg()
 
         // create mandatory OrgPrivateProperties if not existing
 
-        def mandatories = []
-        result.user?.authorizedOrgs?.each { org ->
-            List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, org)
-            if (ppd) {
-                mandatories << ppd
-            }
+        Set<PropertyDefinition> mandatories = []
+        List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.institution)
+        if (ppd) {
+            mandatories << ppd
         }
         mandatories.flatten().each { pd ->
-            if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
+            if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscriptionInstance, pd, result.institution, false)) {
+                SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
 
                 if (newProp.hasErrors()) {
                     log.error(newProp.errors)
@@ -5422,24 +5393,27 @@ class SubscriptionController extends AbstractDebugController {
                     isSlaved: baseSubscription.isSlaved,
                     startDate: params.subscription.copyDates ? baseSubscription.startDate : null,
                     endDate: params.subscription.copyDates ? baseSubscription.endDate : null,
-                    resource: params.subscription.resource ? baseSubscription.resource : null,
-                    form: params.subscription.form ? baseSubscription.form : null,
+                    resource: params.subscription.copyResource ? baseSubscription.resource : null,
+                    form: params.subscription.copyForm ? baseSubscription.form : null,
             )
-            //Copy License
-            if (params.subscription.copyLicense) {
-                newSubscriptionInstance.owner = baseSubscription.owner ?: null
-            }
             //Copy InstanceOf
             if (params.subscription.copylinktoSubscription) {
                 newSubscriptionInstance.instanceOf = baseSubscription?.instanceOf ?: null
             }
 
 
-            if (!newSubscriptionInstance.save(flush: true)) {
+            if (!newSubscriptionInstance.save()) {
                 log.error("Problem saving subscription ${newSubscriptionInstance.errors}");
                 return newSubscriptionInstance
             } else {
                 log.debug("Save ok")
+                //Copy License
+                if (params.subscription.copyLicense) {
+                    Set<Links> baseSubscriptionLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSubscription),RDStore.LINKTYPE_LICENSE)
+                    baseSubscriptionLicenses.each { Links link ->
+                        subscriptionService.setOrgLicRole(newSubscriptionInstance,genericOIDService.resolveOID(link.source),false)
+                    }
+                }
 
                 baseSubscription.documents?.each { dctx ->
 
@@ -5461,6 +5435,12 @@ class SubscriptionController extends AbstractDebugController {
                                     migrated: dctx.owner.migrated,
                                     owner: dctx.owner.owner
                             ).save()
+
+                            String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                            Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                            Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                            Files.copy(source, target)
 
                             DocContext ndc = new DocContext(
                                     owner: clonedContents,
@@ -5513,8 +5493,8 @@ class SubscriptionController extends AbstractDebugController {
 
                 }
                 //Copy References
-                baseSubscription.orgRelations?.each { or ->
-                    if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (params.subscription.copyLinks)) {
+                baseSubscription.orgRelations.each { OrgRole or ->
+                    if ((or.org.id == result.institution.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (params.subscription.copyLinks)) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSubscriptionInstance
@@ -5598,8 +5578,8 @@ class SubscriptionController extends AbstractDebugController {
 
                 if (params.subscription.copyCustomProperties) {
                     //customProperties
-                    for (prop in baseSubscription.customProperties) {
-                        def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscriptionInstance)
+                    baseSubscription.customProperties.findAll{ it.isPublic && it.tenant.id == result.institution.id }.each{ SubscriptionProperty prop ->
+                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.instanceOf = null
                         copiedProp.save()
@@ -5608,15 +5588,12 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 if (params.subscription.copyPrivateProperties) {
                     //privatProperties
-                    Org contextOrg = contextService.getOrg()
 
-                    baseSubscription.privateProperties.each { prop ->
-                        if (prop.type?.tenant?.id == contextOrg?.id) {
-                            def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscriptionInstance)
-                            copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.save()
-                            //newSubscriptionInstance.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-                        }
+                    baseSubscription.customProperties.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance, isPublic: prop.isPublic, tenant: prop.tenant)
+                        copiedProp = prop.copyInto(copiedProp)
+                        copiedProp.save()
+                        //newSubscriptionInstance.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                     }
                 }
 
@@ -5643,16 +5620,16 @@ class SubscriptionController extends AbstractDebugController {
                 //create object itself
                 Subscription sub = new Subscription(name: entry.name,
                         status: genericOIDService.resolveOID(entry.status),
-                        type: genericOIDService.resolveOID(entry.type),
+                        kind: genericOIDService.resolveOID(entry.kind),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
+                /* TODO [ticket=2276]
                 if(sub.type == SUBSCRIPTION_TYPE_ADMINISTRATIVE)
-                    sub.administrative = true
-                //sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
+                    sub.administrative = true*/
                 sub.instanceOf = entry.instanceOf ? genericOIDService.resolveOID(entry.instanceOf) : null
                 Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
                 Org provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
@@ -5662,28 +5639,15 @@ class SubscriptionController extends AbstractDebugController {
                 if(sub.save()) {
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
-                    switch(sub.type) {
-                        case SUBSCRIPTION_TYPE_CONSORTIAL:
-                            parentRoleType = OR_SUBSCRIPTION_CONSORTIA
-                            memberRoleType = OR_SUBSCRIBER_CONS
-                            break
-                        case SUBSCRIPTION_TYPE_ADMINISTRATIVE:
-                            parentRoleType = OR_SUBSCRIPTION_CONSORTIA
-                            memberRoleType = OR_SUBSCRIBER_CONS_HIDDEN
-                            break
-                        default:
-                            if (contextOrg.getCustomerType() == 'ORG_INST_COLLECTIVE') {
-                                parentRoleType = OR_SUBSCRIPTION_COLLECTIVE
-                                memberRoleType = OR_SUBSCRIBER_COLLECTIVE
-                            }
-                            else {
-                                parentRoleType = OR_SUBSCRIBER
-                            }
-                            break
+                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                        parentRoleType = OR_SUBSCRIPTION_CONSORTIA
+                        memberRoleType = OR_SUBSCRIBER_CONS
                     }
-                    if(entry.owner) {
-                        License owner = genericOIDService.resolveOID(entry.owner)
-                        subscriptionService.setOrgLicRole(sub,owner,true)
+                    else
+                        parentRoleType = OR_SUBSCRIBER
+                    entry.licenses.each { String licenseOID ->
+                        License license = genericOIDService.resolveOID(licenseOID)
+                        subscriptionService.setOrgLicRole(sub,license,false)
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
                     if(!parentRole.save()) {
@@ -5724,7 +5688,7 @@ class SubscriptionController extends AbstractDebugController {
                             //in most cases, valueList is a list with one entry
                             valueList.each { value ->
                                 try {
-                                    createProperty(propDef,sub,contextOrg,value,v.propNote)
+                                    createProperty(propDef,sub,contextOrg,value.trim(),v.propNote)
                                 }
                                 catch (Exception e) {
                                     withErrors = true
@@ -5757,11 +5721,11 @@ class SubscriptionController extends AbstractDebugController {
         AbstractPropertyWithCalculatedLastUpdated prop
         if(propDef.tenant == contextOrg) {
             //process private property
-            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef)
+            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, contextOrg)
         }
         else {
             //process custom property
-            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef)
+            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, contextOrg)
         }
         switch(propDef.type) {
             case Integer.toString(): int intVal = Integer.parseInt(value)
@@ -6138,12 +6102,6 @@ class SubscriptionController extends AbstractDebugController {
     private def setProperty(def property, def value) {
 
         def field = null
-
-
-        if(property instanceof SubscriptionCustomProperty || property instanceof SubscriptionPrivateProperty)
-        {
-
-        }
 
         if(property.type.type == Integer.toString()) {
             field = "intValue"

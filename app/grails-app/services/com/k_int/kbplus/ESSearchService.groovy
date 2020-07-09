@@ -198,8 +198,8 @@ class ESSearchService{
                   "AND ( NOT rectype:\"SurveyOrg\" ) AND ( NOT rectype:\"SurveyConfig\" ) " +
                   "AND ( NOT rectype:\"Task\" ) AND ( NOT rectype:\"Note\" ) AND ( NOT rectype:\"Document\" ) " +
                   "AND ( NOT rectype:\"IssueEntitlement\" )" +
-                  "AND ( NOT rectype:\"SubscriptionCustomProperty\" ) AND ( NOT rectype:\"SubscriptionPrivateProperty\" ) " +
-                  "AND ( NOT rectype:\"LicenseCustomProperty\" ) AND ( NOT rectype:\"LicensePrivateProperty\" )" +
+                  "AND ( NOT rectype:\"SubscriptionProperty\" ) " +
+                  "AND ( NOT rectype:\"LicenseProperty\" )" +
                   ") ")
 
           params[mapping.key].each { p ->
@@ -294,9 +294,9 @@ class ESSearchService{
       es_url = grailsApplication.config.aggr_es_gokb_url ?: (ElasticsearchSource.findByIdentifier('gokb')?.url ?: "")
     }else
     {
-      es_cluster_name = grailsApplication.config.aggr_es_cluster  ?: 'elasticsearch'
-      es_index_name   = grailsApplication.config.aggr_es_index    ?: 'kbplus'
-      es_host         = grailsApplication.config.aggr_es_hostname ?: 'localhost'
+      es_cluster_name = ConfigUtils.getAggrEsCluster()  ?: 'elasticsearch'
+      es_index_name   = ConfigUtils.getAggrEsIndex()    ?: 'kbplus'
+      es_host         = ConfigUtils.getAggrEsHostname() ?: 'localhost'
     }
     log.debug("es_cluster = ${es_cluster_name}");
     log.debug("es_index_name = ${es_index_name}");

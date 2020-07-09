@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -15,6 +15,26 @@
     ]}" />
 
 </semui:modal>
+
+<g:if test="${license.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
+    <div class="ui card la-dl-no-table ">
+        <div class="content">
+            <h5 class="ui header">${message(code:'subscription.properties.consortium')}</h5>
+            <div id="member_props_div">
+                <g:render template="/templates/properties/members" model="${[
+                        prop_desc: PropertyDefinition.LIC_PROP,
+                        ownobj: license,
+                        custom_props_div: "member_props_div"]}"/>
+
+                <%--<r:script language="JavaScript">
+                    $(document).ready(function(){
+                           c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
+                    });
+                </r:script>--%>
+            </div>
+        </div>
+    </div>
+</g:if>
 
 <div class="ui card la-dl-no-table la-js-hideable">
 

@@ -1,11 +1,9 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
 import com.k_int.kbplus.auth.Role
-import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -17,14 +15,14 @@ import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class License
-        extends AbstractBaseDomainWithCalculatedLastUpdated
+class License extends AbstractBaseWithCalculatedLastUpdated
         implements CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
 
     static Log static_logger = LogFactory.getLog(License)
@@ -97,8 +95,8 @@ class License
           prsLinks:     PersonRole,
           derivedLicenses:    License,
           pendingChanges:     PendingChange,
-          customProperties:   LicenseCustomProperty,
-          privateProperties:  LicensePrivateProperty
+          customProperties:   LicenseProperty,
+          //privateProperties:  LicensePrivateProperty
   ]
 
   static mappedBy = [
@@ -111,7 +109,7 @@ class License
           derivedLicenses: 'instanceOf',
           pendingChanges:  'license',
           customProperties:  'owner',
-          privateProperties: 'owner'
+          //privateProperties: 'owner'
   ]
 
   static mapping = {
@@ -139,7 +137,7 @@ class License
       lastUpdatedCascading column: 'lic_last_updated_cascading'
 
        customProperties sort:'type', order:'desc', batchSize: 10
-      privateProperties sort:'type', order:'desc', batchSize: 10
+    //privateProperties sort:'type', order:'desc', batchSize: 10
          pendingChanges sort: 'ts', order: 'asc', batchSize: 10
 
               ids               batchSize: 10
@@ -152,15 +150,15 @@ class License
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:false, blank:false)
+        status(blank:false)
         type(nullable:true, blank:false)
-        reference(nullable:false, blank:false)
+        reference(blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
         isPublicForApi (nullable:true, blank:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
         instanceOf(nullable:true, blank:false)
-        isSlaved    (nullable:false, blank:false)
+        isSlaved    (blank:false)
         //licenseStatus(nullable:true, blank:true)
         //lastmod(nullable:true, blank:true)
         //onixplLicense(nullable: true, blank: true)
@@ -181,10 +179,17 @@ class License
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        super.afterDeleteHandler()
 
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
     }
 
     @Transient
@@ -417,7 +422,8 @@ class License
 
   @Override
   boolean equals (Object o) {
-    def obj = ClassUtils.deproxy(o)
+    //def obj = ClassUtils.deproxy(o)
+    def obj = GrailsHibernateUtil.unwrapIfProxy(o)
     if (obj != null) {
       if ( obj instanceof License ) {
         return obj.id == id
@@ -561,7 +567,7 @@ class License
          if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
         }
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
 
     @Override
@@ -569,7 +575,7 @@ class License
         if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
         }
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
 
 
@@ -587,230 +593,6 @@ class License
     result
   }
 
-  /*
-    Following getter methods were introduced to avoid making too many changes when custom properties 
-    were introduced.
-  */
-  @Transient
-  def getConcurrentUserCount(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Concurrent Users")
-  }
-  
-  @Transient
-  def setConcurrentUserCount(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Concurrent Users",newVal)
-  }
-
-  @Transient
-  def getConcurrentUsers(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Concurrent Access")
-  }  
-    @Transient
-  def setConcurrentUsers(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Concurrent Access",newVal)
-  }
-  
-  @Transient
-  def getRemoteAccess(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Remote Access")
-  }
-  
-  @Transient
-  def setRemoteAccess(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Remote Access",newVal)
-  }
-  
-  @Transient
-  def getWalkinAccess(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Walk In Access")
-  }
-  
-  @Transient
-  def setWalkinAccess(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Walk In Access",newVal)
-  }
-  
-  @Transient
-  def getMultisiteAccess(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Multi Site Access")
-  }
-  
-  @Transient
-  def setMultisiteAccess(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Multi Site Access",newVal)
-  }
-  
-  @Transient
-  def getPartnersAccess(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Partners Access")
-  }
-  
-  @Transient
-  def setPartnersAccess(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Partners Access",newVal)
-  }
- 
-  @Transient
-  def getAlumniAccess(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Alumni Access")
-  }
- 
-  @Transient
-  def setAlumniAccess(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Alumni Access",newVal)
-  }
-  @Transient
-  def getIll(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("ILL - InterLibraryLoans")
-  }
-
-  @Transient
-  def setIll(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("ILL - InterLibraryLoans",newVal)
-  }
-  @Transient
-  def getCoursepack(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Include In Coursepacks")
-  }
-
-  @Transient
-  def setCoursepack(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Include In Coursepacks",newVal)
-  }
-  
-  @Transient
-  def getVle(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Include in VLE")
-  }
-  
-  @Transient
-  def setVle(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Include in VLE",newVal)
-  }
-
-  @Transient
-  def getEnterprise(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Enterprise Access")
-  }
-  @Transient
-  def setEnterprise(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Enterprise Access",newVal)
-
-  }
-
-  @Transient
-  def getPca(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Post Cancellation Access Entitlement")
-  }
-
-  @Transient
-  def setPca(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Post Cancellation Access Entitlement",newVal)
-  }
-
-  @Transient
-  def setReferencePropertyAsCustProp(custPropName, newVal) {
-    def custProp = getCustomPropByName(custPropName)
-    if(custProp == null){
-      def type = PropertyDefinition.findWhere(name: custPropName, tenant: null)
-      custProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, this, type)
-    }
-
-    if ( newVal != null ) {
-      custProp.refValue = genericOIDService.resolveOID(newVal)
-    }
-    else {
-      custProp.refValue = null;
-    }
-
-    custProp.save()
-   
-  }
-
-  
-  @Transient
-  def getCustomPropByName(name){
-    return customProperties.find{it.type.name == name}    
-  }
-
-  static def refdataFind(params) {
-
-      String INSTITUTIONAL_LICENSES_QUERY = """
- FROM License AS l WHERE
-( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) )
-AND lower(l.reference) LIKE (:ref)
-"""
-      def result = []
-      def ql
-
-        // TODO: ugly select2 fallback
-      def roleTypes = []
-      if (params.'roleTypes[]') {
-          params.'roleTypes[]'.each{ x -> roleTypes << x.toLong() }
-      } else {
-          roleTypes << params.roleType?.toLong()
-      }
-
-      ql = License.executeQuery("select l ${INSTITUTIONAL_LICENSES_QUERY}",
-        [orgId: params.inst?.toLong(), orgRoles: roleTypes, ref: "${params.q.toLowerCase()}"])
-
-
-      if ( ql ) {
-          ql.each { lic ->
-              def type = lic.type?.value ?"(${lic.type.value})":""
-              result.add([id:"${lic.reference}||${lic.id}",text:"${lic.reference}${type}"])
-          }
-      }
-      result
-  }
-
-    def getBaseCopy() {
-
-        def copy = new License(
-                //globalUID: globalUID,
-                status: status, // fk
-                type: type, // fk
-                reference: reference,
-                sortableReference: sortableReference,
-                licenseCategory: licenseCategory, // fk
-                noticePeriod: noticePeriod,
-                licenseUrl: licenseUrl,
-                licenseType: licenseType,
-                //licenseStatus: licenseStatus,
-                //lastmod: lastmod,
-                startDate: startDate,
-                endDate: endDate,
-                dateCreated: dateCreated,
-                lastUpdated: lastUpdated
-                //onixplLicense: onixplLicense // fk
-        )
-
-        copy
-    }
     String dropdownNamingConvention() {
         String statusString = "" + status ? status.getI10n('value') : RDStore.LICENSE_NO_STATUS.getI10n('value')
 

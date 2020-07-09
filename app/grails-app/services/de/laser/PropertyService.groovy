@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 
@@ -10,6 +9,7 @@ class PropertyService {
 
     def grailsApplication
     def genericOIDService
+    def contextService
 
     private List<String> splitQueryFromOrderBy(String sql) {
         String order_by = null
@@ -183,26 +183,26 @@ class PropertyService {
         count
     }
 
-    List<CustomProperty> getOrphanedProperties(Object obj, List<List> sorted) {
+    List<AbstractPropertyWithCalculatedLastUpdated> getOrphanedProperties(Object obj, List<List> sorted) {
 
-        List<CustomProperty> result = []
-        List orphanedIds = obj.customProperties.collect{ it.id }
+        List<AbstractPropertyWithCalculatedLastUpdated> result = []
+        List orphanedIds = obj.customProperties.findAll{it.isPublic == true && it.tenant == contextService.org}.collect{ it.id }
 
-        sorted.each{ entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
+        sorted.each{ List entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
 
         switch (obj.class.simpleName) {
 
             case License.class.simpleName:
-                result = LicenseCustomProperty.findAllByIdInList(orphanedIds)
+                result = LicenseProperty.findAllByIdInList(orphanedIds)
                 break
             case Subscription.class.simpleName:
-                result = SubscriptionCustomProperty.findAllByIdInList(orphanedIds)
+                result = SubscriptionProperty.findAllByIdInList(orphanedIds)
                 break
             case Org.class.simpleName:
-                result = OrgCustomProperty.findAllByIdInList(orphanedIds)
+                result = OrgProperty.findAllByIdInList(orphanedIds)
                 break
             case Platform.class.simpleName:
-                result = PlatformCustomProperty.findAllByIdInList(orphanedIds)
+                result = PlatformProperty.findAllByIdInList(orphanedIds)
                 break
         }
 

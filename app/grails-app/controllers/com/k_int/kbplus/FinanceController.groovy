@@ -2,8 +2,8 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.IssueEntitlementGroup
-import de.laser.domain.PendingChangeConfiguration
+import de.laser.IssueEntitlementGroup
+import de.laser.PendingChangeConfiguration
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
@@ -708,6 +708,12 @@ class FinanceController extends AbstractDebugController {
         result.modalText = message(code:'financials.addNewCost')
         result.submitButtonLabel = message(code:'default.button.create_new.label')
         result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
+        Set<String> pickedSubscriptions = []
+        JSON.parse(params.preselectedSubscriptions).each { String ciId ->
+            CostItem ci = CostItem.get(Long.parseLong(ciId))
+            pickedSubscriptions << "'${GenericOIDService.getOID(ci.sub)}'"
+        }
+        result.pickedSubscriptions = pickedSubscriptions
         render(template: "/finance/ajaxModal", model: result)
     }
 
@@ -812,7 +818,13 @@ class FinanceController extends AbstractDebugController {
                       break
                   default:
                       if (params.newLicenseeTarget) {
-                          subsToDo = [genericOIDService.resolveOID(params.newLicenseeTarget)]
+                          if(params.newLicenseeTarget instanceof String)
+                            subsToDo << genericOIDService.resolveOID(params.newLicenseeTarget)
+                          else if(params.newLicenseeTarget instanceof String[]) {
+                              params.newLicenseeTarget.each { newLicenseeTarget ->
+                                  subsToDo << genericOIDService.resolveOID(newLicenseeTarget)
+                              }
+                          }
                       }
                       break
               }
@@ -865,7 +877,7 @@ class FinanceController extends AbstractDebugController {
                   }
               }
 
-              println(issueEntitlementGroup)
+              //println(issueEntitlementGroup)
               RefdataValue billing_currency = RefdataValue.get(params.newCostCurrency)
 
               //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00

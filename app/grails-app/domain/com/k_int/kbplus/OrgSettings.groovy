@@ -61,8 +61,8 @@ class OrgSettings {
     }
 
     static constraints = {
-        org        (nullable: false, unique: 'key')
-        key        (nullable: false, unique: 'org')
+        org        (unique: 'key')
+        key        (unique: 'org')
         strValue   (nullable: true)
         rdValue    (nullable: true)
         roleValue  (nullable: true)

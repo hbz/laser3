@@ -17,14 +17,14 @@ modules = {
         resource url:'css/deprecated/legacy.annotations.css', attrs: [media: 'screen,print']
     }*/
 
-    treeSelects { // used only for onix witch will be rebuild
-        dependsOn 'jquery'
-
-        resource url:'css/jstree-themes/default/style.min.css'
-        resource url:'js/libs/jstree.min.js'
-
-        resource url:'js/legacy.tree-selects.js'
-    }
+//    treeSelects { // used only for onix witch will be rebuild
+//        dependsOn 'jquery'
+//
+//        resource url:'css/jstree-themes/default/style.min.css'
+//        resource url:'js/libs/jstree.min.js'
+//
+//        resource url:'js/legacy.tree-selects.js'
+//    }
 
     onixMatrix { //  modules="onixMatrix" not used in working code of laser
         dependsOn 'semanticUI'

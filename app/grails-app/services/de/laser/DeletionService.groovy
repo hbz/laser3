@@ -5,10 +5,6 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PriceItem
-import de.laser.domain.SystemProfiler
-import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import org.elasticsearch.action.delete.DeleteRequest
@@ -124,7 +120,7 @@ class DeletionService {
                     }
                     // custom properties
                     customProps.each{ tmp ->
-                        List changeList = LicenseCustomProperty.findAllByInstanceOf(tmp)
+                        List changeList = LicenseProperty.findAllByInstanceOf(tmp)
                         changeList.each { tmp2 ->
                             tmp2.instanceOf = null
                             tmp2.save(flush:true)
@@ -311,7 +307,7 @@ class DeletionService {
                     }
                     // custom properties
                     customProps.each{ tmp ->
-                        List changeList = SubscriptionCustomProperty.findAllByInstanceOf(tmp)
+                        List changeList = SubscriptionProperty.findAllByInstanceOf(tmp)
                         changeList.each { tmp2 ->
                             tmp2.instanceOf = null
                             tmp2.save()

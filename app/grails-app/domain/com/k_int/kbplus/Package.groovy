@@ -1,9 +1,9 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.PriceItem
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.IssueEntitlementCoverage
+import de.laser.PendingChangeConfiguration
+import de.laser.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -17,7 +17,7 @@ import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class Package extends AbstractBaseDomainWithCalculatedLastUpdated {
+class Package extends AbstractBaseWithCalculatedLastUpdated {
         //implements ShareSupport {
 
     static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
@@ -141,24 +141,31 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  startDate(nullable:true, blank:false)
                    endDate(nullable:true, blank:false)
                    license(nullable:true, blank:false)
-                  isPublic(nullable:false, blank:false)
+                  isPublic(blank:false)
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
-                    gokbId(nullable:false, blank:false, unique: true, maxSize: 511)
+                    gokbId(blank:false, unique: true, maxSize: 511)
            //originEditUrl(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
-      listVerifiedDate(nullable:true, blank:false)
-      lastUpdatedCascading (nullable: true, blank: false)
+      listVerifiedDate    (nullable:true, blank:false)
+      lastUpdatedCascading(nullable:true, blank: false)
   }
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        super.afterDeleteHandler()
 
         //deletionService.deleteDocumentFromIndex(this.globalUID) ES not connected, reactivate as soon as ES works again
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
     }
 
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
@@ -680,7 +687,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             sortName = generateSortName(name)
         }
 
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
 
     @Override
@@ -688,7 +695,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         if ( name != null ) {
             sortName = generateSortName(name)
         }
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
 
   def checkAndAddMissingIdentifier(ns,value) {

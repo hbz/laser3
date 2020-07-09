@@ -4,8 +4,6 @@ import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.CreatorTitle
 import com.k_int.kbplus.Fact
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgAccessPointLink
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
@@ -13,7 +11,6 @@ import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleHistoryEventParticipant
 import com.k_int.kbplus.TitleInstance
@@ -22,8 +19,8 @@ import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.TitleInstancePackagePlatform
-import de.laser.domain.PendingChangeConfiguration
 import de.laser.exceptions.CleanupException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
@@ -34,7 +31,6 @@ import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
-import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
 //@CompileStatic
@@ -48,7 +44,6 @@ class YodaService {
     GOKbService gokbService = Holders.grailsApplication.mainContext.getBean('GOKbService')
     GenericOIDService genericOIDService = Holders.grailsApplication.mainContext.getBean('genericOIDService')
     ChangeNotificationService changeNotificationService = Holders.grailsApplication.mainContext.getBean('changeNotificationService')
-    MessageSource messageSource = Holders.grailsApplication.parentContext
     LinkGenerator grailsLinkGenerator = Holders.grailsApplication.mainContext.getBean(LinkGenerator)
 
     // gsp:
@@ -57,7 +52,7 @@ class YodaService {
 
     boolean showDebugInfo() {
         //enhanced as of ERMS-829
-        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || grailsApplication.config.showDebugInfo )
+        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigUtils.getShowDebugInfo() )
     }
 
     int getNumberOfActiveUsers() {

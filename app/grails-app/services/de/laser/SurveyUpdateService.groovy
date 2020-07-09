@@ -1,11 +1,15 @@
 package de.laser
 
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import de.laser.interfaces.AbstractLockableService
 import grails.transaction.Transactional
 import grails.util.Holders
@@ -23,8 +27,8 @@ class SurveyUpdateService extends AbstractLockableService {
 
     @javax.annotation.PostConstruct
     void init() {
-        from = grailsApplication.config.notifications.email.from
-        //replyTo = grailsApplication.config.notifications.email.replyTo
+        from = ConfigUtils.getNotificationsEmailFrom()
+        //replyTo = ConfigUtils.getNotificationsEmailReplyTo()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         log.debug("Initialised SurveyUpdateService...")
     }
@@ -34,12 +38,16 @@ class SurveyUpdateService extends AbstractLockableService {
             running = true
             def currentDate = new Date(System.currentTimeMillis())
 
+            Map<String,Object> updatedObjs = [:]
+
             // Ready -> Started
             List readySurveysIds = SurveyInfo.findAllByStatusAndStartDateLessThanEquals(RDStore.SURVEY_READY, currentDate).collect {it.id}
 
             log.info("surveyCheck (Ready to Started) readySurveysIds: " + readySurveysIds)
 
             if (readySurveysIds) {
+
+                updatedObjs << ["readyToStarted (${readySurveysIds.size()})" : readySurveysIds]
 
                 SurveyInfo.executeUpdate(
                         'UPDATE SurveyInfo survey SET survey.status =:status WHERE survey.id in (:ids)',
@@ -52,19 +60,29 @@ class SurveyUpdateService extends AbstractLockableService {
 
             // Started -> Completed
 
-            def startedSurveyIds = SurveyInfo.where {
-                (status == RDStore.SURVEY_SURVEY_STARTED) && (startDate < currentDate) && (endDate != null && endDate < currentDate)
-            }.collect { it.id }
+            Set<Long> startedSurveyIds = SurveyInfo.executeQuery('select sur.id from SurveyInfo sur where sur.status = :status and sur.startDate < :currentDate and sur.endDate != null and sur.endDate < :currentDate',
+                    [status: RDStore.SURVEY_SURVEY_STARTED,currentDate: currentDate])
 
             log.info("surveyCheck (Started to Completed) startedSurveyIds: " + startedSurveyIds)
 
             if (startedSurveyIds) {
+                updatedObjs << ["StartedToCompleted (${startedSurveyIds.size()})" : startedSurveyIds]
 
                 SurveyInfo.executeUpdate(
                         'UPDATE SurveyInfo survey SET survey.status =:status WHERE survey.id in (:ids)',
                         [status: RDStore.SURVEY_SURVEY_COMPLETED, ids: startedSurveyIds]
                 )
             }
+
+            def oldStartedSurveyIds = SurveyInfo.where {
+                (status == RDStore.SURVEY_SURVEY_STARTED) && (startDate < currentDate) && (endDate != null && endDate < currentDate)
+            }.collect { it.id }
+
+            if (oldStartedSurveyIds) {
+                updatedObjs << ["old_StartedToCompleted (${oldStartedSurveyIds.size()})": oldStartedSurveyIds]
+            }
+
+            SystemEvent.createEvent('SURVEY_UPDATE_SERVICE_PROCESSING', updatedObjs)
             running = false
             return true
         }
@@ -126,10 +144,9 @@ class SurveyUpdateService extends AbstractLockableService {
             println 'surveyUpdateService.sendEmail() failed due grailsApplication.config.grails.mail.disabled = true'
         }else {
 
-            def emailReceiver = user.getEmail()
-            def currentServer = grailsApplication.config.getCurrentServer()
-            def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
-
+            String emailReceiver = user.getEmail()
+            String currentServer = ServerUtils.getCurrentServer()
+            String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
 
             surveyEntries.each { survey ->
                 try {
@@ -154,8 +171,9 @@ class SurveyUpdateService extends AbstractLockableService {
 
                         replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
                         Object[] args = ["${survey.type.getI10n('value')}"]
-                        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, locale) + " (" + org.name + ")")
+                        Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
+
+                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, language) + " (" + org.name + ")")
 
                         if (isNotificationCCbyEmail && ccAddress) {
                             mailService.sendMail {

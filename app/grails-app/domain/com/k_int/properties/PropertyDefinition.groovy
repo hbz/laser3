@@ -1,12 +1,14 @@
 package com.k_int.properties
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ContextService
-import de.laser.domain.AbstractI10nOverride
-import de.laser.domain.I10nTranslation
+import de.laser.base.AbstractI10nOverride
+import de.laser.I10nTranslation
 import de.laser.helper.SwissKnife
 import grails.util.Holders
 import groovy.util.logging.Log4j
@@ -99,6 +101,9 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     Date dateCreated
     Date lastUpdated
 
+    @Transient
+    def contextService
+
     //Map keys can change and they wont affect any of the functionality
     @Deprecated
     @Transient
@@ -150,19 +155,19 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     }
 
     static constraints = {
-        name                (nullable: false, blank: false)
+        name                (blank: false)
         name_de             (nullable: true, blank: false)
         name_en             (nullable: true, blank: false)
         expl_de             (nullable: true, blank: false)
         expl_en             (nullable: true, blank: false)
         descr               (nullable: true,  blank: false)
-        type                (nullable: false, blank: false)
+        type                (blank: false)
         refdataCategory     (nullable: true)
         tenant              (nullable: true,  blank: true)
         multipleOccurrence  (nullable: true,  blank: true)
-        mandatory           (nullable: false, blank: false)
-        isHardData          (nullable: false, blank: false)
-        isUsedForLogic      (nullable: false, blank: false)
+        mandatory           (blank: false)
+        isHardData          (blank: false)
+        isUsedForLogic      (blank: false)
         lastUpdated         (nullable: true, blank: false)
         dateCreated         (nullable: true, blank: false)
     }
@@ -298,19 +303,31 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
      *
      * @param owner: The class that will hold the property, e.g License
      */
-    static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(def flag, def owner, PropertyDefinition type) {
+    static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(def flag, def owner, PropertyDefinition type, Org contextOrg) {
         String classString = owner.getClass().toString()
         def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
+        boolean isPublic
 
-        if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
-            ownerClassName = "com.k_int.kbplus.${ownerClassName}CustomProperty"
-        }
-        else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
-            ownerClassName = "com.k_int.kbplus.${ownerClassName}PrivateProperty"
-        }
+        //if(!owner.hasProperty("privateProperties")) {
+            ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
+            if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
+                isPublic = true
+            }
+            else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
+                isPublic = false
+            }
+        /*}
+        else {
+            if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
+                ownerClassName = "com.k_int.kbplus.${ownerClassName}CustomProperty"
+            }
+            else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
+                ownerClassName = "com.k_int.kbplus.${ownerClassName}PrivateProperty"
+            }
+        }*/
 
         //def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner)
-        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner)
+        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: isPublic, tenant: contextOrg)
         newProp.setNote("")
 
         /*
@@ -384,10 +401,12 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         result
     }
 
+    @Deprecated
     String getImplClass(String customOrPrivate) {
         getImplClass(this.descr, customOrPrivate)
     }
 
+    @Deprecated
     static String getImplClass(String descr, String customOrPrivate) {
         String result
         String[] parts = descr.split(" ")
@@ -413,11 +432,11 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         result
     }
 
-    def countUsages() {
-        def table = getImplClass('private')?.minus('com.k_int.kbplus.')
+    int countUsages() {
+        String table = this.descr.minus('com.k_int.kbplus.').replace(" ","")
 
         if (table) {
-            def c = PropertyDefinition.executeQuery("select count(c) from " + table + " as c where c.type = ?", [this])
+            int[] c = executeQuery("select count(c) from " + table + " as c where c.type = ?", [this])
             return c[0]
         }
         return 0
@@ -457,13 +476,11 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
 
     @Transient
     void removeProperty() {
-        log.debug("Remove");
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseCustomProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicensePrivateProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionCustomProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgCustomProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgPrivateProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonPrivateProperty c where c.type = ?', [this])
+        log.debug("Remove")
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = ?', [this])
         this.delete();
     }
 

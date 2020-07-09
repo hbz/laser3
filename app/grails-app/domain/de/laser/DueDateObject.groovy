@@ -9,7 +9,7 @@ class DueDateObject {
     String attribute_value_de
     String attribute_value_en
     Date date
-    /** Subscription, CustomProperty, PrivateProperty oder Task*/
+    /** Subscription, AbstractProperty oder Task*/
     String oid
     boolean isDone = false
     Date lastUpdated
@@ -47,10 +47,10 @@ class DueDateObject {
 //        attribute_value_de      (nullable:false, blank:false)
 //        attribute_value_en      (nullable:false, blank:false)
 //        attribute_name          (nullable:false, blank:false)
-        date                    (nullable:false, blank:false)
-        oid                     (nullable:false, blank:false)//, unique: ['attribut_name', 'ddo_oid'])
-        isDone                  (nullable:false, blank:false)
-        dateCreated             (nullable: true, blank: false)
+        date                    (blank:false)
+        oid                     (blank:false)//, unique: ['attribut_name', 'ddo_oid'])
+        isDone                  (blank:false)
+        dateCreated             (nullable:true, blank:false)
         lastUpdated             (nullable:true, blank:false)
     }
 

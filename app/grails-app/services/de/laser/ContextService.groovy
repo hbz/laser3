@@ -17,11 +17,6 @@ class ContextService {
     SpringSecurityService springSecurityService
     CacheService cacheService
 
-    static final SERVER_LOCAL = 'SERVER_LOCAL'
-    static final SERVER_DEV   = 'SERVER_DEV'
-    static final SERVER_QA    = 'SERVER_QA'
-    static final SERVER_PROD  = 'SERVER_PROD'
-
     static final USER_SCOPE  = 'USER_SCOPE'
     static final ORG_SCOPE   = 'ORG_SCOPE'
 

@@ -6,6 +6,7 @@ import de.laser.ContextService
 import de.laser.EscapeService
 import de.laser.LinksGenerationService
 import de.laser.exceptions.FinancialDataException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.EhcacheWrapper
 import grails.converters.JSON
@@ -34,7 +35,7 @@ class FinanceService {
 
     ContextService contextService
     GenericOIDService genericOIDService
-    MessageSource messageSource
+    def messageSource
     AccessService accessService
     EscapeService escapeService
     SpringSecurityService springSecurityService
@@ -1057,7 +1058,8 @@ class FinanceService {
         // created in bootstrap.groovy with e.g. [key:'EUR']
         // TODO: migrate old values to new ones
         Set<RefdataValue> allCurrencies = []
-        List<String> staticOrder = grails.util.Holders.config?.financials?.currency?.split("[|]")
+        //List<String> staticOrder = grails.util.Holders.config?.financials?.currency?.split("[|]")
+        List<String> staticOrder = ConfigUtils.getFinancialsCurrency()?.split("[|]")
 
         staticOrder.each { String important ->
             allCurrencies << RefdataValue.getByValueAndCategory(important,CURRENCY)

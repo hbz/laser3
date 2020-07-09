@@ -1,11 +1,10 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
-import de.laser.domain.AbstractCoverage
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.TIPPCoverage
+import de.laser.base.AbstractCoverage
+import de.laser.IssueEntitlementCoverage
+import de.laser.TIPPCoverage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.apache.poi.POIXMLProperties
@@ -20,7 +19,8 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFDataFormat
 import org.apache.poi.xssf.usermodel.XSSFFont
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
+
 import java.awt.*
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
@@ -40,7 +40,7 @@ import java.util.List
 class ExportService {
 
 	SimpleDateFormat formatter = DateUtil.getSDF_ymd()
-	MessageSource messageSource
+	def messageSource
 
 	/**
 		new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
@@ -194,9 +194,9 @@ class ExportService {
 	List processPropertyListValues(Set<PropertyDefinition> propertyDefinitions, String format, def target) {
 		List cells = []
 		SimpleDateFormat sdf = DateUtil.getSimpleDateFormatByToken('default.date.format.notime')
-		propertyDefinitions.each { pd ->
+		propertyDefinitions.each { PropertyDefinition pd ->
 			def value = ''
-			target.customProperties.each{ CustomProperty prop ->
+			target.customProperties.each{ AbstractPropertyWithCalculatedLastUpdated prop ->
 				if(prop.type.descr == pd.descr && prop.type == pd && prop.value) {
 					if(prop.refValue)
 						value = prop.refValue.getI10n('value')
@@ -204,14 +204,16 @@ class ExportService {
 						value = prop.getValue() ?: ' '
 				}
 			}
-			target.privateProperties.each{ PrivateProperty prop ->
-				if(prop.type.descr == pd.descr && prop.type == pd && prop.value) {
-					if(prop.refValue)
-						value = prop.refValue.getI10n('value')
-					else
-						value = prop.getValue() ?: ' '
-				}
-			}
+            /*if(target.hasProperty("privateProperties")) {
+                target.privateProperties.each{ PrivateProperty prop ->
+                    if(prop.type.descr == pd.descr && prop.type == pd && prop.value) {
+                        if(prop.refValue)
+                            value = prop.refValue.getI10n('value')
+                        else
+                            value = prop.getValue() ?: ' '
+                    }
+                }
+            }*/
 			def cell
 			switch(format) {
 				case "xls":
@@ -234,7 +236,27 @@ class ExportService {
 	 * @return a {@link Map} containing lists for the title row and the column data
 	 */
 	Map<String,List> generateTitleExportKBART(Collection entitlementData) {
-		List<IdentifierNamespace> otherTitleIdentifierNamespaces = IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.ti != null and id.ns.ns not in (:coreTitleNS)',[coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
+		List allRows = []
+		Set<TitleInstance> titleInstances = []
+		entitlementData.each { ieObj ->
+			def entitlement
+			if(ieObj instanceof IssueEntitlement) {
+				entitlement = (IssueEntitlement) ieObj
+				titleInstances << ieObj.tipp.title
+			}
+			else if(ieObj instanceof TitleInstancePackagePlatform) {
+				entitlement = (TitleInstancePackagePlatform) ieObj
+				titleInstances << ieObj.title
+			}
+			if(entitlement) {
+				entitlement.coverages.each { AbstractCoverage covStmt ->
+					allRows << covStmt
+				}
+				if(!entitlement.coverages)
+					allRows << entitlement
+			}
+		}
+		List<IdentifierNamespace> otherTitleIdentifierNamespaces = IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.ti in (:availableTitles) and id.ns.ns not in (:coreTitleNS)',[availableTitles:titleInstances,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
 		List<String> titleHeaders = [
 				'publication_title',
 				'print_identifier',
@@ -284,23 +306,6 @@ class ExportService {
 				'localprice_currency',
 				'price_date'])
 		Map<String,List> export = [titleRow:titleHeaders,columnData:[]]
-		List allRows = []
-		entitlementData.each { ieObj ->
-			def entitlement
-			if(ieObj instanceof IssueEntitlement) {
-				entitlement = (IssueEntitlement) ieObj
-			}
-			else if(ieObj instanceof TitleInstancePackagePlatform) {
-				entitlement = (TitleInstancePackagePlatform) ieObj
-			}
-			if(entitlement) {
-				entitlement.coverages.each { AbstractCoverage covStmt ->
-					allRows << covStmt
-				}
-				if(!entitlement.coverages)
-					allRows << entitlement
-			}
-		}
 		//this double strucutre is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
 		allRows.each { rowData ->
 			IssueEntitlement entitlement = null
@@ -517,7 +522,7 @@ class ExportService {
 
 	Map<String,List> generateTitleExportCSV(Collection entitlements) {
 		Locale locale = LocaleContextHolder.getLocale()
-		List<IdentifierNamespace> otherTitleIdentifierNamespaces = IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.ti != null and id.ns.ns not in (:coreTitleNS)',[coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
+		List<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlements)
 		List<String> titleHeaders = [messageSource.getMessage('title',null,locale),
 									 messageSource.getMessage('tipp.volume',null,locale),
 									 messageSource.getMessage('author.slash.editor',null,locale),
@@ -569,19 +574,19 @@ class ExportService {
 			row.add(tipp.title.subjectReference ?: ' ')
 
 			//zdb_id
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,';'))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','))
 			//zdb_ppn
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,';'))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,','))
 			//DOI
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,';'))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,','))
 			//ISSNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISSN,';'))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISSN,','))
 			//eISSNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.EISSN,';'))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.EISSN,','))
 			//pISBNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,';'))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','))
 			//ISBNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISBN,';'))
+			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISBN,','))
 
 			if(tipp.title instanceof BookInstance) {
 				row.add(tipp.title.dateFirstInPrint ? formatter.format(tipp.title.dateFirstInPrint) : ' ')
@@ -591,7 +596,7 @@ class ExportService {
 				row.add(' ')
 			}
 			otherTitleIdentifierNamespaces.each { IdentifierNamespace otherNS ->
-				row.add(joinIdentifiers(tipp.title.ids,otherNS.ns,';'))
+				row.add(joinIdentifiers(tipp.title.ids,otherNS.ns,','))
 			}
 			if(entitlement && entitlement.priceItem) {
 				row.add(entitlement.priceItem.listPrice ? entitlement.priceItem.listPrice.setScale(2,RoundingMode.HALF_UP) : ' ')
@@ -613,7 +618,7 @@ class ExportService {
 
 	Map<String, List> generateTitleExportXLS(Collection entitlements) {
 		Locale locale = LocaleContextHolder.getLocale()
-		List<IdentifierNamespace> otherTitleIdentifierNamespaces = IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.ti != null and id.ns.ns not in (:coreTitleNS)',[coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
+		List<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlements)
 		List<String> titleHeaders = [
 				messageSource.getMessage('title',null,locale),
 				messageSource.getMessage('tipp.volume',null,locale),
@@ -707,7 +712,20 @@ class ExportService {
 		export.rows = rows
 		export
 	}
-	
+
+	List<IdentifierNamespace> getOtherIdentifierNamespaces(Collection entitlements) {
+		Set<TitleInstance> titleInstances = []
+		entitlements.each { entObj ->
+			if(entObj instanceof IssueEntitlement) {
+				titleInstances << entObj.tipp.title
+			}
+			else if(entObj instanceof TitleInstancePackagePlatform) {
+				titleInstances << entObj.title
+			}
+		}
+		IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.ti in (:titleInstances) and id.ns.ns not in (:coreTitleNS)',[titleInstances:titleInstances,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
+	}
+
 	/**
 	 * This function has been created to track the time taken by the different methods provided by this service
 	 * It's suppose to be run at the start of an event and it will catch the time and display it.

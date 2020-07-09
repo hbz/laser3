@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractI10nOverride
+import de.laser.base.AbstractI10nOverride
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -138,7 +138,7 @@ class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLast
     }
 
     static constraints = {
-        ns              (nullable:false, blank:false) // TODO: constraint
+        ns              (blank:false) // TODO: constraint
         nsType          (nullable:true, blank:false)
         family          (nullable:true, blank:false)
         urlPrefix       (nullable:true, blank:false)
@@ -149,8 +149,8 @@ class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLast
         description_de  (nullable:true, blank:false)
         description_en  (nullable:true, blank:false)
 
-        isUnique        (nullable:false, blank:false)
-        isHidden        (nullable:false, blank:false)
+        isUnique        (blank:false)
+        isHidden        (blank:false)
 
         // Nullable is true, because values are already in the database
         dateCreated (nullable: true, blank: false)
