@@ -369,6 +369,32 @@
         owner:
           $ref: "#/components/schemas/OrganisationStub"
 
+    OrgAccessPoint:
+      type: object
+      properties:
+        globalUID:
+          type: string
+          example: "orgaccesspoint:ab1360cc-147b-d632-2dc8-1a6c56d84b00"
+        ezproxy:
+          type: array
+          items:
+            $ref: "#/components/schemas/EZProxy_in_OrgAccessPoint"
+        ip:
+          type: array
+          items:
+            $ref: "#/components/schemas/IP_in_OrgAccessPoint"
+        openathens:
+          type: array
+          items:
+            $ref: "#/components/schemas/OpenAthens_in_OrgAccessPoint"
+        proxy:
+          type: array
+          items:
+            $ref: "#/components/schemas/Proxy_in_OrgAccessPoint"
+        shibboleth:
+          type: array
+          items:
+            $ref: "#/components/schemas/Shibboleth_in_OrgAccessPoint"
 
     Organisation:
       allOf:
@@ -399,6 +425,10 @@
           type: string
           description: Mapping RefdataCategory "LibraryType"
           enum: <% printRefdataEnum('LibraryType', 12) %>
+        orgAccessPoints:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrgAccessPointCollection"
         persons: # mapping attr prsLinks
           type: array
           items:
@@ -672,6 +702,10 @@
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
         noticePeriod:
           type: string
+        orgAccessPoints:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrgAccessPointCollection"
         organisations: # mapping attr orgRelations
           type: array
           items:
@@ -720,7 +754,6 @@
 
 
 <%-- virtual objects --%>
-
     CostItemCollection:
       type: array
       items:
@@ -825,6 +858,51 @@
             enum:
               [${ com.k_int.kbplus.CostItem.TAX_RATES.collect{ it }.join(', ') }]
 
+    EZProxy_in_OrgAccessPoint:
+      type: object
+      properties:
+        name:
+          type: string
+        proxyurl:
+          type: string
+        ipv4ranges:
+          type: array
+          items:
+            type: object
+            properties:
+                iprange:
+                    type: string
+                    format: CIDR
+        ipv6ranges:
+          type: array
+          items:
+            type: object
+            properties:
+                iprange:
+                    type: string
+                    format: CIDR
+
+    IP_in_OrgAccessPoint:
+      type: object
+      properties:
+        name:
+          type: string
+        ipv4ranges:
+          type: array
+          items:
+            type: object
+            properties:
+                iprange:
+                    type: string
+                    format: CIDR
+        ipv6ranges:
+          type: array
+          items:
+            type: object
+            properties:
+                iprange:
+                    type: string
+                    format: CIDR
 
     IssueEntitlement_in_CostItem:
       type: object
@@ -899,10 +977,23 @@
         tipp:
           $ref: "#/components/schemas/TitleInstancePackagePlatform_in_Subscription"
 
+    OrgAccessPointCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/OrgAccessPointStub"
 
     OA2020_Virtual:
       type: object
 
+    OpenAthens_in_OrgAccessPoint:
+      type: object
+      properties:
+        name:
+          type: string
+        entityid:
+          type: string
+        url:
+          type: string
 
     OrganisationRole_Virtual:
       properties:
@@ -979,6 +1070,27 @@
           refdataCategory:
             type: string
 
+    Proxy_in_OrgAccessPoint:
+      type: object
+      properties:
+        name:
+          type: string
+        ipv4ranges:
+          type: array
+          items:
+            type: object
+            properties:
+                iprange:
+                    type: string
+                    format: CIDR
+        ipv6ranges:
+          type: array
+          items:
+            type: object
+            properties:
+                iprange:
+                    type: string
+                    format: CIDR
 
     Refdatas_Virtual:
       type: array
@@ -1025,6 +1137,17 @@
 
     Statistic_Virtual:
       type: object
+
+
+    Shibboleth_in_OrgAccessPoint:
+      type: object
+      properties:
+        name:
+          type: string
+        entityid:
+          type: string
+        url:
+          type: string
 
 
     TitleInstancePackagePlatform_in_Package:
@@ -1078,7 +1201,18 @@
 
 
 <%-- stubs --%>
-
+    OrgAccessPointStub:
+      type: object
+      properties:
+        globalUID:
+          type: string
+          example: "orgaccesspoint:d64b3dc9-1c1f-4470-9e2b-ae3c341ebc3c"
+        type:
+          type: array
+          items:
+            type: string
+            description: Mapping RefdataCategory "${RDConstants.ACCESS_POINT_TYPE}"
+            enum: <% printRefdataEnum(RDConstants.ACCESS_POINT_TYPE, 12) %>
 
     OrganisationStub:
       type: object

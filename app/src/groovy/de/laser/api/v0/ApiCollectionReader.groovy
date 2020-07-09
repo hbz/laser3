@@ -5,6 +5,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.IssueEntitlementCoverage
+import de.laser.api.v0.entities.ApiOrgAccessPoint
 import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 
@@ -292,6 +293,14 @@ class ApiCollectionReader {
             }
 
             result << ApiToolkit.cleanUp(tmp, true, false)
+        }
+        result
+    }
+
+    static Collection<Object> getOrgAccessPointCollection(Collection<OrgAccessPoint> list) {
+        Collection<Object> result = []
+        list.each { it -> // com.k_int.kbplus.OrgAccessPoint
+            result << ApiUnsecuredMapReader.getOrgAccessPointStubMap(it)
         }
         result
     }

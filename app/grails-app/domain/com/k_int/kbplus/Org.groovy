@@ -130,7 +130,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         documents:          DocContext,
         platforms:          Platform,
         hasCreated:         Org,
-        hasLegallyObliged:  Org
+        hasLegallyObliged:  Org,
+        accessPoints:   OrgAccessPoint
     ]
 
     static mapping = {
