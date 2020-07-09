@@ -192,7 +192,7 @@ class UsageController extends AbstractDebugController {
 
         if (params.supplier != 'null'){
             platform = Platform.get(params.supplier)
-            def cp = platform.customProperties.find(){
+            def cp = platform.propertySet.find(){
                 it.type.name = "NatStat Supplier ID"
             }
             supplier = cp.stringValue

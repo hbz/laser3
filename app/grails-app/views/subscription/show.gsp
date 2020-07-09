@@ -720,8 +720,7 @@
                 <div id="new-dynamic-properties-block">
 
                     <g:render template="properties" model="${[
-                            subscriptionInstance: subscriptionInstance,
-                            authorizedOrgs: authorizedOrgs
+                            subscriptionInstance: subscriptionInstance
                     ]}" />
 
                 </div><!-- #new-dynamic-properties-block -->

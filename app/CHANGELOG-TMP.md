@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1580    09.07.2020  hbz-dev     Andreas Feature     Umbau der Merkmalsverwaltung
+
 2664    07.07.2020  hbz-dev     Andreas Feature     Vorbelegung von auszuwählenden Lizenzen für Finanzmodal per Checkbox
 
 2657    07.07.2020  hbz-dev     David   Feature     Refactoring: Wrapper für Konfigurationszugriff

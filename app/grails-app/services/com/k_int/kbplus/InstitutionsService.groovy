@@ -90,7 +90,7 @@ class InstitutionsService {
             }
             else if (option == InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD) {
 
-                for (prop in base.customProperties) {
+                for (prop in base.propertySet) {
                     LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
                     copiedProp = prop.copyInto(copiedProp)
                     copiedProp.instanceOf = null
@@ -182,7 +182,7 @@ class InstitutionsService {
             licenseInstance.startDate = baseLicense?.startDate
             licenseInstance.endDate = baseLicense?.endDate
         }
-        for (prop in baseLicense?.customProperties) {
+        for (prop in baseLicense?.propertySet) {
             def copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
             copiedProp = prop.copyInto(copiedProp)
             copiedProp.instanceOf = null

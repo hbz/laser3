@@ -148,7 +148,7 @@
                                 <g:render template="/templates/properties/custom" model="${[
                                         prop_desc: PropertyDefinition.ORG_CONF,
                                         ownobj: orgInstance,
-                                        orphanedProperties: orgInstance.customProperties,
+                                        orphanedProperties: orgInstance.propertySet,
                                         custom_props_div: "custom_props_div_1" ]}"/>
                             </div>
                         </div><!-- .content -->

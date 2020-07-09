@@ -107,7 +107,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         contacts:           'org',
         addresses:          'org',
         affiliations:       'org',
-        customProperties:   'owner',
+        propertySet:        'owner',
         //privateProperties:  'owner',
         documents:          'org',
         hasCreated:         'createdBy',
@@ -115,22 +115,22 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     ]
 
     static hasMany = [
-        ids:                Identifier,
-        subjectGroup:       OrgSubjectGroup,
-        outgoingCombos:     Combo,
-        incomingCombos:     Combo,
-        links:              OrgRole,
-        prsLinks:           PersonRole,
-        contacts:           Contact,
-        addresses:          Address,
-        affiliations:       UserOrg,
-        customProperties:   OrgProperty,
-        //privateProperties:  OrgPrivateProperty,
-        orgType:            RefdataValue,
-        documents:          DocContext,
-        platforms:          Platform,
-        hasCreated:         Org,
-        hasLegallyObliged:  Org
+            ids              :                Identifier,
+            subjectGroup     :       OrgSubjectGroup,
+            outgoingCombos   :     Combo,
+            incomingCombos   :     Combo,
+            links            :              OrgRole,
+            prsLinks         :           PersonRole,
+            contacts         :           Contact,
+            addresses        :          Address,
+            affiliations     :       UserOrg,
+            propertySet      :   OrgProperty,
+            //privateProperties:  OrgPrivateProperty,
+            orgType          :            RefdataValue,
+            documents        :          DocContext,
+            platforms        :          Platform,
+            hasCreated       :         Org,
+            hasLegallyObliged:  Org
     ]
 
     static mapping = {
@@ -183,7 +183,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         links               batchSize: 10
         prsLinks            batchSize: 10
         affiliations        batchSize: 10
-        customProperties    batchSize: 10
+        propertySet    batchSize: 10
         //privateProperties   batchSize: 10
         documents           batchSize: 10
         platforms           batchSize: 10

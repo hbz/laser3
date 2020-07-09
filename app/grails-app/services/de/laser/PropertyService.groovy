@@ -28,15 +28,10 @@ class PropertyService {
 
 
         if (params.filterPropDef) {
-            def pd = genericOIDService.resolveOID(params.filterPropDef)
-            String propGroup
-            if (pd.tenant) {
-                propGroup = "privateProperties"
-            } else {
-                propGroup = "customProperties"
-            }
-            base_qry += " and ( exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef "
+            PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
+            base_qry += " and ( exists ( select gProp from ${hqlVar}.propertySet as gProp where gProp.type = :propDef and gProp.tenant = :tenant "
             base_qry_params.put('propDef', pd)
+            base_qry_params.put('tenant', contextService.org)
             if(params.filterProp) {
                 switch (pd.type) {
                     case RefdataValue.toString():
@@ -186,7 +181,7 @@ class PropertyService {
     List<AbstractPropertyWithCalculatedLastUpdated> getOrphanedProperties(Object obj, List<List> sorted) {
 
         List<AbstractPropertyWithCalculatedLastUpdated> result = []
-        List orphanedIds = obj.customProperties.findAll{it.isPublic == true && it.tenant == contextService.org}.collect{ it.id }
+        List orphanedIds = obj.propertySet.findAll{ it.type.tenant == null }.collect{ it.id }
 
         sorted.each{ List entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
 

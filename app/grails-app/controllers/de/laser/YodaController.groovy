@@ -1785,7 +1785,7 @@ class YodaController {
 
                 } else {
                     if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
-                        if (sub?.customProperties?.find {
+                        if (sub?.propertySet?.find {
                             it?.type?.id == property?.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
 

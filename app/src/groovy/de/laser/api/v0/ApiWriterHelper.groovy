@@ -97,7 +97,7 @@ class ApiWriterHelper {
             person.contacts  = getContacts(it.contacts, null, person)
 
             def properties = getProperties(it.properties, person, contextOrg)
-            person.customProperties = properties['private']
+            person.propertySet = properties['private']
 
             // PersonRoles
             it.roles?.each { it2 ->
