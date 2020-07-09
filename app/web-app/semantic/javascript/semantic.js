@@ -6700,9 +6700,11 @@ $.fn.dropdown = function(parameters) {
             if(settings.allowAdditions) {
               module.set.selected(module.get.query());
                //module.remove.searchTerm(); // a11y
+               console.log("1");
             }
             else {
                //module.remove.searchTerm(); // a11y
+                              console.log("2");
             }
           }
         },
@@ -7171,6 +7173,7 @@ $.fn.dropdown = function(parameters) {
                 module.event.item.click.call($selectedItem, event);
                 if(module.is.searchSelection()) {
                    //module.remove.searchTerm();
+                                  console.log("3");
                 }
               }
 
@@ -7188,6 +7191,7 @@ $.fn.dropdown = function(parameters) {
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
                        //module.remove.searchTerm();
+                                      console.log("4");
                     }
                   }
                   event.preventDefault();
@@ -8069,7 +8073,7 @@ $.fn.dropdown = function(parameters) {
             if( module.is.searchSelection() ) {
               module.debug('Added tabindex to searchable dropdown');
               $search
-                //.val('')
+                .val('')
                 .attr('tabindex', 0)
               ;
               $menu
@@ -8149,6 +8153,8 @@ $.fn.dropdown = function(parameters) {
             }
           },
           text: function(text) {
+            var
+                defaultText     = module.get.defaultText();
             if(settings.action !== 'select') {
               if(settings.action == 'combo') {
                 module.debug('Changing combo button text', text, $combo);
@@ -8167,14 +8173,17 @@ $.fn.dropdown = function(parameters) {
                 $text
                   .removeClass(className.filtered)
                 ;
-                if(settings.preserveHTML) {
-                  $text.html(text);
+
+                $text.text(text);
+                if (text !== module.get.placeholderText()) {
                   $search.val(text); // a11y
                 }
                 else {
-                  $text.text(text);
-                  $search.val(text); // a11y
+                  $search.val(''); // a11y
                 }
+
+                               console.log("5 : " + text);
+
               }
             }
           },
@@ -8839,6 +8848,7 @@ $.fn.dropdown = function(parameters) {
           clearable: function() {
             $icon.removeClass(className.clear);
             $search.val('');
+                           console.log("7");
           }
         },
 
@@ -9278,6 +9288,7 @@ $.fn.dropdown = function(parameters) {
 
         hideAndClear: function() {
           //module.remove.searchTerm(); // a11y
+                         console.log("8");
           if( module.has.maxSelections() ) {
             return;
           }
