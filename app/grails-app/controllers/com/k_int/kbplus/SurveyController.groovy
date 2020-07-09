@@ -25,6 +25,8 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 
 import javax.servlet.ServletOutputStream
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -5379,6 +5381,12 @@ class SurveyController {
                                 migrated: dctx.owner.migrated,
                                 owner: dctx.owner.owner
                         ).save()
+
+                        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                        Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                        Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                        Files.copy(source, target)
 
                         DocContext ndc = new DocContext(
                                 owner: clonedContents,

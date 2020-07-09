@@ -2,6 +2,22 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2459    07.07.2020  rc1.4       Moe     Bug         Beim Kopieren von Objekten werden Dokumenten nicht richtig kopiert
+
+2660    06.07.2020  rc1.4       Moe     Bug         API Endpunkt CostItemList muss alle CostItems zurückgeben
+
+2661    06.07.2020  rc1.4       Moe     Bug         API CostItem gibt kein isVisibleForSubscriber zurück
+
+--      06.07.2020  rc1.4       Andreas Bug         Meine Pakete konnte wegen falschen Aufrufs nicht aufgerufen werden
+
+2642    06.07.2020  rc1.4       Moe     Bug         Falsche Bezeichnung bei Alle Anbieter & Lieferanten
+
+2644    06.07.2020  rc1.4       Moe     Bug         "Fällige Termine"-Mailbenachrichtigung hat englischen Betreff "Due Dates"
+
+2651    03.07.2020  rc1.4       Moe     Bug         Lizenz kopieren: Ressourcentyp und Lizenzform werden nicht mitkopiert
+
+2645    03.07.2020  rc1.4       Moe     Bug         Blocker: /myInstitution/tasks nicht aufrufbar
+
 1710    30.06.2020  rc1.4       Andreas Bug         Performanz bei Laden der Änderungen verbessert
 
 2636    30.06.2020  rc1.4       Andreas Bug         Weitere Korrektur zur Nichtprozessierung von Titeldaten im Sync

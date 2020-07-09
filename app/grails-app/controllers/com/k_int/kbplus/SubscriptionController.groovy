@@ -5553,8 +5553,8 @@ class SubscriptionController extends AbstractDebugController {
                     isSlaved: baseSubscription.isSlaved,
                     startDate: params.subscription.copyDates ? baseSubscription.startDate : null,
                     endDate: params.subscription.copyDates ? baseSubscription.endDate : null,
-                    resource: params.subscription.resource ? baseSubscription.resource : null,
-                    form: params.subscription.form ? baseSubscription.form : null,
+                    resource: params.subscription.copyResource ? baseSubscription.resource : null,
+                    form: params.subscription.copyForm ? baseSubscription.form : null,
             )
             //Copy License
             if (params.subscription.copyLicense) {
@@ -5592,6 +5592,12 @@ class SubscriptionController extends AbstractDebugController {
                                     migrated: dctx.owner.migrated,
                                     owner: dctx.owner.owner
                             ).save()
+
+                            String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                            Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                            Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                            Files.copy(source, target)
 
                             DocContext ndc = new DocContext(
                                     owner: clonedContents,
