@@ -38,7 +38,7 @@
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a href="https://www.hbz-nrw.de/produkte/digitale-inhalte/las-er" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
                 <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank">Wiki</a>
-
+                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
                 <div class="right item">
                     <g:link controller="home" action="index" class="ui button blue">
                         ${message(code: 'landingpage.login')}
