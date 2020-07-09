@@ -2,9 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2609    07.07.2020  hbz-dev     Moe     Feature     API Schnittstelle für Zugangskonfiguration
+2609    09.07.2020  hbz-dev     Moe     Feature     API Schnittstelle für Zugangskonfiguration
 
-2654    07.07.2020  hbz-dev     Moe     Feature     Überarbeitung Zugangskonfiguration
+2654    08.07.2020  hbz-dev     Moe     Feature     Überarbeitung Zugangskonfiguration
 
 2098    07.07.2020  hbz-dev     Moe     Feature     Freitextfeld in Teilnehmerübersicht ermöglichen
 
