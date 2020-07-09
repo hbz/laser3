@@ -10,7 +10,7 @@
         </g:if>
         <div class="three fields">
             %{--<div class="four fields">--}%
-            <!-- 1-1 -->
+            <% /* 1-1 */ %>
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
@@ -24,7 +24,7 @@
                            value="${params.q}"/>
                 </div>
             </div>
-            <!-- 1-2 -->
+            <% /* 1-2 */ %>
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
@@ -38,7 +38,7 @@
                            value="${params.identifier}"/>
                 </div>
             </div>
-            <!-- 1-3 -->
+            <% /* 1-3 */ %>
             <div class="field fieldcontain">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
@@ -54,10 +54,10 @@
                                   id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
             </div>
             */ %>
-
+            <% /* 1-4 */ %>
             <div class="field fieldcontain">
                 <label>${message(code: 'default.status.label')}</label>
-                <laser:select class="ui dropdown" name="status"
+                <laser:select class="ui search dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                               optionKey="id"
                               optionValue="value"
@@ -68,7 +68,7 @@
 
         <div class="four fields">
 
-            <!-- 2-1 + 2-2 -->
+            <% /* 2-1 and 2-2 */ %>
             <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
             <%--
                         <!-- 2-1 -->
@@ -94,20 +94,20 @@
                         </div>
 
                        --%>
-            <!-- 2-3 -->
+            <% /* 2-3 */ %>
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
-                <laser:select class="ui fluid dropdown" name="form"
+                <laser:select class="ui fluid search dropdown" name="form"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.form}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-            <!-- 2-4 -->
+            <% /* 2-4 */ %>
             <div class="field">
                 <label>${message(code:'subscription.resource.label')}</label>
-                <laser:select class="ui fluid dropdown" name="resource"
+                <laser:select class="ui fluid search dropdown" name="resource"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                               optionKey="id"
                               optionValue="value"
@@ -118,7 +118,7 @@
         </div>
 
         <div class="four fields">
-
+            <% /* 3-1 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
             <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
@@ -146,6 +146,7 @@
                     </fieldset>
                 </div>
             </g:if>
+            <% /* 3-2 */ %>
             <div class="field">
                 <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
@@ -160,18 +161,20 @@
                 </select>
 
             </div>
+            <% /* 3-3 */ %>
             <div class="field">
                 <label>${message(code:'subscription.isPublicForApi.label')}</label>
-                <laser:select class="ui fluid dropdown" name="isPublicForApi"
+                <laser:select class="ui fluid search dropdown" name="isPublicForApi"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.isPublicForApi}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
+            <% /* 3-4 */ %>
             <div class="field">
                 <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
-                <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                <laser:select class="ui fluid search dropdown" name="hasPerpetualAccess"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"

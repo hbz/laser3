@@ -15,3 +15,7 @@ out/
 /app/node_modules/
 .slcache/
 .slcache/.index
+app/semantic/temp
+app/web-app/semantic/accessibility/components
+app/web-app/semantic/javascript/components
+app/web-app/semantic/laser/components
