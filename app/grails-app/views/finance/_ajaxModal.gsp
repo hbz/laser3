@@ -257,6 +257,7 @@
                             <input class="la-full-width" readonly="readonly" value="${contextSub.getSubscriber().sortname}" />
                         </g:if>
                         <g:else>
+                            <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget" class="ui button la-full-width" onclick="$('#newLicenseeTarget').parent('div').toggle();" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
                             <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown multiple search"
                                       from="${validSubChilds}"
                                       optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
@@ -361,11 +362,12 @@
     </g:form>
 
     <script>
-        /*var costSelectors = {
-            lc:   "#newCostInLocalCurrency",
-            rate: "#newCostCurrencyRate",
-            bc:   "#newCostInBillingCurrency"
-        }*/
+
+    /*var costSelectors = {
+        lc:   "#newCostInLocalCurrency",
+        rate: "#newCostCurrencyRate",
+        bc:   "#newCostInBillingCurrency"
+    }*/
 
             var costItemElementConfigurations = ${raw(orgConfigurations as String)};
             console.log(costItemElementConfigurations);
@@ -470,6 +472,7 @@
             });
 
             $("#editCost").submit(function(e){
+                //console.log("eee");
                 e.preventDefault();
                 if($("[name='newCostCurrency']").val() != 0) {
                     let valuesCorrect = checkValues();
@@ -514,7 +517,7 @@
 
             function onSubscriptionUpdate() {
                 let context;
-                console.log($("[name='newLicenseeTarget']~a").length);
+                //console.log($("[name='newLicenseeTarget']~a").length);
                 if($("[name='newLicenseeTarget']~a").length === 1){
                     let values = collect($("[name='newLicenseeTarget']~a"));
                     if(!values[0].match(/:null|:for/)) {
@@ -627,7 +630,7 @@
                     if(!value.getAttribute("data-value").match(/:null|:for/))
                         values.push(value.getAttribute("data-value"));
                 }
-                console.log(values);
+                //console.log(values);
                 return values;
             }
 
@@ -661,7 +664,13 @@
             }
 
             function preselectMembers() {
-                $("#newLicenseeTarget").dropdown("set selected",[${raw(pickedSubscriptions?.join(','))}]);
+                <g:if test="${pickedSubscriptions}">
+                    $("#newLicenseeTarget").dropdown("set selected",[${raw(pickedSubscriptions.join(','))}]);
+                    <g:if test="${pickedSubscriptions.size() > 9}">
+                        $("#newLicenseeTarget").parent('div').toggle();
+                    </g:if>
+                </g:if>
+
             }
 
     </script>
