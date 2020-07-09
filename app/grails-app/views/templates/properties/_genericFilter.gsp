@@ -132,7 +132,6 @@
                                 duration: 150,
                                 transition: 'fade',
                                 clearable: true,
-                                showOnFocus: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
                                 onChange: function (value, text, $selectedItem) {
@@ -160,7 +159,6 @@
                 $(document).ready(function() {
                     $(".la-filterPropDef").dropdown({
                         clearable: true,
-                        showOnFocus: true,
                         forceSelection: false,
                         selectOnKeydown: false,
                         onChange: function (value, text, $selectedItem) {
