@@ -114,11 +114,6 @@
 
 
 <r:script>
-       $('#test').dropdown({
-            //forceSelection: false
-            //clearable: true
-        });
-
         function chooseRequiredDropdown(opt) {
             $(document).ready(function () {
                 $('#create_task')
