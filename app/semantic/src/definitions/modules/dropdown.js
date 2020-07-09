@@ -935,10 +935,10 @@ $.fn.dropdown = function(parameters) {
           else {
             if(settings.allowAdditions) {
               module.set.selected(module.get.query());
-               module.remove.searchTerm(); // a11y
+               //module.remove.searchTerm(); // a11y
             }
             else {
-               module.remove.searchTerm(); // a11y
+               //module.remove.searchTerm(); // a11y
             }
           }
         },
@@ -1406,7 +1406,7 @@ $.fn.dropdown = function(parameters) {
                 module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                 module.event.item.click.call($selectedItem, event);
                 if(module.is.searchSelection()) {
-                   module.remove.searchTerm();
+                   //module.remove.searchTerm();
                 }
               }
 
@@ -1423,7 +1423,7 @@ $.fn.dropdown = function(parameters) {
                     module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
-                       module.remove.searchTerm();
+                       //module.remove.searchTerm();
                     }
                   }
                   event.preventDefault();
@@ -2305,7 +2305,7 @@ $.fn.dropdown = function(parameters) {
             if( module.is.searchSelection() ) {
               module.debug('Added tabindex to searchable dropdown');
               $search
-                .val('')
+                //.val('')
                 .attr('tabindex', 0)
               ;
               $menu
@@ -2405,11 +2405,11 @@ $.fn.dropdown = function(parameters) {
                 ;
                 if(settings.preserveHTML) {
                   $text.html(text);
-                  //$search.val(text); // a11y
+                  $search.val(text); // a11y
                 }
                 else {
                   $text.text(text);
-                  //$search.val(text); // a11y
+                  $search.val(text); // a11y
                 }
               }
             }
@@ -3074,7 +3074,7 @@ $.fn.dropdown = function(parameters) {
           },
           clearable: function() {
             $icon.removeClass(className.clear);
-            //$search.val('');
+            $search.val('');
           }
         },
 
@@ -3513,7 +3513,7 @@ $.fn.dropdown = function(parameters) {
         },
 
         hideAndClear: function() {
-          module.remove.searchTerm(); // a11y
+          //module.remove.searchTerm(); // a11y
           if( module.has.maxSelections() ) {
             return;
           }
