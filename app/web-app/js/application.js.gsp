@@ -489,26 +489,36 @@ r2d2 = {
         $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').dropdown({
             duration: 150,
             transition: 'fade',
+            forceSelection: false,
+            selectOnKeydown: false,
             apiSettings: {
-                cache: false
-            }
+                    cache: false
+                }
         });
 
         $(ctxSel + ' form').attr('autocomplete', 'off');
 
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
             clearable: true
         });
 
         $(ctxSel + ' .ui.dropdown.la-clearable').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
             clearable: true
         });
 
         $(ctxSel + ' .ui.search.dropdown:not(.la-not-clearable)').dropdown({ // default behaviour
+            forceSelection: false,
+            selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true
         });
         $(ctxSel + ' .ui.search.dropdown.la-not-clearable').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
             fullTextSearch: 'exact'
         });
 
@@ -583,9 +593,6 @@ r2d2 = {
             }
             $(this).data("lastClicked", e.timeStamp);
         });
-
-        //WCAG Improvement
-        $(ctxSel + ' .search.dropdown').children('.search').attr("aria-labelledby","la-legend-searchDropdown");
 
         // confirmation modal
         var buildConfirmationModal =

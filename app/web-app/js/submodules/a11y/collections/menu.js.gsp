@@ -7,9 +7,8 @@ a11yMenu = {
     go: function () {
         // for Main Menu
         $('.ui.dropdown' , a11yMenu.configs.menuSelector ).dropdown({
-            action: function (text, value, element) {
-                element.click()
-            },
+            action: 'nothing',
+            selectOnKeydown        : false,
             on: 'hover',
             onHide         : function() {
                 $(this).attr("aria-expanded", "false"); // a11y
@@ -21,9 +20,8 @@ a11yMenu = {
 
         // for Test Main Menu on dev/index view
         $('.ui.dropdown' , a11yMenu.configs.menuSelectorTest ).dropdown({
-            action: function (text, value, element) {
-                element.click()
-            },
+            action: 'nothing',
+            selectOnKeydown        : true,
             on: 'hover',
             onHide         : function() {
                 $(this).attr("aria-expanded", "false"); // a11y
