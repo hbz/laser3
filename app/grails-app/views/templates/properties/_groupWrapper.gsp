@@ -26,6 +26,7 @@
                     propDefGroup: propDefGroup,
                     prop_desc: prop_desc,
                     ownobj: ownobj,
+                    editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
                     custom_props_div: custom_props_div
             ]}"/>
         </div>

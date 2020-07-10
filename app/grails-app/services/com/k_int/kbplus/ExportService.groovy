@@ -195,8 +195,8 @@ class ExportService {
 		List cells = []
 		SimpleDateFormat sdf = DateUtil.getSimpleDateFormatByToken('default.date.format.notime')
 		propertyDefinitions.each { PropertyDefinition pd ->
-			def value = ''
-			target.customProperties.each{ AbstractPropertyWithCalculatedLastUpdated prop ->
+			def value = ' '
+			target.propertySet.each{ AbstractPropertyWithCalculatedLastUpdated prop ->
 				if(prop.type.descr == pd.descr && prop.type == pd && prop.value) {
 					if(prop.refValue)
 						value = prop.refValue.getI10n('value')

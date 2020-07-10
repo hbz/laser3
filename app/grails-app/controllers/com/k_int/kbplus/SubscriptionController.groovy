@@ -1584,8 +1584,8 @@ class SubscriptionController
                     org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
-                    org.customProperties = subscr.customProperties.findAll{ it.type.tenant == null && it.tenant.id == result.institution.id && it.isPublic }
-                    org.privateProperties = subscr.customProperties.findAll{ it.type.tenant.id == result.institution.id && it.tenant.id == result.institution.id && !it.isPublic }
+                    org.customProperties = subscr.propertySet.findAll{ it.type.tenant == null && it.tenant.id == result.institution.id && it.isPublic }
+                    org.privateProperties = subscr.propertySet.findAll{ it.type.tenant.id == result.institution.id && it.tenant.id == result.institution.id && !it.isPublic }
                     Set generalContacts = []
                     if (publicContacts.get(subscr))
                         generalContacts.addAll(publicContacts.get(subscr))
@@ -2053,7 +2053,7 @@ class SubscriptionController
                 break
         }*/
         //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        Set<PropertyDefinition> propList = result.parentSub.customProperties.type + SubscriptionProperty.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.instanceOf = null",[subscriptionSet:validSubChildren])
+        Set<PropertyDefinition> propList = result.parentSub.customProperties.type + SubscriptionProperty.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
         result.propList = propList
 
         def oldID = params.id
@@ -2182,7 +2182,7 @@ class SubscriptionController
                         //private Property
                         Subscription owner = subChild
 
-                        def existingProps = owner.customProperties.findAll {
+                        def existingProps = owner.propertySet.findAll {
                             it.owner.id == owner.id &&  it.type.id == propDef.id && it.tenant.id == result.institution && !it.isPublic
                         }
                         existingProps.removeAll { it.type.name != propDef.name } // dubious fix
@@ -2210,7 +2210,7 @@ class SubscriptionController
                         //custom Property
                         def owner = subChild
 
-                        def existingProp = owner.customProperties.find {
+                        def existingProp = owner.propertySet.find {
                             it.type.id == propDef.id && it.owner.id == owner.id
                         }
 
@@ -2413,7 +2413,7 @@ class SubscriptionController
                     if (propDef.tenant != null) {
                         //private Property
 
-                        List<SubscriptionProperty> existingProps = subChild.customProperties.findAll {
+                        List<SubscriptionProperty> existingProps = subChild.propertySet.findAll {
                             it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id && !it.isPublic
                         }
                         existingProps.removeAll { it.type.name != propDef.name } // dubious fix
@@ -2435,7 +2435,7 @@ class SubscriptionController
                     } else {
                         //custom Property
 
-                        def existingProp = subChild.customProperties.find {
+                        def existingProp = subChild.propertySet.find {
                             it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id && it.isPublic
                         }
 
@@ -3940,7 +3940,7 @@ class SubscriptionController
                     default: localizedName = "name_en"
                         break
                 }
-                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.instanceOf = null order by sp.type.${localizedName} asc",[subscriptionSet:childSubs])
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc",[subscriptionSet:childSubs,context:result.institution])
                 result.memberProperties = memberProperties
             }
         }
@@ -4123,9 +4123,9 @@ class SubscriptionController
                             }
                         }
 
-                        if (subMember.customProperties) {
+                        if (subMember.propertySet) {
                             //customProperties
-                            for (prop in subMember.customProperties) {
+                            for (prop in subMember.propertySet) {
                                 SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.instanceOf = null
@@ -4450,7 +4450,7 @@ class SubscriptionController
 
                             if (params.subscription.takeCustomProperties) {
                                 //customProperties
-                                baseSub.customProperties.findAll{ it.tenant == result.institution && it.isPublic }.each { SubscriptionProperty prop ->
+                                baseSub.propertySet.findAll{ it.tenant == result.institution && it.isPublic }.each { SubscriptionProperty prop ->
                                     SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.instanceOf = null
@@ -4461,7 +4461,7 @@ class SubscriptionController
                             if (params.subscription.takePrivateProperties) {
                                 //privatProperties
 
-                                baseSub.customProperties.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                                baseSub.propertySet.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
                                     SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.save()
@@ -5211,7 +5211,7 @@ class SubscriptionController
         }
         subsToCompare.each{ sub ->
             Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
             privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties.sort{it.type.getI10n('name')})
@@ -5578,7 +5578,7 @@ class SubscriptionController
 
                 if (params.subscription.copyCustomProperties) {
                     //customProperties
-                    baseSubscription.customProperties.findAll{ it.isPublic && it.tenant.id == result.institution.id }.each{ SubscriptionProperty prop ->
+                    baseSubscription.propertySet.findAll{ it.isPublic && it.tenant.id == result.institution.id }.each{ SubscriptionProperty prop ->
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.instanceOf = null
@@ -5589,7 +5589,7 @@ class SubscriptionController
                 if (params.subscription.copyPrivateProperties) {
                     //privatProperties
 
-                    baseSubscription.customProperties.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                    baseSubscription.propertySet.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.save()
@@ -5760,16 +5760,17 @@ class SubscriptionController
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
+        result.contextOrg = contextService.getOrg()
         result.licenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.subscription),RDStore.LINKTYPE_LICENSE).collect {Links li -> genericOIDService.resolveOID(li.source)}
 
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.subscription))
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
-        result.showConsortiaFunctions = showConsortiaFunctions(contextService.getOrg(), result.subscription)
+        result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.subscription)
         result.consortialView = result.showConsortiaFunctions
 
-        result.showCollectiveFunctions = showCollectiveFunctions(contextService.getOrg(), result.subscription)
+        result.showCollectiveFunctions = showCollectiveFunctions(result.contextOrg, result.subscription)
         result.departmentalView = result.showCollectiveFunctions
 
         Map args = [:]

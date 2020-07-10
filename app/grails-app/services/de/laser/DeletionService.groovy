@@ -53,7 +53,7 @@ class DeletionService {
         List packages       = new ArrayList(lic.pkgs)  // Package
         List pendingChanges = new ArrayList(lic.pendingChanges)
         List privateProps   = new ArrayList(lic.privateProperties)
-        List customProps    = new ArrayList(lic.customProperties)
+        List customProps    = new ArrayList(lic.propertySet)
 
         // collecting informations
 
@@ -75,7 +75,7 @@ class DeletionService {
         result.info << ['Pakete', packages]
         result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['Private Merkmale', lic.privateProperties]
-        result.info << ['Allgemeine Merkmale', lic.customProperties]
+        result.info << ['Allgemeine Merkmale', lic.propertySet]
 
         // checking constraints and/or processing
 
@@ -177,7 +177,7 @@ class DeletionService {
                     privateProps.each { tmp -> tmp.delete() }
 
                     // custom properties
-                    lic.customProperties.clear()
+                    lic.propertySet.clear()
                     /*customProps.each { tmp -> // incomprehensible fix
                         tmp.owner = null
                         tmp.save()
@@ -232,7 +232,7 @@ class DeletionService {
         List deletedCosts   = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus == RDStore.COST_ITEM_DELETED })
         List oapl           = new ArrayList(sub.packages?.oapls)
         List privateProps   = new ArrayList(sub.privateProperties)
-        List customProps    = new ArrayList(sub.customProperties)
+        List customProps    = new ArrayList(sub.propertySet)
 
         List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriber(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
 
@@ -261,7 +261,7 @@ class DeletionService {
         result.info << ['gelöschte Kostenposten', deletedCosts]
         result.info << ['OrgAccessPointLink', oapl]
         result.info << ['Private Merkmale', sub.privateProperties]
-        result.info << ['Allgemeine Merkmale', sub.customProperties]
+        result.info << ['Allgemeine Merkmale', sub.propertySet]
         result.info << ['Umfragen', surveys, sub.instanceOf ? FLAG_WARNING : FLAG_BLOCKER]
 
         // checking constraints and/or processing
@@ -388,7 +388,7 @@ class DeletionService {
                     privateProps.each { tmp -> tmp.delete() }
 
                     // custom properties
-                    sub.customProperties.clear()
+                    sub.propertySet.clear()
                     customProps.each { tmp -> // incomprehensible fix
                         tmp.owner = null
                         tmp.save()
@@ -490,7 +490,7 @@ class DeletionService {
         //List tips           = TitleInstitutionProvider.findAllByInstitution(org)
         //List tipsProviders  = TitleInstitutionProvider.findAllByProvider(org)
 
-        List customProperties       = new ArrayList(org.customProperties)
+        List customProperties       = new ArrayList(org.propertySet)
         List privateProperties      = new ArrayList(org.privateProperties)
         List propertyDefinitions    = PropertyDefinition.findAllByTenant(org)
         List propDefGroups          = PropertyDefinitionGroup.findAllByTenant(org)
@@ -637,7 +637,7 @@ class DeletionService {
                     privateProperties.each { tmp -> tmp.delete() }
 
                     // custom properties
-                    org.customProperties.clear()
+                    org.propertySet.clear()
                     customProperties.each { tmp -> // incomprehensible fix // ??
                         tmp.owner = null
                         tmp.save()

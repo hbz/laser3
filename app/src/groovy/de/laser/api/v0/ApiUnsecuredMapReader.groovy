@@ -229,7 +229,7 @@ class ApiUnsecuredMapReader {
 
         // References
         result.provider = getOrganisationStubMap(pform.org) // com.k_int.kbplus.Org
-        result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.customProperties, pform, context)
+        result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.propertySet, pform, context)
 
         ApiToolkit.cleanUp(result, true, true)
     }
