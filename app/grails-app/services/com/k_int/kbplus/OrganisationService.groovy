@@ -159,7 +159,7 @@ class OrganisationService {
                     row.add([field: furtherData.responsibleAdmin ?: '', style: null])
                     //Billing contact
                     row.add([field: furtherData.billingContact ?: '', style: null])
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,org))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,org,null,null))
                     orgData.add(row)
                 }
                 Map sheetData = [:]
@@ -202,7 +202,7 @@ class OrganisationService {
                     row.add(furtherData.responsibleAdmin ?: '')
                     //Billing contact
                     row.add(furtherData.billingContact ?: '')
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,org))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,org,null,null))
                     orgData.add(row)
                 }
                 return exportService.generateSeparatorTableString(titles,orgData,',')

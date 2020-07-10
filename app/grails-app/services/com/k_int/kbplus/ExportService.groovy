@@ -41,6 +41,8 @@ class ExportService {
 
 	SimpleDateFormat formatter = DateUtil.getSDF_ymd()
 	def messageSource
+	def subscriptionService
+	def contextService
 
 	/**
 		new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
@@ -185,41 +187,46 @@ class ExportService {
 	}
 
 	/**
+	 * Fetches for the given {@link Set} of {@link PropertyDefinition}s the values and inserts them into the cell of the given format
 	 *
-	 * @param propDefConst
-	 * @param contextOrg
-	 * @param format
+	 * @param propertyDefinitions - the {@link Set} of {@link PropertyDefinition}s to read the values off
+	 * @param format - the format (Excel or CSV) in which the values should be outputted
+	 * @param target - the target object whose property set should be consulted
+	 * @param childObjects - a {@link Map} of dependent objects
 	 * @return a {@link List} or a {@link List} of {@link Map}s for the export sheet containing the value
 	 */
-	List processPropertyListValues(Set<PropertyDefinition> propertyDefinitions, String format, def target) {
+	List processPropertyListValues(Set<PropertyDefinition> propertyDefinitions, String format, def target, Map childObjects, Map objectNames) {
 		List cells = []
 		SimpleDateFormat sdf = DateUtil.getSimpleDateFormatByToken('default.date.format.notime')
 		propertyDefinitions.each { PropertyDefinition pd ->
-			def value = ' '
+			Set<String> value = []
 			target.propertySet.each{ AbstractPropertyWithCalculatedLastUpdated prop ->
 				if(prop.type.descr == pd.descr && prop.type == pd && prop.value) {
 					if(prop.refValue)
-						value = prop.refValue.getI10n('value')
+						value << prop.refValue.getI10n('value')
 					else
-						value = prop.getValue() ?: ' '
+						value << prop.getValue() ?: ' '
 				}
 			}
-            /*if(target.hasProperty("privateProperties")) {
-                target.privateProperties.each{ PrivateProperty prop ->
-                    if(prop.type.descr == pd.descr && prop.type == pd && prop.value) {
-                        if(prop.refValue)
-                            value = prop.refValue.getI10n('value')
-                        else
-                            value = prop.getValue() ?: ' '
-                    }
-                }
-            }*/
+			childObjects.get(target).each { childObj ->
+				if(childObj.hasProperty("propertySet")) {
+					childObj.propertySet.each { AbstractPropertyWithCalculatedLastUpdated childProp ->
+						if(childProp.type.descr == pd.descr && childProp.type == pd && childProp.value && !childProp.instanceOf && (childProp.tenant == contextService.org || childProp.isPublic)) {
+							if(childProp.refValue)
+								value << "${childProp.refValue.getI10n('value')} (${objectNames.get(childObj)})"
+							else
+								value << childProp.getValue() ? "${childProp.getValue()} (${objectNames.get(childObj)})" : ' '
+						}
+					}
+				}
+
+			}
 			def cell
 			switch(format) {
 				case "xls":
-				case "xlsx": cell = [field: value, style: null]
+				case "xlsx": cell = [field: value.join(', '), style: null]
 					break
-				case "csv": cell = value.replaceAll(',',';')
+				case "csv": cell = value.join('; ').replaceAll(',',';')
 					break
 			}
 			if(cell)
