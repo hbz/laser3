@@ -75,7 +75,7 @@ class SemanticUiInplaceTagLib {
                 break
             }
 
-            if (attrs?.emptytext)
+            if (attrs.emptytext)
                 out << " data-emptytext=\"${attrs.emptytext}\""
             else {
                 out << " data-emptytext=\"${default_empty}\""
@@ -162,7 +162,7 @@ class SemanticUiInplaceTagLib {
                 def update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
                 def id = attrs.id ?: "${oid}:${attrs.field}"
                 def default_empty = message(code:'default.button.edit.label')
-                def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+                def emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
                 out << "<span>"
 
@@ -215,7 +215,7 @@ class SemanticUiInplaceTagLib {
                 def data_link 		= createLink(controller:'ajax', action: 'generateBoolean').encodeAsHTML()
                 def id 				= attrs.id ?: "${oid}:${attrs.field}"
                 def default_empty 	= message(code:'default.button.edit.label')
-                def emptyText 		= attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+                def emptyText 		= attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
                 out << "<span>"
 
@@ -271,7 +271,7 @@ class SemanticUiInplaceTagLib {
             out << " data-type=\"${attrs.type?:'text'}\" "
         }
 
-        def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+        def emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
         out << "data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
         out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
@@ -391,7 +391,7 @@ class SemanticUiInplaceTagLib {
                     break
             }
 
-            if (attrs?.emptytext)
+            if (attrs.emptytext)
                 out << " data-emptytext=\"${attrs.emptytext}\""
             else {
                 out << " data-emptytext=\"${default_empty}\""
