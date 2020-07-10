@@ -2,7 +2,7 @@
 grails:
     profile: web
     codegen:
-        defaultPackage: laser2
+        defaultPackage: de.laser
     gorm:
         reactor:
             # Whether to translate GORM events into Reactor events
@@ -89,7 +89,6 @@ hibernate:
         queries: false
         use_second_level_cache: false
         use_query_cache: false
-        #region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
 
 dataSource:
     pooled: true

@@ -24,3 +24,19 @@ sdk i groovy 2.4.17
 git init  
 git add \*     
 git commit  
+
+##### Migration
+
+$ ./go.sh
+
+
+
+
+
+
+
+
+
+
+
+
