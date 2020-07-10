@@ -5,6 +5,8 @@ import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.ConfigUtils
+
 import grails.transaction.Transactional
 import java.nio.file.Files
 import java.nio.file.Path
@@ -116,7 +118,7 @@ class InstitutionsService {
                             migrated: dctx.owner.migrated
                     ).save()
 
-                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                     Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
@@ -235,7 +237,7 @@ class InstitutionsService {
                         user: dctx.owner.user,
                         migrated: dctx.owner.migrated).save()
 
-                String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                 Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                 Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
