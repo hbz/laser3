@@ -344,6 +344,7 @@ $.fn.dropdown = function(parameters) {
                 .insertBefore($text)
               ;
             }
+
             if( module.is.multiple() && module.is.searchSelection() && !module.has.sizer()) {
               module.create.sizer();
             }
@@ -371,18 +372,33 @@ $.fn.dropdown = function(parameters) {
             }
             else {
               module.debug('Creating entire dropdown from select');
-              $module = $('<div />')
-                .attr('class', $input.attr('class') )
-                .addClass(className.selection)
-                .addClass(className.dropdown)
-                  .attr('role', 'combobox') //a11y
-                  .attr('aria-haspopup','listbox') //a11y
-                  .attr('aria-owns',id + '_listBox') //a11y
-
-                .html( templates.dropdown(selectValues,id) )
-                .insertBefore($input)
-              ;
-
+              if (!module.is.search()) {
+                $module = $('<div />')
+                    .attr('class', $input.attr('class') )
+                    .addClass(className.selection)
+                    .addClass(className.dropdown)
+                    .attr('role', 'combobox') //a11y
+                    .attr('aria-haspopup','listbox') //a11y
+                    .attr('aria-owns',id + '_listBox') //a11y
+                  .attr('aria-autocomplete','list') // a11y
+                        .attr('aria-controls',id+'_listBox') // a11y
+                        .attr('aria-labelledby',id+'_formLabel')
+                    .html( templates.dropdown(selectValues,id) )
+                    .insertBefore($input)
+                ;
+              }
+              else {
+                $module = $('<div />')
+                    .attr('class', $input.attr('class') )
+                    .addClass(className.selection)
+                    .addClass(className.dropdown)
+                    .attr('role', 'combobox') //a11y
+                    .attr('aria-haspopup','listbox') //a11y
+                    .attr('aria-owns',id + '_listBox') //a11y
+                    .html( templates.dropdown(selectValues,id) )
+                    .insertBefore($input)
+                ;
+              }
                $module.prev('label').attr('id' , id+'_formLabel');
 
               if($input.hasClass(className.multiple) && $input.prop('multiple') === false) {
@@ -940,11 +956,9 @@ $.fn.dropdown = function(parameters) {
             if(settings.allowAdditions) {
               module.set.selected(module.get.query());
                //module.remove.searchTerm(); // a11y
-               console.log("1");
             }
             else {
                //module.remove.searchTerm(); // a11y
-                              console.log("2");
             }
           }
         },
@@ -1413,7 +1427,6 @@ $.fn.dropdown = function(parameters) {
                 module.event.item.click.call($selectedItem, event);
                 if(module.is.searchSelection()) {
                    //module.remove.searchTerm();
-                                  console.log("3");
                 }
               }
 
@@ -1431,7 +1444,6 @@ $.fn.dropdown = function(parameters) {
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
                        //module.remove.searchTerm();
-                                      console.log("4");
                     }
                   }
                   event.preventDefault();
@@ -2429,9 +2441,6 @@ $.fn.dropdown = function(parameters) {
                 else {
                   $search.val(''); // a11y
                 }
-
-                               console.log("5 : " + text);
-
               }
             }
           },
@@ -2446,7 +2455,6 @@ $.fn.dropdown = function(parameters) {
             module.set.partialSearch(searchText);
             module.set.activeItem($item);
             module.set.selected(value, $item);
-            console.log("rufe auf module.set.text(text);")
             module.set.text(text);
             },
           selectedLetter: function(letter) {
@@ -2622,9 +2630,6 @@ $.fn.dropdown = function(parameters) {
                   isUserValue    = $selected.hasClass(className.addition),
                   shouldAnimate  = (isMultiple && $selectedItem.length == 1)
                 ;
-                console.log("--------------$selected---------------");
-                console.log($selected);
-                console.log("------------$selected-----------------");
                 if(isMultiple) {
                   if(!isActive || isUserValue) {
                     if(settings.apiSettings && settings.saveRemoteData) {
@@ -2652,7 +2657,6 @@ $.fn.dropdown = function(parameters) {
                   if(settings.apiSettings && settings.saveRemoteData) {
                     module.save.remoteData(selectedText, selectedValue);
                   }
-                  console.log("rufe auf module.set.text(selectedText)")
                   module.set.text(selectedText);
                   module.set.ariaSelected($selectedItem);
                   module.set.value(selectedValue, selectedText, $selected);
@@ -3101,7 +3105,6 @@ $.fn.dropdown = function(parameters) {
           clearable: function() {
             $icon.removeClass(className.clear);
             $search.val('');
-                           console.log("7");
           }
         },
 
@@ -3541,7 +3544,6 @@ $.fn.dropdown = function(parameters) {
 
         hideAndClear: function() {
           //module.remove.searchTerm(); // a11y
-                         console.log("8");
           if( module.has.maxSelections() ) {
             return;
           }
@@ -3781,7 +3783,7 @@ $.fn.dropdown = function(parameters) {
 $.fn.dropdown.settings = {
 
   silent                 : false,
-  debug                  : false,
+  debug                  : true,
   verbose                : false,
   performance            : true,
 
