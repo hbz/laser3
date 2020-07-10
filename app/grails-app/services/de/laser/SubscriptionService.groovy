@@ -18,6 +18,7 @@ import de.laser.helper.FactoryResult
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
+import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -28,6 +29,7 @@ import java.nio.file.Path
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
+@Transactional
 class SubscriptionService {
     def contextService
     def accessService

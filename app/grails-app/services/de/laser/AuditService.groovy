@@ -7,11 +7,13 @@ import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import de.laser.interfaces.AuditableSupport
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import javax.persistence.Transient
 
 //@CompileStatic
+@Transactional
 class AuditService {
 
     GrailsApplication grailsApplication

@@ -8,6 +8,7 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import grails.transaction.Transactional
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
@@ -37,6 +38,7 @@ import java.util.List
  * @author wpetit
  * @author agalffy
  */
+@Transactional
 class ExportService {
 
 	SimpleDateFormat formatter = DateUtil.getSDF_ymd()

@@ -3,7 +3,9 @@ package com.k_int.kbplus
 
 import grails.plugin.cache.CachePut
 import grails.plugin.cache.Cacheable
+import grails.transaction.Transactional
 
+@Transactional
 class MessageService {
 
   String getMessage(String key, String locale) {

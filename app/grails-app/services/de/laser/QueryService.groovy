@@ -6,11 +6,13 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
 import de.laser.interfaces.CalculatedType
+import grails.transaction.Transactional
 
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 import static com.k_int.kbplus.UserSettings.KEYS.*
 import static de.laser.helper.RDStore.*
 
+@Transactional
 class QueryService {
     def subscriptionsQueryService
     def taskService

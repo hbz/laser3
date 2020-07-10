@@ -7,12 +7,14 @@ import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import grails.transaction.Transactional
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 
 import java.text.SimpleDateFormat
 
 @Log4j
+@Transactional
 class ApiService {
 
     def messageSource

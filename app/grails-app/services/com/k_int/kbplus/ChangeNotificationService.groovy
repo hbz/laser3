@@ -8,11 +8,13 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONElement
 
 import java.sql.Timestamp
 import java.util.concurrent.ExecutorService
 
+@Transactional
 class ChangeNotificationService extends AbstractLockableService {
 
     ExecutorService executorService

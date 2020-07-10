@@ -25,6 +25,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.transaction.Transactional
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChildren
@@ -34,6 +35,7 @@ import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.transaction.TransactionStatus
 
 //@CompileStatic
+//@Transactional
 class YodaService {
 
     GrailsApplication grailsApplication

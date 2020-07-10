@@ -5,7 +5,9 @@ import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdate
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
+import grails.transaction.Transactional
 
+@Transactional
 class PropertyService {
 
     def grailsApplication

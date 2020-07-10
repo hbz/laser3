@@ -3,10 +3,12 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.StatsTripleCursor
 import de.laser.helper.RDConstants
+import grails.transaction.Transactional
 import org.hibernate.criterion.CriteriaSpecification
 
 import java.time.YearMonth
 
+@Transactional
 class FactService {
 
   def sessionFactory
