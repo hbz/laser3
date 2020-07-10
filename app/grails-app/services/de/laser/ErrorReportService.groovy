@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.SystemTicket
 import de.laser.helper.ConfigUtils
+import grails.transaction.Transactional
 import groovy.json.JsonBuilder
 import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
@@ -15,6 +16,7 @@ import sun.misc.BASE64Encoder
 
 import java.text.SimpleDateFormat
 
+@Transactional
 class ErrorReportService {
 
     // jira.rest.url = 'https://jira'

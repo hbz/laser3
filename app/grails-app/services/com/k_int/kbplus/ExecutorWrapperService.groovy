@@ -1,8 +1,11 @@
 package com.k_int.kbplus
 
+import grails.transaction.Transactional
+
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 
+@Transactional
 class ExecutorWrapperService {
 
 	ExecutorService executorService

@@ -5,6 +5,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
+import grails.transaction.Transactional
 import groovy.json.JsonOutput
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.elasticsearch.ElasticsearchException
@@ -30,6 +31,7 @@ import org.hibernate.ScrollMode
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
+//@Transactional
 class DataloadService {
 
     def stats = [:]

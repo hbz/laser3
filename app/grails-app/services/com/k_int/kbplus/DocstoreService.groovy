@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.helper.ConfigUtils
 import gov.loc.repository.bagit.BagFactory
 import gov.loc.repository.bagit.PreBag
+import grails.transaction.Transactional
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
@@ -18,6 +19,7 @@ import java.util.zip.ZipOutputStream
 
 import static de.laser.helper.RDStore.DOC_CTX_STATUS_DELETED
 
+@Transactional
 class DocstoreService {
   
   def grailsApplication
