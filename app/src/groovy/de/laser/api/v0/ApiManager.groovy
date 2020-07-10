@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.114'
+    static final VERSION = '0.115'
 
     /**
      * @return Object
@@ -170,6 +170,14 @@ class ApiManager {
 
             if (tmp.checkFailureCodes_3()) {
                 result = ApiOrg.requestOrganisation((Org) tmp.obj, contextOrg, isInvoiceTool)
+            }
+        }else if (checkValidRequest('orgAccessPoint')) {
+
+            ApiBox tmp = ApiOrgAccessPoint.findAccessPointBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiOrgAccessPoint.requestOrgAccessPoint((OrgAccessPoint) tmp.obj, contextOrg)
             }
         }
         else if (checkValidRequest('package')) {

@@ -96,6 +96,8 @@ class ApiOrg {
                 org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
 
+        result.orgAccessPoints	= ApiCollectionReader.getOrgAccessPointCollection(org.accessPoints)
+
         result.properties   = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
 
         // Ignored

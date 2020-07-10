@@ -18,6 +18,7 @@ class ApiReader {
             'oamonitor/organisations/list': [Constants.MIME_APPLICATION_JSON],
             'oamonitor/organisations':      [Constants.MIME_APPLICATION_JSON],
             'oamonitor/subscriptions':      [Constants.MIME_APPLICATION_JSON],
+            'orgAccessPoint':             [Constants.MIME_APPLICATION_JSON],
             'organisation':             [Constants.MIME_APPLICATION_JSON],
             'package':                  [Constants.MIME_APPLICATION_JSON],
             'platform':                 [Constants.MIME_APPLICATION_JSON],
