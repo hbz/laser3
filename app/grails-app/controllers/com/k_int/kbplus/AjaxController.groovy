@@ -804,13 +804,23 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def lookupIssueEntitlements() {
     params.checkView = true
-    render controlledListService.getIssueEntitlements(params) as JSON
+    if(params.sub != "undefined")
+        render controlledListService.getIssueEntitlements(params) as JSON
+    else {
+        Map entry = ["results": []]
+        render entry as JSON
+    }
   }
 
   @Secured(['ROLE_USER'])
   def lookupTitleGroups() {
      params.checkView = true
-     render controlledListService.getTitleGroups(params) as JSON
+     if(params.sub != "undefined")
+        render controlledListService.getTitleGroups(params) as JSON
+      else {
+         Map empty = [results: []]
+         render empty as JSON
+     }
     }
 
   @Secured(['ROLE_USER'])
@@ -834,7 +844,9 @@ class AjaxController {
 
   @Secured(['ROLE_USER'])
   def lookupSubscriptionPackages() {
-      render controlledListService.getSubscriptionPackages(params) as JSON
+      if(params.ctx != "undefined")
+        render controlledListService.getSubscriptionPackages(params) as JSON
+      else render [:] as JSON
   }
 
   @Secured(['ROLE_USER'])
