@@ -104,18 +104,18 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
 
   static hasMany = [
-                     ids: Identifier,
-                     packages : SubscriptionPackage,
-                     issueEntitlements: IssueEntitlement,
-                     documents: DocContext,
-                     orgRelations: OrgRole,
-                     prsLinks: PersonRole,
-                     derivedSubscriptions: Subscription,
-                     pendingChanges: PendingChange,
-                     customProperties: SubscriptionProperty,
-                     //privateProperties: SubscriptionPrivateProperty,
-                     costItems: CostItem,
-                     ieGroups: IssueEntitlementGroup
+          ids                 : Identifier,
+          packages            : SubscriptionPackage,
+          issueEntitlements   : IssueEntitlement,
+          documents           : DocContext,
+          orgRelations        : OrgRole,
+          prsLinks            : PersonRole,
+          derivedSubscriptions: Subscription,
+          pendingChanges      : PendingChange,
+          propertySet         : SubscriptionProperty,
+          //privateProperties: SubscriptionPrivateProperty,
+          costItems           : CostItem,
+          ieGroups            : IssueEntitlementGroup
   ]
 
   static mappedBy = [
@@ -169,7 +169,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         orgRelations        batchSize: 10
         prsLinks            batchSize: 10
         derivedSubscriptions    batchSize: 10
-        customProperties    batchSize: 10
+        propertySet    batchSize: 10
         //privateProperties   batchSize: 10
         costItems           batchSize: 10
     }
@@ -665,7 +665,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         // ALL type depending groups without checking tenants or bindings
         List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name, [sort:'name', order:'asc'])
-        groups.each{ it ->
+        groups.each{ PropertyDefinitionGroup it ->
 
             // cons_members
             if (this.instanceOf) {

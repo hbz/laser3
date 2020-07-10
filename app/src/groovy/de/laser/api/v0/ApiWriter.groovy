@@ -48,8 +48,8 @@ class ApiWriter {
 
                 // References
                 def properties            = ApiWriterHelper.getProperties(data.properties, license, context)
-                license.customProperties  = properties['custom']
-                license.privateProperties = properties['private']
+                license.propertySet  = properties['custom']
+                //license.privateProperties = properties['private']
 
                 // not supported: license.documents
                 // not supported: license.onixplLicense
@@ -105,7 +105,7 @@ class ApiWriter {
                 org.ids       = ApiWriterHelper.getIdentifiers(data.identifiers, org) // implicit creation of identifier and namespace
 
                 def properties        = ApiWriterHelper.getProperties(data.properties, org, context)
-                org.customProperties  = properties['custom']
+                org.propertySet  = properties['custom']
                 org.privateProperties = properties['private']
 
                 // MUST: save org before saving persons and prsLinks
@@ -161,7 +161,7 @@ class ApiWriter {
 
                 // References
                 def properties       = ApiWriterHelper.getProperties(data.properties, sub, context)
-                sub.customProperties = properties['custom']
+                sub.propertySet = properties['custom']
                 sub.ids              = ApiWriterHelper.getIdentifiers(data.identifiers, sub) // implicit creation of identifier and namespace
 
                 // TO CHECK: save subscriptions before saving orgRelations

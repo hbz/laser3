@@ -4,6 +4,8 @@
 
 2609    09.07.2020  hbz-dev     Moe     Feature     API Schnittstelle für Zugangskonfiguration
 
+1580    09.07.2020  hbz-dev     Andreas Feature     Umbau der Merkmalsverwaltung
+
 2654    08.07.2020  hbz-dev     Moe     Feature     Überarbeitung Zugangskonfiguration
 
 2098    07.07.2020  hbz-dev     Moe     Feature     Freitextfeld in Teilnehmerübersicht ermöglichen
