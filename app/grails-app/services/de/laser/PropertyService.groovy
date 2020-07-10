@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
@@ -12,6 +11,7 @@ class PropertyService {
 
     def grailsApplication
     def genericOIDService
+    def contextService
 
     private List<String> splitQueryFromOrderBy(String sql) {
         String order_by = null
@@ -30,15 +30,10 @@ class PropertyService {
 
 
         if (params.filterPropDef) {
-            def pd = genericOIDService.resolveOID(params.filterPropDef)
-            String propGroup
-            if (pd.tenant) {
-                propGroup = "privateProperties"
-            } else {
-                propGroup = "customProperties"
-            }
-            base_qry += " and ( exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef "
+            PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
+            base_qry += " and ( exists ( select gProp from ${hqlVar}.propertySet as gProp where gProp.type = :propDef and gProp.tenant = :tenant "
             base_qry_params.put('propDef', pd)
+            base_qry_params.put('tenant', contextService.org)
             if(params.filterProp) {
                 switch (pd.type) {
                     case RefdataValue.toString():
@@ -185,12 +180,12 @@ class PropertyService {
         count
     }
 
-    List<CustomProperty> getOrphanedProperties(Object obj, List<List> sorted) {
+    List<AbstractPropertyWithCalculatedLastUpdated> getOrphanedProperties(Object obj, List<List> sorted) {
 
-        List<CustomProperty> result = []
-        List orphanedIds = obj.customProperties.findAll{!it.hasProperty("isPublic") || it.isPublic == true}.collect{ it.id }
+        List<AbstractPropertyWithCalculatedLastUpdated> result = []
+        List orphanedIds = obj.propertySet.findAll{ it.type.tenant == null }.collect{ it.id }
 
-        sorted.each{ entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
+        sorted.each{ List entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
 
         switch (obj.class.simpleName) {
 
@@ -201,10 +196,10 @@ class PropertyService {
                 result = SubscriptionProperty.findAllByIdInList(orphanedIds)
                 break
             case Org.class.simpleName:
-                result = OrgCustomProperty.findAllByIdInList(orphanedIds)
+                result = OrgProperty.findAllByIdInList(orphanedIds)
                 break
             case Platform.class.simpleName:
-                result = PlatformCustomProperty.findAllByIdInList(orphanedIds)
+                result = PlatformProperty.findAllByIdInList(orphanedIds)
                 break
         }
 

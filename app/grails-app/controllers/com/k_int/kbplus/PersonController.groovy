@@ -79,8 +79,8 @@ class PersonController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_USER'])
-    def show() {
-        def personInstance = Person.get(params.id)
+    Map<String,Object> show() {
+        Person personInstance = Person.get(params.id)
         if (! personInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
             //redirect action: 'list'
@@ -111,7 +111,8 @@ class PersonController extends AbstractDebugController {
         }.findAll()
         
 
-        def result = [
+        Map<String,Object> result = [
+                institution: contextService.org,
                 personInstance: personInstance,
                 presetOrg: gcp.size() == 1 ? gcp.first().org : fcba.size() == 1 ? fcba.first().org : personInstance.tenant,
                 editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser()),
@@ -249,9 +250,9 @@ class PersonController extends AbstractDebugController {
 
         List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.PRS_PROP, true, org)
 
-        mandatories.each{ pd ->
-            if (! PersonPrivateProperty.findWhere(owner: personInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, personInstance, pd)
+        mandatories.each{ PropertyDefinition pd ->
+            if (! PersonProperty.findWhere(owner: personInstance, type: pd)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, personInstance, pd, org)
 
                 if (newProp.hasErrors()) {
                     log.error(newProp.errors)

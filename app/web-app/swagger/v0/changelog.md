@@ -2,6 +2,14 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.114
+
+- internal refactoring
+
+#### 0.113
+
+- internal refactoring
+
 #### 0.112
 
 - internal refactoring
@@ -12,7 +20,8 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 #### 0.110
 
-- internal refactoring
+- added new attribute: `CostItem.isVisibleForSubscriber`
+- modified attribute: `CostItem.finalCostRounding`
 
 #### 0.109
 

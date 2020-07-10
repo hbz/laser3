@@ -662,9 +662,9 @@ class AjaxController {
                             break
                         case 'listProvider':
                         case 'currentProviders':
-                        case 'manageMembers': values = OrgPrivateProperty.findAllByType(propDef)
+                        case 'manageMembers': values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
-                        case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
+                        case 'addressbook': values = PersonProperty.findAllByType(propDef)
                             break
                     }
                 }
@@ -677,21 +677,21 @@ class AjaxController {
                             break
                         case 'listProvider':
                         case 'currentProviders':
-                        case 'manageMembers': values = OrgCustomProperty.executeQuery('select ocp from OrgCustomProperty ocp where ocp.type = :propDef',[propDef:propDef])
+                        case 'manageMembers': values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and op.tenant = :tenant and op.isPublic = true',[propDef:propDef,tenant:contextService.org])
                             break
                     }
                 }
 
                 if(values) {
                     if(propDef.type == Integer.toString()) {
-                        values.each { v ->
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.intValue != null)
                                 result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
                         }
                         result = result.sort { x, y -> x.text.compareTo y.text}
                     }
                     else {
-                        values.each { v ->
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.getValue() != null)
                                 result.add([value:v.getValue(),text:v.getValue()])
                         }
@@ -1290,7 +1290,7 @@ class AjaxController {
 
             render(template: "/templates/properties/custom", model: [
                     ownobj: owner,
-                    customProperties: owner.customProperties,
+                    customProperties: owner.propertySet,
                     newProp: newProp,
                     error: error,
                     message: msg,
@@ -1306,11 +1306,11 @@ class AjaxController {
       def newProp
       def owner = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
       def type = PropertyDefinition.get(params.propIdent.toLong())
-
-      def existingProp = owner.customProperties.find { it.type.name == type.name }
+      Org contextOrg = contextService.getOrg()
+      def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant.id == contextOrg.id }
 
       if (existingProp == null || type.multipleOccurrence) {
-        newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type, contextService.getOrg())
+        newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type, contextOrg )
         if (newProp.hasErrors()) {
           log.error(newProp.errors)
         } else {
@@ -1328,6 +1328,7 @@ class AjaxController {
       if (params.propDefGroup) {
         render(template: "/templates/properties/group", model: [
                 ownobj          : owner,
+                institution     : contextOrg,
                 newProp         : newProp,
                 error           : error,
                 showConsortiaFunctions: showConsortiaFunctions,
@@ -1342,6 +1343,7 @@ class AjaxController {
 
           Map<String, Object> modelMap =  [
                   ownobj                : owner,
+                  institution           : contextOrg,
                   newProp               : newProp,
                   showConsortiaFunctions: showConsortiaFunctions,
                   showCollectiveFunctions: showCollectiveFunctions,
@@ -1435,12 +1437,12 @@ class AjaxController {
         else {
             Set<AbstractPropertyWithCalculatedLastUpdated> existingProps
             if(owner.hasProperty("privateProperties")) {
-                existingProps = owner.privateProperties.findAll {
+                existingProps = owner.propertySet.findAll {
                     it.owner.id == owner.id && it.type.id == type.id // this sucks due lazy proxy problem
                 }
             }
             else {
-                existingProps = owner.customProperties.findAll { AbstractPropertyWithCalculatedLastUpdated prop ->
+                existingProps = owner.propertySet.findAll { AbstractPropertyWithCalculatedLastUpdated prop ->
                     prop.owner.id == owner.id && prop.type.id == type.id && prop.tenant.id == tenant.id && prop.isPublic == false
                 }
             }
@@ -1651,6 +1653,49 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    def togglePropertyIsPublic() {
+        EhcacheWrapper cache = contextService.getCache("/subscription/togglePropertyIsPublic/", contextService.USER_SCOPE)
+        if(!cache.get("${params.oid}")) {
+            cache.put(params.oid,'locked')
+            AbstractPropertyWithCalculatedLastUpdated property = genericOIDService.resolveOID(params.oid)
+            property.isPublic = !property.isPublic
+            property.save()
+            Org contextOrg = contextService.getOrg()
+            request.setAttribute("editable", params.editable == "true")
+            if(params.propDefGroup) {
+                render(template: "/templates/properties/group", model: [
+                        ownobj          : property.owner,
+                        newProp         : property,
+                        contextOrg      : contextOrg,
+                        showConsortiaFunctions: params.showConsortiaFunctions,
+                        propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                        custom_props_div: "${params.custom_props_div}", // JS markup id
+                        prop_desc       : property.type.descr // form data
+                ])
+            }
+            else {
+                Map<String, Object>  allPropDefGroups = property.owner.getCalculatedPropDefGroups(contextOrg)
+
+                Map<String, Object> modelMap =  [
+                        ownobj                : property.owner,
+                        newProp               : property,
+                        contextOrg            : contextOrg,
+                        showConsortiaFunctions: params.showConsortiaFunctions,
+                        custom_props_div      : "${params.custom_props_div}", // JS markup id
+                        prop_desc             : property.type.descr, // form data
+                        orphanedProperties    : allPropDefGroups.orphanedProperties
+                ]
+                render(template: "/templates/properties/custom", model: modelMap)
+            }
+            cache.remove(params.oid)
+            log.debug("lock released")
+        }
+        else {
+            log.debug("request already handled!")
+        }
+    }
+
+    @Secured(['ROLE_USER'])
     def togglePropertyAuditConfig() {
         def className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
@@ -1811,7 +1856,7 @@ class AjaxController {
     def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
     def prop_desc = property.getType().getDescr()
 
-    owner.customProperties.remove(property)
+    owner.propertySet.remove(property)
     property.delete(flush:true)
 
     if(property.hasErrors()){

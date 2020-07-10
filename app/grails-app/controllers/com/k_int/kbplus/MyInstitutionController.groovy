@@ -832,25 +832,25 @@ join sub.orgRelations or_sub where
                        g.message(code: 'subscription.manualCancellationDate.label'),
                        g.message(code: 'default.identifiers.label'),
                        g.message(code: 'default.status.label'),
-                       g.message(code: 'subscription.type.label'),
                        g.message(code: 'subscription.kind.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
                        g.message(code: 'subscription.isPublicForApi.label'),
                        g.message(code: 'subscription.hasPerpetualAccess.label')]
         boolean asCons = false
-        if(accessService.checkPerm('ORG_INST_COLLECTIVE, ORG_CONSORTIUM')) {
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
             asCons = true
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
-        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
+        //Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
+        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptions) and sp.tenant = :ctx",[subscriptions:subscriptions,ctx:contextOrg])
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         Map<Subscription,Set> providers = [:], agencies = [:], identifiers = [:], licenseReferences = [:]
         Map costItemCounts = [:]
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         List allIdentifiers = Identifier.findAllBySubIsNotNull()
-        List allLicenses = Links.executeQuery("select li.source from Links li where li.destination in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions.collect{ Subscription sub -> GenericOIDService.getOID(sub) },linkType:RDStore.LINKTYPE_LICENSE])
+        List allLicenses = Links.executeQuery("select li from Links li where li.destination in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions.collect{ Subscription sub -> GenericOIDService.getOID(sub) },linkType:RDStore.LINKTYPE_LICENSE])
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { OrgRole provider ->
             Set subProviders = providers.get(provider.sub)
@@ -913,7 +913,6 @@ join sub.orgRelations or_sub where
                     row.add([field: sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '', style: null])
                     row.add([field: identifiers.get(sub) ? identifiers.get(sub).join(", ") : '',style: null])
                     row.add([field: sub.status?.getI10n("value"), style: null])
-                    row.add([field: sub.type?.getI10n("value"), style: null])
                     row.add([field: sub.kind?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
@@ -935,14 +934,14 @@ join sub.orgRelations or_sub where
                     }
                     row.add(packageNames ? packageNames.join("; ") : '')
                     row.add(sub.getConsortia()?.name ?: '')
-                    row.add(providers.get(sub) ? providers.get(sub).join("; ") : '')
-                    row.add(agencies.get(sub) ? agencies.get(sub).join("; ") : '')
+                    row.add(providers.get(sub) ? providers.get(sub).join("; ").replace(',','') : '')
+                    row.add(agencies.get(sub) ? agencies.get(sub).join("; ").replace(',','') : '')
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
                     row.add(sub.endDate ? sdf.format(sub.endDate) : '')
                     row.add(sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '')
                     row.add(identifiers.get(sub) ? identifiers.get(sub).join("; ") : '')
                     row.add(sub.status?.getI10n("value"))
-                    row.add(sub.type?.getI10n("value"))
+                    row.add(sub.kind?.getI10n("value"))
                     row.add(sub.form?.getI10n("value"))
                     row.add(sub.resource?.getI10n("value"))
                     row.add(sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
@@ -2335,7 +2334,7 @@ AND EXISTS (
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
 
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.customProperties + result.successorSubscription.customProperties, true, true) : null
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet + result.successorSubscription.customProperties, true, true) : null
             }
 
         }

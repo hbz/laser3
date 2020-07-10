@@ -2,8 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
@@ -147,7 +145,7 @@ class SurveyService {
 
 
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
-            targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
+            targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type.multipleOccurrence
             if ((!targetProp) || isAddNewProp) {
                 targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)
@@ -610,11 +608,11 @@ class SurveyService {
                 {
 
                     User user = userOrg.user
-
+                    Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
                     String emailReceiver = user.getEmail()
                     String currentServer = ServerUtils.getCurrentServer()
                     String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
-                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, locale) +  " (" + participationFinish.sortname + ")")
+                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, language) +  " (" + participationFinish.sortname + ")")
 
                         try {
                             if (emailReceiver == null || emailReceiver.isEmpty()) {

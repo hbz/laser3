@@ -14,7 +14,7 @@
 
             <g:if test="${field.equalsIgnoreCase('name')}">
                 <div class="field">
-                    <label for="orgNameContains">${message(code: 'org.search.contains')}</label>
+                    <label for="orgNameContains">${actionName == 'listProvider' ? message(code: 'org.search.provider.contains') : message(code: 'org.search.contains')}</label>
                     <input type="text" id="orgNameContains" name="orgNameContains"
                            placeholder="${message(code:'default.search.ph')}"
                            value="${params.orgNameContains}"/>

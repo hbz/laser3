@@ -2,8 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
@@ -1031,9 +1029,9 @@ class SubscriptionService {
                         }
                     }
 
-                    if (subMember.customProperties) {
+                    if (subMember.propertySet) {
                         //customProperties
-                        for (prop in subMember.customProperties) {
+                        for (prop in subMember.propertySet) {
                             SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.save()
@@ -1277,7 +1275,7 @@ class SubscriptionService {
 
 
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
-            targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId && sourceProp.tenant.id == sourceProp.tenant }
+            targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && sourceProp.tenant.id == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
                 targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)

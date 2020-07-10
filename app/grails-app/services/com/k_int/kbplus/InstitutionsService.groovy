@@ -6,6 +6,8 @@ import de.laser.AuditConfig
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
+import java.nio.file.Files
+import java.nio.file.Path
 
 @Transactional
 class InstitutionsService {
@@ -89,7 +91,7 @@ class InstitutionsService {
             }
             else if (option == InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD) {
 
-                for (prop in base.customProperties) {
+                for (prop in base.propertySet) {
                     LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
                     copiedProp = prop.copyInto(copiedProp)
                     copiedProp.instanceOf = null
@@ -113,6 +115,12 @@ class InstitutionsService {
                             user: dctx.owner.user,
                             migrated: dctx.owner.migrated
                     ).save()
+
+                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                    Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                    Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                    Files.copy(source, target)
 
                     DocContext ndc = new DocContext(
                             owner: clonedContents,
@@ -175,7 +183,7 @@ class InstitutionsService {
             licenseInstance.startDate = baseLicense?.startDate
             licenseInstance.endDate = baseLicense?.endDate
         }
-        for (prop in baseLicense?.customProperties) {
+        for (prop in baseLicense?.propertySet) {
             def copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
             copiedProp = prop.copyInto(copiedProp)
             copiedProp.instanceOf = null
@@ -226,6 +234,12 @@ class InstitutionsService {
                         mimeType: dctx.owner.mimeType,
                         user: dctx.owner.user,
                         migrated: dctx.owner.migrated).save()
+
+                String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                Files.copy(source, target)
 
                 DocContext ndc = new DocContext(owner: clonedContents,
                         license: licenseInstance,

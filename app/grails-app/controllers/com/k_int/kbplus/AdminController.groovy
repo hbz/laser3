@@ -32,6 +32,8 @@ import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -684,6 +686,90 @@ class AdminController extends AbstractDebugController {
         ).size()
 
         result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def recoveryDoc() {
+        Map<String, Object> result = [:]
+
+        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+        Closure fileCheck = { Doc doc ->
+
+            try {
+                File test = new File("${result.filePath}/${doc.uuid}")
+                if (test.exists() && test.isFile()) {
+                    return true
+                }
+            }
+            catch (Exception e) {
+                return false
+            }
+        }
+
+        Doc doc = Doc.get(Long.parseLong(params.docID))
+
+        if (!fileCheck(doc)) {
+            result.doc = doc
+
+            List docs = Doc.findAllWhere(
+                    blobContent: doc.blobContent,
+                    status: doc.status,
+                    type: doc.type,
+                    content: doc.content,
+                    contentType: doc.contentType,
+                    title: doc.title,
+                    creator: doc.creator,
+                    filename: doc.filename,
+                    mimeType: doc.mimeType,
+                    user: doc.user,
+                    migrated: doc.migrated,
+                    owner: doc.owner
+            )
+            result.docsToRecovery = docs
+        }
+        result
+
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def processRecoveryDoc() {
+        Map<String, Object> result = [:]
+
+        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+        Closure fileCheck = { Doc doc ->
+
+            try {
+                File test = new File("${result.filePath}/${doc.uuid}")
+                if (test.exists() && test.isFile()) {
+                    return true
+                }
+            }
+            catch (Exception e) {
+                return false
+            }
+        }
+
+        Doc docWithoutFile = Doc.get(Long.parseLong(params.sourceDoc))
+        Doc docWithFile = Doc.get(Long.parseLong(params.targetDoc))
+
+        if (!fileCheck(docWithoutFile) && fileCheck(docWithFile)) {
+
+            Path source = new File("${result.filePath}/${docWithFile.uuid}").toPath()
+            Path target = new File("${result.filePath}/${docWithoutFile.uuid}").toPath()
+            Files.copy(source, target)
+
+            if(fileCheck(docWithoutFile)){
+                flash.message = "Datei erfolgreich wiederhergestellt!"
+            }else{
+                flash.error = "Datei nicht erfolgreich wiederhergestellt!"
+            }
+        }else {
+            flash.error = "Keine Quell-Datei gefunden um Wiederherzustellen!"
+        }
+        redirect(action:'recoveryDoc', params: ['docID': docWithoutFile.id])
+
     }
 
   @Secured(['ROLE_ADMIN'])

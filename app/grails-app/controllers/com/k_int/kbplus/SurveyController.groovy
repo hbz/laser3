@@ -36,6 +36,8 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 
 import javax.servlet.ServletOutputStream
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -697,7 +699,7 @@ class SurveyController {
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
 
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.customProperties + result.successorSubscription.customProperties, true, true) : null
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet + result.successorSubscription.customProperties, true, true) : null
             }
 
 
@@ -1566,7 +1568,7 @@ class SurveyController {
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
 
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.customProperties + result.successorSubscription.customProperties, true, true) : null
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet + result.successorSubscription.customProperties, true, true) : null
             }
         }
 
@@ -2496,7 +2498,7 @@ class SurveyController {
                 if (surveyResult.participant.id in currentParticipantIDs && surveyResult.sub) {
 
                     if (property.type == 'class com.k_int.kbplus.RefdataValue') {
-                        if (surveyResult.sub.customProperties.find {
+                        if (surveyResult.sub.propertySet.find {
                             it.type.id == property.id
                         }.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {
 
@@ -3022,7 +3024,7 @@ class SurveyController {
         subsToCompare.each { sub ->
             Map customProperties = result.customProperties
             sub = GrailsHibernateUtil.unwrapIfProxy(sub)
-            customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.customProperties.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.propertySet.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
             privateProperties = comparisonService.buildComparisonTree(privateProperties, sub, sub.privateProperties.sort{it.type.getI10n('name')})
@@ -4007,7 +4009,7 @@ class SurveyController {
                                     it.type.id == propDef.id
                                 } : []
                             } else {
-                                copyProperty = oldSub ? oldSub.customProperties.find {
+                                copyProperty = oldSub ? oldSub.propertySet.find {
                                     it.type.id == propDef.id
                                 } : []
                             }
@@ -4037,7 +4039,7 @@ class SurveyController {
                                 }
                             } else {
                                 //custom Property
-                                def existingProp = sub.customProperties.find {
+                                def existingProp = sub.propertySet.find {
                                     it.type.id == propDef.id && it.owner.id == sub.id
                                 }
 
@@ -5084,6 +5086,12 @@ class SurveyController {
                                 migrated: dctx.owner.migrated,
                                 owner: dctx.owner.owner
                         ).save()
+
+                        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                        Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                        Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                        Files.copy(source, target)
 
                         DocContext ndc = new DocContext(
                                 owner: clonedContents,

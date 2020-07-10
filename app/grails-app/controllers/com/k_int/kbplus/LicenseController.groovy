@@ -21,6 +21,8 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.SimpleDateFormat
 
 import static de.laser.helper.RDStore.*
@@ -670,7 +672,7 @@ class LicenseController
         }
 
         // postgresql migration
-        String subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
+        String subQuery = 'select cast(lp.id as string) from LicenseProperty as lp where lp.owner = :owner'
         def subQueryResult = LicenseProperty.executeQuery(subQuery, [owner: result.license])
 
         //def qry_params = [licClass:result.license.class.name, prop:LicenseCustomProperty.class.name,owner:result.license, licId:"${result.license.id}"]
@@ -693,7 +695,7 @@ class LicenseController
                 base_query, query_params, [max:result.max, offset:result.offset]
         )
 
-    def propertyNameHql = "select pd.name from LicenseCustomProperty as licP, PropertyDefinition as pd where licP.id= ? and licP.type = pd"
+    def propertyNameHql = "select pd.name from LicenseProperty as licP, PropertyDefinition as pd where licP.id= ? and licP.type = pd"
     
     result.historyLines?.each{
       if(it.className == query_params.prop ){
@@ -1008,6 +1010,12 @@ class LicenseController
                                         owner: dctx.owner.owner
                                 ).save()
 
+                                String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                                Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                                Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                                Files.copy(source, target)
+
                                 DocContext ndc = new DocContext(
                                         owner: clonedContents,
                                         license: licenseInstance,
@@ -1072,7 +1080,7 @@ class LicenseController
 
                     if(params.license.copyCustomProperties) {
                         //customProperties
-                        baseLicense.customProperties.findAll{ LicenseProperty prop -> prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
+                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
                             LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.instanceOf = null
@@ -1082,7 +1090,7 @@ class LicenseController
                     if(params.license.copyPrivateProperties){
                         //privatProperties
 
-                        baseLicense.customProperties.findAll{ LicenseProperty prop -> prop.type.tenant.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
+                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
                             LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.save()

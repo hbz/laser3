@@ -97,7 +97,7 @@ class ApiWriterHelper {
             person.contacts  = getContacts(it.contacts, null, person)
 
             def properties = getProperties(it.properties, person, contextOrg)
-            person.privateProperties = properties['private']
+            person.propertySet = properties['private']
 
             // PersonRoles
             it.roles?.each { it2 ->
@@ -195,16 +195,17 @@ class ApiWriterHelper {
             def property
 
             // Private Property
-            if (! it.isPublic) {
+            if (it.tenant == contextOrg) {
                 if (owner instanceof Org) {
-                    property = new OrgPrivateProperty(
+                    property = new OrgProperty(
                             owner:  owner,
                             tenant: contextOrg,
-                            note:   it.note
+                            note:   it.note,
+                            isPublic: it.isPublic
                     )
                 }
                 else if (owner instanceof Person) {
-                    property = new PersonPrivateProperty(
+                    property = new PersonProperty(
                             owner:  owner,
                             tenant: contextOrg,
                             note:   it.note
@@ -233,18 +234,22 @@ class ApiWriterHelper {
 
             }
             // Custom Property
-            else {
+            else if(!it.tenant) {
                 if (owner instanceof Org) {
-                    property = new OrgCustomProperty(
+                    property = new OrgProperty(
                             owner: owner,
-                            note:  it.note
+                            note:  it.note,
+                            tenant: it.tenant,
+                            isPublic: it.isPublic
                     )
                 }
                 else if (owner instanceof License) {
                     property = new LicenseProperty(
                             owner:     owner,
                             note:      it.note,
-                            paragraph: it.paragraph
+                            paragraph: it.paragraph,
+                            tenant: it.tenant,
+                            isPublic: it.isPublic
                     )
                 }
 

@@ -29,10 +29,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     LicenseProperty instanceOf
     String paragraph
 
-    //to be transposed to AbstractPropertyWithCalculatedLastUpdated once migration is complete
-    Org tenant
-    boolean isPublic = false
-
     Date dateCreated
     Date lastUpdated
 
@@ -54,6 +50,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         isPublic    column: 'lp_is_public'
         dateCreated column: 'lp_date_created'
         lastUpdated column: 'lp_last_updated'
+        lastUpdatedCascading column: 'lp_last_updated_cascading'
     }
 
     static constraints = {

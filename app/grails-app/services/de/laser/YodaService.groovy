@@ -792,7 +792,7 @@ class YodaService {
             }
         }
         platformsWithoutGOKb.each { Platform platform ->
-            if(!OrgAccessPointLink.findByPlatform(platform) && !TitleInstancePackagePlatform.findByPlatform(platform) && platform.customProperties.empty) {
+            if(!OrgAccessPointLink.findByPlatform(platform) && !TitleInstancePackagePlatform.findByPlatform(platform) && platform.propertySet.empty) {
                 result.platformsWithoutGOKb << platform
             }
             else {
@@ -818,7 +818,7 @@ class YodaService {
                 }
             }
             else {
-                if(!OrgAccessPointLink.findByPlatform(platform) && !TitleInstancePackagePlatform.findByPlatform(platform) && platform.customProperties.empty) {
+                if(!OrgAccessPointLink.findByPlatform(platform) && !TitleInstancePackagePlatform.findByPlatform(platform) && platform.propertySet.empty) {
                     result.inexistentPlatforms << platform
                 }
                 else {
