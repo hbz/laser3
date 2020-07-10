@@ -3,12 +3,14 @@ package de.laser
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
+import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.annotation.PostConstruct
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
+@Transactional
 class FilterService {
 
     private static final Long FAKE_CONSTRAINT_ORGID_WITHOUT_HITS = new Long(-1)

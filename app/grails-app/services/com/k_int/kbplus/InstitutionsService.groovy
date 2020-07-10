@@ -5,10 +5,11 @@ import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-
+import grails.transaction.Transactional
 import java.nio.file.Files
 import java.nio.file.Path
 
+@Transactional
 class InstitutionsService {
 
     def contextService

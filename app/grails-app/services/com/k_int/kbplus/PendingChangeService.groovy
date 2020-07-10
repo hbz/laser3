@@ -11,6 +11,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
@@ -21,6 +22,7 @@ import org.springframework.transaction.TransactionStatus
 import java.text.SimpleDateFormat
 import java.time.Duration
 
+@Transactional
 class PendingChangeService extends AbstractLockableService {
 
     def genericOIDService
