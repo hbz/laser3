@@ -294,12 +294,16 @@ $.fn.dropdown = function(parameters) {
             if(hasNext) {
               module.verbose('Moving selection to', $nextAvailable);
               $nextAvailable.addClass(className.selected);
-              $search.attr('aria-activedescendant', $nextAvailable[0].id);
+              if (hasNext) {
+                $search.attr('aria-activedescendant', $nextAvailable[0].id);
+              }
             }
             else {
               module.verbose('Moving selection to', $prevAvailable);
               $prevAvailable.addClass(className.selected);
-              $search.attr('aria-activedescendant', $prevAvailable[0].id);
+              if (hasNext) {
+                $search.attr('aria-activedescendant', $prevAvailable[0].id);
+              }
             }
           }
         },
@@ -1490,7 +1494,9 @@ $.fn.dropdown = function(parameters) {
                     $nextItem
                       .addClass(className.selected)
                     ;
-                    $search.attr('aria-activedescendant', $nextItem[0].id);
+                    if($nextItem.length !== 0) {
+                      $search.attr('aria-activedescendant', $nextItem[0].id);
+                    }
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
                       module.set.selectedItem($nextItem);
@@ -1848,12 +1854,18 @@ $.fn.dropdown = function(parameters) {
                 // remove all the inner text from this span tag with the class description
                 $choice.children().remove('.description')
               }
-              return ($choice.data(metadata.text) !== undefined)
+/*              return ($choice.data(metadata.text) !== undefined)
                 ? $choice.data(metadata.text)
                 : (preserveHTML)
                   ? $.trim($choice.html())
                   : $.trim($choice.text())
-              ;
+              ;*/
+
+              //always return only the text part of of a choice
+              return ($choice.data(metadata.text) !== undefined)
+                  ? $choice.data(metadata.text)
+                  :  $choice.text().trim()
+                  ;
             }
           },
           choiceValue: function($choice, choiceText) {
@@ -2434,6 +2446,7 @@ $.fn.dropdown = function(parameters) {
             module.set.partialSearch(searchText);
             module.set.activeItem($item);
             module.set.selected(value, $item);
+            console.log("rufe auf module.set.text(text);")
             module.set.text(text);
             },
           selectedLetter: function(letter) {
@@ -2609,6 +2622,9 @@ $.fn.dropdown = function(parameters) {
                   isUserValue    = $selected.hasClass(className.addition),
                   shouldAnimate  = (isMultiple && $selectedItem.length == 1)
                 ;
+                console.log("--------------$selected---------------");
+                console.log($selected);
+                console.log("------------$selected-----------------");
                 if(isMultiple) {
                   if(!isActive || isUserValue) {
                     if(settings.apiSettings && settings.saveRemoteData) {
@@ -2636,6 +2652,7 @@ $.fn.dropdown = function(parameters) {
                   if(settings.apiSettings && settings.saveRemoteData) {
                     module.save.remoteData(selectedText, selectedValue);
                   }
+                  console.log("rufe auf module.set.text(selectedText)")
                   module.set.text(selectedText);
                   module.set.ariaSelected($selectedItem);
                   module.set.value(selectedValue, selectedText, $selected);
