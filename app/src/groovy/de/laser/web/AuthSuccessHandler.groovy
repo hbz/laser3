@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugUtil
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.web.authentication.AjaxAwareAuthenticationSuccessHandler
+import grails.transaction.Transactional
 import grails.util.Holders
 import org.springframework.security.core.Authentication
 
@@ -18,6 +19,7 @@ class AuthSuccessHandler extends AjaxAwareAuthenticationSuccessHandler {
     def contextService = Holders.grailsApplication.mainContext.getBean('contextService')
 
     @Override
+    @Transactional
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
                                         final Authentication authentication) throws ServletException, IOException {
 

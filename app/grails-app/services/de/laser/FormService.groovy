@@ -1,9 +1,11 @@
 package de.laser
 
 import de.laser.helper.SessionCacheWrapper
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 //@CompileStatic
+@Transactional
 class FormService {
 
     def springSecurityService

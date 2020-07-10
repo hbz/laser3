@@ -6,12 +6,14 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.transaction.Transactional
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsHttpSession
 import org.codehaus.groovy.grails.web.util.WebUtils
 
 @CompileStatic
+@Transactional
 class ContextService {
 
     SpringSecurityService springSecurityService

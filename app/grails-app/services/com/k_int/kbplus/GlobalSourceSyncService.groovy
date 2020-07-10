@@ -10,6 +10,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
+import grails.transaction.Transactional
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.NodeChildren
@@ -28,6 +29,7 @@ import java.util.concurrent.ExecutorService
 /**
  * Implements the synchronisation workflow according to https://dienst-wiki.hbz-nrw.de/display/GDI/GOKB+Sync+mit+LASER
  */
+//@Transactional
 class GlobalSourceSyncService extends AbstractLockableService {
 
     SessionFactory sessionFactory
