@@ -34,7 +34,6 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
-import de.laser.helper.ConfigUtils
 
 import javax.servlet.ServletOutputStream
 import java.nio.file.Files
@@ -5437,7 +5436,7 @@ class SubscriptionController
                                     owner: dctx.owner.owner
                             ).save()
 
-                            String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+                            String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
 
                             Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                             Path target = new File("${fPath}/${clonedContents.uuid}").toPath()

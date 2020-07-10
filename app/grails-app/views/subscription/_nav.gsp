@@ -28,6 +28,10 @@
         </sec:ifAnyGranted>
     </g:if>
 
+    <g:if test="${((contextService.org?.getCustomerType() in ['ORG_CONSORTIUM']) && subscriptionInstance.instanceOf)}">
+    <semui:securedSubNavItem orgPerm="ORG_CONSORTIUM" controller="subscription" action="surveys" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+    </g:if>
+
     <g:if test="${((contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']) || params.orgBasicMemberView)&& subscriptionInstance?.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
         <semui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>

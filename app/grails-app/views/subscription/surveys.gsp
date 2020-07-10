@@ -26,7 +26,7 @@
 
 <g:render template="nav"/>
 
-<g:render template="message" />
+<g:render template="message"/>
 
 <semui:messages data="${flash}"/>
 
@@ -57,7 +57,7 @@
         <g:each in="${surveys}" var="surveyConfig" status="i">
 
             <g:set var="surveyInfo"
-                   value="${surveyConfig?.surveyInfo}"/>
+                   value="${surveyConfig.surveyInfo}"/>
 
             <tr>
                 <td class="center aligned">
@@ -66,27 +66,36 @@
                 <td>
 
                     <div class="la-flexbox">
-                        <g:if test="${surveyConfig?.subSurveyUseForTransfer}">
+                        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyConfig.subSurveyUseForTransfer.label.info2")}">
                                 <i class="yellow icon envelope large "></i>
                             </span>
                         </g:if>
-                            ${surveyConfig?.getSurveyName()}
+                        ${surveyConfig.getSurveyName()}
                     </div>
                 </td>
                 <td>
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${surveyInfo?.startDate}"/>
+                                  date="${surveyInfo.startDate}"/>
 
                 </td>
                 <td>
 
                     <g:formatDate formatName="default.date.format.notime"
-                                  date="${surveyInfo?.endDate}"/>
+                                  date="${surveyInfo.endDate}"/>
                 </td>
                 <td>
-                    ${surveyInfo?.type?.getI10n('value')}
+                    <div class="ui label left pointing survey-${surveyInfo.type.value}">
+                        ${surveyInfo.type?.getI10n('value')}
+                    </div>
+
+                    <g:if test="${surveyInfo.isMandatory}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
+                            <i class="yellow icon exclamation triangle"></i>
+                        </span>
+                    </g:if>
                 </td>
 
                 <td class="center aligned">
@@ -98,26 +107,53 @@
                 </td>
                 <td class="x">
 
-                    <g:if test="${!surveyConfig.pickAndChoose}">
-                        <span class="la-popup-tooltip la-delay"
-                              data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                            <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo?.id}"
-                                    params="[surveyConfigID: surveyConfig.id]"
-                                    class="ui icon button">
-                                <i class="write icon"></i>
-                            </g:link>
-                        </span>
-                    </g:if>
+                    <g:if test="${(contextOrg.getCustomerType() in ['ORG_CONSORTIUM'])}">
+                        <g:if test="${!surveyConfig.pickAndChoose}">
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: institution.id]"
+                                        class="ui icon button">
+                                    <i class="write icon"></i>
+                                </g:link>
+                            </span>
+                        </g:if>
 
-                    <g:if test="${surveyConfig.pickAndChoose}">
-                        <span class="la-popup-tooltip la-delay"
-                              data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
-                            <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
-                                    class="ui icon button">
-                                <i class="write icon"></i>
-                            </g:link>
-                        </span>
+                        <g:if test="${surveyConfig.pickAndChoose}">
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
+                                <g:link controller="survey" action="surveyTitlesSubscriber"
+                                        id="${surveyConfig?.id}" params="[participant: institution.id]"
+                                        class="ui icon button"><i
+                                        class="write icon"></i>
+                                </g:link>
+                            </span>
+                        </g:if>
                     </g:if>
+                    <g:else>
+
+                        <g:if test="${!surveyConfig.pickAndChoose}">
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
+                                        params="[surveyConfigID: surveyConfig.id]"
+                                        class="ui icon button">
+                                    <i class="write icon"></i>
+                                </g:link>
+                            </span>
+                        </g:if>
+
+                        <g:if test="${surveyConfig.pickAndChoose}">
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
+                                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
+                                        id="${surveyConfig.id}"
+                                        class="ui icon button">
+                                    <i class="write icon"></i>
+                                </g:link>
+                            </span>
+                        </g:if>
+                    </g:else>
 
                 </td>
             </tr>
