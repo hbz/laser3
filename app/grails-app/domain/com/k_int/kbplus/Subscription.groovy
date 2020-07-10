@@ -85,6 +85,9 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   Date manualCancellationDate
   String cancellationAllowances
 
+  //Only for Consortia: ERMS-2098
+  String comment
+
   Subscription instanceOf
   Subscription previousSubscription //deleted as ERMS-800
   // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
@@ -141,6 +144,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
         name        column:'sub_name'
+        comment     column: 'sub_comment', type: 'text'
         identifier  column:'sub_identifier'
         startDate   column:'sub_start_date',        index: 'sub_dates_idx'
         endDate     column:'sub_end_date',          index: 'sub_dates_idx'
@@ -191,6 +195,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         manualRenewalDate(nullable:true, blank:false)
         manualCancellationDate(nullable:true, blank:false)
         instanceOf(nullable:true, blank:false)
+        comment(nullable: true, blank: true)
         administrative(blank:false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
         isSlaved    (blank:false)
@@ -954,6 +959,14 @@ select distinct oap from OrgAccessPoint oap
             result.startDate = startDate
             result.endDate = endDate
         }
+
+        result
+    }
+
+    List<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
+        List<OrgAccessPoint> result = []
+
+        result = this.getSubscriber().accessPoints
 
         result
     }

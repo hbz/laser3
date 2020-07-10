@@ -3,7 +3,9 @@ package de.laser
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.RefdataAnnotation
+import grails.transaction.Transactional
 
+@Transactional
 class RefdataService {
 
     def grailsApplication

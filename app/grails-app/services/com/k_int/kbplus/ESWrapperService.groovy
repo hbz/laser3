@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.helper.ConfigUtils
+import grails.transaction.Transactional
 import org.apache.http.HttpHost
 import org.codehaus.groovy.grails.web.json.parser.JSONParser
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest
@@ -12,7 +13,7 @@ import org.elasticsearch.cluster.health.ClusterHealthStatus
 import org.elasticsearch.cluster.health.ClusterIndexHealth
 import org.elasticsearch.rest.RestStatus
 
-
+@Transactional
 class ESWrapperService {
 
     final static ES_INDEX   = 'kbplus'

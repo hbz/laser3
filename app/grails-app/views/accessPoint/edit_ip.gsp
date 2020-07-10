@@ -73,10 +73,10 @@
         <table class="ui celled la-table table very compact">
             <thead>
             <tr>
-                <th>${message(code: 'accessPoint.ip.format.input')}</th>
-                <th>${message(code: 'accessPoint.ip.format.range')}</th>
-                <th>${message(code: 'accessPoint.ip.format.cidr')}</th>
-                <th>${message(code: 'default.actions.label')}</th>
+                <th class="five wide">${message(code: 'accessPoint.ip.format.input')}</th>
+                <th class="five wide">${message(code: 'accessPoint.ip.format.range')}</th>
+                <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}</th>
+                <th class="one wide">${message(code: 'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -145,10 +145,10 @@
     <table class="ui celled la-table table very compact">
         <thead>
         <tr>
-            <th>${message(code: 'accessPoint.ip.format.input')}</th>
-            <th>${message(code: 'accessPoint.ip.format.range')}</th>
-            <th>${message(code: 'accessPoint.ip.format.cidr')}</th>
-            <th>${message(code: 'default.actions.label')}</th>
+            <th class="five wide">${message(code: 'accessPoint.ip.format.input')}</th>
+            <th class="five wide">${message(code: 'accessPoint.ip.format.range')}</th>
+            <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}</th>
+            <th class="one wide">${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
         <tbody>

@@ -2,13 +2,21 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2609    09.07.2020  hbz-dev     Moe     Feature     API Schnittstelle für Zugangskonfiguration
+
 1580    09.07.2020  hbz-dev     Andreas Feature     Umbau der Merkmalsverwaltung
+
+2654    08.07.2020  hbz-dev     Moe     Feature     Überarbeitung Zugangskonfiguration
+
+2098    07.07.2020  hbz-dev     Moe     Feature     Freitextfeld in Teilnehmerübersicht ermöglichen
 
 2664    07.07.2020  hbz-dev     Andreas Feature     Vorbelegung von auszuwählenden Lizenzen für Finanzmodal per Checkbox
 
 2657    07.07.2020  hbz-dev     David   Feature     Refactoring: Wrapper für Konfigurationszugriff
 
 2459    07.07.2020  rc1.4       Moe     Bug         Beim Kopieren von Objekten werden Dokumenten nicht richtig kopiert
+
+2659    06.07.2020  hbz-dev     Moe     Feature     Sortierung "Nicht abgeschlossen" auch für Konsortialsicht bauen bei Teilnehmer-Umfragen
 
 2660    06.07.2020  rc1.4       Moe     Bug         API Endpunkt CostItemList muss alle CostItems zurückgeben
 

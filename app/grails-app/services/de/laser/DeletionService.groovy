@@ -7,12 +7,14 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import grails.transaction.Transactional
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 
 //@CompileStatic
+//@Transactional
 class DeletionService {
 
     SubscriptionService subscriptionService

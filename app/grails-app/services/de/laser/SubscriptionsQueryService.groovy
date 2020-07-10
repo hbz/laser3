@@ -6,10 +6,12 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.SimpleDateFormat
 
+@Transactional
 class SubscriptionsQueryService {
     def genericOIDService
     def propertyService
