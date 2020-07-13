@@ -416,7 +416,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
 
 </g:form>
 
-<r:script language="JavaScript">
+<r:script>
 
      $(document).ready(function() {
       $("simpleHiddenRefdata").editable({

@@ -534,7 +534,7 @@
 </div>
 
 
-<r:script language="JavaScript">
+<r:script>
       function hideModal(){
         $("[name='coreAssertionEdit']").modal('hide');
       }
