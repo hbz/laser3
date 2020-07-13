@@ -122,21 +122,23 @@ class RefdataCategory extends AbstractI10nOverride {
    * @param category_name
    * @return ArrayList
    */
-  static List<RefdataValue> getAllRefdataValues(category_name) {
-      String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
+  static List<RefdataValue> getAllRefdataValues(String category_name) {
+      if (! category_name) {
+          return []
+      }
+      String i10nAttr = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
+      String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) = :category order by rdv.${i10nAttr}"
 
-      RefdataValue.executeQuery(
-              "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) = ? order by rdv.${i10value}"
-              , ["${category_name}".toLowerCase()] )
+      RefdataValue.executeQuery( query, [category: category_name.toLowerCase()] )
   }
   static List<RefdataValue> getAllRefdataValues(List category_names) {
-      String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
-      List<String> lowerCategoryName = category_names.collect {it.toLowerCase()}
+      if (! category_names) {
+          return []
+      }
+      String i10nAttr = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
+      String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) in (:categories) order by rdv.${i10nAttr}"
 
-      RefdataValue.executeQuery(
-              "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) " +
-                      "in (:categories) order by rdv.${i10value}"
-              , [categories: lowerCategoryName] )
+      RefdataValue.executeQuery( query, [categories: category_names.collect{it.toLowerCase()}] )
   }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {
