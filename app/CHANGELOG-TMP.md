@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2614    13.07.2020  hbz-dev     Andreas Bug         Rechnungs- und Auftragsnummer konnten nicht gelöscht werden
+
 2426    13.07.2020  hbz-dev     Andreas Feature     Merkmale sind hinsichtlich ihrer Mehrfachvergabe und Pflichtsetzung konfigurierbar
 
 2679    10.07.2020  hbz-dev     Moe     Feature     Umfrage: Umfragereiter auch bei Kindlizenz für Konsortialstelle anzeigen

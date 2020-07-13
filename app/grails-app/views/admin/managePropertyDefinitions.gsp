@@ -125,15 +125,56 @@
                                     </td>
                                     <td class="x">
 
-                                        <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                            <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SUR_PROP, null)}">
-                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
-                                                    <g:link class="ui icon button" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
-                                                        <i class="copy icon"></i>
-                                                    </g:link>
-                                                </span>
+                                        <g:if test="${pd.mandatory}">
+                                            <g:link action="managePropertyDefinitions"
+                                                    params="${[cmd: 'toggleMandatory', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon yellow button">
+                                                <i class="star icon"></i>
+                                            </g:link>
+                                        </g:if>
+                                        <g:else>
+                                            <g:link action="managePropertyDefinitions"
+                                                    params="${[cmd: 'toggleMandatory', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon button">
+                                                <i class="star yellow icon"></i>
+                                            </g:link>
+                                        </g:else>
+                                        <g:if test="${!multiplePdList?.contains(pd.id)}">
+                                            <g:if test="${pd.multipleOccurrence}">
+                                                <g:link action="managePropertyDefinitions"
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon orange button">
+                                                    <i class="redo slash icon"></i>
+                                                </g:link>
                                             </g:if>
-                                        </sec:ifAnyGranted>
+                                            <g:else>
+                                                <g:link action="managePropertyDefinitions"
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon button">
+                                                    <i class="redo orange icon"></i>
+                                                </g:link>
+                                            </g:else>
+                                        </g:if>
+                                        <g:if test="${pd.countUsages()==0}">
+                                            <g:link action="managePrivatePropertyDefinitions"
+                                                    params="[cmd:'delete', deleteIds: pd?.id]"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name")])}"
+                                                    data-confirm-term-how="delete"
+                                                    class="ui icon negative button js-open-confirm-modal"
+                                                    role="button">
+                                                <i class="trash alternate icon"></i>
+                                            </g:link>
+                                        </g:if>
+                                        <g:else>
+                                        <%-- hidden fake button to keep the other button in place --%>
+                                            <div class="ui icon button la-hidden">
+                                                <i class="coffe icon"></i>
+                                            </div>
+                                        </g:else>
+
+                                        <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SUR_PROP, null)}">
+                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
+                                                <g:link class="ui icon button" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
+                                                    <i class="copy icon"></i>
+                                                </g:link>
+                                            </span>
+                                        </g:if>
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">

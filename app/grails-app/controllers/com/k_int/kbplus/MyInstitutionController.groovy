@@ -3539,10 +3539,10 @@ AND EXISTS (
                         if (! pd.isHardData) {
                             try {
                                 pd.delete()
-                                flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de])
+                                flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
                             }
                             catch(Exception e) {
-                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.name_de])
+                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
                             }
                         }
                         break
