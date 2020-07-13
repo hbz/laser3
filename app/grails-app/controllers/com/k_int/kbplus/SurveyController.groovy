@@ -2685,6 +2685,8 @@ class SurveyController {
                             surveyInfo: newSurveyInfo,
                             comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                             url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                            url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
+                            url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
                             configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                     ).save()
 
@@ -2712,6 +2714,8 @@ class SurveyController {
                         surveyInfo: newSurveyInfo,
                         comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                         url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                        url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
+                        url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
                         configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                 ).save()
 
