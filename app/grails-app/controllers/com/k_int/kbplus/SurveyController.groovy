@@ -34,6 +34,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
+import de.laser.helper.ConfigUtils
 
 import javax.servlet.ServletOutputStream
 import java.nio.file.Files
@@ -5087,7 +5088,7 @@ class SurveyController {
                                 owner: dctx.owner.owner
                         ).save()
 
-                        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                        String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                         Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                         Path target = new File("${fPath}/${clonedContents.uuid}").toPath()

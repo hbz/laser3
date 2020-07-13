@@ -71,16 +71,16 @@
                 <table  class="ui celled la-table table">
                     <thead>
                     <tr>
-                            <th>${message(code: 'accessPoint.name')}</th>
+                            <th class="four wide">${message(code: 'accessPoint.name')}</th>
                         <g:if test="${accessPointListItem.key in ['ip', 'proxy']}">
-                            <th>IPv4</th>
-                            <th>IPv6</th>
+                            <th class="five wide">IPv4</th>
+                            <th class="five wide">IPv6</th>
                         </g:if>
                         <g:else>
-                            <th>${message(code: 'accessRule.plural')}</th>
+                            <th class="ten wide">${message(code: 'accessRule.plural')}</th>
                         </g:else>
                         <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
-                            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+                            <th class="la-action-info two wide">${message(code: 'default.actions.label')}</th>
                         </g:if>
                     </tr>
                     </thead>

@@ -115,22 +115,23 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     ]
 
     static hasMany = [
-            ids              :                Identifier,
-            subjectGroup     :       OrgSubjectGroup,
-            outgoingCombos   :     Combo,
-            incomingCombos   :     Combo,
-            links            :              OrgRole,
-            prsLinks         :           PersonRole,
-            contacts         :           Contact,
-            addresses        :          Address,
-            affiliations     :       UserOrg,
-            propertySet      :   OrgProperty,
-            //privateProperties:  OrgPrivateProperty,
-            orgType          :            RefdataValue,
-            documents        :          DocContext,
-            platforms        :          Platform,
-            hasCreated       :         Org,
-            hasLegallyObliged:  Org
+        ids:                Identifier,
+        subjectGroup:       OrgSubjectGroup,
+        outgoingCombos:     Combo,
+        incomingCombos:     Combo,
+        links:              OrgRole,
+        prsLinks:           PersonRole,
+        contacts:           Contact,
+        addresses:          Address,
+        affiliations:       UserOrg,
+        propertySet:        OrgProperty,
+        //privateProperties:  OrgPrivateProperty,
+        orgType:            RefdataValue,
+        documents:          DocContext,
+        platforms:          Platform,
+        hasCreated:         Org,
+        hasLegallyObliged:  Org,
+        accessPoints:   OrgAccessPoint
     ]
 
     static mapping = {

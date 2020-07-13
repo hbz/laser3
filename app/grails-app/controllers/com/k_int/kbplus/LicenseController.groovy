@@ -20,6 +20,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
+import de.laser.helper.ConfigUtils
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -1010,7 +1011,7 @@ class LicenseController
                                         owner: dctx.owner.owner
                                 ).save()
 
-                                String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                                String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                                 Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                                 Path target = new File("${fPath}/${clonedContents.uuid}").toPath()

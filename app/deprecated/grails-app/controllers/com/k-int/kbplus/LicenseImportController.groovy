@@ -5,6 +5,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 import org.xml.sax.SAXException
+import de.laser.helper.ConfigUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseImportController extends AbstractDebugController {
@@ -276,7 +277,7 @@ class LicenseImportController extends AbstractDebugController {
     doc_content.save()
 
     try {
-      def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+      def fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
       def fName = doc_content.uuid
 
       File folder = new File("${fPath}")

@@ -512,4 +512,10 @@ databaseChangeLog = {
 	changeSet(author: "galffy (modified)", id: "1594186314951-71") {
 		addNotNullConstraint(columnDataType: "bool", columnName: "surre_is_public", tableName: "survey_result")
 	}
+
+	changeSet(author: "Moe (generated)", id: "1594186314951-72") {
+		addColumn(schemaName: "public", tableName: "subscription") {
+			column(name: "sub_comment", type: "text")
+		}
+	}
 }
