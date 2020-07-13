@@ -5436,7 +5436,7 @@ class SubscriptionController
                                     owner: dctx.owner.owner
                             ).save()
 
-                            String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                            String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                             Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                             Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
