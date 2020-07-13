@@ -112,18 +112,19 @@ class PropertyService {
     }
 
     def getUsageDetails() {
-        def usedPdList  = []
-        def detailsMap = [:]
+        List usedPdList  = []
+        Map detailsMap = [:]
+        List multiplePdList = []
 
         grailsApplication.getArtefacts("Domain").toList().each { dc ->
 
-            if (dc.shortName.endsWith('CustomProperty') || dc.shortName.endsWith('PrivateProperty')) {
+            if (dc.shortName.endsWith('Property') && !SurveyProperty.class.name.contains(dc.name)) {
 
                 //log.debug( dc.shortName )
                 def query = "SELECT DISTINCT type FROM ${dc.name}"
                 //log.debug(query)
 
-                def pds = PropertyDefinition.executeQuery(query)
+                Set<PropertyDefinition> pds = PropertyDefinition.executeQuery(query)
                 //log.debug(pds)
                 detailsMap << ["${dc.shortName}": pds.collect{ it -> "${it.id}:${it.type}:${it.descr}"}.sort()]
 
@@ -131,10 +132,13 @@ class PropertyService {
                 pds.each{ it ->
                     usedPdList << it.id
                 }
+
+
+                multiplePdList.addAll(PropertyDefinition.executeQuery("select p.type.id from ${dc.name} p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id having count(p) > 1",[ctx:contextService.org]))
             }
         }
 
-        [usedPdList.unique().sort(), detailsMap.sort()]
+        [usedPdList.unique().sort(), detailsMap.sort(), multiplePdList]
     }
 
     Map<String, Object> getRefdataCategoryUsage() {
