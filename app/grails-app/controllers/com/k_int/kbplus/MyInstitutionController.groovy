@@ -3510,9 +3510,10 @@ AND EXISTS (
 
         result.propertyDefinitions = propDefs
 
-        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails()
         result.usedPdList = usedPdList
         result.attrMap = attrMap
+        result.multiplePdList = multiplePdList
         //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
         result.propertyType = 'private'
         result

@@ -134,7 +134,7 @@ class PropertyService {
                 }
 
 
-                multiplePdList.addAll(PropertyDefinition.executeQuery("select p.type.id from ${dc.name} p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id having count(p) > 1",[ctx:contextService.org]))
+                multiplePdList.addAll(PropertyDefinition.executeQuery("select p.type.id from ${dc.name} p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1",[ctx:contextService.org]))
             }
         }
 

@@ -46,14 +46,8 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     final static String SUR_PROP    = 'Survey Property'
 
     @Transient
-    final static String ORG_CONF    = 'Organisation Config'
-    @Transient
-    final static String SYS_CONF    = 'System Config'
-
-    @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [
             LIC_PROP,
-            ORG_CONF,
             SUB_PROP,
             PLA_PROP,
             ORG_PROP,
@@ -434,9 +428,11 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
 
     int countUsages() {
         String table = this.descr.minus('com.k_int.kbplus.').replace(" ","")
+        if(this.descr == "Organisation Property")
+            table = "OrgProperty"
 
         if (table) {
-            int[] c = executeQuery("select count(c) from " + table + " as c where c.type = ?", [this])
+            int[] c = executeQuery("select count(c) from " + table + " as c where c.type.id = :type", [type:this.id])
             return c[0]
         }
         return 0

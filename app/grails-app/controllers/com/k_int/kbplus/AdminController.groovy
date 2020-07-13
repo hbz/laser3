@@ -1710,13 +1710,14 @@ class AdminController extends AbstractDebugController {
             propDefs << ["${it}": itResult]
         }
 
-        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails()
 
         render view: 'managePropertyDefinitions', model: [
                 editable    : true,
                 propertyDefinitions: propDefs,
                 attrMap     : attrMap,
-                usedPdList  : usedPdList
+                usedPdList  : usedPdList,
+                multiplePdList : multiplePdList
         ]
     }
 

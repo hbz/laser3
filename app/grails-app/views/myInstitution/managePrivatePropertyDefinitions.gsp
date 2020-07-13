@@ -87,7 +87,7 @@
                                             <semui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
                                         </td>
                                         <td>
-                                            ${PropertyDefinition.getLocalizedValue(pd?.type)}
+                                            ${PropertyDefinition.getLocalizedValue(pd.type)}
                                             <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
                                                 <g:set var="refdataValues" value="${[]}"/>
                                                 <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
