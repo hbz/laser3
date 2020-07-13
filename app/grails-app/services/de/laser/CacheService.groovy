@@ -27,6 +27,8 @@ class CacheService implements ApplicationContextAware {
 
     CacheManager getCacheManager() {
 
+        // return CacheManager.newInstance() // grails 3
+
         // http://www.ehcache.org/generated/2.10.4/pdf/Integrations.pdf
         return CacheManager.getCacheManager('__DEFAULT__')
 
