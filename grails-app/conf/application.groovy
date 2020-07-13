@@ -40,13 +40,6 @@ grails.plugin.springsecurity.successHandler.logout.afterLogoutUrl   = '/'
 grails.plugin.springsecurity.logout.postOnly                        = false
 //grails.plugin.springsecurity.gsp.layoutAuth                         = 'semanticUI'
 
-grails.plugin.springsecurity.providerNames = [
-        'preAuthenticatedAuthenticationProvider',
-        'daoAuthenticationProvider' //,
-//        // 'anonymousAuthenticationProvider' //,
-//        // 'rememberMeAuthenticationProvider'
-]
-
 grails.plugin.springsecurity.roleHierarchy = '''
     ROLE_YODA > ROLE_ADMIN
     ROLE_ADMIN > ROLE_GLOBAL_DATA

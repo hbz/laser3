@@ -3,7 +3,9 @@ package de.laser.auth
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.userdetails.GrailsUser
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.GrantedAuthority
 
 import javax.persistence.Transient
 
@@ -13,17 +15,17 @@ import javax.persistence.Transient
 class User {
 
 
-    transient springSecurityService
+    def springSecurityService
 
-    transient contextService
+    def contextService
 
-    transient yodaService
+    def yodaService
 
-    transient userService
+    def userService
 
-    transient instAdmService
+    def instAdmService
 
-    transient grailsApplication
+    def grailsApplication
 
     String username
     String display

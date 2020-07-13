@@ -1,13 +1,6 @@
 //import de.laser.dbm.MigrationCallbacks
-import de.laser.web.ApiFilter
-import de.laser.web.AuthSuccessHandler
+
 import grails.plugin.springsecurity.SpringSecurityUtils
-import org.springframework.security.core.session.SessionRegistryImpl
-import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
-import org.springframework.security.web.context.SecurityContextPersistenceFilter
-import grails.plugin.springsecurity.userdetails.GormUserDetailsService
-import org.springframework.security.web.session.ConcurrentSessionFilter
 
 // # https://docs.spring.io/spring-security/site/migrate/current/3-to-4/html5/migrate-3-to-4-xml.html
 
@@ -18,12 +11,12 @@ beans = {
     //}
 
     // [ user counter ..
-    sessionRegistry(SessionRegistryImpl)
+    sessionRegistry(org.springframework.security.core.session.SessionRegistryImpl)
 
     // .. ]
 
     // [ supporting initMandatorySettings for users ..
-    authenticationSuccessHandler(AuthSuccessHandler) {
+    authenticationSuccessHandler(de.laser.web.AuthSuccessHandler) {
         // Reusing the security configuration
         def conf = SpringSecurityUtils.securityConfig
         // Configuring the bean ..
@@ -37,22 +30,26 @@ beans = {
     }
     // .. ]
 
-    userDetailsService(GormUserDetailsService) {
+    userDetailsService(de.laser.userdetails.CustomUserDetailsService) {
         grailsApplication = ref('grailsApplication')
     }
 
-    userDetailsByNameServiceWrapper(UserDetailsByNameServiceWrapper) {
+//    userDetailsService(GormUserDetailsService) {
+//        grailsApplication = ref('grailsApplication')
+//    }
+
+    userDetailsByNameServiceWrapper(org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper) {
         userDetailsService = ref('userDetailsService')
     }
 
-    preAuthenticatedAuthenticationProvider(PreAuthenticatedAuthenticationProvider) {
+    preAuthenticatedAuthenticationProvider(org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider) {
         preAuthenticatedUserDetailsService = ref('userDetailsByNameServiceWrapper')
     }
 
-    securityContextPersistenceFilter(SecurityContextPersistenceFilter){}
+    securityContextPersistenceFilter(org.springframework.security.web.context.SecurityContextPersistenceFilter){}
 
     // [ controls api access via hmac ..
-    apiFilter(ApiFilter){}
+    apiFilter(de.laser.web.ApiFilter){}
     // .. ]
 
 }
