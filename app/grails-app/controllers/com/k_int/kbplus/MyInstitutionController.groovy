@@ -442,7 +442,7 @@ class MyInstitutionController extends AbstractDebugController {
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
 
-        List totalLicenses = License.executeQuery("select l ${base_qry}", qry_params)
+        List<License> totalLicenses = License.executeQuery("select l ${base_qry}", qry_params)
         result.licenseCount = totalLicenses.size()
         result.allLinkedSubscriptions = [:]
         Set<Links> allLinkedLicenses = Links.findAllBySourceInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },RDStore.LINKTYPE_LICENSE)
@@ -479,13 +479,30 @@ class MyInstitutionController extends AbstractDebugController {
                 g.message(code:'license.startDate'),
                 g.message(code:'license.endDate')
         ]
+        Map<License,Set<License>> licChildMap = [:]
+        List<License> childLicsOfSet = License.findAllByInstanceOfInList(totalLicenses)
+        childLicsOfSet.each { License child ->
+            Set<License> children = licChildMap.get(child.instanceOf)
+            if(!children)
+                children = []
+            children << child
+            licChildMap.put(child.instanceOf,children)
+        }
         Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP],result.institution)
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
+        Map objectNames = [:]
+        if(childLicsOfSet) {
+            Set rows = OrgRole.executeQuery('select oo.sub,oo.org.sortname from OrgRole oo where oo.sub in (:subChildren) and oo.roleType = :licType',[subChildren:childLicsOfSet,licType:RDStore.OR_LICENSEE_CONS])
+            rows.each { row ->
+                log.debug("now processing ${row[0]}:${row[1]}")
+                objectNames.put(row[0],row[1])
+            }
+        }
         if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             List rows = []
-            totalLicenses.each { licObj ->
+            totalLicenses.each { License licObj ->
                 License license = (License) licObj
                 List row = [[field:license.reference.replaceAll(',',' '),style:'bold']]
                 List linkedSubs = license.subscriptions.collect { sub ->
@@ -496,23 +513,7 @@ class MyInstitutionController extends AbstractDebugController {
                 row.add([field:license.licensor ? license.licensor.name : '',style:null])
                 row.add([field:license.startDate ? sdf.format(license.startDate) : '',style:null])
                 row.add([field:license.endDate ? sdf.format(license.endDate) : '',style:null])
-                row.addAll(exportService.processPropertyListValues(propertyDefinitions,'xls',license))
-                /*
-                List customProps = license.customProperties.collect { customProp ->
-                    if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
-                        "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
-                    else
-                        "${customProp.type.getI10n('name')}: ${customProp.getValue()}"
-                }
-                row.add([field:customProps.join(", "),style:null])
-                List privateProps = license.privateProperties.collect { privateProp ->
-                    if(privateProp.type.type == RefdataValue.toString() && privateProp.refValue)
-                        "${privateProp.type.getI10n('name')}: ${privateProp.refValue.getI10n('value')}"
-                    else
-                        "${privateProp.type.getI10n('name')}: ${privateProp.getValue()}"
-                }
-                row.add([field:privateProps.join(", "),style:null])
-                */
+                row.addAll(exportService.processPropertyListValues(propertyDefinitions,'xls',license,licChildMap,objectNames))
                 rows.add(row)
             }
             Map sheetData = [:]
@@ -548,23 +549,7 @@ class MyInstitutionController extends AbstractDebugController {
                     row.add(license.licensor)
                     row.add(license.startDate ? sdf.format(license.startDate) : '')
                     row.add(license.endDate ? sdf.format(license.endDate) : '')
-                    row.addAll(row.addAll(exportService.processPropertyListValues(propertyDefinitions,'csv',license)))
-                    /*
-                    List customProps = license.customProperties.collect { customProp ->
-                        if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
-                            "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
-                        else
-                            "${customProp.type.getI10n('name')}: ${customProp.getValue()}"
-                    }
-                    row.add(customProps.join("; "))
-                    List privateProps = license.privateProperties.collect { privateProp ->
-                        if(privateProp.type.type == RefdataValue.toString() && privateProp.refValue)
-                            "${privateProp.type.getI10n('name')}: ${privateProp.refValue.getI10n('value')}"
-                        else
-                            "${privateProp.type.getI10n('name')}: ${privateProp.getValue()}"
-                    }
-                    row.add(privateProps.join("; "))
-                    */
+                    row.addAll(row.addAll(exportService.processPropertyListValues(propertyDefinitions,'csv',license,licChildMap,objectNames)))
                     rows.add(row)
                 }
                 out.withWriter { writer ->
@@ -843,9 +828,9 @@ join sub.orgRelations or_sub where
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
         //Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
-        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptions) and sp.tenant = :ctx",[subscriptions:subscriptions,ctx:contextOrg])
+        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where (sp.owner in (:subscriptions) or sp.owner.instanceOf in (:subscriptions)) and sp.tenant = :ctx",[subscriptions:subscriptions,ctx:contextOrg])
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
-        Map<Subscription,Set> providers = [:], agencies = [:], identifiers = [:], licenseReferences = [:]
+        Map<Subscription,Set> providers = [:], agencies = [:], identifiers = [:], licenseReferences = [:], subChildMap = [:]
         Map costItemCounts = [:]
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
@@ -892,6 +877,22 @@ join sub.orgRelations or_sub where
         membershipCounts.each { row ->
             subscriptionMembers.put(row[1],row[0])
         }
+        List<Subscription> childSubsOfSet = Subscription.findAllByInstanceOfInList(subscriptions)
+        childSubsOfSet.each { Subscription child ->
+            Set<Subscription> children = subChildMap.get(child.instanceOf)
+            if(!children)
+                children = []
+            children << child
+            subChildMap.put(child.instanceOf,children)
+        }
+        Map objectNames = [:]
+        if(childSubsOfSet) {
+            Set rows = OrgRole.executeQuery('select oo.sub,oo.org.sortname from OrgRole oo where oo.sub in (:subChildren) and oo.roleType in (:subscrTypes)',[subChildren:childSubsOfSet,subscrTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+            rows.each { row ->
+                log.debug("now processing ${row[0]}:${row[1]}")
+                objectNames.put(row[0],row[1])
+            }
+        }
         List subscriptionData = []
         subscriptions.each { Subscription sub ->
             List row = []
@@ -922,7 +923,7 @@ join sub.orgRelations or_sub where
                         row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
                         row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
                     }
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames))
                     subscriptionData.add(row)
                     break
                 case "csv":
@@ -947,10 +948,10 @@ join sub.orgRelations or_sub where
                     row.add(sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                     row.add(sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                     if(asCons) {
-                        row.add(subscriptionMembers.get(sub.id) ?: 0)
-                        row.add(costItemCounts.get(sub.id) ?: 0)
+                        row.add(subscriptionMembers.get(sub.id) ? (int) subscriptionMembers.get(sub.id) : 0)
+                        row.add(costItemCounts.get(sub.id) ? (int) costItemCounts.get(sub.id) : 0)
                     }
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames))
                     subscriptionData.add(row)
                     break
             }
@@ -3524,6 +3525,31 @@ AND EXISTS (
     Object managePropertyDefinitions() {
         Map<String,Object> result = setResultGenerics()
 
+        if(params.pd) {
+            PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+            if (pd) {
+                switch(params.cmd) {
+                    case 'toggleMandatory': pd.mandatory = !pd.mandatory
+                        pd.save()
+                        break
+                    case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
+                        pd.save()
+                        break
+                    case 'deletePropertyDefinition':
+                        if (! pd.isHardData) {
+                            try {
+                                pd.delete()
+                                flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de])
+                            }
+                            catch(Exception e) {
+                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.name_de])
+                            }
+                        }
+                        break
+                }
+            }
+        }
+
         result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
@@ -3533,11 +3559,11 @@ AND EXISTS (
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
         result.propertyDefinitions = propDefs
-        //result.attrMap = attrMap
-        //result.usedPdList = usedPdList
+        result.attrMap = attrMap
+        result.usedPdList = usedPdList
 
         result.propertyType = 'custom'
-        render view: 'managePropertyDefinitions', model: result
+        render view: 'managePrivatePropertyDefinitions', model: result
     }
 
     @Secured(['ROLE_USER'])

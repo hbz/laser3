@@ -2054,7 +2054,7 @@ class SubscriptionController
                 break
         }*/
         //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        Set<PropertyDefinition> propList = result.parentSub.customProperties.type + SubscriptionProperty.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
+        Set<PropertyDefinition> propList = result.parentSub.propertySet.type + SubscriptionProperty.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
         result.propList = propList
 
         def oldID = params.id
@@ -3791,7 +3791,7 @@ class SubscriptionController
             // -- private properties
 
             result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
+            result.contextOrg = contextService.getOrg() //result.institution maps to subscriber
 
             // create mandatory OrgPrivateProperties if not existing
 
@@ -3799,7 +3799,7 @@ class SubscriptionController
 
             mandatories.each { PropertyDefinition pd ->
                 if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscriptionInstance, pd, result.institution, false)) {
-                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd, result.contextOrg)
 
                     if (newProp.hasErrors()) {
                         log.error(newProp.errors)
