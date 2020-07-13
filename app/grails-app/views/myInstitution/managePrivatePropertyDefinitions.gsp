@@ -105,6 +105,32 @@
                                         </td>
                                         <g:if test="${editable}">
                                             <td class="x">
+                                                <g:if test="${pd.mandatory}">
+                                                    <g:link action="managePropertyDefinitions"
+                                                            params="${[cmd: 'toggleMandatory', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon yellow button">
+                                                        <i class="star icon"></i>
+                                                    </g:link>
+                                                </g:if>
+                                                <g:else>
+                                                    <g:link action="managePropertyDefinitions"
+                                                            params="${[cmd: 'toggleMandatory', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon button">
+                                                        <i class="star yellow icon"></i>
+                                                    </g:link>
+                                                </g:else>
+                                                <g:if test="${!multiplePdList?.contains(pd.id)}">
+                                                    <g:if test="${pd.multipleOccurrence}">
+                                                        <g:link action="managePropertyDefinitions"
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon orange button">
+                                                            <i class="redo slash icon"></i>
+                                                        </g:link>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <g:link action="managePropertyDefinitions"
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon button">
+                                                            <i class="redo orange icon"></i>
+                                                        </g:link>
+                                                    </g:else>
+                                                </g:if>
                                                 <g:if test="${pd.countUsages()==0}">
                                                     <g:link action="managePrivatePropertyDefinitions"
                                                             params="[cmd:'delete', deleteIds: pd?.id]"
@@ -115,6 +141,12 @@
                                                         <i class="trash alternate icon"></i>
                                                     </g:link>
                                                 </g:if>
+                                                <g:else>
+                                                    <%-- hidden fake button to keep the other button in place --%>
+                                                    <div class="ui icon button la-hidden">
+                                                        <i class="coffe icon"></i>
+                                                    </div>
+                                                </g:else>
                                             </td>
                                         </g:if>
                                     </tr>

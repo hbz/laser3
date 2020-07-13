@@ -1328,7 +1328,7 @@ class AjaxController {
       if (params.propDefGroup) {
         render(template: "/templates/properties/group", model: [
                 ownobj          : owner,
-                institution     : contextOrg,
+                contextOrg      : contextOrg,
                 newProp         : newProp,
                 error           : error,
                 showConsortiaFunctions: showConsortiaFunctions,
@@ -1343,7 +1343,7 @@ class AjaxController {
 
           Map<String, Object> modelMap =  [
                   ownobj                : owner,
-                  institution           : contextOrg,
+                  contextOrg            : contextOrg,
                   newProp               : newProp,
                   showConsortiaFunctions: showConsortiaFunctions,
                   showCollectiveFunctions: showCollectiveFunctions,
@@ -1443,7 +1443,7 @@ class AjaxController {
             }
             else {
                 existingProps = owner.propertySet.findAll { AbstractPropertyWithCalculatedLastUpdated prop ->
-                    prop.owner.id == owner.id && prop.type.id == type.id && prop.tenant.id == tenant.id && prop.isPublic == false
+                    prop.owner.id == owner.id && prop.type.id == type.id && prop.tenant.id == tenant.id && !prop.isPublic
                 }
             }
           existingProps.removeAll { it.type.name != type.name } // dubious fix
@@ -1469,7 +1469,7 @@ class AjaxController {
                 tenant: tenant,
                 newProp: newProp,
                 error: error,
-                institution: contextService.org,
+                contextOrg: contextService.org,
                 custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
                 prop_desc: type?.descr // form data
         ])
@@ -1869,7 +1869,7 @@ class AjaxController {
             ownobj: owner,
             tenant: tenant,
             newProp: property,
-            institution: contextService.org,
+            contextOrg: contextService.org,
             custom_props_div: "custom_props_div_${tenant.id}",  // JS markup id
             prop_desc: prop_desc // form data
     ])

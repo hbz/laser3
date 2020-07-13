@@ -3525,6 +3525,31 @@ AND EXISTS (
     Object managePropertyDefinitions() {
         Map<String,Object> result = setResultGenerics()
 
+        if(params.pd) {
+            PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+            if (pd) {
+                switch(params.cmd) {
+                    case 'toggleMandatory': pd.mandatory = !pd.mandatory
+                        pd.save()
+                        break
+                    case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
+                        pd.save()
+                        break
+                    case 'deletePropertyDefinition':
+                        if (! pd.isHardData) {
+                            try {
+                                pd.delete()
+                                flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de])
+                            }
+                            catch(Exception e) {
+                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.name_de])
+                            }
+                        }
+                        break
+                }
+            }
+        }
+
         result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
@@ -3534,11 +3559,11 @@ AND EXISTS (
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
         result.propertyDefinitions = propDefs
-        //result.attrMap = attrMap
-        //result.usedPdList = usedPdList
+        result.attrMap = attrMap
+        result.usedPdList = usedPdList
 
         result.propertyType = 'custom'
-        render view: 'managePropertyDefinitions', model: result
+        render view: 'managePrivatePropertyDefinitions', model: result
     }
 
     @Secured(['ROLE_USER'])

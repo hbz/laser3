@@ -3791,7 +3791,7 @@ class SubscriptionController
             // -- private properties
 
             result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
+            result.contextOrg = contextService.getOrg() //result.institution maps to subscriber
 
             // create mandatory OrgPrivateProperties if not existing
 
@@ -3799,7 +3799,7 @@ class SubscriptionController
 
             mandatories.each { PropertyDefinition pd ->
                 if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscriptionInstance, pd, result.institution, false)) {
-                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd, result.contextOrg)
 
                     if (newProp.hasErrors()) {
                         log.error(newProp.errors)
