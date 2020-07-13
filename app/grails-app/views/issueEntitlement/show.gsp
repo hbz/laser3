@@ -52,7 +52,7 @@
 
         <!-- START TEMPLATE -->
 
-            <g:render template="../templates/title"
+            <g:render template="/templates/title"
                       model="${[item: issueEntitlementInstance, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
         <!-- END TEMPLATE -->
 

@@ -39,7 +39,7 @@
 <semui:filter>
     <h4>${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [parentSub.name])}</h4>
     <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
-        <g:render template="../templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
+        <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
 
         <div class="field la-field-right-aligned">
             <a href="${request.forwardURI}"

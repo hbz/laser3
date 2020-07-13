@@ -74,7 +74,7 @@
               <div class="field">
                   <semui:datepicker label="license.valid_on" id="validOn" name="validOn" placeholder="default.date.label" value="${validOn}" />
               </div>
-              <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+              <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
           </div>
           <div class="four fields">
               <div class="field">

@@ -29,7 +29,7 @@
 <g:set var="counter" value="${offset + 1}"/>
 ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )
 
-<g:render template="../templates/filter/javascript" />
+<g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form class="ui form" action="addEntitlements" params="${params}" method="get">
         <input type="hidden" name="sort" value="${params.sort}">

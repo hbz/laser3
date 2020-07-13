@@ -364,7 +364,7 @@
                             <div class="content">
                                 <div id="custom_props_div_${institution.id}">
                                     <h5 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h5>
-                                    <g:render template="../templates/properties/private" model="${[
+                                    <g:render template="/templates/properties/private" model="${[
                                             prop_desc: PropertyDefinition.PRS_PROP,
                                             ownobj: personInstance,
                                             custom_props_div: "custom_props_div_${institution.id}",

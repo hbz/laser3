@@ -167,7 +167,7 @@
     <div class="row">
         <div class="column">
 
-            <g:render template="../templates/filter/javascript" />
+            <g:render template="/templates/filter/javascript" />
             <semui:filter showFilterButton="true">
                 <g:form action="index" params="${params}" method="get" class="ui form">
                     <input type="hidden" name="sort" value="${params.sort}">
@@ -389,7 +389,7 @@
                                     <br>
                                     <!-- START TEMPLATE -->
 
-                                    <g:render template="../templates/title" model="${[item: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
+                                    <g:render template="/templates/title" model="${[item: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>
 
