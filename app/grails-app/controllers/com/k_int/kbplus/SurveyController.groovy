@@ -349,6 +349,18 @@ class SurveyController {
         result.num_sub_rows = subscriptions.size()
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
+        result.allLinkedLicenses = [:]
+        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        allLinkedLicenses.each { Links li ->
+            Subscription s = genericOIDService.resolveOID(li.destination)
+            License l = genericOIDService.resolveOID(li.source)
+            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
+            if(!linkedLicenses)
+                linkedLicenses = []
+            linkedLicenses << l
+            result.allLinkedLicenses.put(s,linkedLicenses)
+        }
+
         result
 
     }
@@ -417,6 +429,18 @@ class SurveyController {
         }
         result.num_sub_rows = subscriptions.size()
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+
+        result.allLinkedLicenses = [:]
+        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        allLinkedLicenses.each { Links li ->
+            Subscription s = genericOIDService.resolveOID(li.destination)
+            License l = genericOIDService.resolveOID(li.source)
+            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
+            if(!linkedLicenses)
+                linkedLicenses = []
+            linkedLicenses << l
+            result.allLinkedLicenses.put(s,linkedLicenses)
+        }
 
         result
 
@@ -1535,14 +1559,13 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.subscriptionInstance = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
-        result.subscription =  result.subscriptionInstance ?: null
-
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.ownerId = result.surveyResults[0].owner.id
 
         if(result.surveyConfig.type == 'Subscription') {
+            result.subscriptionInstance = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
+            result.subscription =  result.subscriptionInstance ?: null
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations.each { or ->
@@ -3838,7 +3861,7 @@ class SurveyController {
         params.list('selectedSurveyCostItem').each { costItemId ->
 
             def costItem = CostItem.get(costItemId)
-            def participantSub = result.parentSubscription.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
+            def participantSub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
             def participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costElement, RDStore.COST_ITEM_DELETED)
             if(costItem && participantSub && !participantSubCostItem){
 
@@ -4842,7 +4865,7 @@ class SurveyController {
 
             row.add([field: surveyOrg.org.libraryType?.getI10n('value') ?: '', style: null])
 
-            row.add([field: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org).name ?: '', style: null])
+            row.add([field: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(surveyOrg.org).name ?: '', style: null])
 
 
             def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)

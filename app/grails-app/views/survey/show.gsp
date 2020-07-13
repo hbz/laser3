@@ -19,10 +19,12 @@
             <g:link class="item" controller="survey" action="show"
                     params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
         </semui:exportDropdownItem>
+        <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
         <semui:exportDropdownItem>
             <g:link class="item" controller="survey" action="show"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </semui:exportDropdownItem>
+        </g:if>
     </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
