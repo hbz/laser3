@@ -48,7 +48,11 @@
             <g:sortableColumn params="${params}" property="surveyInfo.endDate"
                               title="${message(code: 'default.endDate.label')}"/>
             <th>${message(code: 'surveyProperty.plural.label')}</th>
-            <th>${message(code: 'surveyConfigDocs.label')}</th>
+            <th>
+                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
+                <i class="file alternate large icon"></i>
+                </a>
+            </th>
             <th>
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyParticipants.label')}" data-position="top center">
                     <i class="users large icon"></i>
