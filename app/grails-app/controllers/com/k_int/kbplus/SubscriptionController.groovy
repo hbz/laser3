@@ -3775,7 +3775,7 @@ class SubscriptionController
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
+                if (!(or.org?.id == contextOrg.id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -4485,7 +4485,7 @@ class SubscriptionController
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
