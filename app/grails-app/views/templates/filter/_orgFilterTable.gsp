@@ -763,6 +763,7 @@
                                          maxFractionDigits="2" type="number"/>%)
                     </g:if>
                 </td>
+                <td></td>
             </g:if>
         </tr>
         </tfoot>

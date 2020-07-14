@@ -22,6 +22,17 @@
 
         <div class="ui card ">
             <div class="content">
+
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER') && surveyOrg}">
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
+
+                    </dl>
+                </g:if>
+
                 <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
                     <dl>
                         <dt class="control-label">
@@ -159,16 +170,6 @@
                         </div>
                     </div>
                 </g:else>
-
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER') && surveyOrg}">
-                    <dl>
-                        <dt class="control-label">
-                            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
-                        </dt>
-                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
-
-                    </dl>
-                </g:if>
 
 
             </div>

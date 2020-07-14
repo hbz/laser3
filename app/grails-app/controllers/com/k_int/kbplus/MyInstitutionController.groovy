@@ -2310,26 +2310,28 @@ AND EXISTS (
             result.subscription = result.subscriptionInstance
             result.authorizedOrgs = result.user?.authorizedOrgs
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = []
-            result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-
-            //costs dataToDisplay
-            result.dataToDisplay = ['subscr']
-            result.offsets = [subscrOffset:0]
-            result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
-
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
-            //cost items
-            //params.forExport = true
-            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
-            if (costItems?.subscr) {
-                result.costItemSums.subscrCosts = costItems.subscr.costItems
+            result.visibleOrgRelations = []
+            if(result.subscriptionInstance) {
+                result.subscriptionInstance.orgRelations?.each { or ->
+                    if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                        result.visibleOrgRelations << or
+                    }
+                }
+                result.visibleOrgRelations.sort { it.org.sortname }
+
+                //costs dataToDisplay
+                result.dataToDisplay = ['subscr']
+                result.offsets = [subscrOffset: 0]
+                result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
+
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+                //cost items
+                //params.forExport = true
+                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+                if (costItems?.subscr) {
+                    result.costItemSums.subscrCosts = costItems.subscr.costItems
+                }
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {

@@ -1568,25 +1568,28 @@ class SurveyController {
             result.subscription =  result.subscriptionInstance ?: null
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
-            result.subscriptionInstance.orgRelations.each { or ->
-                if (!(or.org.id == result.institution.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-
-            //costs dataToDisplay
-            result.dataToDisplay = ['consAtSubscr']
-            result.offsets = [consOffset:0]
-            result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
-
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
-            //cost items
-            //params.forExport = true
-            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
-            if (costItems.cons) {
-                result.costItemSums.consCosts = costItems.cons.sums
+            if(result.subscriptionInstance) {
+                result.subscriptionInstance.orgRelations.each { or ->
+                    if (!(or.org.id == result.institution.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                        result.visibleOrgRelations << or
+                    }
+                }
+                result.visibleOrgRelations.sort { it.org.sortname }
+
+
+                //costs dataToDisplay
+                result.dataToDisplay = ['consAtSubscr']
+                result.offsets = [consOffset: 0]
+                result.sortConfig = [consSort: 'ci.costTitle', consOrder: 'asc']
+
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+                //cost items
+                //params.forExport = true
+                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+                if (costItems.cons) {
+                    result.costItemSums.consCosts = costItems.cons.sums
+                }
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
@@ -3457,10 +3460,10 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def newSurveyCostItem() {
-        result.institution = contextService.getOrg()
         SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
 
         Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
         def newCostItem = null
         result.putAll(financeService.setEditVars(result.institution))
 

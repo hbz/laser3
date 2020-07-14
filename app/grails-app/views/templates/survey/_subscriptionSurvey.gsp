@@ -36,6 +36,17 @@
 
         <div class="ui card ">
             <div class="content">
+
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER') && surveyOrg}">
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
+
+                    </dl>
+                </g:if>
+
                 <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
                     <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                         <dl>
@@ -91,7 +102,7 @@
                         <dt class="control-label">
                             ${message(code: 'surveyConfig.url2.label')}
                         </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="text"/>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
                         <g:if test="${surveyConfig.url2}">
                             <semui:linkIcon href="${surveyConfig.url2}"/>
                         </g:if>
@@ -217,16 +228,6 @@
                         </div>
                     </div>
                 </g:else>
-
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER') && surveyOrg}">
-                    <dl>
-                        <dt class="control-label">
-                            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
-                        </dt>
-                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
-
-                    </dl>
-                </g:if>
 
                 <br>
 
