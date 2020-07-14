@@ -15,8 +15,6 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
-import static de.laser.helper.RDStore.*
-
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationController extends AbstractDebugController {
 
@@ -191,8 +189,8 @@ class OrganisationController extends AbstractDebugController {
     })
     Map listInstitution() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
-        params.orgType   = OT_INSTITUTION.id.toString()
-        params.orgSector = O_SECTOR_HIGHER_EDU.id.toString()
+        params.orgType   = RDStore.OT_INSTITUTION.id.toString()
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         def fsq = filterService.getOrgQuery(params)
@@ -217,8 +215,8 @@ class OrganisationController extends AbstractDebugController {
         result.user        = User.get(springSecurityService.principal.id)
         result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR()
 
-        params.orgSector   = O_SECTOR_PUBLISHER?.id?.toString()
-        params.orgType = OT_PROVIDER?.id?.toString()
+        params.orgSector    = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
+        params.orgType      = RDStore.OT_PROVIDER?.id?.toString()
         params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         def fsq            = filterService.getOrgQuery(params)
@@ -285,7 +283,7 @@ class OrganisationController extends AbstractDebugController {
             return
         }
         //                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name || nsType == null)}
-        List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name)}
+        List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == Org.class.name)}
                 .list(sort: 'ns')
                 .sort { a, b ->
             String aVal = a.getI10n('name') ?: a.ns
@@ -448,7 +446,7 @@ class OrganisationController extends AbstractDebugController {
         switch (request.method) {
             case 'POST':
                 Org orgInstance = new Org(params)
-                orgInstance.status = O_STATUS_CURRENT
+                orgInstance.status = RDStore.O_STATUS_CURRENT
 
                 //if (params.name) {
                     if (orgInstance.save(flush: true)) {
@@ -514,7 +512,7 @@ class OrganisationController extends AbstractDebugController {
         if ( params.proposedProvider ) {
 
             result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
-                    [provider: OT_PROVIDER, searchName: "%${params.proposedProvider.toLowerCase()}%"])
+                    [provider: RDStore.OT_PROVIDER, searchName: "%${params.proposedProvider.toLowerCase()}%"])
         }
         result
     }
@@ -524,17 +522,17 @@ class OrganisationController extends AbstractDebugController {
     def createMember() {
         Org contextOrg = contextService.org
         //new institution = consortia member, implies combo type consortium
-        RefdataValue orgSector = O_SECTOR_HIGHER_EDU
+        RefdataValue orgSector = RDStore.O_SECTOR_HIGHER_EDU
         if(params.institution) {
             Org orgInstance
 
             try {
                 if(accessService.checkPerm("ORG_CONSORTIUM")) {
                     // createdBy will set by Org.beforeInsert()
-                    orgInstance = new Org(name: params.institution, sector: orgSector, status: O_STATUS_CURRENT)
+                    orgInstance = new Org(name: params.institution, sector: orgSector, status: RDStore.O_STATUS_CURRENT)
                     orgInstance.save()
 
-                    Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:COMBO_TYPE_CONSORTIUM)
+                    Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type: RDStore.COMBO_TYPE_CONSORTIUM)
                     newMember.save()
 
                     orgInstance.setDefaultCustomerType()
@@ -560,10 +558,10 @@ class OrganisationController extends AbstractDebugController {
             try {
                 if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
                     // createdBy will set by Org.beforeInsert()
-                    deptInstance = new Org(name: params.department, sector: orgSector, status: O_STATUS_CURRENT)
+                    deptInstance = new Org(name: params.department, sector: orgSector, status: RDStore.O_STATUS_CURRENT)
                     deptInstance.save()
 
-                    Combo newMember = new Combo(fromOrg:deptInstance,toOrg:contextOrg,type:COMBO_TYPE_DEPARTMENT)
+                    Combo newMember = new Combo(fromOrg:deptInstance,toOrg:contextOrg,type: RDStore.COMBO_TYPE_DEPARTMENT)
                     newMember.save()
 
                     deptInstance.setDefaultCustomerType()
@@ -591,10 +589,10 @@ class OrganisationController extends AbstractDebugController {
         RefdataValue comboType
 
         if (accessService.checkPerm('ORG_CONSORTIUM')) {
-            comboType = COMBO_TYPE_CONSORTIUM
+            comboType = RDStore.COMBO_TYPE_CONSORTIUM
         }
         else if (accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            comboType = COMBO_TYPE_DEPARTMENT
+            comboType = RDStore.COMBO_TYPE_DEPARTMENT
         }
 
         Combo.findAllByType(comboType).each { lObj ->
@@ -610,10 +608,10 @@ class OrganisationController extends AbstractDebugController {
 
         Map result = [institution:contextService.org,organisationMatches:[],members:memberMap,comboType:comboType]
         //searching members for consortium, i.e. the context org is a consortium
-        if (comboType == COMBO_TYPE_CONSORTIUM) {
+        if (comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
             if (params.proposedOrganisation) {
                 result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName) ",
-                        [institution: OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
+                        [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
             }
             if (params.proposedOrganisationID) {
                 result.organisationMatches.addAll(Org.executeQuery("select id.org from Identifier id where lower(id.value) like :identifier and lower(id.ns.ns) in (:namespaces) ",
@@ -621,7 +619,7 @@ class OrganisationController extends AbstractDebugController {
             }
         }
         //searching departments of the institution, i.e. the context org is an institution
-        else if (comboType == COMBO_TYPE_DEPARTMENT) {
+        else if (comboType == RDStore.COMBO_TYPE_DEPARTMENT) {
             if (params.proposedOrganisation) {
                 result.organisationMatches.addAll(Org.executeQuery("select c.fromOrg from Combo c join c.fromOrg o where c.toOrg = :contextOrg and c.type = :department and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName)",
                         [department: comboType, contextOrg: contextService.org, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
@@ -717,7 +715,7 @@ class OrganisationController extends AbstractDebugController {
 
         du.setBenchmark('identifier')
 
-        if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
+        if(!Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
@@ -1016,7 +1014,7 @@ class OrganisationController extends AbstractDebugController {
 
         if (! result.editable) {
             boolean instAdminExists = orgInstance.getAllValidInstAdmins().size() > 0
-            boolean comboCheck = instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
+            boolean comboCheck = instAdmService.hasInstAdmPivileges(result.user, orgInstance, [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])
 
             result.editable = comboCheck && ! instAdminExists
         }
@@ -1444,9 +1442,9 @@ class OrganisationController extends AbstractDebugController {
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
             if(checkCombo) {
-                if(checkCombo.type == COMBO_TYPE_CONSORTIUM)
+                if(checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
                     result.institutionalView = true
-                else if(checkCombo.type == COMBO_TYPE_DEPARTMENT)
+                else if(checkCombo.type == RDStore.COMBO_TYPE_DEPARTMENT)
                     result.departmentalView = true
             }
             //restrictions hold if viewed org is not the context org
@@ -1456,7 +1454,7 @@ class OrganisationController extends AbstractDebugController {
                     if(result.orgInstance.hasPerm("ORG_INST,ORG_INST_COLLECTIVE")) {
                         return null
                     }
-                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE") && Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT)) {
+                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE") && Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT)) {
                         return null
                     }
                 }
