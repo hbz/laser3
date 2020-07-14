@@ -738,7 +738,7 @@
 
     <div id="magicArea"></div>
 
-    <r:script language="JavaScript">
+    <r:script>
 
       function unlinkPackage(pkg_id){
         var req_url = "${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription:subscriptionInstance.id])}&package="+pkg_id

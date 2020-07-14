@@ -37,7 +37,7 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="../templates/filter/javascript" />
+<g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="currentSurveys" controller="myInstitution" method="post" class="ui small form" params="[tab: params.tab ]">
         <div class="two fields">

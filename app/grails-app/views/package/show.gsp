@@ -629,7 +629,7 @@
               contextPath="../templates" 
               model="${[linkType:packageInstance?.class?.name,roleLinks:visibleOrgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
 
-    <r:script language="JavaScript">
+    <r:script>
       $(function(){
         $.fn.editable.defaults.mode = 'inline';
         $('.xEditableValue').editable();
