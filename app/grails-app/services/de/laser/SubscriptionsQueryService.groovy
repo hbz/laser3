@@ -148,7 +148,8 @@ class SubscriptionsQueryService {
             }
             else if (params.identifier.startsWith('license:')) {
 
-                base_qry += "AND ( exists ( select idMatch from License as idMatch where s.owner = idMatch and idMatch.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch from License as idMatch where concat('${License.class.name}:',idMatch.id) in (select li.source from Links li where li.destination = concat('${Subscription.class.name}:',s.id) and li.linkType = :linkType) and idMatch.globalUID = :identifier ) ) "
+                qry_params.put('linkType',RDStore.LINKTYPE_LICENSE)
             }
             else if (params.identifier.startsWith('subscription:')) {
 
@@ -166,7 +167,7 @@ class SubscriptionsQueryService {
                 base_qry += "AND ("
                 base_qry += tmpBaseQuery1 + " where ident.sub = s.id " + tmpBaseQuery2 + " or "
 
-                base_qry += tmpBaseQuery1 + ", License lic where ident.lic = lic.id and s.owner = lic " + tmpBaseQuery2 + " or "
+                base_qry += tmpBaseQuery1 + ", License lic where ident.lic = lic.id and concat('${License.class.name}:',lic.id) in (select li.source from Links li where li.destination = concat('${Subscription.class.name}:',s.id) and li.linkType = :linkType) " + tmpBaseQuery2 + " or "
 
                 base_qry += tmpBaseQuery1 + ", SubscriptionPackage sp where ident.pkg = sp.pkg.id and sp.subscription = s " + tmpBaseQuery2 + " or "
 
@@ -179,6 +180,7 @@ class SubscriptionsQueryService {
             }
 
             qry_params.put('identifier', params.identifier.trim())
+            qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
             filterSet = true
         }
 
@@ -198,8 +200,9 @@ class SubscriptionsQueryService {
             base_qry += (
                     " and ( genfunc_filter_matcher(s.name, :name_filter) = true " // filter by subscription
                             + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and genfunc_filter_matcher(sp.pkg.name, :name_filter) = true ) " // filter by pkg
-                            + " or exists ( select lic from License as lic where s.owner = lic and genfunc_filter_matcher(lic.reference, :name_filter) = true ) " // filter by license
-                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( "
+                            + " or exists ( select lic from License as lic where concat('${License.class.name}:',lic.id) in (select li.source from Links li where li.destination = concat('${Subscription.class.name}:',s.id) and li.linkType = :linkType) and genfunc_filter_matcher(lic.reference, :name_filter) = true ) " // filter by license
+                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and" +
+                            "   orgR.roleType in (:roleTypeAgency) and ( "
                                 + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
                                 + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
                                 + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
@@ -207,6 +210,8 @@ class SubscriptionsQueryService {
                         +  " ) "
             )
             qry_params.put('name_filter', "${params.q}")
+            qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
+            qry_params.put('roleTypeAgency', [RDStore.OR_AGENCY, RDStore.OR_PROVIDER])
             filterSet = true
         }
         // eval property filter

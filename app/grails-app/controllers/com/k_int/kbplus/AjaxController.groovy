@@ -23,6 +23,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -39,7 +40,7 @@ class AjaxController {
     def controlledListService
     def dataConsistencyService
     def accessService
-    def debugService
+    def escapeService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -1328,7 +1329,7 @@ class AjaxController {
       if (params.propDefGroup) {
         render(template: "/templates/properties/group", model: [
                 ownobj          : owner,
-                institution     : contextOrg,
+                contextOrg      : contextOrg,
                 newProp         : newProp,
                 error           : error,
                 showConsortiaFunctions: showConsortiaFunctions,
@@ -1343,7 +1344,7 @@ class AjaxController {
 
           Map<String, Object> modelMap =  [
                   ownobj                : owner,
-                  institution           : contextOrg,
+                  contextOrg            : contextOrg,
                   newProp               : newProp,
                   showConsortiaFunctions: showConsortiaFunctions,
                   showCollectiveFunctions: showCollectiveFunctions,
@@ -1443,7 +1444,7 @@ class AjaxController {
             }
             else {
                 existingProps = owner.propertySet.findAll { AbstractPropertyWithCalculatedLastUpdated prop ->
-                    prop.owner.id == owner.id && prop.type.id == type.id && prop.tenant.id == tenant.id && prop.isPublic == false
+                    prop.owner.id == owner.id && prop.type.id == type.id && prop.tenant.id == tenant.id && !prop.isPublic
                 }
             }
           existingProps.removeAll { it.type.name != type.name } // dubious fix
@@ -1469,7 +1470,7 @@ class AjaxController {
                 tenant: tenant,
                 newProp: newProp,
                 error: error,
-                institution: contextService.org,
+                contextOrg: contextService.org,
                 custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
                 prop_desc: type?.descr // form data
         ])
@@ -1797,6 +1798,7 @@ class AjaxController {
         def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
+        Org contextOrg = contextService.getOrg()
 
         AuditConfig.removeAllConfigs(property)
 
@@ -1822,17 +1824,19 @@ class AjaxController {
                   ownobj          : owner,
                   newProp         : property,
                   showConsortiaFunctions: showConsortiaFunctions,
+                  contextOrg      : contextOrg,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
         }
         else {
-            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
             Map<String, Object> modelMap =  [
                     ownobj                : owner,
                     newProp               : property,
                     showConsortiaFunctions: showConsortiaFunctions,
+                    contextOrg            : contextOrg,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
                     orphanedProperties    : allPropDefGroups.orphanedProperties
@@ -1869,7 +1873,7 @@ class AjaxController {
             ownobj: owner,
             tenant: tenant,
             newProp: property,
-            institution: contextService.org,
+            contextOrg: contextService.org,
             custom_props_div: "custom_props_div_${tenant.id}",  // JS markup id
             prop_desc: prop_desc // form data
     ])
@@ -2462,8 +2466,8 @@ class AjaxController {
                 } else {
                     def binding_properties = [:]
 
-                    if (target_object."${params.name}" instanceof Double) {
-                        params.value = Double.parseDouble(params.value)
+                    if (target_object."${params.name}" instanceof BigDecimal) {
+                        params.value = escapeService.parseFinancialValue(params.value)
                     }
                     if (target_object."${params.name}" instanceof Boolean) {
                         params.value = params.value?.equals("1")
@@ -2477,7 +2481,10 @@ class AjaxController {
 
                     target_object.save(failOnError: true)
 
-                    result = target_object."${params.name}"
+
+                    if(target_object."${params.name}" instanceof BigDecimal)
+                        result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}") //is for that German users do not cry about comma-dot-change
+                    else result = target_object."${params.name}"
                 }
 
                 if (target_object instanceof SurveyResult) {

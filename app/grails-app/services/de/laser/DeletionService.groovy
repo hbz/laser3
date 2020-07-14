@@ -921,6 +921,7 @@ class DeletionService {
             esclient.close()
         }catch(Exception e) {
             log.error("deleteDocumentFromIndex with id=${id} failed because: " + e)
+            esclient.close()
         }
     }
 }

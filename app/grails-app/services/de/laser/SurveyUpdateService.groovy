@@ -200,7 +200,7 @@ class SurveyUpdateService extends AbstractLockableService {
                     String eMsg = e.message
 
                     log.error("SurveyUpdateService - sendEmail() :: Unable to perform email due to exception ${eMsg}")
-                    SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user, org: org, survey: survey])
+                    SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: org.name, survey: survey.name])
                 }
             }
         }

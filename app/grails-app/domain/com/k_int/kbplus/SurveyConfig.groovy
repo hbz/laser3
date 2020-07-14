@@ -40,6 +40,8 @@ class SurveyConfig {
     String comment
     String internalComment
     String url
+    String url2
+    String url3
 
     Date dateCreated
     Date lastUpdated
@@ -75,6 +77,8 @@ class SurveyConfig {
         scheduledEndDate (nullable: true, blank: false)
         internalComment(nullable: true, blank: false)
         url(nullable: true, blank: false, maxSize:512)
+        url2(nullable: true, blank: false, maxSize:512)
+        url3(nullable: true, blank: false, maxSize:512)
         evaluationFinish (nullable: true, blank: false)
         subSurveyUseForTransfer (nullable: true, blank: false)
         surResults(nullable: true, blank: false)
@@ -92,6 +96,8 @@ class SurveyConfig {
         comment column: 'surconf_comment', type: 'text'
         internalComment column: 'surconf_internal_comment', type: 'text'
         url column: 'surconf_url'
+        url2 column: 'surconf_url_2'
+        url3 column: 'surconf_url_3'
         pickAndChoose column: 'surconf_pickandchoose'
         createTitleGroups column: 'surconf_create_title_groups'
         configFinish column: 'surconf_config_finish'
