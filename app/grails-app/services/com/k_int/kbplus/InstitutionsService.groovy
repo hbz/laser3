@@ -54,29 +54,29 @@ class InstitutionsService {
 
             if (option == InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED) {
 
-                LicenseProperty.findAllByOwner(base).each { lcp ->
-                    AuditConfig ac = AuditConfig.getConfig(lcp)
+                LicenseProperty.findAllByOwner(base).each { LicenseProperty lp ->
+                    AuditConfig ac = AuditConfig.getConfig(lp)
 
                     if (ac) {
                         // multi occurrence props; add one additional with backref
-                        if (lcp.type.multipleOccurrence) {
-                            def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
-                            additionalProp = lcp.copyInto(additionalProp)
-                            additionalProp.instanceOf = lcp
+                        if (lp.type.multipleOccurrence) {
+                            LicenseProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lp.type, lp.tenant)
+                            additionalProp = lp.copyInto(additionalProp)
+                            additionalProp.instanceOf = lp
                             additionalProp.save()
                         }
                         else {
                             // no match found, creating new prop with backref
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
-                            newProp = lcp.copyInto(newProp)
-                            newProp.instanceOf = lcp
+                            LicenseProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lp.type, lp.tenant)
+                            newProp = lp.copyInto(newProp)
+                            newProp.instanceOf = lp
                             newProp.save()
                         }
                     }
                 }
 
-                // documents
-                base.documents?.each { dctx ->
+                // documents (test if documents is really never null)
+                base.documents.each { DocContext dctx ->
 
                     if (dctx.isShared) {
                         DocContext ndc = new DocContext(

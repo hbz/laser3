@@ -5,7 +5,7 @@ import de.laser.helper.RDStore
 
 import javax.persistence.Transient
 
-class SubscriptionPackage {
+class SubscriptionPackage implements Comparable {
 
   Subscription subscription
   Package pkg
@@ -49,6 +49,11 @@ class SubscriptionPackage {
     lastUpdated (nullable: true, blank: false)
     dateCreated (nullable: true, blank: false)
     //oapls   batchSize: 10
+  }
+
+  @Override
+  int compareTo(Object o) {
+    return this.pkg.name.compareTo(o.pkg.name)
   }
 
   @Transient
@@ -129,5 +134,4 @@ class SubscriptionPackage {
   PendingChangeConfiguration getPendingChangeConfig(String config) {
     PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(this,config)
   }
-
 }
