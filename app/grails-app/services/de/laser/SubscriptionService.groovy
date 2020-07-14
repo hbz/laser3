@@ -100,10 +100,10 @@ class SubscriptionService {
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
         if(params.sort == "providerAgency") {
-            subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]).collect{ row -> row[0] }
+            subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ).collect{ row -> row[0] }
         }
         else {
-            subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
+            subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         }
         result.allSubscriptions = subscriptions
         result.allLinkedLicenses = [:]

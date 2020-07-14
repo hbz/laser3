@@ -333,8 +333,8 @@ class DataManagerController extends AbstractDebugController {
             }
         }
 
-        result.titleInstanceTotal = Subscription.executeQuery("select t.id "+base_qry, qry_params ).size()
-        result.titleList = Subscription.executeQuery("select t ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
+        result.titleInstanceTotal = Subscription.executeQuery( "select t.id " + base_qry, qry_params ).size()
+        result.titleList = Subscription.executeQuery( "select t " + base_qry, qry_params, [max:result.max, offset:result.offset] )
 
         result
     }

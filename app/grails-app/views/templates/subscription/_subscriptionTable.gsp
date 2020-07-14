@@ -98,12 +98,12 @@
                         </td>
                         <td>
                         <!-- packages -->
-                            <g:each in="${s.packages.sort{it?.pkg?.name}}" var="sp" status="ind">
+                            <g:each in="${s.packages}" var="sp" status="ind">
                                 <g:if test="${ind < 10}">
                                     <div class="la-flexbox">
                                         <i class="icon gift la-list-icon"></i>
-                                        <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg?.id]"
-                                                title="${sp.pkg?.contentProvider?.name}">
+                                        <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg.id]"
+                                                title="${sp.pkg.contentProvider.name}">
                                             ${sp.pkg.name}
                                         </g:link>
                                     </div>
@@ -163,15 +163,15 @@
                         </td>
                         <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
                             <td>
-                                <g:link controller="subscription" action="members" params="${[id:s.id]}">${Subscription.findAllByInstanceOf(s)?.size()}</g:link>
+                                <g:link controller="subscription" action="members" params="${[id:s.id]}">${Subscription.findAllByInstanceOf(s).size()}</g:link>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
                                     <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
+                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED).size()}
                                     </g:if>
                                     <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST_COLLECTIVE'}">
-                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED,true)?.size()}
+                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED,true).size()}
                                     </g:elseif>
                                 </g:link>
                             </td>

@@ -2,7 +2,10 @@
 <laser:serviceInjection/>
 
 <table class="ui three column table">
-  <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
+  <tr>
+    <th scope="row" rowspan="0"
+        class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th></tr>
+  <g:each in="${subscriptionInstance.packages}" var="sp">
     <%
       Map<String,Object> packageMetadata = [:]
       ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
@@ -15,8 +18,6 @@
     %>
     <g:set var="cssId" value="oapLinksModal-${sp.id}"/>
     <tr>
-      <th scope="row"
-          class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th>
       <td>
         <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
 

@@ -100,6 +100,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdatedCascading
 
   SortedSet issueEntitlements
+  SortedSet packages
 
   static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
 
@@ -128,7 +129,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       derivedSubscriptions: 'instanceOf',
                       pendingChanges: 'subscription',
                       costItems: 'sub',
-                      customProperties: 'owner',
+                      propertySet: 'owner',
                       //privateProperties: 'owner',
                       ]
 

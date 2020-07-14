@@ -153,7 +153,7 @@
                                         </laser:remoteLink>
                                     </g:else>
                                 </g:if>
-                                <g:else>
+                                <g:elseif test="${ownobj.hasProperty('instanceOf') && !ownobj.instanceOf}">
                                     <g:if test="${prop.isPublic}">
                                         <laser:remoteLink class="ui orange icon button la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
@@ -172,7 +172,7 @@
                                             <i class="icon eye slash la-js-editmode-icon"></i>
                                         </laser:remoteLink>
                                     </g:else>
-                                </g:else>
+                                </g:elseif>
 
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
                                     <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />

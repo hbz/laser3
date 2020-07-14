@@ -250,12 +250,13 @@ class MyInstitutionController extends AbstractDebugController {
                 qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
                 qry3 += "   or genfunc_filter_matcher(o.shortname, :query) = true "
                 qry3 += ")"
+                qry3 += " group by p, s"
                 qryParams3.put('query', "${params.q}")
-            } else {
-                qry3 += "order by p.normname asc"
             }
-
-            qry3 += " group by p, s"
+            else {
+                qry3 += " group by p, s"
+                qry3 += " order by p.normname asc"
+            }
 
             List platformSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
 
@@ -441,7 +442,7 @@ class MyInstitutionController extends AbstractDebugController {
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
 
-        List<License> totalLicenses = License.executeQuery("select l ${base_qry}", qry_params)
+        List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
         result.licenseCount = totalLicenses.size()
         result.allLinkedSubscriptions = [:]
         Set<Links> allLinkedLicenses = Links.findAllBySourceInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },RDStore.LINKTYPE_LICENSE)
@@ -1594,7 +1595,7 @@ join sub.orgRelations or_sub where
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
-        currentSubIds = Subscription.executeQuery("select s.id ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
+        currentSubIds = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
 
         idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
@@ -1631,8 +1632,8 @@ join sub.orgRelations or_sub where
                 qryParams3.put('query', "${params.pkg_q}")
             }
 
-            qry3 += "order by pkg.name ${params.order ?: 'asc'}"
             qry3 += " group by pkg, s"
+            qry3 += " order by pkg.name ${params.order ?: 'asc'}"
 
             List packageSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
             /*, [max:result.max, offset:result.offset])) */

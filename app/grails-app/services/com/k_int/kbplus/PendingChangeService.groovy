@@ -362,7 +362,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 // C: create new targetProperty
                 if (! targetProperty) {
-                    targetProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcObject.type)
+                    targetProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcObject.type, srcObject.tenant)
                     setInstanceOf = true
                 }
 
@@ -443,8 +443,8 @@ class PendingChangeService extends AbstractLockableService {
             //queryCount += ' and ' + queryClauses.join(" and ")
         }
         Set<PendingChange> result = []
-        Set<PendingChange> pending = PendingChange.executeQuery("${queryOwn} and pc.status = :queryStatus order by pc.ts desc",queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING])
-        Set<PendingChange> accepted = PendingChange.executeQuery("${queryOwn} and pc.status = :queryStatus order by pc.ts desc",queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])
+        Set<PendingChange> pending = PendingChange.executeQuery( queryOwn + " and pc.status = :queryStatus order by pc.ts desc", queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING] )
+        Set<PendingChange> accepted = PendingChange.executeQuery( queryOwn + " and pc.status = :queryStatus order by pc.ts desc", queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED] )
         //int pendingCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING])[0]
         //int notificationsCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])[0]
         Set<SubscriptionPackage> pendingChangePackages = []
@@ -452,8 +452,8 @@ class PendingChangeService extends AbstractLockableService {
             String queryMember = "select pc from PendingChange pc join pc.subscription sub join sub.orgRelations oo where oo.roleType = :subRoleType and oo.org = :contextOrg "
             if(queryClauses)
                 queryMember += ' and '+queryClauses.join(" and ")
-            Set<PendingChange> memberPCs = PendingChange.executeQuery("${queryMember} and pc.status = :queryStatus",queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_PENDING])
-            Set<PendingChange> memberACs = PendingChange.executeQuery("${queryMember} and pc.status = :queryStatus",queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])
+            Set<PendingChange> memberPCs = PendingChange.executeQuery( queryMember + " and pc.status = :queryStatus", queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_PENDING] )
+            Set<PendingChange> memberACs = PendingChange.executeQuery( queryMember + " and pc.status = :queryStatus", queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_ACCEPTED] )
             pending.addAll(memberPCs)
             accepted.addAll(memberACs)
         }
