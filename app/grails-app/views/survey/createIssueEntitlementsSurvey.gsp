@@ -187,13 +187,12 @@
                                     </g:if>
                                 </g:if>
                             </g:link>
-                            <g:if test="${s.owner}">
+                            <g:each in="${allLinkedLicenses.get(s)}" var="license">
                                 <div class="la-flexbox">
                                     <i class="icon balance scale la-list-icon"></i>
-                                    <g:link controller="license" action="show"
-                                            id="${s.owner.id}">${s.owner?.reference ?: message(code: 'missingLicenseReference', default: '** No License Reference Set **')}</g:link>
+                                    <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
                                 </div>
-                            </g:if>
+                            </g:each>
                         </td>
                         <td>
                         <!-- packages -->

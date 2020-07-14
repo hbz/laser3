@@ -21,9 +21,9 @@
     <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </semui:breadcrumbs>
 
-<semui:controlButtons>
+%{--<semui:controlButtons>
     <g:render template="actions"/>
-</semui:controlButtons>
+</semui:controlButtons>--}%
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>

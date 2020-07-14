@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2674    13.07.2020  hbz-dev     Moe     Feature     Suchbegriff im Filter "Meine Lizenzen" muss optimiert werden
+
+2675    13.07.2020  hbz-dev     Moe     Feature     Umfrage: Eingabe von zwei weiteren URLs
+
 2593    13.07.2020  hbz-dev     Andreas Bug         inkorrekte Darstellung von Dezimalwerten bei Merkmalen
 
 2614    13.07.2020  hbz-dev     Andreas Bug         Rechnungs- und Auftragsnummer konnten nicht gelöscht werden

@@ -9,13 +9,13 @@ import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDatesService
 import de.laser.LinksGenerationService
 import de.laser.SystemAnnouncement
-import de.laser.controller.AbstractDebugController
 import de.laser.base.AbstractI10nTranslatable
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
+import grails.converters.JSON
 
 //import de.laser.TaskService //unused for quite a long time
 
-import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
@@ -29,7 +29,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
@@ -2310,26 +2309,28 @@ AND EXISTS (
             result.subscription = result.subscriptionInstance
             result.authorizedOrgs = result.user?.authorizedOrgs
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = []
-            result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-
-            //costs dataToDisplay
-            result.dataToDisplay = ['subscr']
-            result.offsets = [subscrOffset:0]
-            result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
-
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
-            //cost items
-            //params.forExport = true
-            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
-            if (costItems?.subscr) {
-                result.costItemSums.subscrCosts = costItems.subscr.costItems
+            result.visibleOrgRelations = []
+            if(result.subscriptionInstance) {
+                result.subscriptionInstance.orgRelations?.each { or ->
+                    if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                        result.visibleOrgRelations << or
+                    }
+                }
+                result.visibleOrgRelations.sort { it.org.sortname }
+
+                //costs dataToDisplay
+                result.dataToDisplay = ['subscr']
+                result.offsets = [subscrOffset: 0]
+                result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
+
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+                //cost items
+                //params.forExport = true
+                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+                if (costItems?.subscr) {
+                    result.costItemSums.subscrCosts = costItems.subscr.costItems
+                }
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {

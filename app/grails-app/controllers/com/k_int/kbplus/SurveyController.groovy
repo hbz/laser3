@@ -349,6 +349,18 @@ class SurveyController {
         result.num_sub_rows = subscriptions.size()
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
+        result.allLinkedLicenses = [:]
+        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        allLinkedLicenses.each { Links li ->
+            Subscription s = genericOIDService.resolveOID(li.destination)
+            License l = genericOIDService.resolveOID(li.source)
+            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
+            if(!linkedLicenses)
+                linkedLicenses = []
+            linkedLicenses << l
+            result.allLinkedLicenses.put(s,linkedLicenses)
+        }
+
         result
 
     }
@@ -417,6 +429,18 @@ class SurveyController {
         }
         result.num_sub_rows = subscriptions.size()
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+
+        result.allLinkedLicenses = [:]
+        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        allLinkedLicenses.each { Links li ->
+            Subscription s = genericOIDService.resolveOID(li.destination)
+            License l = genericOIDService.resolveOID(li.source)
+            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
+            if(!linkedLicenses)
+                linkedLicenses = []
+            linkedLicenses << l
+            result.allLinkedLicenses.put(s,linkedLicenses)
+        }
 
         result
 
@@ -1535,35 +1559,37 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.subscriptionInstance = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
-        result.subscription =  result.subscriptionInstance ?: null
-
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.ownerId = result.surveyResults[0].owner.id
 
         if(result.surveyConfig.type == 'Subscription') {
+            result.subscriptionInstance = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
+            result.subscription =  result.subscriptionInstance ?: null
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
-            result.subscriptionInstance.orgRelations.each { or ->
-                if (!(or.org.id == result.institution.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-
-            //costs dataToDisplay
-            result.dataToDisplay = ['consAtSubscr']
-            result.offsets = [consOffset:0]
-            result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
-
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
-            //cost items
-            //params.forExport = true
-            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
-            if (costItems.cons) {
-                result.costItemSums.consCosts = costItems.cons.sums
+            if(result.subscriptionInstance) {
+                result.subscriptionInstance.orgRelations.each { or ->
+                    if (!(or.org.id == result.institution.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                        result.visibleOrgRelations << or
+                    }
+                }
+                result.visibleOrgRelations.sort { it.org.sortname }
+
+
+                //costs dataToDisplay
+                result.dataToDisplay = ['consAtSubscr']
+                result.offsets = [consOffset: 0]
+                result.sortConfig = [consSort: 'ci.costTitle', consOrder: 'asc']
+
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+                //cost items
+                //params.forExport = true
+                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+                if (costItems.cons) {
+                    result.costItemSums.consCosts = costItems.cons.sums
+                }
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
@@ -2685,6 +2711,8 @@ class SurveyController {
                             surveyInfo: newSurveyInfo,
                             comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                             url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                            url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
+                            url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
                             configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                     ).save()
 
@@ -2712,6 +2740,8 @@ class SurveyController {
                         surveyInfo: newSurveyInfo,
                         comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                         url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                        url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
+                        url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
                         configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                 ).save()
 
@@ -3430,10 +3460,10 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def newSurveyCostItem() {
-        result.institution = contextService.getOrg()
         SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
 
         Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
         def newCostItem = null
         result.putAll(financeService.setEditVars(result.institution))
 
@@ -3834,7 +3864,7 @@ class SurveyController {
         params.list('selectedSurveyCostItem').each { costItemId ->
 
             def costItem = CostItem.get(costItemId)
-            def participantSub = result.parentSubscription.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
+            def participantSub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
             def participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costElement, RDStore.COST_ITEM_DELETED)
             if(costItem && participantSub && !participantSubCostItem){
 
@@ -4838,7 +4868,7 @@ class SurveyController {
 
             row.add([field: surveyOrg.org.libraryType?.getI10n('value') ?: '', style: null])
 
-            row.add([field: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org).name ?: '', style: null])
+            row.add([field: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(surveyOrg.org).name ?: '', style: null])
 
 
             def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)
