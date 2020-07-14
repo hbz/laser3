@@ -37,7 +37,7 @@
         <div class="ui card ">
             <div class="content">
 
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER') && surveyOrg}">
+                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM') && surveyOrg}">
                     <dl>
                         <dt class="control-label">
                             ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}

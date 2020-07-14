@@ -9,13 +9,13 @@ import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDatesService
 import de.laser.LinksGenerationService
 import de.laser.SystemAnnouncement
-import de.laser.controller.AbstractDebugController
 import de.laser.base.AbstractI10nTranslatable
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
+import grails.converters.JSON
 
 //import de.laser.TaskService //unused for quite a long time
 
-import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
@@ -29,7 +29,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
@@ -2314,7 +2313,7 @@ AND EXISTS (
             result.visibleOrgRelations = []
             if(result.subscriptionInstance) {
                 result.subscriptionInstance.orgRelations?.each { or ->
-                    if (!(or.org?.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                         result.visibleOrgRelations << or
                     }
                 }
