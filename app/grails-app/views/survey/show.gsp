@@ -54,7 +54,7 @@
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.startDate.label')}</dt>
                             <dd>
-                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">}"
+                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
                                     <semui:xEditable owner="${surveyInfo}" field="startDate" type="date"/>
                                 </g:if><g:else>
                                     <semui:xEditable owner="${surveyInfo}" field="startDate" type="date" overwriteEditable="false"/>
@@ -65,7 +65,7 @@
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.endDate.label')}</dt>
                             <dd>
-                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id, RDStore.SURVEY_SURVEY_STARTED.id]}">}"
+                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id, RDStore.SURVEY_SURVEY_STARTED.id]}">
                                     <semui:xEditable owner="${surveyInfo}" field="endDate" type="date"/>
                                 </g:if><g:else>
                                     <semui:xEditable owner="${surveyInfo}" field="endDate" type="date" overwriteEditable="false"/>

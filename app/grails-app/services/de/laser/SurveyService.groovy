@@ -27,6 +27,7 @@ class SurveyService {
     MailService mailService
     EscapeService escapeService
     GrailsApplication grailsApplication
+    String replyTo
 
     SimpleDateFormat formatter = DateUtil.getSDF_dmy()
     String from
@@ -859,7 +860,7 @@ class SurveyService {
     private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries) {
 
         if (grailsApplication.config.grails.mail.disabled == true) {
-            println 'surveyUpdateService.sendSurveyEmail() failed due grailsApplication.config.grails.mail.disabled = true'
+            println 'SurveyService.sendSurveyEmail() failed due grailsApplication.config.grails.mail.disabled = true'
         }else {
 
             String emailReceiver = user.getEmail()
@@ -912,12 +913,12 @@ class SurveyService {
                             }
                         }
 
-                        log.debug("SurveyUpdateService - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + org.name);
+                        log.debug("SurveyService - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + org.name);
                     }
                 } catch (Exception e) {
                     String eMsg = e.message
 
-                    log.error("SurveyUpdateService - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                    log.error("SurveyService - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
                     SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: org.name, survey: survey.name])
                 }
             }
