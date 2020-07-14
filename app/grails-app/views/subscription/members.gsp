@@ -133,7 +133,7 @@
                 <th>${message(code:'default.status.label')}</th>
                 <th class="la-no-uppercase">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                          data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                          data-content="${message(code: 'subscription.ismultiyear.consortial.label')}">
                         <i class="map orange icon"></i>
                     </span>
                 </th>

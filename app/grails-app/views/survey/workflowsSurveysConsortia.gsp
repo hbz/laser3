@@ -203,12 +203,17 @@
 
                     <th rowspan="2" scope="col">${message(code: 'surveyConfigDocs.label')}</th>
 
-                    <th rowspan="2" scope="col">${message(code: 'surveyParticipants.label')}</th>
+                    <th scope="col" rowspan="2">
+                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyParticipants.label')}" data-position="top center">
+                            <i class="users large icon"></i>
+                        </a>
+                    </th>
 
-
-                    <th rowspan="2" scope="col">${message(code: 'surveyCostItems.label')}</th>
-
-
+                    <th scope="col" rowspan="2">
+                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
+                            <i class="money bill large icon"></i>
+                        </a>
+                    </th>
 
                     <th rowspan="2" scope="col">${message(code: 'surveyInfo.finished')}</th>
                     <th rowspan="2" scope="col"></th>

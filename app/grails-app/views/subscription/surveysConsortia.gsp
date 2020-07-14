@@ -49,8 +49,17 @@
                               title="${message(code: 'default.endDate.label')}"/>
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>${message(code: 'surveyConfigDocs.label')}</th>
-            <th>${message(code: 'surveyParticipants.label')}</th>
-            <th>${message(code: 'surveyCostItems.label')}</th>
+            <th>
+                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyParticipants.label')}" data-position="top center">
+                    <i class="users large icon"></i>
+                </a>
+            </th>
+
+            <th>
+                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
+                    <i class="money bill large icon"></i>
+                </a>
+            </th>
             <th>${message(code: 'surveyInfo.finished')}</th>
             <th class="la-action-info">${message(code: 'default.actions.label')}</th>
 
