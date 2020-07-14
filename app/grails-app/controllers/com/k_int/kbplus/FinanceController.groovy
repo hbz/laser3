@@ -756,14 +756,20 @@ class FinanceController extends AbstractDebugController {
 
         CostItem ci = CostItem.get(params.id)
         if (ci) {
-            def cigs = CostItemGroup.findAllByCostItem(ci)
+            List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
 
-            cigs.each { item ->
+            cigs.each { CostItemGroup item ->
                 item.delete()
                 log.debug("deleting CostItemGroup: " + item)
             }
+            if(!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(ci.order,ci.id,RDStore.COST_ITEM_DELETED))
+                ci.order.delete()
+            if(!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(ci.invoice,ci.id,RDStore.COST_ITEM_DELETED))
+                ci.invoice.delete()
             log.debug("deleting CostItem: " + ci)
             ci.costItemStatus = RDStore.COST_ITEM_DELETED
+            ci.invoice = null
+            ci.order = null
             if(!ci.save())
                 log.error(ci.errors)
         }
@@ -788,11 +794,11 @@ class FinanceController extends AbstractDebugController {
 
               Order order = null
               if (params.newOrderNumber)
-                  order = Order.findByOrderNumberAndOwner(params.newOrderNumber, result.institution) ?: new Order(orderNumber: params.newOrderNumber, owner: result.institution).save(flush: true);
+                  order = Order.findByOrderNumberAndOwner(params.newOrderNumber, result.institution) ?: new Order(orderNumber: params.newOrderNumber, owner: result.institution).save()
 
               Invoice invoice = null
               if (params.newInvoiceNumber)
-                  invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save(flush: true);
+                  invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save()
 
               Set<Subscription> subsToDo = []
               if (params.newSubscription.contains("com.k_int.kbplus.Subscription:"))
@@ -950,6 +956,16 @@ class FinanceController extends AbstractDebugController {
                       newCostItem = CostItem.get(Long.parseLong(params.costItemId))
                       //get copied cost items
                       copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqual(newCostItem, RDStore.COST_ITEM_DELETED)
+                      if(params.newOrderNumber == null || params.newOrderNumber.length() < 1) {
+                          CostItem costItemWithOrder = CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(newCostItem.order,newCostItem.id,RDStore.COST_ITEM_DELETED)
+                          if(!costItemWithOrder)
+                              newCostItem.order.delete()
+                      }
+                      if(params.newInvoiceNumber == null || params.newInvoiceNumber.length() < 1) {
+                          CostItem costItemWithInvoice = CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(newCostItem.invoice,newCostItem.id,RDStore.COST_ITEM_DELETED)
+                          if(!costItemWithInvoice)
+                              newCostItem.invoice.delete()
+                      }
                   }
                   else {
                       newCostItem = new CostItem()

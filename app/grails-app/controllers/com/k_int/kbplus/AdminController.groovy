@@ -1651,57 +1651,73 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def managePropertyDefinitions() {
 
-        if (params.cmd == 'deletePropertyDefinition') {
-            def pd = genericOIDService.resolveOID(params.pd)
+        if (params.cmd){
+            PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+            switch(params.cmd) {
+                case 'toggleMandatory':
+                    if(pd) {
+                        pd.mandatory = !pd.mandatory
+                        pd.save()
+                    }
+                    break
+                case 'toggleMultipleOccurrence':
+                    if(pd) {
+                        pd.multipleOccurrence = !pd.multipleOccurrence
+                        pd.save()
+                    }
+                    break
+                case 'deletePropertyDefinition':
+                    if (pd) {
+                        if (! pd.isHardData) {
+                            try {
+                                pd.delete()
+                                flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de])
+                            }
+                            catch(Exception e) {
+                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.name_de])
+                            }
+                        }
+                    }
+                    break
+                case 'replacePropertyDefinition':
+                    if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
+                        PropertyDefinition pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
+                        PropertyDefinition pdTo = genericOIDService.resolveOID(params.xcgPdTo)
 
-            if (pd) {
-                if (! pd.isHardData) {
-                    try {
-                        pd.delete(flush:true)
-                        flash.message = "${params.pd} wurde gelöscht."
+                        if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
+
+                            try {
+                                def count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
+
+                                flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
+                            }
+                            catch (Exception e) {
+                                log.error(e)
+                                flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
+                            }
+
+                        }
+                    } else {
+                        flash.error = "Keine ausreichenden Rechte!"
                     }
-                    catch(Exception e) {
-                        flash.error = "${params.pd} konnte nicht gelöscht werden."
-                    }
-                }
+                    break
             }
         }
-        else if (params.cmd == 'replacePropertyDefinition') {
-            if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
-                def pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
-                def pdTo = genericOIDService.resolveOID(params.xcgPdTo)
 
-                if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
-
-                    try {
-                        def count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
-
-                        flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
-                    }
-                    catch (Exception e) {
-                        log.error(e)
-                        flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
-                    }
-
-                }
-            } else {
-                flash.error = "Keine ausreichenden Rechte!"
-            }
-        }
-
-        def propDefs = [:]
-        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+        Map<String,Object> propDefs = [:]
+        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { String it ->
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
             propDefs << ["${it}": itResult]
         }
 
-        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails()
 
         render view: 'managePropertyDefinitions', model: [
                 editable    : true,
                 propertyDefinitions: propDefs,
                 attrMap     : attrMap,
-                usedPdList  : usedPdList
+                usedPdList  : usedPdList,
+                multiplePdList : multiplePdList
         ]
     }
 

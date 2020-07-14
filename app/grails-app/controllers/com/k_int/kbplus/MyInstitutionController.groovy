@@ -3510,9 +3510,10 @@ AND EXISTS (
 
         result.propertyDefinitions = propDefs
 
-        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails()
         result.usedPdList = usedPdList
         result.attrMap = attrMap
+        result.multiplePdList = multiplePdList
         //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
         result.propertyType = 'private'
         result
@@ -3539,10 +3540,10 @@ AND EXISTS (
                         if (! pd.isHardData) {
                             try {
                                 pd.delete()
-                                flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de])
+                                flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
                             }
                             catch(Exception e) {
-                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.name_de])
+                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
                             }
                         }
                         break

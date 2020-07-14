@@ -1,9 +1,10 @@
 package de.laser
 
-import com.k_int.kbplus.RefdataCategory
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SurveyResult
 import de.laser.helper.RDStore
+import org.springframework.context.i18n.LocaleContextHolder
+
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
 class SemanticUiInplaceTagLib {
@@ -96,6 +97,9 @@ class SemanticUiInplaceTagLib {
                 else {
                     if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
                     }
+                    else if(attrs.field == 'decValue') {
+                        oldValue = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(attrs.owner[attrs.field])
+                    }
                     else {
                         oldValue = attrs.owner[attrs.field].encodeAsHTML()
                     }
@@ -122,6 +126,9 @@ class SemanticUiInplaceTagLib {
                 }
                 else {
                     if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
+                    }
+                    else if(attrs.field == 'decValue') {
+                        out << NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(attrs.owner[attrs.field])
                     }
                     else {
                         out << attrs.owner[attrs.field]
