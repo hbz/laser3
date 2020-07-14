@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation; com.k_int.kbplus.GenericOIDService" %>
 
 <!doctype html>
 <html>
@@ -107,26 +107,26 @@
                                             <td class="x">
                                                 <g:if test="${pd.mandatory}">
                                                     <g:link action="managePropertyDefinitions"
-                                                            params="${[cmd: 'toggleMandatory', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon yellow button">
+                                                            params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon yellow button">
                                                         <i class="star icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:link action="managePropertyDefinitions"
-                                                            params="${[cmd: 'toggleMandatory', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon button">
+                                                            params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
                                                         <i class="star yellow icon"></i>
                                                     </g:link>
                                                 </g:else>
                                                 <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                     <g:if test="${pd.multipleOccurrence}">
                                                         <g:link action="managePropertyDefinitions"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon orange button">
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon orange button">
                                                             <i class="redo slash icon"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
                                                         <g:link action="managePropertyDefinitions"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon button">
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
                                                             <i class="redo orange icon"></i>
                                                         </g:link>
                                                     </g:else>
