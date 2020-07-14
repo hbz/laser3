@@ -1633,7 +1633,7 @@ join sub.orgRelations or_sub where
             }
 
             qry3 += " group by pkg, s"
-            qry3 += " order by pkg.name ${params.order ?: 'asc'}"
+            qry3 += " order by pkg.name " + (params.order ?: 'asc')
 
             List packageSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
             /*, [max:result.max, offset:result.offset])) */
@@ -2051,10 +2051,10 @@ AND EXISTS (
           result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }
 
-        PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = ?',[result.institution]).each {
+        PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
           result.institutional_objects.add(['com.k_int.kbplus.License:'+it.id,"${message(code:'license.label')}: "+it.reference]);
         }
-        PendingChange.executeQuery('select distinct(pc.subscription) from PendingChange as pc where pc.owner = ?',[result.institution]).each {
+        PendingChange.executeQuery('select distinct(pc.subscription) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
           result.institutional_objects.add(['com.k_int.kbplus.Subscription:'+it.id,"${message(code:'subscription')}: "+it.name]);
         }
 

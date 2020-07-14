@@ -38,7 +38,7 @@ class RefdataService {
             def dfMap = [:]
 
             dcFields.each { df ->
-                def rdvs = RefdataValue.executeQuery("SELECT DISTINCT ${df.name} FROM ${dcName}")
+                Set<RefdataValue> rdvs = RefdataValue.executeQuery( "SELECT DISTINCT " + df.name + " FROM " + dcName )
 
                 dfMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
 
@@ -113,9 +113,8 @@ class RefdataService {
 
                             RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)
                             if (anno && ! [RefdataAnnotation.GENERIC, RefdataAnnotation.UNKOWN].contains(anno.cat()) ) {
-                                List fieldCats = RefdataValue.executeQuery(
-                                        "SELECT DISTINCT dummy.${it.name}, rdc FROM ${cls.simpleName} dummy JOIN dummy.${it.name}.owner rdc",
-                                )
+                                String query = "SELECT DISTINCT dummy.${it.name}, rdc FROM ${cls.simpleName} dummy JOIN dummy.${it.name}.owner rdc"
+                                List fieldCats = RefdataValue.executeQuery( query )
                                 Map fieldCheck = [:]
 
                                 fieldCats.each { it2 ->
