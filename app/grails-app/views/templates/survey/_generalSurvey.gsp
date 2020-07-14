@@ -22,7 +22,18 @@
 
         <div class="ui card ">
             <div class="content">
-                <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
+
+                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM') && surveyOrg}">
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
+
+                    </dl>
+                </g:if>
+
+                <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
                     <dl>
                         <dt class="control-label">
                             <div class="ui icon la-popup-tooltip la-delay"
@@ -42,6 +53,32 @@
                         <dd><semui:xEditable owner="${surveyConfig}" field="url" type="text"/>
                         <g:if test="${surveyConfig.url}">
                             <semui:linkIcon href="${surveyConfig.url}"/>
+                        </g:if>
+                            <br/>&nbsp<br/>&nbsp<br/>
+                        </dd>
+
+                    </dl>
+
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.url2.label')}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
+                        <g:if test="${surveyConfig.url2}">
+                            <semui:linkIcon href="${surveyConfig.url2}"/>
+                        </g:if>
+                            <br/>&nbsp<br/>&nbsp<br/>
+                        </dd>
+
+                    </dl>
+
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.url3.label')}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url3" type="text"/>
+                        <g:if test="${surveyConfig.url3}">
+                            <semui:linkIcon href="${surveyConfig.url3}"/>
                         </g:if>
                             <br/>&nbsp<br/>&nbsp<br/>
                         </dd>
@@ -87,6 +124,38 @@
                         </dl>
                     </g:if>
 
+                    <g:if test="${surveyConfig.url2}">
+                        <dl>
+                            <dt class="control-label">
+                                ${message(code: 'surveyConfig.url2.label')}
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="url2" type="text"
+                                                 overwriteEditable="${false}"/>
+
+                            <semui:linkIcon href="${surveyConfig.url2}"/>
+
+                                <br/>&nbsp<br/>&nbsp<br/>
+                            </dd>
+
+                        </dl>
+                    </g:if>
+
+                    <g:if test="${surveyConfig.url3}">
+                        <dl>
+                            <dt class="control-label">
+                                ${message(code: 'surveyConfig.url3.label')}
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="url3" type="text"
+                                                 overwriteEditable="${false}"/>
+
+                            <semui:linkIcon href="${surveyConfig.url3}"/>
+
+                                <br/>&nbsp<br/>&nbsp<br/>
+                            </dd>
+
+                        </dl>
+                    </g:if>
+
                     <div class="ui form">
                         <div class="field">
                             <label>
@@ -101,16 +170,6 @@
                         </div>
                     </div>
                 </g:else>
-
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER') && surveyOrg}">
-                    <dl>
-                        <dt class="control-label">
-                            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
-                        </dt>
-                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
-
-                    </dl>
-                </g:if>
 
 
             </div>
@@ -149,7 +208,7 @@
 
 </div><!-- .grid -->
 
-<g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id}">
+<g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
     <g:set var="surveyProperties" value="${surveyConfig.surveyProperties}"/>
 
     <semui:form>

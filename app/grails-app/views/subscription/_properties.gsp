@@ -26,7 +26,7 @@
                         ownobj: subscriptionInstance,
                         custom_props_div: "member_props_div"]}"/>
 
-                <%--<r:script language="JavaScript">
+                <%--<r:script>
                     $(document).ready(function(){
                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
                     });
@@ -108,12 +108,13 @@
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscriptionInstance,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
+                    editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>
     <%--</div>--%>
 
-    <r:script language="JavaScript">
+    <r:script>
     $(document).ready(function(){
         c3po.initProperties("<g:createLink controller='ajax' action='lookup' params='[oid:"${subscriptionInstance.class.simpleName}:${subscriptionInstance.id}"]'/>", "#custom_props_div_props");
     });
@@ -134,7 +135,7 @@
                     custom_props_div: "custom_props_div_${institution.id}",
                     tenant: institution]}"/>
 
-            <r:script language="JavaScript">
+            <r:script>
                     $(document).ready(function(){
                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
                     });

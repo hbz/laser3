@@ -28,7 +28,7 @@ class ApiMapReader {
             // References
             result.contacts     = ApiCollectionReader.getContactCollection(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact
             result.addresses    = ApiCollectionReader.getAddressCollection(prs.addresses, allowedAddressTypes) // com.k_int.kbplus.Address
-            result.properties   = ApiCollectionReader.getPrivatePropertyCollection(prs.customProperties, context) // com.k_int.kbplus.PersonPrivateProperty
+            result.properties   = ApiCollectionReader.getPrivatePropertyCollection(prs.propertySet, context) // com.k_int.kbplus.PersonPrivateProperty
         }
         return ApiToolkit.cleanUp(result, true, true)
     }

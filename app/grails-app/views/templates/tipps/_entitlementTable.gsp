@@ -264,7 +264,7 @@
     </table>
 </div>
 
-<r:script language="JavaScript">
+<r:script>
     $("simpleHiddenRefdata").editable({
         url: function(params) {
             var hidden_field_id = $(this).data('hidden-id');

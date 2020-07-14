@@ -5,6 +5,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
+import grails.transaction.Transactional
 import groovy.json.JsonOutput
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.elasticsearch.ElasticsearchException
@@ -30,6 +31,7 @@ import org.hibernate.ScrollMode
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
+//@Transactional
 class DataloadService {
 
     def stats = [:]
@@ -1062,9 +1064,14 @@ class DataloadService {
     }
     finally {
       log.debug("Completed processing on ${domain.name} - saved ${total} records")
-
+        try {
+            esclient.close()
+        }
+        catch ( Exception e ) {
+            log.error("Problem by Close ES Client",e);
+        }
     }
-        esclient.close()
+
   }
 
     def lookupOrCreateCanonicalIdentifier(ns, value) {
@@ -1238,49 +1245,60 @@ class DataloadService {
 
         log.debug("Begin to check ES Elements with DB Elements")
 
-        FTControl.list().each { ft ->
+        RestHighLevelClient esclient = ESWrapperService.getClient()
 
-            if(ft.active) {
-                RestHighLevelClient esclient = ESWrapperService.getClient()
+        try {
+            FTControl.list().each { ft ->
 
-                Class domainClass = grailsApplication.getDomainClass(ft.domainClassName).clazz
+                if (ft.active) {
 
-                String query_str = "rectype: '${ft.domainClassName.replaceAll("com.k_int.kbplus.", "")}'"
+                    Class domainClass = grailsApplication.getDomainClass(ft.domainClassName).clazz
 
-                if (ft.domainClassName == DocContext.name) {
-                    query_str = "rectype:'Note' OR rectype:'Document'"
+                    String query_str = "rectype: '${ft.domainClassName.replaceAll("com.k_int.kbplus.", "")}'"
+
+                    if (ft.domainClassName == DocContext.name) {
+                        query_str = "rectype:'Note' OR rectype:'Document'"
+                    }
+
+                    if (ft.domainClassName == TitleInstance.name) {
+                        query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
+                    }
+
+                    //println(query_str)
+
+                    String index = ESWrapperService.getESSettings().indexName
+
+                    CountRequest countRequest = new CountRequest(index);
+                    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+                    searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
+                    countRequest.source(searchSourceBuilder);
+
+                    CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
+
+                    ft.dbElements = domainClass.findAll().size()
+                    ft.esElements = countResponse ? countResponse.getCount().toInteger() : 0
+
+                    //println(ft.dbElements +' , '+ ft.esElements)
+
+                    if (ft.dbElements != ft.esElements) {
+                        log.debug("****ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} -> RESET lastTimestamp****")
+                        //ft.lastTimestamp = 0
+                    }
+
+                    ft.save(flush: true)
+
+
                 }
-
-                if (ft.domainClassName == TitleInstance.name) {
-                    query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
-                }
-
-                //println(query_str)
-
-                String index = ESWrapperService.getESSettings().indexName
-
-                CountRequest countRequest = new CountRequest(index);
-                SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-                searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
-                countRequest.source(searchSourceBuilder);
-
-                CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
-
-                ft.dbElements = domainClass.findAll().size()
-                ft.esElements = countResponse ? countResponse.getCount().toInteger() : 0
-
-                //println(ft.dbElements +' , '+ ft.esElements)
-
-                if (ft.dbElements != ft.esElements) {
-                    log.debug("****ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} -> RESET lastTimestamp****")
-                    //ft.lastTimestamp = 0
-                }
-
-                ft.save(flush: true)
-                esclient.close()
             }
-
         }
+            finally {
+                try {
+                    esclient.close()
+                }
+                catch (Exception e) {
+                    log.error("Problem by Close ES Client", e);
+                }
+            }
 
         log.debug("End to check ES Elements with DB Elements")
 

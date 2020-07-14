@@ -1,5 +1,5 @@
 <!-- _groups.gsp -->
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; de.laser.AuditConfig" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; de.laser.AuditConfig" %>
 
 <g:if test="${newProp}">
     <semui:errors bean="${newProp}" />
@@ -32,6 +32,8 @@
     </g:if>
     <tbody>
         <g:each in="${propDefGroup.getCurrentProperties(ownobj).sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+            <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextOrg.id && editable) || (!prop.tenant && editable)}"/>
+            <g:if test="${(prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                 <tr>
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
@@ -68,19 +70,19 @@
                     </td>
                     <td>
                         <g:if test="${prop.type.type == Integer.toString()}">
-                            <semui:xEditable owner="${prop}" type="number" field="intValue"/>
+                            <semui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}"/>
                         </g:if>
                         <g:elseif test="${prop.type.type == String.toString()}">
-                            <semui:xEditable owner="${prop}" type="text" field="stringValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == BigDecimal.toString()}">
-                            <semui:xEditable owner="${prop}" type="text" field="decValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="decValue" overwriteEditable="${overwriteEditable}"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == Date.toString()}">
-                            <semui:xEditable owner="${prop}" type="date" field="dateValue"/>
+                            <semui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
-                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
+                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == URL.toString()}">
                             <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis" />
@@ -91,18 +93,16 @@
                     </td>
                     <g:if test="${propDefGroup.ownerType == License.class.name}">
                         <td>
-                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph"/>
+                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph" overwriteEditable="${overwriteEditable}"/>
                         </td>
                     </g:if>
                     <td>
-                        <semui:xEditable owner="${prop}" type="textarea" field="note"/>
+                        <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}"/>
                     </td>
                     <td class="x la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
-                        <g:if test="${editable == true}">
+                        <g:if test="${overwriteEditable}">
                             <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
-
-
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
                                     <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax"
@@ -152,7 +152,26 @@
                                     </laser:remoteLink>
                                 </g:else>
                             </g:if>
-
+                            <g:else>
+                                <g:if test="${prop.isPublic}">
+                                    <laser:remoteLink class="ui orange icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                                      params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
+                                                      data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                      data-update="${custom_props_div}">
+                                        <i class="icon eye la-js-editmode-icon"></i>
+                                    </laser:remoteLink>
+                                </g:if>
+                                <g:else>
+                                    <laser:remoteLink class="ui icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                                      params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
+                                                      data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                      data-update="${custom_props_div}">
+                                        <i class="icon eye slash la-js-editmode-icon"></i>
+                                    </laser:remoteLink>
+                                </g:else>
+                            </g:else>
                             <g:if test="${! AuditConfig.getConfig(prop)}">
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
 
@@ -188,7 +207,7 @@
                         </g:if>
                     </td>
                 </tr>
-
+            </g:if>
         </g:each>
     </tbody>
 

@@ -8,11 +8,13 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.ConfigUtils
 import de.laser.helper.ServerUtils
 import grails.plugin.mail.MailService
+import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import static de.laser.helper.RDStore.*
 
+//@Transactional
 class DashboardDueDatesService {
 
     QueryService queryService

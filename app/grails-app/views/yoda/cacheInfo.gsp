@@ -145,30 +145,5 @@
 
 <hr />
 
-<h3 class="ui header">Plugin-Cache ; not expiring <span class="ui label">${plugincacheManager.class}</span></h3>
-
-<g:each in="${plugincacheManager.getCacheNames()}" var="cacheName">
-    <g:set var="cache" value="${plugincacheManager.getCache(cacheName)}" />
-
-    <h4 class="ui header">${cacheName} <span class="ui label">${cache.class}</span></h4>
-
-    <div class="ui segment">
-
-        <g:link class="ui button small"
-                controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'cache']">Cache leeren</g:link>
-
-        <ul>
-            <g:each in="${cache.allKeys}" var="key">
-                <g:set var="cacheEntry" value="${cache.getNativeCache().get(key)}" />
-                <li>${key} >> ${cacheEntry}</li>
-            </g:each>
-        </ul>
-
-        ${cache}
-
-    </div>
-</g:each>
-
-
 </body>
 </html>

@@ -720,8 +720,7 @@
                 <div id="new-dynamic-properties-block">
 
                     <g:render template="properties" model="${[
-                            subscriptionInstance: subscriptionInstance,
-                            authorizedOrgs: authorizedOrgs
+                            subscriptionInstance: subscriptionInstance
                     ]}" />
 
                 </div><!-- #new-dynamic-properties-block -->
@@ -739,7 +738,7 @@
 
     <div id="magicArea"></div>
 
-    <r:script language="JavaScript">
+    <r:script>
 
       function unlinkPackage(pkg_id){
         var req_url = "${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription:subscriptionInstance.id])}&package="+pkg_id

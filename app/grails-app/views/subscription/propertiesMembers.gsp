@@ -39,7 +39,7 @@
 <semui:filter>
     <h4>${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [parentSub.name])}</h4>
     <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
-        <g:render template="../templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
+        <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
 
         <div class="field la-field-right-aligned">
             <a href="${request.forwardURI}"
@@ -147,11 +147,11 @@
                         <div class="item">
 
                             <div class="right floated content">
-                                <semui:totalNumber total="${parentSub.customProperties?.size()}"/>
+                                <semui:totalNumber total="${parentSub.propertySet.findAll{ it.type.tenant == null && it.tenant == institution }.size()}"/>
                             </div>
 
                             <g:set var="customProperty"
-                                   value="${parentSub.customProperties.find { it.type == filterPropDef }}"/>
+                                   value="${parentSub.propertySet.find { it.type.tenant == null && it.tenant.id == institution.id && it.type == filterPropDef }}"/>
                             <g:if test="${customProperty}">
                                 <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
 
@@ -215,11 +215,11 @@
                         <div class="item">
 
                             <div class="right floated content">
-                                <semui:totalNumber total="${parentSub.privateProperties?.size()}"/>
+                                <semui:totalNumber total="${parentSub.propertySet.findAll{ it.type.tenant.id == institution.id }.size()}"/>
                             </div>
 
                             <g:set var="privateProperty"
-                                   value="${parentSub.privateProperties.find { it.type == filterPropDef }}"/>
+                                   value="${parentSub.propertySet.find { it.type.tenant.id == institution.id && it.type == filterPropDef }}"/>
                             <g:if test="${privateProperty}">
                                 <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
 
@@ -438,11 +438,11 @@
                                     <div class="item">
 
                                         <div class="right floated content">
-                                            <semui:totalNumber total="${sub.customProperties?.size()}"/>
+                                            <semui:totalNumber total="${sub.propertySet.findAll{it.type.tenant == null && it.tenant == institution}.size()}"/>
                                         </div>
 
                                         <g:set var="customProperty"
-                                               value="${sub.customProperties.find { it.type == filterPropDef }}"/>
+                                               value="${sub.propertySet.find { it.type.tenant == null && it.tenant == institution && it.type == filterPropDef }}"/>
                                         <g:if test="${customProperty}">
                                             <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
 
@@ -503,10 +503,10 @@
                                     <div class="item">
 
                                         <g:set var="privateProperty"
-                                               value="${sub.privateProperties.find { it.type == filterPropDef }}"/>
+                                               value="${sub.propertySet.findAll { it.type.tenant.id == institution.id && it.type == filterPropDef }}"/>
 
                                         <div class="right floated content">
-                                            <semui:totalNumber total="${sub.privateProperties?.size()}"/>
+                                            <semui:totalNumber total="${sub.propertySet.findAll{ it.type.tenant.id == institution.id }.size()}"/>
                                         </div>
 
                                         <g:if test="${privateProperty}">
@@ -597,7 +597,7 @@
 
 <div id="magicArea"></div>
 
-<r:script language="JavaScript">
+<r:script>
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)

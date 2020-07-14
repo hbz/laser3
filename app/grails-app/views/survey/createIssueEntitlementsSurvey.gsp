@@ -35,7 +35,7 @@
 <semui:totalNumber total="${num_sub_rows}"/>
 </h1>
 
-<g:render template="../templates/filter/javascript" />
+<g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="createIssueEntitlementsSurvey" controller="survey" method="get" class="ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -78,7 +78,7 @@
         <div class="four fields">
 
             <!-- 2-1 + 2-2 -->
-            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
 
             <!-- 2-3 -->
             <div class="field">
@@ -187,13 +187,12 @@
                                     </g:if>
                                 </g:if>
                             </g:link>
-                            <g:if test="${s.owner}">
+                            <g:each in="${allLinkedLicenses.get(s)}" var="license">
                                 <div class="la-flexbox">
                                     <i class="icon balance scale la-list-icon"></i>
-                                    <g:link controller="license" action="show"
-                                            id="${s.owner.id}">${s.owner?.reference ?: message(code: 'missingLicenseReference', default: '** No License Reference Set **')}</g:link>
+                                    <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
                                 </div>
-                            </g:if>
+                            </g:each>
                         </td>
                         <td>
                         <!-- packages -->

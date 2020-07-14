@@ -70,7 +70,7 @@ class PropertyDefinitionGroup {
         List result = []
         def givenIds = getPropertyDefinitions().collect{ it.id }
 
-        currentObject?.customProperties?.each{ cp ->
+        currentObject?.propertySet?.each{ cp ->
             if (cp.type.id in givenIds) {
                 result << GrailsHibernateUtil.unwrapIfProxy(cp)
             }

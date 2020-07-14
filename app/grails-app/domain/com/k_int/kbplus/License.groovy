@@ -87,15 +87,15 @@ class License extends AbstractBaseWithCalculatedLastUpdated
   //static hasOne = [onixplLicense: OnixplLicense]
 
   static hasMany = [
-          ids: Identifier,
-          pkgs:         Package,
+          ids            : Identifier,
+          pkgs           :         Package,
           //subscriptions:Subscription,
-          documents:    DocContext,
-          orgLinks:     OrgRole,
-          prsLinks:     PersonRole,
+          documents      :    DocContext,
+          orgLinks       :     OrgRole,
+          prsLinks       :     PersonRole,
           derivedLicenses:    License,
-          pendingChanges:     PendingChange,
-          customProperties:   LicenseProperty,
+          pendingChanges :     PendingChange,
+          propertySet    :   LicenseProperty,
           //privateProperties:  LicensePrivateProperty
   ]
 
@@ -108,7 +108,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           prsLinks:      'lic',
           derivedLicenses: 'instanceOf',
           pendingChanges:  'license',
-          customProperties:  'owner',
+          propertySet:  'owner',
           //privateProperties: 'owner'
   ]
 
@@ -136,7 +136,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 endDate column: 'lic_end_date',     index: 'lic_dates_idx'
       lastUpdatedCascading column: 'lic_last_updated_cascading'
 
-       customProperties sort:'type', order:'desc', batchSize: 10
+       propertySet sort:'type', order:'desc', batchSize: 10
     //privateProperties sort:'type', order:'desc', batchSize: 10
          pendingChanges sort: 'ts', order: 'asc', batchSize: 10
 

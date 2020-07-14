@@ -43,7 +43,7 @@
     </div>
     <%--</div>--%>
 
-    <r:script language="JavaScript">
+    <r:script>
         $(document).ready(function(){
             c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
         });

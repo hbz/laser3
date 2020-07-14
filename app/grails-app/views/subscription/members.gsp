@@ -76,7 +76,7 @@
         </form>
     </semui:filter>
     --%>
-    <g:render template="../templates/filter/javascript" />
+    <g:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <%
@@ -227,6 +227,7 @@
                         </g:if>
                     </td>
                     <td class="x">
+
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         <g:if test="${sub.isEditableBy(contextService.getUser())}"> <%-- needs to be checked for child subscription because of collective subscriptions! --%>
                             <g:if test="${sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
@@ -259,12 +260,14 @@
                                 </div>
                             </g:else>
                         </g:if>
+
+                        <semui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" field="comment" type="textarea"/>
                     </td>
                 </tr>
             </g:each>
         </tbody>
         </table>
-                <g:render template="../templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
+                <g:render template="/templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">

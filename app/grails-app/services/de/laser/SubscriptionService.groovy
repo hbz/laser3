@@ -16,6 +16,7 @@ import de.laser.helper.FactoryResult
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
+import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -26,6 +27,7 @@ import java.nio.file.Path
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
+@Transactional
 class SubscriptionService {
     def contextService
     def accessService
@@ -1027,9 +1029,9 @@ class SubscriptionService {
                         }
                     }
 
-                    if (subMember.customProperties) {
+                    if (subMember.propertySet) {
                         //customProperties
-                        for (prop in subMember.customProperties) {
+                        for (prop in subMember.propertySet) {
                             SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.save()
@@ -1273,7 +1275,7 @@ class SubscriptionService {
 
 
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
-            targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId && sourceProp.tenant.id == sourceProp.tenant }
+            targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && sourceProp.tenant.id == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
                 targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)

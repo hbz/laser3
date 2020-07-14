@@ -6,7 +6,9 @@ import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.*
 import de.laser.helper.RDConstants
+import grails.transaction.Transactional
 
+@Transactional
 class AccessService {
 
     static final CHECK_VIEW = 'CHECK_VIEW'

@@ -6,9 +6,11 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.json.JSONElement
 
+@Transactional
 class StatusUpdateService extends AbstractLockableService {
 
     def changeNotificationService

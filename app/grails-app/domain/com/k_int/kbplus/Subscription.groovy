@@ -85,6 +85,9 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   Date manualCancellationDate
   String cancellationAllowances
 
+  //Only for Consortia: ERMS-2098
+  String comment
+
   Subscription instanceOf
   Subscription previousSubscription //deleted as ERMS-800
   // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
@@ -101,18 +104,18 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
 
   static hasMany = [
-                     ids: Identifier,
-                     packages : SubscriptionPackage,
-                     issueEntitlements: IssueEntitlement,
-                     documents: DocContext,
-                     orgRelations: OrgRole,
-                     prsLinks: PersonRole,
-                     derivedSubscriptions: Subscription,
-                     pendingChanges: PendingChange,
-                     customProperties: SubscriptionProperty,
-                     //privateProperties: SubscriptionPrivateProperty,
-                     costItems: CostItem,
-                     ieGroups: IssueEntitlementGroup
+          ids                 : Identifier,
+          packages            : SubscriptionPackage,
+          issueEntitlements   : IssueEntitlement,
+          documents           : DocContext,
+          orgRelations        : OrgRole,
+          prsLinks            : PersonRole,
+          derivedSubscriptions: Subscription,
+          pendingChanges      : PendingChange,
+          propertySet         : SubscriptionProperty,
+          //privateProperties: SubscriptionPrivateProperty,
+          costItems           : CostItem,
+          ieGroups            : IssueEntitlementGroup
   ]
 
   static mappedBy = [
@@ -141,6 +144,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
         name        column:'sub_name'
+        comment     column: 'sub_comment', type: 'text'
         identifier  column:'sub_identifier'
         startDate   column:'sub_start_date',        index: 'sub_dates_idx'
         endDate     column:'sub_end_date',          index: 'sub_dates_idx'
@@ -165,7 +169,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         orgRelations        batchSize: 10
         prsLinks            batchSize: 10
         derivedSubscriptions    batchSize: 10
-        customProperties    batchSize: 10
+        propertySet    batchSize: 10
         //privateProperties   batchSize: 10
         costItems           batchSize: 10
     }
@@ -191,6 +195,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         manualRenewalDate(nullable:true, blank:false)
         manualCancellationDate(nullable:true, blank:false)
         instanceOf(nullable:true, blank:false)
+        comment(nullable: true, blank: true)
         administrative(blank:false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
         isSlaved    (blank:false)
@@ -660,7 +665,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         // ALL type depending groups without checking tenants or bindings
         List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name, [sort:'name', order:'asc'])
-        groups.each{ it ->
+        groups.each{ PropertyDefinitionGroup it ->
 
             // cons_members
             if (this.instanceOf) {
@@ -954,6 +959,14 @@ select distinct oap from OrgAccessPoint oap
             result.startDate = startDate
             result.endDate = endDate
         }
+
+        result
+    }
+
+    List<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
+        List<OrgAccessPoint> result = []
+
+        result = this.getSubscriber().accessPoints
 
         result
     }

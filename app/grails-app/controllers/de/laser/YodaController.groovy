@@ -274,8 +274,7 @@ class YodaController {
 
         result.hibernateSession = sessionFactory
 
-        result.ehcacheManager = cacheService.getCacheManager(cacheService.EHCACHE)
-        result.plugincacheManager = cacheService.getCacheManager(cacheService.PLUGINCACHE)
+        result.ehcacheManager = cacheService.getCacheManager()
 
         if (params.cmd?.equals('clearCache')) {
             def cache
@@ -287,10 +286,6 @@ class YodaController {
                 cache = cacheService.getCache(result.ehcacheManager, params.cache)
                 cacheService.clear(cache)
             }
-            else {
-                cache = cacheService.getCache(result.plugincacheManager, params.cache)
-                cacheService.clear(cache)
-            }
 
             params.remove('cmd')
             params.remove('type')
@@ -298,17 +293,6 @@ class YodaController {
 
             redirect controller: 'yoda', action: 'cacheInfo', params: params
         }
-        /* else if (params.cmd?.equals('deleteCache')) {
-            if (params.type?.equals('ehcache')) {
-                result.ehcacheManager.removeCache(params.cache)
-            }
-
-            params.remove('cmd')
-            params.remove('type')
-            params.remove('cache')
-
-            redirect controller: 'yoda', action: 'cacheInfo', params: params
-        } */
 
         result
     }
@@ -1785,7 +1769,7 @@ class YodaController {
 
                 } else {
                     if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
-                        if (sub?.customProperties?.find {
+                        if (sub?.propertySet?.find {
                             it?.type?.id == property?.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
 

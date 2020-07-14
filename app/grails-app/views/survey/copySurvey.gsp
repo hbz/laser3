@@ -103,6 +103,28 @@
                     </td>
                 </tr>
                 <tr>
+                    <th><g:checkBox name="copySurvey.copySurveyConfigUrl2" value="${true}"/></th>
+                    <th>${message(code: 'copySurvey.copySurveyConfigUrl2')}</th>
+                    <td>
+                        ${surveyConfig.url2}
+                        <g:if test="${surveyConfig.url2}">
+                            <semui:linkIcon href="${surveyConfig.url2}"/>
+                            <br/>&nbsp<br/>&nbsp<br/>
+                        </g:if>
+                    </td>
+                </tr>
+                <tr>
+                    <th><g:checkBox name="copySurvey.copySurveyConfigUrl3" value="${true}"/></th>
+                    <th>${message(code: 'copySurvey.copySurveyConfigUrl3')}</th>
+                    <td>
+                        ${surveyConfig.url3}
+                        <g:if test="${surveyConfig.url3}">
+                            <semui:linkIcon href="${surveyConfig.url3}"/>
+                            <br/>&nbsp<br/>&nbsp<br/>
+                        </g:if>
+                    </td>
+                </tr>
+                <tr>
                     <th><g:checkBox name="copySurvey.copySurveyConfigComment" value="${true}"/></th>
                     <th><g:message code="copySurvey.copySurveyConfigComment"/></th>
                     <td>
@@ -285,7 +307,7 @@
     <semui:totalNumber total="${num_sub_rows}"/>
     </h1>
 
-    <g:render template="../templates/filter/javascript"/>
+    <g:render template="/templates/filter/javascript"/>
     <semui:filter showFilterButton="true">
         <g:form action="copySurvey" controller="survey" method="get" class="ui small form">
             <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -328,7 +350,7 @@
             <div class="four fields">
 
                 <!-- 2-1 + 2-2 -->
-                <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+                <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
 
                 <!-- 2-3 -->
                 <div class="field">

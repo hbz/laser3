@@ -2,11 +2,33 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2674    13.07.2020  hbz-dev     Moe     Feature     Suchbegriff im Filter "Meine Lizenzen" muss optimiert werden
+
+2675    13.07.2020  hbz-dev     Moe     Feature     Umfrage: Eingabe von zwei weiteren URLs
+
+2593    13.07.2020  hbz-dev     Andreas Bug         inkorrekte Darstellung von Dezimalwerten bei Merkmalen
+
+2614    13.07.2020  hbz-dev     Andreas Bug         Rechnungs- und Auftragsnummer konnten nicht gelöscht werden
+
+2426    13.07.2020  hbz-dev     Andreas Feature     Merkmale sind hinsichtlich ihrer Mehrfachvergabe und Pflichtsetzung konfigurierbar
+
+2679    10.07.2020  hbz-dev     Moe     Feature     Umfrage: Umfragereiter auch bei Kindlizenz für Konsortialstelle anzeigen
+
+2609    09.07.2020  hbz-dev     Moe     Feature     API Schnittstelle für Zugangskonfiguration
+
+1580    09.07.2020  hbz-dev     Andreas Feature     Umbau der Merkmalsverwaltung
+
+2654    08.07.2020  hbz-dev     Moe     Feature     Überarbeitung Zugangskonfiguration
+
+2098    07.07.2020  hbz-dev     Moe     Feature     Freitextfeld in Teilnehmerübersicht ermöglichen
+
 2664    07.07.2020  hbz-dev     Andreas Feature     Vorbelegung von auszuwählenden Lizenzen für Finanzmodal per Checkbox
 
 2657    07.07.2020  hbz-dev     David   Feature     Refactoring: Wrapper für Konfigurationszugriff
 
 2459    07.07.2020  rc1.4       Moe     Bug         Beim Kopieren von Objekten werden Dokumenten nicht richtig kopiert
+
+2659    06.07.2020  hbz-dev     Moe     Feature     Sortierung "Nicht abgeschlossen" auch für Konsortialsicht bauen bei Teilnehmer-Umfragen
 
 2660    06.07.2020  rc1.4       Moe     Bug         API Endpunkt CostItemList muss alle CostItems zurückgeben
 

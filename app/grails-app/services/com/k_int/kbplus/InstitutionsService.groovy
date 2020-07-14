@@ -5,10 +5,13 @@ import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.ConfigUtils
 
+import grails.transaction.Transactional
 import java.nio.file.Files
 import java.nio.file.Path
 
+@Transactional
 class InstitutionsService {
 
     def contextService
@@ -90,7 +93,7 @@ class InstitutionsService {
             }
             else if (option == InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD) {
 
-                for (prop in base.customProperties) {
+                for (prop in base.propertySet) {
                     LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
                     copiedProp = prop.copyInto(copiedProp)
                     copiedProp.instanceOf = null
@@ -115,7 +118,7 @@ class InstitutionsService {
                             migrated: dctx.owner.migrated
                     ).save()
 
-                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                     Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
@@ -182,7 +185,7 @@ class InstitutionsService {
             licenseInstance.startDate = baseLicense?.startDate
             licenseInstance.endDate = baseLicense?.endDate
         }
-        for (prop in baseLicense?.customProperties) {
+        for (prop in baseLicense?.propertySet) {
             def copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
             copiedProp = prop.copyInto(copiedProp)
             copiedProp.instanceOf = null
@@ -234,7 +237,7 @@ class InstitutionsService {
                         user: dctx.owner.user,
                         migrated: dctx.owner.migrated).save()
 
-                String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                 Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                 Path target = new File("${fPath}/${clonedContents.uuid}").toPath()

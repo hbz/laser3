@@ -4,7 +4,9 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
+import grails.transaction.Transactional
 
+@Transactional
 class PropertyService {
 
     def grailsApplication
@@ -28,15 +30,10 @@ class PropertyService {
 
 
         if (params.filterPropDef) {
-            def pd = genericOIDService.resolveOID(params.filterPropDef)
-            String propGroup
-            if (pd.tenant) {
-                propGroup = "privateProperties"
-            } else {
-                propGroup = "customProperties"
-            }
-            base_qry += " and ( exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef "
+            PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
+            base_qry += " and ( exists ( select gProp from ${hqlVar}.propertySet as gProp where gProp.type = :propDef and gProp.tenant = :tenant "
             base_qry_params.put('propDef', pd)
+            base_qry_params.put('tenant', contextService.org)
             if(params.filterProp) {
                 switch (pd.type) {
                     case RefdataValue.toString():
@@ -115,18 +112,19 @@ class PropertyService {
     }
 
     def getUsageDetails() {
-        def usedPdList  = []
-        def detailsMap = [:]
+        List usedPdList  = []
+        Map detailsMap = [:]
+        List multiplePdList = []
 
         grailsApplication.getArtefacts("Domain").toList().each { dc ->
 
-            if (dc.shortName.endsWith('CustomProperty') || dc.shortName.endsWith('PrivateProperty')) {
+            if (dc.shortName.endsWith('Property') && !SurveyProperty.class.name.contains(dc.name)) {
 
                 //log.debug( dc.shortName )
                 def query = "SELECT DISTINCT type FROM ${dc.name}"
                 //log.debug(query)
 
-                def pds = PropertyDefinition.executeQuery(query)
+                Set<PropertyDefinition> pds = PropertyDefinition.executeQuery(query)
                 //log.debug(pds)
                 detailsMap << ["${dc.shortName}": pds.collect{ it -> "${it.id}:${it.type}:${it.descr}"}.sort()]
 
@@ -134,10 +132,13 @@ class PropertyService {
                 pds.each{ it ->
                     usedPdList << it.id
                 }
+
+
+                multiplePdList.addAll(PropertyDefinition.executeQuery("select p.type.id from ${dc.name} p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1",[ctx:contextService.org]))
             }
         }
 
-        [usedPdList.unique().sort(), detailsMap.sort()]
+        [usedPdList.unique().sort(), detailsMap.sort(), multiplePdList]
     }
 
     Map<String, Object> getRefdataCategoryUsage() {
@@ -186,7 +187,7 @@ class PropertyService {
     List<AbstractPropertyWithCalculatedLastUpdated> getOrphanedProperties(Object obj, List<List> sorted) {
 
         List<AbstractPropertyWithCalculatedLastUpdated> result = []
-        List orphanedIds = obj.customProperties.findAll{it.isPublic == true && it.tenant == contextService.org}.collect{ it.id }
+        List orphanedIds = obj.propertySet.findAll{ it.type.tenant == null }.collect{ it.id }
 
         sorted.each{ List entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
 

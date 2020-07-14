@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.helper.DateUtil
+import grails.transaction.Transactional
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
@@ -11,6 +12,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.sort.FieldSortBuilder
 import org.elasticsearch.search.sort.SortOrder
 
+@Transactional
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields
   def reversemap = ['rectype':'rectype',

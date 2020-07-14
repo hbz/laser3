@@ -34,6 +34,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
+import de.laser.helper.ConfigUtils
 
 import javax.servlet.ServletOutputStream
 import java.nio.file.Files
@@ -348,6 +349,18 @@ class SurveyController {
         result.num_sub_rows = subscriptions.size()
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
+        result.allLinkedLicenses = [:]
+        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        allLinkedLicenses.each { Links li ->
+            Subscription s = genericOIDService.resolveOID(li.destination)
+            License l = genericOIDService.resolveOID(li.source)
+            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
+            if(!linkedLicenses)
+                linkedLicenses = []
+            linkedLicenses << l
+            result.allLinkedLicenses.put(s,linkedLicenses)
+        }
+
         result
 
     }
@@ -416,6 +429,18 @@ class SurveyController {
         }
         result.num_sub_rows = subscriptions.size()
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+
+        result.allLinkedLicenses = [:]
+        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        allLinkedLicenses.each { Links li ->
+            Subscription s = genericOIDService.resolveOID(li.destination)
+            License l = genericOIDService.resolveOID(li.source)
+            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
+            if(!linkedLicenses)
+                linkedLicenses = []
+            linkedLicenses << l
+            result.allLinkedLicenses.put(s,linkedLicenses)
+        }
 
         result
 
@@ -699,7 +724,7 @@ class SurveyController {
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
 
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.customProperties + result.successorSubscription.customProperties, true, true) : null
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet + result.successorSubscription.customProperties, true, true) : null
             }
 
 
@@ -1534,41 +1559,43 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.subscriptionInstance = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
-        result.subscription =  result.subscriptionInstance ?: null
-
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.ownerId = result.surveyResults[0].owner.id
 
         if(result.surveyConfig.type == 'Subscription') {
+            result.subscriptionInstance = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
+            result.subscription =  result.subscriptionInstance ?: null
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
-            result.subscriptionInstance.orgRelations.each { or ->
-                if (!(or.org.id == result.institution.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-
-            //costs dataToDisplay
-            result.dataToDisplay = ['consAtSubscr']
-            result.offsets = [consOffset:0]
-            result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
-
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
-            //cost items
-            //params.forExport = true
-            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
-            if (costItems.cons) {
-                result.costItemSums.consCosts = costItems.cons.sums
+            if(result.subscriptionInstance) {
+                result.subscriptionInstance.orgRelations.each { or ->
+                    if (!(or.org.id == result.institution.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                        result.visibleOrgRelations << or
+                    }
+                }
+                result.visibleOrgRelations.sort { it.org.sortname }
+
+
+                //costs dataToDisplay
+                result.dataToDisplay = ['consAtSubscr']
+                result.offsets = [consOffset: 0]
+                result.sortConfig = [consSort: 'ci.costTitle', consOrder: 'asc']
+
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+                //cost items
+                //params.forExport = true
+                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+                if (costItems.cons) {
+                    result.costItemSums.consCosts = costItems.cons.sums
+                }
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
 
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.customProperties + result.successorSubscription.customProperties, true, true) : null
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet + result.successorSubscription.customProperties, true, true) : null
             }
         }
 
@@ -2113,7 +2140,7 @@ class SurveyController {
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editSurveyCostItem() {
         def result = setResultGenericsAndCheckAccess()
         result.putAll(financeService.setEditVars(result.institution))
@@ -2141,7 +2168,7 @@ class SurveyController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def addForAllSurveyCostItem() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
@@ -2498,7 +2525,7 @@ class SurveyController {
                 if (surveyResult.participant.id in currentParticipantIDs && surveyResult.sub) {
 
                     if (property.type == 'class com.k_int.kbplus.RefdataValue') {
-                        if (surveyResult.sub.customProperties.find {
+                        if (surveyResult.sub.propertySet.find {
                             it.type.id == property.id
                         }.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {
 
@@ -2684,6 +2711,8 @@ class SurveyController {
                             surveyInfo: newSurveyInfo,
                             comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                             url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                            url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
+                            url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
                             configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                     ).save()
 
@@ -2711,6 +2740,8 @@ class SurveyController {
                         surveyInfo: newSurveyInfo,
                         comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                         url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                        url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
+                        url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
                         configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                 ).save()
 
@@ -3024,7 +3055,7 @@ class SurveyController {
         subsToCompare.each { sub ->
             Map customProperties = result.customProperties
             sub = GrailsHibernateUtil.unwrapIfProxy(sub)
-            customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.customProperties.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.propertySet.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
             privateProperties = comparisonService.buildComparisonTree(privateProperties, sub, sub.privateProperties.sort{it.type.getI10n('name')})
@@ -3377,7 +3408,7 @@ class SurveyController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def exportSurCostItems() {
         def result = setResultGenericsAndCheckAccess()
         if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
@@ -3411,7 +3442,7 @@ class SurveyController {
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def copyEmailaddresses() {
         Map<String, Object> result = [:]
         result.modalID = params.targetId
@@ -3427,12 +3458,12 @@ class SurveyController {
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def newSurveyCostItem() {
-        result.institution = contextService.getOrg()
         SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
 
         Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
         def newCostItem = null
         result.putAll(financeService.setEditVars(result.institution))
 
@@ -3833,7 +3864,7 @@ class SurveyController {
         params.list('selectedSurveyCostItem').each { costItemId ->
 
             def costItem = CostItem.get(costItemId)
-            def participantSub = result.parentSubscription.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
+            def participantSub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
             def participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costElement, RDStore.COST_ITEM_DELETED)
             if(costItem && participantSub && !participantSubCostItem){
 
@@ -4009,7 +4040,7 @@ class SurveyController {
                                     it.type.id == propDef.id
                                 } : []
                             } else {
-                                copyProperty = oldSub ? oldSub.customProperties.find {
+                                copyProperty = oldSub ? oldSub.propertySet.find {
                                     it.type.id == propDef.id
                                 } : []
                             }
@@ -4039,7 +4070,7 @@ class SurveyController {
                                 }
                             } else {
                                 //custom Property
-                                def existingProp = sub.customProperties.find {
+                                def existingProp = sub.propertySet.find {
                                     it.type.id == propDef.id && it.owner.id == sub.id
                                 }
 
@@ -4837,7 +4868,7 @@ class SurveyController {
 
             row.add([field: surveyOrg.org.libraryType?.getI10n('value') ?: '', style: null])
 
-            row.add([field: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org).name ?: '', style: null])
+            row.add([field: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(surveyOrg.org).name ?: '', style: null])
 
 
             def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)
@@ -5087,7 +5118,7 @@ class SurveyController {
                                 owner: dctx.owner.owner
                         ).save()
 
-                        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                        String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                         Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                         Path target = new File("${fPath}/${clonedContents.uuid}").toPath()

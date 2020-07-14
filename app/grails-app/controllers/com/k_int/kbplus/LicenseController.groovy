@@ -20,6 +20,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
+import de.laser.helper.ConfigUtils
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -1010,7 +1011,7 @@ class LicenseController
                                         owner: dctx.owner.owner
                                 ).save()
 
-                                String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                                String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                                 Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                                 Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
@@ -1080,7 +1081,7 @@ class LicenseController
 
                     if(params.license.copyCustomProperties) {
                         //customProperties
-                        baseLicense.customProperties.findAll{ LicenseProperty prop -> prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
+                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
                             LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.instanceOf = null
@@ -1090,7 +1091,7 @@ class LicenseController
                     if(params.license.copyPrivateProperties){
                         //privatProperties
 
-                        baseLicense.customProperties.findAll{ LicenseProperty prop -> prop.type.tenant.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
+                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
                             LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.save()

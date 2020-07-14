@@ -3,22 +3,19 @@ package de.laser
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.User
 import de.laser.helper.EhcacheWrapper
-import grails.plugin.cache.GrailsConcurrentMapCache
-import grails.plugin.cache.GrailsConcurrentMapCacheManager
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.transaction.Transactional
 import net.sf.ehcache.Cache
 import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Element
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 
+@Transactional
 class CacheService implements ApplicationContextAware {
 
     ApplicationContext applicationContext
     SpringSecurityService springSecurityService
-
-    final static EHCACHE = 'EHCACHE'
-    final static PLUGINCACHE = 'PLUGINCACHE'
 
     // global caches
 
@@ -28,32 +25,26 @@ class CacheService implements ApplicationContextAware {
     private Cache shared_user_cache
     private Cache shared_org_cache
 
-    def getCacheManager(def type) {
+    CacheManager getCacheManager() {
 
-        if (type == EHCACHE) {
-            // http://www.ehcache.org/generated/2.10.4/pdf/Integrations.pdf
-            return CacheManager.getCacheManager('__DEFAULT__')
-        }
-        else if (type == PLUGINCACHE) {
-            // http://grails-plugins.github.io/grails-cache/
-            return applicationContext.grailsCacheManager
-        }
+        // return CacheManager.newInstance() // grails 3
+
+        // http://www.ehcache.org/generated/2.10.4/pdf/Integrations.pdf
+        return CacheManager.getCacheManager('__DEFAULT__')
+
+        // http://grails-plugins.github.io/grails-cache/
+        // return applicationContext.grailsCacheManager
     }
 
-    def getCache(def cacheManager, String cacheName) {
+    Cache getCache(CacheManager cacheManager, String cacheName) {
 
         def cache = null
 
         if (cacheManager) {
-            if (cacheManager instanceof CacheManager) {
-                if (! cacheManager.getCache(cacheName)) {
-                    cacheManager.addCache(cacheName)
-                }
-                cache = cacheManager.getCache(cacheName)
+            if (! cacheManager.getCache(cacheName)) {
+                cacheManager.addCache(cacheName)
             }
-            else if (cacheManager instanceof GrailsConcurrentMapCacheManager) {
-                cache = cacheManager.getCache(cacheName)
-            }
+            cache = cacheManager.getCache(cacheName)
         }
 
         return cache
@@ -66,8 +57,8 @@ class CacheService implements ApplicationContextAware {
         if (! cache_ttl_300) {
 
             String cacheName = 'CACHE_TTL_300'
-            CacheManager cacheManager = (CacheManager) getCacheManager(EHCACHE)
-            cache_ttl_300 = (Cache) getCache(cacheManager, cacheName)
+            CacheManager cacheManager = getCacheManager()
+            cache_ttl_300 = getCache(cacheManager, cacheName)
 
             cache_ttl_300.getCacheConfiguration().setTimeToLiveSeconds(300)
             cache_ttl_300.getCacheConfiguration().setTimeToIdleSeconds(300)
@@ -81,8 +72,8 @@ class CacheService implements ApplicationContextAware {
         if (! cache_ttl_1800) {
 
             String cacheName = 'CACHE_TTL_1800'
-            CacheManager cacheManager = (CacheManager) getCacheManager(EHCACHE)
-            cache_ttl_1800 = (Cache) getCache(cacheManager, cacheName)
+            CacheManager cacheManager = getCacheManager()
+            cache_ttl_1800 = getCache(cacheManager, cacheName)
 
             cache_ttl_1800.getCacheConfiguration().setTimeToLiveSeconds(1800)
             cache_ttl_1800.getCacheConfiguration().setTimeToIdleSeconds(1800)
@@ -110,8 +101,8 @@ class CacheService implements ApplicationContextAware {
         if (! shared_user_cache) {
 
             String cacheName = 'USER_CACHE_SHARED'
-            CacheManager cacheManager = (CacheManager) getCacheManager(EHCACHE)
-            shared_user_cache  = (Cache) getCache(cacheManager, cacheName)
+            CacheManager cacheManager = getCacheManager()
+            shared_user_cache = getCache(cacheManager, cacheName)
 
             shared_user_cache.getCacheConfiguration().setCopyOnRead(true)
         }
@@ -124,8 +115,8 @@ class CacheService implements ApplicationContextAware {
         if (! shared_org_cache) {
 
             String cacheName = 'ORG_CACHE_SHARED'
-            CacheManager cacheManager = (CacheManager) getCacheManager(EHCACHE)
-            shared_org_cache = (Cache) getCache(cacheManager, cacheName)
+            CacheManager cacheManager = getCacheManager()
+            shared_org_cache = getCache(cacheManager, cacheName)
 
             shared_org_cache.getCacheConfiguration().setCopyOnRead(true)
         }
@@ -137,49 +128,29 @@ class CacheService implements ApplicationContextAware {
 
     def put(def cache, String key, def value) {
 
-        if (cache instanceof Cache) {
-            //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
-                cache.put(new Element(key, value))
-            //}
-        }
-        else if (cache instanceof GrailsConcurrentMapCache) {
-            cache.put( key, value )
-        }
+        //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
+            cache.put(new Element(key, value))
+        //}
     }
 
     def get(def cache, String key) {
 
-        if (cache instanceof Cache) {
-            //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
-                cache.get(key)?.objectValue
-            //}
-        }
-        else if (cache instanceof GrailsConcurrentMapCache) {
-            cache.get(key)
-        }
+        //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
+            cache.get(key)?.objectValue
+        //}
     }
 
     def remove(def cache, String key) {
 
-        if (cache instanceof Cache) {
-            //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
-                cache.remove(key)
-            //}
-        }
-        else if (cache instanceof GrailsConcurrentMapCache) {
-            println " TODO -> IMPLEMENT GrailsConcurrentMapCache.remove()"
-        }
+        //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
+            cache.remove(key)
+        //}
     }
 
     def clear(def cache) {
 
-        if (cache instanceof Cache) {
-            //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
-                cache.removeAll()
-            //}
-        }
-        else if (cache instanceof GrailsConcurrentMapCache) {
-            cache.clear()
-        }
+        //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
+            cache.removeAll()
+        //}
     }
 }

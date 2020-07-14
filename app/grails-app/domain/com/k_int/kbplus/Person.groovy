@@ -53,7 +53,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         roleLinks           cascade: 'all', batchSize: 10
         addresses           cascade: 'all', lazy: false
         contacts            cascade: 'all', lazy: false
-        customProperties   cascade: 'all', batchSize: 10
+        propertySet   cascade: 'all', batchSize: 10
 
         dateCreated column: 'prs_date_created'
         lastUpdated column: 'prs_last_updated'
@@ -64,14 +64,14 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         roleLinks:          'prs',
         addresses:          'prs',
         contacts:           'prs',
-        customProperties:  'owner'
+        propertySet:        'owner'
     ]
   
     static hasMany = [
             roleLinks: PersonRole,
             addresses: Address,
             contacts:  Contact,
-            customProperties: PersonProperty
+            propertySet: PersonProperty
     ]
     
     static constraints = {

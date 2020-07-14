@@ -50,6 +50,21 @@ class ApiUnsecuredMapReader {
     /**
      * @return Map<String, Object>
      */
+    static Map<String, Object> getOrgAccessPointStubMap(OrgAccessPoint orgAccessPoint) {
+        if (!orgAccessPoint) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.globalUID        = orgAccessPoint.globalUID
+        result.type             = orgAccessPoint.accessMethod?.value
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
+     * @return Map<String, Object>
+     */
     static Map<String, Object> getOrganisationStubMap(Org org) {
         if (!org) {
             return null
@@ -229,7 +244,7 @@ class ApiUnsecuredMapReader {
 
         // References
         result.provider = getOrganisationStubMap(pform.org) // com.k_int.kbplus.Org
-        result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.customProperties, pform, context)
+        result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.propertySet, pform, context)
 
         ApiToolkit.cleanUp(result, true, true)
     }

@@ -206,7 +206,7 @@
               contextPath="../templates" 
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />--%>
 
-    <r:script language="JavaScript">
+    <r:script>
       $(function(){
         $.fn.editable.defaults.mode = 'inline';
         $('.xEditableValue').editable();

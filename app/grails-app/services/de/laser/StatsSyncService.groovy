@@ -6,6 +6,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
+import grails.transaction.Transactional
 import groovy.json.JsonOutput
 import groovyx.gpars.GParsPool
 import groovyx.net.http.RESTClient
@@ -18,6 +19,7 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ExecutorService
 
+@Transactional
 class StatsSyncService {
 
     static final THREAD_POOL_SIZE = 1
