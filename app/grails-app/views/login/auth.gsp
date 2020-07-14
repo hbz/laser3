@@ -50,7 +50,7 @@
     </semui:card>
     </div>
 </div>
-<r:script type='text/javascript'>
+<r:script>
     (function () {
         document.forms['loginForm'].elements['j_username'].focus();
     })();

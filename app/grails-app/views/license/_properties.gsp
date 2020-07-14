@@ -26,7 +26,7 @@
                         ownobj: license,
                         custom_props_div: "member_props_div"]}"/>
 
-                <%--<r:script language="JavaScript">
+                <%--<r:script>
                     $(document).ready(function(){
                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
                     });
@@ -113,7 +113,7 @@
     </div>
     <%--</div>--%>
 
-    <r:script language="JavaScript">
+    <r:script>
         $(document).ready(function(){
             c3po.initProperties("<g:createLink controller='ajax' action='lookup' params='[oid:"${license.class.simpleName}:${license.id}"]'/>", "#custom_props_div_props");
         });
@@ -137,7 +137,7 @@
                             custom_props_div: "custom_props_div_${authOrg.id}",
                             tenant: authOrg]}"/>
 
-                    <r:script language="JavaScript">
+                    <r:script>
                             $(document).ready(function(){
                                 c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                             });
