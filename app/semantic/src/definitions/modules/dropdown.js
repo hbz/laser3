@@ -281,7 +281,12 @@ $.fn.dropdown = function(parameters) {
                 .addClass(className.selected)
             ;
             if ( $item.length > 0 ) {
-              $search.attr('aria-activedescendant', $item[0].id);
+              if (module.is.searchSelection()) {
+                $search.attr('aria-activedescendant', $item[0].id);
+              }
+              else {
+                $module.attr('aria-activedescendant', $item[0].id);
+              }
             }
           },
           nextAvailable: function($selected) {
@@ -295,14 +300,24 @@ $.fn.dropdown = function(parameters) {
               module.verbose('Moving selection to', $nextAvailable);
               $nextAvailable.addClass(className.selected);
               if (hasNext) {
-                $search.attr('aria-activedescendant', $nextAvailable[0].id);
+                if (module.is.searchSelection()) {
+                  $search.attr('aria-activedescendant', $nextAvailable[0].id);
+                }
+                else {
+                  $module.attr('aria-activedescendant', $nextAvailable[0].id);
+                }
               }
             }
             else {
               module.verbose('Moving selection to', $prevAvailable);
               $prevAvailable.addClass(className.selected);
               if (hasNext) {
-                $search.attr('aria-activedescendant', $prevAvailable[0].id);
+                if (module.is.searchSelection()) {
+                  $search.attr('aria-activedescendant', $prevAvailable[0].id);
+                }
+                else {
+                  $module.attr('aria-activedescendant', $prevAvailable[0].id);
+                }
               }
             }
           }
@@ -955,10 +970,10 @@ $.fn.dropdown = function(parameters) {
           else {
             if(settings.allowAdditions) {
               module.set.selected(module.get.query());
-               //module.remove.searchTerm(); // a11y
+               module.remove.searchTerm(); // a11y
             }
             else {
-               //module.remove.searchTerm(); // a11y
+               module.remove.searchTerm(); // a11y
             }
           }
         },
@@ -1043,7 +1058,7 @@ $.fn.dropdown = function(parameters) {
               }
             },
             focus: function() {
-              //activated = true;
+              activated = true;
               if(module.is.multiple()) {
                 module.remove.activeLabel();
               }
@@ -1074,7 +1089,7 @@ $.fn.dropdown = function(parameters) {
           text: {
             focus: function(event) {
               activated = true;
-              //module.focusSearch();
+              module.focusSearch();
               if(settings.showOnFocus) {
                 module.show();
               }
@@ -1507,7 +1522,12 @@ $.fn.dropdown = function(parameters) {
                       .addClass(className.selected)
                     ;
                     if($nextItem.length !== 0) {
-                      $search.attr('aria-activedescendant', $nextItem[0].id);
+                      if (module.is.searchSelection()) {
+                        $search.attr('aria-activedescendant', $nextItem[0].id);
+                      }
+                      else {
+                        $search.attr('aria-activedescendant', $nextItem[0].id);
+                      }
                     }
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
@@ -1536,7 +1556,12 @@ $.fn.dropdown = function(parameters) {
                     $nextItem
                       .addClass(className.selected)
                     ;
-                    $search.attr('aria-activedescendant', $nextItem[0].id);
+                    if (module.is.searchSelection()) {
+                      $search.attr('aria-activedescendant', $nextItem[0].id);
+                    }
+                    else {
+                      $module.attr('aria-activedescendant', $nextItem[0].id);
+                    }
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
                       module.set.selectedItem($nextItem);
@@ -2433,13 +2458,15 @@ $.fn.dropdown = function(parameters) {
                 $text
                   .removeClass(className.filtered)
                 ;
-
+                // text should never include the html
                 $text.text(text);
+                // if text is not "Bitte auswählen" put the text in input value
                 if (text !== module.get.placeholderText()) {
                   $search.val(text); // a11y
                 }
+                //else - text = "Bitte auswählen" remove the value of search input
                 else {
-                  $search.val(''); // a11y
+                  //$search.val(''); // a11y
                 }
               }
             }
@@ -2728,6 +2755,7 @@ $.fn.dropdown = function(parameters) {
               $message = $('<div/>')
                 .html(html)
                 .addClass(className.message)
+
                 .appendTo($menu)
               ;
             }
@@ -3783,7 +3811,7 @@ $.fn.dropdown = function(parameters) {
 $.fn.dropdown.settings = {
 
   silent                 : false,
-  debug                  : true,
+  debug                  : false,
   verbose                : false,
   performance            : true,
 
