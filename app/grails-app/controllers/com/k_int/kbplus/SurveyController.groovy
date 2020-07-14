@@ -4001,13 +4001,13 @@ class SurveyController {
                         def org = sub.getSubscriber()
                         def oldSub = sub.getCalculatedPrevious()
 
-                        def copyProperty
+                        SurveyResult copyProperty
                         if (params.tab == 'surveyProperties') {
                             copyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surveyProperty, org)
                         } else {
                             if (params.tab == 'privateProperties') {
-                                copyProperty = oldSub ? oldSub.privateProperties.find {
-                                    it.type.id == propDef.id
+                                copyProperty = oldSub ? oldSub.propertySet.find {
+                                    it.type.id == propDef.id && it.type.tenant.id == result.institution.id
                                 } : []
                             } else {
                                 copyProperty = oldSub ? oldSub.propertySet.find {
@@ -4019,13 +4019,13 @@ class SurveyController {
                         if (copyProperty) {
                             if (propDef.tenant != null) {
                                 //private Property
-                                def existingProps = sub.privateProperties.findAll {
+                                def existingProps = sub.propertySet.findAll {
                                     it.owner.id == sub.id && it.type.id == propDef.id
                                 }
                                 existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
                                 if (existingProps.size() == 0 || propDef.multipleOccurrence) {
-                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef)
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, org)
                                     if (newProp.hasErrors()) {
                                         log.error(newProp.errors)
                                     } else {
@@ -4045,7 +4045,7 @@ class SurveyController {
                                 }
 
                                 if (existingProp == null || propDef.multipleOccurrence) {
-                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef)
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, org)
                                     if (newProp.hasErrors()) {
                                         log.error(newProp.errors)
                                     } else {
@@ -4368,14 +4368,14 @@ class SurveyController {
                             if (ac) {
                                 // multi occurrence props; add one additional with backref
                                 if (scp.type.multipleOccurrence) {
-                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type, scp.tenant)
                                     additionalProp = scp.copyInto(additionalProp)
                                     additionalProp.instanceOf = scp
                                     additionalProp.save(flush: true)
                                 }
                                 else {
                                     // no match found, creating new prop with backref
-                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type, scp.tenant)
                                     newProp = scp.copyInto(newProp)
                                     newProp.instanceOf = scp
                                     newProp.save(flush: true)
