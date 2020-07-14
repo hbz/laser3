@@ -2,6 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+2168    14.07.2020  hbz-dev     Moe     Feature     Paketsymbol analog zu Vertragssymbol unter Lizenz --> Teilnehmer
+
 2674    13.07.2020  hbz-dev     Moe     Feature     Suchbegriff im Filter "Meine Lizenzen" muss optimiert werden
 
 2675    13.07.2020  hbz-dev     Moe     Feature     Umfrage: Eingabe von zwei weiteren URLs

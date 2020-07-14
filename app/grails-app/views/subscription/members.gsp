@@ -119,7 +119,16 @@
                     </span>
                 </th>
                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                    <th>${message(code: 'subscription.linktoLicense')}</th>
+                    <th class="la-no-uppercase"><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${message(code: 'subscription.linktoLicense')}">
+                        <i class="balance scale icon"></i>
+                    </span></th>
+                </g:if>
+                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                    <th class="la-no-uppercase"><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${message(code: 'subscription.packages.label')}">
+                        <i class="gift icon"></i>
+                    </span></th>
                 </g:if>
                 <th>${message(code:'default.status.label')}</th>
                 <th class="la-no-uppercase">
@@ -208,13 +217,22 @@
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
                             <g:set var="licenses" value="${Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)}"/>
-                            <g:each in="${licenses}" var="row">
-                                <g:set var="license" value="${genericOIDService.resolveOID(row.source)}"/>
-                                <g:link class="ui right labeled icon button green link" controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license.licenseCategory?.getI10n("value")}</g:link>
-                            </g:each>
                             <g:if test="${!licenses}">
-                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon "><i class="minus circle big icon"></i></g:link>
                             </g:if>
+                            <g:else>
+                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon "><i class="balance inverted scale circular green icon"></i></g:link>
+                            </g:else>
+                        </td>
+                    </g:if>
+                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                        <td class="center aligned">
+                            <g:if test="${!subscriptionInstance.packages}">
+                                <g:link controller="subscription" action="linkPackagesMembers" id="${subscriptionInstance.id}" class="ui icon "><i class="minus circle big icon"></i></g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="subscription" action="linkPackagesMembers" id="${subscriptionInstance.id}" class="ui icon "><i class="gift inverted circular purple icon"></i></g:link>
+                            </g:else>
                         </td>
                     </g:if>
                     <td>${sub.status.getI10n('value')}</td>
