@@ -1105,8 +1105,9 @@ class LicenseController
         def result             = [:]
         result.user            = User.get(springSecurityService.principal.id)
         result.institution     = contextService.org
+        result.contextOrg      = result.institution
         result.license         = License.get(params.id)
-        result.licenseInstance = License.get(params.id)
+        result.licenseInstance = result.license
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.license))
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigUtils; com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;com.k_int.kbplus.License" %>
+<%@ page import="de.laser.helper.ConfigUtils; com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;com.k_int.kbplus.License;com.k_int.kbplus.Links" %>
 <laser:serviceInjection />
 
 <div class="subscription-results subscription-results la-clear-before">
@@ -88,7 +88,8 @@
                                 </g:if>
                             </g:link>
                             <g:if test="${'showLicense' in tableConfig}">
-                                <g:each in="${allLinkedLicenses.get(s)}" var="license">
+                                <g:each in="${allLinkedLicenses.findAll { Links li -> li.destination == GenericOIDService.getOID(s)}}" var="row">
+                                    <g:set var="license" value="${genericOIDService.resolveOID(row.source)}"/>
                                     <div class="la-flexbox">
                                         <i class="icon balance scale la-list-icon"></i>
                                         <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
@@ -161,17 +162,23 @@
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
                             <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                         </td>
-                        <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
+                        <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                            <g:set var="childSubs" value="${Subscription.findAllByInstanceOf(s)}"/>
                             <td>
-                                <g:link controller="subscription" action="members" params="${[id:s.id]}">${Subscription.findAllByInstanceOf(s).size()}</g:link>
+                                <g:if test="${childSubs.size() > 0}">
+                                    <g:link controller="subscription" action="members" params="${[id:s.id]}">${childSubs.size()}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">${childSubs.size()}</g:link>
+                                </g:else>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
                                     <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED).size()}
+                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(childSubs, institution, RDStore.COST_ITEM_DELETED)?.size()}
                                     </g:if>
                                     <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST_COLLECTIVE'}">
-                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED,true).size()}
+                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(childSubs, institution, RDStore.COST_ITEM_DELETED,true)?.size()}
                                     </g:elseif>
                                 </g:link>
                             </td>
