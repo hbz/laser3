@@ -126,7 +126,7 @@ class TitleController extends AbstractDebugController {
         }
 
         result.duplicates = reusedIdentifiers(result.ti);
-        result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = ?", [result.ti] )
+        result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = :participant", [participant: result.ti] )
 
         result
     }

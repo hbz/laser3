@@ -26,8 +26,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.text.SimpleDateFormat
 
-import static de.laser.helper.RDStore.*
-
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseController
         extends AbstractDebugController
@@ -84,7 +82,7 @@ class LicenseController
             result.processingpc = true
         } else {
 
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, PENDING_CHANGE_PENDING])
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, RDStore.PENDING_CHANGE_PENDING])
 
             log.debug("pc result is ${result.pendingChanges}");
             // refactoring: replace link table with instanceOf
@@ -122,7 +120,7 @@ class LicenseController
 
             String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgLinks = OrgRole.executeQuery("select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType.${i10value} asc, oo.org.sortname asc, oo.org.name asc",[license:result.license,context:result.institution,roleTypes:[OR_LICENSEE, OR_LICENSEE_CONS, OR_LICENSING_CONSORTIUM]])
+            result.visibleOrgLinks = OrgRole.executeQuery("select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType.${i10value} asc, oo.org.sortname asc, oo.org.name asc",[license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM]])
 
             /*result.license.orgLinks?.each { or ->
                 if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
@@ -181,7 +179,7 @@ class LicenseController
 
             // -- private properties
 
-            result.modalPrsLinkRole = PRS_RESP_SPEC_LIC_EDITOR
+            result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_LIC_EDITOR
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
 
             result.visiblePrsLinks = []
@@ -560,7 +558,7 @@ class LicenseController
         result.dateRestriction = dateRestriction
         if (! params.status) {
             if (!params.filterSet) {
-                params.status = SUBSCRIPTION_CURRENT.id
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
                 result.defaultSet = true
             }
             else {
@@ -577,9 +575,9 @@ class LicenseController
         tmpParams.remove("max")
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))
-            tmpParams.comboType = COMBO_TYPE_CONSORTIUM.value
+            tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            tmpParams.comboType = COMBO_TYPE_DEPARTMENT.value
+            tmpParams.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
         def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
         if (tmpParams.filterPropDef) {

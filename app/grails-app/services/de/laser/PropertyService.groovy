@@ -121,7 +121,7 @@ class PropertyService {
             if (dc.shortName.endsWith('Property') && !SurveyProperty.class.name.contains(dc.name)) {
 
                 //log.debug( dc.shortName )
-                def query = "SELECT DISTINCT type FROM ${dc.name}"
+                String query = "SELECT DISTINCT type FROM " + dc.name
                 //log.debug(query)
 
                 Set<PropertyDefinition> pds = PropertyDefinition.executeQuery(query)
