@@ -77,7 +77,7 @@ class PublicController {
             query += "      lower(s.status.value) = 'current'"
             query += "      and lower(s.type.value) != 'local licence'"
             query += "      and exists "
-            query += "          ( select scp from s.customProperties as scp where "
+            query += "          ( select scp from s.propertySet as scp where "
             query += "               scp.type = :gasco and lower(scp.refValue.value) = 'yes'"
             query += "           )"
             queryParams.put('gasco', PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP))
@@ -89,7 +89,7 @@ class PublicController {
             if (q) {
                 query += " and ("
                 query += "    exists "
-                query += "          ( select scp1 from s.customProperties as scp1 where "
+                query += "          ( select scp1 from s.propertySet as scp1 where "
                 query += "               scp1.type = :gascoAnzeigenname and genfunc_filter_matcher(scp1.stringValue, :q) = true"
                 query += "           )"
 
@@ -167,7 +167,7 @@ class PublicController {
 //            def sp  = SubscriptionPackage.get(params.long('id'))
 //            def sub = sp?.subscription
 //            def pkg = sp?.pkg
-//            def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
+//            def scp = SubscriptionProperty.findByOwnerAndTypeAndRefValue(
 //                    sub,
 //                    PropertyDefinition.findByDescrAndName('Subscription Property', 'GASCO Entry'),
 //                    RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)
@@ -278,6 +278,7 @@ class PublicController {
         result
     }
 
+    @Deprecated
   private def checkUserAccessToOrg(user, org, org_access) {
     boolean hasAccess = false
     def org_access_rights = org_access?.getValue() ? org_access.getValue().split(",") : []
@@ -299,11 +300,12 @@ class PublicController {
     return hasAccess
   }
 
+    @Deprecated
   private def generateIELicenseMap(ies, result) {
     log.debug("generateIELicenseMap")
     def comparisonMap = [:]
       TreeMap licIEMap = new TreeMap()
-    //See if we got IEs under the same license, and list them together
+    //See if we got IEs under the same license, and list them together - if used, should be refactored onto new license model
     ies.each{ ie->
       def lic = ie.subscription.owner
       if(licIEMap.containsKey(lic)){
@@ -313,8 +315,8 @@ class PublicController {
       }
     }
     licIEMap.each{
-      def lic = it.getKey()
-          lic.customProperties.each{prop ->
+      License lic = it.getKey()
+          lic.propertySet.each{prop ->
             def point = [:]
             if(prop.getValue()|| prop.getNote()){
               point.put(lic.reference,prop)

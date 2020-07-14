@@ -87,7 +87,7 @@
         </g:else>
     </div>
 
-    <g:render template="../templates/copyEmailaddresses" model="[orgList: orgList]"/>
+    <g:render template="/templates/copyEmailaddresses" model="[orgList: orgList]"/>
 
     <semui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
 

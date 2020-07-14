@@ -65,7 +65,7 @@
 
 <g:render template="/templates/subscription/consortiaSubscriptionTable"/>
 
-<g:render template="../templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
+<g:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
 
 </body>
 </html>

@@ -33,7 +33,7 @@
                     </dl>
                 </g:if>
 
-                <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
+                <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
                     <dl>
                         <dt class="control-label">
                             <div class="ui icon la-popup-tooltip la-delay"
@@ -208,7 +208,7 @@
 
 </div><!-- .grid -->
 
-<g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id}">
+<g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
     <g:set var="surveyProperties" value="${surveyConfig.surveyProperties}"/>
 
     <semui:form>

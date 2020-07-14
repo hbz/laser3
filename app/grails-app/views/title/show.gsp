@@ -522,7 +522,7 @@
 
             <br><br>
 
-  <%--<r:script language="JavaScript">
+  <%--<r:script>
 
     $(function(){
       <g:if test="${editable}">

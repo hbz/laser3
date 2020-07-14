@@ -33,7 +33,7 @@
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('property')}">
-                <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+                <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('type')}">

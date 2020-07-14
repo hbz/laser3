@@ -26,7 +26,7 @@
 
 <g:render template="nav" />
 
-<g:render template="../templates/filter/javascript" />
+<g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="members" controller="license" params="${[id:params.id]}" method="get" class="ui form">
         <div class="three fields">

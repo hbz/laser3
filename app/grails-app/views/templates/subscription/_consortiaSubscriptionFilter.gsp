@@ -64,7 +64,7 @@
         </div>
 
         <div class="four fields">
-            <g:render template="../templates/properties/genericFilter" model="[propList: filterPropList]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: filterPropList]"/>
 
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>

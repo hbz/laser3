@@ -23,6 +23,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -39,7 +40,7 @@ class AjaxController {
     def controlledListService
     def dataConsistencyService
     def accessService
-    def debugService
+    def escapeService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -1702,6 +1703,7 @@ class AjaxController {
         def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
+        Org contextOrg = contextService.getOrg()
 
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
 
@@ -1736,26 +1738,26 @@ class AjaxController {
 
                     // multi occurrence props; add one additional with backref
                     if (property.type.multipleOccurrence) {
-                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextService.getOrg())
+                        AbstractPropertyWithCalculatedLastUpdated additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
                         additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
-                        additionalProp.save(flush: true)
+                        additionalProp.save()
                     }
                     else {
-                        def matchingProps = property.getClass().findByOwnerAndType(member, property.type)
+                        Set<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findByOwnerAndType(member, property.type)
                         // unbound prop found with matching type, set backref
                         if (matchingProps) {
-                            matchingProps.each { memberProp ->
+                            matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
                                 memberProp.instanceOf = property
-                                memberProp.save(flush: true)
+                                memberProp.save(flush:true)
                             }
                         }
                         else {
                             // no match found, creating new prop with backref
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
+                            AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
                             newProp = property.copyInto(newProp)
                             newProp.instanceOf = property
-                            newProp.save(flush: true)
+                            newProp.save()
                         }
                     }
                 }
@@ -1771,6 +1773,7 @@ class AjaxController {
                   newProp         : property,
                   showConsortiaFunctions: params.showConsortiaFunctions,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                  contextOrg      : contextOrg,
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
@@ -1784,6 +1787,7 @@ class AjaxController {
                     showConsortiaFunctions: params.showConsortiaFunctions,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
+                    contextOrg            : contextOrg,
                     orphanedProperties    : allPropDefGroups.orphanedProperties
             ]
             render(template: "/templates/properties/custom", model: modelMap)
@@ -1797,6 +1801,7 @@ class AjaxController {
         def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
+        Org contextOrg = contextService.getOrg()
 
         AuditConfig.removeAllConfigs(property)
 
@@ -1822,17 +1827,19 @@ class AjaxController {
                   ownobj          : owner,
                   newProp         : property,
                   showConsortiaFunctions: showConsortiaFunctions,
+                  contextOrg      : contextOrg,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
         }
         else {
-            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
             Map<String, Object> modelMap =  [
                     ownobj                : owner,
                     newProp               : property,
                     showConsortiaFunctions: showConsortiaFunctions,
+                    contextOrg            : contextOrg,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
                     orphanedProperties    : allPropDefGroups.orphanedProperties
@@ -2462,8 +2469,8 @@ class AjaxController {
                 } else {
                     def binding_properties = [:]
 
-                    if (target_object."${params.name}" instanceof Double) {
-                        params.value = Double.parseDouble(params.value)
+                    if (target_object."${params.name}" instanceof BigDecimal) {
+                        params.value = escapeService.parseFinancialValue(params.value)
                     }
                     if (target_object."${params.name}" instanceof Boolean) {
                         params.value = params.value?.equals("1")
@@ -2477,7 +2484,10 @@ class AjaxController {
 
                     target_object.save(failOnError: true)
 
-                    result = target_object."${params.name}"
+
+                    if(target_object."${params.name}" instanceof BigDecimal)
+                        result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}") //is for that German users do not cry about comma-dot-change
+                    else result = target_object."${params.name}"
                 }
 
                 if (target_object instanceof SurveyResult) {

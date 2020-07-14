@@ -142,9 +142,9 @@
         <g:set var="GASCO_ANZEIGENAME" value="${PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP)}" />
         <g:set var="GASCO_VERHANDLERNAME" value="${PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP)}" />
             <g:each in="${subscriptions}" var="sub" status="i">
-                <g:set var="gasco_infolink" value="${sub.customProperties.find{ it.type == GASCO_INFORMATION_LINK}?.urlValue}" />
-                <g:set var="gasco_anzeigename" value="${sub.customProperties.find{ it.type == GASCO_ANZEIGENAME}?.stringValue}" />
-                <g:set var="gasco_verhandlername" value="${sub.customProperties.find{ it.type == GASCO_VERHANDLERNAME}?.stringValue}" />
+                <g:set var="gasco_infolink" value="${sub.propertySet.find{ it.type == GASCO_INFORMATION_LINK}?.urlValue}" />
+                <g:set var="gasco_anzeigename" value="${sub.propertySet.find{ it.type == GASCO_ANZEIGENAME}?.stringValue}" />
+                <g:set var="gasco_verhandlername" value="${sub.propertySet.find{ it.type == GASCO_VERHANDLERNAME}?.stringValue}" />
                 <tr>
                     <td class="center aligned">
                         ${i + 1}

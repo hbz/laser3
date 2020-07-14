@@ -126,7 +126,7 @@
                 </div><!-- .cons-options -->
             </g:else>
 
-            <r:script language="JavaScript">
+            <r:script>
                 $('#submitterFallback').click(function(e){
                     e.preventDefault();
                     $('#dynHiddenValues').empty();
@@ -150,7 +150,7 @@
 
         </g:if>
      --%>
-        <r:script language="JavaScript">
+        <r:script>
             function formatDate(input) {
                 if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
                     var inArr = input.split(/[\.\/-]/g);
