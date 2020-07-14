@@ -163,18 +163,18 @@ class PackageController extends AbstractDebugController {
 
 
         log.debug(base_qry + ' <<< ' + qry_params)
-        result.packageInstanceTotal = Subscription.executeQuery("select p.id " + base_qry, qry_params).size()
+        result.packageInstanceTotal = Subscription.executeQuery( "select p.id " + base_qry, qry_params ).size()
 
 
         withFormat {
             html {
-                result.packageInstanceList = Subscription.executeQuery("select p ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
+                result.packageInstanceList = Subscription.executeQuery( "select p " + base_qry, qry_params, [max: result.max, offset: result.offset] )
                 result
             }
             csv {
                 response.setHeader("Content-disposition", "attachment; filename=\"packages.csv\"")
                 response.contentType = "text/csv"
-                def packages = Subscription.executeQuery("select p ${base_qry}", qry_params)
+                def packages = Subscription.executeQuery( "select p " + base_qry, qry_params )
                 def out = response.outputStream
                 log.debug('colheads');
                 out.withWriter { writer ->
