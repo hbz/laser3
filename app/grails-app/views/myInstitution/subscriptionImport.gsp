@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory;static de.laser.helper.RDStore.*" %>
+<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
