@@ -153,7 +153,7 @@
 
                         <g:if test="${gasco_infolink}">
                             <span  class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${gasco_infolink}">
-                                <a href="${gasco_infolink}" target="_blank">${gasco_anzeigename ?: sub}</a>
+                                <a class="la-break-all" href="${gasco_infolink}" target="_blank">${gasco_anzeigename ?: sub}</a>
                             </span>
                         </g:if>
                         <g:else>
@@ -177,7 +177,7 @@
                     %{--<td>--}%
                         %{--${sub.type?.getI10n('value')}--}%
                     %{--</td>--}%
-                    <td class="la-break-all">
+                    <td>
 
                     ${gasco_verhandlername ?: sub.getConsortia()?.name}
                     <br>
@@ -196,8 +196,8 @@
                                         )}" var="prsContact">
                                             <div class="description">
                                                 <i class="icon globe"></i>
-                                                <span  class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
-                                                    <a href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
+                                                <span  class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
+                                                    <a class="la-break-all" href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
                                                 </span>
 
                                             </div>
@@ -209,7 +209,7 @@
                                             <div class="description">
                                                 <i class="ui icon envelope outline"></i>
                                                 <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
-                                                    <a href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
+                                                    <a class="la-break-all" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
                                             </div>
                                         </g:each>
