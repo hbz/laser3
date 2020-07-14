@@ -58,8 +58,8 @@ class PlatformController extends AbstractDebugController {
         log.debug(base_qry)
         log.debug(qry_params)
 
-        result.platformInstanceTotal = Subscription.executeQuery("select p.id " + base_qry, qry_params ).size()
-        result.platformInstanceList = Subscription.executeQuery("select p ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
+        result.platformInstanceTotal = Subscription.executeQuery( "select p.id " + base_qry, qry_params ).size()
+        result.platformInstanceList = Subscription.executeQuery( "select p " + base_qry, qry_params, [max:result.max, offset:result.offset] )
 
       result
     }

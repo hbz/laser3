@@ -183,7 +183,7 @@ class QueryService {
         def qry_params
         (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextOrg)
         Map<String, Object> result = [:]
-        result.query = "select s ${base_qry}"
+        result.query = "select s " + base_qry
         result.queryParams = qry_params
         result
     }
@@ -220,7 +220,7 @@ from License as l where (
             qry_params = [roleTypeC:OR_LICENSING_CONSORTIUM, roleTypeL:OR_LICENSEE_CONS, lic_org:institution]
         }
 
-        result.query = "select l ${base_qry}"
+        result.query = "select l " + base_qry
         result.queryParams = qry_params
 
         result
