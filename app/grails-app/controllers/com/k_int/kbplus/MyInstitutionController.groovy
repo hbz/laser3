@@ -3604,14 +3604,14 @@ AND EXISTS (
             return ['error', message(code: 'propertyDefinition.name.unique')]
         }
         else {
-            def rdc
+            RefdataCategory rdc = null
 
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
             }
 
             Map<String, Object> map = [
-                    token       : params.pd_name,
+                    token       : UUID.randomUUID(),
                     category    : params.pd_descr,
                     type        : params.pd_type,
                     rdc         : rdc?.getDesc(),
@@ -3629,10 +3629,10 @@ AND EXISTS (
             privatePropDef = PropertyDefinition.construct(map)
 
             if (privatePropDef.save(flush: true)) {
-                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])]
+                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
             }
             else {
-                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.name])]
+                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
             }
         }
     }
