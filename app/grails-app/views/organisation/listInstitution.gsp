@@ -34,7 +34,7 @@
 
     <semui:messages data="${flash}" />
 
-    <g:render template="../templates/filter/javascript" />
+    <g:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="listInstitution" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"

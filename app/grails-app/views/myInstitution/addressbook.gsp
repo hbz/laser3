@@ -40,7 +40,7 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
                                                        'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         ]"/>
 
-            <g:render template="../templates/filter/javascript" />
+            <g:render template="/templates/filter/javascript" />
             <semui:filter showFilterButton="true">
                 <g:form action="addressbook" controller="myInstitution" method="get" class="ui small form">
                     <div class="four fields">
@@ -58,7 +58,7 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
                                        placeholder="${message(code: 'person.filter.org')}" />
                             </div>
                         </div>
-                        <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+                        <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
                     </div>
 
                     <div class="field la-field-right-aligned">

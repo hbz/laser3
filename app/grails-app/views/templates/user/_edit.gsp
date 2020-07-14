@@ -190,7 +190,7 @@
                         </g:if>
                       </table>
 
-                  <r:script language="JavaScript">
+                  <r:script>
 
                     $(function(){
                       $.fn.editable.defaults.mode = 'inline';

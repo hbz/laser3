@@ -57,9 +57,9 @@
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
 
-    <g:render template="../templates/subscription/subscriptionFilter"/>
+    <g:render template="/templates/subscription/subscriptionFilter"/>
 
-    <g:render template="../templates/subscription/subscriptionTable"/>
+    <g:render template="/templates/subscription/subscriptionTable"/>
 
     <%--
     <r:script>

@@ -69,7 +69,7 @@
         <div class="four fields">
 
             <% /* 2-1 and 2-2 */ %>
-            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
             <%--
                         <!-- 2-1 -->
                         <div class="field disabled fieldcontain">

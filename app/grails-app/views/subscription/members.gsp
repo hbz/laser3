@@ -76,7 +76,7 @@
         </form>
     </semui:filter>
     --%>
-    <g:render template="../templates/filter/javascript" />
+    <g:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <%
@@ -267,7 +267,7 @@
             </g:each>
         </tbody>
         </table>
-                <g:render template="../templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
+                <g:render template="/templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
