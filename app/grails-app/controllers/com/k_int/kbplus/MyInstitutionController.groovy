@@ -760,7 +760,7 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = setResultGenerics()
 
 		DebugUtil du = new DebugUtil()
-		du.setBenchmark('init')
+		//du.setBenchmark('init')
         result.tableConfig = ['showActions','showLicense']
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
 
@@ -769,8 +769,8 @@ join sub.orgRelations or_sub where
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
-		List bm = du.stopBenchmark()
-		result.benchMark = bm
+		//List bm = du.stopBenchmark()
+		//result.benchMark = bm
 
         if ( params.exportXLS ) {
 

@@ -65,16 +65,25 @@ class ControlledListService {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
-        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER]]
+        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
             filter.put("query",params.query)
             queryString += " and (genfunc_filter_matcher(s.name,:query) = true or genfunc_filter_matcher(orgRoles.org.sortname,:query) = true) "
         }
+        def ctx = null
         if(params.ctx && params.ctx.contains(Subscription.class.name)) {
-            Subscription ctx = genericOIDService.resolveOID(params.ctx)
+            ctx = genericOIDService.resolveOID(params.ctx)
             filter.ctx = ctx
             queryString += " and s != :ctx "
+        }
+        else if(params.ctx && params.ctx.contains(License.class.name))
+            ctx = genericOIDService.resolveOID(params.ctx)
+        switch(ctx?.getCalculatedType()) {
+            case CalculatedType.TYPE_CONSORTIAL: queryString += " and s.instanceOf = null "
+                break
+            case CalculatedType.TYPE_PARTICIPATION: queryString += " and s.instanceOf != null "
+                break
         }
         if(params.status) {
             if (params.status instanceof List){
@@ -103,10 +112,6 @@ class ControlledListService {
             filter.status = RDStore.SUBSCRIPTION_CURRENT
             queryString += " and s.status = :status "
         }
-        if(accessService.checkPerm("ORG_CONSORTIUM"))
-            filter.orgRoles.addAll([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA])
-        else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            filter.orgRoles.addAll([RDStore.OR_SUBSCRIBER_COLLECTIVE,RDStore.OR_SUBSCRIPTION_COLLECTIVE])
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
 
         subscriptions.each { row ->
@@ -224,10 +229,20 @@ class ControlledListService {
             licFilter = ' and genfunc_filter_matcher(l.reference,:query) = true '
             filterParams.put('query',params.query)
         }
+        def ctx = null
         if(params.ctx && params.ctx.contains(License.class.name)) {
-            License ctx = genericOIDService.resolveOID(params.ctx)
+            ctx = genericOIDService.resolveOID(params.ctx)
             filterParams.ctx = ctx
             licFilter += " and l != :ctx "
+        }
+        else if(params.ctx && params.ctx.contains(Subscription.class.name)) {
+            ctx = genericOIDService.resolveOID(params.ctx)
+        }
+        switch(ctx?.getCalculatedType()) {
+            case CalculatedType.TYPE_CONSORTIAL: licFilter += " and l.instanceOf = null "
+                break
+            case CalculatedType.TYPE_PARTICIPATION: licFilter += " and l.instanceOf != null "
+                break
         }
         if(params.filterMembers) {
             filterParams.orgRoles.removeAll([RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS])

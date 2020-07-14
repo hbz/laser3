@@ -53,9 +53,13 @@ class SubscriptionService {
         result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
+        DebugUtil du = new DebugUtil()
+        du.setBenchmark('init data fetch')
+        du.setBenchmark('consortia')
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [contextOrg])
 
         def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
+        du.setBenchmark('all consortia')
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
@@ -96,9 +100,11 @@ class SubscriptionService {
             }
         }
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        du.setBenchmark('get base query')
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
+        du.setBenchmark('fetch subscription data')
         if(params.sort == "providerAgency") {
             subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ).collect{ row -> row[0] }
         }
@@ -106,28 +112,31 @@ class SubscriptionService {
             subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         }
         result.allSubscriptions = subscriptions
-        result.allLinkedLicenses = [:]
-        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        du.setBenchmark('fetch licenses')
+        result.allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        /*du.setBenchmark('process licenses')
         allLinkedLicenses.each { Links li ->
-            Subscription s = genericOIDService.resolveOID(li.destination)
-            License l = genericOIDService.resolveOID(li.source)
-            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
+            Set<String> linkedLicenses = result.allLinkedLicenses.get(li.destination)
             if(!linkedLicenses)
                 linkedLicenses = []
-            linkedLicenses << l
-            result.allLinkedLicenses.put(s,linkedLicenses)
-        }
+            linkedLicenses << li.source
+            result.allLinkedLicenses.put(li.destination,linkedLicenses)
+        }*/
+        du.setBenchmark('after licenses')
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
 
         result.date_restriction = date_restriction
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        du.setBenchmark('get properties')
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
         if (OrgSettings.get(contextOrg, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
             result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
         }
-
+        du.setBenchmark('end properties')
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        List bm = du.stopBenchmark()
+        result.benchMark = bm
         result
     }
 
