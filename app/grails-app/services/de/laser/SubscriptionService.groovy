@@ -1262,7 +1262,7 @@ class SubscriptionService {
     }
 
     boolean setOrgLicRole(Subscription sub, License newOwner) {
-        boolean success = true
+        boolean success = false
         if(sub.owner != newOwner) {
             Org subscr = sub.getSubscriber()
             if(newOwner == null) {
@@ -1271,8 +1271,8 @@ class SubscriptionService {
                 //size == 1 is correct because this is the last subscription to be linked for that org
                 if(linkedSubs.size() == 1) {
                     log.info("no more license <-> subscription links between org -> removing licensee role")
-                    if(!OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams))
-                        success = false
+                    if(OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams))
+                        success = true
                 }
             }
             else if(newOwner != null) {
@@ -1293,15 +1293,15 @@ class SubscriptionService {
                         else {
                             orgLicRole = new OrgRole(lic: newOwner,org: subscr,roleType: licRole)
                         }
-                        if(!orgLicRole.save())
-                            success = false
+                        if(orgLicRole.save())
+                            success = true
                     }
                 }
             }
             sub.owner = newOwner
             success && sub.save()
         }
-        else success
+        else (sub.owner == newOwner)
     }
 
     Map subscriptionImport(CommonsMultipartFile tsvFile) {
