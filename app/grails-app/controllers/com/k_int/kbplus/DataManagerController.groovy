@@ -363,8 +363,8 @@ class DataManagerController extends AbstractDebugController {
             }
         }
 
-        result.orgTotal = Org.executeQuery("select o.id " + query, qry_params ).size()
-        result.orgList = Org.executeQuery("select o ${query}", qry_params, [max:result.max, offset:result.offset])
+        result.orgTotal = Org.executeQuery( "select o.id " + query, qry_params ).size()
+        result.orgList = Org.executeQuery( "select o " + query, qry_params, [max:result.max, offset:result.offset] )
 
         result
     }

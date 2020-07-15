@@ -1,6 +1,6 @@
 <!-- _copyEmailAddresses.gsp -->
 <%@ page import="com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
-<%@ page import="static de.laser.helper.RDStore.*;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
@@ -24,7 +24,7 @@
                               from="${rdvAllPersonFunctions}"
                               optionKey="id"
                               optionValue="value"
-                              value="${PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
+                              value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
             </div>
         </div>
         <div class="field">

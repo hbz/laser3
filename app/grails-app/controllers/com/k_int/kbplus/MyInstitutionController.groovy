@@ -760,7 +760,7 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = setResultGenerics()
 
 		DebugUtil du = new DebugUtil()
-		du.setBenchmark('init')
+		//du.setBenchmark('init')
         result.tableConfig = ['showActions','showLicense']
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
 
@@ -769,8 +769,8 @@ join sub.orgRelations or_sub where
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
-		List bm = du.stopBenchmark()
-		result.benchMark = bm
+		//List bm = du.stopBenchmark()
+		//result.benchMark = bm
 
         if ( params.exportXLS ) {
 
@@ -1633,7 +1633,7 @@ join sub.orgRelations or_sub where
             }
 
             qry3 += " group by pkg, s"
-            qry3 += " order by pkg.name ${params.order ?: 'asc'}"
+            qry3 += " order by pkg.name " + (params.order ?: 'asc')
 
             List packageSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
             /*, [max:result.max, offset:result.offset])) */
@@ -2051,10 +2051,10 @@ AND EXISTS (
           result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }
 
-        PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = ?',[result.institution]).each {
+        PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
           result.institutional_objects.add(['com.k_int.kbplus.License:'+it.id,"${message(code:'license.label')}: "+it.reference]);
         }
-        PendingChange.executeQuery('select distinct(pc.subscription) from PendingChange as pc where pc.owner = ?',[result.institution]).each {
+        PendingChange.executeQuery('select distinct(pc.subscription) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
           result.institutional_objects.add(['com.k_int.kbplus.Subscription:'+it.id,"${message(code:'subscription')}: "+it.name]);
         }
 
@@ -3604,14 +3604,14 @@ AND EXISTS (
             return ['error', message(code: 'propertyDefinition.name.unique')]
         }
         else {
-            def rdc
+            RefdataCategory rdc = null
 
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
             }
 
             Map<String, Object> map = [
-                    token       : params.pd_name,
+                    token       : UUID.randomUUID(),
                     category    : params.pd_descr,
                     type        : params.pd_type,
                     rdc         : rdc?.getDesc(),
@@ -3629,10 +3629,10 @@ AND EXISTS (
             privatePropDef = PropertyDefinition.construct(map)
 
             if (privatePropDef.save(flush: true)) {
-                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])]
+                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
             }
             else {
-                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.name])]
+                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
             }
         }
     }
