@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore;com.k_int.kbplus.CostItem" %>
+<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore;com.k_int.kbplus.CostItem;de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -45,11 +45,11 @@
             <g:each in="${parentPackages}" var="subPkg">
                 <div class="item">
                     <g:link controller="package" action="show"
-                            id="${subPkg?.pkg?.id}">${subPkg?.pkg?.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
+                            id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
 
                     <div class="right floated content">
                         <button class="ui negative button la-selectable-button"
-                                onclick="unlinkPackage(${subPkg?.pkg.id}, ${subPkg?.subscription.id})">
+                                onclick="unlinkPackage(${subPkg.pkg.id}, ${subPkg.subscription.id})">
                             <i class="unlink icon"></i>
                         </button>
                     </div>
@@ -131,6 +131,7 @@
 
     <g:form action="processLinkPackagesMembers" method="post" class="ui form">
         <g:hiddenField name="id" value="${params.id}"/>
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <div class="ui segment">
 
             <div class="field required">

@@ -57,7 +57,7 @@
             <% /* 1-4 */ %>
             <div class="field fieldcontain">
                 <label>${message(code: 'default.status.label')}</label>
-                <laser:select class="ui search dropdown" name="status"
+                <laser:select class="ui dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                               optionKey="id"
                               optionValue="value"
@@ -97,7 +97,7 @@
             <% /* 2-3 */ %>
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
-                <laser:select class="ui fluid search dropdown" name="form"
+                <laser:select class="ui fluid dropdown" name="form"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
                               optionValue="value"
@@ -107,7 +107,7 @@
             <% /* 2-4 */ %>
             <div class="field">
                 <label>${message(code:'subscription.resource.label')}</label>
-                <laser:select class="ui fluid search dropdown" name="resource"
+                <laser:select class="ui fluid dropdown" name="resource"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                               optionKey="id"
                               optionValue="value"
@@ -164,7 +164,7 @@
             <% /* 3-3 */ %>
             <div class="field">
                 <label>${message(code:'subscription.isPublicForApi.label')}</label>
-                <laser:select class="ui fluid search dropdown" name="isPublicForApi"
+                <laser:select class="ui fluid dropdown" name="isPublicForApi"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"
@@ -174,7 +174,7 @@
             <% /* 3-4 */ %>
             <div class="field">
                 <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
-                <laser:select class="ui fluid search dropdown" name="hasPerpetualAccess"
+                <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"

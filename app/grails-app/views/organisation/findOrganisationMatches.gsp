@@ -1,27 +1,16 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Org; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
-			<g:set var="entityName" value="${message(code: 'default.institution')}" />
-		</g:if>
-		<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
-			<g:set var="entityName" value="${message(code: 'default.department')}" />
-		</g:elseif>
+		<g:set var="entityName" value="${message(code: 'default.institution')}" />
 		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>
 	<semui:breadcrumbs>
-		<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
-			<semui:crumb message="menu.public.all_insts" controller="organisation" action="listInstitution"  />
-			<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
-		</g:if>
-		<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
-			<semui:crumb message="menu.my.departments" controller="myInstitution" action="manageMembers"  />
-			<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
-		</g:elseif>
+		<semui:crumb message="menu.public.all_insts" controller="organisation" action="listInstitution"  />
+		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
 	<br>
 		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
@@ -79,59 +68,36 @@
 											<g:link controller="organisation" action="show" id="${organisationInstance.id}">(${message(code:'default.button.edit.label')})</g:link>
 										</g:if>
 									</td>
-									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
-										<td>
-											<ul>
-												<li><g:message code="org.globalUID.label" />: <g:fieldValue bean="${organisationInstance}" field="globalUID"/></li>
-												<g:if test="${organisationInstance.gokbId}">
-													<li><g:message code="org.gokbId.label" />: <g:fieldValue bean="${organisationInstance}" field="gokbId"/></li>
-												</g:if>
-												<g:each in="${organisationInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
-											</ul>
-										</td>
-										<td>${organisationInstance.shortname}</td>
-										<td>${organisationInstance.country}</td>
-										<td>
-										<%-- here: switch if in consortia or not --%>
-											<g:if test="${members.get(organisationInstance.id)?.contains(institution.id)}">
-												<g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
-														data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [organisationInstance.name])}"
-														data-confirm-term-how="unlink"
-														data-content="${message(code:'org.consortiaToggle.remove.label')}"
-														controller="organisation"
-														action="toggleCombo"
-														params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
-													<i class="minus icon"></i>
-												</g:link>
+									<td>
+										<ul>
+											<li><g:message code="org.globalUID.label" />: <g:fieldValue bean="${organisationInstance}" field="globalUID"/></li>
+											<g:if test="${organisationInstance.gokbId}">
+												<li><g:message code="org.gokbId.label" />: <g:fieldValue bean="${organisationInstance}" field="gokbId"/></li>
 											</g:if>
-											<g:else>
-												<g:link class="ui icon positive button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
-													<i class="plus icon"></i>
-												</g:link>
-											</g:else>
-										</td>
-									</g:if>
-									<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
-										<td>
-											<g:if test="${!organisationInstance.isEmpty()}">
-												<span  class="la-popup-tooltip la-delay" data-content="${message(code:'org.departmentRemoval.departmentNotEmpty')}">
-													<button class="ui icon negative button" disabled="disabled">
-														<i class="trash alternate icon"></i>
-													</button>
-												</span>
-											</g:if>
-											<g:else>
-												<g:link class="ui icon negative button la-popup-tooltip la-delay"
-														data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.department.institution", args: [organisationInstance.name.institution])}"
-														data-confirm-term-how="delete"
-														data-content="${message(code:'org.departmentRemoval.remove.label')}"
-														controller="myInstitution" action="removeDepartment"
-														params="${[dept:organisationInstance.id]}">
-													<i class="trash alternate icon"></i>
-												</g:link>
-											</g:else>
-										</td>
-									</g:elseif>
+											<g:each in="${organisationInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
+										</ul>
+									</td>
+									<td>${organisationInstance.shortname}</td>
+									<td>${organisationInstance.country}</td>
+									<td>
+									<%-- here: switch if in consortia or not --%>
+										<g:if test="${members.get(organisationInstance.id)?.contains(institution.id)}">
+											<g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
+													data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [organisationInstance.name])}"
+													data-confirm-term-how="unlink"
+													data-content="${message(code:'org.consortiaToggle.remove.label')}"
+													controller="organisation"
+													action="toggleCombo"
+													params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
+												<i class="minus icon"></i>
+											</g:link>
+										</g:if>
+										<g:else>
+											<g:link class="ui icon positive button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
+												<i class="plus icon"></i>
+											</g:link>
+										</g:else>
+									</td>
 								</tr>
 							</g:each>
 							</tbody>
@@ -146,14 +112,8 @@
 						</g:else>
 					</g:if>
 					<g:elseif test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
-						<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
-							<semui:msg class="warning" message="org.findInstitutionMatches.no_match" args="[params.proposedOrganisation]" />
-							<g:link controller="organisation" action="createMember" class="ui positive button" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
-						</g:if>
-						<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
-							<semui:msg class="warning" message="org.findDepartmentMatches.no_match" args="[params.proposedOrganisation]" />
-							<g:link controller="organisation" action="createMember" class="ui positive button" params="${[department:params.proposedOrganisation]}">${message(code:'org.findDepartmentMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
-						</g:elseif>
+						<semui:msg class="warning" message="org.findInstitutionMatches.no_match" args="[params.proposedOrganisation]" />
+						<g:link controller="organisation" action="createMember" class="ui positive button" params="${[institution:params.proposedOrganisation,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
 					</g:elseif>
 					<g:elseif test="${params.proposedOrganisationID && !params.proposedOrganisationID.isEmpty()}">
 						<semui:msg class="warning" message="org.findInstitutionMatches.no_id_match" args="[params.proposedOrganisationID]" />

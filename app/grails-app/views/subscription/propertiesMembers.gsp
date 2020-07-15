@@ -128,11 +128,11 @@
             <td>${parentSub.name}</td>
 
             <td>
-                <g:formatDate formatName="default.date.format.notime" date="${parentSub?.startDate}"/>
+                <g:formatDate formatName="default.date.format.notime" date="${parentSub.startDate}"/>
                 <semui:auditButton auditable="[parentSub, 'startDate']"/>
             </td>
             <td>
-                <g:formatDate formatName="default.date.format.notime" date="${parentSub?.endDate}"/>
+                <g:formatDate formatName="default.date.format.notime" date="${parentSub.endDate}"/>
                 <semui:auditButton auditable="[parentSub, 'endDate']"/>
             </td>
             <td>
@@ -153,7 +153,7 @@
                             <g:set var="customProperty"
                                    value="${parentSub.propertySet.find { it.type.tenant == null && it.tenant.id == institution.id && it.type == filterPropDef }}"/>
                             <g:if test="${customProperty}">
-                                <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
+                                <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
                                 <div class="content">
 
@@ -215,11 +215,11 @@
                         <div class="item">
 
                             <div class="right floated content">
-                                <semui:totalNumber total="${parentSub.propertySet.findAll{ it.type.tenant.id == institution.id }.size()}"/>
+                                <semui:totalNumber total="${parentSub.propertySet.findAll{ it.type == filterPropDef }.size()}"/>
                             </div>
 
                             <g:set var="privateProperty"
-                                   value="${parentSub.propertySet.find { it.type.tenant.id == institution.id && it.type == filterPropDef }}"/>
+                                   value="${parentSub.propertySet.find { it.type == filterPropDef }}"/>
                             <g:if test="${privateProperty}">
                                 <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
 
@@ -503,10 +503,10 @@
                                     <div class="item">
 
                                         <g:set var="privateProperty"
-                                               value="${sub.propertySet.findAll { it.type.tenant.id == institution.id && it.type == filterPropDef }}"/>
+                                               value="${sub.propertySet.findAll { it.type == filterPropDef }}"/>
 
                                         <div class="right floated content">
-                                            <semui:totalNumber total="${sub.propertySet.findAll{ it.type.tenant.id == institution.id }.size()}"/>
+                                            <semui:totalNumber total="${sub.propertySet.findAll{ it.type == filterPropDef }.size()}"/>
                                         </div>
 
                                         <g:if test="${privateProperty}">
