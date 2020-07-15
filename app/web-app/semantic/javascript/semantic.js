@@ -6045,7 +6045,12 @@ $.fn.dropdown = function(parameters) {
                 .addClass(className.selected)
             ;
             if ( $item.length > 0 ) {
-              $search.attr('aria-activedescendant', $item[0].id);
+              if (module.is.searchSelection()) {
+                $search.attr('aria-activedescendant', $item[0].id);
+              }
+              else {
+                $module.attr('aria-activedescendant', $item[0].id);
+              }
             }
           },
           nextAvailable: function($selected) {
@@ -6058,12 +6063,26 @@ $.fn.dropdown = function(parameters) {
             if(hasNext) {
               module.verbose('Moving selection to', $nextAvailable);
               $nextAvailable.addClass(className.selected);
-              $search.attr('aria-activedescendant', $nextAvailable[0].id);
+              if (hasNext) {
+                if (module.is.searchSelection()) {
+                  $search.attr('aria-activedescendant', $nextAvailable[0].id);
+                }
+                else {
+                  $module.attr('aria-activedescendant', $nextAvailable[0].id);
+                }
+              }
             }
             else {
               module.verbose('Moving selection to', $prevAvailable);
               $prevAvailable.addClass(className.selected);
-              $search.attr('aria-activedescendant', $prevAvailable[0].id);
+              if (hasNext) {
+                if (module.is.searchSelection()) {
+                  $search.attr('aria-activedescendant', $prevAvailable[0].id);
+                }
+                else {
+                  $module.attr('aria-activedescendant', $prevAvailable[0].id);
+                }
+              }
             }
           }
         },
@@ -6104,6 +6123,7 @@ $.fn.dropdown = function(parameters) {
                 .insertBefore($text)
               ;
             }
+
             if( module.is.multiple() && module.is.searchSelection() && !module.has.sizer()) {
               module.create.sizer();
             }
@@ -6131,18 +6151,33 @@ $.fn.dropdown = function(parameters) {
             }
             else {
               module.debug('Creating entire dropdown from select');
-              $module = $('<div />')
-                .attr('class', $input.attr('class') )
-                .addClass(className.selection)
-                .addClass(className.dropdown)
-                  .attr('role', 'combobox') //a11y
-                  .attr('aria-haspopup','listbox') //a11y
-                  .attr('aria-owns',id + '_listBox') //a11y
-
-                .html( templates.dropdown(selectValues,id) )
-                .insertBefore($input)
-              ;
-
+              if (!module.is.search()) {
+                $module = $('<div />')
+                    .attr('class', $input.attr('class') )
+                    .addClass(className.selection)
+                    .addClass(className.dropdown)
+                    .attr('role', 'combobox') //a11y
+                    .attr('aria-haspopup','listbox') //a11y
+                    .attr('aria-owns',id + '_listBox') //a11y
+                  .attr('aria-autocomplete','list') // a11y
+                        .attr('aria-controls',id+'_listBox') // a11y
+                        .attr('aria-labelledby',id+'_formLabel')
+                    .html( templates.dropdown(selectValues,id) )
+                    .insertBefore($input)
+                ;
+              }
+              else {
+                $module = $('<div />')
+                    .attr('class', $input.attr('class') )
+                    .addClass(className.selection)
+                    .addClass(className.dropdown)
+                    .attr('role', 'combobox') //a11y
+                    .attr('aria-haspopup','listbox') //a11y
+                    .attr('aria-owns',id + '_listBox') //a11y
+                    .html( templates.dropdown(selectValues,id) )
+                    .insertBefore($input)
+                ;
+              }
                $module.prev('label').attr('id' , id+'_formLabel');
 
               if($input.hasClass(className.multiple) && $input.prop('multiple') === false) {
@@ -6787,7 +6822,7 @@ $.fn.dropdown = function(parameters) {
               }
             },
             focus: function() {
-              //activated = true;
+              activated = true;
               if(module.is.multiple()) {
                 module.remove.activeLabel();
               }
@@ -6818,7 +6853,7 @@ $.fn.dropdown = function(parameters) {
           text: {
             focus: function(event) {
               activated = true;
-              //module.focusSearch();
+              module.focusSearch();
               if(settings.showOnFocus) {
                 module.show();
               }
@@ -7170,7 +7205,7 @@ $.fn.dropdown = function(parameters) {
                 module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                 module.event.item.click.call($selectedItem, event);
                 if(module.is.searchSelection()) {
-                   module.remove.searchTerm();
+                   //module.remove.searchTerm();
                 }
               }
 
@@ -7187,7 +7222,7 @@ $.fn.dropdown = function(parameters) {
                     module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
-                       module.remove.searchTerm();
+                       //module.remove.searchTerm();
                     }
                   }
                   event.preventDefault();
@@ -7250,7 +7285,14 @@ $.fn.dropdown = function(parameters) {
                     $nextItem
                       .addClass(className.selected)
                     ;
-                    $search.attr('aria-activedescendant', $nextItem[0].id);
+                    if($nextItem.length !== 0) {
+                      if (module.is.searchSelection()) {
+                        $search.attr('aria-activedescendant', $nextItem[0].id);
+                      }
+                      else {
+                        $search.attr('aria-activedescendant', $nextItem[0].id);
+                      }
+                    }
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
                       module.set.selectedItem($nextItem);
@@ -7278,7 +7320,12 @@ $.fn.dropdown = function(parameters) {
                     $nextItem
                       .addClass(className.selected)
                     ;
-                    $search.attr('aria-activedescendant', $nextItem[0].id);
+                    if (module.is.searchSelection()) {
+                      $search.attr('aria-activedescendant', $nextItem[0].id);
+                    }
+                    else {
+                      $module.attr('aria-activedescendant', $nextItem[0].id);
+                    }
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
                       module.set.selectedItem($nextItem);
@@ -7608,12 +7655,18 @@ $.fn.dropdown = function(parameters) {
                 // remove all the inner text from this span tag with the class description
                 $choice.children().remove('.description')
               }
-              return ($choice.data(metadata.text) !== undefined)
+/*              return ($choice.data(metadata.text) !== undefined)
                 ? $choice.data(metadata.text)
                 : (preserveHTML)
                   ? $.trim($choice.html())
                   : $.trim($choice.text())
-              ;
+              ;*/
+
+              //always return only the text part of of a choice
+              return ($choice.data(metadata.text) !== undefined)
+                  ? $choice.data(metadata.text)
+                  :  $choice.text().trim()
+                  ;
             }
           },
           choiceValue: function($choice, choiceText) {
@@ -8149,6 +8202,8 @@ $.fn.dropdown = function(parameters) {
             }
           },
           text: function(text) {
+            var
+                defaultText     = module.get.defaultText();
             if(settings.action !== 'select') {
               if(settings.action == 'combo') {
                 module.debug('Changing combo button text', text, $combo);
@@ -8167,13 +8222,15 @@ $.fn.dropdown = function(parameters) {
                 $text
                   .removeClass(className.filtered)
                 ;
-                if(settings.preserveHTML) {
-                  $text.html(text);
-                  //$search.val(text); // a11y
+                // text should never include the html
+                $text.text(text);
+                // if text is not "Bitte auswählen" put the text in input value
+                if (text !== module.get.placeholderText()) {
+                  $search.val(text); // a11y
                 }
+                //else - text = "Bitte auswählen" remove the value of search input
                 else {
-                  $text.text(text);
-                  //$search.val(text); // a11y
+                  //$search.val(''); // a11y
                 }
               }
             }
@@ -8462,6 +8519,7 @@ $.fn.dropdown = function(parameters) {
               $message = $('<div/>')
                 .html(html)
                 .addClass(className.message)
+
                 .appendTo($menu)
               ;
             }
@@ -8838,7 +8896,7 @@ $.fn.dropdown = function(parameters) {
           },
           clearable: function() {
             $icon.removeClass(className.clear);
-            //$search.val('');
+            $search.val('');
           }
         },
 
@@ -9277,7 +9335,7 @@ $.fn.dropdown = function(parameters) {
         },
 
         hideAndClear: function() {
-          module.remove.searchTerm(); // a11y
+          //module.remove.searchTerm(); // a11y
           if( module.has.maxSelections() ) {
             return;
           }
@@ -9517,7 +9575,7 @@ $.fn.dropdown = function(parameters) {
 $.fn.dropdown.settings = {
 
   silent                 : false,
-  debug                  : false,
+  debug                  : true,
   verbose                : false,
   performance            : true,
 
