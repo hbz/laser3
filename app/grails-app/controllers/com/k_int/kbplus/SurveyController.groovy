@@ -13,8 +13,8 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
+import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -30,7 +30,6 @@ import java.nio.file.Path
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
@@ -490,7 +489,7 @@ class SurveyController {
         }
 
         Subscription subscription = Subscription.get(Long.parseLong(params.sub))
-        boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true) || subscription.getCalculatedSuccessor()) ? false : (params.subSurveyUseForTransfer ? true : false)
+        boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) ? false : (params.subSurveyUseForTransfer ? true : false)
 
         SurveyInfo surveyInfo = new SurveyInfo(
                 name: params.name,
@@ -1534,17 +1533,23 @@ class SurveyController {
             result.visibleOrgRelations.sort { it.org.sortname }
 
             //costs dataToDisplay
-            result.dataToDisplay = ['consAtSubscr']
-            result.offsets = [consOffset:0]
-            result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
+            result.dataToDisplay = ['subscr']
+            result.offsets = [subscrOffset:0]
+            result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
+            //result.dataToDisplay = ['consAtSubscr']
+            //result.offsets = [consOffset:0]
+            //result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
 
             result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
             //cost items
             //params.forExport = true
             LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
             result.costItemSums = [:]
-            if (costItems?.cons) {
+            /*if (costItems?.cons) {
                 result.costItemSums.consCosts = costItems.cons.sums
+            }*/
+            if (costItems?.subscr) {
+                result.costItemSums.subscrCosts = costItems.subscr.costItems
             }
         }
 

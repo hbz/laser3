@@ -8,7 +8,6 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.IssueEntitlementGroupItem
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
 import de.laser.domain.TIPPCoverage
@@ -983,6 +982,39 @@ class SubscriptionService {
                 if (((sourceProp.id.toString() in auditProperties)) && targetProp instanceof CustomProperty) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+
+                        Subscription.findAllByInstanceOf(targetSub).each { member ->
+
+                            def existingProp = SubscriptionCustomProperty.findByOwnerAndInstanceOf(member, targetProp)
+                            if (! existingProp) {
+
+                                // multi occurrence props; add one additional with backref
+                                if (sourceProp.type.multipleOccurrence) {
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                    additionalProp = targetProp.copyInto(additionalProp)
+                                    additionalProp.instanceOf = targetProp
+                                    additionalProp.save(flush: true)
+                                }
+                                else {
+                                    def matchingProps = SubscriptionCustomProperty.findByOwnerAndType(member, targetProp.type)
+                                    // unbound prop found with matching type, set backref
+                                    if (matchingProps) {
+                                        matchingProps.each { memberProp ->
+                                            memberProp.instanceOf = targetProp
+                                            memberProp.save(flush: true)
+                                        }
+                                    }
+                                    else {
+                                        // no match found, creating new prop with backref
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                        newProp = targetProp.copyInto(newProp)
+                                        newProp.instanceOf = targetProp
+                                        newProp.save(flush: true)
+                                    }
+                                }
+                            }
+                        }
+
                         def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
@@ -1017,7 +1049,7 @@ class SubscriptionService {
             obj.delete(flush: true)
             log.debug("Delete ${obj} ok")
         } else {
-            flash.error += messageSource.getMessage('default.delete.error.message', null, locale)
+            flash.error += messageSource.getMessage('default.delete.error.general.message', null, locale)
         }
     }
 
@@ -1230,7 +1262,7 @@ class SubscriptionService {
     }
 
     boolean setOrgLicRole(Subscription sub, License newOwner) {
-        boolean success = false
+        boolean success = true
         if(sub.owner != newOwner) {
             Org subscr = sub.getSubscriber()
             if(newOwner == null) {
@@ -1239,8 +1271,8 @@ class SubscriptionService {
                 //size == 1 is correct because this is the last subscription to be linked for that org
                 if(linkedSubs.size() == 1) {
                     log.info("no more license <-> subscription links between org -> removing licensee role")
-                    if(OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams))
-                        success = true
+                    if(!OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams))
+                        success = false
                 }
             }
             else if(newOwner != null) {
@@ -1261,8 +1293,8 @@ class SubscriptionService {
                         else {
                             orgLicRole = new OrgRole(lic: newOwner,org: subscr,roleType: licRole)
                         }
-                        if(orgLicRole.save())
-                            success = true
+                        if(!orgLicRole.save())
+                            success = false
                     }
                 }
             }
