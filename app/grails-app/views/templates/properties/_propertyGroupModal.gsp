@@ -116,7 +116,6 @@
 </semui:modal>
 
 <script>
-    var ajaxPostFunc = function() {
 
         var prop_descr_selector_controller = {
             init: function () {
@@ -135,6 +134,5 @@
             }
         }
         prop_descr_selector_controller.init()
-        setTimeout( function(){ $(window).trigger('resize')}, 500)
-    }
+        setTimeout( function(){ $(window).trigger('resize')}, 500);
 </script>

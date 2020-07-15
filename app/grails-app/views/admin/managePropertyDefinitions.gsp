@@ -10,20 +10,20 @@
 			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
 			<semui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>
 		</semui:breadcrumbs>
+
+        <semui:controlButtons>
+            <%--<g:render template="actions"/>--%>
+            <%--
+            <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
+            --%>
+        </semui:controlButtons>
+
         <br>
 		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.managePropertyDefinitions"/></h1>
 
         <h3 class="ui header">${message(code:'license.properties')}</h3>
 
 		<semui:messages data="${flash}" />
-
-            <div class="content ui form">
-                <div class="fields">
-                    <div class="field">
-                        <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
-                    </div>
-                </div>
-            </div>
 
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">

@@ -11,24 +11,16 @@
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.manage_props" class="active"/>
         </semui:breadcrumbs>
+
+        <semui:controlButtons>
+            <g:render template="actions"/>
+        </semui:controlButtons>
         <br>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.manage_props')}</h1>
 
         <g:render template="nav" />
 
         <semui:messages data="${flash}" />
-
-        <g:if test="${editable}">
-            <div class="content ui form">
-                <div class="fields">
-                    <div class="field">
-                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'new']}" class="ui button trigger-modal">
-                            ${message(code:'propertyDefinitionGroup.create_new.label')}
-                        </g:link>
-                    </div>
-                </div>
-            </div>
-        </g:if>
 
     <table class="ui celled sortable table la-table la-table-small">
         <thead>
@@ -93,7 +85,15 @@
         </tbody>
     </table>
 
+    <g:render template="/templates/properties/propertyGroupModal"/>
+
     <script>
+        r2d2.initDynamicSemuiStuff('#propDefGroupModal');
+        r2d2.initDynamicXEditableStuff('#propDefGroupModal');
+        $("html").css("cursor", "auto");
+    </script>
+
+    <%--<script>
         $('.trigger-modal').on('click', function(e) {
             e.preventDefault();
 
@@ -121,7 +121,7 @@
                 }).modal('show');
             })
         })
-    </script>
+    </script>--%>
 
   </body>
 </html>
