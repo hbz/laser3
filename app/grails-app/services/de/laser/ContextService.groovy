@@ -36,7 +36,15 @@ class ContextService {
         try {
             GrailsHttpSession session  = WebUtils.retrieveGrailsWebRequest().getSession()
 
-            def context = session.getAttribute('contextOrg') ?: getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)
+            def context = session.getAttribute('contextOrg')
+            if (! context) {
+                context = getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)
+
+                if (context) {
+                    session.setAttribute('contextOrg', context)
+                }
+            }
+
             if (context) {
                 return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
             }

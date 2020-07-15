@@ -104,7 +104,7 @@ class FilterService {
         }
         result.queryParams = queryParams
 
-        log.debug(result)
+        log.debug(result.toMapString())
         result
     }
 
