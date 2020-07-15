@@ -70,7 +70,7 @@
                             controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
-                        ${surveyConfig.type == 'Subscription' ? message(code: 'surveyParticipants.selectedParticipants') : message(code: 'surveyParticipants.label')}
+                        ${surveyConfig.type == 'Subscription' ? message(code: 'surveyParticipants.selectedParticipants') : message(code: 'surveyParticipants.selectedParticipants2')}
                         <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></g:link>
                 </g:if>
 

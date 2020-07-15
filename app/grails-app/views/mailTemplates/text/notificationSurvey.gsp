@@ -2,7 +2,9 @@
 ${message(code: 'email.text.title', locale: language)} ${userName},
 
 ${message(code: 'email.survey.text', locale: language)}
-${message(code: 'email.subject.surveys', locale: language, args: [survey.type.getI10n('value')])}: ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.startDate}"/> - <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.endDate}"/>)
+${survey.type.getI10n('value')} - ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.startDate}"/> - <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.endDate}"/>)
+
+${survey.isMandatory ? message(code: 'email.survey.text.isMandatory', locale: language) : ''}
 
 ${message(code: 'email.survey.text2', locale: language)}
 ${grailsApplication.config.grails.serverURL+raw(surveyUrl)}

@@ -3,26 +3,8 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import de.laser.AccessService
-import de.laser.AuditConfig
-import de.laser.ComparisonService
-import de.laser.ContextService
-import de.laser.EscapeService
-import de.laser.FilterService
-import de.laser.OrgTypeService
-import de.laser.PropertyService
-import de.laser.SubscriptionService
-import de.laser.SubscriptionsQueryService
-import de.laser.SurveyService
-import de.laser.SurveyUpdateService
-import de.laser.TaskService
-import de.laser.IssueEntitlementGroup
-import de.laser.IssueEntitlementGroupItem
-import de.laser.PendingChangeConfiguration
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.*
+import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
@@ -34,7 +16,6 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
-import de.laser.helper.ConfigUtils
 
 import javax.servlet.ServletOutputStream
 import java.nio.file.Files
@@ -60,7 +41,6 @@ class SurveyController {
     TaskService taskService
     SubscriptionService subscriptionService
     ComparisonService comparisonService
-    SurveyUpdateService surveyUpdateService
     EscapeService escapeService
     InstitutionsService institutionsService
     PropertyService propertyService
@@ -671,7 +651,6 @@ class SurveyController {
             result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : result.surveyInfo.surveyConfigs[0]
 
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo,  result.surveyConfig)
-            result.contextOrg = result.institution
 
             if ( result.surveyConfig.type == 'Subscription') {
                 result.authorizedOrgs = result.user.authorizedOrgs
@@ -770,8 +749,6 @@ class SurveyController {
         if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
             response.sendError(401); return
         }
-
-        result.contextOrg = result.institution
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -1846,7 +1823,7 @@ class SurveyController {
                             }
 
                             if(surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED){
-                                surveyUpdateService.emailsToSurveyUsersOfOrg(surveyInfo, org)
+                                surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org)
                             }
                         }
                     }
@@ -1983,7 +1960,7 @@ class SurveyController {
             result.surveyInfo.save(flush: true)
             flash.message = g.message(code: "openSurveyNow.successfully")
 
-            surveyUpdateService.emailsToSurveyUsers([result.surveyInfo.id])
+            surveyService.emailsToSurveyUsers([result.surveyInfo.id])
 
         }
 
@@ -4516,7 +4493,7 @@ class SurveyController {
                                 }
 
                                 if (surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED) {
-                                    surveyUpdateService.emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org)
+                                    surveyService.emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org)
                                 }
                             }
                         }
@@ -4921,6 +4898,7 @@ class SurveyController {
     private LinkedHashMap setResultGenericsAndCheckAccess() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
+        result.contextOrg = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         result.surveyInfo = SurveyInfo.get(params.id)
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : result.surveyInfo.surveyConfigs[0]
@@ -4934,8 +4912,6 @@ class SurveyController {
         }
 
         result.subscriptionInstance =  result.surveyConfig.subscription ?: null
-
-
 
         result
     }
