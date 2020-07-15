@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.Links;com.k_int.kbplus.GenericOIDService;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.FormService; de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.Links;com.k_int.kbplus.GenericOIDService;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
 <g:if test="${params.member}">
@@ -229,12 +229,12 @@
                 <g:if test="${'onlyMemberSubs' in tableConfig}">
                     <td>
                         <g:if test="${subCons in linkedSubscriptions}">
-                            <g:link class="ui icon negative button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:subCons.id]}">
+                            <g:link class="ui icon negative button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
                                 <i class="ui minus icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:link class="ui icon positive button" action="linkToSubscription" params="${params+[id:license.id,subscription:subCons.id]}">
+                            <g:link class="ui icon positive button" action="linkToSubscription" params="${params+[id:license.id,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
                                 <i class="ui plus icon"></i>
                             </g:link>
                         </g:else>

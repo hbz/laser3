@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2139    15.07.2020  hbz-dev     Andreas Bug         Sicherung gegen Mehrfachversand von Formularen an systemkritischen Stellen eingebaut
+
 1878    14.07.2020  hbz-dev     Andreas Feature     gewünschte Anpassungen in den Verknüpfungssichten umgesetzt
 
 2168    14.07.2020  hbz-dev     Moe     Feature     Paketsymbol analog zu Vertragssymbol unter Lizenz --> Teilnehmer

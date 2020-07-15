@@ -7,6 +7,7 @@ import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.DeletionService
+import de.laser.FormService
 import de.laser.LinksGenerationService
 import de.laser.PropertyService
 import de.laser.SubscriptionsQueryService
@@ -50,6 +51,7 @@ class LicenseController
     def subscriptionService
     SubscriptionsQueryService subscriptionsQueryService
     LinksGenerationService linksGenerationService
+    FormService formService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -371,23 +373,26 @@ class LicenseController
             allSubscriptions.addAll(result.allSubscriptions)
             action = 'linkLicenseToSubs'
         }
-        License newLicense = result.license
-        boolean unlink = params.unlink == 'true'
-        if(params.subscription == "all") {
-            allSubscriptions.each { s->
-                subscriptionService.setOrgLicRole(s,newLicense,unlink)
+        if(formService.validateToken(params)) {
+            License newLicense = (License) result.license
+            boolean unlink = params.unlink == 'true'
+            if(params.subscription == "all") {
+                allSubscriptions.each { s->
+                    subscriptionService.setOrgLicRole(s,newLicense,unlink)
+                }
             }
+            else {
+                try {
+                    subscriptionService.setOrgLicRole(Subscription.get(Long.parseLong(params.subscription)),newLicense,unlink)
+                }
+                catch (NumberFormatException e) {
+                    log.error("Invalid identifier supplied!")
+                }
+            }
+            params.remove("unlink")
+            //result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
         }
-        else {
-            try {
-                subscriptionService.setOrgLicRole(Subscription.get(Long.parseLong(params.subscription)),newLicense,unlink)
-            }
-            catch (NumberFormatException e) {
-                log.error("Invalid identifier supplied!")
-            }
-        }
-        params.remove("unlink")
-        //result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
+
         redirect action: action, params: params
   }
 
