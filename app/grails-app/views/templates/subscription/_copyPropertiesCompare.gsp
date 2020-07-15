@@ -1,5 +1,4 @@
-<%@page import="com.k_int.kbplus.Subscription"%>
-<%@page import="static com.k_int.kbplus.SubscriptionController.WORKFLOW_END"%>
+<%@page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController"%>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -18,7 +17,7 @@
         </g:if>
 
         <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceSubscriptionId}"
-                params="[workFlowPart: WORKFLOW_END, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
+                params="[workFlowPart: SubscriptionController.WORKFLOW_END, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
                 method="post" class="ui form newLicence">
 
                 <%

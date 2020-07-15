@@ -1,6 +1,5 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.auth.Role; com.k_int.kbplus.auth.UserOrg; com.k_int.kbplus.UserSettings" %>
-<%@ page import="static de.laser.helper.RDStore.*;de.laser.helper.RDConstants" %>
-<%@ page import="static com.k_int.kbplus.UserSettings.KEYS.*" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.auth.Role; com.k_int.kbplus.auth.UserOrg; com.k_int.kbplus.UserSettings; com.k_int.kbplus.UserSettings.KEYS" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -71,10 +70,10 @@
                 <div class="field">
                     <label>${message(code: 'profile.dash')}</label>
 
-                    <select name="defaultDash" value="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id}" class="ui fluid dropdown">
+                    <select name="defaultDash" value="${user.getSettingsValue(KEYS.DASHBOARD)?.id}" class="ui fluid dropdown">
                         <option value=""></option>
                         <g:each in="${user.authorizedOrgs}" var="o">
-                            <option value="${o.class.name}:${o.id}" ${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id==o.id?'selected':''}>${o.name}</option>
+                            <option value="${o.class.name}:${o.id}" ${user.getSettingsValue(KEYS.DASHBOARD)?.id==o.id?'selected':''}>${o.name}</option>
                         </g:each>
                     </select>
                 </div>
@@ -156,18 +155,18 @@
 
                 <div class="inline field">
                     <div class="ui checkbox">
-                        <g:set var="isRemindByEmail" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, YN_NO).rdValue == YN_YES}"/>
+                        <g:set var="isRemindByEmail" value="${user.getSetting(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
                         <input type="checkbox" name="isRemindByEmail" id="isRemindByEmail" class="hidden" value="Y" ${isRemindByEmail?'checked':''}/>
                         <label>${message(code: 'profile.isRemindByEmail')}</label>
                     </div>
                 </div>
                 <div class="inline field">
                     <div class="ui checkbox">
-                        <g:set var="isRemindCCByEmail" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, YN_NO).rdValue == YN_YES}"/>
+                        <g:set var="isRemindCCByEmail" value="${user.getSetting(KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
                         <input type="checkbox" name="isRemindCCByEmail" id="isRemindCCByEmail" class="hidden" value="Y" ${isRemindCCByEmail?'checked':''}/>
                         <label>${message(code: 'profile.isRemindCCByEmail')}</label>
                     </div>
-                    <g:set var="remindCCEmailaddress" value="${user.getSettingsValue(UserSettings.KEYS.REMIND_CC_EMAILADDRESS)}"/>
+                    <g:set var="remindCCEmailaddress" value="${user.getSettingsValue(KEYS.REMIND_CC_EMAILADDRESS)}"/>
                     <input type="text" id="emailCC" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
                 </div>
 
@@ -185,147 +184,147 @@
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isSubscriptionsNoticePeriod" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isSubscriptionsNoticePeriod" value="${user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isSubscriptionsNoticePeriod" class="hidden" value="Y" ${isSubscriptionsNoticePeriod?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.subscriptions.noticePeriod')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSubscriptionNoticeperiod" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSubscriptionNoticeperiod" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isSubscriptionsEnddate" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isSubscriptionsEnddate" value="${user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isSubscriptionsEnddate" class="hidden" value="Y" ${isSubscriptionsEnddate?'checked':''}/>
                                     <label></label>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.subscriptions.enddate')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSubscriptionEnddate" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSubscriptionEnddate" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isSubscriptionsCustomProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isSubscriptionsCustomProp" value="${user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isSubscriptionsCustomProp" class="hidden" value="Y" ${isSubscriptionsCustomProp?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.subscriptions.customProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSubscriptionsCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSubscriptionsCustomProp" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isSubscriptionsPrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isSubscriptionsPrivateProp" value="${user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isSubscriptionsPrivateProp" class="hidden" value="Y" ${isSubscriptionsPrivateProp?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.subscriptions.privateProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSubscriptionsPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSubscriptionsPrivateProp" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isLicenseCustomProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_LICENSE_CUSTOM_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isLicenseCustomProp" value="${user.getSetting(KEYS.IS_REMIND_FOR_LICENSE_CUSTOM_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isLicenseCustomProp" class="hidden" value="Y" ${isLicenseCustomProp?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.license.customProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForLicenseCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForLicenseCustomProp" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isLicensePrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_LIZENSE_PRIVATE_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isLicensePrivateProp" value="${user.getSetting(KEYS.IS_REMIND_FOR_LIZENSE_PRIVATE_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isLicensePrivateProp" class="hidden" value="Y" ${isLicensePrivateProp?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.license.privateProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForLicensePrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForLicensePrivateProp" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isPersonPrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_PERSON_PRIVATE_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isPersonPrivateProp" value="${user.getSetting(KEYS.IS_REMIND_FOR_PERSON_PRIVATE_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isPersonPrivateProp" class="hidden" value="Y" ${isPersonPrivateProp?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.person.privateProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForPersonPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForPersonPrivateProp" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isOrgCustomProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_ORG_CUSTOM_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isOrgCustomProp" value="${user.getSetting(KEYS.IS_REMIND_FOR_ORG_CUSTOM_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isOrgCustomProp" class="hidden" value="Y" ${isOrgCustomProp?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.org.customProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForOrgCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForOrgCustomProp" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isOrgPrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_ORG_PRIVATE_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isOrgPrivateProp" value="${user.getSetting(KEYS.IS_REMIND_FOR_ORG_PRIVATE_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isOrgPrivateProp" class="hidden" value="Y" ${isOrgPrivateProp?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.org.privateProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForOrgPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForOrgPrivateProp" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isTasks" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_TASKS, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isTasks" value="${user.getSetting(KEYS.IS_REMIND_FOR_TASKS, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isTasks" class="hidden" value="Y" ${isTasks?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.tasks')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForTasks" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_TASKS, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForTasks" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_TASKS, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                     </g:if>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isSurveysNotMandatoryEndDate" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isSurveysNotMandatoryEndDate" value="${user.getSetting(KEYS.IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isSurveysNotMandatoryEndDate" class="hidden" value="Y" ${isSurveysNotMandatoryEndDate?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.surveys.endDate')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSurveysEndDate" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSurveysEndDate" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div class="ui checkbox">
-                                    <g:set var="isSurveysMandatoryEndDate" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE, YN_YES).rdValue==YN_YES}"/>
+                                    <g:set var="isSurveysMandatoryEndDate" value="${user.getSetting(KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                     <input type="checkbox" name="isSurveysMandatoryEndDate" class="hidden" value="Y" ${isSurveysMandatoryEndDate?'checked':''}/>
                                 </div>
                             </td>
                             <td>${message(code: 'profile.reminder.for.surveysMandatory.endDate')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSurveysMandatoryEndDate" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, defaultRemindPeriod)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSurveysMandatoryEndDate" value="${user.getSetting(KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                     </tbody>
@@ -352,53 +351,53 @@
                 --%>
                 <div class="field">
                     <label>${message(code: 'profile.theme', default:'Theme')}</label>
-                    <g:set var="US_THEME" value="${user.getSetting(UserSettings.KEYS.THEME, RefdataValue.getByValueAndCategory('default', RDConstants.USER_SETTING_THEME))}" />
+                    <g:set var="US_THEME" value="${user.getSetting(KEYS.THEME, RefdataValue.getByValueAndCategory('default', RDConstants.USER_SETTING_THEME))}" />
                     <semui:xEditableRefData owner="${US_THEME}" field="rdValue" config="${US_THEME.key.rdc}" />
                 </div>
                 <div class="field">
                     <label>${message(code: 'profile.dashboardTab')}</label>
-                    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))}" />
+                    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))}" />
                     <semui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
                 </div>
                 <div class="field">
                     <label>${message(code: 'profile.language')}</label>
-                    <g:set var="US_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))}" />
+                    <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))}" />
                     <semui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
                     &nbsp;
                     <g:link controller="profile" action="index" class="ui button icon" style="float:right"><i class="icon sync"></i></g:link>
                 </div>
                 <div class="field">
                     <label>${message(code: 'profile.emailLanguage')}</label>
-                    <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))}" />
+                    <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))}" />
                     <semui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'profile.editMode')}</label>
-                    <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, YN_YES)}" />
+                    <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)}" />
                     <semui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'profile.simpleViews')}</label>
-                    <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(UserSettings.KEYS.SHOW_SIMPLE_VIEWS, null)}" />
+                    <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(KEYS.SHOW_SIMPLE_VIEWS, null)}" />
                     <semui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'profile.extendedFilter')}</label>
-                    <g:set var="US_SHOW_EXTENDED_FILTER" value="${user.getSetting(UserSettings.KEYS.SHOW_EXTENDED_FILTER, YN_YES)}" />
+                    <g:set var="US_SHOW_EXTENDED_FILTER" value="${user.getSetting(KEYS.SHOW_EXTENDED_FILTER, RDStore.YN_YES)}" />
                     <semui:xEditableRefData owner="${US_SHOW_EXTENDED_FILTER}" field="rdValue" config="${US_SHOW_EXTENDED_FILTER.key.rdc}" />
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'profile.itemsTimeWindow')}</label>
-                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" field="strValue" />
+                    <semui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" field="strValue" />
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'profile.pagesize')}</label>
-                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
+                    <semui:xEditable owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" />
                 </div>
 
             </div>
@@ -416,18 +415,18 @@
 
                 <div class="inline field">
                     <div class="ui checkbox">
-                        <g:set var="isNotificationByEmail" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL, YN_NO).rdValue == YN_YES}"/>
+                        <g:set var="isNotificationByEmail" value="${user.getSetting(KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
                         <input type="checkbox" name="isNotificationByEmail" id="isNotificationByEmail" class="hidden" value="Y" ${isNotificationByEmail?'checked':''}/>
                         <label>${message(code: 'profile.isNotificationByEmail')}</label>
                     </div>
                 </div>
                 <div class="inline field">
                     <div class="ui checkbox">
-                        <g:set var="isNotificationCCByEmail" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, YN_NO).rdValue == YN_YES}"/>
+                        <g:set var="isNotificationCCByEmail" value="${user.getSetting(KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
                         <input type="checkbox" name="isNotificationCCByEmail" id="isNotificationCCByEmail" class="hidden" value="Y" ${isNotificationCCByEmail?'checked':''}/>
                         <label>${message(code: 'profile.isNotificationCCByEmail')}</label>
                     </div>
-                    <g:set var="notificationCCEmailaddress" value="${user.getSettingsValue(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS)}"/>
+                    <g:set var="notificationCCEmailaddress" value="${user.getSettingsValue(KEYS.NOTIFICATION_CC_EMAILADDRESS)}"/>
                     <input type="text" id="emailCC" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
                 </div>
 
@@ -442,7 +441,7 @@
                     <tr>
                         <td>
                             <div class="ui checkbox">
-                                <g:set var="isNotificationForSurveysStart" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, YN_NO).rdValue==YN_YES}"/>
+                                <g:set var="isNotificationForSurveysStart" value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, RDStore.YN_NO).rdValue==RDStore.YN_YES}"/>
                                 <input type="checkbox" name="isNotificationForSurveysStart" class="hidden" value="Y" ${isNotificationForSurveysStart?'checked':''}/>
                             </div>
                         </td>
@@ -452,7 +451,7 @@
                     <tr>
                         <td>
                             <div class="ui checkbox">
-                                <g:set var="isNotificationForSurveysParticipationFinish" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, YN_NO).rdValue==YN_YES}"/>
+                                <g:set var="isNotificationForSurveysParticipationFinish" value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO).rdValue==RDStore.YN_YES}"/>
                                 <input type="checkbox" name="isNotificationForSurveysParticipationFinish" class="hidden" value="Y" ${isNotificationForSurveysParticipationFinish?'checked':''}/>
                             </div>
                         </td>
@@ -462,7 +461,7 @@
                     <tr>
                         <td>
                             <div class="ui checkbox">
-                                <g:set var="isNotificationForSystemMessages" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, YN_NO).rdValue==YN_YES}"/>
+                                <g:set var="isNotificationForSystemMessages" value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, RDStore.YN_NO).rdValue==RDStore.YN_YES}"/>
                                 <input type="checkbox" name="isNotificationForSystemMessages" class="hidden" value="Y" ${isNotificationForSystemMessages?'checked':''}/>
                             </div>
                         </td>
