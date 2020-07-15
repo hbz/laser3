@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
+    <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.addMembers.label',args:memberType)}"/>
@@ -90,12 +90,15 @@
                         </div>
                         <br>
                         <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics" value="all">
+                            <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics" value="all" checked="checked">
                             <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
                         </div>
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-tooltip="${message(code:'myinst.separate_lics_all.expl')}">
+                            <i class="question circle icon la-popup"></i>
+                        </span>
                         <br>
                         <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics" value="partial" checked="checked">
+                            <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics" value="partial">
                             <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_partial')}</label>
                         </div>
                         <div class="generateSlavedLicsReference-wrapper hidden">
@@ -168,25 +171,15 @@
         </g:if>
     </g:form>
 
-    <g:if test="${accessService.checkPermAffiliation("ORG_INST_COLLECTIVE, ORG_CONSORTIUM","INST_ADM")}">
+    <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
         <hr/>
 
         <div class="ui info message">
             <div class="header">
-                <g:if test="${consortialView}">
-                    <g:message code="myinst.noMembers.cons.header"/>
-                </g:if>
-                <g:elseif test="${departmentalView}">
-                    <g:message code="myinst.noMembers.dept.header"/>
-                </g:elseif>
+                <g:message code="myinst.noMembers.cons.header"/>
             </div>
             <p>
-                <g:if test="${consortialView}">
-                    <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
-                </g:if>
-                <g:elseif test="${departmentalView}">
-                    <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'collective.member.plural')]}"/>
-                </g:elseif>
+                <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
             </p>
         </div>
     </g:if>

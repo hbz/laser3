@@ -24,10 +24,10 @@ class SurveyService {
     ContextService contextService
     def messageSource
     ExportService exportService
-    Locale locale
     MailService mailService
     EscapeService escapeService
     GrailsApplication grailsApplication
+    String replyTo
 
     SimpleDateFormat formatter = DateUtil.getSDF_dmy()
     String from
@@ -36,7 +36,6 @@ class SurveyService {
     void init() {
         from = ConfigUtils.getNotificationsEmailFrom()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
     }
 
 
@@ -169,7 +168,7 @@ class SurveyService {
                 }
             } else {
                 Object[] args = [sourceProp.type.getI10n("name") ?: sourceProp.class.getSimpleName()]
-                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
+                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, LocaleContextHolder.getLocale())
             }
         }
     }
@@ -192,7 +191,7 @@ class SurveyService {
         } else {
             log.error("Problem saving ${obj.errors}")
             Object[] args = [obj]
-            flash.error += messageSource.getMessage('default.save.error.message', args, locale)
+            flash.error += messageSource.getMessage('default.save.error.message', args, LocaleContextHolder.getLocale())
             return false
         }
     }
@@ -659,12 +658,12 @@ class SurveyService {
                                     }
                                 }
 
-                                log.debug("emailToSurveyOwnerbyParticipationFinish - finished sendEmail() to " + user.displayName + " (" + user.email + ") " + surveyInfo.owner.name);
+                                log.debug("emailToSurveyOwnerbyParticipationFinish - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + surveyInfo.owner.name);
                             }
                         } catch (Exception e) {
                             String eMsg = e.message
 
-                            log.error("emailToSurveyOwnerbyParticipationFinish - sendEmail() :: Unable to perform email due to exception ${eMsg}")
+                            log.error("emailToSurveyOwnerbyParticipationFinish - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
                             SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
                         }
                 }
@@ -810,5 +809,119 @@ class SurveyService {
 
 
         return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    def emailsToSurveyUsers(List surveyInfoIds){
+
+        def surveys = SurveyInfo.findAllByIdInList(surveyInfoIds)
+
+        def orgs = surveys?.surveyConfigs?.orgs?.org?.flatten()
+
+        if(orgs)
+        {
+            //Only User that approved
+            List<UserOrg> userOrgs = UserOrg.findAllByOrgInListAndStatus(orgs, 1)
+
+            //Only User with Notification by Email and for Surveys Start
+            userOrgs.each { userOrg ->
+                if(userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                {
+
+                    def orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
+                            "LEFT JOIN s.surveyConfigs surConf " +
+                            "LEFT JOIN surConf.orgs surOrg  " +
+                            "WHERE surOrg.org IN (:org) " +
+                            "AND s.id IN (:survey)", [org: userOrg.org, survey: surveys?.id])
+
+                    sendSurveyEmail(userOrg.user, userOrg.org, orgSurveys)
+                }
+            }
+
+        }
+
+    }
+
+    def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org){
+
+        //Only User that approved
+        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(org, UserOrg.STATUS_APPROVED)
+
+        //Only User with Notification by Email and for Surveys Start
+        userOrgs.each { userOrg ->
+            if(userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                    userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+            {
+                sendSurveyEmail(userOrg.user, userOrg.org, [surveyInfo])
+            }
+        }
+    }
+
+    private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries) {
+
+        if (grailsApplication.config.grails.mail.disabled == true) {
+            println 'SurveyService.sendSurveyEmail() failed due grailsApplication.config.grails.mail.disabled = true'
+        }else {
+
+            String emailReceiver = user.getEmail()
+            String currentServer = ServerUtils.getCurrentServer()
+            String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+
+            surveyEntries.each { survey ->
+                try {
+                    if (emailReceiver == null || emailReceiver.isEmpty()) {
+                        log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                    } else {
+                        boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                        String ccAddress = null
+                        if (isNotificationCCbyEmail) {
+                            ccAddress = user.getSetting(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                        }
+
+                        List generalContactsEMails = []
+
+                        survey.owner.getGeneralContactPersons(false)?.each { person ->
+                            person.contacts.each { contact ->
+                                if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                                    generalContactsEMails << contact.content
+                                }
+                            }
+                        }
+
+                        replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
+                        Object[] args = ["${survey.type.getI10n('value')}"]
+                        Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
+
+                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, language) + " (" + survey.name + ")")
+
+                        if (isNotificationCCbyEmail && ccAddress) {
+                            mailService.sendMail {
+                                to emailReceiver
+                                from from
+                                cc ccAddress
+                                replyTo replyTo
+                                subject mailSubject
+                                body(view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                            }
+                        } else {
+                            mailService.sendMail {
+                                to emailReceiver
+                                from from
+                                replyTo replyTo
+                                subject mailSubject
+                                body(view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                            }
+                        }
+
+                        log.debug("SurveyService - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + org.name);
+                    }
+                } catch (Exception e) {
+                    String eMsg = e.message
+
+                    log.error("SurveyService - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                    SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: org.name, survey: survey.name])
+                }
+            }
+        }
     }
 }

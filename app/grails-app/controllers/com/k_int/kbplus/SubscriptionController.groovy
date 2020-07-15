@@ -2627,22 +2627,22 @@ class SubscriptionController
 
                             synShareTargetList.add(memberSub)
 
-                            SubscriptionProperty.findAllByOwner(result.subscriptionInstance).each { scp ->
-                                AuditConfig ac = AuditConfig.getConfig(scp)
+                            SubscriptionProperty.findAllByOwner(result.subscriptionInstance).each { SubscriptionProperty sp ->
+                                AuditConfig ac = AuditConfig.getConfig(sp)
 
                                 if (ac) {
                                     // multi occurrence props; add one additional with backref
-                                    if (scp.type.multipleOccurrence) {
-                                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
-                                        additionalProp = scp.copyInto(additionalProp)
-                                        additionalProp.instanceOf = scp
+                                    if (sp.type.multipleOccurrence) {
+                                        SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                        additionalProp = sp.copyInto(additionalProp)
+                                        additionalProp.instanceOf = sp
                                         additionalProp.save(flush: true)
                                     }
                                     else {
                                         // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
-                                        newProp = scp.copyInto(newProp)
-                                        newProp.instanceOf = scp
+                                        SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                        newProp = sp.copyInto(newProp)
+                                        newProp.instanceOf = sp
                                         newProp.save(flush: true)
                                     }
                                 }

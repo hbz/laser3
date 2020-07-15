@@ -179,7 +179,7 @@
             </div>
 
             <div class="field la-field-right-aligned">
-                <g:if test="${license}">
+                <g:if test="${license && !request.forwardURI.contains(license.id.toString())}">
                     <g:set var="returnURL" value="${request.forwardURI+"/"+license.id}"/>
                 </g:if>
                 <g:else>

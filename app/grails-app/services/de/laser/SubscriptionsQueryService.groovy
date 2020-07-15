@@ -197,10 +197,12 @@ class SubscriptionsQueryService {
         }
 
         if (params.q?.length() > 0) {
+            Set<String> licenses = License.executeQuery("select concat('"+License.class.name+":',l.id) from License l where genfunc_filter_matcher(l.reference, :name_filter) = true ",[name_filter:params.q])
+
             base_qry += (
                     " and ( genfunc_filter_matcher(s.name, :name_filter) = true " // filter by subscription
                             + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and genfunc_filter_matcher(sp.pkg.name, :name_filter) = true ) " // filter by pkg
-                            + " or exists ( select lic from License as lic where concat('${License.class.name}:',lic.id) in (select li.source from Links li where li.destination = concat('${Subscription.class.name}:',s.id) and li.linkType = :linkType) and genfunc_filter_matcher(lic.reference, :name_filter) = true ) " // filter by license
+                            + " or exists ( select li from Links li where li.destination = concat('"+Subscription.class.name+":',s.id) and li.linkType = :linkType and li.source in (:licenses) ) " // filter by license
                             + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and" +
                             "   orgR.roleType in (:roleTypeAgency) and ( "
                                 + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
@@ -209,7 +211,8 @@ class SubscriptionsQueryService {
                             + " ) ) " // filter by Anbieter, Konsortium, Agency
                         +  " ) "
             )
-            qry_params.put('name_filter', "${params.q}")
+            qry_params.put('name_filter', params.q)
+            qry_params.put('licenses', licenses)
             qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
             qry_params.put('roleTypeAgency', [RDStore.OR_AGENCY, RDStore.OR_PROVIDER])
             filterSet = true

@@ -362,7 +362,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 // C: create new targetProperty
                 if (! targetProperty) {
-                    targetProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcObject.type)
+                    targetProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcObject.type, srcObject.tenant)
                     setInstanceOf = true
                 }
 

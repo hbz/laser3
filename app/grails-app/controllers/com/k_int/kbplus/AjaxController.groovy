@@ -1703,6 +1703,7 @@ class AjaxController {
         def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
+        Org contextOrg = contextService.getOrg()
 
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
 
@@ -1737,26 +1738,26 @@ class AjaxController {
 
                     // multi occurrence props; add one additional with backref
                     if (property.type.multipleOccurrence) {
-                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextService.getOrg())
+                        AbstractPropertyWithCalculatedLastUpdated additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
                         additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
-                        additionalProp.save(flush: true)
+                        additionalProp.save()
                     }
                     else {
-                        def matchingProps = property.getClass().findByOwnerAndType(member, property.type)
+                        Set<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findByOwnerAndType(member, property.type)
                         // unbound prop found with matching type, set backref
                         if (matchingProps) {
-                            matchingProps.each { memberProp ->
+                            matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
                                 memberProp.instanceOf = property
-                                memberProp.save(flush: true)
+                                memberProp.save(flush:true)
                             }
                         }
                         else {
                             // no match found, creating new prop with backref
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
+                            AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
                             newProp = property.copyInto(newProp)
                             newProp.instanceOf = property
-                            newProp.save(flush: true)
+                            newProp.save()
                         }
                     }
                 }
@@ -1772,6 +1773,7 @@ class AjaxController {
                   newProp         : property,
                   showConsortiaFunctions: params.showConsortiaFunctions,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                  contextOrg      : contextOrg,
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
@@ -1785,6 +1787,7 @@ class AjaxController {
                     showConsortiaFunctions: params.showConsortiaFunctions,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
+                    contextOrg            : contextOrg,
                     orphanedProperties    : allPropDefGroups.orphanedProperties
             ]
             render(template: "/templates/properties/custom", model: modelMap)

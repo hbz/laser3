@@ -134,7 +134,7 @@
                                                 <g:if test="${pd.countUsages()==0}">
                                                     <g:link action="managePrivatePropertyDefinitions"
                                                             params="[cmd:'delete', deleteIds: pd?.id]"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name")])}"
+                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name_de")])}"
                                                             data-confirm-term-how="delete"
                                                             class="ui icon negative button js-open-confirm-modal"
                                                             role="button">
