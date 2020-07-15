@@ -289,7 +289,7 @@ class LicenseController
         //    role_lic = OR_LICENSEE_COLL
 
         License licenseCopy
-            if (accessService.checkPerm("ORG_INST_COLLECTIVE, ORG_CONSORTIUM")) {
+            if (accessService.checkPerm(" ORG_CONSORTIUM")) {
 
                 if (params.cmd == 'generate') {
                     licenseCopy = institutionsService.copyLicense(

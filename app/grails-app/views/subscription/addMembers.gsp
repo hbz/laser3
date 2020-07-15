@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.CalculatedType" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.CalculatedType;de.laser.helper.RDConstants;de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -30,7 +30,7 @@
 <h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
 
 
-<g:if test="${consortialView || departmentalView}">
+<g:if test="${consortialView}">
 
     <semui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
@@ -43,8 +43,7 @@
         </g:form>
     </semui:filter>
 
-    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post"
-            class="ui form">
+    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" class="ui form">
 
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList          : members,
@@ -67,13 +66,12 @@
                         <label for="generateSlavedSubs">${message(code: 'myinst.separate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
                     </div>--}%
 
-                    <g:set value="${RefdataCategory.getByDesc(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS)}"
-                           var="rdcSubStatus"/>
+                    <g:set value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}" var="rdcSubStatus"/>
 
                     <br/>
                     <br/>
 
-                    <g:select from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subStatus"
@@ -165,9 +163,9 @@
         <br/>
         <g:if test="${members}">
             <div class="field la-field-right-aligned">
-                <input type="submit" class="ui button js-click-control"
-                       value="${message(code: 'default.button.create.label')}"/>
+                <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
             </div>
+            <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         </g:if>
     </g:form>
 

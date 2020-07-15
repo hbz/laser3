@@ -70,6 +70,7 @@ class SubscriptionController
     def deletionService
     def auditService
     def surveyService
+    FormService formService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -2507,72 +2508,72 @@ class SubscriptionController
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug(params)
-
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
+        if(formService.validateToken(params)) {
 
-        List orgType = [RDStore.OT_INSTITUTION.id.toString()]
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            orgType = [RDStore.OT_CONSORTIUM.id.toString()]
-        }
+            List orgType = [RDStore.OT_INSTITUTION.id.toString()]
+            if (accessService.checkPerm("ORG_CONSORTIUM")) {
+                orgType = [RDStore.OT_CONSORTIUM.id.toString()]
+            }
 
-        RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: RDStore.SUBSCRIPTION_CURRENT
+            RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: RDStore.SUBSCRIPTION_CURRENT
 
-        RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_cons  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_coll      = RDStore.OR_SUBSCRIBER_COLLECTIVE
-        RefdataValue role_sub_coll  = RDStore.OR_SUBSCRIPTION_COLLECTIVE
-        RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
-        RefdataValue role_lic       = RDStore.OR_LICENSEE_CONS
-        RefdataValue role_lic_cons  = RDStore.OR_LICENSING_CONSORTIUM
-        RefdataValue role_provider  = RDStore.OR_PROVIDER
-        RefdataValue role_agency    = RDStore.OR_AGENCY
+            RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
+            RefdataValue role_sub_cons  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+            RefdataValue role_coll      = RDStore.OR_SUBSCRIBER_COLLECTIVE
+            RefdataValue role_sub_coll  = RDStore.OR_SUBSCRIPTION_COLLECTIVE
+            RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+            RefdataValue role_lic       = RDStore.OR_LICENSEE_CONS
+            RefdataValue role_lic_cons  = RDStore.OR_LICENSING_CONSORTIUM
+            RefdataValue role_provider  = RDStore.OR_PROVIDER
+            RefdataValue role_agency    = RDStore.OR_AGENCY
 
-        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
+            if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                List<Org> members = []
-                License licenseCopy
+                if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                    List<Org> members = []
+                    License licenseCopy
 
-                params.list('selectedOrgs').each { it ->
-                    members << Org.findById(Long.valueOf(it))
-                }
-
-                List<Subscription> synShareTargetList = []
-                List<License> licensesToProcess = []
-                Set<Package> packagesToProcess = []
-
-                //copy package data
-                if(params.linkAllPackages) {
-                    result.subscriptionInstance.packages.each { sp ->
-                        packagesToProcess << sp.pkg
+                    params.list('selectedOrgs').each { it ->
+                        members << Org.findById(Long.valueOf(it))
                     }
-                }
-                else if(params.packageSelection) {
-                    List packageIds = params.list("packageSelection")
-                    packageIds.each { spId ->
-                        packagesToProcess << SubscriptionPackage.get(spId).pkg
+
+                    List<Subscription> synShareTargetList = []
+                    List<License> licensesToProcess = []
+                    Set<Package> packagesToProcess = []
+
+                    //copy package data
+                    if(params.linkAllPackages) {
+                        result.subscriptionInstance.packages.each { sp ->
+                            packagesToProcess << sp.pkg
+                        }
                     }
-                }
-                if(params.generateSlavedLics == "all") {
-                    licensesToProcess.addAll(License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE]))
-                }
-                else if(params.generateSlavedLics == "partial") {
-                    List<String> licenseKeys = params.list("generateSlavedLicsReference")
-                    licenseKeys.each { String licenseKey ->
-                        licensesToProcess << genericOIDService.resolveOID(licenseKey)
+                    else if(params.packageSelection) {
+                        List packageIds = params.list("packageSelection")
+                        packageIds.each { spId ->
+                            packagesToProcess << SubscriptionPackage.get(spId).pkg
+                        }
                     }
-                }
+                    if(params.generateSlavedLics == "all") {
+                        licensesToProcess.addAll(License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE]))
+                    }
+                    else if(params.generateSlavedLics == "partial") {
+                        List<String> licenseKeys = params.list("generateSlavedLicsReference")
+                        licenseKeys.each { String licenseKey ->
+                            licensesToProcess << genericOIDService.resolveOID(licenseKey)
+                        }
+                    }
 
-                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
+                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
 
-                members.each { Org cm ->
+                    members.each { Org cm ->
 
 
-                    //ERMS-1155
-                    //if (true) {
+                        //ERMS-1155
+                        //if (true) {
                         log.debug("Generating seperate slaved instances for members")
 
                         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -2660,17 +2661,21 @@ class SubscriptionController
                             }
 
                         }
-                    //}
+                        //}
+                    }
+
+                    result.subscriptionInstance.syncAllShares(synShareTargetList)
+
+                    redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
+                } else {
+                    redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
                 }
-
-                result.subscriptionInstance.syncAllShares(synShareTargetList)
-
-                redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
             } else {
                 redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
             }
-        } else {
-            redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
+        }
+        else {
+            redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
         }
     }
 
