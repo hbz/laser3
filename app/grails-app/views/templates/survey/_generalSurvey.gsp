@@ -13,7 +13,7 @@
                     <b>${message(code: 'surveyConfig.orgs.label')}:</b>
                     <g:link controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig?.id]">
+                            params="[surveyConfigID: surveyConfig.id]">
                         <div class="ui circular label">${countParticipants.surveyMembers}</div>
                     </g:link>
                 </div>
@@ -89,14 +89,14 @@
 
                     <div class="ui form">
                         <g:form action="setSurveyConfigComment" controller="survey" method="post"
-                                params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]">
+                                params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]">
                             <div class="field">
                                 <label><div class="ui icon la-popup-tooltip la-delay"
                                             data-content="${message(code: "surveyConfig.comment.comment")}">
                                     ${message(code: 'surveyConfig.comment.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div></label>
-                                <textarea name="comment" rows="15">${surveyConfig?.comment}</textarea>
+                                <textarea name="comment" rows="15">${surveyConfig.comment}</textarea>
                             </div>
 
                             <div class="left aligned">
@@ -161,8 +161,8 @@
                             <label>
                                 <g:message code="surveyConfigsInfo.comment"/>
                             </label>
-                            <g:if test="${surveyConfig?.comment}">
-                                <textarea readonly="readonly" rows="15">${surveyConfig?.comment}</textarea>
+                            <g:if test="${surveyConfig.comment}">
+                                <textarea readonly="readonly" rows="15">${surveyConfig.comment}</textarea>
                             </g:if>
                             <g:else>
                                 <g:message code="surveyConfigsInfo.comment.noComment"/>
@@ -228,21 +228,21 @@
             </thead>
 
             <tbody>
-            <g:each in="${surveyProperties.sort { it.surveyProperty?.name }}" var="surveyProperty" status="i">
+            <g:each in="${surveyProperties.sort { it.surveyProperty.name }}" var="surveyProperty" status="i">
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
                     </td>
                     <td>
-                        ${surveyProperty?.surveyProperty?.getI10n('name')}
+                        ${surveyProperty.surveyProperty.getI10n('name')}
 
-                        <g:if test="${surveyProperty?.surveyProperty?.tenant?.id == contextService.getOrg().id}">
+                        <g:if test="${surveyProperty.surveyProperty.tenant?.id == contextOrg.id}">
                             <i class='shield alternate icon'></i>
                         </g:if>
 
-                        <g:if test="${surveyProperty?.surveyProperty?.getI10n('expl')}">
+                        <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${surveyProperty?.surveyProperty?.getI10n('expl')}">
+                                  data-content="${surveyProperty.surveyProperty.getI10n('expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </g:if>
@@ -250,16 +250,16 @@
                     </td>
 
                     <td>
-                        <g:if test="${surveyProperty?.surveyProperty?.getI10n('expl')}">
-                            ${surveyProperty?.surveyProperty?.getI10n('expl')}
+                        <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
+                            ${surveyProperty.surveyProperty.getI10n('expl')}
                         </g:if>
                     </td>
                     <td>
 
-                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyProperty?.surveyProperty.type)}
-                        <g:if test="${surveyProperty?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
+                        <g:if test="${surveyProperty.surveyProperty.type == 'class com.k_int.kbplus.RefdataValue'}">
                             <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyProperty?.surveyProperty.refdataCategory)}"
+                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
                                     var="refdataValue">
                                 <g:if test="${refdataValue.getI10n('value')}">
                                     <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
@@ -272,11 +272,11 @@
                     </td>
                     <td>
                         <g:if test="${editable && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING &&
-                                com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty?.surveyProperty)
-                                && (de.laser.helper.RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty?.surveyProperty?.id)}">
+                                com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
+                                && (de.laser.helper.RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
-                                    id="${surveyProperty?.id}">
+                                    id="${surveyProperty.id}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
@@ -289,8 +289,8 @@
                 <g:if test="${editable && properties && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
                     <td colspan="6">
                         <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
-                            <g:hiddenField name="id" value="${surveyInfo?.id}"/>
-                            <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
+                            <g:hiddenField name="id" value="${surveyInfo.id}"/>
+                            <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
 
                             <div class="field required">
                                 <label>${message(code: 'surveyConfigs.property')}</label>
@@ -323,7 +323,7 @@
     <semui:form>
         <h3><g:message code="surveyConfigsInfo.properties"/>
         <semui:totalNumber
-                total="${surveyResults?.size()}"/>
+                total="${surveyResults.size()}"/>
         </h3>
 
         <table class="ui celled sortable table la-table">
@@ -370,60 +370,60 @@
                         ${i + 1}
                     </td>
                     <td>
-                        ${surveyResult?.type?.getI10n('name')}
+                        ${surveyResult.type.getI10n('name')}
 
-                        <g:if test="${surveyResult?.type?.getI10n('expl')}">
+                        <g:if test="${surveyResult.type.getI10n('expl')}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${surveyResult?.type?.getI10n('expl')}">
+                                  data-content="${surveyResult.type.getI10n('expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </g:if>
 
                     </td>
                     <td>
-                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyResult?.type.type)}
-                        <g:if test="${surveyResult?.type.type == 'class com.k_int.kbplus.RefdataValue'}">
+                        ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
+                        <g:if test="${surveyResult.type.type == 'class com.k_int.kbplus.RefdataValue'}">
                             <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult?.type.refdataCategory)}"
+                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">
                                 <g:set var="refdataValues"
-                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                       value="${refdataValues + refdataValue.getI10n('value')}"/>
                             </g:each>
                             <br>
                             (${refdataValues.join('/')})
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${surveyResult?.type?.type == Integer.toString()}">
+                        <g:if test="${surveyResult.type.type == Integer.toString()}">
                             <semui:xEditable owner="${surveyResult}" type="text" field="intValue"/>
                         </g:if>
-                        <g:elseif test="${surveyResult?.type?.type == String.toString()}">
+                        <g:elseif test="${surveyResult.type.type == String.toString()}">
                             <semui:xEditable owner="${surveyResult}" type="text" field="stringValue"/>
                         </g:elseif>
-                        <g:elseif test="${surveyResult?.type?.type == BigDecimal.toString()}">
+                        <g:elseif test="${surveyResult.type.type == BigDecimal.toString()}">
                             <semui:xEditable owner="${surveyResult}" type="text" field="decValue"/>
                         </g:elseif>
-                        <g:elseif test="${surveyResult?.type?.type == Date.toString()}">
+                        <g:elseif test="${surveyResult.type.type == Date.toString()}">
                             <semui:xEditable owner="${surveyResult}" type="date" field="dateValue"/>
                         </g:elseif>
-                        <g:elseif test="${surveyResult?.type?.type == URL.toString()}">
+                        <g:elseif test="${surveyResult.type.type == URL.toString()}">
                             <semui:xEditable owner="${surveyResult}" type="url" field="urlValue"
                                              overwriteEditable="${overwriteEditable}"
                                              class="la-overflow la-ellipsis"/>
-                            <g:if test="${surveyResult?.urlValue}">
+                            <g:if test="${surveyResult.urlValue}">
                                 <semui:linkIcon/>
                             </g:if>
                         </g:elseif>
-                        <g:elseif test="${surveyResult?.type?.type == com.k_int.kbplus.RefdataValue.toString()}">
+                        <g:elseif test="${surveyResult.type.type == com.k_int.kbplus.RefdataValue.toString()}">
 
-                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.owner?.id != contextService.getOrg().id}">
+                            <g:if test="${surveyResult.type.name in ["Participation"] && surveyResult.owner.id != contextOrg.id}">
                                 <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
                                                         id="participation"
-                                                        config="${surveyResult.type?.refdataCategory}"/>
+                                                        config="${surveyResult.type.refdataCategory}"/>
                             </g:if>
                             <g:else>
                                 <semui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
-                                                        config="${surveyResult.type?.refdataCategory}"/>
+                                                        config="${surveyResult.type.refdataCategory}"/>
                             </g:else>
                         </g:elseif>
                     </td>

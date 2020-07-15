@@ -21,9 +21,15 @@
     <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </semui:breadcrumbs>
 
-%{--<semui:controlButtons>
-    <g:render template="actions"/>
-</semui:controlButtons>--}%
+<semui:controlButtons>
+    <semui:actionsDropdown>
+        <g:if test="${surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id && surveyConfig.isResultsSetFinishByOrg(participant)}">
+            <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                       message="openSurveyAgainForParticipant.button"/>
+            <div class="ui divider"></div>
+        </g:if>
+    </semui:actionsDropdown>
+</semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
@@ -95,8 +101,7 @@
                                                                              costItemSums        : costItemSums,
                                                                              subscriptionInstance: surveyConfig.subscription,
                                                                              tasks               : tasks,
-                                                                             visibleOrgRelations : visibleOrgRelations,
-                                                                             properties          : properties]"/>
+                                                                             visibleOrgRelations : visibleOrgRelations]"/>
             </g:if>
 
         </div>
