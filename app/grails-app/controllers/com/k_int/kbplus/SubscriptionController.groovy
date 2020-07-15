@@ -70,6 +70,7 @@ class SubscriptionController
     def deletionService
     def auditService
     def surveyService
+    FormService formService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -1723,30 +1724,32 @@ class SubscriptionController
             redirect(url: request.getHeader('referer'))
             return
         }
+        if(formService.validateToken(params)) {
+            result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+            /*RefdataValue licenseeRoleType = OR_LICENSEE_CONS
+            if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
+                licenseeRoleType = OR_LICENSEE_COLL
 
-        /*RefdataValue licenseeRoleType = OR_LICENSEE_CONS
-        if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
-            licenseeRoleType = OR_LICENSEE_COLL
+            result.parentLicense = result.parentSub.owner*/
 
-        result.parentLicense = result.parentSub.owner*/
+            Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
-        Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+            List selectedMembers = params.list("selectedMembers")
 
-        List selectedMembers = params.list("selectedMembers")
-
-        List<GString> changeAccepted = []
-        validSubChilds.each { subChild ->
-            if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
-                License newLicense = License.get(params.license_All)
-                if(subscriptionService.setOrgLicRole(subChild,newLicense,params.processOption == 'unlinkLicense'))
-                    changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+            List<GString> changeAccepted = []
+            validSubChilds.each { subChild ->
+                if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
+                    License newLicense = License.get(params.license_All)
+                    if(subscriptionService.setOrgLicRole(subChild,newLicense,params.processOption == 'unlinkLicense'))
+                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                }
+            }
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
             }
         }
-        if (changeAccepted) {
-            flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
-        }
+
         redirect(action: 'linkLicenseMembers', id: params.id)
     }
 
@@ -1764,31 +1767,31 @@ class SubscriptionController
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
+        if(formService.validateToken(params)) {
+            result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+            //result.parentLicense = result.parentSub.owner TODO we need to iterate over ALL linked licenses!
 
-        //result.parentLicense = result.parentSub.owner TODO we need to iterate over ALL linked licenses!
+            List selectedMembers = params.list("selectedMembers")
 
-        List selectedMembers = params.list("selectedMembers")
+            def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-
-        def removeLic = []
-        validSubChilds.each { subChild ->
-            if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
-                Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subChild),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                    License license = genericOIDService.resolveOID(li.source)
-                    if (subscriptionService.setOrgLicRole(subChild,license,true)) {
-                        removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+            def removeLic = []
+            validSubChilds.each { subChild ->
+                if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
+                    Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subChild),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                        License license = genericOIDService.resolveOID(li.source)
+                        if (subscriptionService.setOrgLicRole(subChild,license,true)) {
+                            removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                        }
                     }
                 }
+
             }
-
+            if (removeLic) {
+                flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
+            }
         }
-        if (removeLic) {
-            flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
-        }
-
 
         redirect(action: 'linkLicenseMembers', id: params.id)
     }
@@ -1861,90 +1864,90 @@ class SubscriptionController
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        if(formService.validateToken(params)) {
+            result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def changeAccepted = []
-        def changeAcceptedwithIE = []
-        def changeFailed = []
+            List changeAccepted = []
+            List changeAcceptedwithIE = []
+            List changeFailed = []
 
-        List selectedMembers = params.list("selectedMembers")
+            List selectedMembers = params.list("selectedMembers")
 
-        if(selectedMembers && params.package_All){
-            def pkg_to_link = SubscriptionPackage.get(params.package_All).pkg
-            selectedMembers.each { id ->
-                def subChild = Subscription.get(Long.parseLong(id))
-                if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
-                    if (!(pkg_to_link in subChild.packages.pkg)) {
+            if(selectedMembers && params.package_All){
+                Package pkg_to_link = SubscriptionPackage.get(params.package_All).pkg
+                selectedMembers.each { id ->
+                    Subscription subChild = Subscription.get(Long.parseLong(id))
+                    if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
+                        if (!(pkg_to_link in subChild.packages.pkg)) {
 
-                        if (params.processOption == 'linkwithIE') {
+                            if (params.processOption == 'linkwithIE') {
 
-                            pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
-                            changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-
-                        } else {
-                            pkg_to_link.addToSubscription(subChild, false)
-                            changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-
-                        }
-                    } else {
-                        changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                    }
-
-                    if (changeAccepted) {
-                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
-                    }
-                    if (changeAcceptedwithIE) {
-                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
-                    }
-
-                    if (!changeAccepted && !changeAcceptedwithIE){
-                        flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
-                    }
-
-                }
-
-                if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
-                    if (pkg_to_link in subChild.packages.pkg) {
-
-                        if (params.processOption == 'unlinkwithIE') {
-
-                            if(pkg_to_link.unlinkFromSubscription(subChild, true)) {
+                                pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
                                 changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+
+                            } else {
+                                pkg_to_link.addToSubscription(subChild, false)
+                                changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+
                             }
                         } else {
-                            if(pkg_to_link.unlinkFromSubscription(subChild, false)) {
-                                changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                            }
+                            changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                         }
-                    } else {
-                        changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+
+                        if (changeAccepted) {
+                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+                        }
+                        if (changeAcceptedwithIE) {
+                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+                        }
+
+                        if (!changeAccepted && !changeAcceptedwithIE){
+                            flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
+                        }
+
                     }
 
-                    if (changeAccepted) {
-                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
-                    }
-                    if (changeAcceptedwithIE) {
-                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkWithIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
-                    }
+                    if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
+                        if (pkg_to_link in subChild.packages.pkg) {
 
-                    if (!changeAccepted && !changeAcceptedwithIE){
-                        flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
-                    }
+                            if (params.processOption == 'unlinkwithIE') {
 
+                                if(pkg_to_link.unlinkFromSubscription(subChild, true)) {
+                                    changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                                }
+                            } else {
+                                if(pkg_to_link.unlinkFromSubscription(subChild, false)) {
+                                    changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                                }
+                            }
+                        } else {
+                            changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                        }
+
+                        if (changeAccepted) {
+                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+                        }
+                        if (changeAcceptedwithIE) {
+                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkWithIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+                        }
+
+                        if (!changeAccepted && !changeAcceptedwithIE){
+                            flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
+                        }
+
+                    }
                 }
-            }
 
-        }else {
-            if(!selectedMembers) {
-                flash.error = message(code: 'subscription.linkPackagesMembers.noSelectedMember')
-            }
+            }else {
+                if(!selectedMembers) {
+                    flash.error = message(code: 'subscription.linkPackagesMembers.noSelectedMember')
+                }
 
-            if(!params.package_All) {
-                flash.error = message(code: 'subscription.linkPackagesMembers.noSelectedPackage')
+                if(!params.package_All) {
+                    flash.error = message(code: 'subscription.linkPackagesMembers.noSelectedPackage')
+                }
             }
         }
-
-
 
         redirect(action: 'linkPackagesMembers', id: params.id)
     }
@@ -1969,15 +1972,15 @@ class SubscriptionController
 
         result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+        Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
-        validSubChilds.each { subChild ->
+        validSubChilds.each { Subscription subChild ->
 
             subChild.packages.pkg.each { pkg ->
 
                     if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
-                        def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-                        def queryParams = [sub: subChild, pkg_id: pkg.id]
+                        String query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                        Map<String,Object> queryParams = [sub: subChild, pkg_id: pkg.id]
 
 
                         if (subChild.isEditableBy(result.user)) {
@@ -2148,90 +2151,92 @@ class SubscriptionController
             redirect(url: request.getHeader('referer'))
         }
 
-        result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
+        if(formService.validateToken(params)) {
+            result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
-
-
-        if (params.filterPropDef && params.filterPropValue) {
-
-            def filterPropDef = params.filterPropDef
-            def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
+            result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
 
-            def newProperties = 0
-            def changeProperties = 0
+            if (params.filterPropDef && params.filterPropValue) {
 
-            if (propDef) {
+                def filterPropDef = params.filterPropDef
+                def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
 
-                List selectedMembers = params.list("selectedMembers")
 
-                if(selectedMembers){
-                    selectedMembers.each { subId ->
-                        Subscription subChild = Subscription.get(subId)
-                    if (propDef?.tenant != null) {
-                        //private Property
-                        Subscription owner = subChild
+                def newProperties = 0
+                def changeProperties = 0
 
-                        def existingProps = owner.propertySet.findAll {
-                            it.owner.id == owner.id &&  it.type.id == propDef.id && it.tenant.id == result.institution && !it.isPublic
-                        }
-                        existingProps.removeAll { it.type.name != propDef.name } // dubious fix
+                if (propDef) {
 
-                        if (existingProps.size() == 0 || propDef.multipleOccurrence) {
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef, result.institution)
-                            if (newProp.hasErrors()) {
-                                log.error(newProp.errors)
+                    List selectedMembers = params.list("selectedMembers")
+
+                    if(selectedMembers){
+                        selectedMembers.each { subId ->
+                            Subscription subChild = Subscription.get(subId)
+                            if (propDef?.tenant != null) {
+                                //private Property
+                                Subscription owner = subChild
+
+                                def existingProps = owner.propertySet.findAll {
+                                    it.owner.id == owner.id &&  it.type.id == propDef.id && it.tenant.id == result.institution && !it.isPublic
+                                }
+                                existingProps.removeAll { it.type.name != propDef.name } // dubious fix
+
+                                if (existingProps.size() == 0 || propDef.multipleOccurrence) {
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef, result.institution)
+                                    if (newProp.hasErrors()) {
+                                        log.error(newProp.errors)
+                                    } else {
+                                        log.debug("New private property created: " + newProp.type.name)
+
+                                        newProperties++
+                                        def prop = setProperty(newProp, params.filterPropValue)
+                                    }
+                                }
+
+                                if (existingProps.size() == 1){
+                                    def privateProp = SubscriptionProperty.get(existingProps[0].id)
+                                    changeProperties++
+                                    def prop = setProperty(privateProp, params.filterPropValue)
+
+                                }
+
                             } else {
-                                log.debug("New private property created: " + newProp.type.name)
+                                //custom Property
+                                def owner = subChild
 
-                                newProperties++
-                                def prop = setProperty(newProp, params.filterPropValue)
+                                def existingProp = owner.propertySet.find {
+                                    it.type.id == propDef.id && it.owner.id == owner.id
+                                }
+
+                                if (existingProp == null || propDef.multipleOccurrence) {
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef, result.institution)
+                                    if (newProp.hasErrors()) {
+                                        log.error(newProp.errors)
+                                    } else {
+                                        log.debug("New custom property created: " + newProp.type.name)
+                                        newProperties++
+                                        def prop = setProperty(newProp, params.filterPropValue)
+                                    }
+                                }
+
+                                if (existingProp){
+                                    SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
+                                    changeProperties++
+                                    def prop = setProperty(customProp, params.filterPropValue)
+
+                                }
                             }
-                        }
-
-                        if (existingProps.size() == 1){
-                            def privateProp = SubscriptionProperty.get(existingProps[0].id)
-                            changeProperties++
-                            def prop = setProperty(privateProp, params.filterPropValue)
 
                         }
-
-                    } else {
-                        //custom Property
-                        def owner = subChild
-
-                        def existingProp = owner.propertySet.find {
-                            it.type.id == propDef.id && it.owner.id == owner.id
-                        }
-
-                        if (existingProp == null || propDef.multipleOccurrence) {
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef, result.institution)
-                            if (newProp.hasErrors()) {
-                                log.error(newProp.errors)
-                            } else {
-                                log.debug("New custom property created: " + newProp.type.name)
-                                newProperties++
-                                def prop = setProperty(newProp, params.filterPropValue)
-                            }
-                        }
-
-                        if (existingProp){
-                            SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
-                            changeProperties++
-                            def prop = setProperty(customProp, params.filterPropValue)
-
-                        }
+                        flash.message = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
+                    }else{
+                        flash.error = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
                     }
 
                 }
-                    flash.message = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
-                }else{
-                    flash.error = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
-                }
 
             }
-
         }
 
         def filterPropDef = params.filterPropDef
@@ -2507,72 +2512,72 @@ class SubscriptionController
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug(params)
-
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
+        if(formService.validateToken(params)) {
 
-        List orgType = [RDStore.OT_INSTITUTION.id.toString()]
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            orgType = [RDStore.OT_CONSORTIUM.id.toString()]
-        }
+            List orgType = [RDStore.OT_INSTITUTION.id.toString()]
+            if (accessService.checkPerm("ORG_CONSORTIUM")) {
+                orgType = [RDStore.OT_CONSORTIUM.id.toString()]
+            }
 
-        RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: RDStore.SUBSCRIPTION_CURRENT
+            RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: RDStore.SUBSCRIPTION_CURRENT
 
-        RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_cons  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_coll      = RDStore.OR_SUBSCRIBER_COLLECTIVE
-        RefdataValue role_sub_coll  = RDStore.OR_SUBSCRIPTION_COLLECTIVE
-        RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
-        RefdataValue role_lic       = RDStore.OR_LICENSEE_CONS
-        RefdataValue role_lic_cons  = RDStore.OR_LICENSING_CONSORTIUM
-        RefdataValue role_provider  = RDStore.OR_PROVIDER
-        RefdataValue role_agency    = RDStore.OR_AGENCY
+            RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
+            RefdataValue role_sub_cons  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+            RefdataValue role_coll      = RDStore.OR_SUBSCRIBER_COLLECTIVE
+            RefdataValue role_sub_coll  = RDStore.OR_SUBSCRIPTION_COLLECTIVE
+            RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+            RefdataValue role_lic       = RDStore.OR_LICENSEE_CONS
+            RefdataValue role_lic_cons  = RDStore.OR_LICENSING_CONSORTIUM
+            RefdataValue role_provider  = RDStore.OR_PROVIDER
+            RefdataValue role_agency    = RDStore.OR_AGENCY
 
-        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
+            if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                List<Org> members = []
-                License licenseCopy
+                if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                    List<Org> members = []
+                    License licenseCopy
 
-                params.list('selectedOrgs').each { it ->
-                    members << Org.findById(Long.valueOf(it))
-                }
-
-                List<Subscription> synShareTargetList = []
-                List<License> licensesToProcess = []
-                Set<Package> packagesToProcess = []
-
-                //copy package data
-                if(params.linkAllPackages) {
-                    result.subscriptionInstance.packages.each { sp ->
-                        packagesToProcess << sp.pkg
+                    params.list('selectedOrgs').each { it ->
+                        members << Org.findById(Long.valueOf(it))
                     }
-                }
-                else if(params.packageSelection) {
-                    List packageIds = params.list("packageSelection")
-                    packageIds.each { spId ->
-                        packagesToProcess << SubscriptionPackage.get(spId).pkg
+
+                    List<Subscription> synShareTargetList = []
+                    List<License> licensesToProcess = []
+                    Set<Package> packagesToProcess = []
+
+                    //copy package data
+                    if(params.linkAllPackages) {
+                        result.subscriptionInstance.packages.each { sp ->
+                            packagesToProcess << sp.pkg
+                        }
                     }
-                }
-                if(params.generateSlavedLics == "all") {
-                    licensesToProcess.addAll(License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE]))
-                }
-                else if(params.generateSlavedLics == "partial") {
-                    List<String> licenseKeys = params.list("generateSlavedLicsReference")
-                    licenseKeys.each { String licenseKey ->
-                        licensesToProcess << genericOIDService.resolveOID(licenseKey)
+                    else if(params.packageSelection) {
+                        List packageIds = params.list("packageSelection")
+                        packageIds.each { spId ->
+                            packagesToProcess << SubscriptionPackage.get(spId).pkg
+                        }
                     }
-                }
+                    if(params.generateSlavedLics == "all") {
+                        licensesToProcess.addAll(License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE]))
+                    }
+                    else if(params.generateSlavedLics == "partial") {
+                        List<String> licenseKeys = params.list("generateSlavedLicsReference")
+                        licenseKeys.each { String licenseKey ->
+                            licensesToProcess << genericOIDService.resolveOID(licenseKey)
+                        }
+                    }
 
-                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
+                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
 
-                members.each { Org cm ->
+                    members.each { Org cm ->
 
 
-                    //ERMS-1155
-                    //if (true) {
+                        //ERMS-1155
+                        //if (true) {
                         log.debug("Generating seperate slaved instances for members")
 
                         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -2660,17 +2665,21 @@ class SubscriptionController
                             }
 
                         }
-                    //}
+                        //}
+                    }
+
+                    result.subscriptionInstance.syncAllShares(synShareTargetList)
+
+                    redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
+                } else {
+                    redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
                 }
-
-                result.subscriptionInstance.syncAllShares(synShareTargetList)
-
-                redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
             } else {
                 redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
             }
-        } else {
-            redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
+        }
+        else {
+            redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
         }
     }
 

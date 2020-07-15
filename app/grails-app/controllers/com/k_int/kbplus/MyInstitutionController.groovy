@@ -2794,37 +2794,33 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def addMembers() {
         Map<String, Object> result = setResultGenerics()
 
         // new: filter preset
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            result.comboType = 'Consortium'
-            params.orgType   = RDStore.OT_INSTITUTION.id?.toString()
-        }
-        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            result.comboType = 'Department'
-            params.orgType   = RDStore.OT_DEPARTMENT.id?.toString()
-        }
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id?.toString()
+        result.comboType = 'Consortium'
+        params.orgType   = RDStore.OT_INSTITUTION.id.toString()
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
         if (params.selectedOrgs) {
-            log.debug('adding orgs to consortia/institution')
+            if(formService.validateToken(params)) {
+                log.debug('adding orgs to consortia/institution')
 
-            params.list('selectedOrgs').each { soId ->
-                Map map = [
-                        toOrg: result.institution,
-                        fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.getByValueAndCategory(result.comboType,RDConstants.COMBO_TYPE)
-                ]
-                if (! Combo.findWhere(map)) {
-                    Combo cmb = new Combo(map)
-                    cmb.save()
+                params.list('selectedOrgs').each { soId ->
+                    Map map = [
+                            toOrg: result.institution,
+                            fromOrg: Org.findById( Long.parseLong(soId)),
+                            type: RefdataValue.getByValueAndCategory(result.comboType,RDConstants.COMBO_TYPE)
+                    ]
+                    if (! Combo.findWhere(map)) {
+                        Combo cmb = new Combo(map)
+                        cmb.save()
+                    }
                 }
-            }
 
+            }
             redirect action: 'manageMembers'
         }
         result.filterSet = params.filterSet ? true : false
@@ -2871,9 +2867,9 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def manageMembers() {
         Map<String, Object> result = setResultGenerics()
@@ -2882,32 +2878,17 @@ AND EXISTS (
         du.setBenchmark('start')
 
         // new: filter preset
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
-            if (params.selectedOrgs) {
-                log.debug('remove orgs from consortia')
+        result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
+        if (params.selectedOrgs) {
+            log.debug('remove orgs from consortia')
 
-                params.list('selectedOrgs').each { soId ->
-                    def cmb = Combo.findWhere(
-                            toOrg: result.institution,
-                            fromOrg: Org.get(Long.parseLong(soId)),
-                            type: RDStore.COMBO_TYPE_CONSORTIUM
-                    )
-                    cmb.delete()
-                }
-            }
-        }
-        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            result.comboType = RDStore.COMBO_TYPE_DEPARTMENT
-            if (params.selectedOrgs) {
-                log.debug('remove orgs from department')
-                params.list('selectedOrgs').each { soId ->
-                    Org department = Org.get(soId)
-                    if(!organisationService.removeDepartment(department)) {
-                        flash.error(message(code:'default.not.deleted.message',args:[message(code:'org.department.label'),department.name]))
-                        redirect(url: request.getHeader('referer'))
-                    }
-                }
+            params.list('selectedOrgs').each { soId ->
+                def cmb = Combo.findWhere(
+                        toOrg: result.institution,
+                        fromOrg: Org.get(Long.parseLong(soId)),
+                        type: RDStore.COMBO_TYPE_CONSORTIUM
+                )
+                cmb.delete()
             }
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
@@ -2935,14 +2916,8 @@ AND EXISTS (
         String header
         String exportHeader
 
-        if(result.comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
-            header = message(code: 'menu.my.consortia')
-            exportHeader = message(code: 'export.my.consortia')
-        }
-        else if(result.comboType == RDStore.COMBO_TYPE_DEPARTMENT) {
-            header = g.message(code: 'menu.my.departments')
-            exportHeader = message(code: 'export.my.departments')
-        }
+        header = message(code: 'menu.my.consortia')
+        exportHeader = message(code: 'export.my.consortia')
         SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
         // Write the output to a file
         String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
@@ -2975,18 +2950,6 @@ AND EXISTS (
                     out.close()
                 }
             }
-        }
-    }
-
-    @DebugAnnotation(perm="ORG_INST_COLLECTIVE", affil="INST_ADM", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
-    def removeDepartment() {
-        Org department = Org.get(params.dept)
-        if(organisationService.removeDepartment(department))
-            redirect action: 'manageMembers'
-        else {
-            flash.error(message(code:'default.not.deleted.message',args:[message(code:'org.department.label'),department.name]))
-            redirect(url: request.getHeader('referer'))
         }
     }
 

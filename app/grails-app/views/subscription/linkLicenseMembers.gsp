@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.Links; com.k_int.kbplus.Person; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.Links; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -62,7 +62,7 @@
     <div class="ui segment">
     <g:form action="processLinkLicenseMembers" method="post" class="ui form">
         <g:hiddenField name="id" value="${params.id}"/>
-
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <div class="field required">
             <h4>${message(code: 'subscription.linkLicenseMembers.info', args: args.memberType)}</h4>

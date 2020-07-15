@@ -127,17 +127,17 @@
 <!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
 <div class="ui card la-dl-no-table ">
     <div class="content">
-        <h5 class="ui header">${message(code:'subscription.properties.private')} ${institution.name}</h5>
-        <div id="custom_props_div_${institution.id}">
+        <h5 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h5>
+        <div id="custom_props_div_${contextOrg.id}">
             <g:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscriptionInstance,
-                    custom_props_div: "custom_props_div_${institution.id}",
-                    tenant: institution]}"/>
+                    custom_props_div: "custom_props_div_${contextOrg.id}",
+                    tenant: contextOrg]}"/>
 
             <r:script>
                     $(document).ready(function(){
-                           c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
+                           c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
                     });
             </r:script>
         </div>
