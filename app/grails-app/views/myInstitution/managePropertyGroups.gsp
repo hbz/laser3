@@ -50,13 +50,16 @@
                     <td>
                         <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
                         <g:if test="${pdGroup.ownerType == License.class.name}">
-                            <g:message code="propertyDefinition.License Property.label" default="${pdDescr}"/>
+                            <g:message code="propertyDefinition.License Property.label"/>
                         </g:if>
                         <g:elseif test="${pdGroup.ownerType == Org.class.name}">
-                            <g:message code="propertyDefinition.Organisation Property.label" default="${pdDescr}"/>
+                            <g:message code="propertyDefinition.Organisation Property.label"/>
                         </g:elseif>
                         <g:elseif test="${pdGroup.ownerType == Subscription.class.name}">
-                            <g:message code="propertyDefinition.Subscription Property.label" default="${pdDescr}"/>
+                            <g:message code="propertyDefinition.Subscription Property.label"/>
+                        </g:elseif>
+                        <g:elseif test="${pdGroup.ownerType == Platform.class.name}">
+                            <g:message code="propertyDefinition.Platform Property.label"/>
                         </g:elseif>
                         <%-- TODO: REFACTORING x.class.name with pd.desc --%>
                     </td>
@@ -85,15 +88,7 @@
         </tbody>
     </table>
 
-    <g:render template="/templates/properties/propertyGroupModal"/>
-
     <script>
-        r2d2.initDynamicSemuiStuff('#propDefGroupModal');
-        r2d2.initDynamicXEditableStuff('#propDefGroupModal');
-        $("html").css("cursor", "auto");
-    </script>
-
-    <%--<script>
         $('.trigger-modal').on('click', function(e) {
             e.preventDefault();
 
@@ -108,7 +103,24 @@
                         r2d2.initDynamicSemuiStuff('#propDefGroupModal');
                         r2d2.initDynamicXEditableStuff('#propDefGroupModal');
                         $("html").css("cursor", "auto");
-                        ajaxPostFunc()
+                        var prop_descr_selector_controller = {
+                            init: function () {
+                                $('#propDefGroupModal #prop_descr_selector').on('change', function () {
+                                    prop_descr_selector_controller.changeTable($(this).val())
+                                })
+
+                                $('#propDefGroupModal #prop_descr_selector').trigger('change')
+                            },
+                            changeTable: function (target) {
+                                $('#propDefGroupModal .table').addClass('hidden')
+                                $('#propDefGroupModal .table input').attr('disabled', 'disabled')
+
+                                $('#propDefGroupModal .table[data-propDefTable="' + target + '"]').removeClass('hidden')
+                                $('#propDefGroupModal .table[data-propDefTable="' + target + '"] input').removeAttr('disabled')
+                            }
+                        }
+                        prop_descr_selector_controller.init();
+                        setTimeout( function(){ $(window).trigger('resize')}, 500);
                     },
                     detachable: true,
                     autofocus: false,
@@ -121,7 +133,7 @@
                 }).modal('show');
             })
         })
-    </script>--%>
+    </script>
 
   </body>
 </html>
