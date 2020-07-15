@@ -123,8 +123,8 @@ class User {
   }
 
     @Transient List<Org> getAuthorizedOrgs() {
-        String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
-        Org.executeQuery(qry, [this]);
+        String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user and ( uo.status=1 or uo.status=3)) order by o.name"
+        Org.executeQuery(qry, [user: this])
     }
     @Transient def getAuthorizedOrgsIds() {
         getAuthorizedOrgs().collect{ it.id }

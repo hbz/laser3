@@ -27,7 +27,7 @@ class DashboardDueDatesService {
     String from
     String replyTo
     boolean update_running = false
-    private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
+    private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user and ( uo.status=1 or uo.status=3)) order by o.name"
 
     @javax.annotation.PostConstruct
     void init() {
@@ -84,7 +84,7 @@ class DashboardDueDatesService {
         List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
 //        List<User> users = [User.get(96)]
         users.each { user ->
-            List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
+            List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, [user: user])
             orgs.each {org ->
                 List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
                 dueObjects.each { obj ->
@@ -150,7 +150,7 @@ class DashboardDueDatesService {
             users.each { user ->
                 boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
                 if (userWantsEmailReminder) {
-                    List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
+                    List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, [user: user])
                     orgs.each { org ->
                         List<DashboardDueDate> dashboardEntries = DashboardDueDatesService.getDashboardDueDates(user, org, false, false)
                         sendEmail(user, org, dashboardEntries)

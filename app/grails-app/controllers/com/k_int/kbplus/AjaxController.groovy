@@ -10,7 +10,7 @@ import de.laser.AuditConfig
 import de.laser.DashboardDueDate
 import de.laser.DashboardDueDatesService
 import de.laser.DueDateObject
-import de.laser.base.AbstractI10nOverride
+import de.laser.base.AbstractI10n
 import de.laser.base.AbstractI10nTranslatable
 import de.laser.I10nTranslation
 import de.laser.SystemProfiler
@@ -619,7 +619,7 @@ class AjaxController {
             if ( it instanceof AbstractI10nTranslatable) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
-            else if ( it instanceof AbstractI10nOverride) {
+            else if ( it instanceof AbstractI10n) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
             else {
@@ -770,7 +770,7 @@ class AjaxController {
               if (it instanceof AbstractI10nTranslatable) {
                   result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
               }
-              else if (it instanceof AbstractI10nOverride) {
+              else if (it instanceof AbstractI10n) {
                   result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
               }
               else {
