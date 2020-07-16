@@ -120,6 +120,10 @@ class PropertyService {
 
             if (dc.shortName.endsWith('Property') && !SurveyProperty.class.name.contains(dc.name)) {
 
+                if (dc.shortName.endsWith('CustomProperty') || dc.shortName.endsWith('PrivateProperty')) {
+                    return // tmp. workaround
+                }
+
                 //log.debug( dc.shortName )
                 String query = "SELECT DISTINCT type FROM " + dc.name
                 //log.debug(query)
@@ -191,20 +195,22 @@ class PropertyService {
 
         sorted.each{ List entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
 
-        switch (obj.class.simpleName) {
+        if (! orphanedIds.isEmpty()) {
+            switch (obj.class.simpleName) {
 
-            case License.class.simpleName:
-                result = LicenseProperty.findAllByIdInList(orphanedIds)
-                break
-            case Subscription.class.simpleName:
-                result = SubscriptionProperty.findAllByIdInList(orphanedIds)
-                break
-            case Org.class.simpleName:
-                result = OrgProperty.findAllByIdInList(orphanedIds)
-                break
-            case Platform.class.simpleName:
-                result = PlatformProperty.findAllByIdInList(orphanedIds)
-                break
+                case License.class.simpleName:
+                    result = LicenseProperty.findAllByIdInList(orphanedIds)
+                    break
+                case Subscription.class.simpleName:
+                    result = SubscriptionProperty.findAllByIdInList(orphanedIds)
+                    break
+                case Org.class.simpleName:
+                    result = OrgProperty.findAllByIdInList(orphanedIds)
+                    break
+                case Platform.class.simpleName:
+                    result = PlatformProperty.findAllByIdInList(orphanedIds)
+                    break
+            }
         }
 
         log.debug('object             : ' + obj.class.simpleName + ' - ' + obj)
