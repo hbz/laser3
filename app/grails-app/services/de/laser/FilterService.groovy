@@ -2,11 +2,9 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
-import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.springframework.context.i18n.LocaleContextHolder
 
-import javax.annotation.PostConstruct
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
@@ -462,7 +460,7 @@ class FilterService {
             queryParams << [status: RDStore.SURVEY_COMPLETED]
         }
 
-        String defaultOrder = " order by " + (params.sort ?: " surInfo.endDate DESC, LOWER(surInfo.name) ") + " " + (params.order ?: "asc")
+        String defaultOrder = " order by " + (params.sort ?: " surInfo.endDate ASC, LOWER(surInfo.name) ") + " " + (params.order ?: "asc")
 
         /*if (query.size() > 0) {
             result.query = "select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and " + query.join(" and ") + defaultOrder
@@ -707,7 +705,7 @@ class FilterService {
         }
 
 
-        String defaultOrder = " order by " + (params.sort ?: " surInfo.endDate DESC, LOWER(surInfo.name)") + " " + (params.order ?: "asc")
+        String defaultOrder = " order by " + (params.sort ?: " surInfo.endDate ASC, LOWER(surInfo.name) ") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
             result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where " + query.join(" and ") + defaultOrder
