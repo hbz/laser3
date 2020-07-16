@@ -505,7 +505,7 @@ class SurveyController {
         }
 
         Subscription subscription = Subscription.get(Long.parseLong(params.sub))
-        boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true) || subscription.getCalculatedSuccessor()) ? false : (params.subSurveyUseForTransfer ? true : false)
+        boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) ? false : (params.subSurveyUseForTransfer ? true : false)
 
         SurveyInfo surveyInfo = new SurveyInfo(
                 name: params.name,
@@ -888,7 +888,7 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        def surveyOrgs = result.surveyConfig.getSurveyOrgsIDs()
+        def surveyOrgs = result.surveyConfig?.getSurveyOrgsIDs()
 
         result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
@@ -1554,20 +1554,26 @@ class SurveyController {
                 }
                 result.visibleOrgRelations.sort { it.org.sortname }
 
+            //costs dataToDisplay
+            result.dataToDisplay = ['subscr']
+            result.offsets = [subscrOffset:0]
+            result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
+            //result.dataToDisplay = ['consAtSubscr']
+            //result.offsets = [consOffset:0]
+            //result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
 
-                //costs dataToDisplay
-                result.dataToDisplay = ['consAtSubscr']
-                result.offsets = [consOffset: 0]
-                result.sortConfig = [consSort: 'ci.costTitle', consOrder: 'asc']
-
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
-                //cost items
-                //params.forExport = true
-                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
-                if (costItems.cons) {
-                    result.costItemSums.consCosts = costItems.cons.sums
-                }
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            //cost items
+            //params.forExport = true
+            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+            result.costItemSums = [:]
+            /*if (costItems?.cons) {
+                result.costItemSums.consCosts = costItems.cons.sums
+            }*/
+            if (costItems?.subscr) {
+                result.costItemSums.subscrCosts = costItems.subscr.costItems
             }
+        }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()

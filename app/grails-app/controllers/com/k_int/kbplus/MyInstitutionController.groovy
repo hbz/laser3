@@ -3459,14 +3459,24 @@ AND EXISTS (
     Map<String, Object> managePrivatePropertyDefinitions() {
         Map<String, Object> result = setResultGenerics()
 
-        if('add' == params.cmd) {
-            List rl = addPrivatePropertyDefinition(params)
-            flash."${rl[0]}" = rl[1]
+        switch(params.cmd) {
+            case 'add':List rl = addPrivatePropertyDefinition(params)
+                flash."${rl[0]}" = rl[1]
+                break
+            case 'toggleMandatory':
+                PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+                pd.mandatory = !pd.mandatory
+                pd.save()
+                break
+            case 'toggleMultipleOccurrence':
+                PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+                pd.multipleOccurrence = !pd.multipleOccurrence
+                pd.save()
+                break
+            case 'delete': flash.message = deletePrivatePropertyDefinition(params)
+                break
         }
 
-        else if('delete' == params.cmd) {
-            flash.message = deletePrivatePropertyDefinition(params)
-        }
         result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
         Map<String, Set<PropertyDefinition>> propDefs = [:]

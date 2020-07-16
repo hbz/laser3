@@ -12,23 +12,21 @@
     <semui:breadcrumbs>
         <semui:crumb message="menu.institutions.manage_props" class="active" />
     </semui:breadcrumbs>
+
+    <semui:controlButtons>
+        <g:render template="actions"/>
+    </semui:controlButtons>
+
     <br>
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
+
 
     <g:render template="nav" />
 
     <semui:messages data="${flash}" />
 
-    <g:if test="${editable}">
-        <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
-               data-semui="modal" data-href="#addPropertyDefinitionModal" type="submit">
-    </g:if>
-
     <g:if test="${propertyDefinitions}">
 
-        <div class="ui info message">
-            ${message(code:'propertyDefinition.private.info')}
-        </div>
         <div class="ui styled fluid accordion">
             <g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
@@ -106,26 +104,26 @@
                                         <g:if test="${editable}">
                                             <td class="x">
                                                 <g:if test="${pd.mandatory}">
-                                                    <g:link action="managePropertyDefinitions"
+                                                    <g:link action="managePrivatePropertyDefinitions"
                                                             params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon yellow button">
                                                         <i class="star icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:link action="managePropertyDefinitions"
+                                                    <g:link action="managePrivatePropertyDefinitions"
                                                             params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
                                                         <i class="star yellow icon"></i>
                                                     </g:link>
                                                 </g:else>
                                                 <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                     <g:if test="${pd.multipleOccurrence}">
-                                                        <g:link action="managePropertyDefinitions"
+                                                        <g:link action="managePrivatePropertyDefinitions"
                                                                 params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon orange button">
                                                             <i class="redo slash icon"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
-                                                        <g:link action="managePropertyDefinitions"
+                                                        <g:link action="managePrivatePropertyDefinitions"
                                                                 params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
                                                             <i class="redo orange icon"></i>
                                                         </g:link>
