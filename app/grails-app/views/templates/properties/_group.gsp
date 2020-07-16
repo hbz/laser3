@@ -120,7 +120,7 @@
                                                       id="${prop.id}"
                                                       data-content="${message(code:'property.audit.off.tooltip')}"
                                                       data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}','#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                      data-always="c3po.loadJsAfterAjax()"
                                                       data-update="${custom_props_div}"
                                                       role="button"
                                     >
@@ -144,7 +144,7 @@
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [prop.type.getI10n('name')])}"
                                                       data-confirm-term-how="inherit"
                                                       data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                      data-always="c3po.loadJsAfterAjax()"
                                                       data-update="${custom_props_div}"
                                                       role="button"
                                     >
@@ -157,7 +157,7 @@
                                     <laser:remoteLink class="ui orange icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                      data-always="c3po.loadJsAfterAjax()"
                                                       data-update="${custom_props_div}">
                                         <i class="icon eye la-js-editmode-icon"></i>
                                     </laser:remoteLink>
@@ -166,7 +166,7 @@
                                     <laser:remoteLink class="ui icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                      data-always="c3po.loadJsAfterAjax()"
                                                       data-update="${custom_props_div}">
                                         <i class="icon eye slash la-js-editmode-icon"></i>
                                     </laser:remoteLink>
@@ -190,7 +190,7 @@
                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                                                   data-confirm-term-how="delete"
                                                   data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                  data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                  data-always="c3po.loadJsAfterAjax()"
                                                   data-update="${custom_props_div}"
                                                   role="button"
                                 >
