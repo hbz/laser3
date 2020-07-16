@@ -3,22 +3,16 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.IssueEntitlementGroup
-import de.laser.domain.IssueEntitlementGroupItem
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.PriceItem
+import de.laser.domain.*
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
-import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.CalculatedType
+import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
@@ -4686,8 +4680,8 @@ class SubscriptionController extends AbstractDebugController {
             def sub_startDate = params.subscription.start_date ? parseDate(params.subscription.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription.end_date ? parseDate(params.subscription.end_date, possible_date_formats) : null
             def sub_status = params.subStatus ?: RDStore.SUBSCRIPTION_NO_STATUS
-            def sub_type = params.subType
-            /*def sub_kind = params.subKind ?: null
+            /*def sub_type = params.subType
+            def sub_kind = params.subKind ?: null
             def sub_form = params.subForm ?: null
             def sub_resource = params.subResource ?: null
             def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
@@ -4706,7 +4700,7 @@ class SubscriptionController extends AbstractDebugController {
                     manualCancellationDate: manualCancellationDate,
                     identifier: UUID.randomUUID().toString(),
                     isSlaved: baseSub.isSlaved,
-                    type: sub_type,
+                    type: baseSub.type,
                     status: sub_status,
                     /*kind: sub_kind,
                     resource: sub_resource,
@@ -4869,7 +4863,7 @@ class SubscriptionController extends AbstractDebugController {
                 subTypSubscriberVisible.contains(result.targetSubscription.getCalculatedType())
 
         if (! result.isSubscriberVisible) {
-            flash.message += message(code: 'subscription.info.subscriberNotAvailable')
+            //flash.message += message(code: 'subscription.info.subscriberNotAvailable')
         }
 
         switch (params.workFlowPart) {
@@ -5099,13 +5093,13 @@ class SubscriptionController extends AbstractDebugController {
 
         if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
             if(!subscriptionService.setOrgLicRole(newSub, null)) {
-                Object[] args = [newSub]
-                flash.error += message(code:'default.save.error.message',args:args)
+                Object[] args = [message(code:'license.label')]
+                flash.error += message(code:'default.delete.error.message',args:args)
             }
             //isTargetSubChanged = true
         }else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
             if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
-                Object[] args = [newSub]
+                Object[] args = [message(code:'license.label')]
                 flash.error += message(code:'default.save.error.message',args:args)
             }
             //isTargetSubChanged = true

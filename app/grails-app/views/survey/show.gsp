@@ -81,7 +81,9 @@
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.type.label')}</dt>
                             <dd>
-                                ${surveyInfo.type.getI10n('value')}
+                                <div class="ui label left pointing survey-${surveyInfo.type.value}">
+                                    ${surveyInfo.type.getI10n('value')}
+                                </div>
                             </dd>
 
                         </dl>
@@ -197,6 +199,22 @@
                 <p><b>${message(code: 'surveyConfigs.noConfigList')}</b></p>
             </g:else>
         </div>
+
+        <br>
+        <br>
+
+        <g:form action="surveyConfigFinish" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+
+            <div class="ui right floated compact segment">
+                <div class="ui checkbox">
+                    <input type="checkbox" onchange="this.form.submit()"
+                           name="configFinish" ${surveyConfig.configFinish ? 'checked' : ''}>
+                    <label><g:message code="surveyConfig.configFinish.label"/></label>
+                </div>
+            </div>
+
+        </g:form>
 
     </div><!-- .twelve -->
 

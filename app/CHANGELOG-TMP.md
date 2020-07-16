@@ -2,6 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      15.07.2020  rc1.4       Moe     Bug         Sortierung Umfrage
+
+--      15.07.2020  rc1.4       Moe     Bug         Für die Umfrage wieder das ConfigFinish Flag anzeigen
+
+2688    15.07.2020  rc1.4       Moe     Bug         Manuell Verlängerung: Vererbung wird nicht an Teilnehmer weitergereicht!	
+
+2687    15.07.2020  rc1.4       Moe     Bug         Hotfix: Umfrage wird nicht zur Verländerungsumfrage
+
+--      15.07.2020  rc1.4       Moe     Bug         Bug bei Kostenanzeigen in der Umfragesicht eine Teilnehmer für die Konsortialstelle
+
 2459    07.07.2020  rc1.4       Moe     Bug         Beim Kopieren von Objekten werden Dokumenten nicht richtig kopiert
 
 2660    06.07.2020  rc1.4       Moe     Bug         API Endpunkt CostItemList muss alle CostItems zurückgeben

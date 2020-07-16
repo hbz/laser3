@@ -101,7 +101,7 @@ class AdminController extends AbstractDebugController {
                         flash.message = message(code: 'default.success')
                     }
                     else {
-                        flash.error = message(code: 'default.delete.error.message')
+                        flash.error = message(code: 'default.delete.error.general.message')
                     }
                 }
             }
