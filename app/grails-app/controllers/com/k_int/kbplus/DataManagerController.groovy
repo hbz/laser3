@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import de.laser.YodaService
 import de.laser.controller.AbstractDebugController
 import de.laser.MailTemplate
@@ -96,7 +97,7 @@ class DataManagerController extends AbstractDebugController {
     // From the list of users, extract and who have the INST_ADM role
     def rolesMa = []
     if ( auditActors )
-      rolesMa = com.k_int.kbplus.auth.UserOrg.executeQuery(
+      rolesMa = UserOrg.executeQuery(
         'select distinct(userorg.user.username) from UserOrg as userorg ' +
         'where userorg.formalRole = (:formal_role) and userorg.user.username in (:actors)',
         [formal_role:formal_role,actors:auditActors])

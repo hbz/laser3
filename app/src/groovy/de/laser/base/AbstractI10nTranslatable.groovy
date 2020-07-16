@@ -20,36 +20,28 @@ abstract class AbstractI10nTranslatable {
     }
     // get translation
     def getI10n(String property, String locale) {
-        def result
+        String result
         locale = I10nTranslation.decodeLocale(locale)
 
         if (I10nTranslation.supportedLocales.contains(locale)) {
-            result = this."${property}_${locale}"
+            String name = property + '_' + locale
+            if (this.hasProperty(name)) {
+                result = this."${name}"
+            }
+            else {
+                if (! i10nStorage.containsKey(name)) {
+                    String i10n = I10nTranslation.get(this, property, locale)
+                    String fallback = this."${property}"
+                    i10nStorage["${name}"] = (i10n ?: fallback)
+                }
+
+                return i10nStorage["${name}"]
+            }
         }
         else {
             result = "- requested locale ${locale} not supported -"
         }
-        result = (result != 'null') ? result : ''
-    }
-
-    // returning virtual property for template tags
-    def propertyMissing(String name) {
-        if (! i10nStorage.containsKey(name)) {
-
-            def parts = name.split("_")
-            if (parts.size() == 2) {
-                def fallback = this."${parts[0]}"
-                def i10n = I10nTranslation.get(this, parts[0], parts[1])
-                this."${name}" = (i10n ? i10n : "${fallback}")
-            }
-        }
-
-        i10nStorage["${name}"]
-    }
-
-    // setting virtual property
-    def propertyMissing(String name, def value) {
-        i10nStorage["${name}"] = value
+        return (result != 'null') ? result : ''
     }
 
     /** Suffix for DB Tables. Right now, there are only German and English Columns */

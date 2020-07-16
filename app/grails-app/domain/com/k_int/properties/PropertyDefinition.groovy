@@ -1,13 +1,11 @@
 package com.k_int.properties
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ContextService
-import de.laser.base.AbstractI10nOverride
+import de.laser.base.AbstractI10n
 import de.laser.I10nTranslation
 import de.laser.helper.SwissKnife
 import grails.util.Holders
@@ -23,7 +21,7 @@ import javax.validation.UnexpectedTypeException
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
-class PropertyDefinition extends AbstractI10nOverride implements Serializable, Comparable<PropertyDefinition> {
+class PropertyDefinition extends AbstractI10n implements Serializable, Comparable<PropertyDefinition> {
 
     static Log static_logger = LogFactory.getLog(PropertyDefinition)
 

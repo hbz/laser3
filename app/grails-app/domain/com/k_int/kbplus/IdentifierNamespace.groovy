@@ -1,13 +1,13 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractI10nOverride
+import de.laser.base.AbstractI10n
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 
-class IdentifierNamespace extends AbstractI10nOverride implements CalculatedLastUpdated {
+class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated {
 
     @Transient
     def cascadingUpdateService

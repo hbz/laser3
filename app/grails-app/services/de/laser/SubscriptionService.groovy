@@ -369,20 +369,20 @@ class SubscriptionService {
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         } else {
            /* tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))*/
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))*/
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
         result
     }
@@ -393,17 +393,17 @@ class SubscriptionService {
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         } else {
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
         result
     }
@@ -415,10 +415,10 @@ class SubscriptionService {
         if(accessService.checkPerm("ORG_INST")) {
 
             tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         }
         result
@@ -431,10 +431,10 @@ class SubscriptionService {
         if(accessService.checkPerm("ORG_INST")) {
 
             tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
 
         result
