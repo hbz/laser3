@@ -154,6 +154,38 @@ class SurveyService {
                 if ((sourceProp.id.toString() in auditProperties) && targetProp.isPublic) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+                        Subscription.findAllByInstanceOf(targetSub).each { member ->
+
+                            def existingProp = SubscriptionProperty.findByOwnerAndInstanceOf(member, targetProp)
+                            if (! existingProp) {
+
+                                // multi occurrence props; add one additional with backref
+                                if (sourceProp.type.multipleOccurrence) {
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                    additionalProp = targetProp.copyInto(additionalProp)
+                                    additionalProp.instanceOf = targetProp
+                                    additionalProp.save(flush: true)
+                                }
+                                else {
+                                    def matchingProps = SubscriptionProperty.findByOwnerAndType(member, targetProp.type)
+                                    // unbound prop found with matching type, set backref
+                                    if (matchingProps) {
+                                        matchingProps.each { memberProp ->
+                                            memberProp.instanceOf = targetProp
+                                            memberProp.save(flush: true)
+                                        }
+                                    }
+                                    else {
+                                        // no match found, creating new prop with backref
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                        newProp = targetProp.copyInto(newProp)
+                                        newProp.instanceOf = targetProp
+                                        newProp.save(flush: true)
+                                    }
+                                }
+                            }
+                        }
+
                         def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
