@@ -3939,7 +3939,9 @@ class SubscriptionController
                     default: localizedName = "name_en"
                         break
                 }
-                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc",[subscriptionSet:childSubs,context:result.institution])
+                String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
+
                 result.memberProperties = memberProperties
             }
         }
