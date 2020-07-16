@@ -127,7 +127,6 @@
                                                       params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
                                                       data-content="${message(code:'property.share.tooltip.on')}"
                                                       data-done=""
-                                                      data-always="bb8.init('#container-documents')"
                                                       data-update="container-documents"
                                                       role="button"
                                     >
@@ -142,9 +141,7 @@
                                                       data-content="${message(code:'property.share.tooltip.off')}"
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
                                                       data-confirm-term-how="share"
-
                                                       data-done=""
-                                                      data-always="bb8.init('#container-documents')"
                                                       data-update="container-documents"
                                                       role="button"
                                     >

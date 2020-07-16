@@ -42,6 +42,8 @@ bb8 = {
                 //console.log('done')
                 $(update).empty()
                 $(update).html(data)
+
+                bb8.init(update);
                 tooltip.go();
                 a11yMenu.go();
 

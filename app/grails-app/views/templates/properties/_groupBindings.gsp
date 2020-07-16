@@ -64,7 +64,7 @@
                             <g:if test="${editable}">
                                 <g:if test="${! binding}">
                                     <g:if test="${propDefGroup.isVisible}">
-                                        <g:remoteLink controller="ajax" action="addCustomPropertyGroupBinding"
+                                        <laser:remoteLink controller="ajax" action="addCustomPropertyGroupBinding"
                                                       params='[propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                                ownobj:"${ownobj.class.name}:${ownobj.id}",
                                                                isVisible:"No",
@@ -72,13 +72,13 @@
                                                                showConsortiaFunctions:"${showConsortiaFunctions}"
                                                                 ]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
-                                                      update="propDefGroupBindingConfig"
+                                                      data-update="propDefGroupBindingConfig"
                                                       class="ui icon button">
                                             Nicht anzeigen
-                                        </g:remoteLink>
+                                        </laser:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <g:remoteLink controller="ajax" action="addCustomPropertyGroupBinding"
+                                        <laser:remoteLink controller="ajax" action="addCustomPropertyGroupBinding"
                                                       params='[propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                                ownobj:"${ownobj.class.name}:${ownobj.id}",
                                                                isVisible:"Yes",
@@ -86,14 +86,14 @@
                                                                showConsortiaFunctions:"${showConsortiaFunctions}"
                                                                ]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
-                                                      update="propDefGroupBindingConfig"
+                                                      data-update="propDefGroupBindingConfig"
                                                       class="ui icon button">
                                             Anzeigen
-                                        </g:remoteLink>
+                                        </laser:remoteLink>
                                     </g:else>
                                 </g:if>
                                 <g:else>
-                                    <g:remoteLink controller="ajax" action="deleteCustomPropertyGroupBinding"
+                                    <laser:remoteLink controller="ajax" action="deleteCustomPropertyGroupBinding"
                                                   params='[propDefGroupBinding: "${binding.class.name}:${binding.id}",
                                                            propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                            ownobj:"${ownobj.class.name}:${ownobj.id}",
@@ -101,10 +101,10 @@
                                                            showConsortiaFunctions:"${showConsortiaFunctions}"
                                                   ]'
                                                   onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
-                                                  update="propDefGroupBindingConfig"
+                                                  data-update="propDefGroupBindingConfig"
                                                   class="ui icon negative button">
                                         <i class="icon times"></i>
-                                    </g:remoteLink>
+                                    </laser:remoteLink>
                                 </g:else>
                             </g:if>
                         </td>
