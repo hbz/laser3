@@ -12,6 +12,10 @@
     <semui:breadcrumbs>
         <semui:crumb message="menu.institutions.manage_props" class="active" />
     </semui:breadcrumbs>
+
+    <semui:controlButtons>
+        <g:render template="actions"/>
+    </semui:controlButtons>
     <br>
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
 
@@ -19,19 +23,6 @@
 
     <semui:messages data="${flash}" />
 
-    <g:if test="${false}">
-        <div class="content ui form">
-            <div class="fields">
-                <div class="field">
-                    <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
-                </div>
-            </div>
-        </div>
-    </g:if>
-    <g:else>
-        <br />
-        <br />
-    </g:else>
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">

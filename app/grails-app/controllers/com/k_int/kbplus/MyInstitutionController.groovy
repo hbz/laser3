@@ -3458,14 +3458,24 @@ AND EXISTS (
     Map<String, Object> managePrivatePropertyDefinitions() {
         Map<String, Object> result = setResultGenerics()
 
-        if('add' == params.cmd) {
-            List rl = addPrivatePropertyDefinition(params)
-            flash."${rl[0]}" = rl[1]
+        switch(params.cmd) {
+            case 'add':List rl = addPrivatePropertyDefinition(params)
+                flash."${rl[0]}" = rl[1]
+                break
+            case 'toggleMandatory':
+                PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+                pd.mandatory = !pd.mandatory
+                pd.save()
+                break
+            case 'toggleMultipleOccurrence':
+                PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+                pd.multipleOccurrence = !pd.multipleOccurrence
+                pd.save()
+                break
+            case 'delete': flash.message = deletePrivatePropertyDefinition(params)
+                break
         }
 
-        else if('delete' == params.cmd) {
-            flash.message = deletePrivatePropertyDefinition(params)
-        }
         result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
@@ -3490,31 +3500,6 @@ AND EXISTS (
     })
     Object managePropertyDefinitions() {
         Map<String,Object> result = setResultGenerics()
-
-        if(params.pd) {
-            PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
-            if (pd) {
-                switch(params.cmd) {
-                    case 'toggleMandatory': pd.mandatory = !pd.mandatory
-                        pd.save()
-                        break
-                    case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
-                        pd.save()
-                        break
-                    case 'deletePropertyDefinition':
-                        if (! pd.isHardData) {
-                            try {
-                                pd.delete()
-                                flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
-                            }
-                            catch(Exception e) {
-                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
-                            }
-                        }
-                        break
-                }
-            }
-        }
 
         result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
         Map<String,Set<PropertyDefinition>> propDefs = [:]

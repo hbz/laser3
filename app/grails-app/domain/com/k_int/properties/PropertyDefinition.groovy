@@ -49,12 +49,14 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             SUB_PROP,
             PLA_PROP,
             ORG_PROP,
+            PRS_PROP,
             SUR_PROP
     ]
     @Transient
     final static String[] AVAILABLE_PRIVATE_DESCR = [
             LIC_PROP,
             SUB_PROP,
+            PLA_PROP,
             ORG_PROP,
             PRS_PROP,
             SUR_PROP
@@ -64,7 +66,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     final static String[] AVAILABLE_GROUPS_DESCR = [
             LIC_PROP,
             SUB_PROP,
-            ORG_PROP
+            ORG_PROP,
+            PLA_PROP
     ]
 
     String name
