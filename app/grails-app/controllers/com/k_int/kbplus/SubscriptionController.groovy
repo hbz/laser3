@@ -4537,8 +4537,8 @@ class SubscriptionController
             def sub_startDate = params.subscription.start_date ? parseDate(params.subscription.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription.end_date ? parseDate(params.subscription.end_date, possible_date_formats) : null
             def sub_status = params.subStatus ?: RDStore.SUBSCRIPTION_NO_STATUS
-            def sub_type = params.subType
-            /*def sub_kind = params.subKind ?: null
+            /*def sub_type = params.subType
+            def sub_kind = params.subKind ?: null
             def sub_form = params.subForm ?: null
             def sub_resource = params.subResource ?: null
             def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
@@ -4557,7 +4557,7 @@ class SubscriptionController
                     manualCancellationDate: manualCancellationDate,
                     identifier: UUID.randomUUID().toString(),
                     isSlaved: baseSub.isSlaved,
-                    type: sub_type,
+                    type: baseSub.type,
                     status: sub_status,
                     /*kind: sub_kind,
                     resource: sub_resource,
@@ -4717,7 +4717,7 @@ class SubscriptionController
                 subTypSubscriberVisible.contains(result.targetSubscription.getCalculatedType())
 
         if (! result.isSubscriberVisible) {
-            flash.message += message(code: 'subscription.info.subscriberNotAvailable')
+            //flash.message += message(code: 'subscription.info.subscriberNotAvailable')
         }
 
         switch (params.workFlowPart) {
