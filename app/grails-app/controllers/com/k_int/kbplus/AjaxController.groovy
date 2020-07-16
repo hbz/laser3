@@ -2350,14 +2350,14 @@ class AjaxController {
         Set result = []
         if (params.orgIdList){
             List<Long> orgIds = params.orgIdList.split ','
-            List<Org> orgList = Org.findAllByIdInList(orgIds)
+            List<Org> orgList = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds)
             boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
             boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
 
             List<RefdataValue> selectedRoleTypes = null
             if (params.selectedRoleTypIds) {
                 List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
-                selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
+                selectedRoleTypes = selectedRoleTypIds.isEmpty() ? [] : RefdataValue.findAllByIdInList(selectedRoleTypIds)
             }
 
             String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "

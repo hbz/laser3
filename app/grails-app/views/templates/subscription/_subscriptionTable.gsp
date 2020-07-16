@@ -175,10 +175,10 @@
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
                                     <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(childSubs, institution, RDStore.COST_ITEM_DELETED)?.size()}
+                                        ${childSubs.isEmpty() ? 0 : CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(childSubs, institution, RDStore.COST_ITEM_DELETED).size()}
                                     </g:if>
                                     <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST_COLLECTIVE'}">
-                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(childSubs, institution, RDStore.COST_ITEM_DELETED,true)?.size()}
+                                        ${childSubs.isEmpty() ? 0 : CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(childSubs, institution, RDStore.COST_ITEM_DELETED,true).size()}
                                     </g:elseif>
                                 </g:link>
                             </td>

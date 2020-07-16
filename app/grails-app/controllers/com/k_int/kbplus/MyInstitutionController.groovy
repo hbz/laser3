@@ -481,7 +481,7 @@ class MyInstitutionController extends AbstractDebugController {
                 g.message(code:'license.endDate')
         ]
         Map<License,Set<License>> licChildMap = [:]
-        List<License> childLicsOfSet = License.findAllByInstanceOfInList(totalLicenses)
+        List<License> childLicsOfSet = totalLicenses.isEmpty() ? [] : License.findAllByInstanceOfInList(totalLicenses)
         childLicsOfSet.each { License child ->
             Set<License> children = licChildMap.get(child.instanceOf)
             if(!children)
@@ -878,7 +878,7 @@ join sub.orgRelations or_sub where
         membershipCounts.each { row ->
             subscriptionMembers.put(row[1],row[0])
         }
-        List<Subscription> childSubsOfSet = Subscription.findAllByInstanceOfInList(subscriptions)
+        List<Subscription> childSubsOfSet = subscriptions.isEmpty() ? [] : Subscription.findAllByInstanceOfInList(subscriptions)
         childSubsOfSet.each { Subscription child ->
             Set<Subscription> children = subChildMap.get(child.instanceOf)
             if(!children)
@@ -2240,7 +2240,7 @@ AND EXISTS (
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIBER_CONS, 'activeInst': result.institution])
