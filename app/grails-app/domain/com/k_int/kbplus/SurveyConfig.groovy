@@ -131,7 +131,7 @@ class SurveyConfig {
     ]
 
     static getLocalizedValue(key) {
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
         //println locale
         if (SurveyConfig.validTypes.containsKey(key)) {

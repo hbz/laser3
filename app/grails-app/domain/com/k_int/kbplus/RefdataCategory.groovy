@@ -95,7 +95,7 @@ class RefdataCategory extends AbstractI10n {
           matches = RefdataCategory.findAll()
       }
       else {
-          switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+          switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
               case 'en':
                   matches = RefdataCategory.findAllByDesc_enIlike("%${params.q}%")
                   break

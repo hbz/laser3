@@ -351,7 +351,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         List<PropertyDefinition> matches = []
 
-        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
             case 'en':
                 matches = PropertyDefinition.findAllByDescrAndName_enIlike(params.desc, "%${params.q}%")
                 break
@@ -488,7 +488,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     static getLocalizedValue(key){
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
         //println locale
         if (PropertyDefinition.validTypes2.containsKey(key)) {

@@ -7,9 +7,9 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDatesService
+import de.laser.I10nTranslation
 import de.laser.LinksGenerationService
 import de.laser.SystemAnnouncement
-import de.laser.base.AbstractI10nTranslatable
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
 import grails.converters.JSON
@@ -30,6 +30,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.mozilla.universalchardet.UniversalDetector
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -3466,7 +3467,8 @@ AND EXISTS (
         else if('delete' == params.cmd) {
             flash.message = deletePrivatePropertyDefinition(params)
         }
-        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
+        result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
@@ -3516,7 +3518,8 @@ AND EXISTS (
             }
         }
 
-        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
+        result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!
