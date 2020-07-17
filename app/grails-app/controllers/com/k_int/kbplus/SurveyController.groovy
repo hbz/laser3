@@ -82,7 +82,7 @@ class SurveyController {
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
@@ -304,7 +304,7 @@ class SurveyController {
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
@@ -385,7 +385,7 @@ class SurveyController {
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
@@ -2174,7 +2174,8 @@ class SurveyController {
 
         if (params.get('orgsIDs')) {
             List idList = (params.get('orgsIDs')?.split(',').collect { Long.valueOf(it.trim()) }).toList()
-            result.surveyOrgList = SurveyOrg.findAllByOrgInListAndSurveyConfig(Org.findAllByIdInList(idList), result.surveyConfig)
+            List<Org> orgList = Org.findAllByIdInList(idList)
+            result.surveyOrgList = orgList.isEmpty() ? [] : SurveyOrg.findAllByOrgInListAndSurveyConfig(orgList, result.surveyConfig)
         }
 
         render(template: "/survey/costItemModal", model: result)
@@ -2607,7 +2608,7 @@ class SurveyController {
 
             List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.org)
 
-            result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
+            result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
             def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
             result.filterSet = tmpQ[2]
@@ -3433,7 +3434,7 @@ class SurveyController {
 
         if (params.get('orgListIDs')) {
             List idList = (params.get('orgListIDs').split(',').collect { Long.valueOf(it.trim()) }).toList()
-            result.orgList = Org.findAllByIdInList(idList)
+            result.orgList = idList.isEmpty() ? [] : Org.findAllByIdInList(idList)
         }
 
         render(template: "/templates/copyEmailaddresses", model: result)

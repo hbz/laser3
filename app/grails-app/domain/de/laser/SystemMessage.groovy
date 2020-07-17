@@ -46,7 +46,7 @@ class SystemMessage {
     }
 
     String getLocalizedContent() {
-        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
             case 'de':
                 return content_de
                 break;
