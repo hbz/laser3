@@ -24,7 +24,7 @@
         <g:if test="${sp.pkg.contentProvider}">
           (${sp.pkg.contentProvider.name})
         </g:if>
-        <g:if test="${packageMetadata.records?.get(0)?.curatoryGroups}">
+        <g:if test="${packageMetadata.records.size() > 0}">
           <p>
             <em><g:message code="subscription.packages.curatoryGroups"/>
               <ul>

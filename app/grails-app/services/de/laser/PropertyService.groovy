@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
+import de.laser.interfaces.CalculatedType
 import grails.transaction.Transactional
 
 @Transactional
@@ -31,7 +32,7 @@ class PropertyService {
 
         if (params.filterPropDef) {
             PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
-            base_qry += " and ( exists ( select gProp from ${hqlVar}.propertySet as gProp where gProp.type = :propDef and gProp.tenant = :tenant "
+            base_qry += ' and ( exists ( select gProp from '+hqlVar+'.propertySet as gProp where gProp.type = :propDef and gProp.tenant = :tenant '
             base_qry_params.put('propDef', pd)
             base_qry_params.put('tenant', contextService.org)
             if(params.filterProp) {
@@ -163,6 +164,41 @@ class PropertyService {
         }
 
         result
+    }
+
+    Map<String,Object> processObjects(obj,Org contextOrg,PropertyDefinition propDef) {
+        Map<String,Object> objMap = [id:obj.id,propertySet:obj.propertySet,displayAction:"show"]
+        if(obj instanceof Subscription) {
+            Subscription s = (Subscription) obj
+            objMap.name = s.dropdownNamingConvention(contextOrg)
+            if(s.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+                objMap.subscriber = s.getSubscriber()
+            objMap.displayController = "subscription"
+            objMap.manageChildren = "propertiesMembers"
+            objMap.manageChildrenParams = [id:s.id,filterPropDef:GenericOIDService.getOID(propDef)]
+        }
+        else if(obj instanceof License) {
+            License l = (License) obj
+            objMap.name = l.dropdownNamingConvention()
+            objMap.displayController = "license"
+        }
+        else if(obj instanceof Org) {
+            Org o = (Org) obj
+            objMap.name = o.name
+            objMap.sortname = o.sortname
+            objMap.displayController = "org"
+        }
+        else if(obj instanceof Platform) {
+            Platform p = (Platform) obj
+            objMap.name = p.name
+            objMap.displayController = "platform"
+        }
+        else if(obj instanceof Person) {
+            Person p = (Person) obj
+            objMap.name = "${p.title} ${p.last_name}, ${p.first_name}"
+            objMap.displayController = "person"
+        }
+        objMap
     }
 
     def replacePropertyDefinitions(PropertyDefinition pdFrom, PropertyDefinition pdTo) {

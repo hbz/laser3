@@ -112,27 +112,29 @@ class SubscriptionService {
             subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         }
         result.allSubscriptions = subscriptions
-        du.setBenchmark('fetch licenses')
+        /*du.setBenchmark('fetch licenses')
         result.allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
-        /*du.setBenchmark('process licenses')
+        du.setBenchmark('process licenses')
         allLinkedLicenses.each { Links li ->
             Set<String> linkedLicenses = result.allLinkedLicenses.get(li.destination)
             if(!linkedLicenses)
                 linkedLicenses = []
             linkedLicenses << li.source
             result.allLinkedLicenses.put(li.destination,linkedLicenses)
-        }*/
-        du.setBenchmark('after licenses')
+        }
+        du.setBenchmark('after licenses')*/
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
 
         result.date_restriction = date_restriction
         du.setBenchmark('get properties')
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
+        /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
         if (OrgSettings.get(contextOrg, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
             result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
         }
+         */
         du.setBenchmark('end properties')
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         List bm = du.stopBenchmark()
