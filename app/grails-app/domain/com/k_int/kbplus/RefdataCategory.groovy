@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractI10nOverride
+import de.laser.base.AbstractI10n
 import de.laser.I10nTranslation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
-class RefdataCategory extends AbstractI10nOverride {
+class RefdataCategory extends AbstractI10n {
 
     static Log static_logger = LogFactory.getLog(RefdataCategory)
 
@@ -95,7 +95,7 @@ class RefdataCategory extends AbstractI10nOverride {
           matches = RefdataCategory.findAll()
       }
       else {
-          switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+          switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
               case 'en':
                   matches = RefdataCategory.findAllByDesc_enIlike("%${params.q}%")
                   break

@@ -1,57 +1,48 @@
-package de.laser.base
+package de.laser.traits
 
 import de.laser.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
 
-abstract class AbstractI10nOverride {
+trait I10nTrait {
     public static final LOCALE_DE = Locale.GERMAN.toString()
     public static final LOCALE_EN = Locale.ENGLISH.toString()
 
-    protected i10nStorage = [:]
+    private i10nStorage = [:]
 
-    // get translation; current locale
     def getI10n(String property) {
-        getI10n(property, LocaleContextHolder.getLocale().toString())
+        getI10n(property, LocaleContextHolder.getLocale().toString()) // current locale
     }
 
-    // get translation
     def getI10n(String property, Locale locale) {
         getI10n(property, locale.toString())
     }
-    // get translation
+
     def getI10n(String property, String locale) {
-        def result
+        String result
         locale = I10nTranslation.decodeLocale(locale)
 
         if (I10nTranslation.supportedLocales.contains(locale)) {
-            result = this."${property}_${locale}"
+            String name = property + '_' + locale
+            result = this."${name}"
         }
         else {
             result = "- requested locale ${locale} not supported -"
         }
-        result = (result != 'null') ? result : ''
+        return (result != 'null') ? result : ''
     }
 
-    /*
-    // returning virtual property for template tags
+    // returning virtual property for template tags; laser:select
     def propertyMissing(String name) {
         if (! i10nStorage.containsKey(name)) {
 
-            def parts = name.split("_")
+            String[] parts = name.split("_")
             if (parts.size() == 2) {
-                def fallback = this."${parts[0]}"
-                def i10n = I10nTranslation.get(this, parts[0], parts[1])
-                this."${name}" = (i10n ? i10n : "${fallback}")
+                String fallback = this."${parts[0]}"
+                String i10n = I10nTranslation.get(this, parts[0], parts[1])
+                i10nStorage["${name}"] = (i10n ? i10n : "${fallback}")
             }
         }
 
         i10nStorage["${name}"]
     }
-
-    // setting virtual property
-    def propertyMissing(String name, def value) {
-        i10nStorage["${name}"] = value
-    }
-    */
-
 }

@@ -10,9 +10,9 @@ import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DashboardDueDatesService
+import de.laser.I10nTranslation
 import de.laser.LinksGenerationService
 import de.laser.SystemAnnouncement
-import de.laser.base.AbstractI10nTranslatable
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
@@ -478,7 +478,7 @@ class MyInstitutionController extends AbstractDebugController {
                 g.message(code:'license.endDate')
         ]
         Map<License,Set<License>> licChildMap = [:]
-        List<License> childLicsOfSet = License.findAllByInstanceOfInList(totalLicenses)
+        List<License> childLicsOfSet = totalLicenses.isEmpty() ? [] : License.findAllByInstanceOfInList(totalLicenses)
         childLicsOfSet.each { License child ->
             Set<License> children = licChildMap.get(child.instanceOf)
             if(!children)
@@ -875,7 +875,7 @@ join sub.orgRelations or_sub where
         membershipCounts.each { row ->
             subscriptionMembers.put(row[1],row[0])
         }
-        List<Subscription> childSubsOfSet = Subscription.findAllByInstanceOfInList(subscriptions)
+        List<Subscription> childSubsOfSet = subscriptions.isEmpty() ? [] : Subscription.findAllByInstanceOfInList(subscriptions)
         childSubsOfSet.each { Subscription child ->
             Set<Subscription> children = subChildMap.get(child.instanceOf)
             if(!children)
@@ -2237,7 +2237,7 @@ AND EXISTS (
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIBER_CONS, 'activeInst': result.institution])
@@ -3623,7 +3623,8 @@ AND EXISTS (
                 break
         }
 
-        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
+        result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { String it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
@@ -3648,7 +3649,33 @@ AND EXISTS (
     Object managePropertyDefinitions() {
         Map<String,Object> result = setResultGenerics()
 
-        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
+        if(params.pd) {
+            PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+            if (pd) {
+                switch(params.cmd) {
+                    case 'toggleMandatory': pd.mandatory = !pd.mandatory
+                        pd.save()
+                        break
+                    case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
+                        pd.save()
+                        break
+                    case 'deletePropertyDefinition':
+                        if (! pd.isHardData) {
+                            try {
+                                pd.delete()
+                                flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
+                            }
+                            catch(Exception e) {
+                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
+                            }
+                        }
+                        break
+                }
+            }
+        }
+
+        result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!

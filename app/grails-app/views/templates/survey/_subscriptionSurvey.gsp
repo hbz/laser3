@@ -482,7 +482,7 @@
     <g:set var="costItemSurvey"
            value="${surveyOrg ? CostItem.findBySurveyOrg(surveyOrg) : null}"/>
 
-    <g:if test="${surveyInfo.owner.id != contextService.getOrg().id && ((costItemSums && costItemSums.subscrCosts) || costItemSurvey)}">
+    <g:if test="${surveyInfo.owner.id != institution.id && ((costItemSums && costItemSums.subscrCosts) || costItemSurvey)}">
         <div class="ui card la-time-card">
 
             <div class="content">
@@ -571,7 +571,7 @@
 
                                     ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
                                 </td>
-                                <td>${costItem.taxKey.taxType?.getI10n("value") + " (" + costItem.taxKey.taxRate + "%)"}</td>
+                                <td>${costItem.taxKey ? costItem.taxKey.taxType?.getI10n("value") + " (" + costItem.taxKey.taxRate + "%)" : ''}</td>
                                 <td>
                                     <b>
                                         <g:formatNumber
@@ -630,7 +630,7 @@
 
                                         ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
                                     </td>
-                                    <td>${costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)"}</td>
+                                    <td>${costItemSurvey.taxKey ? costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)" : ''}</td>
                                     <td>
                                         <b>
                                             <g:formatNumber
@@ -742,7 +742,7 @@
 
                                 ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
                             </td>
-                            <td>${costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)"}</td>
+                            <td>${costItemSurvey.taxKey ? costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)" : ''}</td>
                             <td>
                                 <b>
                                     <g:formatNumber
@@ -783,7 +783,7 @@
         </div>
     </g:if>
 
-    <g:if test="${surveyInfo.owner.id == contextService.getOrg().id && costItemSums.consCosts}">
+    <g:if test="${surveyInfo.owner.id == institution.id && costItemSums.consCosts}">
         <div class="ui card la-dl-no-table">
             <div class="content">
                 <g:if test="${costItemSums.ownCosts}">

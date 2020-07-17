@@ -82,7 +82,7 @@ class SurveyController {
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
@@ -304,7 +304,7 @@ class SurveyController {
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
@@ -385,7 +385,7 @@ class SurveyController {
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
@@ -505,7 +505,7 @@ class SurveyController {
         }
 
         Subscription subscription = Subscription.get(Long.parseLong(params.sub))
-        boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true) || subscription.getCalculatedSuccessor()) ? false : (params.subSurveyUseForTransfer ? true : false)
+        boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) ? false : (params.subSurveyUseForTransfer ? true : false)
 
         SurveyInfo surveyInfo = new SurveyInfo(
                 name: params.name,
@@ -888,7 +888,7 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        def surveyOrgs = result.surveyConfig.getSurveyOrgsIDs()
+        def surveyOrgs = result.surveyConfig?.getSurveyOrgsIDs()
 
         result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
@@ -1554,20 +1554,26 @@ class SurveyController {
                 }
                 result.visibleOrgRelations.sort { it.org.sortname }
 
+            //costs dataToDisplay
+            result.dataToDisplay = ['subscr']
+            result.offsets = [subscrOffset:0]
+            result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
+            //result.dataToDisplay = ['consAtSubscr']
+            //result.offsets = [consOffset:0]
+            //result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
 
-                //costs dataToDisplay
-                result.dataToDisplay = ['consAtSubscr']
-                result.offsets = [consOffset: 0]
-                result.sortConfig = [consSort: 'ci.costTitle', consOrder: 'asc']
-
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
-                //cost items
-                //params.forExport = true
-                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
-                if (costItems.cons) {
-                    result.costItemSums.consCosts = costItems.cons.sums
-                }
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            //cost items
+            //params.forExport = true
+            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+            result.costItemSums = [:]
+            /*if (costItems?.cons) {
+                result.costItemSums.consCosts = costItems.cons.sums
+            }*/
+            if (costItems?.subscr) {
+                result.costItemSums.subscrCosts = costItems.subscr.costItems
             }
+        }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
@@ -2168,7 +2174,8 @@ class SurveyController {
 
         if (params.get('orgsIDs')) {
             List idList = (params.get('orgsIDs')?.split(',').collect { Long.valueOf(it.trim()) }).toList()
-            result.surveyOrgList = SurveyOrg.findAllByOrgInListAndSurveyConfig(Org.findAllByIdInList(idList), result.surveyConfig)
+            List<Org> orgList = Org.findAllByIdInList(idList)
+            result.surveyOrgList = orgList.isEmpty() ? [] : SurveyOrg.findAllByOrgInListAndSurveyConfig(orgList, result.surveyConfig)
         }
 
         render(template: "/survey/costItemModal", model: result)
@@ -2601,7 +2608,7 @@ class SurveyController {
 
             List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.org)
 
-            result.providers = Org.findAllByIdInList(orgIds, [sort: 'name'])
+            result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
             def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
             result.filterSet = tmpQ[2]
@@ -3427,7 +3434,7 @@ class SurveyController {
 
         if (params.get('orgListIDs')) {
             List idList = (params.get('orgListIDs').split(',').collect { Long.valueOf(it.trim()) }).toList()
-            result.orgList = Org.findAllByIdInList(idList)
+            result.orgList = idList.isEmpty() ? [] : Org.findAllByIdInList(idList)
         }
 
         render(template: "/templates/copyEmailaddresses", model: result)

@@ -111,7 +111,7 @@ class PropertyDefinitionGroup {
         }
 
         cache.get('propDefs').each { it ->
-            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
                 case 'en':
                     if (params.q == '*' || it.en?.toLowerCase()?.contains(params.q?.toLowerCase())) {
                         result.add([id:"${it.id}", text:"${it.en}"])

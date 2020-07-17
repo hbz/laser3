@@ -152,8 +152,8 @@ class TaskService {
                     tableName = 'surveyConfig'
                     break
             }
-            tasks = Task.executeQuery("""select distinct(t) from Task t where ${tableName}=:obj and (responsibleUser=:user or responsibleOrg=:org) order by endDate""",
-                [user: user, org: org, obj: obj])
+            String query = "select distinct(t) from Task t where ${tableName}=:obj and (responsibleUser=:user or responsibleOrg=:org) order by endDate"
+            tasks = Task.executeQuery( query, [user: user, org: org, obj: obj] )
         }
         tasks
     }

@@ -106,7 +106,7 @@ class AdminController extends AbstractDebugController {
                         flash.message = message(code: 'default.success')
                     }
                     else {
-                        flash.error = message(code: 'default.delete.error.message')
+                        flash.error = message(code: 'default.delete.error.general.message')
                     }
                 }
             }
@@ -1644,7 +1644,7 @@ class AdminController extends AbstractDebugController {
                 editable: true, // TODO check role and editable !!!
                 identifierNamespaceInstance: identifierNamespaceInstance,
                 identifierNamespaces: IdentifierNamespace.where{}.sort('ns'),
-                currentLang: I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+                currentLang: I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
         ]
     }
 
@@ -1898,7 +1898,7 @@ class AdminController extends AbstractDebugController {
 
         render view: 'manageRefdatas', model: [
                 editable    : true,
-                rdCategories: RefdataCategory.where{}.sort('desc_' + I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())),
+                rdCategories: RefdataCategory.where{}.sort('desc_' + I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())),
                 attrMap     : attrMap,
                 usedRdvList : usedRdvList,
                 integrityCheckResult : integrityCheckResult

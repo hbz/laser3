@@ -212,6 +212,22 @@
             </g:else>
         </div>
 
+        <br>
+        <br>
+
+        <g:form action="surveyConfigFinish" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+
+            <div class="ui right floated compact segment">
+                <div class="ui checkbox">
+                    <input type="checkbox" onchange="this.form.submit()"
+                           name="configFinish" ${surveyConfig.configFinish ? 'checked' : ''}>
+                    <label><g:message code="surveyConfig.configFinish.label"/></label>
+                </div>
+            </div>
+
+        </g:form>
+
     </div><!-- .twelve -->
 
 %{-- <aside class="four wide column la-sidekick">
