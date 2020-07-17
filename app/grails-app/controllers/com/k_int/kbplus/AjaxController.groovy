@@ -11,11 +11,11 @@ import de.laser.DashboardDueDate
 import de.laser.DashboardDueDatesService
 import de.laser.DueDateObject
 import de.laser.base.AbstractI10n
-import de.laser.base.AbstractI10nTranslatable
 import de.laser.I10nTranslation
 import de.laser.SystemProfiler
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
+import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -616,10 +616,10 @@ class AjaxController {
         rq.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
-            if ( it instanceof AbstractI10nTranslatable) {
+            if ( it instanceof I10nTrait ) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
-            else if ( it instanceof AbstractI10n) {
+            else if ( it instanceof AbstractI10n ) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
             else {
@@ -718,7 +718,7 @@ class AjaxController {
         boolean defaultOrder = true
 
         if (config == null) {
-            String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+            String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
             defaultOrder = false
             // If we werent able to locate a specific config override, assume the ID is just a refdata key
             config = [
@@ -767,7 +767,7 @@ class AjaxController {
           }
           // default ..
           else {
-              if (it instanceof AbstractI10nTranslatable) {
+              if (it instanceof I10nTrait) {
                   result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
               }
               else if (it instanceof AbstractI10n) {
@@ -2350,14 +2350,14 @@ class AjaxController {
         Set result = []
         if (params.orgIdList){
             List<Long> orgIds = params.orgIdList.split ','
-            List<Org> orgList = Org.findAllByIdInList(orgIds)
+            List<Org> orgList = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds)
             boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
             boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
 
             List<RefdataValue> selectedRoleTypes = null
             if (params.selectedRoleTypIds) {
                 List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
-                selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
+                selectedRoleTypes = selectedRoleTypIds.isEmpty() ? [] : RefdataValue.findAllByIdInList(selectedRoleTypIds)
             }
 
             String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "

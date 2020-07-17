@@ -158,6 +158,9 @@ class I10nTranslation {
             return locale
         }
     }
+    static String decodeLocale(Locale locale) {
+        decodeLocale(locale.toString())
+    }
 
     @Deprecated
     static def refdataFindHelper(String referenceClass, String referenceField, String query, def locale) {
@@ -170,7 +173,7 @@ class I10nTranslation {
             )
         }
         else {
-            switch (I10nTranslation.decodeLocale(locale.toString())) {
+            switch (I10nTranslation.decodeLocale(locale)) {
                 case 'en':
                     matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueEnIlike(
                             referenceClass, referenceField, "%${query}%"

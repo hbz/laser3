@@ -510,7 +510,7 @@ class SubscriptionController
                     List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
                     if (childSubs) {
 
-                        List<SubscriptionPackage> spChildSubs = SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
+                        List<SubscriptionPackage> spChildSubs = childSubs.isEmpty() ? [] : SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
 
                         String queryChildSubs = "from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                         Map queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
@@ -519,7 +519,7 @@ class SubscriptionController
 
                         int numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
 
-                        int numOfCIsChildSubs = CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs,result.package)).size()
+                        int numOfCIsChildSubs = childSubs.isEmpty() ? 0 : CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)).size()
 
                         if (spChildSubs.size() > 0) {
                             Map conflict_item_pkgChildSubs = [
