@@ -52,7 +52,7 @@
                     <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                         ${message(code: 'surveyParticipants.label')}: <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]" class="ui icon">
-                            <div class="ui circular ${surveyConfig.configFinish ? "yellow" : ""} label">
+                            <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                 ${surveyConfig.orgs?.size() ?: 0}
                             </div>
                         </g:link>

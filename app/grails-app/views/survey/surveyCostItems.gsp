@@ -236,7 +236,7 @@
                                        style="width:50%"
                                        name="percentOnOldPrice"
                                        placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
-                                       value="${0.0}" step="0.01"/>
+                                       value="" step="0.01"/>
                                 <div class="ui basic label">%</div>
                                 </div>
                             </div>
