@@ -11,7 +11,7 @@
         <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}</g:link>
     </g:else>
 
-    <g:if test="${showConsortiaFunctions || showCollectiveFunctions}">
+    <g:if test="${(showConsortiaFunctions || showCollectiveFunctions ) && !subscriptionInstance.instanceOf}">
         <%
             String message
             if(showConsortiaFunctions)
