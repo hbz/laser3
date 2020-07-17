@@ -6,14 +6,9 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.AuditConfig
-import de.laser.DashboardDueDate
-import de.laser.DashboardDueDatesService
-import de.laser.DueDateObject
+import de.laser.*
 import de.laser.base.AbstractI10n
 import de.laser.base.AbstractI10nTranslatable
-import de.laser.I10nTranslation
-import de.laser.SystemProfiler
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
@@ -25,10 +20,10 @@ import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.regex.Matcher
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 @Secured(['permitAll']) // TODO
@@ -2394,6 +2389,28 @@ class AjaxController {
             }
 
         }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getRegions() {
+        Set result = []
+        if (params.country) {
+            println(RefdataValue.get(params.country).value)
+            println(params.country)
+            switch (RefdataValue.get(params.country).value) {
+                case 'DE':
+                    result = RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE])
+                    break;
+                case 'AT':
+                    result = RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_AT])
+                    break;
+                case 'CH':
+                    result = RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_CH])
+                    break;
+            }
+        }
+        println(result)
         render result as JSON
     }
 
