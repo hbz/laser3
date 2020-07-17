@@ -9575,7 +9575,7 @@ $.fn.dropdown = function(parameters) {
 $.fn.dropdown.settings = {
 
   silent                 : false,
-  debug                  : true,
+  debug                  : false,
   verbose                : false,
   performance            : true,
 
