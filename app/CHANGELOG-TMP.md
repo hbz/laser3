@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2509    17.07.2020  rc1.4       Moe     Bug         Länderauswahl-Filter verfeinern
+
 --      15.07.2020  rc1.4       Moe     Bug         Sortierung Umfrage
 
 --      15.07.2020  rc1.4       Moe     Bug         Für die Umfrage wieder das ConfigFinish Flag anzeigen
