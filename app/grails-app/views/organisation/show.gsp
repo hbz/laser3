@@ -51,9 +51,9 @@
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
-<g:if test="${departmentalView == false}">
+%{--<g:if test="${departmentalView == false}">
     <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>
-</g:if>
+</g:if>--}%
 
 <semui:messages data="${flash}"/>
 
@@ -318,7 +318,7 @@
                         <H3><g:message code="org.contacts.and.addresses.label" /></H3>
                         <g:link action="myPublicContacts" controller="myInstitution"  class="ui button">${message('code':'org.edit.contacts')}</g:link>
                         <dl>
-                            <dt><g:message code="org.addresses.label" default="Addresses"/></dt>
+                            <dt><g:message code="org.prsLinks.label" /></dt>
                             <dd>
                                 <g:each in="${usedRDV}" var="rdv">
                                     <h3>${rdv.getI10n('value')}</h3>
@@ -377,8 +377,8 @@
                             </dd>
                         </dl>--}%
                         <dl>
-                            <dt><g:message code="org.prsLinks.label" />
-                            </dt>
+
+                            <dt><g:message code="org.addresses.label" default="Addresses"/></dt>
                             <dd>
 
                             <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>

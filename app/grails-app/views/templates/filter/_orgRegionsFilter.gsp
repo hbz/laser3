@@ -3,8 +3,8 @@
 <g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
 
 <div class="field">
-    <label for="country">${message(code: 'org.country.label')}</label>
-    <select id="country" name="country" multiple="" class="ui search selection fluid dropdown">
+    <label for="filterCountry">${message(code: 'org.country.label')}</label>
+    <select id="filterCountry" name="country" multiple="" class="ui search selection fluid dropdown">
         <option value="">${message(code: 'default.select.choose.label')}</option>
         <g:each in="${RefdataCategory.getAllRefdataValues([RDConstants.COUNTRY])}" var="rdv">
             <option <%=(params.list('country').contains(rdv.id.toString())) ? 'selected="selected"' : ''%>
@@ -15,8 +15,8 @@
 
 
 <div class="field">
-    <label for="region">${message(code: 'org.region.label')}</label>
-    <select id="region" name="region" multiple="" class="ui search selection fluid dropdown">
+    <label for="filterRegion">${message(code: 'org.region.label')}</label>
+    <select id="filterRegion" name="region" multiple="" class="ui search selection fluid dropdown">
         <option value="">${message(code: 'default.select.choose.label')}</option>
     </select>
 </div>
@@ -24,14 +24,14 @@
 
 <g:javascript>
          $(document).ready(function () {
-            if($("#country").val()) updateDropdown();
+            if($("#filterCountry").val()) updateDropdown();
         });
 
-        $("#country").change(function() { updateDropdown(); });
+        $("#filterCountry").change(function() { updateDropdown(); });
 
         function updateDropdown() {
-            var dropdownRegion = $('#region');
-            var selectedCountry = $("#country").val();
+            var dropdownRegion = $('#filterRegion');
+            var selectedCountry = $("#filterCountry").val();
             var selectedRegions = ${raw(params.list('region') as String)};
 
             dropdownRegion.empty();
