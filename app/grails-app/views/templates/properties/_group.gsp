@@ -47,21 +47,6 @@
                         <g:else>
                             ${prop.type.getI10n('name')}
                         </g:else>
-                        <%
-                            /*
-                            if (AuditConfig.getConfig(prop)) {
-                                println '&nbsp; <span data-content="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
-                            }
-                            */
-                            if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
-                                if (ownobj.isSlaved) {
-                                    println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
-                                }
-                                else {
-                                    println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
-                                }
-                            }
-                        %>
                         <g:if test="${prop.type.multipleOccurrence}">
                             <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                 <i class="redo icon orange"></i>
@@ -120,7 +105,7 @@
                                                       id="${prop.id}"
                                                       data-content="${message(code:'property.audit.off.tooltip')}"
                                                       data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}','#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                      data-always="c3po.loadJsAfterAjax()"
                                                       data-update="${custom_props_div}"
                                                       role="button"
                                     >
@@ -144,7 +129,7 @@
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [prop.type.getI10n('name')])}"
                                                       data-confirm-term-how="inherit"
                                                       data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                      data-always="c3po.loadJsAfterAjax()"
                                                       data-update="${custom_props_div}"
                                                       role="button"
                                     >
@@ -157,7 +142,7 @@
                                     <laser:remoteLink class="ui orange icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                      data-always="c3po.loadJsAfterAjax()"
                                                       data-update="${custom_props_div}">
                                         <i class="icon eye la-js-editmode-icon"></i>
                                     </laser:remoteLink>
@@ -166,7 +151,7 @@
                                     <laser:remoteLink class="ui icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                      data-always="c3po.loadJsAfterAjax()"
                                                       data-update="${custom_props_div}">
                                         <i class="icon eye slash la-js-editmode-icon"></i>
                                     </laser:remoteLink>
@@ -190,7 +175,7 @@
                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                                                   data-confirm-term-how="delete"
                                                   data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                  data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                                  data-always="c3po.loadJsAfterAjax()"
                                                   data-update="${custom_props_div}"
                                                   role="button"
                                 >
@@ -205,6 +190,16 @@
 
                             </g:else>
                         </g:if>
+                        <g:else>
+                            <g:if test="${prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)}">
+                                <g:if test="${ownobj.isSlaved}">
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon thumbtack blue"></i></span>
+                                </g:if>
+                                <g:else>
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="icon thumbtack grey"></i></span>
+                                </g:else>
+                            </g:if>
+                        </g:else>
                     </td>
                 </tr>
             </g:if>

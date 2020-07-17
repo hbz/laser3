@@ -510,7 +510,7 @@ class SubscriptionController
                     List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
                     if (childSubs) {
 
-                        List<SubscriptionPackage> spChildSubs = SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
+                        List<SubscriptionPackage> spChildSubs = childSubs.isEmpty() ? [] : SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
 
                         String queryChildSubs = "from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                         Map queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
@@ -519,7 +519,7 @@ class SubscriptionController
 
                         int numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
 
-                        int numOfCIsChildSubs = CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs,result.package)).size()
+                        int numOfCIsChildSubs = childSubs.isEmpty() ? 0 : CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)).size()
 
                         if (spChildSubs.size() > 0) {
                             Map conflict_item_pkgChildSubs = [
@@ -2007,9 +2007,9 @@ class SubscriptionController
         redirect(action: 'linkPackagesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def propertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -2047,7 +2047,7 @@ class SubscriptionController
                 break
         }*/
         //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        Set<PropertyDefinition> propList = result.parentSub.propertySet.type + SubscriptionProperty.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
+        Set<PropertyDefinition> propList = result.parentSub.propertySet.type + PropertyDefinition.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
         result.propList = propList
 
         def oldID = params.id
@@ -3939,7 +3939,9 @@ class SubscriptionController
                     default: localizedName = "name_en"
                         break
                 }
-                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc",[subscriptionSet:childSubs,context:result.institution])
+                String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
+
                 result.memberProperties = memberProperties
             }
         }
@@ -4537,8 +4539,8 @@ class SubscriptionController
             def sub_startDate = params.subscription.start_date ? parseDate(params.subscription.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription.end_date ? parseDate(params.subscription.end_date, possible_date_formats) : null
             def sub_status = params.subStatus ?: RDStore.SUBSCRIPTION_NO_STATUS
-            def sub_type = params.subType
-            /*def sub_kind = params.subKind ?: null
+            /*def sub_type = params.subType
+            def sub_kind = params.subKind ?: null
             def sub_form = params.subForm ?: null
             def sub_resource = params.subResource ?: null
             def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
@@ -4557,7 +4559,7 @@ class SubscriptionController
                     manualCancellationDate: manualCancellationDate,
                     identifier: UUID.randomUUID().toString(),
                     isSlaved: baseSub.isSlaved,
-                    type: sub_type,
+                    type: baseSub.type,
                     status: sub_status,
                     /*kind: sub_kind,
                     resource: sub_resource,
@@ -4717,7 +4719,7 @@ class SubscriptionController
                 subTypSubscriberVisible.contains(result.targetSubscription.getCalculatedType())
 
         if (! result.isSubscriberVisible) {
-            flash.message += message(code: 'subscription.info.subscriberNotAvailable')
+            //flash.message += message(code: 'subscription.info.subscriberNotAvailable')
         }
 
         switch (params.workFlowPart) {

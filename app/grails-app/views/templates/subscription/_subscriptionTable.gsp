@@ -88,13 +88,29 @@
                                 </g:if>
                             </g:link>
                             <g:if test="${'showLicense' in tableConfig}">
-                                <g:each in="${allLinkedLicenses.findAll { Links li -> li.destination == GenericOIDService.getOID(s)}}" var="row">
+                                <div id="${s.id}linkedLicenses">
+                                    <script>
+                                        $.ajax({
+                                            url: "<g:createLink controller="ajax" action="getLinkedLicenses" />",
+                                            data: {
+                                                subscription: "${GenericOIDService.getOID(s)}"
+                                            }
+                                        }).done(function(data) {
+                                            <%--<g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>+--%>
+                                            let link = "<g:createLink controller="license" action="show"/>";
+                                            $.each(data.results,function(k,v) {
+                                                $("#${s.id}linkedLicenses").append('<i class="icon clipboard outline outline la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br>');
+                                            });
+                                        });
+                                    </script>
+                                </div>
+                                <%--<g:each in="${allLinkedLicenses.findAll { Links li -> li.destination == GenericOIDService.getOID(s)}}" var="row">
                                     <g:set var="license" value="${genericOIDService.resolveOID(row.source)}"/>
                                     <div class="la-flexbox">
                                         <i class="icon balance scale la-list-icon"></i>
                                         <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
                                     </div>
-                                </g:each>
+                                </g:each>--%>
                             </g:if>
                         </td>
                         <td>
@@ -175,10 +191,10 @@
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
                                     <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(childSubs, institution, RDStore.COST_ITEM_DELETED)?.size()}
+                                        ${childSubs.isEmpty() ? 0 : CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(childSubs, institution, RDStore.COST_ITEM_DELETED).size()}
                                     </g:if>
                                     <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST_COLLECTIVE'}">
-                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(childSubs, institution, RDStore.COST_ITEM_DELETED,true)?.size()}
+                                        ${childSubs.isEmpty() ? 0 : CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(childSubs, institution, RDStore.COST_ITEM_DELETED,true).size()}
                                     </g:elseif>
                                 </g:link>
                             </td>
@@ -231,7 +247,7 @@
                                         </g:else>
                                     </g:link>
                                 </g:if>
-                                <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
+                                <%--<g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
                                     <laser:statsLink class="ui icon button"
                                                      base="${ConfigUtils.getStatsApiUrl()}"
                                                      module="statistics"
@@ -245,7 +261,7 @@
                                                      title="Springe zu Statistik im Nationalen Statistikserver"> <!-- TODO message -->
                                         <i class="chart bar outline icon"></i>
                                     </laser:statsLink>
-                                </g:if>
+                                </g:if>--%>
                             </g:if>
                             <g:if test="${'showLinking' in tableConfig}">
                             <%--<g:if test="${license in s.licenses}"></g:if>--%>

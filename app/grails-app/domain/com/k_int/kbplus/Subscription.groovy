@@ -489,7 +489,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     List<Org> getDerivedSubscribers() {
         List<Subscription> subs = Subscription.findAllByInstanceOf(this)
-        OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
+        subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
     }
 
     Subscription getCalculatedPrevious() {

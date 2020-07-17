@@ -1,17 +1,21 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.AccessService
+import de.laser.AuditConfig
 import de.laser.DashboardDueDatesService
+import de.laser.I10nTranslation
 import de.laser.LinksGenerationService
 import de.laser.SystemAnnouncement
-import de.laser.base.AbstractI10nTranslatable
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
+import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 
 //import de.laser.TaskService //unused for quite a long time
@@ -30,6 +34,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.mozilla.universalchardet.UniversalDetector
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -441,27 +446,20 @@ class MyInstitutionController extends AbstractDebugController {
 
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
-
+        du.setBenchmark('execute query')
         List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
         result.licenseCount = totalLicenses.size()
-        result.allLinkedSubscriptions = [:]
-        Set<Links> allLinkedLicenses = Links.findAllBySourceInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },RDStore.LINKTYPE_LICENSE)
-        allLinkedLicenses.each { Links li ->
-            Subscription s = genericOIDService.resolveOID(li.destination)
-            License l = genericOIDService.resolveOID(li.source)
-            Set<Subscription> linkedSubscriptions = result.allLinkedSubscriptions.get(l)
-            if(!linkedSubscriptions)
-                linkedSubscriptions = []
-            linkedSubscriptions << s
-            result.allLinkedSubscriptions.put(l,linkedSubscriptions)
-        }
+        result.allLinkedSubscriptions = Links.findAllBySourceInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },RDStore.LINKTYPE_LICENSE)
+        du.setBenchmark('get subscriptions')
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
         result.orgRoles = [:]
         orgRoles.each { oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
+        du.setBenchmark('get consortia')
         Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority in ('ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM')) order by os.org.name asc")
+        du.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
         result.orgs = orgs
@@ -480,7 +478,7 @@ class MyInstitutionController extends AbstractDebugController {
                 g.message(code:'license.endDate')
         ]
         Map<License,Set<License>> licChildMap = [:]
-        List<License> childLicsOfSet = License.findAllByInstanceOfInList(totalLicenses)
+        List<License> childLicsOfSet = totalLicenses.isEmpty() ? [] : License.findAllByInstanceOfInList(totalLicenses)
         childLicsOfSet.each { License child ->
             Set<License> children = licChildMap.get(child.instanceOf)
             if(!children)
@@ -877,7 +875,7 @@ join sub.orgRelations or_sub where
         membershipCounts.each { row ->
             subscriptionMembers.put(row[1],row[0])
         }
-        List<Subscription> childSubsOfSet = Subscription.findAllByInstanceOfInList(subscriptions)
+        List<Subscription> childSubsOfSet = subscriptions.isEmpty() ? [] : Subscription.findAllByInstanceOfInList(subscriptions)
         childSubsOfSet.each { Subscription child ->
             Set<Subscription> children = subChildMap.get(child.instanceOf)
             if(!children)
@@ -2239,7 +2237,7 @@ AND EXISTS (
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIBER_CONS, 'activeInst': result.institution])
@@ -3448,6 +3446,155 @@ AND EXISTS (
         result
     }
 
+    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def manageProperties() {
+        def result = setResultGenerics()
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        PropertyDefinition propDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
+
+        params.remove('filterPropDef')
+
+        //Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
+        /*Sortieren
+        result.validSubChilds = validSubChilds.sort { Subscription a, Subscription b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
+        }*/
+        //result.validSubChilds = validSubChildren
+
+        String localizedName
+        switch(LocaleContextHolder.getLocale()) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
+                [ctx:result.institution,availableTypes:[PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]])
+        result.propList = propList
+        result.filteredObjs = []
+        result.objectsWithoutProp = []
+
+        if(propDef) {
+            Set filteredObjs = [], objectsWithoutProp = []
+            Map<String,Object> parameterMap = [type:propDef,ctx:result.institution]
+            String subFilterClause = '', licFilterClause = ''
+            if(accessService.checkPerm('ORG_CONSORTIUM')) {
+                subFilterClause += 'and oo.sub.instanceOf = null'
+                licFilterClause += 'and oo.lic.instanceOf = null'
+            }
+            switch(propDef.descr) {
+                case PropertyDefinition.SUB_PROP: objectsWithoutProp.addAll(Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :ctx '+subFilterClause+' and oo.roleType in (:roleTypes) and not exists (select sp from SubscriptionProperty sp where sp.owner = oo.sub and sp.tenant = :ctx and sp.type = :type) order by oo.sub.name asc, oo.sub.startDate asc, oo.sub.endDate asc',parameterMap+[roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]))
+                    filteredObjs.addAll(SubscriptionProperty.executeQuery('select sp.owner from SubscriptionProperty sp where sp.type = :type and sp.tenant = :ctx and sp.owner.instanceOf = null order by sp.owner.name asc',parameterMap))
+                    result.auditable = propDef.tenant == null //blocked until inheritance of private property is cleared
+                    result.manageChildren = true
+                    break
+                case PropertyDefinition.LIC_PROP: objectsWithoutProp.addAll(License.executeQuery('select oo.lic from OrgRole oo where oo.org = :ctx '+licFilterClause+' and oo.roleType in (:roleTypes) and not exists (select lp from LicenseProperty lp where lp.owner = oo.lic and lp.tenant = :ctx and lp.type = :type) order by oo.lic.reference asc, oo.lic.startDate asc, oo.lic.endDate asc',parameterMap+[roleTypes:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSEE]]))
+                    filteredObjs.addAll(LicenseProperty.executeQuery('select lp.owner from LicenseProperty lp where lp.type = :type and lp.tenant = :ctx and lp.owner.instanceOf = null order by lp.owner.reference asc',parameterMap))
+                    result.auditable = propDef.tenant == null //blocked until inheritance of private property is cleared
+                    break
+                case PropertyDefinition.PRS_PROP: objectsWithoutProp.addAll(Person.executeQuery('select p from Person p where (p.tenant = :ctx or p.tenant = null) and not exists (select pp from PersonProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) order by p.last_name asc, p.first_name asc',parameterMap))
+                    filteredObjs.addAll(PersonProperty.executeQuery('select pp.owner from PersonProperty pp where pp.type = :type and pp.tenant = :ctx order by pp.owner.last_name asc, pp.owner.first_name asc',parameterMap))
+                    break
+                case PropertyDefinition.ORG_PROP: objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) order by o.sortname asc, o.name asc',parameterMap+[deleted:RDStore.ORG_STATUS_DELETED]))
+                    filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx order by op.owner.sortname asc, op.owner.name asc',parameterMap))
+                    result.sortname = true
+                    break
+                case PropertyDefinition.PLA_PROP: objectsWithoutProp.addAll(Platform.executeQuery('select pl from Platform pl where pl.status != :deleted and not exists (select plp from PlatformProperty plp where plp.owner = plp and plp.tenant = :ctx and plp.type = :type) order by pl.name asc',parameterMap+[deleted:RDStore.PLATFORM_STATUS_DELETED]))
+                    filteredObjs.addAll(PlatformProperty.executeQuery('select plp.owner from PlatformProperty plp where plp.type = :type and plp.tenant = :ctx order by plp.owner.name asc',parameterMap))
+                    break
+            }
+            objectsWithoutProp.each { obj ->
+                result.objectsWithoutProp << propertyService.processObjects(obj,result.institution,propDef)
+            }
+            filteredObjs.each { obj ->
+                result.filteredObjs << propertyService.processObjects(obj,result.institution,propDef)
+            }
+            result.filterPropDef = propDef
+        }
+
+        /*
+        def oldID = params.id
+        params.id = result.parentSub.id
+
+        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
+        result.filteredSubChilds = new ArrayList<Subscription>()
+        result.validSubChilds.each { Subscription sub ->
+            List<Org> subscr = sub.getAllSubscribers()
+            def filteredSubscr = []
+            subscr.each { Org subOrg ->
+                if (filteredOrgIds.contains(subOrg.id)) {
+                    filteredSubscr << subOrg
+                }
+            }
+            if (filteredSubscr) {
+                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+            }
+        }
+
+        params.id = oldID*/
+
+        result
+    }
+
+    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def processManageProperties() {
+        Map<String, Object> result = setResultGenerics()
+        log.debug(params)
+        PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
+        List withAudit = params.list("withAudit")
+        String propertyType = pd.tenant ? PropertyDefinition.PRIVATE_PROPERTY : PropertyDefinition.CUSTOM_PROPERTY
+        params.list("newObjects").each { String id ->
+            AbstractPropertyWithCalculatedLastUpdated prop
+            def owner
+            switch(pd.descr) {
+                case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
+                    break
+                case PropertyDefinition.LIC_PROP: owner = License.get(id)
+                    break
+                case PropertyDefinition.ORG_PROP: owner = Org.get(id)
+                    break
+                case PropertyDefinition.PRS_PROP: owner = Person.get(id)
+                    break
+                case PropertyDefinition.PLA_PROP: owner = Platform.get(id)
+                    break
+            }
+            prop = PropertyDefinition.createGenericProperty(propertyType,owner,pd,result.institution)
+            if(pd.type == RefdataValue.toString())
+                prop.setValue(params.filterPropValue,pd.type,pd.refdataCategory)
+            else prop.setValue(params.filterPropValue,pd.type, null)
+            if(prop.save()) {
+                if(id in withAudit) {
+                    owner.getClass().findAllByInstanceOf(owner).each { member ->
+                        AbstractPropertyWithCalculatedLastUpdated memberProp = PropertyDefinition.createGenericProperty(propertyType,member,prop.type,result.institution)
+                        memberProp = prop.copyInto(memberProp)
+                        memberProp.instanceOf = prop
+                        memberProp.save()
+                        AuditConfig.addConfig(prop,AuditConfig.COMPLETE_OBJECT)
+                    }
+                }
+            }
+        }
+        redirect action: 'manageProperties', params: [filterPropDef:params.filterPropDef]
+    }
+
     /**
      * Display and manage PrivateProperties for this institution
      */
@@ -3476,9 +3623,10 @@ AND EXISTS (
                 break
         }
 
-        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
+        result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+
         Map<String, Set<PropertyDefinition>> propDefs = [:]
-        PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
+        PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { String it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
             propDefs[it] = itResult
         }
@@ -3501,7 +3649,33 @@ AND EXISTS (
     Object managePropertyDefinitions() {
         Map<String,Object> result = setResultGenerics()
 
-        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
+        if(params.pd) {
+            PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+            if (pd) {
+                switch(params.cmd) {
+                    case 'toggleMandatory': pd.mandatory = !pd.mandatory
+                        pd.save()
+                        break
+                    case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
+                        pd.save()
+                        break
+                    case 'deletePropertyDefinition':
+                        if (! pd.isHardData) {
+                            try {
+                                pd.delete()
+                                flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
+                            }
+                            catch(Exception e) {
+                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
+                            }
+                        }
+                        break
+                }
+            }
+        }
+
+        result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!

@@ -147,11 +147,11 @@
                         <div class="item">
 
                             <div class="right floated content">
-                                <semui:totalNumber total="${parentSub.propertySet.findAll{ it.type.tenant == null && it.tenant == institution }.size()}"/>
+                                <semui:totalNumber total="${parentSub.propertySet.findAll{ it.tenant.id == institution.id && it.type == filterPropDef }.size()}"/>
                             </div>
 
                             <g:set var="customProperty"
-                                   value="${parentSub.propertySet.find { it.type.tenant == null && it.tenant.id == institution.id && it.type == filterPropDef }}"/>
+                                   value="${parentSub.propertySet.find { it.tenant.id == institution.id && it.type == filterPropDef }}"/>
                             <g:if test="${customProperty}">
                                 <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 

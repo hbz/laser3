@@ -26,14 +26,16 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
     @Transient
-    final static CUSTOM_PROPERTY  = "CUSTOM_PROPERTY"
+    final static String CUSTOM_PROPERTY  = "CUSTOM_PROPERTY"
     @Transient
-    final static PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
+    final static String PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
 
     @Transient
     final static String LIC_PROP    = 'License Property'
     @Transient
     final static String ORG_PROP    = 'Organisation Property'
+    @Transient
+    final static String ORG_CONF    = 'Organisation Config'
     @Transient
     final static String PRS_PROP    = 'Person Property'
     @Transient
@@ -43,31 +45,33 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     @Transient
     final static String SUR_PROP    = 'Survey Property'
 
+    //sorting is for German terms for the next three arrays; I10n is todo for later
+
     @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [
-            LIC_PROP,
+            PRS_PROP,
+            ORG_PROP,
             SUB_PROP,
             PLA_PROP,
-            ORG_PROP,
-            PRS_PROP,
-            SUR_PROP
+            SUR_PROP,
+            LIC_PROP
     ]
     @Transient
     final static String[] AVAILABLE_PRIVATE_DESCR = [
-            LIC_PROP,
+            PRS_PROP,
+            ORG_PROP,
             SUB_PROP,
             PLA_PROP,
-            ORG_PROP,
-            PRS_PROP,
-            SUR_PROP
+            SUR_PROP,
+            LIC_PROP
     ]
 
     @Transient
     final static String[] AVAILABLE_GROUPS_DESCR = [
-            LIC_PROP,
             SUB_PROP,
             ORG_PROP,
-            PLA_PROP
+            PLA_PROP,
+            LIC_PROP
     ]
 
     String name
@@ -298,7 +302,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *
      * @param owner: The class that will hold the property, e.g License
      */
-    static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(def flag, def owner, PropertyDefinition type, Org contextOrg) {
+    static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(String flag, def owner, PropertyDefinition type, Org contextOrg) {
         String classString = owner.getClass().toString()
         def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
         boolean isPublic
@@ -354,7 +358,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         List<PropertyDefinition> matches = []
 
-        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
             case 'en':
                 matches = PropertyDefinition.findAllByDescrAndName_enIlike(params.desc, "%${params.q}%")
                 break
@@ -491,7 +495,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     static getLocalizedValue(key){
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
         //println locale
         if (PropertyDefinition.validTypes2.containsKey(key)) {

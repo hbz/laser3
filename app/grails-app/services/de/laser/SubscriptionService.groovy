@@ -112,27 +112,29 @@ class SubscriptionService {
             subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         }
         result.allSubscriptions = subscriptions
-        du.setBenchmark('fetch licenses')
+        /*du.setBenchmark('fetch licenses')
         result.allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
-        /*du.setBenchmark('process licenses')
+        du.setBenchmark('process licenses')
         allLinkedLicenses.each { Links li ->
             Set<String> linkedLicenses = result.allLinkedLicenses.get(li.destination)
             if(!linkedLicenses)
                 linkedLicenses = []
             linkedLicenses << li.source
             result.allLinkedLicenses.put(li.destination,linkedLicenses)
-        }*/
-        du.setBenchmark('after licenses')
+        }
+        du.setBenchmark('after licenses')*/
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
 
         result.date_restriction = date_restriction
         du.setBenchmark('get properties')
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
+        /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
         if (OrgSettings.get(contextOrg, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
             result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
         }
+         */
         du.setBenchmark('end properties')
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         List bm = du.stopBenchmark()
@@ -215,7 +217,7 @@ class SubscriptionService {
             }
             qarams.put('subscriptions', subscriptions)
         }
-        
+
         if (params.member?.size() > 0) {
             query += " and roleT.org.id = :member "
             qarams.put('member', params.long('member'))
@@ -1294,7 +1296,40 @@ class SubscriptionService {
                 if (((sourceProp.id.toString() in auditProperties)) && targetProp.isPublic) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
+
+                        Subscription.findAllByInstanceOf(targetSub).each { member ->
+
+                            def existingProp = SubscriptionCustomProperty.findByOwnerAndInstanceOf(member, targetProp)
+                            if (! existingProp) {
+
+                                // multi occurrence props; add one additional with backref
+                                if (sourceProp.type.multipleOccurrence) {
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                    additionalProp = targetProp.copyInto(additionalProp)
+                                    additionalProp.instanceOf = targetProp
+                                    additionalProp.save(flush: true)
+                                }
+                                else {
+                                    def matchingProps = SubscriptionCustomProperty.findByOwnerAndType(member, targetProp.type)
+                                    // unbound prop found with matching type, set backref
+                                    if (matchingProps) {
+                                        matchingProps.each { memberProp ->
+                                            memberProp.instanceOf = targetProp
+                                            memberProp.save(flush: true)
+                                        }
+                                    }
+                                    else {
+                                        // no match found, creating new prop with backref
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                        newProp = targetProp.copyInto(newProp)
+                                        newProp.instanceOf = targetProp
+                                        newProp.save(flush: true)
+                                    }
+                                }
+                            }
+                        }
+
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
                                 //All ReferenceFields were copied!
@@ -1328,7 +1363,7 @@ class SubscriptionService {
             obj.delete(flush: true)
             log.debug("Delete ${obj} ok")
         } else {
-            flash.error += messageSource.getMessage('default.delete.error.message', null, locale)
+            flash.error += messageSource.getMessage('default.delete.error.general.message', null, locale)
         }
     }
 
@@ -1588,7 +1623,7 @@ class SubscriptionService {
             }
             success = true
         }
-        success
+        else (sub.owner == newOwner)
     }
 
     Map subscriptionImport(CommonsMultipartFile tsvFile) {

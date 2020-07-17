@@ -2,6 +2,24 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      17.07.2020  hbz-dev     Andreas Bug         Filterverarbeitung von BudgetCodes, Rechnung und Auftrag korrigiert
+
+--      17.07.2020  hbz-dev     Andreas Bug         Absturzfehler behoben, der bei fehlendem GOKb-Paket-Eintrag auf /subscription/show auftrat
+
+2694    17.07.2020  hbz-dev     Andreas Feature     Neue Seite zur Massenverwaltung von Merkmalen angelegt
+
+2043    17.07.2020  hbz-dev     Andreas Feature     Link zu vorbelegtem Filter bei Merkmalsnutzung angelegt (vorerst nur Lizenz und Vertrag)
+
+--      15.07.2020  rc1.4       Moe     Bug         Sortierung Umfrage
+
+--      15.07.2020  rc1.4       Moe     Bug         Für die Umfrage wieder das ConfigFinish Flag anzeigen
+
+2688    15.07.2020  rc1.4       Moe     Bug         Manuell Verlängerung: Vererbung wird nicht an Teilnehmer weitergereicht!	
+
+2687    15.07.2020  rc1.4       Moe     Bug         Hotfix: Umfrage wird nicht zur Verländerungsumfrage
+
+--      15.07.2020  rc1.4       Moe     Bug         Bug bei Kostenanzeigen in der Umfragesicht eine Teilnehmer für die Konsortialstelle
+
 2139    15.07.2020  hbz-dev     Andreas Bug         Sicherung gegen Mehrfachversand von Formularen an systemkritischen Stellen eingebaut
 
 1878    14.07.2020  hbz-dev     Andreas Feature     gewünschte Anpassungen in den Verknüpfungssichten umgesetzt
@@ -72,13 +90,13 @@
 
 2629    24.06.2020  hbz-dev     Moe     Feature     ES: Suche über Erstellungsdatum bzw. Aktualisierungsdatum
 
-2100    23.06.2020  hbz-dev     Moe     Feature     E-Mails mit Umlauten
-
 2630    24.06.2020  rc1.4       Andreas Feature     Steuersätze 5 und 16 % hinzugefügt
 
 2238    24.06.2020  rc1.4       Andreas Bug         fehlende Vertragskategorisierungen nachgereicht
 
 1476    24.06.2020  rc1.4       Andreas Bug         Verschiedene Verbesserungen am Synchronisationsprozess
+
+2100    23.06.2020  hbz-dev     Moe     Feature     E-Mails mit Umlauten
 
 2620    23.06.2020  hbz-dev     Moe     Feature     Verlängerungsumfrage: Veränderung an zukünftigen Merkmal einblenden
 

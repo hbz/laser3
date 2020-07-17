@@ -119,7 +119,7 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
             matches = RefdataValue.findAll()
         }
         else {
-            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
                 case 'en':
                     matches = RefdataValue.findAllByValue_enIlike("%${params.q}%")
                     break
