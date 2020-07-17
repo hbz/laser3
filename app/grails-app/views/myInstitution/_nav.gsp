@@ -6,5 +6,6 @@
     <semui:subNavItem controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.private_props" />
     <semui:subNavItem controller="myInstitution" action="managePropertyDefinitions" message="menu.institutions.prop_defs" />
     <semui:subNavItem controller="myInstitution" action="managePropertyGroups" message="menu.institutions.prop_groups" />
+    <semui:subNavItem controller="myInstitution" action="manageProperties" message="menu.institutions.manage_private_props" />
 
 </semui:subNav>

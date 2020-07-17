@@ -856,6 +856,16 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
+    def getLinkedSubscriptions() {
+        render controlledListService.getLinkedObjects([source:params.license,destinationType:Subscription.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE]]) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getLinkedLicenses() {
+        render controlledListService.getLinkedObjects([destination:params.subscription,sourceType:License.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE]]) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
     def lookupProviderAndPlatforms() {
         def result = []
 

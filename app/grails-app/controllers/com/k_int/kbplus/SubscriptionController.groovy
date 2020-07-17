@@ -2007,9 +2007,9 @@ class SubscriptionController
         redirect(action: 'linkPackagesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def propertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -2047,7 +2047,7 @@ class SubscriptionController
                 break
         }*/
         //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        Set<PropertyDefinition> propList = result.parentSub.propertySet.type + SubscriptionProperty.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
+        Set<PropertyDefinition> propList = result.parentSub.propertySet.type + PropertyDefinition.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
         result.propList = propList
 
         def oldID = params.id
