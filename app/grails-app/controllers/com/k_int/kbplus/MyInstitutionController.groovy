@@ -7,20 +7,14 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.AccessService
-import de.laser.AuditConfig
-import de.laser.DashboardDueDatesService
-import de.laser.I10nTranslation
-import de.laser.LinksGenerationService
-import de.laser.SystemAnnouncement
+import de.laser.*
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
-import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 //import de.laser.TaskService //unused for quite a long time
 
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
@@ -2235,6 +2229,17 @@ AND EXISTS (
 
         params.tab = params.tab ?: 'new'
 
+        if(params.tab != 'new'){
+            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+        }
+
+        /*if (params.validOnYear == null || params.validOnYear == '') {
+            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+        }*/
+
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution])
+
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
@@ -3332,6 +3337,17 @@ AND EXISTS (
         result.participant = Org.get(Long.parseLong(params.id))
 
         params.tab = params.tab ?: 'new'
+
+        if(params.tab != 'new'){
+            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+        }
+
+        /*if (params.validOnYear == null || params.validOnYear == '') {
+            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+        }*/
+
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.participant])
 
         params.consortiaOrg = result.institution
 

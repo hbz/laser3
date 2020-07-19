@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2509    17.07.2020  rc1.4       Moe     Bug         Länderauswahl-Filter verfeinern
+--      17.07.2020  hbz-dev     Moe     Feature     Umfrage Jahres Filter + Umfrage Standard Sortierung 
+
+2509    17.07.2020  hbz-dev     Moe     Feature     Länderauswahl-Filter verfeinern
 
 --      17.07.2020  hbz-dev     Andreas Bug         Filterverarbeitung von BudgetCodes, Rechnung und Auftrag korrigiert
 

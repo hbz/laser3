@@ -80,6 +80,14 @@ class SurveyController {
         params.offset = result.offset
         params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
 
+
+        if (params.validOnYear == null || params.validOnYear == '') {
+            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+        }
+
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution])
+
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
@@ -140,6 +148,13 @@ class SurveyController {
         params.offset = result.offset
 
         params.tab = params.tab ?: 'created'
+
+        if (params.validOnYear == null || params.validOnYear == '') {
+            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+        }
+
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution])
 
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.org )
 

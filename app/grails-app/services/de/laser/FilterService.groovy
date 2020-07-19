@@ -372,6 +372,12 @@ class FilterService {
             params.filterSet = true
         }
 
+        if (params.validOnYear) {
+            query += " Year(surInfo.startDate) = :validOnYear "
+            queryParams.put('validOnYear', Integer.parseInt(params.validOnYear))
+            params.filterSet = true
+        }
+
         if(params.name) {
             query << "(genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
             queryParams << [name:"${params.name}"]
@@ -606,6 +612,12 @@ class FilterService {
         if (date_restriction) {
             query += " surInfo.startDate <= :date_restr and (surInfo.endDate >= :date_restr or surInfo.endDate is null)"
             queryParams.put('date_restr', date_restriction)
+            params.filterSet = true
+        }
+
+        if (params.validOnYear) {
+            query += " Year(surInfo.startDate) = :validOnYear "
+            queryParams.put('validOnYear', Integer.parseInt(params.validOnYear))
             params.filterSet = true
         }
 
