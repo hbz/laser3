@@ -3368,81 +3368,84 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    Map<String,Object> managePropertyGroups() {
+    def managePropertyGroups() {
         Map<String,Object> result = setResultGenerics()
         //result.editable = true // true, because action is protected (is it? I doubt; INST_USERs have at least reading rights to this page!)
+        switch(params.cmd) {
+            case 'new': result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+                render template: '/templates/properties/propertyGroupModal', model: result
+                return
+            case 'edit':
+                result.pdGroup = genericOIDService.resolveOID(params.oid)
+                result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
 
-        if (params.cmd == 'new') {
-            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
-
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
-        }
-        else if (params.cmd == 'edit') {
-            result.pdGroup = genericOIDService.resolveOID(params.oid)
-            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
-
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
-        }
-        else if (params.cmd == 'delete') {
-            def pdg = genericOIDService.resolveOID(params.oid)
-            try {
-                pdg.delete()
-                flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
-            }
-            catch (e) {
-                flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
-            }
-        }
-        else if (params.cmd == 'processing' && formService.validateToken(params)) {
-
-            def valid
-            def propDefGroup
-            def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
-
-            if (params.oid) {
-                propDefGroup = genericOIDService.resolveOID(params.oid)
-                propDefGroup.name = params.name ?: propDefGroup.name
-                propDefGroup.description = params.description
-                propDefGroup.ownerType = ownerType
-
-                if (propDefGroup.save(flush:true)) {
-                    valid = true
+                render template: '/templates/properties/propertyGroupModal', model: result
+                return
+            case 'delete':
+                PropertyDefinitionGroup pdg = genericOIDService.resolveOID(params.oid)
+                try {
+                    pdg.delete()
+                    flash.message = message(code:'propertyDefinitionGroup.delete.success',args:[pdg.name])
                 }
-            }
-            else {
-                if (params.name && ownerType) {
-                    propDefGroup = new PropertyDefinitionGroup(
-                            name: params.name,
-                            description: params.description,
-                            tenant: result.institution,
-                            ownerType: ownerType,
-                            visible: true
-                    )
-                    if (propDefGroup.save(flush:true)) {
-                        valid = true
+                catch (e) {
+                    flash.error = message(code:'propertyDefinitionGroup.delete.failure',args:[pdg.name])
+                }
+                break
+            case 'processing':
+                if(formService.validateToken(params)) {
+                    boolean valid
+                    PropertyDefinitionGroup propDefGroup
+                    String ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
+
+                    if (params.oid) {
+                        propDefGroup = genericOIDService.resolveOID(params.oid)
+                        propDefGroup.name = params.name ?: propDefGroup.name
+                        propDefGroup.description = params.description
+                        propDefGroup.ownerType = ownerType
+
+                        if (propDefGroup.save()) {
+                            valid = true
+                        }
+                    }
+                    else {
+                        if (params.name && ownerType) {
+                            propDefGroup = new PropertyDefinitionGroup(
+                                    name: params.name,
+                                    description: params.description,
+                                    tenant: result.institution,
+                                    ownerType: ownerType,
+                                    isVisible: true
+                            )
+                            if (propDefGroup.save()) {
+                                valid = true
+                            }
+                        }
+                    }
+
+                    if (valid) {
+                        PropertyDefinitionGroupItem.executeUpdate(
+                                "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                                [pdg: propDefGroup]
+                        )
+
+                        params.list('propertyDefinition')?.each { pd ->
+
+                            new PropertyDefinitionGroupItem(
+                                    propDef: pd,
+                                    propDefGroup: propDefGroup
+                            ).save()
+                        }
                     }
                 }
-            }
-
-            if (valid) {
-                PropertyDefinitionGroupItem.executeUpdate(
-                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
-                        [pdg: propDefGroup]
-                )
-
-                params.list('propertyDefinition')?.each { pd ->
-
-                    new PropertyDefinitionGroupItem(
-                            propDef: pd,
-                            propDefGroup: propDefGroup
-                    ).save(flush: true)
-                }
-            }
+                break
         }
 
-        result.propDefGroups = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
+        Set<PropertyDefinitionGroup> unorderedPdgs = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
+        result.propDefGroups = [:]
+        PropertyDefinition.AVAILABLE_GROUPS_DESCR.each { String propDefGroupType ->
+            result.propDefGroups.put(propDefGroupType,unorderedPdgs.findAll { PropertyDefinitionGroup pdg -> pdg.ownerType == PropertyDefinition.getDescrClass(propDefGroupType)})
+        }
+
         result
     }
 

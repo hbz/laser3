@@ -68,8 +68,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     @Transient
     final static String[] AVAILABLE_GROUPS_DESCR = [
-            SUB_PROP,
             ORG_PROP,
+            SUB_PROP,
             PLA_PROP,
             LIC_PROP
     ]
