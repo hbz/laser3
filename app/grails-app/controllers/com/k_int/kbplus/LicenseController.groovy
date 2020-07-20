@@ -419,7 +419,8 @@ class LicenseController
         result.subscriptions = []
         result.putAll(setSubscriptionFilterData())
         if(params.status != "FETCH_ALL") {
-            result.subscriptionsForFilter = Subscription.executeQuery("select s from Subscription s where s.status.id = :status and concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)",[status:params.status as Long,lic:GenericOIDService.getOID(result.license),linkType:RDStore.LINKTYPE_LICENSE])
+            String query = "select s from Subscription s where s.status.id = :status and concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
+            result.subscriptionsForFilter = Subscription.executeQuery( query, [status:params.status as Long, lic:GenericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
         }
         if(result.license.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
@@ -435,7 +436,8 @@ class LicenseController
             }
             result.consAtMember = true
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
-            result.validSubChilds = Subscription.executeQuery("select s from Subscription s join s.orgRelations oo where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType in :subscriberRoleTypes ${whereClause} order by oo.org.sortname asc, oo.org.name asc, s.name asc, s.startDate asc, s.endDate asc",queryParams)
+            String query = "select s from Subscription s join s.orgRelations oo where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType) and oo.roleType in :subscriberRoleTypes ${whereClause} order by oo.org.sortname asc, oo.org.name asc, s.name asc, s.startDate asc, s.endDate asc"
+            result.validSubChilds = Subscription.executeQuery( query, queryParams )
             ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
 
             result.validSubChilds.each { sub ->
