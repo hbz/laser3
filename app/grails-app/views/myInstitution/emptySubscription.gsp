@@ -101,14 +101,14 @@
             <g:else>
                 <div class="cons-options">
                     <semui:filter>
-                        <g:formRemote name="x" url="[action:'ajaxEmptySubscription']" update="orgListTable" class="ui form">
+                        <laser:remoteForm name="x" url="[controller:'myInstitution', action:'ajaxEmptySubscription']" data-update="orgListTable" class="ui form">
                             <g:render template="/templates/filter/orgFilter"
                                       model="[
                                               tmplConfigShow: [['name']],
                                               tmplConfigFormFilter: true,
                                               useNewLayouter: true
                                       ]" />
-                        </g:formRemote>
+                        </laser:remoteForm>
                     </semui:filter>
 
                     <div id="orgListTable">

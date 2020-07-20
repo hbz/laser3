@@ -45,7 +45,7 @@
       <h4 class="ui header">${message(code:'template.coreAssertionsModal.addDate')}</h4>
       <p>${message(code:'template.coreAssertionsModal.addDate.note')}</p>
       
-      <g:formRemote  name="coreExtendForm" url="[controller: 'ajax', action: 'coreExtend']" before="hideModal()" onComplete="showCoreAssertionModal()" update="magicArea">
+      <laser:remoteForm name="coreExtendForm" url="[controller: 'ajax', action: 'coreExtend']" data-before="hideModal()" data-always="showCoreAssertionModal()" data-update="magicArea">
         <input type="hidden" name="tipID" value="${tipID}"/>
         <input type="hidden" name="title" value="${title}"/>
         <table style="width:100%">
@@ -63,7 +63,7 @@
             </td>
           </tr>
         </table>
-      </g:formRemote>
+      </laser:remoteForm>
     </div>
 
   </div>

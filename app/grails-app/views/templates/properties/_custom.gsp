@@ -228,12 +228,12 @@
             <g:else>
                 <td>
             </g:else>
-                    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
+                    <laser:remoteForm url="[controller: 'ajax', action: 'addCustomPropertyValue']"
                                   name="cust_prop_add_value_custom"
                                   class="ui form"
-                                  update="${custom_props_div}"
-                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                  onComplete="c3po.loadJsAfterAjax()"
+                                  data-update="${custom_props_div}"
+                                  data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                  data-always="c3po.loadJsAfterAjax()"
                     >
 
                         <input type="hidden" name="propIdent" data-desc="${prop_desc}" class="customPropSelect"/>
@@ -245,7 +245,7 @@
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 
                         <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
-                    </g:formRemote>
+                    </laser:remoteForm>
                 </td>
             </tr>
         </tfoot>

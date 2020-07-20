@@ -662,7 +662,7 @@ r2d2 = {
                                 window.location.href = url;
                             }
                             if (remoteLink) {
-                                bb8.ajax(that)
+                                bb8.ajax4remoteLink(that)
                             }
                             $('#js-confirmation-content-term').html('');
                         },
