@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2693    17.07.2020  rc1.4       Moe     Bug         Umfrage Ausschüttungsfunktion 0% nicht ausschütten
+
 --      15.07.2020  rc1.4       Moe     Bug         Sortierung Umfrage
 
 --      15.07.2020  rc1.4       Moe     Bug         Für die Umfrage wieder das ConfigFinish Flag anzeigen
