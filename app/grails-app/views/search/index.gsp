@@ -293,7 +293,7 @@ String period
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${(hit.getSourceAsMap().sector == 'Publisher') ? message(code: 'spotlight.provideragency') : message(code: 'spotlight.'+hit.getSourceAsMap().rectype.toLowerCase())}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="organisation" action="show"
@@ -319,7 +319,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -338,7 +338,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -357,7 +357,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -376,7 +376,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -395,7 +395,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="package" action="show"
@@ -419,7 +419,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="platform" action="show"
@@ -443,7 +443,7 @@ String period
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="subscription" action="show"
@@ -502,7 +502,7 @@ String period
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="license" action="show"
