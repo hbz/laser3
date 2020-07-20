@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2509    17.07.2020  rc1.4       Moe     Bug         Länderauswahl-Filter verfeinern
+
 --      17.07.2020  hbz-dev     Andreas Bug         Filterverarbeitung von BudgetCodes, Rechnung und Auftrag korrigiert
 
 --      17.07.2020  hbz-dev     Andreas Bug         Absturzfehler behoben, der bei fehlendem GOKb-Paket-Eintrag auf /subscription/show auftrat
@@ -9,6 +11,7 @@
 2694    17.07.2020  hbz-dev     Andreas Feature     Neue Seite zur Massenverwaltung von Merkmalen angelegt
 
 2043    17.07.2020  hbz-dev     Andreas Feature     Link zu vorbelegtem Filter bei Merkmalsnutzung angelegt (vorerst nur Lizenz und Vertrag)
+
 
 --      15.07.2020  rc1.4       Moe     Bug         Sortierung Umfrage
 
