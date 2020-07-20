@@ -71,6 +71,7 @@ class SubscriptionController
     def auditService
     def surveyService
     FormService formService
+    AccessPointService accessPointService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -1592,7 +1593,19 @@ class SubscriptionController
         if (params.exportXLS) {
             exportOrg(orgs, filename, true, 'xlsx')
             return
-        } else {
+        }else if (params.exportIPs) {
+            SXSSFWorkbook wb
+            filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportIPs.fileName'))
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(result.filteredSubChilds.orgs.flatten())
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else {
             withFormat {
                 html {
                     result
@@ -5770,9 +5783,6 @@ class SubscriptionController
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.subscription)
         result.consortialView = result.showConsortiaFunctions
-
-        result.showCollectiveFunctions = showCollectiveFunctions(result.contextOrg, result.subscription)
-        result.departmentalView = result.showCollectiveFunctions
 
         Map args = [:]
         if(result.consortialView) {

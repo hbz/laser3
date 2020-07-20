@@ -8,7 +8,6 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
 import grails.util.Holders
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -85,5 +84,65 @@ class AccessPointService {
             sheetData.put(escapeService.escapeString(accessPoint.name), [titleRow: titles, columnData: accessPointData])
         }
         return exportService.generateXLSXWorkbook(sheetData)
+    }
+    def exportIPsOfOrgs(List<Org> orgs) {
+
+        List titles = []
+        def local = LocaleContextHolder.getLocale()
+
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, local),
+                       'Name',
+                       messageSource.getMessage('org.shortname.label',null, local),
+                       messageSource.getMessage('accessPoint.ip.name.label',null, local),
+                       messageSource.getMessage('accessMethod.label',null, local),
+                       messageSource.getMessage('accessPoint.ip.format.range',null, local),
+                       messageSource.getMessage('accessPoint.ip.format.cidr',null, local)
+        ])
+
+        List accessPointData = []
+        orgs.each { Org org ->
+            List row = []
+            row.add([field: org.sortname ?: '', style: null])
+            row.add([field: org.name ?: '', style: null])
+            row.add([field: org.shortname ?: '', style: null])
+            accessPointData.add(row)
+
+            List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
+            accessPoints.each { accessPoint ->
+
+                if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_IP) {
+
+                    Map accessPointDataList = accessPoint.getAccessPointIpRanges()
+
+                    accessPointDataList.ipv4Ranges.each {
+                        row = []
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: it.name ?: '', style: null])
+                        row.add([field: 'IPv4', style: null])
+                        row.add([field: it.ipRange ?: '', style: null])
+                        row.add([field: it.ipCidr ?: '', style: null])
+                        accessPointData.add(row)
+                    }
+
+                    accessPointDataList.ipv6Ranges.each {
+                        row = []
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: it.name ?: '', style: null])
+                        row.add([field: 'IPv6', style: null])
+                        row.add([field: it.ipRange ?: '', style: null])
+                        row.add([field: it.ipCidr ?: '', style: null])
+                        accessPointData.add(row)
+                    }
+                }
+            }
+            accessPointData.add([[field: '', style: null]])
+
+        }
+
+        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName',null, local)}": [titleRow: titles, columnData: accessPointData]])
     }
 }
