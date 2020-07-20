@@ -2,6 +2,8 @@
 // Show Buttons only on hover
 .ui.divided.middle.la-flex-list .item {
   display: flex;
+  align-items: center;
+  min-width: max-content;
   .button {
     opacity: 0;
     -webkit-transition: opacity 1s; /* For Safari 3.1 to 6.0 */
@@ -22,20 +24,6 @@
   .button:focus {
     opacity: 1;
   }
-}
-.ui.list.la-flex-list > .item > span  {
-  align-self: center;
-}
-.ui.list.la-flex-list > .item > span + .content  {
-  flex-basis: 90%;
-  align-self: center;
-
-}
-.ui.list.la-flex-list > .item > span + .content + .content {
-  flex-basis: 10%;
-  align-self: center;
-  text-align: right;
-  display: inline-flex;
 }
 
 .la-list-border-around {
