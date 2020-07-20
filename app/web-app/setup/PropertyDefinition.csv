@@ -210,7 +210,7 @@ Subscription Property,reverse charge,reverse charge,reverse charge,class com.k_i
 Subscription Property,Scale of discount,Rabattstaffel,Scale of discount,class java.lang.String,,,,,Wie sieht die Rabattstaffel für die Lizenz aus?,,,,,
 Subscription Property,SFX entry,SFX-Eintrag,SFX entry,class com.k_int.kbplus.RefdataValue,y.n,,,,Gibt es einen SFX-Eintrag?,,,,,
 Subscription Property,Sim-User Number,Simultannutzer Zahl,Sim-User Number,class com.k_int.kbplus.RefdataValue,sim.user.number,,,,Wie viele gleichzeitige Nutzerzugriffe umfasst die Lizenz?,How many users may access the subscription at the same time?,,,,
-Subscription Property,Simuser,Simuser,Simultannutzer,class com.k_int.kbplus.RefdataValue,y.n,,,,Sind die simuser relevant für die Preisbestimmung?,,,,,
+Subscription Property,Simuser,Simuser,Simultannutzer,class com.k_int.kbplus.RefdataValue,y.n,,,,Sind die Simultannutzer relevant für die Preisbestimmung?,,,,,
 Subscription Property,Specialised statistics / classification,Fachstatistik / Klassifikation,Specialised statistics / classification,class java.lang.Integer,,,true,,Fachstatistik / Klassifikation,,,,,
 Subscription Property,Statistic,Statistik,Statistic,class java.lang.String,,,,,,,,,,
 Subscription Property,Statistic access,Statistikzugang,Statistic access,class java.lang.String,,,,,Mit welchen Zugangsdaten können die Statistiken abgerufen werden?,With which credentials may the statistics be fetched?,,,,
