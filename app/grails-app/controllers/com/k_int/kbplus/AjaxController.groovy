@@ -2421,7 +2421,7 @@ class AjaxController {
             }
         }
         result = result.flatten()
-        println(result)
+
         render result as JSON
     }
 

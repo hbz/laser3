@@ -85,7 +85,7 @@
 
         </div>
 
-        <div class="two fields">
+        <div class="four fields">
 
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>
@@ -116,6 +116,8 @@
                 </select>
 
             </div>
+
+            %{--<g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>--}%
 
         </div>
 

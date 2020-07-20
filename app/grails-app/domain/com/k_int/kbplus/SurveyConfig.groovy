@@ -59,7 +59,7 @@ class SurveyConfig {
             documents       : DocContext,
             surveyProperties: SurveyConfigProperties,
             orgs            : SurveyOrg,
-            surResults      : SurveyResult
+            propertySet      : SurveyResult
     ]
 
     static constraints = {
@@ -81,7 +81,7 @@ class SurveyConfig {
         url3(nullable: true, blank: false, maxSize:512)
         evaluationFinish (nullable: true, blank: false)
         subSurveyUseForTransfer (nullable: true, blank: false)
-        surResults(nullable: true, blank: false)
+        propertySet(nullable: true, blank: false)
         transferWorkflow (nullable: true, blank: false)
         createTitleGroups (nullable: true, blank: false)
 

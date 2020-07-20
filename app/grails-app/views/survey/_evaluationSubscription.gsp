@@ -31,6 +31,17 @@
 </g:if>
 
 <semui:form>
+    <semui:filter>
+        <g:form action="surveyEvaluation" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
+            <g:render template="/templates/filter/orgFilter"
+                      model="[
+                              tmplConfigShow      : [['name', 'libraryType'], ['region', 'libraryNetwork', 'property']],
+                              tmplConfigFormFilter: true,
+                              useNewLayouter      : true
+                      ]"/>
+        </g:form>
+    </semui:filter>
 
     <h4><g:message code="surveyParticipants.hasAccess"/></h4>
 

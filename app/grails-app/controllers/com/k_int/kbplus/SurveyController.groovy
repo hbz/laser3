@@ -80,6 +80,7 @@ class SurveyController {
         params.offset = result.offset
         params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
 
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUR_PROP], result.institution)
 
         if (params.validOnYear == null || params.validOnYear == '') {
             def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
@@ -1115,24 +1116,6 @@ class SurveyController {
 
         params.tab = params.tab ?: 'surveyConfigsView'
 
-        result.participantsNotFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).sort {
-            it.participant.sortname
-        }
-
-        result.participantsFinish = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).sort {
-            it.participant.sortname
-        }
-
-        result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig)?.participant.flatten().unique { a, b -> a.id <=> b.id }
-        result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)?.participant.flatten().unique { a, b -> a.id <=> b.id }
-
-        result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).sort {
-            it.participant.sortname
-        }
-
-        result.participants = result.surveyResult
-        result.participantsTotal = result.surveyResult?.participant.flatten().unique { a, b -> a.id <=> b.id }
-
         if ( params.exportXLSX ) {
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
@@ -1159,6 +1142,20 @@ class SurveyController {
 
             return
         }else {
+
+            if(params.tab == 'participantsViewAllNotFinish'){
+                params.participantsNotFinish = true
+            }
+            if(params.tab == 'participantsViewAllFinish'){
+                params.participantsFinish = true
+            }
+
+            def fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
+
+            result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+
+            result.participantsTotal = result.surveyConfig.orgs.size()
+            result.propList    = result.surveyConfig.surveyProperties.surveyProperty
             result
         }
 
@@ -4540,6 +4537,25 @@ class SurveyController {
         //println(tmpQuery)
 
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
+    }
+
+    private ArrayList<Long> getOrgIdsForFilter() {
+        def result = setResultGenericsAndCheckAccess()
+        ArrayList<Long> resultOrgIds
+        def tmpParams = params.clone()
+        tmpParams.remove("max")
+        tmpParams.remove("offset")
+        if (accessService.checkPerm("ORG_CONSORTIUM"))
+            tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
+            tmpParams.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
+        def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
+
+        if (tmpParams.filterPropDef) {
+            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
+        }
+        fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
+        Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
     }
 
     private def exportRenewalResult(Map renewalResult) {
