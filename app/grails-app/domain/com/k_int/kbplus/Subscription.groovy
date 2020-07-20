@@ -682,15 +682,24 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                         result.sorted << ['global', it, null]
                     }
                 }
-                // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextOrg?.id) {
+                // consortium @ member or single user; getting group by tenant (and instanceOf.binding)
+                if (it.tenant?.id == contextOrg.id) {
                     if (binding) {
-                        result.member << [it, binding] // TODO: remove
-                        result.sorted << ['member', it, binding]
+                        if(contextOrg.id == this.getConsortia().id) {
+                            result.member << [it, binding] // TODO: remove
+                            result.sorted << ['member', it, binding]
+                        }
+                        else {
+                            result.local << [it, binding]
+                            result.sorted << ['local', it, binding]
+                        }
+                    } else {
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
                 // subscriber consortial; getting group by consortia and instanceOf.binding
-                else if (it.tenant?.id == this.instanceOf.getConsortia()?.id) {
+                else if (it.tenant?.id == this.getConsortia()?.id) {
                     if (binding) {
                         result.member << [it, binding] // TODO: remove
                         result.sorted << ['member', it, binding]
@@ -701,7 +710,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             else {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg.id) {
                     if (binding) {
                         result.local << [it, binding] // TODO: remove
                         result.sorted << ['local', it, binding]
