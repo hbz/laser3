@@ -7,11 +7,11 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="allOrgTypeIds" value="${orgInstance.getallOrgTypeIds()}" />
-    <g:set var="isProvider" value="${RDStore.OT_PROVIDER.id in allOrgTypeIds}" />
+    <g:set var="isProviderOrAgency" value="${RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds}" />
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
     <g:set var="isGrantedOrgRoleAdmin" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}" />
 
-    <g:if test="${isProvider}">
+    <g:if test="${isProviderOrAgency}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
     </g:if>
     <g:elseif test="${institutionalView}">
@@ -85,7 +85,7 @@
                                 </dd>
                             </dl>
                         </g:if>
-                        <g:if test="${!isProvider}">
+                        <g:if test="${!isProviderOrAgency}">
                             <dl>
                                 <dt>
                                     <g:message code="org.sortname.label" />
@@ -106,6 +106,7 @@
                             <br />&nbsp<br />&nbsp<br />
                         </dd>
                     </dl>
+                    <g:if test="${!isProviderOrAgency}">
                     <dl>
                         <dt>
                             <g:message code="org.legalPatronName.label" />
@@ -118,7 +119,8 @@
                             <semui:xEditable owner="${orgInstance}" field="legalPatronName"/>
                         </dd>
                     </dl>
-                    <g:if test="${!departmentalView}">
+                    </g:if>
+                    <g:if test="${!departmentalView && !isProviderOrAgency}">
                         <dl>
                             <dt>
                                 <g:message code="org.urlGov.label"/>
@@ -190,7 +192,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${departmentalView == false && !isProvider}">
+            <g:if test="${departmentalView == false && !isProviderOrAgency}">
                 <div class="ui card">
                     <div class="content">
                             <dl>
@@ -288,7 +290,7 @@
             </g:if>
 
 
-            <g:if test="${isProvider}">
+            <g:if test="${isProviderOrAgency}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -312,7 +314,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${(!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor}">
+            <g:if test="${((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) && !isProviderOrAgency}">
                 <div class="ui card">
                     <div class="content">
                         <H3><g:message code="org.contacts.and.addresses.label" /></H3>
