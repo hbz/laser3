@@ -1150,6 +1150,10 @@ class SurveyController {
                 params.participantsFinish = true
             }
 
+            result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
+            result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
+
+
             def fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
 
             result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
