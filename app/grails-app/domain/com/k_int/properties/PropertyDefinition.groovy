@@ -5,8 +5,8 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ContextService
-import de.laser.base.AbstractI10n
 import de.laser.I10nTranslation
+import de.laser.base.AbstractI10n
 import de.laser.helper.SwissKnife
 import grails.util.Holders
 import groovy.util.logging.Log4j
@@ -523,6 +523,15 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         String a = this.getI10n('name') ?:''
         String b = pd.getI10n('name') ?:''
         return a.toLowerCase()?.compareTo(b.toLowerCase())
+    }
+
+    String getPropertyType(){
+       if(type == Integer.toString()){ return "intValue" }
+        if(type == String.toString()){ return "stringValue" }
+        if(type == BigDecimal.toString()){ return "decValue" }
+        if(type == Date.toString()){ return "dateValue" }
+        if(type == URL.toString()){ return "urlValue" }
+        if(type == RefdataValue.toString()){ return "refValue"}
     }
 }
 

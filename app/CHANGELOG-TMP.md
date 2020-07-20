@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2695    17.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Nach Merkmale Wert filtern
+2497    18.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Merkmale nach Wert sortieren
+
+2695    18.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Nach Merkmale Wert filtern
 
 --      17.07.2020  hbz-dev     Moe     Feature     Umfrage Jahres Filter + Umfrage Standard Sortierung 
 
