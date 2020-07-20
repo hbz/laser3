@@ -148,16 +148,33 @@
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>
-                              <g:each in="${allLinkedSubscriptions.get(l)}" var="sub">
+                              <div id="${l.id}linkedSubscriptions">
+                                  <script>
+                                      $.ajax({
+                                          url: "<g:createLink controller="ajax" action="getLinkedSubscriptions" />",
+                                          data: {
+                                              license: "${GenericOIDService.getOID(l)}"
+                                          }
+                                      }).done(function(data) {
+                                          <%--<g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>+--%>
+                                          let link = "<g:createLink controller="subscription" action="show"/>";
+                                          $.each(data.results,function(k,v) {
+                                              $("#${l.id}linkedSubscriptions").append('<i class="icon clipboard outline outline la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br>');
+                                          });
+                                      });
+                                  </script>
+                              </div>
+                              <%--<g:each in="${allLinkedSubscriptions.findAll { Links li -> li.source == GenericOIDService.getOID(l) }}" var="row">
+                                  <g:set var="sub" value="${genericOIDService.resolveOID(row.destination)}"/>
                                   <g:if test="${sub.status.id == RDStore.SUBSCRIPTION_CURRENT.id}">
-                                      <g:if test="${institution.id in sub.orgRelations.org.id/* || accessService.checkPerm("ORG_CONSORTIUM")*/}">
+                                      <%--<g:if test="${institution.id in orgRelations.org.id/* || accessService.checkPerm("ORG_CONSORTIUM")*/}">
                                           <div class="la-flexbox">
                                               <i class="icon clipboard outline outline la-list-icon"></i>
                                               <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
                                           </div>
                                       </g:if>
                                   </g:if>
-                              </g:each>
+                              </g:each>--%>
                           </td>
                           <g:if test="${'memberLicenses' in licenseFilterTable}">
                               <td>
