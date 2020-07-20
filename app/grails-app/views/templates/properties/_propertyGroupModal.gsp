@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; com.k_int.properties.*; com.k_int.kbplus.RefdataCategory; de.laser.FormService"%>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; com.k_int.properties.*; com.k_int.kbplus.RefdataCategory; de.laser.FormService;com.k_int.kbplus.GenericOIDService"%>
 <laser:serviceInjection />
 
 <semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label">
@@ -8,7 +8,7 @@
         <input type="hidden" name="cmd" value="processing"/>
 
         <g:if test="${pdGroup}">
-            <input type="hidden" name="oid" value="${pdGroup.class.name}:${pdGroup.id}"/>
+            <input type="hidden" name="oid" value="${GenericOIDService.getOID(pdGroup)}"/>
         </g:if>
 
         <div class="ui two column grid">

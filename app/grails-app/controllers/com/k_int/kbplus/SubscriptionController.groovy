@@ -5824,13 +5824,8 @@ class SubscriptionController
     }
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getConsortia()?.id == contextOrg?.id) && subscription.getCalculatedType() in
+        return ((subscription.getConsortia()?.id == contextOrg.id) && subscription.getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
-    }
-
-    static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getCollective()?.id == contextOrg?.id) && subscription.getCalculatedType() in
-                [CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {
