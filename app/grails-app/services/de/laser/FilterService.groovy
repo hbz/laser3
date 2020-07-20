@@ -385,28 +385,28 @@ class FilterService {
         }
 
         if(params.name) {
-            surveyResult " and (genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
+            query += " and (genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
             queryParams << [name:"${params.name}"]
             params.filterSet = true
         }
 
         if(params.status) {
-            surveyResult " and surInfo.status = :status"
+            query += " and surInfo.status = :status"
             queryParams << [status: RefdataValue.get(params.status)]
             params.filterSet = true
         }
         if(params.type) {
-            surveyResult " and surInfo.type = :type"
+            query += " and surInfo.type = :type"
             queryParams << [type: RefdataValue.get(params.type)]
             params.filterSet = true
         }
         if (params.startDate && sdFormat) {
-            surveyResult " and surInfo.startDate >= :startDate"
+            query += " and surInfo.startDate >= :startDate"
             queryParams << [startDate : sdFormat.parse(params.startDate)]
             params.filterSet = true
         }
         if (params.endDate && sdFormat) {
-            surveyResult " and surInfo.endDate <= :endDate"
+            query += " and surInfo.endDate <= :endDate"
             queryParams << [endDate : sdFormat.parse(params.endDate)]
             params.filterSet = true
         }
@@ -414,53 +414,53 @@ class FilterService {
         if (params.mandatory || params.noMandatory) {
 
             if (params.mandatory && !params.noMandatory) {
-                surveyResult " and surInfo.isMandatory = :mandatory"
+                query += " and surInfo.isMandatory = :mandatory"
                 queryParams << [mandatory: true]
             }else if (!params.mandatory && params.noMandatory){
-                surveyResult " and surInfo.isMandatory = :mandatory"
+                query += " and surInfo.isMandatory = :mandatory"
                 queryParams << [mandatory: false]
             }
             params.filterSet = true
         }
 
         if(params.ids) {
-            surveyResult " and surInfo.id in (:ids)"
+            query += " and surInfo.id in (:ids)"
             queryParams << [ids: params.list('ids').collect{Long.parseLong(it)}]
             params.filterSet = true
         }
 
         if(params.checkSubSurveyUseForTransfer) {
-            surveyResult " and surConfig.subSurveyUseForTransfer = :checkSubSurveyUseForTransfer"
+            query += " and surConfig.subSurveyUseForTransfer = :checkSubSurveyUseForTransfer"
             queryParams << [checkSubSurveyUseForTransfer: true]
             params.filterSet = true
         }
 
         if (params.provider) {
-            surveyResult " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
+            query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
             queryParams << [provider : Org.get(params.provider)]
             params.filterSet = true
         }
 
         if (params.list('filterSub')) {
-            surveyResult " and surConfig.subscription.name in (:subs) "
+            query += " and surConfig.subscription.name in (:subs) "
             queryParams << [subs : params.list('filterSub')]
             params.filterSet = true
         }
 
         if (params.filterStatus && params.filterStatus != "" && params.list('filterStatus')) {
-            surveyResult " and surInfo.status.id in (:filterStatus) "
+            query += " and surInfo.status.id in (:filterStatus) "
             queryParams << [filterStatus : params.list('filterStatus').collect { Long.parseLong(it) }]
             params.filterSet = true
         }
 
         if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
-            surveyResult " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
+            query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
             queryParams << [filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
             params.filterSet = true
         }
 
         if (params.participant) {
-            surveyResult " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant)"
+            query += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant)"
             queryParams << [participant : params.participant]
         }
 

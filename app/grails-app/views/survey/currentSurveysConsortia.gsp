@@ -85,7 +85,7 @@
 
         </div>
 
-        <div class="four fields">
+        <div class="two fields">
 
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>

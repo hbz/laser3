@@ -87,7 +87,7 @@
                         controller="survey" action="surveyEvaluation"
                         params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
                     ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-                    <div class="ui floating circular label">${participantsFinishTotal.size() ?: 0}</div>
+                    <div class="ui floating circular label">${participantsFinishTotal}</div>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
