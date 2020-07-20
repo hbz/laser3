@@ -90,7 +90,41 @@
 
         <div class="ui top attached label">Zusätzliche Icons in Laser</div>
     </div>
+    <h4 class="ui header">Icons und Farben von Objekten</h4>
+    <p>Die Größe der Icons ist von der Umgebung abhängig (durch Größenangabe in em, die sich nach der Fontgröße des Elternelements richtet)</p>
+    <i class="circular la-license icon"></i>
+    <i class="circular la-package icon"></i>
+    <i class="circular la-organisation icon"></i>
+    <i class="circular la-platform icon"></i>
+    <i class="circular la-journal icon"></i>
+    <i class="circular la-database icon"></i>
+    <i class="circular la-ebook icon"></i>
+    <i class="circular la-book icon"></i>
+    <div class="html ui top attached segment example">
 
+        <div class="ui doubling five column grid">
+            <div class="column"><a href="#"><i class="circular la-license icon"></i></a>circular la-license icon</div>
+
+            <div class="column"><i class="circular la-package icon"></i>circular la-package icon</div>
+
+            <div class="column"><i class="circular la-subscription icon"></i>circular la-subscription icon</div>
+
+            <div class="column"><i class="circular la-organisation icon"></i>circular la-organisation icon</div>
+
+            <div class="column"><i class="circular la-platform icon"></i>circular la-platform icon</div>
+
+            <div class="column"><i class="circular la-journal icon"></i>circular la-journal icon</div>
+
+            <div class="column"><i class="circular la-database icon"></i>circular la-database icon</div>
+
+            <div class="column"><i class="circular la-ebook icon"></i>circular la-ebook icon</div>
+
+            <div class="column"><i class="circular la-book icon"></i>circular la-book icon</div>
+
+        </div>
+
+        <div class="ui top attached label">Zusätzliche Icons in Laser</div>
+    </div>
     <h2 class="ui dividing header">Form-Elemente<a class="anchor" id="form-elemente"></a></h2>
     <h4 class="ui header">Dropdowns</h4>
     <div class="dropdown example">

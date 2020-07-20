@@ -358,7 +358,7 @@ class SemanticUiInplaceTagLib {
             def default_empty = message(code:'default.button.edit.label')
             def data_link     = null
 
-            out << "<a href=\"#\" id=\"${id}\" "
+            out << "<a style=\"display: inline-block;\" href=\"#\" id=\"${id}\" "
             if(attrs.owner instanceof SurveyResult){
                 out << "data-onblur=\"submit\" "
             }else {

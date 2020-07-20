@@ -13484,91 +13484,113 @@ i.icon.la-laser:before {
   vertical-align: super;
 }
 
-.circular.icon.la-search-license {
-  display: inline-block;
-  background-color: #008C25;
-  border-color: #008C25;
+/* Light Grey */
+
+i.la-light-grey.icon {
+  color: #e8e8e8 !important;
 }
 
-.circular.icon.la-search-license:before {
+i.inverted.la-light-grey.icon {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+i.inverted.bordered.la-light-grey.icon,
+i.inverted.circular.la-light-grey.icon {
+  background-color: #e8e8e8 !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.circular.icon.la-license,
+.circular.icon.la-package,
+.circular.icon.la-subscription,
+.circular.icon.la-organisation,
+.circular.icon.la-platform,
+.circular.icon.la-journal,
+.circular.icon.la-database,
+.circular.icon.la-ebook {
+  display: inline-block;
+  -webkit-box-shadow: 0em 0em 0em 0em rgba(0, 0, 0, 0) inset;
+  box-shadow: 0em 0em 0em 0em rgba(0, 0, 0, 0) inset;
+}
+
+.icon.la-license {
+  background-color: #008C25;
+}
+
+.icon.la-license:before {
   content: "\f24e";
   color: white;
 }
 
-.circular.icon.la-search-package {
-  display: inline-block;
+.icon.la-package {
   background-color: #76007A;
-  border-color: #76007A;
 }
 
-.circular.icon.la-search-package:before {
+.icon.la-package:before {
   content: "\f06b";
   color: white;
 }
 
-.circular.icon.la-search-subscription {
-  display: inline-block;
+.icon.la-subscription {
   background-color: #fa820a;
-  border-color: #fa820a;
 }
 
-.circular.icon.la-search-subscription:before {
+.icon.la-subscription:before {
   content: "\f328";
   color: white;
 }
 
-.circular.icon.la-search-organisation {
-  display: inline-block;
+.icon.la-organisation {
   background-color: #00B5AD;
-  border-color: #00B5AD;
 }
 
-.circular.icon.la-search-organisation:before {
+.icon.la-organisation:before {
   content: "\f19c";
   color: white;
 }
 
-.circular.icon.la-search-platform {
-  display: inline-block;
+.icon.la-platform {
   background-color: #FBC71C;
-  border-color: #FBC71C;
 }
 
-.circular.icon.la-search-platform:before {
+.icon.la-platform:before {
   content: "\f0c2";
   color: white;
 }
 
-.circular.icon.la-search-journal {
-  display: inline-block;
+.icon.la-journal {
   background-color: #004678;
-  border-color: #004678;
 }
 
-.circular.icon.la-search-journal:before {
+.icon.la-journal:before {
   content: "\f1ea";
   color: white;
 }
 
-.circular.icon.la-search-database {
-  display: inline-block;
+.icon.la-database {
   background-color: #004678;
-  border-color: #004678;
 }
 
-.circular.icon.la-search-database:before {
+.icon.la-database:before {
   content: "\f1c0";
   color: white;
 }
 
-.circular.icon.la-search-ebook {
-  display: inline-block;
+.icon.la-ebook {
   background-color: #004678;
-  border-color: #004678;
 }
 
-.circular.icon.la-search-ebook:before {
+.icon.la-ebook:before {
   content: "\f3fa";
+  color: white;
+}
+
+.icon.la-book {
+  background-color: #004678;
+}
+
+.icon.la-book:before {
+  content: "\f02d";
   color: white;
 }
 

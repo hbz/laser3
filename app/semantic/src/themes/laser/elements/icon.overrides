@@ -1805,93 +1805,108 @@ i.icon.la-laser:before { content: "\e90f"; }
   vertical-align: super;
   }
 }
-
-.circular.icon.la-search-license {
-  display: inline-block;
-  background-color: @license;
-  border-color: @license;
+/* Light Grey */
+i.la-light-grey.icon {
+  color: #e8e8e8 !important;
 }
-
-.circular.icon.la-search-license:before {
+i.inverted.la-light-grey.icon {
+  color: @metaColor !important;
+}
+i.inverted.bordered.la-light-grey.icon,
+i.inverted.circular.la-light-grey.icon {
+  background-color: #e8e8e8 !important;
+  color: @metaColor !important;
+}
+// special for search icons
+.circular.icon.la-license,
+.circular.icon.la-package,
+.circular.icon.la-subscription,
+.circular.icon.la-organisation,
+.circular.icon.la-platform,
+.circular.icon.la-journal,
+.circular.icon.la-database,
+.circular.icon.la-ebook{
+  display: inline-block;
+  -webkit-box-shadow: 0em 0em 0em 0em rgba(0, 0, 0, 0) inset;
+  box-shadow: 0em 0em 0em 0em rgba(0, 0, 0, 0) inset;
+}
+// for all the icons
+// ****  License  **** //
+.icon.la-license {
+  background-color: @license;
+}
+.icon.la-license:before {
   content: "\f24e";
   color: white;
 }
 
-.circular.icon.la-search-package {
-  display: inline-block;
+// ****  Package **** //
+.icon.la-package {
   background-color: @package;
-  border-color: @package;
 }
-
-.circular.icon.la-search-package:before {
+.icon.la-package:before {
   content: "\f06b";
   color: white;
 }
 
-.circular.icon.la-search-subscription {
-  display: inline-block;
+// ****  Subscription **** //
+.icon.la-subscription {
   background-color: @subscription;
-  border-color: @subscription;
 }
-
-.circular.icon.la-search-subscription:before {
+.icon.la-subscription:before {
   content: "\f328";
   color: white;
 }
-
-.circular.icon.la-search-organisation {
-  display: inline-block;
+// ****  organisation **** //
+.icon.la-organisation {
   background-color: @organisation;
-  border-color: @organisation;
 }
-
-.circular.icon.la-search-organisation:before {
+.icon.la-organisation:before {
   content: "\f19c";
   color: white;
 }
-
-.circular.icon.la-search-platform {
-  display: inline-block;
+// ****  platform **** //
+.icon.la-platform {
   background-color: @platform;
-  border-color: @platform;
 }
-
-.circular.icon.la-search-platform:before {
+.icon.la-platform:before {
   content: "\f0c2";
   color: white;
 }
-
-.circular.icon.la-search-journal {
-  display: inline-block;
+// ****  journal **** //
+.icon.la-journal {
   background-color: @title;
-  border-color: @title;
 }
-
-.circular.icon.la-search-journal:before {
+.icon.la-journal:before {
   content: "\f1ea";
   color: white;
 }
-
-.circular.icon.la-search-database {
-  display: inline-block;
+// ****  databas **** //
+.icon.la-database {
   background-color: @title;
-  border-color: @title;
 }
-
-.circular.icon.la-search-database:before {
+.icon.la-database:before {
   content: "\f1c0";
   color: white;
 }
-
-.circular.icon.la-search-ebook {
-  display: inline-block;
+// ****  ebook **** //
+.icon.la-ebook {
   background-color: @title;
-  border-color: @title;
 }
-.circular.icon.la-search-ebook:before {
+.icon.la-ebook:before {
   content: "\f3fa";
   color: white;
 }
+
+// ****  book **** //
+.icon.la-book {
+  background-color: @title;
+}
+.icon.la-book:before {
+  content: "\f02d";
+  color: white;
+}
+
 i.inverted.circular.icon.la-filter-icon {
   background-color: #8699b1!important;
 }

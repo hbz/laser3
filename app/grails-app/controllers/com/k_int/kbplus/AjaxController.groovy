@@ -6,13 +6,8 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.AuditConfig
-import de.laser.DashboardDueDate
-import de.laser.DashboardDueDatesService
-import de.laser.DueDateObject
+import de.laser.*
 import de.laser.base.AbstractI10n
-import de.laser.I10nTranslation
-import de.laser.SystemProfiler
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.I10nTrait
@@ -25,11 +20,10 @@ import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
 class AjaxController {
@@ -854,6 +848,16 @@ class AjaxController {
   def lookupLicenses() {
     render controlledListService.getLicenses(params) as JSON
   }
+
+    @Secured(['ROLE_USER'])
+    def getLinkedSubscriptions() {
+        render controlledListService.getLinkedObjects([source:params.license,destinationType:Subscription.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE]]) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getLinkedLicenses() {
+        render controlledListService.getLinkedObjects([destination:params.subscription,sourceType:License.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE]]) as JSON
+    }
 
     @Secured(['ROLE_USER'])
     def lookupProviderAndPlatforms() {
@@ -2394,6 +2398,30 @@ class AjaxController {
             }
 
         }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getRegions() {
+        List<RefdataValue> result = []
+        if (params.country) {
+            List<Long> countryIds = params.country.split ','
+            countryIds.each {
+                switch (RefdataValue.get(it).value) {
+                    case 'DE':
+                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE])
+                        break;
+                    case 'AT':
+                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_AT])
+                        break;
+                    case 'CH':
+                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_CH])
+                        break;
+                }
+            }
+        }
+        result = result.flatten()
+        println(result)
         render result as JSON
     }
 

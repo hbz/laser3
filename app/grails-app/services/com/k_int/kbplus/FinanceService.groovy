@@ -281,7 +281,7 @@ class FinanceService {
             subFilterQuery += " and sub in (:filterSubMembers) "
             List<Subscription> filterSubMembers = []
             String[] subMembers = params.list("filterSubMembers")
-            subMembers.each { subMember ->
+            subMembers.each { String subMember ->
                 filterSubMembers.add(Subscription.get(Long.parseLong(subMember)))
             }
             queryParams.filterSubMembers = filterSubMembers
@@ -292,7 +292,7 @@ class FinanceService {
             subFilterQuery += " and orgRoles.org in (:filterConsMembers) "
             List<Org> filterConsMembers = []
             String[] consMembers = params.list("filterConsMembers")
-            consMembers.each { consMember ->
+            consMembers.each { String consMember ->
                 filterConsMembers.add(Org.get(Long.parseLong(consMember)))
             }
             queryParams.filterConsMembers = filterConsMembers
@@ -306,7 +306,7 @@ class FinanceService {
             if(params.filterSubProviders.contains(","))
                 subProviders = params.filterSubProviders.split(',')
             else subProviders = [params.filterSubProviders]
-            subProviders.each { subProvider ->
+            subProviders.each { String subProvider ->
                 filterSubProviders.add(genericOIDService.resolveOID(subProvider))
             }
             queryParams.filterSubProviders = filterSubProviders
@@ -337,7 +337,7 @@ class FinanceService {
             costItemFilterQuery += " and sub in (:filterCISub) "
             List<Subscription> filterSubs = []
             String[] subscriptions = params.filterCISub.split(',')
-            subscriptions.each { sub ->
+            subscriptions.each { String sub ->
                 filterSubs.add((Subscription) genericOIDService.resolveOID(sub))
             }
             queryParams.filterCISub = filterSubs
@@ -348,7 +348,7 @@ class FinanceService {
             costItemFilterQuery += " and ci.subPkg in (:filterCISPkg) "
             List<SubscriptionPackage> filterSubPackages = []
             String[] subscriptionPackages = params."filterCISPkg".split(',')
-            subscriptionPackages.each { subPkg ->
+            subscriptionPackages.each { String subPkg ->
                 filterSubPackages.add((SubscriptionPackage) genericOIDService.resolveOID(subPkg))
             }
             queryParams.filterCISPkg = filterSubPackages
@@ -359,7 +359,7 @@ class FinanceService {
             costItemFilterQuery += " and ci in (select cig.costItem from CostItemGroup cig where cig.budgetCode in (:filterCIBudgetCode)) "
             List<BudgetCode> filterBudgetCodes = []
             String[] budgetCodes = params."filterCIBudgetCode".split(',')
-            budgetCodes.each { bc ->
+            budgetCodes.each { String bc ->
                 filterBudgetCodes.add(BudgetCode.get(Long.parseLong(bc)))
             }
             queryParams.filterCIBudgetCode = filterBudgetCodes
@@ -377,7 +377,7 @@ class FinanceService {
             costItemFilterQuery += " and ci.invoice.invoiceNumber in (:filterCIInvoiceNumber) "
             List<String> filterInvoiceNumbers = []
             String[] invoiceNumbers = params."filterCIInvoiceNumber".split(',')
-            invoiceNumbers.each { invNum ->
+            invoiceNumbers.each { String invNum ->
                 filterInvoiceNumbers.add(invNum)
             }
             queryParams.filterCIInvoiceNumber = filterInvoiceNumbers
@@ -388,7 +388,7 @@ class FinanceService {
             costItemFilterQuery += " and ci.order.orderNumber in (:filterCIOrderNumber) "
             List<String> filterOrderNumbers = []
             String[] orderNumbers = params."filterCIOrderNumber".split(',')
-            orderNumbers.each { orderNum ->
+            orderNumbers.each { String orderNum ->
                 filterOrderNumbers.add(orderNum)
             }
             queryParams.filterCIOrderNumber = filterOrderNumbers
@@ -399,7 +399,7 @@ class FinanceService {
             costItemFilterQuery += " and ci.costItemElement in (:filterCIElement) "
             List<RefdataValue> filterElements = []
             String[] costItemElements = params.list('filterCIElement')
-            costItemElements.each { cie ->
+            costItemElements.each { String cie ->
                 filterElements.add(genericOIDService.resolveOID(cie))
             }
             queryParams.filterCIElement = filterElements
@@ -410,7 +410,7 @@ class FinanceService {
             costItemFilterQuery += " and ci.costItemStatus in (:filterCIStatus) "
             List<RefdataValue> filterStatus = []
             String[] costItemStatus = params.list("filterCIStatus")
-            costItemStatus.each { cis ->
+            costItemStatus.each { String cis ->
                 filterStatus.add(genericOIDService.resolveOID(cis))
             }
             queryParams.filterCIStatus = filterStatus
