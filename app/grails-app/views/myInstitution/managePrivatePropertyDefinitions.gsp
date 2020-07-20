@@ -99,7 +99,18 @@
                                             </g:if>
                                         </td>
                                         <td>
-                                            <span class="ui circular label">${pd.countUsages()}</span>
+                                            <span class="ui circular label">
+                                                <g:if test="${pd.descr == PropertyDefinition.LIC_PROP}">
+                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:GenericOIDService.getOID(pd)]}">${pd.countUsages()}</g:link>
+                                                </g:if>
+                                                <g:elseif test="${pd.descr == PropertyDefinition.SUB_PROP}">
+                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:GenericOIDService.getOID(pd)]}">${pd.countUsages()}</g:link>
+                                                </g:elseif>
+                                                <%-- TODO platforms and orgs do not have property filters yet, they must be built! --%>
+                                                <g:else>
+                                                    ${pd.countUsages()}
+                                                </g:else>
+                                            </span>
                                         </td>
                                         <g:if test="${editable}">
                                             <td class="x">
