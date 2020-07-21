@@ -1,6 +1,6 @@
 
 <br>
-%{--<g:if test="${surveyConfig.type == 'Subscription'}">
+%{--<g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
     <h3 class="ui icon header"><semui:headerIcon/>
     <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
         ${surveyConfig.subscription?.name}

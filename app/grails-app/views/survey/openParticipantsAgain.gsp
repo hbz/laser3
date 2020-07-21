@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyOrg" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.SurveyConfig;" %>
 
 <laser:serviceInjection/>
 
@@ -45,7 +45,7 @@
 <br>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type == 'Subscription'}">
+    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
             ${surveyConfig.subscription?.name}

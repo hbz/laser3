@@ -658,9 +658,6 @@ class SurveyController {
     })
     def show() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
-            response.sendError(401); return
-        }
 
         if(result.surveyInfo.surveyConfigs.size() >= 1  || params.surveyConfigID) {
 
@@ -668,7 +665,7 @@ class SurveyController {
 
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo,  result.surveyConfig)
 
-            if ( result.surveyConfig.type == 'Subscription') {
+            if ( result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
                 result.authorizedOrgs = result.user.authorizedOrgs
 
                 // restrict visible for templates/links/orgLinksAsList
@@ -762,17 +759,12 @@ class SurveyController {
     })
     def surveyTitles() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
-            response.sendError(401); return
-        }
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         String base_qry = null
         Map<String,Object> qry_params = [subscription: result.surveyConfig.subscription]
-
-
 
         def date_filter
         date_filter = new Date()
@@ -781,7 +773,6 @@ class SurveyController {
         base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
         qry_params.startDate = date_filter
         qry_params.endDate = date_filter
-
 
         base_qry += " and ie.status = :current "
         qry_params.current = RDStore.TIPP_STATUS_CURRENT
@@ -802,9 +793,6 @@ class SurveyController {
     })
     def surveyConfigDocs() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
-            response.sendError(401); return
-        }
 
         result
 
@@ -816,9 +804,6 @@ class SurveyController {
     })
     def surveyParticipants() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
-            response.sendError(401); return
-        }
 
         // new: filter preset
         params.orgType = RDStore.OT_INSTITUTION.id.toString()
@@ -851,7 +836,7 @@ class SurveyController {
         result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        params.tab = params.tab ?: (result.surveyConfig.type == 'GeneralSurvey' ? 'selectedParticipants' : 'selectedSubParticipants')
+        params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY ? 'selectedParticipants' : 'selectedSubParticipants')
 
         result
 
@@ -864,9 +849,7 @@ class SurveyController {
     })
     def surveyCostItems() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
-            response.sendError(401); return
-        }
+
         result.putAll(financeService.setEditVars(result.institution))
 
         Map<Long,Object> orgConfigurations = [:]
@@ -1110,9 +1093,7 @@ class SurveyController {
     })
     def surveyEvaluation() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
-            response.sendError(401); return
-        }
+
 
         params.tab = params.tab ?: 'surveyConfigsView'
 
@@ -1171,9 +1152,6 @@ class SurveyController {
     })
     def openParticipantsAgain() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
-            response.sendError(401); return
-        }
 
         params.tab = params.tab ?: 'participantsViewAllFinish'
         if(params.tab == 'participantsViewAllNotFinish'){
@@ -1201,9 +1179,6 @@ class SurveyController {
     })
     def processOpenParticipantsAgain() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
-            response.sendError(401); return
-        }
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -1285,9 +1260,6 @@ class SurveyController {
     })
     def surveyTitlesEvaluation() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
-            response.sendError(401); return
-        }
 
         def orgs = result.surveyConfig.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
         result.participants = orgs.sort { it.sortname }
@@ -1670,7 +1642,7 @@ class SurveyController {
 
         result.ownerId = result.surveyResults[0].owner.id
 
-        if(result.surveyConfig.type == 'Subscription') {
+        if(result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
             result.subscriptionInstance = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
             result.subscription =  result.subscriptionInstance ?: null
             // restrict visible for templates/links/orgLinksAsList
@@ -4991,7 +4963,7 @@ class SurveyController {
 
             row.add([field: surveyConfig.getConfigNameShort() ?: '', style: null])
 
-            row.add([field: surveyConfig.type == 'Subscription' ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig.surveyProperty.type) + ')', style: null])
+            row.add([field: surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig.surveyProperty.type) + ')', style: null])
 
             row.add([field: surveyConfig.comment ?: '', style: null])
 

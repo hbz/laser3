@@ -60,7 +60,7 @@
 </g:if>
 <g:else>
     <h2 class="ui icon header la-clear-before la-noMargin-top">
-        <g:if test="${surveyConfig.type == 'Subscription'}">
+        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
             <i class="icon clipboard outline la-list-icon"></i>
             <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
                 ${surveyConfig.subscription?.name}
@@ -111,11 +111,11 @@
 
                     <g:if test="${surveyConfig}">
 
-                        <g:if test="${surveyConfig.type == "Subscription"}">
+                        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
                             <g:render template="evaluationSubscription" />
                         </g:if>
 
-                        <g:if test="${surveyConfig.type == "GeneralSurvey"}">
+                        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY}">
                             <g:render template="evaluationGeneralSurvey" />
                         </g:if>
 

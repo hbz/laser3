@@ -25,6 +25,15 @@ class SurveyConfig {
     @Transient
     public static final ALL_RESULTS_HALF_PROCESSED_BY_ORG = "Half Processed"
 
+    @Transient
+    public static final SURVEY_CONFIG_TYPE_SUBSCRIPTION = "Subscription"
+
+    @Transient
+    public static final SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT = "IssueEntitlementsSurvey"
+
+    @Transient
+    public static final SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY = "GeneralSurvey"
+
     Integer configOrder
 
     Subscription subscription

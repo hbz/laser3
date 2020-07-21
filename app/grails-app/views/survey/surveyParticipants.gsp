@@ -36,7 +36,7 @@
 <br>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type == 'Subscription'}">
+    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
             ${surveyConfig.subscription?.name}
@@ -55,7 +55,7 @@
         <div class="sixteen wide stretched column">
             <div class="ui top attached tabular menu">
 
-                <g:if test="${surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey'}">
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
                     <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                             controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
@@ -70,7 +70,7 @@
                             controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
-                        ${surveyConfig.type == 'Subscription' ? message(code: 'surveyParticipants.selectedParticipants') : message(code: 'surveyParticipants.selectedParticipants2')}
+                        ${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION ? message(code: 'surveyParticipants.selectedParticipants') : message(code: 'surveyParticipants.selectedParticipants2')}
                         <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></g:link>
                 </g:if>
 
