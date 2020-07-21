@@ -9,12 +9,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.ConfigUtils
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugUtil
-import de.laser.helper.FactoryResult
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import grails.transaction.Transactional
 import grails.util.Holders
@@ -493,7 +488,10 @@ class SubscriptionService {
     List getValidSurveySubChilds(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
-                [RDStore.SUBSCRIPTION_CURRENT, RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
+                [RDStore.SUBSCRIPTION_CURRENT,
+                 RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION,
+                 RDStore.SUBSCRIPTION_INTENDED,
+                 RDStore.SUBSCRIPTION_ORDERED]
         )
         if(validSubChilds) {
             validSubChilds = validSubChilds?.sort { a, b ->

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyConfig;" %>
 <br>
 
 <semui:filter>
@@ -21,7 +21,7 @@
               model="[orgList          : consortiaMembers,
                       tmplShowCheckbox : (surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]),
                       tmplDisableOrgIds: surveyConfig.orgs?.org?.id,
-                      tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.type == 'Subscription' ? 'surveySubInfo' : '')]
+                      tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION ? 'surveySubInfo' : '')]
               ]"/>
 
     <br/>

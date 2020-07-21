@@ -71,6 +71,7 @@ class SubscriptionController
     def auditService
     def surveyService
     FormService formService
+    AccessPointService accessPointService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -1592,7 +1593,19 @@ class SubscriptionController
         if (params.exportXLS) {
             exportOrg(orgs, filename, true, 'xlsx')
             return
-        } else {
+        }else if (params.exportIPs) {
+            SXSSFWorkbook wb
+            filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportIPs.fileName'))
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(result.filteredSubChilds.orgs.flatten())
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else {
             withFormat {
                 html {
                     result
@@ -5771,21 +5784,12 @@ class SubscriptionController
         result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.subscription)
         result.consortialView = result.showConsortiaFunctions
 
-        result.showCollectiveFunctions = showCollectiveFunctions(result.contextOrg, result.subscription)
-        result.departmentalView = result.showCollectiveFunctions
-
         Map args = [:]
         if(result.consortialView) {
             args.superOrgType = [message(code:'consortium.superOrgType')]
             args.memberTypeSingle = [message(code:'consortium.subscriber')]
             args.memberType = [message(code:'consortium.subscriber')]
             args.memberTypeGenitive = [message(code:'consortium.subscriber')]
-        }
-        else if(result.departmentalView) {
-            args.superOrgType = [message(code:'collective.superOrgType')]
-            args.memberTypeSingle = [message(code:'collective.member')]
-            args.memberType = [message(code:'collective.member.plural')]
-            args.memberTypeGenitive = [message(code:'collective.member.genitive')]
         }
         result.args = args
 
@@ -5797,10 +5801,8 @@ class SubscriptionController
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
-        if(result.subscription.getCollective()?.id == contextService.getOrg().id &&
-                (result.subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ||
-                result.subscription.instanceOf?.getConsortia()) &&
-                ! (params.action in ['addMembers', 'processAddMembers',
+        if(result.subscription.instanceOf?.getConsortia() && !
+                (params.action in ['addMembers', 'processAddMembers',
                                      'linkLicenseMembers', 'processLinkLicenseMembers',
                                      'linkPackagesMembers', 'processLinkPackagesMembers',
                                      'propertiesMembers', 'processPropertiesMembers',
@@ -5824,13 +5826,8 @@ class SubscriptionController
     }
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getConsortia()?.id == contextOrg?.id) && subscription.getCalculatedType() in
+        return ((subscription.getConsortia()?.id == contextOrg.id) && subscription.getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
-    }
-
-    static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getCollective()?.id == contextOrg?.id) && subscription.getCalculatedType() in
-                [CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {

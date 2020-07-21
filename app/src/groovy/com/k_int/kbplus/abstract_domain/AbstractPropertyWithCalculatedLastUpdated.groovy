@@ -44,7 +44,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         urlValue    (nullable: true)
         note        (nullable: true)
         dateValue   (nullable: true)
-        lastUpdatedCascading (nullable: true, blank: false)
+        lastUpdatedCascading (nullable: true)
     }
 
     def afterInsertHandler() {

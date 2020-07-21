@@ -6,13 +6,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
-import de.laser.base.AbstractI10nTranslatable
-import de.laser.helper.ConfigUtils
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
-import de.laser.traits.I10nTrait
+import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -1843,6 +1837,28 @@ class YodaController {
 
         result
 
+        redirect action: 'dashboard'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def cleanUpSurveyOrgFinishDate() {
+
+        Integer changes = 0
+        List<SurveyOrg> surveyOrgs = SurveyOrg.findAllByFinishDateIsNull()
+
+        surveyOrgs.each { surveyOrg ->
+
+            List<SurveyResult> surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(surveyOrg.surveyConfig, surveyOrg.org)
+            List<SurveyResult> surveyResultsFinish = SurveyResult.findAllBySurveyConfigAndParticipantAndFinishDateIsNotNull(surveyOrg.surveyConfig, surveyOrg.org)
+
+            if(surveyResults.size() == surveyResultsFinish.size()){
+                surveyOrg.finishDate = surveyResultsFinish[0].finishDate
+                surveyOrg.save(flush: true)
+                changes++
+            }
+
+        }
+        flash.message = "Es wurden ${changes} FinishDate in SurveyOrg geändert!"
         redirect action: 'dashboard'
     }
 

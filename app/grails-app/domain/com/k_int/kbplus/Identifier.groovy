@@ -50,9 +50,9 @@ class Identifier implements CalculatedLastUpdated {
 	  	cre     (nullable:true)
 
 		// Nullable is true, because values are already in the database
-        dateCreated (nullable: true, blank: false)
-        lastUpdated (nullable: true, blank: false)
-        lastUpdatedCascading (nullable: true, blank: false)
+        dateCreated (nullable: true)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
   	}
 
     static mapping = {

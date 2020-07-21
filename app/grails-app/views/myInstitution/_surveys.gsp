@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.OrgRole" %>
+<%@ page import="com.k_int.kbplus.OrgRole; com.k_int.kbplus.SurveyConfig;" %>
 
 <h3><g:message code="surveys.active"/></h3>
 
@@ -52,13 +52,13 @@
                     <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                         ${message(code: 'surveyParticipants.label')}: <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]" class="ui icon">
-                            <div class="ui circular ${surveyConfig.configFinish ? "yellow" : ""} label">
+                            <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                 ${surveyConfig.orgs?.size() ?: 0}
                             </div>
                         </g:link>
 
                         <div class="la-float-right">
-                        <g:if test="${surveyConfig && surveyConfig.type == 'IssueEntitlementsSurvey' && surveyConfig.pickAndChoose}">
+                        <g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT && surveyConfig.pickAndChoose}">
 
                                 <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig.id]"

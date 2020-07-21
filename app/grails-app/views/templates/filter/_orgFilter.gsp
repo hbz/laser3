@@ -79,17 +79,7 @@
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('region')}">
-                <div class="field">
-                    <label for="region">${message(code: 'org.region.label')}</label>
-                    <select id="region" name="region" multiple="" class="ui selection fluid dropdown">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,
-                                                                           RDConstants.REGIONS_AT,
-                                                                           RDConstants.REGIONS_CH])}" var="rdv">
-                            <option <%=(params.list('region').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
-                        </g:each>
-                    </select>
-                </div>
+                <g:render template="/templates/filter/orgRegionsFilter" />
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('libraryNetwork')}">

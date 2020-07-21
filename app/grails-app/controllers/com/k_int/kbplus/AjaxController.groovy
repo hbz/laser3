@@ -6,13 +6,8 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.AuditConfig
-import de.laser.DashboardDueDate
-import de.laser.DashboardDueDatesService
-import de.laser.DueDateObject
+import de.laser.*
 import de.laser.base.AbstractI10n
-import de.laser.I10nTranslation
-import de.laser.SystemProfiler
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.I10nTrait
@@ -25,11 +20,10 @@ import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
 class AjaxController {
@@ -672,13 +666,13 @@ class AjaxController {
                 else {
                     switch(params.domain) {
                         case 'currentSubscriptions':
-                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.type = :propDef and sp.tenant = :tenant and sp.isPublic = true',[propDef:propDef, tenant:contextService.org])
+                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
-                        case 'currentLicenses': values = LicenseProperty.executeQuery('select lcp from LicenseProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef, tenant:contextService.org])
+                        case 'currentLicenses': values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgLinks oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
                         case 'listProvider':
                         case 'currentProviders':
-                        case 'manageMembers': values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and op.tenant = :tenant and op.isPublic = true',[propDef:propDef,tenant:contextService.org])
+                        case 'manageMembers': values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.org])
                             break
                     }
                 }
@@ -723,8 +717,8 @@ class AjaxController {
             // If we werent able to locate a specific config override, assume the ID is just a refdata key
             config = [
                 domain      :'RefdataValue',
-                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
-                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}' order by rdv.value_${locale}",
+                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.value_" + locale,
                 qryParams   :[],
                 cols        :['value'],
                 format      :'simple'
@@ -2404,6 +2398,30 @@ class AjaxController {
             }
 
         }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getRegions() {
+        List<RefdataValue> result = []
+        if (params.country) {
+            List<Long> countryIds = params.country.split ','
+            countryIds.each {
+                switch (RefdataValue.get(it).value) {
+                    case 'DE':
+                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE])
+                        break;
+                    case 'AT':
+                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_AT])
+                        break;
+                    case 'CH':
+                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_CH])
+                        break;
+                }
+            }
+        }
+        result = result.flatten()
+
         render result as JSON
     }
 

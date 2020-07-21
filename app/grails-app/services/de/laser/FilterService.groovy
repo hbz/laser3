@@ -1,7 +1,9 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
+import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
@@ -17,6 +19,7 @@ class FilterService {
     def genericOIDService
     def contextService
     def messageSource
+    PropertyService propertyService
 
     Map<String, Object> getOrgQuery(Map params) {
         Map<String, Object> result = [:]
@@ -56,6 +59,7 @@ class FilterService {
             }
             queryParams << [region : regions]
         }
+
         if (params.libraryNetwork?.size() > 0) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
             List<String> selLibraryNetworks = params.list("libraryNetwork")
@@ -74,9 +78,14 @@ class FilterService {
             }
             queryParams << [libraryType : libraryTypes]
         }
-        if (params.country?.length() > 0) {
-            query << "o.country.id = :country"
-             queryParams << [country : Long.parseLong(params.country)]
+        if (params.country?.size() > 0) {
+            query << "o.country.id in (:country)"
+            List<String> selCountries = params.list("country")
+            List<Long> countries = []
+            selCountries.each { String sel ->
+                countries << Long.parseLong(sel)
+            }
+            queryParams << [country : countries]
         }
 
         if (params.customerType?.length() > 0) {
@@ -140,6 +149,15 @@ class FilterService {
             }
             queryParams << [region : regions]
         }
+        if (params.country?.size() > 0) {
+            query << "o.country.id in (:country)"
+            List<String> selCountries = params.list("country")
+            List<Long> countries = []
+            selCountries.each { String sel ->
+                countries << Long.parseLong(sel)
+            }
+            queryParams << [country : countries]
+        }
         if (params.libraryNetwork?.size() > 0) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
             List<String> selLibraryNetworks = params.list("libraryNetwork")
@@ -149,6 +167,7 @@ class FilterService {
             }
             queryParams << [libraryNetwork : libraryNetworks]
         }
+
         if (params.libraryType?.size() > 0) {
             query << "o.libraryType.id in (:libraryType)"
             List<String> selLibraryTypes = params.list("libraryType")
@@ -340,8 +359,11 @@ class FilterService {
 
     Map<String,Object> getSurveyConfigQueryConsortia(Map params, DateFormat sdFormat, Org contextOrg) {
         Map result = [:]
-        List query = []
         Map<String,Object> queryParams = [:]
+        String query
+
+        query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg "
+        queryParams << [contextOrg : contextOrg]
 
         def date_restriction
         if ((params.validOn == null || params.validOn.trim() == '') && sdFormat) {
@@ -351,34 +373,40 @@ class FilterService {
         }
 
         if (date_restriction) {
-            query += " surInfo.startDate <= :date_restr and (surInfo.endDate >= :date_restr or surInfo.endDate is null)"
+            query += " and surInfo.startDate <= :date_restr and (surInfo.endDate >= :date_restr or surInfo.endDate is null)"
             queryParams.put('date_restr', date_restriction)
             params.filterSet = true
         }
 
+        if (params.validOnYear) {
+            query += " and Year(surInfo.startDate) = :validOnYear "
+            queryParams.put('validOnYear', Integer.parseInt(params.validOnYear))
+            params.filterSet = true
+        }
+
         if(params.name) {
-            query << "(genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
+            query += " and (genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
             queryParams << [name:"${params.name}"]
             params.filterSet = true
         }
 
         if(params.status) {
-            query << "surInfo.status = :status"
+            query += " and surInfo.status = :status"
             queryParams << [status: RefdataValue.get(params.status)]
             params.filterSet = true
         }
         if(params.type) {
-            query << "surInfo.type = :type"
+            query += " and surInfo.type = :type"
             queryParams << [type: RefdataValue.get(params.type)]
             params.filterSet = true
         }
         if (params.startDate && sdFormat) {
-            query << "surInfo.startDate >= :startDate"
+            query += " and surInfo.startDate >= :startDate"
             queryParams << [startDate : sdFormat.parse(params.startDate)]
             params.filterSet = true
         }
         if (params.endDate && sdFormat) {
-            query << "surInfo.endDate <= :endDate"
+            query += " and surInfo.endDate <= :endDate"
             queryParams << [endDate : sdFormat.parse(params.endDate)]
             params.filterSet = true
         }
@@ -386,99 +414,95 @@ class FilterService {
         if (params.mandatory || params.noMandatory) {
 
             if (params.mandatory && !params.noMandatory) {
-                query << "surInfo.isMandatory = :mandatory"
+                query += " and surInfo.isMandatory = :mandatory"
                 queryParams << [mandatory: true]
             }else if (!params.mandatory && params.noMandatory){
-                query << "surInfo.isMandatory = :mandatory"
+                query += " and surInfo.isMandatory = :mandatory"
                 queryParams << [mandatory: false]
             }
             params.filterSet = true
         }
 
         if(params.ids) {
-            query << "surInfo.id in (:ids)"
+            query += " and surInfo.id in (:ids)"
             queryParams << [ids: params.list('ids').collect{Long.parseLong(it)}]
             params.filterSet = true
         }
 
         if(params.checkSubSurveyUseForTransfer) {
-            query << "surConfig.subSurveyUseForTransfer = :checkSubSurveyUseForTransfer"
+            query += " and surConfig.subSurveyUseForTransfer = :checkSubSurveyUseForTransfer"
             queryParams << [checkSubSurveyUseForTransfer: true]
             params.filterSet = true
         }
 
         if (params.provider) {
-            query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
+            query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
             queryParams << [provider : Org.get(params.provider)]
             params.filterSet = true
         }
 
         if (params.list('filterSub')) {
-            query << " surConfig.subscription.name in (:subs) "
+            query += " and surConfig.subscription.name in (:subs) "
             queryParams << [subs : params.list('filterSub')]
             params.filterSet = true
         }
 
         if (params.filterStatus && params.filterStatus != "" && params.list('filterStatus')) {
-            query << " surInfo.status.id in (:filterStatus) "
+            query += " and surInfo.status.id in (:filterStatus) "
             queryParams << [filterStatus : params.list('filterStatus').collect { Long.parseLong(it) }]
             params.filterSet = true
         }
 
         if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
-            query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
+            query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
             queryParams << [filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
             params.filterSet = true
         }
 
         if (params.participant) {
-            query << "" +
-                    " exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant)"
+            query += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant)"
             queryParams << [participant : params.participant]
         }
 
+        if (params.filterPropDef?.size() > 0) {
+            def psq = propertyService.evalFilterQuery(params, query, 'surConfig', queryParams)
+            query = psq.query
+            queryParams = psq.queryParams
+            params.filterSet = true
+        }
+
         if(params.tab == "created"){
-            query << "(surInfo.status in (:status))"
+            surveyResult " and (surInfo.status in (:status))"
             queryParams << [status: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]
         }
 
         if(params.tab == "active"){
-            query << "surInfo.status = :status"
+            surveyResult " and surInfo.status = :status"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
         }
 
         if(params.tab == "finish"){
-            query << "surInfo.status = :status"
+            surveyResult " and surInfo.status = :status"
             queryParams << [status: RDStore.SURVEY_SURVEY_COMPLETED]
         }
 
         if(params.tab == "inEvaluation"){
-            query << "surInfo.status = :status"
+            surveyResult " and surInfo.status = :status"
             queryParams << [status: RDStore.SURVEY_IN_EVALUATION]
         }
 
         if(params.tab == "completed"){
-            query << "surInfo.status = :status"
+            surveyResult " and surInfo.status = :status"
             queryParams << [status: RDStore.SURVEY_COMPLETED]
         }
 
-        String defaultOrder = " order by " + (params.sort ?: " surInfo.endDate ASC, LOWER(surInfo.name) ") + " " + (params.order ?: "asc")
-
-        /*if (query.size() > 0) {
-            result.query = "select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and " + query.join(" and ") + defaultOrder
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            query += " order by ${params.sort} ${params.order ?: "asc"}"
         } else {
-            result.query = "select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg" + defaultOrder
-        }
-*/
-        if (query.size() > 0) {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and " + query.join(" and ") + defaultOrder
-        } else {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg" + defaultOrder
+            query += " order by surInfo.endDate ASC, LOWER(surInfo.name) "
         }
 
-        queryParams << [contextOrg : contextOrg]
-
-
+        result.query = query
         result.queryParams = queryParams
         result
     }
@@ -564,9 +588,9 @@ class FilterService {
         String defaultOrder = " order by " + (params.sort ?: " LOWER(surResult.surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where (surResult.participant = :org)  and " + query.join(" and ") + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where (surResult.participant = :org)  and " + query.join(" and ") + defaultOrder
         } else {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult where (surResult.participant = :org) " + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult where (surResult.participant = :org) " + defaultOrder
         }
         queryParams << [org : org]
 
@@ -590,6 +614,12 @@ class FilterService {
         if (date_restriction) {
             query += " surInfo.startDate <= :date_restr and (surInfo.endDate >= :date_restr or surInfo.endDate is null)"
             queryParams.put('date_restr', date_restriction)
+            params.filterSet = true
+        }
+
+        if (params.validOnYear) {
+            query += " Year(surInfo.startDate) = :validOnYear "
+            queryParams.put('validOnYear', Integer.parseInt(params.validOnYear))
             params.filterSet = true
         }
 
@@ -719,6 +749,182 @@ class FilterService {
 
         result.queryParams = queryParams
         result
+    }
+
+    Map<String,Object> getSurveyResultQuery(Map params, SurveyConfig surveyConfig) {
+        Map result = [:]
+        String base_qry = "from SurveyResult as surResult where surResult.surveyConfig = :surveyConfig "
+        Map<String,Object> queryParams = [surveyConfig: surveyConfig]
+
+        if (params.orgNameContains?.length() > 0) {
+            base_qry += " and (genfunc_filter_matcher(surResult.participant.name, :orgNameContains1) = true or genfunc_filter_matcher(surResult.participant.shortname, :orgNameContains2) = true or genfunc_filter_matcher(surResult.participant.sortname, :orgNameContains3) = true) "
+            queryParams << [orgNameContains1 : "${params.orgNameContains}"]
+            queryParams << [orgNameContains2 : "${params.orgNameContains}"]
+            queryParams << [orgNameContains3 : "${params.orgNameContains}"]
+        }
+        if (params.orgType?.length() > 0) {
+            base_qry += " and exists (select roletype from surResult.participant.orgType as roletype where roletype.id = :orgType )"
+            queryParams << [orgType : Long.parseLong(params.orgType)]
+        }
+        if (params.orgSector?.length() > 0) {
+            base_qry += " and surResult.participant.sector.id = :orgSector"
+            queryParams << [orgSector : Long.parseLong(params.orgSector)]
+        }
+        if (params.region?.size() > 0) {
+            base_qry += " and surResult.participant.region.id in (:region)"
+            List<String> selRegions = params.list("region")
+            List<Long> regions = []
+            selRegions.each { String sel ->
+                regions << Long.parseLong(sel)
+            }
+            queryParams << [region : regions]
+        }
+        if (params.country?.size() > 0) {
+            base_qry += " and surResult.participant.country.id in (:country)"
+            List<String> selCountries = params.list("country")
+            List<Long> countries = []
+            selCountries.each { String sel ->
+                countries << Long.parseLong(sel)
+            }
+            queryParams << [country : countries]
+        }
+        if (params.libraryNetwork?.size() > 0) {
+            base_qry += " and surResult.participant.libraryNetwork.id in (:libraryNetwork)"
+            List<String> selLibraryNetworks = params.list("libraryNetwork")
+            List<Long> libraryNetworks = []
+            selLibraryNetworks.each { String sel ->
+                libraryNetworks << Long.parseLong(sel)
+            }
+            queryParams << [libraryNetwork : libraryNetworks]
+        }
+
+        if (params.libraryType?.size() > 0) {
+            base_qry += " and surResult.participant.libraryType.id in (:libraryType)"
+            List<String> selLibraryTypes = params.list("libraryType")
+            List<Long> libraryTypes = []
+            selLibraryTypes.each { String sel ->
+                libraryTypes << Long.parseLong(sel)
+            }
+            queryParams << [libraryType : libraryTypes]
+        }
+
+        if (params.customerType?.length() > 0) {
+            base_qry += " and exists (select oss from OrgSettings as oss where oss.id = surResult.participant.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
+            queryParams << [customerType : Long.parseLong(params.customerType)]
+            queryParams << [customerTypeKey : OrgSettings.KEYS.CUSTOMER_TYPE]
+        }
+
+        if (params.orgIdentifier?.length() > 0) {
+            base_qry += " and exists (select ident from Identifier io join io.org ioorg " +
+                    " where ioorg = surResult.participant and LOWER(ident.value) like LOWER(:orgIdentifier)) "
+            queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
+        }
+
+        if (params.participant) {
+            base_qry += " and surResult.participant = :participant)"
+            queryParams << [participant : params.participant]
+        }
+
+        if(params.owner) {
+            base_qry += " and surResult.owner = :owner"
+            queryParams << [owner: params.owner instanceof Org ?: Org.get(params.owner) ]
+        }
+        if(params.consortiaOrg) {
+            base_qry += " and surResult.owner = :owner"
+            queryParams << [owner: params.consortiaOrg]
+        }
+
+        if(params.participantsNotFinish) {
+            base_qry += " and surResult.finishDate is null"
+        }
+
+        if(params.participantsFinish) {
+            base_qry += " and surResult.finishDate is not null"
+        }
+
+        if (params.filterPropDef) {
+            if (params.filterPropDef) {
+                PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
+                base_qry += ' and (surResult.type = :propDef '
+                queryParams.put('propDef', pd)
+                if (params.filterProp) {
+                    switch (pd.type) {
+                        case RefdataValue.toString():
+                            List<String> selFilterProps = params.filterProp.split(',')
+                            List filterProp = []
+                            selFilterProps.each { String sel ->
+                                filterProp << genericOIDService.resolveOID(sel)
+                            }
+                            base_qry += " and "
+                            if (filterProp.contains(RDStore.GENERIC_NULL_VALUE) && filterProp.size() == 1) {
+                                base_qry += " surResult.refValue = null "
+                                filterProp.remove(RDStore.GENERIC_NULL_VALUE)
+                            } else if (filterProp.contains(RDStore.GENERIC_NULL_VALUE) && filterProp.size() > 1) {
+                                base_qry += " ( surResult.refValue = null or surResult.refValue in (:prop) ) "
+                                filterProp.remove(RDStore.GENERIC_NULL_VALUE)
+                                queryParams.put('prop', filterProp)
+                            } else {
+                                base_qry += " surResult.refValue in (:prop) "
+                                queryParams.put('prop', filterProp)
+                            }
+                            base_qry += " ) "
+                            break
+                        case Integer.toString():
+                            if (!params.filterProp || params.filterProp.length() < 1) {
+                                base_qry += " and surResult.intValue = null ) "
+                            } else {
+                                base_qry += " and surResult.intValue = :prop ) "
+                                queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
+                            }
+                            break
+                        case String.toString():
+                            if (!params.filterProp || params.filterProp.length() < 1) {
+                                base_qry += " and surResult.stringValue = null ) "
+                            } else {
+                                base_qry += " and lower(surResult.stringValue) like lower(:prop) ) "
+                                queryParams.put('prop', "%${AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type)}%")
+                            }
+                            break
+                        case BigDecimal.toString():
+                            if (!params.filterProp || params.filterProp.length() < 1) {
+                                base_qry += " and surResult.decValue = null ) "
+                            } else {
+                                base_qry += " and surResult.decValue = :prop ) "
+                                queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
+                            }
+                            break
+                        case Date.toString():
+                            if (!params.filterProp || params.filterProp.length() < 1) {
+                                base_qry += " and surResult.dateValue = null ) "
+                            } else {
+                                base_qry += " and surResult.dateValue = :prop ) "
+                                queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
+                            }
+                            break
+                        case URL.toString():
+                            if (!params.filterProp || params.filterProp.length() < 1) {
+                                base_qry += " and surResult.urlValue = null ) "
+                            } else {
+                                base_qry += " and genfunc_filter_matcher(surResult.urlValue, :prop) = true ) "
+                                queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
+                            }
+                            break
+                    }
+                }
+            }
+        }
+
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+                base_qry += " order by ${params.sort} ${params.order ?: "asc"}"
+        } else {
+            base_qry += " order by surResult.participant.sortname "
+        }
+
+        result.query = base_qry
+        result.queryParams = queryParams
+
+        result
+
     }
 
     Map<String,Object> generateBasePackageQuery(params, qry_params, showDeletedTipps, asAt, forBase) {

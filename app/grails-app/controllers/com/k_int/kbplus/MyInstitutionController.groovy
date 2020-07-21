@@ -7,21 +7,15 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.AccessService
-import de.laser.AuditConfig
-import de.laser.DashboardDueDatesService
-import de.laser.I10nTranslation
-import de.laser.LinksGenerationService
-import de.laser.SystemAnnouncement
+import de.laser.*
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
-import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.annotation.Secured
 
 //import de.laser.TaskService //unused for quite a long time
 
-import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.POIXMLProperties
@@ -2235,6 +2229,17 @@ AND EXISTS (
 
         params.tab = params.tab ?: 'new'
 
+        if(params.tab != 'new'){
+            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+        }
+
+        /*if (params.validOnYear == null || params.validOnYear == '') {
+            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+        }*/
+
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution])
+
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
@@ -3333,6 +3338,17 @@ AND EXISTS (
 
         params.tab = params.tab ?: 'new'
 
+        if(params.tab != 'new'){
+            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+        }
+
+        /*if (params.validOnYear == null || params.validOnYear == '') {
+            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+        }*/
+
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.participant])
+
         params.consortiaOrg = result.institution
 
         def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.participant)
@@ -3368,81 +3384,84 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    Map<String,Object> managePropertyGroups() {
+    def managePropertyGroups() {
         Map<String,Object> result = setResultGenerics()
         //result.editable = true // true, because action is protected (is it? I doubt; INST_USERs have at least reading rights to this page!)
+        switch(params.cmd) {
+            case 'new': result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+                render template: '/templates/properties/propertyGroupModal', model: result
+                return
+            case 'edit':
+                result.pdGroup = genericOIDService.resolveOID(params.oid)
+                result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
 
-        if (params.cmd == 'new') {
-            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
-
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
-        }
-        else if (params.cmd == 'edit') {
-            result.pdGroup = genericOIDService.resolveOID(params.oid)
-            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
-
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
-        }
-        else if (params.cmd == 'delete') {
-            def pdg = genericOIDService.resolveOID(params.oid)
-            try {
-                pdg.delete()
-                flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
-            }
-            catch (e) {
-                flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
-            }
-        }
-        else if (params.cmd == 'processing' && formService.validateToken(params)) {
-
-            def valid
-            def propDefGroup
-            def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
-
-            if (params.oid) {
-                propDefGroup = genericOIDService.resolveOID(params.oid)
-                propDefGroup.name = params.name ?: propDefGroup.name
-                propDefGroup.description = params.description
-                propDefGroup.ownerType = ownerType
-
-                if (propDefGroup.save(flush:true)) {
-                    valid = true
+                render template: '/templates/properties/propertyGroupModal', model: result
+                return
+            case 'delete':
+                PropertyDefinitionGroup pdg = genericOIDService.resolveOID(params.oid)
+                try {
+                    pdg.delete()
+                    flash.message = message(code:'propertyDefinitionGroup.delete.success',args:[pdg.name])
                 }
-            }
-            else {
-                if (params.name && ownerType) {
-                    propDefGroup = new PropertyDefinitionGroup(
-                            name: params.name,
-                            description: params.description,
-                            tenant: result.institution,
-                            ownerType: ownerType,
-                            visible: true
-                    )
-                    if (propDefGroup.save(flush:true)) {
-                        valid = true
+                catch (e) {
+                    flash.error = message(code:'propertyDefinitionGroup.delete.failure',args:[pdg.name])
+                }
+                break
+            case 'processing':
+                if(formService.validateToken(params)) {
+                    boolean valid
+                    PropertyDefinitionGroup propDefGroup
+                    String ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
+
+                    if (params.oid) {
+                        propDefGroup = genericOIDService.resolveOID(params.oid)
+                        propDefGroup.name = params.name ?: propDefGroup.name
+                        propDefGroup.description = params.description
+                        propDefGroup.ownerType = ownerType
+
+                        if (propDefGroup.save()) {
+                            valid = true
+                        }
+                    }
+                    else {
+                        if (params.name && ownerType) {
+                            propDefGroup = new PropertyDefinitionGroup(
+                                    name: params.name,
+                                    description: params.description,
+                                    tenant: result.institution,
+                                    ownerType: ownerType,
+                                    isVisible: true
+                            )
+                            if (propDefGroup.save()) {
+                                valid = true
+                            }
+                        }
+                    }
+
+                    if (valid) {
+                        PropertyDefinitionGroupItem.executeUpdate(
+                                "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                                [pdg: propDefGroup]
+                        )
+
+                        params.list('propertyDefinition')?.each { pd ->
+
+                            new PropertyDefinitionGroupItem(
+                                    propDef: pd,
+                                    propDefGroup: propDefGroup
+                            ).save()
+                        }
                     }
                 }
-            }
-
-            if (valid) {
-                PropertyDefinitionGroupItem.executeUpdate(
-                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
-                        [pdg: propDefGroup]
-                )
-
-                params.list('propertyDefinition')?.each { pd ->
-
-                    new PropertyDefinitionGroupItem(
-                            propDef: pd,
-                            propDefGroup: propDefGroup
-                    ).save(flush: true)
-                }
-            }
+                break
         }
 
-        result.propDefGroups = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
+        Set<PropertyDefinitionGroup> unorderedPdgs = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
+        result.propDefGroups = [:]
+        PropertyDefinition.AVAILABLE_GROUPS_DESCR.each { String propDefGroupType ->
+            result.propDefGroups.put(propDefGroupType,unorderedPdgs.findAll { PropertyDefinitionGroup pdg -> pdg.ownerType == PropertyDefinition.getDescrClass(propDefGroupType)})
+        }
+
         result
     }
 
@@ -3859,18 +3878,18 @@ AND EXISTS (
     private def getSurveyParticipantCounts(Org participant){
         Map<String, Object> result = [:]
 
-        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
-        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
-        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
                 [participant: participant]).groupBy {it.id[1]}.size()
 
-        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
                 [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
                  participant: participant]).groupBy {it.id[1]}.size()
         return result

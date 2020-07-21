@@ -2,6 +2,20 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2693    17.07.2020  rc1.4       Moe     Bug         Umfrage Ausschüttungsfunktion 0% nicht ausschütten
+
+2681    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Teilnehmer wieder freischalten
+
+--      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Merkmalsverwaltung
+
+2497    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Merkmale nach Wert sortieren
+
+2695    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Nach Merkmale Wert filtern
+
+--      17.07.2020  hbz-dev     Moe     Feature     Umfrage Jahres Filter + Umfrage Standard Sortierung 
+
+2509    17.07.2020  hbz-dev     Moe     Feature     Länderauswahl-Filter verfeinern
+
 --      17.07.2020  hbz-dev     Andreas Bug         Filterverarbeitung von BudgetCodes, Rechnung und Auftrag korrigiert
 
 --      17.07.2020  hbz-dev     Andreas Bug         Absturzfehler behoben, der bei fehlendem GOKb-Paket-Eintrag auf /subscription/show auftrat

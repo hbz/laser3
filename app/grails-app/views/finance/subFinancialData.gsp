@@ -90,10 +90,10 @@
         <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
-        <g:render template="../subscription/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions,showCollectiveFunctions:showCollectiveFunctions])]}"/>
+        <g:render template="/subscription/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions,showCollectiveFunctions:showCollectiveFunctions])]}"/>
 
         <g:if test="${showConsortiaFunctions || showCollectiveFunctions || params.orgBasicMemberView}">
-            <g:render template="../subscription/message" model="${[contextOrg: institution, subscriptionInstance: subscription]}"/>
+            <g:render template="/subscription/message" model="${[contextOrg: institution, subscriptionInstance: subscription]}"/>
         </g:if>
 
         <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription]" />

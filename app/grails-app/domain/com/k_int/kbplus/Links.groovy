@@ -42,7 +42,7 @@ class Links {
         owner         (blank: false)
 
         // Nullable is true, because values are already in the database
-        dateCreated (nullable: true, blank: false)
+        dateCreated (nullable: true)
 
     }
 

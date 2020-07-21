@@ -22,8 +22,8 @@ class TitleHistoryEvent {
 
   static constraints = {
     // Nullable is true, because values are already in the database
-    lastUpdated (nullable: true, blank: false)
-    dateCreated (nullable: true, blank: false)
+    lastUpdated (nullable: true)
+    dateCreated (nullable: true)
   }
 
   @Transient 

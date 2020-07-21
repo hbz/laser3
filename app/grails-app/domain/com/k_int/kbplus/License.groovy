@@ -23,7 +23,7 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 class License extends AbstractBaseWithCalculatedLastUpdated
-        implements CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
+        implements AuditableSupport, CalculatedType, Permissions, ShareSupport, Comparable<License> {
 
     static Log static_logger = LogFactory.getLog(License)
 
@@ -173,8 +173,17 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
             }
         })
-        lastUpdated(nullable: true, blank: true)
-        lastUpdatedCascading (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
+    }
+
+    @Override
+    Collection<String> getLogIncluded() {
+        [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges' ]
     }
 
     @Override
@@ -526,14 +535,24 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                     }
                 }
                 // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextOrg?.id) {
+                if (it.tenant?.id == contextOrg.id) {
                     if (binding) {
-                        result.member << [it, binding] // TODO: remove
-                        result.sorted << ['member', it, binding]
+                        if(contextOrg.id == this.getLicensingConsortium().id) {
+                            result.member << [it, binding] // TODO: remove
+                            result.sorted << ['member', it, binding]
+                        }
+                        else {
+                            result.local << [it, binding] // TODO: remove
+                            result.sorted << ['local', it, binding]
+                        }
+                    }
+                    else {
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
                 // licensee consortial; getting group by consortia and instanceOf.binding
-                else if (it.tenant?.id == this.instanceOf.getLicensingConsortium()?.id) {
+                else if (it.tenant?.id == this.getLicensingConsortium().id) {
                     if (binding) {
                         result.member << [it, binding] // TODO: remove
                         result.sorted << ['member', it, binding]
@@ -544,7 +563,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             else {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg.id) {
                     if (binding) {
                         result.local << [it, binding] // TODO: remove
                         result.sorted << ['local', it, binding]
