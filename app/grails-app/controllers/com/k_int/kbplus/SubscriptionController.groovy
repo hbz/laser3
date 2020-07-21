@@ -5778,12 +5778,6 @@ class SubscriptionController
             args.memberType = [message(code:'consortium.subscriber')]
             args.memberTypeGenitive = [message(code:'consortium.subscriber')]
         }
-        else if(result.departmentalView) {
-            args.superOrgType = [message(code:'collective.superOrgType')]
-            args.memberTypeSingle = [message(code:'collective.member')]
-            args.memberType = [message(code:'collective.member.plural')]
-            args.memberTypeGenitive = [message(code:'collective.member.genitive')]
-        }
         result.args = args
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
@@ -5794,10 +5788,8 @@ class SubscriptionController
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
-        if(result.subscription.getCollective()?.id == contextService.getOrg().id &&
-                (result.subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ||
-                result.subscription.instanceOf?.getConsortia()) &&
-                ! (params.action in ['addMembers', 'processAddMembers',
+        if(result.subscription.instanceOf?.getConsortia() && !
+                (params.action in ['addMembers', 'processAddMembers',
                                      'linkLicenseMembers', 'processLinkLicenseMembers',
                                      'linkPackagesMembers', 'processLinkPackagesMembers',
                                      'propertiesMembers', 'processPropertiesMembers',
