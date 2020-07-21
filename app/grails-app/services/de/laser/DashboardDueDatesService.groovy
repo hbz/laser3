@@ -27,7 +27,7 @@ class DashboardDueDatesService {
     String from
     String replyTo
     boolean update_running = false
-    private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user and ( uo.status=1 or uo.status=3)) order by o.name"
+    private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user and uo.status=1 ) order by o.name"
 
     @javax.annotation.PostConstruct
     void init() {

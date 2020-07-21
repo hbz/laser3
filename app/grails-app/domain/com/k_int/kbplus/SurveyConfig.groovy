@@ -328,8 +328,7 @@ class SurveyConfig {
 
     List<CostItem> getSurveyConfigCostItems(){
 
-        return CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(this.orgs, RDStore.COST_ITEM_DELETED)
-
+        return this.orgs ? CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(this.orgs, RDStore.COST_ITEM_DELETED) : []
     }
 
     JSONElement getTransferWorkflowAsJSON() {
