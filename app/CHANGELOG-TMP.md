@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2693    17.07.2020  rc1.4       Moe     Bug         Umfrage Ausschüttungsfunktion 0% nicht ausschütten
+--      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Vertragsverwaltung
+
+2646    21.07.2020  hbz-dev     Andreas Bug         Schaltschrank wird auch für INST_USER angezeigt
 
 2681    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Teilnehmer wieder freischalten
 
@@ -11,6 +13,8 @@
 2497    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Merkmale nach Wert sortieren
 
 2695    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Nach Merkmale Wert filtern
+
+2693    17.07.2020  rc1.4       Moe     Bug         Umfrage Ausschüttungsfunktion 0% nicht ausschütten
 
 --      17.07.2020  hbz-dev     Moe     Feature     Umfrage Jahres Filter + Umfrage Standard Sortierung 
 
