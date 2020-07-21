@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
@@ -238,8 +239,8 @@ class TaskService {
 
     private List<User> getUserDropdown(Org contextOrg) {
         List<User> validResponsibleUsers   = contextOrg ? User.executeQuery(
-                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)",
-                [contextOrg]) : []
+                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org and uo.status = :approved) order by lower(u.display)",
+                [org: contextOrg, approved: UserOrg.STATUS_APPROVED]) : []
 
         validResponsibleUsers
     }
@@ -438,8 +439,8 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
     Map<String, Object> getPreconditionsWithoutTargets(Org contextOrg) {
         Map<String, Object> result = [:]
         def validResponsibleUsers   = contextOrg ? User.executeQuery(
-                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)",
-                [contextOrg]) : []
+                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org and uo.status = :approved) order by lower(u.display)",
+                [org: contextOrg, approved: UserOrg.STATUS_APPROVED]) : []
         result.taskCreator          = springSecurityService.getCurrentUser()
         result.validResponsibleUsers = validResponsibleUsers
         result

@@ -172,11 +172,13 @@ class AdminController extends AbstractDebugController {
         jobList.each { job ->
             if (job instanceof String) {
                 log.info('processing: ' + job)
-                result.stats."${job}" = Org.executeQuery("select count(obj) from ${job} obj join obj.status s where lower(s.value) like 'deleted'")
+                String query = "select count(obj) from ${job} obj join obj.status s where lower(s.value) like 'deleted'"
+                result.stats."${job}" = Org.executeQuery( query )
             }
             else {
                 log.info('processing: ' + job[0])
-                result.stats."${job[0]}" = Org.executeQuery("select count(obj) from ${job[0]} obj join obj.${job[1]} s where lower(s.value) like 'deleted'")
+                String query = "select count(obj) from ${job[0]} obj join obj.${job[1]} s where lower(s.value) like 'deleted'"
+                result.stats."${job[0]}" = Org.executeQuery( query )
             }
         }
         result
