@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.SurveyResult;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.SurveyResult; com.k_int.kbplus.SurveyConfig;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -177,7 +177,7 @@
 
             <br>
             <g:if test="${surveyConfig}">
-                <g:if test="${surveyConfig.type == "Subscription"}">
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
                     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                 costItemSums: costItemSums,
@@ -187,7 +187,7 @@
                                                                 properties: properties]"/>
                 </g:if>
 
-                <g:if test="${surveyConfig.type == "IssueEntitlementsSurvey"}">
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
 
                     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                                       subscriptionInstance: surveyConfig.subscription,
@@ -196,7 +196,7 @@
                                                                                       properties: properties]"/>
                 </g:if>
 
-                <g:if test="${surveyConfig.type == "GeneralSurvey"}">
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY}">
 
                     <g:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
                                                                     costItemSums: costItemSums,

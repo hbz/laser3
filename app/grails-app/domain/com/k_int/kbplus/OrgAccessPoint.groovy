@@ -148,6 +148,7 @@ class OrgAccessPoint extends AbstractBase {
 
             if (accPD.datatype == 'ipv4') {
                 apd.id = accPD.id
+                apd.name = name
                 apd.ipRange = accPD.getIPString('range')
                 apd.ipCidr = accPD.getIPString('cidr')
                 apd.ipInput = accPD.getIPString('input')
@@ -155,6 +156,7 @@ class OrgAccessPoint extends AbstractBase {
             }
             if (accPD.datatype == 'ipv6') {
                 apd.id = accPD.id
+                apd.name = name
                 apd.ipRange = accPD.getIPString('range')
                 apd.ipCidr = accPD.getIPString('cidr')
                 apd.ipInput = accPD.getIPString('input')

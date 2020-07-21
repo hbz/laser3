@@ -54,7 +54,6 @@
                         <g:if test="${surveyConfig.url}">
                             <semui:linkIcon href="${surveyConfig.url}"/>
                         </g:if>
-                            <br/>&nbsp<br/>&nbsp<br/>
                         </dd>
 
                     </dl>
@@ -67,7 +66,7 @@
                         <g:if test="${surveyConfig.url2}">
                             <semui:linkIcon href="${surveyConfig.url2}"/>
                         </g:if>
-                            <br/>&nbsp<br/>&nbsp<br/>
+
                         </dd>
 
                     </dl>
@@ -80,7 +79,7 @@
                         <g:if test="${surveyConfig.url3}">
                             <semui:linkIcon href="${surveyConfig.url3}"/>
                         </g:if>
-                            <br/>&nbsp<br/>&nbsp<br/>
+
                         </dd>
 
                     </dl>
@@ -118,7 +117,7 @@
 
                                 <semui:linkIcon href="${surveyConfig.url}"/>
 
-                                <br/>&nbsp<br/>&nbsp<br/>
+
                             </dd>
 
                         </dl>
@@ -134,7 +133,7 @@
 
                             <semui:linkIcon href="${surveyConfig.url2}"/>
 
-                                <br/>&nbsp<br/>&nbsp<br/>
+
                             </dd>
 
                         </dl>
@@ -150,7 +149,7 @@
 
                             <semui:linkIcon href="${surveyConfig.url3}"/>
 
-                                <br/>&nbsp<br/>&nbsp<br/>
+
                             </dd>
 
                         </dl>
