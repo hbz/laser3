@@ -173,7 +173,8 @@ class LicenseController
                         default: localizedName = "name_en"
                             break
                     }
-                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery("select lp.type from LicenseProperty lp where lp.owner in (:licenseSet) and lp.instanceOf = null order by lp.type.${localizedName} asc",[licenseSet:childLics])
+                    String query = "select lp.type from LicenseProperty lp where lp.owner in (:licenseSet) and lp.instanceOf = null order by lp.type.${localizedName} asc"
+                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery( query, [licenseSet:childLics] )
                     result.memberProperties = memberProperties
                 }
             }
