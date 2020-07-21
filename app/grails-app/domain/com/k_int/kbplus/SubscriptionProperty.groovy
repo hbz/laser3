@@ -68,6 +68,15 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     ]
 
     @Override
+    Collection<String> getLogIncluded() {
+        [ 'stringValue', 'intValue', 'decValue', 'refValue', 'note', 'dateValue' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading' ]
+    }
+
+    @Override
     def afterDelete() {
         super.afterDeleteHandler()
 

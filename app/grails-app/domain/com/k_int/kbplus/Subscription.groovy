@@ -24,7 +24,7 @@ import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
 class Subscription extends AbstractBaseWithCalculatedLastUpdated
-        implements CalculatedType, Permissions, AuditableSupport, ShareSupport {
+        implements AuditableSupport, CalculatedType, Permissions, ShareSupport {
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
@@ -207,6 +207,15 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true, blank: false)
         isMultiYear(nullable: true, blank: false)
         hasPerpetualAccess(blank: false)
+    }
+
+    @Override
+    Collection<String> getLogIncluded() {
+        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges' ]
     }
 
     @Override

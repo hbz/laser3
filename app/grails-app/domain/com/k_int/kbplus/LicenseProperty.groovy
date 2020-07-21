@@ -69,6 +69,15 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     ]
 
     @Override
+    Collection<String> getLogIncluded() {
+        [ 'stringValue', 'intValue', 'decValue', 'refValue', 'paragraph', 'note', 'dateValue' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading' ]
+    }
+
+    @Override
     def afterDelete() {
         super.afterDeleteHandler()
 
