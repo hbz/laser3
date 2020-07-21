@@ -84,8 +84,8 @@ class DocContext implements ShareableTrait {
       surveyConfig (nullable: true,blank: false)
 
       // Nullable is true, because values are already in the database
-      lastUpdated (nullable: true, blank: false)
-      dateCreated (nullable: true, blank: false)
+      lastUpdated (nullable: true)
+      dateCreated (nullable: true)
   }
     def afterDelete() {
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)

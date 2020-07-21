@@ -153,9 +153,9 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
         isHidden        (blank:false)
 
         // Nullable is true, because values are already in the database
-        dateCreated (nullable: true, blank: false)
-        lastUpdated (nullable: true, blank: false)
-        lastUpdatedCascading (nullable: true, blank: false)
+        dateCreated (nullable: true)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
     }
 
     def afterInsert() {

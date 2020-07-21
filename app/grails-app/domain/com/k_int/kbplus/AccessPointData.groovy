@@ -35,8 +35,8 @@ class AccessPointData extends AbstractBase {
         data(nullable:true, blank:true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
     
     static List<RefdataValue> getAllRefdataValues(String category) {

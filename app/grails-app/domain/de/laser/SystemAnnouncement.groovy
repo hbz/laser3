@@ -48,9 +48,9 @@ class SystemAnnouncement {
         content     (blank:false)
         status      (nullable:true, blank:false)
         isPublished (blank:false)
-        lastPublishingDate (nullable:true, blank:false)
-        dateCreated (nullable:true, blank:false)
-        lastUpdated (nullable:true, blank:false)
+        lastPublishingDate (nullable:true)
+        dateCreated (nullable:true)
+        lastUpdated (nullable:true)
     }
 
     static List<SystemAnnouncement> getPublished(int periodInDays) {

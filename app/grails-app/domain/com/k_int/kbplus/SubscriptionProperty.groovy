@@ -58,8 +58,8 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
         instanceOf (nullable: true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     static belongsTo = [

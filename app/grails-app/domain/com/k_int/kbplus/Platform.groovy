@@ -88,7 +88,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     softwareProvider(nullable:true, blank:false)
     gokbId (blank:false, unique: true, maxSize:511)
     org (nullable:true, blank:false)
-    lastUpdatedCascading (nullable: true, blank: false)
+    lastUpdatedCascading (nullable: true)
   }
 
   @Override

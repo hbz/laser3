@@ -41,8 +41,8 @@ class PropertyDefinitionGroupBinding {
         propDefGroup                (blank: false)
         isVisible                   (blank: false)
         isVisibleForConsortiaMembers(blank: false)
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 }
 

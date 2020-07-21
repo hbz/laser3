@@ -173,8 +173,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
             }
         })
-        lastUpdated(nullable: true, blank: true)
-        lastUpdatedCascading (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
     }
 
     @Override

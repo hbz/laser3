@@ -138,8 +138,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  breakable(nullable:true, blank:false)
                 consistent(nullable:true, blank:false)
                      fixed(nullable:true, blank:false)
-                 startDate(nullable:true, blank:false)
-                   endDate(nullable:true, blank:false)
+                 startDate (nullable:true)
+                   endDate (nullable:true)
                    license(nullable:true, blank:false)
                   isPublic(blank:false)
               packageScope(nullable:true, blank:false)
@@ -149,8 +149,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
-      listVerifiedDate    (nullable:true, blank:false)
-      lastUpdatedCascading(nullable:true, blank: false)
+      listVerifiedDate     (nullable:true)
+      lastUpdatedCascading (nullable:true)
   }
 
     @Override
