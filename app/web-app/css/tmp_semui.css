@@ -315,15 +315,15 @@ h1 .icon.h1-icon-overwrite {
 .ui.la-table.table tr td.table-td-error   { background-color: rgba(255,0,0, 0.1); }
 
 .ui.label.survey-renewal {
-    background-color: greenyellow;
+    background-color: greenyellow  !important;
 }
 
 .ui.label.survey-interest {
-    background-color: deepskyblue;
+    background-color: deepskyblue  !important;
 }
 
 .ui.label.survey-selection {
-    background-color: #ffdf00;
+    background-color: #ffdf00  !important;
 }
 
 

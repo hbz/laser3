@@ -323,7 +323,7 @@
                         <g:if test="${surveyConfig}">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
-                                    <div class="ui circular ${surveyConfig.configFinish ? "yellow" : ""} label">
+                                    <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                     ${surveyConfig.orgs?.size() ?: 0}
                                     </div>
                                 %{--<div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
