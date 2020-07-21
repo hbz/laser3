@@ -3,7 +3,15 @@
 .ui.divided.middle.la-flex-list .item {
   display: flex;
   align-items: center;
-  min-width: max-content;
+  justify-content:space-between;
+  table-layout: unset;
+  &:after {
+    content: unset;
+    display: unset;
+    height: unset;
+    clear: unset;
+    visibility: unset;
+  }
   .button {
     opacity: 0;
     -webkit-transition: opacity 1s; /* For Safari 3.1 to 6.0 */
