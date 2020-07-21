@@ -207,7 +207,7 @@
 
 </div><!-- .grid -->
 
-<g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+<g:if test="${actionName == "show" && contextOrg.id == surveyConfig.surveyInfo.owner.id}">
     <g:set var="surveyProperties" value="${surveyConfig.surveyProperties}"/>
 
     <semui:form>

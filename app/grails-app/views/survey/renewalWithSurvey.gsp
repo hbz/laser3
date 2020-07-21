@@ -15,7 +15,8 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+                     params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
     <semui:crumb message="surveyInfo.renewalOverView" class="active"/>
 </semui:breadcrumbs>
@@ -228,7 +229,7 @@ ${surveyInfo.name}
                     <g:set var="surveyOrg"
                            value="${SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)}"/>
 
-                    <g:if test="${surveyOrg}">
+                    <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${surveyOrg.ownerComment}">
                             <i class="info circle icon"></i>
@@ -290,7 +291,7 @@ ${surveyInfo.name}
                         <g:set var="surveyOrg"
                                value="${SurveyOrg.findBySurveyConfigAndOrg(participantResultProperty.surveyConfig, participantResultProperty.participant)}"/>
 
-                        <g:if test="${surveyOrg}">
+                        <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${surveyOrg.ownerComment}">
                                 <i class="info circle icon"></i>
@@ -314,7 +315,7 @@ ${surveyInfo.name}
                         ${(costItem?.billingCurrency?.getI10n('value')?.split('-'))?.first()}
                     </g:if>
                 </td>
-                <td>
+                <td class="x">
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult.participant.id]" class="ui icon button">
                         <i class="write icon"></i>
@@ -443,7 +444,7 @@ ${surveyInfo.name}
                     <g:set var="surveyOrg"
                            value="${SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)}"/>
 
-                    <g:if test="${surveyOrg}">
+                    <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${surveyOrg.ownerComment}">
                             <i class="info circle icon"></i>
@@ -506,7 +507,7 @@ ${surveyInfo.name}
                         <g:set var="surveyOrg"
                                value="${SurveyOrg.findBySurveyConfigAndOrg(participantResultProperty.surveyConfig, participantResultProperty.participant)}"/>
 
-                        <g:if test="${surveyOrg}">
+                        <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${surveyOrg.ownerComment}">
                                 <i class="info circle icon"></i>
@@ -530,7 +531,7 @@ ${surveyInfo.name}
                         ${(costItem?.billingCurrency?.getI10n('value')?.split('-'))?.first()}
                     </g:if>
                 </td>
-                <td>
+                <td class="x">
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult.participant.id]" class="ui icon button">
                         <i class="write icon"></i>
@@ -757,7 +758,7 @@ ${surveyInfo.name}
                     <g:set var="surveyOrg"
                            value="${SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)}"/>
 
-                    <g:if test="${surveyOrg}">
+                    <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${surveyOrg.ownerComment}">
                             <i class="info circle icon"></i>
@@ -781,7 +782,7 @@ ${surveyInfo.name}
                         <g:set var="surveyOrg"
                                value="${SurveyOrg.findBySurveyConfigAndOrg(participantResultProperty.surveyConfig, participantResultProperty.participant)}"/>
 
-                        <g:if test="${surveyOrg}">
+                        <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${surveyOrg.ownerComment}">
                                 <i class="info circle icon"></i>
@@ -803,7 +804,7 @@ ${surveyInfo.name}
                         ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
                     </g:if>
                 </td>
-                <td>
+                <td class="x">
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult.participant.id]" class="ui icon button">
                         <i class="write icon"></i>
@@ -926,7 +927,7 @@ ${surveyInfo.name}
                     <g:set var="surveyOrg"
                            value="${SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)}"/>
 
-                    <g:if test="${surveyOrg}">
+                    <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${surveyOrg.ownerComment}">
                             <i class="info circle icon"></i>
@@ -950,7 +951,7 @@ ${surveyInfo.name}
                         <g:set var="surveyOrg"
                                value="${SurveyOrg.findBySurveyConfigAndOrg(participantResultProperty.surveyConfig, participantResultProperty.participant)}"/>
 
-                        <g:if test="${surveyOrg}">
+                        <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${surveyOrg.ownerComment}">
                                 <i class="info circle icon"></i>
@@ -972,7 +973,7 @@ ${surveyInfo.name}
                         ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
                     </g:if>
                 </td>
-                <td>
+                <td class="x">
 
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult.participant.id]" class="ui icon button">
@@ -1124,7 +1125,7 @@ ${surveyInfo.name}
                 </g:if>
             </div>
 
-            <div class="ui two fields">
+            %{--<div class="ui two fields">
                 <div class="field">
                     <label><g:message code="myinst.copyLicense"/></label>
                     <g:if test="${parentSuccessorSubscription.owner}">
@@ -1142,7 +1143,7 @@ ${surveyInfo.name}
                         </g:if>
                         <g:else>
                             <div class="ui radio checkbox">
-                                <g:if test="${parentSuccessorSubscription.owner.derivedLicenses}">
+                                <g:if test="${parentSuccessorSubscription.owner?.derivedLicenses}">
                                     <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics"
                                            value="no">
                                 </g:if>
@@ -1166,7 +1167,7 @@ ${surveyInfo.name}
                                 <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_explicit', args: superOrgType)}</label>
                             </div>
 
-                            <g:if test="${parentSuccessorSubscription.owner.derivedLicenses}">
+                            <g:if test="${parentSuccessorSubscription.owner?.derivedLicenses}">
                                 <div class="ui radio checkbox">
                                     <input class="hidden" type="radio" id="generateSlavedLics3"
                                            name="generateSlavedLics"
@@ -1197,7 +1198,7 @@ ${surveyInfo.name}
                         <semui:msg class="info" text="${message(code: 'myinst.noSubscriptionOwner')}"/>
                     </g:else>
                 </div>
-            </div>
+            </div>--}%
 
         </g:form>
 

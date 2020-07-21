@@ -2604,7 +2604,7 @@ class SurveyController {
         }.size()?:0) + (result.orgsWithTermination.groupBy { it.participant.id }.size()?:0) + (result.orgsWithMultiYearTermSub.size()?:0))
 
         if (sumParticipantWithSub < result.parentSubChilds.size()?:0) {
-            def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
+            /*def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
 
             def removeSurveyResultOfOrg = []
             result.orgsWithoutResult.each { surveyResult ->
@@ -2613,7 +2613,7 @@ class SurveyController {
                     if (property.type == 'class com.k_int.kbplus.RefdataValue') {
                         if (surveyResult.sub.propertySet.find {
                             it.type.id == property.id
-                        }.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {
+                        }?.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {
 
                             result.orgsWithMultiYearTermSub << surveyResult.sub
                             removeSurveyResultOfOrg << surveyResult
@@ -2623,9 +2623,9 @@ class SurveyController {
             }
             removeSurveyResultOfOrg.each{ it
                 result.orgsWithoutResult?.remove(it)
-            }
+            }*/
 
-            result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort{it.getAllSubscribers()[0].sortname}
+            result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort{it.getAllSubscribers().sortname}
 
         }
 
