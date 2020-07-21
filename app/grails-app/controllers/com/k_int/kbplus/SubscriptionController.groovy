@@ -5771,9 +5771,6 @@ class SubscriptionController
         result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.subscription)
         result.consortialView = result.showConsortiaFunctions
 
-        result.showCollectiveFunctions = showCollectiveFunctions(result.contextOrg, result.subscription)
-        result.departmentalView = result.showCollectiveFunctions
-
         Map args = [:]
         if(result.consortialView) {
             args.superOrgType = [message(code:'consortium.superOrgType')]
