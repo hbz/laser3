@@ -24,7 +24,7 @@ class IssueEntitlementGroupItem {
     static constraints = {
         ieGroup     (blank: false)
         ie          (blank: false)
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 }

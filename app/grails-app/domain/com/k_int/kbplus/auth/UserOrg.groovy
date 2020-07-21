@@ -35,8 +35,8 @@ class UserOrg implements Comparable {
         dateActioned    (nullable: true)
         dateRequested   (nullable: true)
         formalRole      (nullable: true)
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     @Transient

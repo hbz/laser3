@@ -53,8 +53,8 @@ class PropertyDefinitionGroup {
         tenant      (nullable: true, blank: false)
         ownerType   (blank: false)
         isVisible   (blank: false)
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     List<PropertyDefinition> getPropertyDefinitions() {

@@ -34,11 +34,11 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     static constraints = {
         importFrom AbstractPropertyWithCalculatedLastUpdated
         tenant (nullable: true, blank: false)
-        finishDate (nullable:true, blank:false)
+        finishDate  (nullable:true)
         comment (nullable:true, blank:false)
         resultValues (nullable:true, blank:false)
-        startDate  (nullable:true, blank:false)
-        endDate (nullable:true, blank:false)
+        startDate   (nullable:true)
+        endDate     (nullable:true)
         participantComment (nullable:true, blank:false)
         ownerComment (nullable:true, blank:false)
         isRequired (blank:false)

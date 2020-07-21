@@ -11,17 +11,17 @@ class TIPPCoverage extends AbstractCoverage {
     static belongsTo = [tipp: TitleInstancePackagePlatform]
 
     static constraints = {
-        startDate(nullable:true, blank:true)
+        startDate   (nullable:true)
         startVolume(nullable:true, blank:true)
         startIssue(nullable:true, blank:true)
-        endDate(nullable:true, blank:true)
+        endDate     (nullable:true)
         endVolume(nullable:true, blank:true)
         endIssue(nullable:true, blank:true)
         embargo(nullable:true, blank:true)
         coverageDepth(nullable:true, blank:true)
         coverageNote(nullable:true, blank:true)
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     static mapping = {

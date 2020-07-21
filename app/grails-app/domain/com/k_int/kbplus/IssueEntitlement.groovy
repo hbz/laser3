@@ -106,11 +106,11 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     ieReason       (nullable:true, blank:true)
     medium         (nullable:true, blank:true)
     priceItem      (nullable:true, blank:true)
-    accessStartDate(nullable:true, blank:true)
-    accessEndDate  (nullable:true, blank:true)
+    accessStartDate(nullable:true)
+    accessEndDate  (nullable:true)
     coreStatus     (nullable:true, blank:true)
-    coreStatusStart(nullable:true, blank:true)
-    coreStatusEnd  (nullable:true, blank:true)
+    coreStatusStart(nullable:true)
+    coreStatusEnd  (nullable:true)
     acceptStatus   (nullable:true, blank:true)
       /*
       startDate     (nullable:true, blank:true)
@@ -125,8 +125,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
        */
 
     // Nullable is true, because values are already in the database
-    lastUpdated (nullable: true, blank: false)
-    dateCreated (nullable: true, blank: false)
+    lastUpdated (nullable: true)
+    dateCreated (nullable: true)
   }
 
   static IssueEntitlement construct(Map<String,Object> configMap) throws EntitlementCreationException {

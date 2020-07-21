@@ -183,18 +183,18 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         //owner(nullable:true, blank:false)
         form        (nullable:true, blank:false)
         resource    (nullable:true, blank:false)
-        startDate(nullable:true, blank:false, validator: { val, obj ->
+        startDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
             }
         })
-        endDate(nullable:true, blank:false, validator: { val, obj ->
+        endDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
             }
         })
-        manualRenewalDate(nullable:true, blank:false)
-        manualCancellationDate(nullable:true, blank:false)
+        manualRenewalDate (nullable:true)
+        manualCancellationDate (nullable:true)
         instanceOf(nullable:true, blank:false)
         comment(nullable: true, blank: true)
         administrative(blank:false)
@@ -203,8 +203,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         noticePeriod(nullable:true, blank:true)
         isPublicForApi (blank:false)
         cancellationAllowances(nullable:true, blank:true)
-        lastUpdated(nullable: true, blank: true)
-        lastUpdatedCascading (nullable: true, blank: false)
+        lastUpdated(nullable: true)
+        lastUpdatedCascading (nullable: true)
         isMultiYear(nullable: true, blank: false)
         hasPerpetualAccess(blank: false)
     }
