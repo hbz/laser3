@@ -23,7 +23,7 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 class License extends AbstractBaseWithCalculatedLastUpdated
-        implements CalculatedType, Permissions, AuditableSupport, ShareSupport, Comparable<License> {
+        implements AuditableSupport, CalculatedType, Permissions, ShareSupport, Comparable<License> {
 
     static Log static_logger = LogFactory.getLog(License)
 
@@ -175,6 +175,15 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         })
         lastUpdated(nullable: true, blank: true)
         lastUpdatedCascading (nullable: true, blank: false)
+    }
+
+    @Override
+    Collection<String> getLogIncluded() {
+        [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges' ]
     }
 
     @Override
