@@ -12,12 +12,15 @@ class RefdataService {
     def genericOIDService
 
     List getUsageDetails() {
-        def detailsMap = [:]
-        def usedRdvList = []
+        def detailsMap      = [:]
+        def usedRdvList     = []
+        def allDcs          = [:]
 
-        def allDcs = [:]
+        List classes = grailsApplication.getArtefacts("Domain").toList().findAll {
+            ! it.clazz.toString().endsWith('CustomProperty') && ! it.clazz.toString().endsWith('PrivateProperty') // tmp
+        }
 
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+        classes.each { dc ->
             def dcFields = []
             def cls = dc.clazz
 
