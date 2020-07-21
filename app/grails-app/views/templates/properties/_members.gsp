@@ -66,6 +66,9 @@
                         </g:if>
                     </g:else>
                 </td>
+                <td>
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="large icon cart arrow down teal"></i></span>
+                </td>
             </tr>
         </g:each>
     </tbody>
@@ -102,6 +105,3 @@
         </tfoot>
     </g:if>--%>
 </table>
-<g:if test="${error}">
-    <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
-</g:if>
