@@ -1840,4 +1840,26 @@ class YodaController {
         redirect action: 'dashboard'
     }
 
+    @Secured(['ROLE_YODA'])
+    def cleanUpSurveyOrgFinishDate() {
+
+        Integer changes = 0
+        List<SurveyOrg> surveyOrgs = SurveyOrg.findAllByFinishDateIsNull()
+
+        surveyOrgs.each { surveyOrg ->
+
+            List<SurveyResult> surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(surveyOrg.surveyConfig, surveyOrg.org)
+            List<SurveyResult> surveyResultsFinish = SurveyResult.findAllBySurveyConfigAndParticipantAndFinishDateIsNotNull(surveyOrg.surveyConfig, surveyOrg.org)
+
+            if(surveyResults.size() == surveyResultsFinish.size()){
+                surveyOrg.finishDate = surveyResultsFinish[0].finishDate
+                surveyOrg.save(flush: true)
+                changes++
+            }
+
+        }
+        flash.message = "Es wurden ${changes} FinishDate in SurveyOrg geändert!"
+        redirect action: 'dashboard'
+    }
+
 }

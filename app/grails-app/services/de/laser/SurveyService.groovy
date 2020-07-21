@@ -866,7 +866,7 @@ class SurveyService {
                             "WHERE surOrg.org IN (:org) " +
                             "AND s.id IN (:survey)", [org: userOrg.org, survey: surveys?.id])
 
-                    sendSurveyEmail(userOrg.user, userOrg.org, orgSurveys)
+                    sendSurveyEmail(userOrg.user, userOrg.org, orgSurveys, false)
                 }
             }
 
@@ -874,7 +874,7 @@ class SurveyService {
 
     }
 
-    def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org){
+    def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
         List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(org, UserOrg.STATUS_APPROVED)
@@ -884,12 +884,12 @@ class SurveyService {
             if(userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
                     userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
             {
-                sendSurveyEmail(userOrg.user, userOrg.org, [surveyInfo])
+                sendSurveyEmail(userOrg.user, userOrg.org, [surveyInfo], reminderMail)
             }
         }
     }
 
-    private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries) {
+    private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
         if (grailsApplication.config.grails.mail.disabled == true) {
             println 'SurveyService.sendSurveyEmail() failed due grailsApplication.config.grails.mail.disabled = true'
@@ -924,7 +924,7 @@ class SurveyService {
                         Object[] args = ["${survey.type.getI10n('value')}"]
                         Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
 
-                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.surveys', args, language) + " (" + survey.name + ")")
+                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + (reminderMail ? messageSource.getMessage('email.subject.surveysReminder', args, language)  : messageSource.getMessage('email.subject.surveys', args, language)) + " (" + survey.name + ")")
 
                         if (isNotificationCCbyEmail && ccAddress) {
                             mailService.sendMail {

@@ -42,6 +42,10 @@
                 <semui:actionsDropdownItem controller="survey" action="processEndSurvey" params="[id: params.id]"
                                            message="endSurvey.button"
                                            tooltip="${message(code: "endSurvey.button.info")}"/>
+
+                <semui:actionsDropdownItem controller="survey" action="openParticipantsAgain" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                           message="openParticipantsAgain.button"/>
+
                 <div class="ui divider"></div>
             </g:if>
 

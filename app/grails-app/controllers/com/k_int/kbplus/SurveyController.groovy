@@ -1169,6 +1169,120 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
+    def openParticipantsAgain() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
+            response.sendError(401); return
+        }
+
+        params.tab = params.tab ?: 'participantsViewAllFinish'
+        if(params.tab == 'participantsViewAllNotFinish'){
+            params.participantsNotFinish = true
+        }
+        if(params.tab == 'participantsViewAllFinish'){
+            params.participantsFinish = true
+        }
+
+        def fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
+
+        result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+
+        result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
+        result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
+
+        result.propList    = result.surveyConfig.surveyProperties.surveyProperty
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+    })
+    def processOpenParticipantsAgain() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
+            response.sendError(401); return
+        }
+
+        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.editable = (result.surveyInfo && result.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
+
+        Integer countReminderMails = 0
+        Integer countOpenParticipants = 0
+        boolean reminderMail = (params.openOption == 'ReminderMail')  ?: false
+        boolean openAndSendMail = (params.openOption == 'OpenWithMail')  ?: false
+        boolean open = (params.openOption == 'OpenWithoutMail') ?: false
+
+        if (params.selectedOrgs && result.editable) {
+
+            params.list('selectedOrgs').each { soId ->
+
+                Org org = Org.get(Long.parseLong(soId))
+
+                if(openAndSendMail || open) {
+                    if (result.surveyConfig.pickAndChoose) {
+                        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
+
+                        result.subscriptionInstance = result.surveyConfig.subscription
+
+                        List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org))
+
+                        ies.each { ie ->
+                            ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+                            ie.save(flush: true)
+                        }
+
+                        surveyOrg.finishDate = null
+                        surveyOrg.save(flush: true)
+                    }
+
+                    List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(org, result.surveyConfig)
+
+                    surveyResults.each {
+                        it.finishDate = null
+                        it.save(flush: true)
+                    }
+                    countOpenParticipants++
+                }
+
+                if(openAndSendMail) {
+                    surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, false)
+                }
+                if(reminderMail) {
+                    surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, true)
+                    countReminderMails++
+                }
+
+            }
+        }
+
+        if(countReminderMails > 0){
+            flash.message =  g.message(code: 'openParticipantsAgain.sendReminderMail.count', args: [countReminderMails])
+        }
+
+        if(countOpenParticipants > 0 && !openAndSendMail){
+            flash.message =  g.message(code: 'openParticipantsAgain.open.count', args: [countOpenParticipants])
+        }
+
+        if(countOpenParticipants > 0 && openAndSendMail){
+            flash.message =  g.message(code: 'openParticipantsAgain.openWithMail.count', args: [countOpenParticipants])
+        }
+
+        redirect(action: 'openParticipantsAgain', id: result.surveyInfo.id, params:[tab: params.tab, surveyConfigID: result.surveyConfig.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+    })
     def surveyTitlesEvaluation() {
         def result = setResultGenericsAndCheckAccess()
         if (!accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")) {
@@ -1845,7 +1959,7 @@ class SurveyController {
                             }
 
                             if(surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED){
-                                surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org)
+                                surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
                             }
                         }
                     }
@@ -4516,7 +4630,7 @@ class SurveyController {
                                 }
 
                                 if (surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED) {
-                                    surveyService.emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org)
+                                    surveyService.emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org, false)
                                 }
                             }
                         }
