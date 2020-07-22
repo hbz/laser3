@@ -3657,7 +3657,7 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    Map<String, Object> managePrivatePropertyDefinitions() {
+    def managePrivatePropertyDefinitions() {
         Map<String, Object> result = setResultGenerics()
 
         switch(params.cmd) {
@@ -3694,7 +3694,53 @@ AND EXISTS (
         result.multiplePdList = multiplePdList
         //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
         result.propertyType = 'private'
-        result
+        if(params.cmd == 'exportXLS') {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            List titleRow = [message(code:'default.name.label'),
+                             message(code:'propertyDefinition.expl.label'),
+                             message(code:'default.type.label'),
+                             message(code:'propertyDefinition.count.label'),
+                             message(code:'default.hardData.tooltip'),
+                             message(code:'default.multipleOccurrence.tooltip'),
+                             message(code:'default.isUsedForLogic.tooltip'),
+                             message(code:'default.mandatory.tooltip'),
+                             message(code:'default.multipleOccurrence.tooltip')]
+            Map sheetData = [:]
+            propDefs.each { Map.Entry propDefEntry ->
+                List rows = []
+                propDefEntry.value.each { PropertyDefinition pd ->
+                    List row = []
+                    row.add([field:pd.getI10n("name"),style:null])
+                    row.add([field:pd.getI10n("expl"),style:null])
+                    String typeString = pd.getLocalizedValue(pd.type)
+                    if(pd.type == RefdataValue.toString()) {
+                        List refdataValues = []
+                        RefdataCategory.getAllRefdataValues(pd.refdataCategory).each { RefdataValue refdataValue ->
+                            refdataValues << refdataValue.getI10n("value")
+                        }
+                        typeString += "(${refdataValues.join('/')})"
+                    }
+                    row.add([field:typeString,style:null])
+                    row.add([field:pd.countUsages(),style:null])
+                    row.add([field:pd.isHardData ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+                    row.add([field:pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+                    row.add([field:pd.isUsedForLogic ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+                    row.add([field:pd.mandatory ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+                    row.add([field:pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+                    rows.add(row)
+                }
+                sheetData.put(propDefEntry.key,[titleRow:titleRow,columnData:rows])
+            }
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'default.property.label')}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        else
+            result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")

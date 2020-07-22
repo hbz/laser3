@@ -2,13 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
 --      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Vertragsverwaltung
 
 2646    21.07.2020  hbz-dev     Andreas Bug         Schaltschrank wird auch für INST_USER angezeigt
 
-2681    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Teilnehmer wieder freischalten
+2697    21.07.2020  hbz-dev     Andreas Feature     Sicht "Eigene Merkmale" kann als Excel exportiert werden
 
 --      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Merkmalsverwaltung
+
+2681    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Teilnehmer wieder freischalten
 
 2497    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Merkmale nach Wert sortieren
 
