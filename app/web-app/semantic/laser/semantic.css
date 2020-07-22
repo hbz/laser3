@@ -17184,6 +17184,21 @@ ol.ui.horizontal.list li:before,
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  table-layout: unset;
+}
+
+.ui.divided.middle.la-flex-list .item:after {
+  content: unset;
+  display: unset;
+  height: unset;
+  clear: unset;
+  visibility: unset;
 }
 
 .ui.divided.middle.la-flex-list .item .button {
@@ -17210,29 +17225,6 @@ ol.ui.horizontal.list li:before,
 
 .ui.divided.middle.la-flex-list .item .button:focus {
   opacity: 1;
-}
-
-.ui.list.la-flex-list > .item > span {
-  -ms-flex-item-align: center;
-  align-self: center;
-}
-
-.ui.list.la-flex-list > .item > span + .content {
-  -ms-flex-preferred-size: 90%;
-  flex-basis: 90%;
-  -ms-flex-item-align: center;
-  align-self: center;
-}
-
-.ui.list.la-flex-list > .item > span + .content + .content {
-  -ms-flex-preferred-size: 10%;
-  flex-basis: 10%;
-  -ms-flex-item-align: center;
-  align-self: center;
-  text-align: right;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
 }
 
 .la-list-border-around {

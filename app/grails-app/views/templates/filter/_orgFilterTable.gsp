@@ -253,7 +253,7 @@
                     <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, org)}"
                             var="personRole">
                         <g:if test="${personRole.prs.isPublic || (!personRole.prs.isPublic && personRole?.prs?.tenant?.id == contextService.getOrg().id)}">
-                            <div class="item">
+                            <div class="item js-copyTriggerParent">
                                 <%--
                                 <g:if test="${! personRole.prs.isPublic}">
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
@@ -270,11 +270,11 @@
                                         personRole.getPrs(),
                                         RDStore.CCT_EMAIL
                                 )}" var="email">
-                                    <i class="ui icon envelope outline"></i>
+                                    <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
-                                        <a href="mailto:${email?.content}">${email?.content}</a>
+                                        <a class="js-copyTopic" href="mailto:${email?.content}">${email?.content}</a>
                                     </span><br>
                                 </g:each>
                                 <g:each in="${Contact.findAllByPrsAndContentType(
@@ -861,3 +861,4 @@
 
     </r:script>
 </g:if>
+
