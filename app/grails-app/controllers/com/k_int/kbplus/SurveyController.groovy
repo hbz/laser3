@@ -2383,16 +2383,17 @@ class SurveyController {
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
             result.superOrgType << message(code:'consortium.superOrgType')
         }
-        if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            result.superOrgType << message(code:'collective.superOrgType')
-        }
 
         result.parentSubscription = result.surveyConfig.subscription
         result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
         result.parentSuccessorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
+
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        if(result.parentSuccessorSubscription) {
+            result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)", [subscription: GenericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
+        }
 
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty.sort {
@@ -3782,9 +3783,6 @@ class SurveyController {
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
             result.superOrgType << message(code:'consortium.superOrgType')
         }
-        if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            result.superOrgType << message(code:'collective.superOrgType')
-        }
 
         result.participantsList = []
 
@@ -3811,6 +3809,9 @@ class SurveyController {
 
 
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        if(result.parentSuccessorSubscription) {
+            result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)", [subscription: GenericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
+        }
 
         result
 
@@ -4366,21 +4367,19 @@ class SurveyController {
         RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
         RefdataValue role_lic       = RDStore.OR_LICENSEE_CONS
 
-        if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-            role_lic = RDStore.OR_LICENSEE_COLL
-        }
         RefdataValue role_lic_cons  = RDStore.OR_LICENSING_CONSORTIUM
 
         RefdataValue role_provider  = RDStore.OR_PROVIDER
         RefdataValue role_agency    = RDStore.OR_AGENCY
 
-        if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
 
                 License licenseCopy
 
-                def subLicense = newParentSub.owner
+                //def subLicense = newParentSub.owner
 
                 Set<Package> packagesToProcess = []
+                List<License> licensesToProcess = []
 
                 //copy package data
                 if(params.linkAllPackages) {
@@ -4393,38 +4392,18 @@ class SurveyController {
                         packagesToProcess << SubscriptionPackage.get(spId).pkg
                     }
                 }
-
-                    if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                       // def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
-                        def postfix = 'Teilnehmervertrag'
-
-                        if (subLicense) {
-                            def subLicenseParams = [
-                                    lic_name     : "${subLicense.reference} (${postfix})",
-                                    isSlaved     : params.isSlaved,
-                                    asOrgType: orgType,
-                                    copyStartEnd : true
-                            ]
-
-                            if (params.generateSlavedLics == 'explicit') {
-                                licenseCopy = institutionsService.copyLicense(
-                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            }
-                            else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                                licenseCopy = institutionsService.copyLicense(
-                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            }
-                            else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
-                                licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
-                            }
-
-                            if (licenseCopy) {
-                                new OrgRole(org: org, lic: licenseCopy, roleType: role_lic).save()
-                            }
-                        }
+                if(params.generateSlavedLics == "all") {
+                    licensesToProcess.addAll(License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(newParentSub),linkType:RDStore.LINKTYPE_LICENSE]))
+                }
+                else if(params.generateSlavedLics == "partial") {
+                    List<String> licenseKeys = params.list("generateSlavedLicsReference")
+                    licenseKeys.each { String licenseKey ->
+                        licensesToProcess << genericOIDService.resolveOID(licenseKey)
                     }
+                }
 
-                    log.debug("Generating seperate slaved instances for members")
+
+            log.debug("Generating seperate slaved instances for members")
 
                     SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                     Date startDate = newStartDate ?: null
@@ -4442,7 +4421,6 @@ class SurveyController {
                             identifier: UUID.randomUUID().toString(),
                             instanceOf: newParentSub,
                             isSlaved: true,
-                            owner: licenseCopy,
                             resource: newParentSub.resource ?: null,
                             form: newParentSub.form ?: null,
                             isMultiYear: multiYear ?: false
@@ -4509,11 +4487,15 @@ class SurveyController {
                                 pkg.addToSubscription(memberSub, false)
                         }
 
+                        licensesToProcess.each { License lic ->
+                            subscriptionService.setOrgLicRole(memberSub,lic,false)
+                        }
+
                         if(oldSub){
                             new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: memberSub.id, destination: oldSub.id, owner: contextService.getOrg(), objectType:Subscription.class.name).save(flush: true)
                         }
 
-                        if(Org.get(orgID).getCustomerType() == 'ORG_INST') {
+                        if(org.getCustomerType() == 'ORG_INST') {
                             PendingChange.construct([target: memberSub, oid: "${memberSub.getClass().getName()}:${memberSub.id}", msgToken: "pendingChange.message_SU_NEW_01", status: RDStore.PENDING_CHANGE_PENDING, owner: org])
                         }
 
@@ -4640,8 +4622,6 @@ class SurveyController {
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            tmpParams.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
         def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
         if (tmpParams.filterPropDef) {
