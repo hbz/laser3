@@ -12,7 +12,8 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+                     params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
         <semui:crumb class="active" controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" message="surveyTitlesEvaluation.label"/>
     </g:if>

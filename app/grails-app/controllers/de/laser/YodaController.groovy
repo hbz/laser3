@@ -1727,10 +1727,10 @@ class YodaController {
             def parentSubscription = surConfig?.subscription
             def parentSubChilds = subscriptionService.getCurrentValidSubChilds(parentSubscription)
             def parentSuccessorSubscription = surConfig?.subscription?.getCalculatedSuccessor()
-            def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
-            parentSubChilds?.each { sub ->
-                if (sub?.getCalculatedSuccessor()) {
-                    sub?.getAllSubscribers().each { org1 ->
+            //def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
+            parentSubChilds.each { sub ->
+                if (sub.getCalculatedSuccessor()) {
+                    sub.getAllSubscribers().each { org1 ->
 
                         def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org1)
                         if(surveyResult?.size() > 0) {
@@ -1764,7 +1764,7 @@ class YodaController {
                     }
 
                 } else {
-                    if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
+                   /* if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
                         if (sub?.propertySet?.find {
                             it?.type?.id == property?.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
@@ -1801,7 +1801,7 @@ class YodaController {
 
                             }
                         }
-                    }
+                    }*/
                 }
             }
 
