@@ -115,7 +115,7 @@
                             <g:render template="evaluationSubscription" />
                         </g:if>
 
-                        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY}">
+                        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
                             <g:render template="evaluationGeneralSurvey" />
                         </g:if>
 
