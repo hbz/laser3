@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2696    22.07.2020  hbz-dev     Anja    Feature     Überarbeitung Darstellung Einrichtungskontakte auf org/show (Teil 2)
+
 2509    17.07.2020  rc1.4       Moe     Bug         Länderauswahl-Filter verfeinern
 
 --      17.07.2020  hbz-dev     Andreas Bug         Filterverarbeitung von BudgetCodes, Rechnung und Auftrag korrigiert
