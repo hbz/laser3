@@ -15,6 +15,11 @@
 
     <semui:controlButtons>
         <g:render template="actions"/>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="managePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
     </semui:controlButtons>
     <br>
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>

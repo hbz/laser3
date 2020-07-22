@@ -16,6 +16,12 @@
             <%--
             <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
             --%>
+            <%-- included in case someone of the admins wishes this export
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="managePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
+                </semui:exportDropdownItem>
+            </semui:exportDropdown>--%>
         </semui:controlButtons>
 
         <br>
