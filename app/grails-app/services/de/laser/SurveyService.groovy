@@ -521,7 +521,7 @@ class SurveyService {
                                    messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.costItemElement', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.costInBillingCurrency', null, LocaleContextHolder.getLocale()),
-                               -    messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('default.startDate.label', null, LocaleContextHolder.getLocale()),
