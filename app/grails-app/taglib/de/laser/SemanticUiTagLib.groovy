@@ -452,7 +452,7 @@ class SemanticUiTagLib {
             case 'E-Mail':
             case 'Mail': // Deprecated
                 out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i aria-hidden="true" class="ui icon envelope outline la-list-icon"></i>'
+                out << '    <i aria-hidden="true" class="ui icon envelope outline la-list-icon js-copyTrigger"></i>'
                 out << '</span>'
                 break
             case 'Fax':

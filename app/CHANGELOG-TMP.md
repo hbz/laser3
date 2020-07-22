@@ -2,15 +2,23 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2686    21.07.2020  hbz-dev     Ingrid  Feature     Bugfixing Layout Kontakt / Möglichkeit für Kopieren der Mailadresse in die Zwischenablage schaffen
+
 2693    17.07.2020  rc1.4       Moe     Bug         Umfrage Ausschüttungsfunktion 0% nicht ausschütten
 
 2681    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Teilnehmer wieder freischalten
 
+2697    21.07.2020  hbz-dev     Andreas Feature     Sicht "Eigene Merkmale" kann als Excel exportiert werden
+
 --      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Merkmalsverwaltung
+
+2681    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Teilnehmer wieder freischalten
 
 2497    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Merkmale nach Wert sortieren
 
 2695    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Nach Merkmale Wert filtern
+
+2693    17.07.2020  rc1.4       Moe     Bug         Umfrage Ausschüttungsfunktion 0% nicht ausschütten
 
 --      17.07.2020  hbz-dev     Moe     Feature     Umfrage Jahres Filter + Umfrage Standard Sortierung 
 
