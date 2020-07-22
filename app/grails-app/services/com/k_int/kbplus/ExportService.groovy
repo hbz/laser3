@@ -44,6 +44,7 @@ class ExportService {
 
 	SimpleDateFormat formatter = DateUtil.getSDF_ymd()
 	def messageSource
+	def escapeService
 	def contextService
 
 	/**
@@ -139,7 +140,7 @@ class ExportService {
 							cell.setCellValue((String) cellData.field)
 						} else if (cellData.field instanceof Integer) {
 							cell.setCellValue((Integer) cellData.field)
-						} else if (cellData.field instanceof Double) {
+						} else if (cellData.field instanceof Double || cellData.field instanceof BigDecimal) {
 							cell.setCellValue((Double) cellData.field)
 							cell.setCellStyle(numberStyle)
 						}
@@ -564,11 +565,11 @@ class ExportService {
 			}
 			if(entitlement?.priceItem) {
 				//listprice_value
-				row.add(entitlement.priceItem.listPrice ? entitlement.priceItem.listPrice.setScale(2, RoundingMode.HALF_UP) : ' ')
+				row.add(entitlement.priceItem.listPrice ? escapeService.outputFinancialValue(entitlement.priceItem.listPrice) : ' ')
 				//listprice_currency
 				row.add(entitlement.priceItem.listCurrency ? entitlement.priceItem.listCurrency.value : ' ')
 				//localprice_value
-				row.add(entitlement.priceItem.localPrice ? entitlement.priceItem.localPrice.setScale(2, RoundingMode.HALF_UP) : ' ')
+				row.add(entitlement.priceItem.localPrice ? escapeService.outputFinancialValue(entitlement.priceItem.localPrice) : ' ')
 				//localprice_currency
 				row.add(entitlement.priceItem.localCurrency ? entitlement.priceItem.localCurrency.value : ' ')
 				//price_date
@@ -641,7 +642,7 @@ class ExportService {
 			row.add(tipp.title.title ?: ' ')
 			if(tipp.title instanceof BookInstance) {
 				row.add(tipp.title.volume ?: ' ')
-				row.add(tipp.title.getEbookFirstAutorOrFirstEditor() ?: ' ')
+				row.add(tipp.title.getEbookFirstAutorOrFirstEditor() ? tipp.title.getEbookFirstAutorOrFirstEditor().replace(';',',') : ' ')
 				row.add(tipp.title.editionStatement ?: ' ')
 				row.add(tipp.title.summaryOfContent ?: ' ')
 			}else{
@@ -679,9 +680,9 @@ class ExportService {
 				row.add(joinIdentifiers(tipp.title.ids,otherNS.ns,','))
 			}
 			if(entitlement && entitlement.priceItem) {
-				row.add(entitlement.priceItem.listPrice ? entitlement.priceItem.listPrice.setScale(2,RoundingMode.HALF_UP) : ' ')
+				row.add(entitlement.priceItem.listPrice ? escapeService.outputFinancialValue(entitlement.priceItem.listPrice) : ' ')
 				row.add(entitlement.priceItem.listCurrency ? entitlement.priceItem.listCurrency.value : ' ')
-				row.add(entitlement.priceItem.localPrice ? entitlement.priceItem.localPrice.setScale(2,RoundingMode.HALF_UP) : ' ')
+				row.add(entitlement.priceItem.localPrice ? escapeService.outputFinancialValue(entitlement.priceItem.localPrice) : ' ')
 				row.add(entitlement.priceItem.localCurrency ? entitlement.priceItem.listCurrency.value : ' ')
 			}else{
 				row.add(' ')
