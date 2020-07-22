@@ -151,7 +151,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 
             </g:if>
 
-            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY}">
+            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
                 <g:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
                                                                              surveyResults: surveyResults]"/>

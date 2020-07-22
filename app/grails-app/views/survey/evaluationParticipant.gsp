@@ -95,7 +95,7 @@
                                                                                   surveyResults       : surveyResults]"/>
             </g:if>
 
-            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY}">
+            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
                 <g:render template="/templates/survey/generalSurvey" model="[surveyConfig        : surveyConfig,
                                                                              costItemSums        : costItemSums,
