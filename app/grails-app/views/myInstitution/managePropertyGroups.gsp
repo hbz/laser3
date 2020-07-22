@@ -14,6 +14,11 @@
 
         <semui:controlButtons>
             <g:render template="actions"/>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="managePropertyGroups" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
+                </semui:exportDropdownItem>
+            </semui:exportDropdown>
         </semui:controlButtons>
         <br>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.manage_props')}</h1>
@@ -35,7 +40,6 @@
                         <th><g:message code="default.name.label"/></th>
                         <th><g:message code="propertyDefinitionGroup.table.header.description"/></th>
                         <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
-                        <th><g:message code="default.type.label"/></th>
                         <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>
                         <g:if test="${editable}">
                             <th class="la-action-info">${message(code:'default.actions.label')}</th>
@@ -53,22 +57,6 @@
                             </td>
                             <td>
                                 ${pdGroup.getPropertyDefinitions().size()}
-                            </td>
-                            <td>
-                                <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
-                                <g:if test="${pdGroup.ownerType == License.class.name}">
-                                    <g:message code="propertyDefinition.License Property.label"/>
-                                </g:if>
-                                <g:elseif test="${pdGroup.ownerType == Org.class.name}">
-                                    <g:message code="propertyDefinition.Organisation Property.label"/>
-                                </g:elseif>
-                                <g:elseif test="${pdGroup.ownerType == Subscription.class.name}">
-                                    <g:message code="propertyDefinition.Subscription Property.label"/>
-                                </g:elseif>
-                                <g:elseif test="${pdGroup.ownerType == Platform.class.name}">
-                                    <g:message code="propertyDefinition.Platform Property.label"/>
-                                </g:elseif>
-                                <%-- TODO: REFACTORING x.class.name with pd.desc --%>
                             </td>
                             <td>
                                 <semui:xEditableBoolean owner="${pdGroup}" field="isVisible" />

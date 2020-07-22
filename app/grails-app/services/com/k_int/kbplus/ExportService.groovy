@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage
@@ -43,7 +44,6 @@ class ExportService {
 
 	SimpleDateFormat formatter = DateUtil.getSDF_ymd()
 	def messageSource
-	def subscriptionService
 	def contextService
 
 	/**
@@ -136,11 +136,12 @@ class ExportService {
 					rowData.each { cellData ->
 						cell = row.createCell(cellnum++)
 						if (cellData.field instanceof String) {
-							cell.setCellValue((String) cellData.field);
+							cell.setCellValue((String) cellData.field)
 						} else if (cellData.field instanceof Integer) {
-							cell.setCellValue((Integer) cellData.field);
+							cell.setCellValue((Integer) cellData.field)
 						} else if (cellData.field instanceof Double) {
-							cell.setCellValue((Double) cellData.field);
+							cell.setCellValue((Double) cellData.field)
+							cell.setCellStyle(numberStyle)
 						}
 						switch(cellData.style) {
 							case 'positive': cell.setCellStyle(csPositive)
@@ -151,9 +152,6 @@ class ExportService {
 								break
 							case 'bold': cell.setCellStyle(bold)
 								break
-						}
-						if(cellData.field instanceof Integer || cellData.field instanceof Double){
-							cell.setCellStyle(numberStyle);
 						}
 					}
 					rownum++
@@ -235,6 +233,79 @@ class ExportService {
 				cells.add(cell)
 		}
 		cells
+	}
+
+	/**
+	 * Generates an Excel workbook of the property usage for the given {@link Map} of {@link PropertyDefinition}s.
+	 * The structure of the workbook is the same as of the view _manage(Private)PropertyDefintions.gsp
+	 * @param propDefs - the {@link Map} of {@link PropertyDefinition}s whose usages should be printed
+	 * @return a {@link Map} of the Excel sheets containing the table data
+	 */
+	Map<String,Map> generatePropertyUsageExportXLS(Map propDefs) {
+		Locale locale = LocaleContextHolder.getLocale()
+		List titleRow = [messageSource.getMessage('default.name.label',null,locale),
+						 messageSource.getMessage('propertyDefinition.expl.label',null,locale),
+						 messageSource.getMessage('default.type.label',null,locale),
+						 messageSource.getMessage('propertyDefinition.count.label',null,locale),
+						 messageSource.getMessage('default.hardData.tooltip',null,locale),
+						 messageSource.getMessage('default.multipleOccurrence.tooltip',null,locale),
+						 messageSource.getMessage('default.isUsedForLogic.tooltip',null,locale),
+						 messageSource.getMessage('default.mandatory.tooltip',null,locale),
+						 messageSource.getMessage('default.multipleOccurrence.tooltip',null,locale)]
+		Map<String,Map> sheetData = [:]
+		propDefs.each { Map.Entry propDefEntry ->
+			List rows = []
+			propDefEntry.value.each { PropertyDefinition pd ->
+				List row = []
+				row.add([field:pd.getI10n("name"),style:null])
+				row.add([field:pd.getI10n("expl"),style:null])
+				String typeString = pd.getLocalizedValue(pd.type)
+				if(pd.type == RefdataValue.toString()) {
+					List refdataValues = []
+					RefdataCategory.getAllRefdataValues(pd.refdataCategory).each { RefdataValue refdataValue ->
+						refdataValues << refdataValue.getI10n("value")
+					}
+					typeString += "(${refdataValues.join('/')})"
+				}
+				row.add([field:typeString,style:null])
+				row.add([field:pd.countUsages(),style:null])
+				row.add([field:pd.isHardData ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+				row.add([field:pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+				row.add([field:pd.isUsedForLogic ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+				row.add([field:pd.mandatory ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+				row.add([field:pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+				rows.add(row)
+			}
+			sheetData.put(messageSource.getMessage("propertyDefinition.${propDefEntry.key}.label",null,locale),[titleRow:titleRow,columnData:rows])
+		}
+		sheetData
+	}
+
+	/**
+	 *
+	 * @param propDefGroups
+	 * @return
+	 */
+	Map<String,Map> generatePropertyGroupUsageXLS(Map propDefGroups) {
+		Locale locale = LocaleContextHolder.getLocale()
+		List titleRow = [messageSource.getMessage("default.name.label",null,locale),
+						 messageSource.getMessage("propertyDefinitionGroup.table.header.description",null,locale),
+						 messageSource.getMessage("propertyDefinitionGroup.table.header.properties",null,locale),
+						 messageSource.getMessage("propertyDefinitionGroup.table.header.presetShow",null,locale)]
+		Map<String,Map> sheetData = [:]
+		propDefGroups.each { Map.Entry typeEntry ->
+			List rows = []
+			typeEntry.value.each { PropertyDefinitionGroup pdGroup ->
+				List row = []
+				row.add([field:pdGroup.name,style:null])
+				row.add([field:pdGroup.description,style:null])
+				row.add([field:pdGroup.getPropertyDefinitions().size(),style:null])
+				row.add([field:pdGroup.isVisible ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+				rows.add(row)
+			}
+			sheetData.put(messageSource.getMessage("propertyDefinition.${typeEntry.key}.label",null,locale),[titleRow:titleRow,columnData:rows])
+		}
+		sheetData
 	}
 
 	/**

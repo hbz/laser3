@@ -1,27 +1,17 @@
 <!-- _licPropGroup.gsp -->
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; de.laser.AuditConfig" %>
 
-<table class="ui la-table-small la-table-inCard table">
+<table class="ui table la-table-small la-table-inCard">
     <g:if test="${propList}">
-        <colgroup>
-            <col style="width: 129px;">
-            <col style="width: 96px;">
-            <col style="width: 359px;">
-            <col style="width: 148px;">
-            <col style="width: 76px;">
-        </colgroup>
         <thead>
-            <tr>
-                <th>${message(code:'property.table.property')}</th>
-                <th>${message(code:'property.table.value')}</th>
-                <th>${message(code:'property.table.paragraph')}</th>
-                <th>${message(code:'property.table.notes')}</th>
-                <th></th>
-            </tr>
+            <th>${message(code:'property.table.property')}</th>
+            <th>${message(code:'property.table.value')}</th>
+            <th>${message(code:'property.table.paragraph')}</th>
+            <th>${message(code:'property.table.notes')}</th>
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${propList.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+        <g:each in="${propList}" var="prop">
                 <tr>
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
@@ -87,7 +77,6 @@
                     <td>
                         ${prop.note}
                     </td>
-                    <td class="x"></td>
                 </tr>
 
         </g:each>
