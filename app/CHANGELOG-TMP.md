@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2700    22.07.2020  rc1.5       Andreas Bug         Merkmalsfilter korrigiert
+
 2575    22.07.2020  rc1.5       Andreas Bug         Export der Bestände korrigiert
 
 2655    22.07.2020  rc1.5       Andreas Bug         Stift zum Umschalten des Bearbeitungsmodus für Vollnutzer bei Kindlizenzen eingefügt
