@@ -15,6 +15,11 @@
 
     <semui:controlButtons>
         <g:render template="actions"/>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="managePrivatePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
     </semui:controlButtons>
 
     <br>
@@ -86,7 +91,7 @@
                                         </td>
                                         <td>
                                             ${PropertyDefinition.getLocalizedValue(pd.type)}
-                                            <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                            <g:if test="${pd.type == 'class com.k_int.kbplus.RefdataValue'}">
                                                 <g:set var="refdataValues" value="${[]}"/>
                                                 <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
                                                         var="refdataValue">

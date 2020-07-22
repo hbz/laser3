@@ -97,6 +97,24 @@ r2d2 = {
 
     initGlobalSemuiStuff : function() {
         console.log("r2d2.initGlobalSemuiStuff()")
+        // copy email adress next to icon and putting it in cache
+
+        $('.js-copyTrigger').click(function(){
+            var element = $(this).parents('.js-copyTriggerParent').find('.js-copyTopic')
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val($(element).text()).select();
+            document.execCommand("copy");
+            $temp.remove();
+        });
+        $('.js-copyTrigger').hover(
+            function(){ $(this).addClass('open') },
+            function(){ $(this).removeClass('open') }
+        )
+        $('.js-linkGoogle').hover(
+            function(){ $(this).removeClass('alternate') },
+            function(){ $(this).addClass('alternate') }
+        )
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,
