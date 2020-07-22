@@ -951,11 +951,11 @@ class SemanticUiTagLib {
             out << object.type.getI10n('value')
             out << "</div>"
 
-            if(object.isMandatory) {
+/*            if(object.isMandatory) {
                 out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
                 out << "<i class='yellow small icon exclamation triangle'></i>"
                 out << "</span>"
-            }
+            }*/
 
         }
     }
