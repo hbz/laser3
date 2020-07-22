@@ -36,8 +36,6 @@ class LicenseController
     def taskService
     def docstoreService
     def genericOIDService
-    def exportService
-    def escapeService
     PropertyService propertyService
     def institutionsService
     def pendingChangeService
@@ -513,7 +511,8 @@ class LicenseController
                 dateFilter += " and ((s.startDate = null or s.startDate <= :validOn) and (s.endDate = null or s.endDate >= :validOn))"
                 subQueryParams.validOn = result.dateRestriction
             }
-            Set<Subscription> subscriptions = Subscription.executeQuery("select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)${dateFilter}",subQueryParams)
+            String subscrQuery = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)${dateFilter}"
+            Set<Subscription> subscriptions = Subscription.executeQuery(subscrQuery,subQueryParams)
             if(params.status != 'FETCH_ALL') {
                 subscriptions.removeAll { Subscription s -> s.status.id != params.status as Long }
             }
@@ -988,7 +987,8 @@ class LicenseController
                     startDate: params.license.copyDates ? baseLicense?.startDate : null,
                     endDate: params.license.copyDates ? baseLicense?.endDate : null,
                     instanceOf: params.license.copyLinks ? baseLicense?.instanceOf : null,
-
+                    status: baseLicense?.status ?: null,
+                    openEnded: baseLicense?.openEnded
             )
 
 
@@ -1090,7 +1090,7 @@ class LicenseController
 
                     if(params.license.copyCustomProperties) {
                         //customProperties
-                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
+                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant == null && prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
                             LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.instanceOf = null
@@ -1100,7 +1100,7 @@ class LicenseController
                     if(params.license.copyPrivateProperties){
                         //privatProperties
 
-                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
+                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant?.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
                             LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.save()

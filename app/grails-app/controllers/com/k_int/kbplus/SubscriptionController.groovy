@@ -2516,7 +2516,8 @@ class SubscriptionController
             }
         }
         result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
-        result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
+        String memberLicensesQuery = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
+        result.memberLicenses = License.executeQuery(memberLicensesQuery,[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
 
         result
     }
@@ -5035,9 +5036,12 @@ class SubscriptionController
             }
         }
 
-        result.sourceLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc",[sub:GenericOIDService.getOID(baseSub),linkType:RDStore.LINKTYPE_LICENSE])
-        if(newSub)
-            result.targetLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc",[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
+        String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+        result.sourceLicenses = License.executeQuery(sourceLicensesQuery,[sub:GenericOIDService.getOID(baseSub),linkType:RDStore.LINKTYPE_LICENSE])
+        if(newSub) {
+            String targetLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+            result.targetLicenses = License.executeQuery(targetLicensesQuery,[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
+        }
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
@@ -5223,12 +5227,13 @@ class SubscriptionController
         if (newSub) {
             result.newSub = newSub.refresh()
         }
-        subsToCompare.each{ sub ->
+        Org contextOrg = contextService.org
+        subsToCompare.each{ Subscription sub ->
             Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties.sort{it.type.getI10n('name')})
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result

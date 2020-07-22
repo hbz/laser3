@@ -197,6 +197,7 @@
                             </g:if>
                             <g:elseif test="${ownobj instanceof Subscription}">
                                 <g:set var="consortium" value="${ownobj.getConsortia()}"/>
+                                <g:set var="atSubscr" value="${ownobj.getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                             </g:elseif>
                             <g:if test="${prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)}">
                                 <g:if test="${ownobj.isSlaved}">
@@ -206,7 +207,7 @@
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="large icon thumbtack grey"></i></span>
                                 </g:else>
                             </g:if>
-                            <g:elseif test="${prop.tenant?.id == consortium?.id}">
+                            <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="large icon cart arrow down teal"></i></span>
                             </g:elseif>
                         </g:else>
