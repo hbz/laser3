@@ -3139,13 +3139,13 @@ class SurveyController {
         if (newSub) {
             result.newSub = newSub.refresh()
         }
-        subsToCompare.each { sub ->
+        Org contextOrg = contextService.org
+        subsToCompare.each { Subscription sub ->
             Map customProperties = result.customProperties
-            sub = GrailsHibernateUtil.unwrapIfProxy(sub)
-            customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.propertySet.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties, sub, sub.privateProperties.sort{it.type.getI10n('name')})
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result
@@ -4031,27 +4031,27 @@ class SurveyController {
                     newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
                     def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, PropertyDefinition.SUB_PROP) : null
 
-                    newMap.newCustomProperty = (sub && propDef) ? sub.customProperties.find {
+                    newMap.newCustomProperty = (sub && propDef) ? sub.propertySet.find {
                         it.type.id == propDef.id
                     } : null
-                    newMap.oldCustomProperty = (newMap.oldSub && propDef) ? newMap.oldSub.customProperties.find {
+                    newMap.oldCustomProperty = (newMap.oldSub && propDef) ? newMap.oldSub.propertySet.find {
                         it.type.id == propDef.id
                     } : null
                 }
                 if(params.tab == 'customProperties') {
-                    newMap.newCustomProperty = (sub) ? sub.customProperties.find {
+                    newMap.newCustomProperty = (sub) ? sub.propertySet.find {
                         it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
                     } : null
-                    newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.customProperties.find {
+                    newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
                         it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
                     } : null
                 }
 
                 if(params.tab == 'privateProperties') {
-                    newMap.newPrivateProperty = (sub) ? sub.privateProperties.find {
+                    newMap.newPrivateProperty = (sub) ? sub.propertySet.find {
                         it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
                     } : null
-                    newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.privateProperties.find {
+                    newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
                         it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
                     } : null
                 }
