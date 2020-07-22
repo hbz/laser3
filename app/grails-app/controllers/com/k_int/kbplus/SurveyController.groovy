@@ -4004,11 +4004,11 @@ class SurveyController {
         }
 
         if(params.tab == 'customProperties') {
-            result.properties = result.parentSubscription.customProperties.type
+            result.properties = result.parentSubscription.propertySet.findAll{ it.type.tenant == null }.type
         }
 
         if(params.tab == 'privateProperties') {
-            result.properties = result.parentSubscription.privateProperties.type
+            result.properties = result.parentSubscription.propertySet.findAll{ it.type.tenant != null }.type
         }
 
         if(result.properties) {
