@@ -45,7 +45,7 @@
                 refdataValues.each { rv ->
                     String[] linkArray = rv.getI10n("value").split("\\|")
                     linkArray.eachWithIndex { l, int perspective ->
-                        linkTypes.put(rv.class.name+":"+rv.id+"§"+perspective,l)
+                        linkTypes.put(GenericOIDService.getOID(rv)+"§"+perspective,l)
                     }
                     if(link && link.linkType == rv) {
                         int perspIndex
@@ -58,7 +58,7 @@
                         else {
                             perspIndex = 0
                         }
-                        linkType = "${rv.class.name}:${rv.id}§${perspIndex}"
+                        linkType = "${GenericOIDService.getOID(rv)}§${perspIndex}"
                     }
                 }
             }
@@ -70,9 +70,9 @@
             <g:set var="selectPair" value="pair_${link.id}"/>
             <g:set var="selectLink" value="linkType_${link.id}"/>
             <g:set var="linkComment" value="linkComment_${link.id}"/>
-            <input type="hidden" name="link" value="${link.class.name}:${link.id}" />
+            <input type="hidden" name="link" value="${GenericOIDService.getOID(link)}" />
             <g:if test="${comment}">
-                <input type="hidden" name="commentID" value="${comment.owner.class.name}:${comment.owner.id}" />
+                <input type="hidden" name="commentID" value="${GenericOIDService.getOID(comment.owner)}" />
             </g:if>
         </g:if>
         <g:elseif test="${subscriptionLicenseLink}">
@@ -92,21 +92,20 @@
                         ${header}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="four wide column">
-                        ${thisString}
-                    </div>
-                    <div class="twelve wide column">
-                        <g:if test="${subscriptionLicenseLink}">
-                            <g:hiddenField name="${selectLink}" value="${RDStore.LINKTYPE_LICENSE.id}"/>
-                            ${RDStore.LINKTYPE_LICENSE.getI10n("value").split("\\|")[1]}
-                        </g:if>
-                        <g:else>
+                <g:if test="${subscriptionLicenseLink}">
+                    <g:hiddenField name="${selectLink}" value="${GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}§${1}"/>
+                </g:if>
+                <g:else>
+                    <div class="row">
+                        <div class="four wide column">
+                            ${thisString}
+                        </div>
+                        <div class="twelve wide column">
                             <g:select class="ui dropdown select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
                                       optionValue="${{it.value}}" value="${linkType ?: null}" noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-                        </g:else>
+                        </div>
                     </div>
-                </div>
+                </g:else>
                 <div class="row">
                     <div class="four wide column">
                         <g:message code="${instanceType}" />

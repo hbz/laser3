@@ -851,12 +851,22 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def getLinkedSubscriptions() {
-        render controlledListService.getLinkedObjects([source:params.license,destinationType:Subscription.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE]]) as JSON
+        render controlledListService.getLinkedObjects([source:params.license,destinationType:Subscription.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE],status:params.status]) as JSON
     }
 
     @Secured(['ROLE_USER'])
     def getLinkedLicenses() {
-        render controlledListService.getLinkedObjects([destination:params.subscription,sourceType:License.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE]]) as JSON
+        render controlledListService.getLinkedObjects([destination:params.subscription,sourceType:License.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE],status:params.status]) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getLicensePropertiesForSubscription() {
+        License loadFor = genericOIDService.resolveOID(params.loadFor)
+        if(loadFor) {
+            Map<String,Object> derivedPropDefGroups = loadFor.getCalculatedPropDefGroups(contextService.org)
+            render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
+        }
+        else null
     }
 
     @Secured(['ROLE_USER'])

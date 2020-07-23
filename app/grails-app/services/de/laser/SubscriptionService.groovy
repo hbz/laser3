@@ -1613,7 +1613,8 @@ class SubscriptionService {
             License lic = genericOIDService.resolveOID(sourceOID)
             curLink.delete() //delete() is void, no way to check whether errors occurred or not
             if(sub.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
-                Set<Links> linkedSubs = Links.executeQuery("select li from Links li where li.source = :lic and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:subscrTypes) and oo.org = :subscr)", [lic: sourceOID, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])
+                String linkedSubsQuery = "select li from Links li where li.source = :lic and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:subscrTypes) and oo.org = :subscr)"
+                Set<Links> linkedSubs = Links.executeQuery(linkedSubsQuery, [lic: sourceOID, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])
                 if (linkedSubs.size() < 1) {
                     log.info("no more license <-> subscription links between org -> removing licensee role")
                     OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber", [lic: lic, subscriber: subscr])

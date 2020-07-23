@@ -83,7 +83,7 @@ class LinksGenerationService {
             linkComment = (Doc) configMap.comment
         Links link
         if(configMap.link instanceof Links)
-            link = (Links) configMap.links
+            link = (Links) configMap.link
         else if(!configMap.link) {
             try {
                 link = Links.construct(configMap)

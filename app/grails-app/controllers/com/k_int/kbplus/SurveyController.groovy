@@ -12,7 +12,6 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
@@ -716,7 +715,7 @@ class SurveyController {
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
 
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet + result.successorSubscription.customProperties, true, true) : null
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}, true, true) : null
             }
 
 
@@ -836,7 +835,7 @@ class SurveyController {
         result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY ? 'selectedParticipants' : 'selectedSubParticipants')
+        params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : 'selectedSubParticipants')
 
         result
 
@@ -1680,7 +1679,7 @@ class SurveyController {
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
 
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet + result.successorSubscription.customProperties, true, true) : null
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
         }
 
@@ -2383,16 +2382,17 @@ class SurveyController {
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
             result.superOrgType << message(code:'consortium.superOrgType')
         }
-        if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            result.superOrgType << message(code:'collective.superOrgType')
-        }
 
         result.parentSubscription = result.surveyConfig.subscription
         result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
         result.parentSuccessorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
+
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        if(result.parentSuccessorSubscription) {
+            result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)", [subscription: GenericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
+        }
 
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty.sort {
@@ -2604,7 +2604,7 @@ class SurveyController {
         }.size()?:0) + (result.orgsWithTermination.groupBy { it.participant.id }.size()?:0) + (result.orgsWithMultiYearTermSub.size()?:0))
 
         if (sumParticipantWithSub < result.parentSubChilds.size()?:0) {
-            def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
+            /*def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
 
             def removeSurveyResultOfOrg = []
             result.orgsWithoutResult.each { surveyResult ->
@@ -2613,7 +2613,7 @@ class SurveyController {
                     if (property.type == 'class com.k_int.kbplus.RefdataValue') {
                         if (surveyResult.sub.propertySet.find {
                             it.type.id == property.id
-                        }.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {
+                        }?.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {
 
                             result.orgsWithMultiYearTermSub << surveyResult.sub
                             removeSurveyResultOfOrg << surveyResult
@@ -2623,9 +2623,9 @@ class SurveyController {
             }
             removeSurveyResultOfOrg.each{ it
                 result.orgsWithoutResult?.remove(it)
-            }
+            }*/
 
-            result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort{it.getAllSubscribers()[0].sortname}
+            result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort{it.getAllSubscribers().sortname}
 
         }
 
@@ -3138,13 +3138,13 @@ class SurveyController {
         if (newSub) {
             result.newSub = newSub.refresh()
         }
-        subsToCompare.each { sub ->
+        Org contextOrg = contextService.org
+        subsToCompare.each { Subscription sub ->
             Map customProperties = result.customProperties
-            sub = GrailsHibernateUtil.unwrapIfProxy(sub)
-            customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.propertySet.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties, sub, sub.privateProperties.sort{it.type.getI10n('name')})
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result
@@ -3379,9 +3379,12 @@ class SurveyController {
                 x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
             }
         }
-        result.sourceLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc",[sub:GenericOIDService.getOID(baseSub),linkType:RDStore.LINKTYPE_LICENSE])
-        if(newSub)
-            result.targetLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc",[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
+        String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+        result.sourceLicenses = License.executeQuery(sourceLicensesQuery,[sub:GenericOIDService.getOID(baseSub),linkType:RDStore.LINKTYPE_LICENSE])
+        if(newSub) {
+            String targetLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+            result.targetLicenses = License.executeQuery(targetLicensesQuery, [sub: GenericOIDService.getOID(newSub), linkType: RDStore.LINKTYPE_LICENSE])
+        }
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
@@ -3779,9 +3782,6 @@ class SurveyController {
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
             result.superOrgType << message(code:'consortium.superOrgType')
         }
-        if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            result.superOrgType << message(code:'collective.superOrgType')
-        }
 
         result.participantsList = []
 
@@ -3808,6 +3808,9 @@ class SurveyController {
 
 
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        if(result.parentSuccessorSubscription) {
+            result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)", [subscription: GenericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
+        }
 
         result
 
@@ -4000,11 +4003,11 @@ class SurveyController {
         }
 
         if(params.tab == 'customProperties') {
-            result.properties = result.parentSubscription.customProperties.type
+            result.properties = result.parentSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}.type
         }
 
         if(params.tab == 'privateProperties') {
-            result.properties = result.parentSubscription.privateProperties.type
+            result.properties = result.parentSubscription.propertySet.findAll{it.type.tenant?.id == result.contextOrg.id}.type
         }
 
         if(result.properties) {
@@ -4027,27 +4030,27 @@ class SurveyController {
                     newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
                     def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, PropertyDefinition.SUB_PROP) : null
 
-                    newMap.newCustomProperty = (sub && propDef) ? sub.customProperties.find {
+                    newMap.newCustomProperty = (sub && propDef) ? sub.propertySet.find {
                         it.type.id == propDef.id
                     } : null
-                    newMap.oldCustomProperty = (newMap.oldSub && propDef) ? newMap.oldSub.customProperties.find {
+                    newMap.oldCustomProperty = (newMap.oldSub && propDef) ? newMap.oldSub.propertySet.find {
                         it.type.id == propDef.id
                     } : null
                 }
                 if(params.tab == 'customProperties') {
-                    newMap.newCustomProperty = (sub) ? sub.customProperties.find {
+                    newMap.newCustomProperty = (sub) ? sub.propertySet.find {
                         it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
                     } : null
-                    newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.customProperties.find {
+                    newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
                         it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
                     } : null
                 }
 
                 if(params.tab == 'privateProperties') {
-                    newMap.newPrivateProperty = (sub) ? sub.privateProperties.find {
+                    newMap.newPrivateProperty = (sub) ? sub.propertySet.find {
                         it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
                     } : null
-                    newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.privateProperties.find {
+                    newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
                         it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
                     } : null
                 }
@@ -4363,21 +4366,19 @@ class SurveyController {
         RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
         RefdataValue role_lic       = RDStore.OR_LICENSEE_CONS
 
-        if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-            role_lic = RDStore.OR_LICENSEE_COLL
-        }
         RefdataValue role_lic_cons  = RDStore.OR_LICENSING_CONSORTIUM
 
         RefdataValue role_provider  = RDStore.OR_PROVIDER
         RefdataValue role_agency    = RDStore.OR_AGENCY
 
-        if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
 
                 License licenseCopy
 
-                def subLicense = newParentSub.owner
+                //def subLicense = newParentSub.owner
 
                 Set<Package> packagesToProcess = []
+                List<License> licensesToProcess = []
 
                 //copy package data
                 if(params.linkAllPackages) {
@@ -4390,38 +4391,18 @@ class SurveyController {
                         packagesToProcess << SubscriptionPackage.get(spId).pkg
                     }
                 }
-
-                    if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                       // def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
-                        def postfix = 'Teilnehmervertrag'
-
-                        if (subLicense) {
-                            def subLicenseParams = [
-                                    lic_name     : "${subLicense.reference} (${postfix})",
-                                    isSlaved     : params.isSlaved,
-                                    asOrgType: orgType,
-                                    copyStartEnd : true
-                            ]
-
-                            if (params.generateSlavedLics == 'explicit') {
-                                licenseCopy = institutionsService.copyLicense(
-                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            }
-                            else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                                licenseCopy = institutionsService.copyLicense(
-                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            }
-                            else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
-                                licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
-                            }
-
-                            if (licenseCopy) {
-                                new OrgRole(org: org, lic: licenseCopy, roleType: role_lic).save()
-                            }
-                        }
+                if(params.generateSlavedLics == "all") {
+                    licensesToProcess.addAll(License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(newParentSub),linkType:RDStore.LINKTYPE_LICENSE]))
+                }
+                else if(params.generateSlavedLics == "partial") {
+                    List<String> licenseKeys = params.list("generateSlavedLicsReference")
+                    licenseKeys.each { String licenseKey ->
+                        licensesToProcess << genericOIDService.resolveOID(licenseKey)
                     }
+                }
 
-                    log.debug("Generating seperate slaved instances for members")
+
+            log.debug("Generating seperate slaved instances for members")
 
                     SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                     Date startDate = newStartDate ?: null
@@ -4439,7 +4420,6 @@ class SurveyController {
                             identifier: UUID.randomUUID().toString(),
                             instanceOf: newParentSub,
                             isSlaved: true,
-                            owner: licenseCopy,
                             resource: newParentSub.resource ?: null,
                             form: newParentSub.form ?: null,
                             isMultiYear: multiYear ?: false
@@ -4506,11 +4486,15 @@ class SurveyController {
                                 pkg.addToSubscription(memberSub, false)
                         }
 
+                        licensesToProcess.each { License lic ->
+                            subscriptionService.setOrgLicRole(memberSub,lic,false)
+                        }
+
                         if(oldSub){
                             new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: memberSub.id, destination: oldSub.id, owner: contextService.getOrg(), objectType:Subscription.class.name).save(flush: true)
                         }
 
-                        if(Org.get(orgID).getCustomerType() == 'ORG_INST') {
+                        if(org.getCustomerType() == 'ORG_INST') {
                             PendingChange.construct([target: memberSub, oid: "${memberSub.getClass().getName()}:${memberSub.id}", msgToken: "pendingChange.message_SU_NEW_01", status: RDStore.PENDING_CHANGE_PENDING, owner: org])
                         }
 
@@ -4637,8 +4621,6 @@ class SurveyController {
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            tmpParams.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
         def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
         if (tmpParams.filterPropDef) {

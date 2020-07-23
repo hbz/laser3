@@ -76,7 +76,16 @@
               </div>
               <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
           </div>
-          <div class="four fields">
+          <div class="three fields">
+              <div class="field">
+                  <label for="status">${message(code: 'license.status')}</label>
+                  <laser:select class="ui dropdown" name="status"
+                                from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
+                                optionKey="id"
+                                optionValue="value"
+                                value="${params.status}"
+                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+              </div>
               <div class="field">
                   <label for="licensor"><g:message code="license.licensor.label"/></label>
                   <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
@@ -95,6 +104,17 @@
                       </g:each>
                   </select>
               </div>
+          </div>
+          <div class="three fields">
+              <div class="field">
+                  <label for="subStatus">${message(code: 'subscription.status.label')}</label>
+                  <laser:select class="ui dropdown" name="subStatus"
+                                from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
+                                optionKey="id"
+                                optionValue="value"
+                                value="${params.subStatus}"
+                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+              </div>
               <div class="field">
                   <label for="subKind"><g:message code="license.subscription.kind.label"/></label>
                   <select id="subKind" name="subKind" multiple="" class="ui search selection fluid dropdown">
@@ -107,7 +127,7 @@
               <div class="field la-field-right-aligned">
                   <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
                   <input type="hidden" name="filterSet" value="true">
-                  <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
+                  <input type="submit" name="filterSubmit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
               </div>
           </div>
       </form>
@@ -153,7 +173,8 @@
                                       $.ajax({
                                           url: "<g:createLink controller="ajax" action="getLinkedSubscriptions" />",
                                           data: {
-                                              license: "${GenericOIDService.getOID(l)}"
+                                              license: "${GenericOIDService.getOID(l)}",
+                                              status: ${params.subStatus}
                                           }
                                       }).done(function(data) {
                                           <%--<g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>+--%>

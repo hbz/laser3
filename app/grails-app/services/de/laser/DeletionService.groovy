@@ -76,8 +76,8 @@ class DeletionService {
         result.info << ['Personen', pRoles]     // delete ? personRole->person
         result.info << ['Pakete', packages]
         result.info << ['Anstehende Änderungen', pendingChanges]
-        result.info << ['Private Merkmale', lic.privateProperties]
-        result.info << ['Allgemeine Merkmale', lic.propertySet]
+        result.info << ['Private Merkmale', lic.propertySet.findAll { it.type.tenant != null }]
+        result.info << ['Allgemeine Merkmale', lic.propertySet.findAll { it.type.tenant == null }]
 
         // checking constraints and/or processing
 
@@ -175,8 +175,8 @@ class DeletionService {
                     pendingChanges.each { tmp -> tmp.delete() }
 
                     // private properties
-                    lic.privateProperties.clear()
-                    privateProps.each { tmp -> tmp.delete() }
+                    //lic.privateProperties.clear()
+                    //privateProps.each { tmp -> tmp.delete() }
 
                     // custom properties
                     lic.propertySet.clear()
@@ -233,8 +233,8 @@ class DeletionService {
         List nonDeletedCosts = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus != RDStore.COST_ITEM_DELETED })
         List deletedCosts   = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus == RDStore.COST_ITEM_DELETED })
         List oapl           = new ArrayList(sub.packages?.oapls)
-        List privateProps   = new ArrayList(sub.privateProperties)
-        List customProps    = new ArrayList(sub.propertySet)
+        List privateProps   = new ArrayList(sub.propertySet.findAll { it.type.tenant != null })
+        List customProps    = new ArrayList(sub.propertySet.findAll { it.type.tenant == null })
 
         List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriber(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
 
@@ -262,8 +262,8 @@ class DeletionService {
         result.info << ['nicht gelöschte Kostenposten', nonDeletedCosts, FLAG_BLOCKER]
         result.info << ['gelöschte Kostenposten', deletedCosts]
         result.info << ['OrgAccessPointLink', oapl]
-        result.info << ['Private Merkmale', sub.privateProperties]
-        result.info << ['Allgemeine Merkmale', sub.propertySet]
+        result.info << ['Private Merkmale', sub.propertySet.findAll { it.type.tenant != null }]
+        result.info << ['Allgemeine Merkmale', sub.propertySet.findAll { it.type.tenant == null }]
         result.info << ['Umfragen', surveys, sub.instanceOf ? FLAG_WARNING : FLAG_BLOCKER]
 
         // checking constraints and/or processing
@@ -386,8 +386,8 @@ class DeletionService {
                     }
 
                     // private properties
-                    sub.privateProperties.clear()
-                    privateProps.each { tmp -> tmp.delete() }
+                    //sub.privateProperties.clear()
+                    //privateProps.each { tmp -> tmp.delete() }
 
                     // custom properties
                     sub.propertySet.clear()
@@ -492,8 +492,8 @@ class DeletionService {
         //List tips           = TitleInstitutionProvider.findAllByInstitution(org)
         //List tipsProviders  = TitleInstitutionProvider.findAllByProvider(org)
 
-        List customProperties       = new ArrayList(org.propertySet)
-        List privateProperties      = new ArrayList(org.privateProperties)
+        List customProperties       = new ArrayList(org.propertySet.findAll { it.type.tenant == null })
+        List privateProperties      = new ArrayList(org.propertySet.findAll { it.type.tenant != null })
         List propertyDefinitions    = PropertyDefinition.findAllByTenant(org)
         List propDefGroups          = PropertyDefinitionGroup.findAllByTenant(org)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllByOrg(org)
@@ -635,8 +635,8 @@ class DeletionService {
                     contacts.each{ tmp -> tmp.delete() }
 
                     // private properties
-                    org.privateProperties.clear()
-                    privateProperties.each { tmp -> tmp.delete() }
+                    //org.privateProperties.clear()
+                    //privateProperties.each { tmp -> tmp.delete() }
 
                     // custom properties
                     org.propertySet.clear()

@@ -944,7 +944,6 @@ class OrganisationService {
                      items:[PropertyDefinition.getByNameAndDescr('Open country-wide', PropertyDefinition.SUB_PROP),
                             PropertyDefinition.getByNameAndDescr('Restricted user group', PropertyDefinition.SUB_PROP),
                             PropertyDefinition.getByNameAndDescr('Perennial term', PropertyDefinition.SUB_PROP),
-                            PropertyDefinition.getByNameAndDescr('Perennial term checked', PropertyDefinition.SUB_PROP),
                             PropertyDefinition.getByNameAndDescr('Due date for volume discount', PropertyDefinition.SUB_PROP),
                             PropertyDefinition.getByNameAndDescr('Newcomer discount', PropertyDefinition.SUB_PROP),
                             PropertyDefinition.getByNameAndDescr('Price increase', PropertyDefinition.SUB_PROP),
@@ -1640,7 +1639,6 @@ class OrganisationService {
                                     [type:PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP).id,urlValue:null,isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP).id,stringValue:'Allianzlizenz Team'],
                                     [type:PropertyDefinition.getByNameAndDescr('Perennial term', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
-                                    [type:PropertyDefinition.getByNameAndDescr('Perennial term checked', PropertyDefinition.SUB_PROP).id,refValue:null,isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Price rounded', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.getByNameAndDescr('Time of billing', PropertyDefinition.SUB_PROP).id,stringValue:'Vorauszahlung',isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP).id,stringValue:'unlimitiert',isShared:true]
@@ -1747,7 +1745,6 @@ class OrganisationService {
                                     [type:PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP).id,urlValue:null,isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP).id,stringValue:'Allianzlizenz Team'],
                                     [type:PropertyDefinition.getByNameAndDescr('Perennial term', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
-                                    [type:PropertyDefinition.getByNameAndDescr('Perennial term checked', PropertyDefinition.SUB_PROP).id,refValue:null],
                                     [type:PropertyDefinition.getByNameAndDescr('Price rounded', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.getByNameAndDescr('Time of billing', PropertyDefinition.SUB_PROP).id,stringValue:'Vorauszahlung',isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP).id,stringValue:'unlimitiert',isShared:true]

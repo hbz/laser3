@@ -19,7 +19,7 @@
 <g:if test="${license.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
     <div class="ui card la-dl-no-table ">
         <div class="content">
-            <h5 class="ui header">${message(code:'subscription.properties.consortium')}</h5>
+            <h5 class="ui header">${message(code:'license.properties.consortium')}</h5>
             <div id="member_props_div">
                 <g:render template="/templates/properties/members" model="${[
                         prop_desc: PropertyDefinition.LIC_PROP,

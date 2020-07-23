@@ -32,7 +32,7 @@ class SurveyConfig {
     public static final SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT = "IssueEntitlementsSurvey"
 
     @Transient
-    public static final SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY = "GeneralSurvey"
+    public static final SURVEY_CONFIG_TYPE_GENERAL_SURVEY = "GeneralSurvey"
 
     Integer configOrder
 
