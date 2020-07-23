@@ -815,7 +815,7 @@ class YodaController {
                 Subscription sub = so[0]
                 OrgRole role 	 = so[1]
 
-				if (sub.getCalculatedType() == Subscription.TYPE_LOCAL) {
+				if (sub._getCalculatedType() == Subscription.TYPE_LOCAL) {
 					role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
 					role.save()
 
@@ -831,7 +831,7 @@ class YodaController {
                 Subscription sub = so[0]
                 OrgRole role 	 = so[1]
 
-                if (sub.getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
+                if (sub._getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
                     OrgRole newRole = new OrgRole(
                             org: role.org,
                             sub: sub,
@@ -1726,10 +1726,10 @@ class YodaController {
 
             def parentSubscription = surConfig?.subscription
             def parentSubChilds = subscriptionService.getCurrentValidSubChilds(parentSubscription)
-            def parentSuccessorSubscription = surConfig?.subscription?.getCalculatedSuccessor()
+            def parentSuccessorSubscription = surConfig?.subscription?._getCalculatedSuccessor()
             //def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
             parentSubChilds.each { sub ->
-                if (sub.getCalculatedSuccessor()) {
+                if (sub._getCalculatedSuccessor()) {
                     sub.getAllSubscribers().each { org1 ->
 
                         def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org1)

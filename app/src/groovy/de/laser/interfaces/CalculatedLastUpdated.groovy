@@ -6,5 +6,5 @@ interface CalculatedLastUpdated {
     def afterUpdate()
     def afterDelete()
 
-    Date getCalculatedLastUpdated()
+    Date _getCalculatedLastUpdated()
 }

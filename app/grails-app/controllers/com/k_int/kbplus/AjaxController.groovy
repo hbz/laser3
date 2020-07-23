@@ -863,7 +863,7 @@ class AjaxController {
     def getLicensePropertiesForSubscription() {
         License loadFor = genericOIDService.resolveOID(params.loadFor)
         if(loadFor) {
-            Map<String,Object> derivedPropDefGroups = loadFor.getCalculatedPropDefGroups(contextService.org)
+            Map<String,Object> derivedPropDefGroups = loadFor._getCalculatedPropDefGroups(contextService.org)
             render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
         }
         else null
@@ -1301,7 +1301,7 @@ class AjaxController {
             redirect(controller:"propertyDefinition", action:"create")
         }
         else {
-            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+            Map<String, Object> allPropDefGroups = owner._getCalculatedPropDefGroups(contextService.getOrg())
 
             render(template: "/templates/properties/custom", model: [
                     ownobj: owner,
@@ -1354,7 +1354,7 @@ class AjaxController {
         ])
       }
       else {
-          Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+          Map<String, Object> allPropDefGroups = owner._getCalculatedPropDefGroups(contextService.getOrg())
 
           Map<String, Object> modelMap =  [
                   ownobj                : owner,
@@ -1689,7 +1689,7 @@ class AjaxController {
                 ])
             }
             else {
-                Map<String, Object>  allPropDefGroups = property.owner.getCalculatedPropDefGroups(contextOrg)
+                Map<String, Object>  allPropDefGroups = property.owner._getCalculatedPropDefGroups(contextOrg)
 
                 Map<String, Object> modelMap =  [
                         ownobj                : property.owner,
@@ -1793,7 +1793,7 @@ class AjaxController {
           ])
         }
         else {
-            Map<String, Object>  allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+            Map<String, Object>  allPropDefGroups = owner._getCalculatedPropDefGroups(contextService.getOrg())
 
             Map<String, Object> modelMap =  [
                     ownobj                : owner,
@@ -1848,7 +1848,7 @@ class AjaxController {
           ])
         }
         else {
-            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
+            Map<String, Object> allPropDefGroups = owner._getCalculatedPropDefGroups(contextOrg)
             Map<String, Object> modelMap =  [
                     ownobj                : owner,
                     newProp               : property,

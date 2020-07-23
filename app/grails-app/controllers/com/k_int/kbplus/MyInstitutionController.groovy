@@ -2382,7 +2382,7 @@ AND EXISTS (
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor()
 
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
@@ -3111,7 +3111,7 @@ AND EXISTS (
                 log.debug("insert subscription name")
                 cell = row.createCell(cellnum++)
                 String subscriptionString = subCons.name
-                //if(subCons.getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
+                //if(subCons._getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
                 if(subLinks.getKey(subCons.id))
                     subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
                 cell.setCellValue(subscriptionString)
@@ -3262,7 +3262,7 @@ AND EXISTS (
                         log.debug("insert subscription name")
                         cellnum++
                         String subscriptionString = subCons.name
-                        //if(subCons.getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
+                        //if(subCons._getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
                         if(subLinks.getKey(subCons.id))
                             subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
                         row.add(subscriptionString.replaceAll(',',' '))

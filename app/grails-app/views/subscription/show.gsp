@@ -20,7 +20,7 @@
                     ${subscriptionInstance.instanceOf.getAllocationTerm()}
                 </g:if> </p>
                 <p>sub.administrative: ${subscriptionInstance.administrative}</p>
-                <p>getCalculatedType(): ${subscriptionInstance.getCalculatedType()}</p>
+                <p>getCalculatedType(): ${subscriptionInstance._getCalculatedType()}</p>
             </div>
             <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
             <g:render template="/templates/debug/orgRoles"  model="[debug: subscriptionInstance.orgRelations]" />
@@ -97,9 +97,9 @@
                             </dl>
 
                             <g:if test="${(subscriptionInstance.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                                    subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
+                                    subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
                                     (subscriptionInstance.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
-                                    subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
+                                    subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
                                     <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
