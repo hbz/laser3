@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2705    23.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen laut Sammelticket
+
 --      23.07.2020  rc1.5       Andreas Bug         lokale Verträge waren für Vollnutzer nicht verknüpfbar
 
 2703    23.07.2020  rc1.5       Andreas Bug         Korrektur der Knöpfe in den Merkmalspanelen, Tooltip eingebunden für Sichtbarkeit

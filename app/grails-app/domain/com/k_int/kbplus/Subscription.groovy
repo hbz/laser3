@@ -439,23 +439,17 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   Org getSubscriber() {
     Org result
     Org cons
-    Org coll
     
     orgRelations.each { or ->
-      if ( or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id] )
+      if ( or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id] )
         result = or.org
         
       if ( or.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
         cons = or.org
-      else if(or.roleType.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)
-        coll = or.org
     }
     
     if ( !result && cons ) {
       result = cons
-    }
-    else if(!result && coll) {
-        result = coll
     }
     
     result
@@ -585,25 +579,19 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA
             )
-            OrgRole coll = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIPTION_COLLECTIVE
-            )
             OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIBER_CONS
-            )
-            OrgRole subscrColl = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIBER_COLLECTIVE
             )
             OrgRole subscr = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIBER
             )
 
             if (perm == 'view') {
-                return cons || subscrCons || coll || subscrColl || subscr
+                return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
                 if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                    return cons || coll || subscr
+                    return cons || subscr
             }
         }
 
