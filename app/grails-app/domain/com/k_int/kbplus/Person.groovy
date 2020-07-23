@@ -82,7 +82,6 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         last_name   (blank:false)
         gender      (nullable:true)
         tenant      (nullable:true)
-        isPublic    (blank:false)
         contactType (nullable:true)
         roleType    (nullable:true)
 

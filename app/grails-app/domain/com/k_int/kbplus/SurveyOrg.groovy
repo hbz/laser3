@@ -22,7 +22,7 @@ class SurveyOrg {
     static constraints = {
         ownerComment(nullable: true, blank: false)
         priceComment(nullable: true, blank: false)
-        finishDate (nullable:true, blank:false)
+        finishDate  (nullable:true)
     }
 
     static mapping = {

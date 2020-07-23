@@ -43,8 +43,8 @@ class I10nTranslation {
         valueDe         (nullable:true,  blank:false)
         valueEn         (nullable:true,  blank:false)
         valueFr         (nullable:true,  blank:false)
-        lastUpdated     (nullable:true, blank: false)
-        dateCreated     (nullable:true, blank: false)
+        lastUpdated     (nullable:true)
+        dateCreated     (nullable:true)
 
         referenceId(unique: ['referenceClass', 'referenceField'])
     }

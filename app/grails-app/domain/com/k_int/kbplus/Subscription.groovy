@@ -197,16 +197,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         manualCancellationDate (nullable:true)
         instanceOf(nullable:true, blank:false)
         comment(nullable: true, blank: true)
-        administrative(blank:false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
-        isSlaved    (blank:false)
         noticePeriod(nullable:true, blank:true)
-        isPublicForApi (blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)
         lastUpdatedCascading (nullable: true)
-        isMultiYear(nullable: true, blank: false)
-        hasPerpetualAccess(blank: false)
+        isMultiYear(nullable: true)
     }
 
     @Override
