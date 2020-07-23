@@ -34,8 +34,8 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
         importFrom AbstractPropertyWithCalculatedLastUpdated
         tenant (nullable: true, blank: false) //subject of discussion, for the moment, it cannot be determined exactly
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     static belongsTo = [

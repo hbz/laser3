@@ -106,7 +106,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
         seriesName(nullable:true, blank:false)
         subjectReference(nullable:true, blank:false)
         //originEditUrl(nullable:true, blank:false)
-        lastUpdatedCascading (nullable: true, blank: false)
+        lastUpdatedCascading (nullable: true)
     }
 
     @Override

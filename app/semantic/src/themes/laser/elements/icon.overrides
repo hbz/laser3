@@ -1810,12 +1810,12 @@ i.la-light-grey.icon {
   color: #e8e8e8 !important;
 }
 i.inverted.la-light-grey.icon {
-  color: @metaColor !important;
+  color: rgba(0,0,0,.6) !important;
 }
 i.inverted.bordered.la-light-grey.icon,
 i.inverted.circular.la-light-grey.icon {
   background-color: #e8e8e8 !important;
-  color: @metaColor !important;
+  color: rgba(0,0,0,.6) !important;
 }
 // special for search icons
 .circular.icon.la-license,

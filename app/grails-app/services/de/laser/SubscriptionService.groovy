@@ -9,12 +9,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.ConfigUtils
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugUtil
-import de.laser.helper.FactoryResult
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import grails.transaction.Transactional
 import grails.util.Holders
@@ -493,7 +488,10 @@ class SubscriptionService {
     List getValidSurveySubChilds(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
-                [RDStore.SUBSCRIPTION_CURRENT, RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
+                [RDStore.SUBSCRIPTION_CURRENT,
+                 RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION,
+                 RDStore.SUBSCRIPTION_INTENDED,
+                 RDStore.SUBSCRIPTION_ORDERED]
         )
         if(validSubChilds) {
             validSubChilds = validSubChilds?.sort { a, b ->
@@ -1615,7 +1613,8 @@ class SubscriptionService {
             License lic = genericOIDService.resolveOID(sourceOID)
             curLink.delete() //delete() is void, no way to check whether errors occurred or not
             if(sub.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
-                Set<Links> linkedSubs = Links.executeQuery("select li from Links li where li.source = :lic and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:subscrTypes) and oo.org = :subscr)", [lic: sourceOID, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])
+                String linkedSubsQuery = "select li from Links li where li.source = :lic and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:subscrTypes) and oo.org = :subscr)"
+                Set<Links> linkedSubs = Links.executeQuery(linkedSubsQuery, [lic: sourceOID, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])
                 if (linkedSubs.size() < 1) {
                     log.info("no more license <-> subscription links between org -> removing licensee role")
                     OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber", [lic: lic, subscriber: subscr])

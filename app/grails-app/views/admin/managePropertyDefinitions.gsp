@@ -16,6 +16,12 @@
             <%--
             <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
             --%>
+            <%-- included in case someone of the admins wishes this export
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="managePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
+                </semui:exportDropdownItem>
+            </semui:exportDropdown>--%>
         </semui:controlButtons>
 
         <br>
@@ -29,7 +35,7 @@
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
+                    <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
                 </div>
                 <div class="content">
                     <table class="ui celled la-table la-table-small table">
@@ -125,26 +131,26 @@
                                     <td class="x">
 
                                         <g:if test="${pd.mandatory}">
-                                            <g:link action="managePropertyDefinitions"
+                                            <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left"
                                                     params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon yellow button">
                                                 <i class="star icon"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <g:link action="managePropertyDefinitions"
+                                            <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left"
                                                     params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
                                                 <i class="star yellow icon"></i>
                                             </g:link>
                                         </g:else>
                                         <g:if test="${!multiplePdList?.contains(pd.id)}">
                                             <g:if test="${pd.multipleOccurrence}">
-                                                <g:link action="managePropertyDefinitions"
+                                                <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left"
                                                         params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon orange button">
                                                     <i class="redo slash icon"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
-                                                <g:link action="managePropertyDefinitions"
+                                                <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left"
                                                         params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
                                                     <i class="redo orange icon"></i>
                                                 </g:link>

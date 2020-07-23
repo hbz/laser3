@@ -666,13 +666,13 @@ class AjaxController {
                 else {
                     switch(params.domain) {
                         case 'currentSubscriptions':
-                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.type = :propDef and sp.tenant = :tenant and sp.isPublic = true',[propDef:propDef, tenant:contextService.org])
+                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
-                        case 'currentLicenses': values = LicenseProperty.executeQuery('select lcp from LicenseProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef, tenant:contextService.org])
+                        case 'currentLicenses': values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgLinks oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
                         case 'listProvider':
                         case 'currentProviders':
-                        case 'manageMembers': values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and op.tenant = :tenant and op.isPublic = true',[propDef:propDef,tenant:contextService.org])
+                        case 'manageMembers': values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.org])
                             break
                     }
                 }
@@ -717,8 +717,8 @@ class AjaxController {
             // If we werent able to locate a specific config override, assume the ID is just a refdata key
             config = [
                 domain      :'RefdataValue',
-                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
-                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}' order by rdv.value_${locale}",
+                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.value_" + locale,
                 qryParams   :[],
                 cols        :['value'],
                 format      :'simple'
@@ -851,12 +851,22 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def getLinkedSubscriptions() {
-        render controlledListService.getLinkedObjects([source:params.license,destinationType:Subscription.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE]]) as JSON
+        render controlledListService.getLinkedObjects([source:params.license,destinationType:Subscription.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE],status:params.status]) as JSON
     }
 
     @Secured(['ROLE_USER'])
     def getLinkedLicenses() {
-        render controlledListService.getLinkedObjects([destination:params.subscription,sourceType:License.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE]]) as JSON
+        render controlledListService.getLinkedObjects([destination:params.subscription,sourceType:License.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE],status:params.status]) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getLicensePropertiesForSubscription() {
+        License loadFor = genericOIDService.resolveOID(params.loadFor)
+        if(loadFor) {
+            Map<String,Object> derivedPropDefGroups = loadFor.getCalculatedPropDefGroups(contextService.org)
+            render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
+        }
+        else null
     }
 
     @Secured(['ROLE_USER'])
@@ -2421,7 +2431,7 @@ class AjaxController {
             }
         }
         result = result.flatten()
-        println(result)
+
         render result as JSON
     }
 

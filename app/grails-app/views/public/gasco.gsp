@@ -195,7 +195,7 @@
                                                 RDStore.CCT_URL
                                         )}" var="prsContact">
                                             <div class="description">
-                                                <i class="icon globe"></i>
+                                                <i class="icon globe la-list-icon"></i>
                                                 <span  class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
                                                     <a class="la-break-all" href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
                                                 </span>
@@ -206,10 +206,10 @@
                                                 person,
                                                 RDStore.CCT_EMAIL
                                         )}" var="prsContact">
-                                            <div class="description">
-                                                <i class="ui icon envelope outline"></i>
+                                            <div class="description js-copyTriggerParent">
+                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
                                                 <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
-                                                    <a class="la-break-all" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
+                                                    <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
                                             </div>
                                         </g:each>

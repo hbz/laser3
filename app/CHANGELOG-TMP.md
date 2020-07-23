@@ -4,7 +4,29 @@
 
 2696    22.07.2020  hbz-dev     Anja    Feature     Überarbeitung Darstellung Einrichtungskontakte auf org/show (Teil 2)
 
-2509    17.07.2020  rc1.4       Moe     Bug         Länderauswahl-Filter verfeinern
+2689    22.07.2020  rc1.5       Andreas Bug         Brücke zur korrekten Verarbeitung von PendingChange-Altlasten eingebaut
+
+--      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Vertragsverwaltung
+
+2646    21.07.2020  hbz-dev     Andreas Bug         Schaltschrank wird auch für INST_USER angezeigt
+
+2686    21.07.2020  hbz-dev     Ingrid  Feature     Bugfixing Layout Kontakt / Möglichkeit für Kopieren der Mailadresse in die Zwischenablage schaffen
+
+2697    21.07.2020  hbz-dev     Andreas Feature     Sicht "Eigene Merkmale" kann als Excel exportiert werden
+
+--      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Merkmalsverwaltung
+
+2681    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Teilnehmer wieder freischalten
+
+2497    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Merkmale nach Wert sortieren
+
+2695    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Nach Merkmale Wert filtern
+
+2693    17.07.2020  rc1.4       Moe     Bug         Umfrage Ausschüttungsfunktion 0% nicht ausschütten
+
+--      17.07.2020  hbz-dev     Moe     Feature     Umfrage Jahres Filter + Umfrage Standard Sortierung 
+
+2509    17.07.2020  hbz-dev     Moe     Feature     Länderauswahl-Filter verfeinern
 
 --      17.07.2020  hbz-dev     Andreas Bug         Filterverarbeitung von BudgetCodes, Rechnung und Auftrag korrigiert
 
@@ -13,7 +35,6 @@
 2694    17.07.2020  hbz-dev     Andreas Feature     Neue Seite zur Massenverwaltung von Merkmalen angelegt
 
 2043    17.07.2020  hbz-dev     Andreas Feature     Link zu vorbelegtem Filter bei Merkmalsnutzung angelegt (vorerst nur Lizenz und Vertrag)
-
 
 --      15.07.2020  rc1.4       Moe     Bug         Sortierung Umfrage
 

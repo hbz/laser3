@@ -24,7 +24,7 @@ import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
 class Subscription extends AbstractBaseWithCalculatedLastUpdated
-        implements CalculatedType, Permissions, AuditableSupport, ShareSupport {
+        implements AuditableSupport, CalculatedType, Permissions, ShareSupport {
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
@@ -183,18 +183,18 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         //owner(nullable:true, blank:false)
         form        (nullable:true, blank:false)
         resource    (nullable:true, blank:false)
-        startDate(nullable:true, blank:false, validator: { val, obj ->
+        startDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
             }
         })
-        endDate(nullable:true, blank:false, validator: { val, obj ->
+        endDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
             }
         })
-        manualRenewalDate(nullable:true, blank:false)
-        manualCancellationDate(nullable:true, blank:false)
+        manualRenewalDate (nullable:true)
+        manualCancellationDate (nullable:true)
         instanceOf(nullable:true, blank:false)
         comment(nullable: true, blank: true)
         administrative(blank:false)
@@ -203,10 +203,19 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         noticePeriod(nullable:true, blank:true)
         isPublicForApi (blank:false)
         cancellationAllowances(nullable:true, blank:true)
-        lastUpdated(nullable: true, blank: true)
-        lastUpdatedCascading (nullable: true, blank: false)
+        lastUpdated(nullable: true)
+        lastUpdatedCascading (nullable: true)
         isMultiYear(nullable: true, blank: false)
         hasPerpetualAccess(blank: false)
+    }
+
+    @Override
+    Collection<String> getLogIncluded() {
+        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges' ]
     }
 
     @Override
@@ -682,15 +691,24 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                         result.sorted << ['global', it, null]
                     }
                 }
-                // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextOrg?.id) {
+                // consortium @ member or single user; getting group by tenant (and instanceOf.binding)
+                if (it.tenant?.id == contextOrg.id) {
                     if (binding) {
-                        result.member << [it, binding] // TODO: remove
-                        result.sorted << ['member', it, binding]
+                        if(contextOrg.id == this.getConsortia().id) {
+                            result.member << [it, binding] // TODO: remove
+                            result.sorted << ['member', it, binding]
+                        }
+                        else {
+                            result.local << [it, binding]
+                            result.sorted << ['local', it, binding]
+                        }
+                    } else {
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
                 // subscriber consortial; getting group by consortia and instanceOf.binding
-                else if (it.tenant?.id == this.instanceOf.getConsortia()?.id) {
+                else if (it.tenant?.id == this.getConsortia()?.id) {
                     if (binding) {
                         result.member << [it, binding] // TODO: remove
                         result.sorted << ['member', it, binding]
@@ -701,7 +719,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             else {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg.id) {
                     if (binding) {
                         result.local << [it, binding] // TODO: remove
                         result.sorted << ['local', it, binding]

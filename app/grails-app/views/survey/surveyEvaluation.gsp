@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig]" text="${surveyConfig.getConfigNameShort()}" />
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
     <semui:crumb message="surveyEvaluation.label" class="active"/>
 </semui:breadcrumbs>
@@ -60,7 +60,7 @@
 </g:if>
 <g:else>
     <h2 class="ui icon header la-clear-before la-noMargin-top">
-        <g:if test="${surveyConfig.type == 'Subscription'}">
+        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
             <i class="icon clipboard outline la-list-icon"></i>
             <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
                 ${surveyConfig.subscription?.name}
@@ -87,21 +87,21 @@
                         controller="survey" action="surveyEvaluation"
                         params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
                     ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-                    <div class="ui floating circular label">${participantsFinishTotal.size() ?: 0}</div>
+                    <div class="ui floating circular label">${participantsFinishTotal}</div>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
                         params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
                     ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-                    <div class="ui floating circular label">${participantsNotFinishTotal.size() ?: 0}</div>
+                    <div class="ui floating circular label">${participantsNotFinishTotal}</div>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
                         params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
                     ${message(code: 'surveyEvaluation.participantsView')}
-                    <div class="ui floating circular label">${participantsTotal.size() ?: 0}</div>
+                    <div class="ui floating circular label">${participantsTotal}</div>
                 </g:link>
 
             </div>
@@ -111,11 +111,11 @@
 
                     <g:if test="${surveyConfig}">
 
-                        <g:if test="${surveyConfig.type == "Subscription"}">
+                        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
                             <g:render template="evaluationSubscription" />
                         </g:if>
 
-                        <g:if test="${surveyConfig.type == "GeneralSurvey"}">
+                        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
                             <g:render template="evaluationGeneralSurvey" />
                         </g:if>
 

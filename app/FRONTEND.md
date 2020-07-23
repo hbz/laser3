@@ -83,6 +83,25 @@ data-confirm-term-how="concludeBinding":
         </div>
 </g:form>
 ```
+
+#### Form with Ajax Update
+
+```
+<div id="${wrapper}">
+    <laser:remoteForm   url="[controller: 'ajax', action: 'somethingWithProperties']"
+                        name="demo" 
+                        class="ui form"
+                        data-update="${wrapper}"
+                        data-before="alert('before')"
+                        data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${wrapper}')"
+                        data-always="c3po.loadJsAfterAjax()">
+
+                            <input type="hidden" name="blah" value="blubb"/>
+                            <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+    </laser:remoteForm>
+</div>
+```
+
 #### Use in Link with AJAX Call
 
 ```

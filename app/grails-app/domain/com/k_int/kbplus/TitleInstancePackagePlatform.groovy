@@ -141,10 +141,10 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         option(nullable:true, blank:false)
         hostPlatformURL(nullable:true, blank:true, maxSize:2048)
         //derivedFrom(nullable:true, blank:true)
-        accessStartDate(nullable:true, blank:true)
-        accessEndDate(nullable:true, blank:true)
-        coreStatusStart(nullable:true, blank:true)
-        coreStatusEnd(nullable:true, blank:true)
+        accessStartDate (nullable:true)
+        accessEndDate (nullable:true)
+        coreStatusStart (nullable:true)
+        coreStatusEnd (nullable:true)
         /*
         startDate(nullable:true, blank:true)
         startVolume(nullable:true, blank:true)
@@ -158,8 +158,8 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
          */
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     @Override

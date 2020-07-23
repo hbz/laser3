@@ -145,7 +145,7 @@ class PublicController {
             result.subscriptions = []
 
             if (result.allConsortia && (q || consortia || subKinds)) {
-                result.subscriptions = Subscription.executeQuery("select s ${query} order by lower(s.name) asc", queryParams)
+                result.subscriptions = Subscription.executeQuery("select s " + query + " order by lower(s.name) asc", queryParams)
             }
             result.subscriptionsCount = result.subscriptions.size()
         }

@@ -1727,10 +1727,10 @@ class YodaController {
             def parentSubscription = surConfig?.subscription
             def parentSubChilds = subscriptionService.getCurrentValidSubChilds(parentSubscription)
             def parentSuccessorSubscription = surConfig?.subscription?.getCalculatedSuccessor()
-            def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
-            parentSubChilds?.each { sub ->
-                if (sub?.getCalculatedSuccessor()) {
-                    sub?.getAllSubscribers().each { org1 ->
+            //def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
+            parentSubChilds.each { sub ->
+                if (sub.getCalculatedSuccessor()) {
+                    sub.getAllSubscribers().each { org1 ->
 
                         def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org1)
                         if(surveyResult?.size() > 0) {
@@ -1764,7 +1764,7 @@ class YodaController {
                     }
 
                 } else {
-                    if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
+                   /* if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
                         if (sub?.propertySet?.find {
                             it?.type?.id == property?.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
@@ -1801,7 +1801,7 @@ class YodaController {
 
                             }
                         }
-                    }
+                    }*/
                 }
             }
 
@@ -1837,6 +1837,28 @@ class YodaController {
 
         result
 
+        redirect action: 'dashboard'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def cleanUpSurveyOrgFinishDate() {
+
+        Integer changes = 0
+        List<SurveyOrg> surveyOrgs = SurveyOrg.findAllByFinishDateIsNull()
+
+        surveyOrgs.each { surveyOrg ->
+
+            List<SurveyResult> surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(surveyOrg.surveyConfig, surveyOrg.org)
+            List<SurveyResult> surveyResultsFinish = SurveyResult.findAllBySurveyConfigAndParticipantAndFinishDateIsNotNull(surveyOrg.surveyConfig, surveyOrg.org)
+
+            if(surveyResults.size() == surveyResultsFinish.size()){
+                surveyOrg.finishDate = surveyResultsFinish[0].finishDate
+                surveyOrg.save(flush: true)
+                changes++
+            }
+
+        }
+        flash.message = "Es wurden ${changes} FinishDate in SurveyOrg geändert!"
         redirect action: 'dashboard'
     }
 

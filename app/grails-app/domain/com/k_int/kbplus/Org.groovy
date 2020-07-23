@@ -229,7 +229,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
       costConfigurationPreset(nullable:true, blank:false)
              orgType(nullable:true, blank:true)
              gokbId (nullable:true, blank:true)
-        lastUpdatedCascading (nullable: true, blank: false)
+        lastUpdatedCascading (nullable: true)
     }
 
     @Override

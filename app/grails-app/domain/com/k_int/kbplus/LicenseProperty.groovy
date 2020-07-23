@@ -59,14 +59,23 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         paragraph  (nullable: true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     static belongsTo = [
         type : PropertyDefinition,
         owner: License
     ]
+
+    @Override
+    Collection<String> getLogIncluded() {
+        [ 'stringValue', 'intValue', 'decValue', 'refValue', 'paragraph', 'note', 'dateValue' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading' ]
+    }
 
     @Override
     def afterDelete() {

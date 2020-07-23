@@ -7,22 +7,16 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.AccessService
-import de.laser.AuditConfig
-import de.laser.DashboardDueDatesService
-import de.laser.I10nTranslation
-import de.laser.LinksGenerationService
-import de.laser.SystemAnnouncement
+import de.laser.*
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
-import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
-
-//import de.laser.TaskService //unused for quite a long time
-
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
+
+//import de.laser.TaskService //unused for quite a long time
+
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
@@ -67,6 +61,7 @@ class MyInstitutionController extends AbstractDebugController {
     def surveyService
     def formService
     LinksGenerationService linksGenerationService
+    ComparisonService comparisonService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -373,14 +368,14 @@ class MyInstitutionController extends AbstractDebugController {
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
             base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
-            + " or exists ( select s from Subscription as s where concat('${Subscription.class.name}:',s.id) in (select li.destination from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType) and genfunc_filter_matcher(s.name, :name_filter) = true ) " // filter by subscription
+                    // + " or exists ( select s from Subscription as s where concat('${Subscription.class.name}:',s.id) in (select li.destination from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType) and genfunc_filter_matcher(s.name, :name_filter) = true ) " filter by subscription
             + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
             + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
             + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
             + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
             + " ) ) " // filter by Anbieter, Konsortium, Agency
             +  " ) ")
-            qry_params += [linkType:RDStore.LINKTYPE_LICENSE, name_filter:"${params['keyword-search']}"]
+            qry_params += [name_filter:"${params['keyword-search']}"]
             result.keyWord = params['keyword-search']
         }
 
@@ -428,14 +423,55 @@ class MyInstitutionController extends AbstractDebugController {
             qry_params.categorisations = categorisations
         }
 
-        if(params.subKind) {
-            base_qry += " and ( exists ( select s from l.subscriptions as s where s.kind.id in (:subKinds) ) ) "
-            List<Long> subKinds = []
-            List<String> selKinds = params.list('subKind')
-            selKinds.each { String sel ->
-                subKinds << Long.parseLong(sel)
+        Set<String> subscriptionOIDs
+        if(params.subKind || params.subStatus || (params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || !params.filterSubmit) {
+            Set<String> subscrQueryFilter = []
+            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s"
+            Map<String,Object> subscrQueryParams = [:]
+
+            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
+                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
+                subscrQueryParams.name_filter = params['keyword-search']
+                result.keyWord = params['keyword-search']
             }
-            qry_params.subKinds = subKinds
+
+            if(params.subStatus || !params.filterSubmit) {
+                subscrQueryFilter <<  "s.status.id = :subStatus"
+                if(!params.filterSubmit) {
+                    params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                    result.filterSet = true
+                }
+                subscrQueryParams.subStatus = params.subStatus as Long
+            }
+
+            if(params.subKind) {
+                subscrQueryFilter << "s.kind.id in (:subKinds)"
+                List<Long> subKinds = []
+                List<String> selKinds = params.list('subKind')
+                selKinds.each { String sel ->
+                    subKinds << Long.parseLong(sel)
+                }
+                subscrQueryParams.subKinds = subKinds
+            }
+
+            if(subscrQueryFilter)
+                subscrQuery += " where "+subscrQueryFilter.join(" and ")
+
+            subscriptionOIDs = Subscription.executeQuery(subscrQuery,subscrQueryParams)
+            base_qry += " and ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
+            qry_params.linkType = RDStore.LINKTYPE_LICENSE
+            if(subscriptionOIDs)
+                qry_params.subOIDs = subscriptionOIDs
+            else qry_params.subOIDs = ['false'] //workaround against empty list
+        }
+
+        if(params.status || !params.filterSubmit) {
+            base_qry += " and l.status.id = :status "
+            if(!params.filterSubmit) {
+                params.status = RDStore.LICENSE_CURRENT.id
+                result.filterSet = true
+            }
+            qry_params.status = params.status as Long
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -449,8 +485,10 @@ class MyInstitutionController extends AbstractDebugController {
         du.setBenchmark('execute query')
         List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
         result.licenseCount = totalLicenses.size()
-        result.allLinkedSubscriptions = Links.findAllBySourceInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },RDStore.LINKTYPE_LICENSE)
         du.setBenchmark('get subscriptions')
+        if(subscriptionOIDs)
+            result.allLinkedSubscriptions = Links.findAllBySourceInListAndDestinationInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },subscriptionOIDs,RDStore.LINKTYPE_LICENSE)
+        else result.allLinkedSubscriptions = Links.findAllBySourceInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },RDStore.LINKTYPE_LICENSE)
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
         result.orgRoles = [:]
@@ -458,7 +496,7 @@ class MyInstitutionController extends AbstractDebugController {
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
         du.setBenchmark('get consortia')
-        Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority in ('ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM')) order by os.org.name asc")
+        Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM') order by os.org.name asc")
         du.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
@@ -1252,22 +1290,22 @@ join sub.orgRelations or_sub where
             configMap.link = genericOIDService.resolveOID(params.link)
             if(params.commentID)
                 configMap.comment = genericOIDService.resolveOID(params.commentID)
-            if(params["linkType_${link.id}"]) {
-                String linkTypeString = params["linkType_${link.id}"].split("§")[0]
-                int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
+            if(params["linkType_${configMap.link.id}"]) {
+                String linkTypeString = params["linkType_${configMap.link.id}"].split("§")[0]
+                int perspectiveIndex = Integer.parseInt(params["linkType_${configMap.link.id}"].split("§")[1])
                 RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
-                configMap.commentContent = params["linkComment_${link.id}"].trim()
+                configMap.commentContent = params["linkComment_${configMap.link.id}"].trim()
                 if(perspectiveIndex == 0) {
                     configMap.source = params.context
-                    configMap.destination = params["pair_${link.id}"]
+                    configMap.destination = params["pair_${configMap.link.id}"]
                 }
                 else if(perspectiveIndex == 1) {
-                    configMap.source = params["pair_${link.id}"]
+                    configMap.source = params["pair_${configMap.link.id}"]
                     configMap.destination = params.context
                 }
                 configMap.linkType = linkType
             }
-            else if(!params["linkType_${link.id}"]) {
+            else if(!params["linkType_${configMap.link.id}"]) {
                 flash.error = message(code:'default.linking.linkTypeError')
             }
         }
@@ -2235,6 +2273,17 @@ AND EXISTS (
 
         params.tab = params.tab ?: 'new'
 
+        if(params.tab != 'new'){
+            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+        }
+
+        /*if (params.validOnYear == null || params.validOnYear == '') {
+            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+        }*/
+
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution])
+
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
@@ -2335,7 +2384,7 @@ AND EXISTS (
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
 
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet + result.successorSubscription.customProperties, true, true) : null
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
 
         }
@@ -3333,6 +3382,17 @@ AND EXISTS (
 
         params.tab = params.tab ?: 'new'
 
+        if(params.tab != 'new'){
+            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+        }
+
+        /*if (params.validOnYear == null || params.validOnYear == '') {
+            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+        }*/
+
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.participant])
+
         params.consortiaOrg = result.institution
 
         def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.participant)
@@ -3368,82 +3428,96 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    Map<String,Object> managePropertyGroups() {
+    def managePropertyGroups() {
         Map<String,Object> result = setResultGenerics()
         //result.editable = true // true, because action is protected (is it? I doubt; INST_USERs have at least reading rights to this page!)
+        switch(params.cmd) {
+            case 'new': result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+                render template: '/templates/properties/propertyGroupModal', model: result
+                return
+            case 'edit':
+                result.pdGroup = genericOIDService.resolveOID(params.oid)
+                result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
 
-        if (params.cmd == 'new') {
-            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
-
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
-        }
-        else if (params.cmd == 'edit') {
-            result.pdGroup = genericOIDService.resolveOID(params.oid)
-            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
-
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
-        }
-        else if (params.cmd == 'delete') {
-            def pdg = genericOIDService.resolveOID(params.oid)
-            try {
-                pdg.delete()
-                flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
-            }
-            catch (e) {
-                flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
-            }
-        }
-        else if (params.cmd == 'processing' && formService.validateToken(params)) {
-
-            def valid
-            def propDefGroup
-            def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
-
-            if (params.oid) {
-                propDefGroup = genericOIDService.resolveOID(params.oid)
-                propDefGroup.name = params.name ?: propDefGroup.name
-                propDefGroup.description = params.description
-                propDefGroup.ownerType = ownerType
-
-                if (propDefGroup.save(flush:true)) {
-                    valid = true
+                render template: '/templates/properties/propertyGroupModal', model: result
+                return
+            case 'delete':
+                PropertyDefinitionGroup pdg = genericOIDService.resolveOID(params.oid)
+                try {
+                    pdg.delete()
+                    flash.message = message(code:'propertyDefinitionGroup.delete.success',args:[pdg.name])
                 }
-            }
-            else {
-                if (params.name && ownerType) {
-                    propDefGroup = new PropertyDefinitionGroup(
-                            name: params.name,
-                            description: params.description,
-                            tenant: result.institution,
-                            ownerType: ownerType,
-                            visible: true
-                    )
-                    if (propDefGroup.save(flush:true)) {
-                        valid = true
+                catch (e) {
+                    flash.error = message(code:'propertyDefinitionGroup.delete.failure',args:[pdg.name])
+                }
+                break
+            case 'processing':
+                if(formService.validateToken(params)) {
+                    boolean valid
+                    PropertyDefinitionGroup propDefGroup
+                    String ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
+
+                    if (params.oid) {
+                        propDefGroup = genericOIDService.resolveOID(params.oid)
+                        propDefGroup.name = params.name ?: propDefGroup.name
+                        propDefGroup.description = params.description
+                        propDefGroup.ownerType = ownerType
+
+                        if (propDefGroup.save()) {
+                            valid = true
+                        }
+                    }
+                    else {
+                        if (params.name && ownerType) {
+                            propDefGroup = new PropertyDefinitionGroup(
+                                    name: params.name,
+                                    description: params.description,
+                                    tenant: result.institution,
+                                    ownerType: ownerType,
+                                    isVisible: true
+                            )
+                            if (propDefGroup.save()) {
+                                valid = true
+                            }
+                        }
+                    }
+
+                    if (valid) {
+                        PropertyDefinitionGroupItem.executeUpdate(
+                                "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                                [pdg: propDefGroup]
+                        )
+
+                        params.list('propertyDefinition')?.each { pd ->
+
+                            new PropertyDefinitionGroupItem(
+                                    propDef: pd,
+                                    propDefGroup: propDefGroup
+                            ).save()
+                        }
                     }
                 }
-            }
-
-            if (valid) {
-                PropertyDefinitionGroupItem.executeUpdate(
-                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
-                        [pdg: propDefGroup]
-                )
-
-                params.list('propertyDefinition')?.each { pd ->
-
-                    new PropertyDefinitionGroupItem(
-                            propDef: pd,
-                            propDefGroup: propDefGroup
-                    ).save(flush: true)
-                }
-            }
+                break
         }
 
-        result.propDefGroups = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
-        result
+        Set<PropertyDefinitionGroup> unorderedPdgs = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
+        result.propDefGroups = [:]
+        PropertyDefinition.AVAILABLE_GROUPS_DESCR.each { String propDefGroupType ->
+            result.propDefGroups.put(propDefGroupType,unorderedPdgs.findAll { PropertyDefinitionGroup pdg -> pdg.ownerType == PropertyDefinition.getDescrClass(propDefGroupType)})
+        }
+
+        if(params.cmd == 'exportXLS') {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyGroupUsageXLS(result.propDefGroups))
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.propertyGroups')}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        else
+            result
     }
 
     @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
@@ -3602,7 +3676,7 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    Map<String, Object> managePrivatePropertyDefinitions() {
+    def managePrivatePropertyDefinitions() {
         Map<String, Object> result = setResultGenerics()
 
         switch(params.cmd) {
@@ -3639,7 +3713,18 @@ AND EXISTS (
         result.multiplePdList = multiplePdList
         //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
         result.propertyType = 'private'
-        result
+        if(params.cmd == 'exportXLS') {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyUsageExportXLS(propDefs))
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.privateProperties')}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        else
+            result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
@@ -3688,7 +3773,18 @@ AND EXISTS (
         result.usedPdList = usedPdList
 
         result.propertyType = 'custom'
-        render view: 'managePrivatePropertyDefinitions', model: result
+        if(params.cmd == 'exportXLS') {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyUsageExportXLS(propDefs))
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.customProperties')}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        else
+            render view: 'managePrivatePropertyDefinitions', model: result
     }
 
     @Secured(['ROLE_USER'])
@@ -3859,18 +3955,18 @@ AND EXISTS (
     private def getSurveyParticipantCounts(Org participant){
         Map<String, Object> result = [:]
 
-        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
-        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
-        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
                 [participant: participant]).groupBy {it.id[1]}.size()
 
-        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
                 [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
                  participant: participant]).groupBy {it.id[1]}.size()
         return result

@@ -1,21 +1,18 @@
 package de.laser
 
-import com.k_int.kbplus.ApiSource
-import com.k_int.kbplus.BookInstance
-import com.k_int.kbplus.DatabaseInstance
-import com.k_int.kbplus.JournalInstance
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.SurveyOrg
-import com.k_int.kbplus.SurveyResult
-import com.k_int.kbplus.UserSettings
+import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.SessionCacheWrapper
 import de.laser.helper.SwissKnife
+import org.codehaus.groovy.grails.support.encoding.CodecLookup
+import org.codehaus.groovy.grails.support.encoding.Encoder
+import org.codehaus.groovy.grails.web.pages.GroovyPage
+import org.codehaus.groovy.grails.web.pages.TagLibraryLookup
+import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
-
 
 // Semantic UI
 
@@ -27,6 +24,8 @@ class SemanticUiTagLib {
     def systemService
     def contextService
     def GOKbService
+    CodecLookup codecLookup
+    TagLibraryLookup gspTagLibraryLookup
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
@@ -453,7 +452,7 @@ class SemanticUiTagLib {
             case 'E-Mail':
             case 'Mail': // Deprecated
                 out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i aria-hidden="true" class="ui icon envelope outline la-list-icon"></i>'
+                out << '    <i aria-hidden="true" class="ui icon envelope outline la-list-icon js-copyTrigger"></i>'
                 out << '</span>'
                 break
             case 'Fax':
@@ -946,6 +945,19 @@ class SemanticUiTagLib {
         out << '<i aria-hidden="true" class="icon"></i>'
 
         out << '</div>'
+
+        if(actionName != 'show'){
+            out << "<div class='ui label left pointing survey-${object.type.value}'>"
+            out << object.type.getI10n('value')
+            out << "</div>"
+
+/*            if(object.isMandatory) {
+                out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
+                out << "<i class='yellow small icon exclamation triangle'></i>"
+                out << "</span>"
+            }*/
+
+        }
     }
 
     def totalNumber = { attrs, body ->
@@ -1187,6 +1199,99 @@ class SemanticUiTagLib {
             }
         }
 
+    }
+
+    Closure sortableColumn = { attrs, body ->
+        def writer = out
+        if (!attrs.property) {
+            throwTagError("Tag [sortableColumn] is missing required attribute [property]")
+        }
+
+        if (!attrs.title && !attrs.titleKey) {
+            throwTagError("Tag [sortableColumn] is missing required attribute [title] or [titleKey]")
+        }
+
+        def property = attrs.remove("property")
+        def action = attrs.action ? attrs.remove("action") : (actionName ?: "list")
+        def namespace = attrs.namespace ? attrs.remove("namespace") : ""
+
+        def defaultOrder = attrs.remove("defaultOrder")
+        if (defaultOrder != "desc") defaultOrder = "asc"
+
+        // current sorting property and order
+        def sort = params.sort
+        def order = params.order
+
+        // add sorting property and params to link params
+        Map linkParams = [:]
+        if (params.id) linkParams.put("id", params.id)
+        def paramsAttr = attrs.remove("params")
+        if (paramsAttr instanceof Map) linkParams.putAll(paramsAttr)
+        linkParams.sort = property
+
+        // propagate "max" and "offset" standard params
+        if (params.max) linkParams.max = params.max
+        if (params.offset) linkParams.offset = params.offset
+
+        // determine and add sorting order for this column to link params
+        attrs['class'] = (attrs['class'] ? "${attrs['class']} sortable" : "sortable")
+        if (property == sort) {
+            attrs['class'] = (attrs['class'] as String) + " sorted " + order
+            if (order == "asc") {
+                linkParams.order = "desc"
+            }
+            else {
+                linkParams.order = "asc"
+            }
+        }
+        else {
+            linkParams.order = defaultOrder
+        }
+
+        // determine column title
+        String title = attrs.remove("title") as String
+        String titleKey = attrs.remove("titleKey") as String
+        Object mapping = attrs.remove('mapping')
+        if (titleKey) {
+            if (!title) title = titleKey
+            def messageSource = grailsAttributes.messageSource
+            def locale = RequestContextUtils.getLocale(request)
+            title = messageSource.getMessage(titleKey, null, title, locale)
+        }
+
+        writer << "<th "
+        // process remaining attributes
+        Encoder htmlEncoder = codecLookup.lookupEncoder('HTML')
+        attrs.each { k, v ->
+            writer << k
+            writer << "=\""
+            writer << htmlEncoder.encode(v)
+            writer << "\" "
+        }
+        writer << '>'
+        Map linkAttrs = [:]
+        linkAttrs.params = linkParams
+        if (mapping) {
+            linkAttrs.mapping = mapping
+        }
+
+        linkAttrs.action = action
+        linkAttrs.namespace = namespace
+
+        writer << callLink((Map)linkAttrs) {
+            title
+        }
+
+        if(body)
+        {
+            writer << body()
+        }
+
+        writer << '</th>'
+    }
+
+    private callLink(Map attrs, Object body) {
+        GroovyPage.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, webRequest)
     }
 
 }

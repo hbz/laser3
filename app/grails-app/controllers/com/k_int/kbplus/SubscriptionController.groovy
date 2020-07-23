@@ -71,6 +71,7 @@ class SubscriptionController
     def auditService
     def surveyService
     FormService formService
+    AccessPointService accessPointService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -1592,7 +1593,19 @@ class SubscriptionController
         if (params.exportXLS) {
             exportOrg(orgs, filename, true, 'xlsx')
             return
-        } else {
+        }else if (params.exportIPs) {
+            SXSSFWorkbook wb
+            filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportIPs.fileName'))
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(result.filteredSubChilds.orgs.flatten())
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else {
             withFormat {
                 html {
                     result
@@ -2503,7 +2516,8 @@ class SubscriptionController
             }
         }
         result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
-        result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
+        String memberLicensesQuery = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
+        result.memberLicenses = License.executeQuery(memberLicensesQuery,[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
 
         result
     }
@@ -5022,9 +5036,12 @@ class SubscriptionController
             }
         }
 
-        result.sourceLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc",[sub:GenericOIDService.getOID(baseSub),linkType:RDStore.LINKTYPE_LICENSE])
-        if(newSub)
-            result.targetLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc",[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
+        String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+        result.sourceLicenses = License.executeQuery(sourceLicensesQuery,[sub:GenericOIDService.getOID(baseSub),linkType:RDStore.LINKTYPE_LICENSE])
+        if(newSub) {
+            String targetLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+            result.targetLicenses = License.executeQuery(targetLicensesQuery,[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
+        }
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
@@ -5210,12 +5227,13 @@ class SubscriptionController
         if (newSub) {
             result.newSub = newSub.refresh()
         }
-        subsToCompare.each{ sub ->
+        Org contextOrg = contextService.org
+        subsToCompare.each{ Subscription sub ->
             Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties.sort{it.type.getI10n('name')})
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result
@@ -5771,21 +5789,12 @@ class SubscriptionController
         result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.subscription)
         result.consortialView = result.showConsortiaFunctions
 
-        result.showCollectiveFunctions = showCollectiveFunctions(result.contextOrg, result.subscription)
-        result.departmentalView = result.showCollectiveFunctions
-
         Map args = [:]
         if(result.consortialView) {
             args.superOrgType = [message(code:'consortium.superOrgType')]
             args.memberTypeSingle = [message(code:'consortium.subscriber')]
             args.memberType = [message(code:'consortium.subscriber')]
             args.memberTypeGenitive = [message(code:'consortium.subscriber')]
-        }
-        else if(result.departmentalView) {
-            args.superOrgType = [message(code:'collective.superOrgType')]
-            args.memberTypeSingle = [message(code:'collective.member')]
-            args.memberType = [message(code:'collective.member.plural')]
-            args.memberTypeGenitive = [message(code:'collective.member.genitive')]
         }
         result.args = args
 
@@ -5797,10 +5806,8 @@ class SubscriptionController
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
-        if(result.subscription.getCollective()?.id == contextService.getOrg().id &&
-                (result.subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ||
-                result.subscription.instanceOf?.getConsortia()) &&
-                ! (params.action in ['addMembers', 'processAddMembers',
+        if(result.subscription.instanceOf?.getConsortia() && !
+                (params.action in ['addMembers', 'processAddMembers',
                                      'linkLicenseMembers', 'processLinkLicenseMembers',
                                      'linkPackagesMembers', 'processLinkPackagesMembers',
                                      'propertiesMembers', 'processPropertiesMembers',
@@ -5824,13 +5831,8 @@ class SubscriptionController
     }
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getConsortia()?.id == contextOrg?.id) && subscription.getCalculatedType() in
+        return ((subscription.getConsortia()?.id == contextOrg.id) && subscription.getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
-    }
-
-    static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getCollective()?.id == contextOrg?.id) && subscription.getCalculatedType() in
-                [CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {

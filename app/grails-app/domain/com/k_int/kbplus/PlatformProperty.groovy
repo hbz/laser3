@@ -33,8 +33,8 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
     static constraints = {
         importFrom  AbstractPropertyWithCalculatedLastUpdated
         tenant      (nullable: true, blank: false) //as no tenant can be determined for the moment, subject of discussion
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     static belongsTo = [

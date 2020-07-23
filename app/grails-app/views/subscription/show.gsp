@@ -343,7 +343,7 @@
                   </div><!-- .content -->
                 </div>
 
-                  <g:if test="${editable}">
+
                       <div class="ui card la-js-hideable hidden">
                           <div class="ui segment accordion">
                               <div class="ui title header">
@@ -360,11 +360,11 @@
                                               <dt class="control-label">
                                                   <g:message code="subscription.packages.setting.label"/>
                                               </dt>
-                                              <dt class="control-label">
-                                                  <g:message code="subscription.packages.notification.label"/>
+                                              <dt class="control-label" data-tooltip="${message(code:"subscription.packages.notification.label")}">
+                                                  <i class="ui large icon bullhorn"></i>
                                               </dt>
-                                              <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
-                                                  <dt class="control-label">
+                                              <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                                                  <dt class="control-label" data-tooltip="${message(code:'subscription.packages.auditable')}">
                                                       <i class="ui large icon thumbtack"></i>
                                                   </dt>
                                               </g:if>
@@ -377,35 +377,51 @@
                                                   </dt>
                                                   <dd>
                                                       <g:if test="${!(settingKey in excludes)}">
-                                                          <laser:select class="ui dropdown"
-                                                                        name="${settingKey}!§!setting" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
-                                                                        optionKey="id" optionValue="value"
-                                                                        value="${subscriptionPackage.getPendingChangeConfig(settingKey) ? subscriptionPackage.getPendingChangeConfig(settingKey).settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
-                                                          />
+                                                          <g:if test="${editable}">
+                                                              <laser:select class="ui dropdown"
+                                                                            name="${settingKey}!§!setting" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
+                                                                            optionKey="id" optionValue="value"
+                                                                            value="${subscriptionPackage.getPendingChangeConfig(settingKey) ? subscriptionPackage.getPendingChangeConfig(settingKey).settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
+                                                              />
+                                                          </g:if>
+                                                          <g:else>
+                                                              ${subscriptionPackage.getPendingChangeConfig(settingKey) ? subscriptionPackage.getPendingChangeConfig(settingKey).settingValue.getI10n("value") : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
+                                                          </g:else>
                                                       </g:if>
                                                   </dd>
                                                   <dd>
-                                                      <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${subscriptionPackage.getPendingChangeConfig(settingKey)?.withNotification}"/>
+                                                      <g:if test="${editable}">
+                                                          <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${subscriptionPackage.getPendingChangeConfig(settingKey)?.withNotification}"/>
+                                                      </g:if>
+                                                      <g:else>
+                                                          ${subscriptionPackage.getPendingChangeConfig(settingKey)?.withNotification ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                                      </g:else>
                                                   </dd>
-                                                  <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
+                                                  <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                                                       <dd>
                                                           <g:if test="${!(settingKey in excludes)}">
-                                                              <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable" checked="${subscriptionPackage.getPendingChangeConfig(settingKey) ? auditService.getAuditConfig(subscriptionInstance,settingKey) : false}"/>
+                                                              <g:if test="${editable}">
+                                                                  <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable" checked="${subscriptionPackage.getPendingChangeConfig(settingKey) ? auditService.getAuditConfig(subscriptionInstance,settingKey) : false}"/>
+                                                              </g:if>
+                                                              <g:else>
+                                                                  ${subscriptionPackage.getPendingChangeConfig(settingKey) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                                              </g:else>
                                                           </g:if>
                                                       </dd>
                                                   </g:if>
                                               </dl>
                                           </g:each>
-                                          <dl>
-                                              <dt class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></dt>
-                                          </dl>
+                                          <g:if test="${editable}">
+                                              <dl>
+                                                  <dt class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></dt>
+                                              </dl>
+                                          </g:if>
                                       </g:form>
                                   </g:each>
 
                               </div><!-- .content -->
                           </div>
                       </div>
-                  </g:if>
               </g:if>
 
                 <div class="ui card la-js-hideable hidden">
@@ -477,21 +493,37 @@
                         </h5>
                         <g:if test="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
                             <table class="ui three column table">
-                                <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="${link}">
+                                <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
                                     <tr>
                                         <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
                                         <th scope="row" class="control-label la-js-dont-hide-this-card">${pair.licenseCategory?.getI10n("value")}</th>
                                         <td>
                                             <g:link controller="license" action="show" id="${pair.id}">
-                                                ${pair.reference}
+                                                ${pair.reference} (${pair.status.getI10n("value")})
                                             </g:link><br>
                                             <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
                                             <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
                                             <g:if test="${comment}">
                                                 <em>${comment.owner.content}</em>
                                             </g:if>
+                                            <div id="${link.id}Properties">
+
+                                            </div>
                                         </td>
                                         <td class="right aligned">
+                                            <g:if test="${pair.propertySet}">
+                                                <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button"><i class="ui table icon"></i><i class="ui arrow down icon"></i></button>
+                                                <script>
+                                                    $("#derived-license-properties-toggle${link.id}").on('click', function() {
+                                                        $("#derived-license-properties${link.id}").toggleClass('hidden')
+                                                        if ($("#derived-license-properties${link.id}").hasClass('hidden')) {
+                                                            $(this).html('<i class="ui table icon"></i><i class="ui arrow down icon"></i>')
+                                                        } else {
+                                                            $(this).html('<i class="ui table icon"></i><i class="ui arrow up icon"></i>')
+                                                        }
+                                                    })
+                                                </script>
+                                            </g:if>
                                             <g:render template="/templates/links/subLinksModal"
                                                       model="${[tmplText:message(code:'subscription.details.editLink'),
                                                                 tmplIcon:'write',
@@ -514,39 +546,7 @@
                                                 </div>
                                                 <br />
                                             </g:if>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3">
-                                            <%-- to be transposed to AJAX
-                                            <g:set var="derivedPropDefGroups" value="${subscriptionInstance.owner?.getCalculatedPropDefGroups(contextService.getOrg())}" />
-
-                                            <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.orphanedProperties}">
-                                                <div class="ui la-vertical buttons">
-                                                    <button id="derived-license-properties-toggle" class="ui button la-js-dont-hide-button">Vertragsmerkmale anzeigen</button>
-                                                    <script>
-                                                        $('#derived-license-properties-toggle').on('click', function() {
-                                                            $('#derived-license-properties').toggleClass('hidden')
-                                                            if ($('#derived-license-properties').hasClass('hidden')) {
-                                                                $(this).text('Vertragsmerkmale anzeigen')
-                                                            } else {
-                                                                $(this).text('Vertragsmerkmale ausblenden')
-                                                            }
-                                                        })
-                                                    </script>
-
-                                                    <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.orphanedProperties}">
-                                                        <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
-
-                                                            <g:render template="licProp" model="${[
-                                                                    license: subscriptionInstance.owner,
-                                                                    derivedPropDefGroups: derivedPropDefGroups
-                                                            ]}" />
-                                                        </div>
-                                                    </g:if>
-                                                </div>
-                                            </g:if>--%>
-                                        </td>
+                                        </td><br>
                                     </tr>
                                 </g:each>
                             </table>
@@ -739,49 +739,61 @@
     <div id="magicArea"></div>
 
     <r:script>
-
-      function unlinkPackage(pkg_id){
-        var req_url = "${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription:subscriptionInstance.id])}&package="+pkg_id
-
-        $.ajax({url: req_url,
-          success: function(result){
-             $('#magicArea').html(result);
-          },
-          complete: function(){
-            $("#unlinkPackageModal").modal("show");
-          }
-        });
-      }
-
-      function hideModal(){
-        $("[name='coreAssertionEdit']").modal('hide');
-      }
-
-      function showCoreAssertionModal(){
-
-        $("[name='coreAssertionEdit']").modal('show');
-
-      }
-
-      <g:if test="${editable}">
-
       $(document).ready(function() {
 
-         $('#collapseableSubDetails').on('show', function() {
-            $('.hidden-license-details i').removeClass('icon-plus').addClass('icon-minus');
+          function unlinkPackage(pkg_id){
+            var req_url = "${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription:subscriptionInstance.id])}&package="+pkg_id
+
+            $.ajax({url: req_url,
+              success: function(result){
+                 $('#magicArea').html(result);
+              },
+              complete: function(){
+                $("#unlinkPackageModal").modal("show");
+              }
+            });
+          }
+
+          function hideModal(){
+            $("[name='coreAssertionEdit']").modal('hide');
+          }
+
+          function showCoreAssertionModal(){
+
+            $("[name='coreAssertionEdit']").modal('show');
+
+          }
+
+          <g:if test="${editable}">
+
+             $('#collapseableSubDetails').on('show', function() {
+                $('.hidden-license-details i').removeClass('icon-plus').addClass('icon-minus');
+            });
+
+            // Reverse it for hide:
+            $('#collapseableSubDetails').on('hide', function() {
+                $('.hidden-license-details i').removeClass('icon-minus').addClass('icon-plus');
+            });
+          </g:if>
+
+          <g:if test="${params.asAt && params.asAt.length() > 0}"> $(function() {
+            document.body.style.background = "#fcf8e3";
+          });</g:if>
+
+          <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
+              $.ajax({
+                  url: "<g:createLink controller="ajax" action="getLicensePropertiesForSubscription" />",
+                  data: {
+                       loadFor: "${link.source}",
+                       linkId: ${link.id}
+                  }
+              }).done(function(response) {
+                  $("#${link.id}Properties").html(response);
+              }).fail();
+
+          </g:each>
+
         });
-
-        // Reverse it for hide:
-        $('#collapseableSubDetails').on('hide', function() {
-            $('.hidden-license-details i').removeClass('icon-minus').addClass('icon-plus');
-        });
-      });
-
-      </g:if>
-
-      <g:if test="${params.asAt && params.asAt.length() > 0}"> $(function() {
-        document.body.style.background = "#fcf8e3";
-      });</g:if>
 
     </r:script>
   </body>
