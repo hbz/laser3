@@ -43,10 +43,10 @@ class PriceItem extends AbstractBase {
         listCurrency        (nullable: true, blank: false)
         localPrice          (nullable: true, blank: false)
         localCurrency       (nullable: true, blank: false)
-        priceDate           (nullable: true, blank: false)
+        priceDate           (nullable: true)
         issueEntitlement    (blank: false)
-        lastUpdated         (nullable: true, blank: false)
-        dateCreated         (nullable: true, blank: false)
+        lastUpdated         (nullable: true)
+        dateCreated         (nullable: true)
     }
 
     @Override

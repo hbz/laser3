@@ -50,8 +50,6 @@ class SystemTicket {
         meta         (blank:true)
         status       (blank:false)
         category     (blank:false)
-        dateCreated  (blank:false)
-        lastUpdated  (blank:false)
         jiraReference(nullable:true, blank:true)
     }
 

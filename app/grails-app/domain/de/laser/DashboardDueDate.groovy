@@ -111,9 +111,8 @@ class DashboardDueDate {
     static constraints = {
         responsibleUser         (nullable:true, blank:false)
         responsibleOrg          (nullable:true, blank:false)
-        isHidden                (blank:false)
         dueDateObject           (nullable:true, blank:false)
-        dateCreated             (nullable:true, blank: false)
-        lastUpdated             (nullable:true, blank:false)
+        dateCreated             (nullable:true)
+        lastUpdated             (nullable:true)
     }
 }
