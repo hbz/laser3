@@ -6,8 +6,15 @@
 <%
     Map params = [:]
     params.sort = params.sort ?: " LOWER(o.name)"
+    if (org.getCustomerType() == 'ORG_INST'){
+        params.orgType = [RDStore.OT_AGENCY.id, RDStore.OT_PROVIDER.id]
+    }
     Map fsq = filterService.getOrgQuery(params)
     List orgList  = Org.findAll(fsq.query, fsq.queryParams)
+    if ( ! orgList.contains(org)){
+        orgList.add(org)
+        orgList.sort{it.name.toLowerCase()}
+    }
     %>
 <semui:modal id="${modalId}" text="${message(code: (modalId))}">
     <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create', params: [org_id: org.id]]"
@@ -203,7 +210,7 @@
                                     <div class="field">
                                         <g:if test="${institution}">
                                             <label for="functionOrg">
-                                                <g:message code="contact.belongesTo.label"/>
+                                                <g:message code="contact.belongesTo.label"/>FFF
                                             </label>
                                             <g:select class="ui search dropdown"
                                                       name="functionOrg"
@@ -214,7 +221,7 @@
                                         </g:if>
                                         <g:else>
                                             <label for="functionOrg">
-                                                <g:message code="contact.belongesTo.label"/>
+                                                <g:message code="contact.belongesTo.label"/>GGG
                                             </label>
                                             <i class="icon university la-list-icon"></i>${org?.name}
                                             <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
@@ -245,7 +252,7 @@
 
                                     <g:if test="${institution}">
                                         <label for="positionOrg">
-                                            <g:message code="contact.belongesTo.label"/>
+                                            <g:message code="contact.belongesTo.label"/>AAA
                                         </label>
                                         <g:select class="ui search dropdown"
                                                   name="positionOrg"
@@ -256,7 +263,7 @@
                                     </g:if>
                                     <g:else>
                                         <label for="positionOrg">
-                                            <g:message code="contact.belongesTo.label"/>
+                                            <g:message code="contact.belongesTo.label"/>BBB
                                         </label>
                                         <i class="icon university la-list-icon"></i>${org?.name}
                                         <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}"/>
