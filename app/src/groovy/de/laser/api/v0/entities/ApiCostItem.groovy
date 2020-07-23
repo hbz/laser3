@@ -141,7 +141,7 @@ class ApiCostItem {
         result.isVisibleForSubscriber = costItem.isVisibleForSubscriber ? 'Yes' : 'No'
 
         // erms-888
-        result.calculatedType      = costItem.getCalculatedType()
+        result.calculatedType      = costItem._getCalculatedType()
 
         // RefdataValues
 

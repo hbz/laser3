@@ -16,7 +16,7 @@
 
 </semui:modal>
 
-<g:if test="${subscriptionInstance.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
+<g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
     <div class="ui card la-dl-no-table ">
         <div class="content">
             <h5 class="ui header">${message(code:'license.properties.consortium')}</h5>
@@ -40,7 +40,7 @@
 <div class="ui card la-dl-no-table">
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${subscriptionInstance.getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${subscriptionInstance._getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 

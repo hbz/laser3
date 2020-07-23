@@ -171,7 +171,7 @@ class PropertyService {
         if(obj instanceof Subscription) {
             Subscription s = (Subscription) obj
             objMap.name = s.dropdownNamingConvention(contextOrg)
-            if(s.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+            if(s._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 objMap.subscriber = s.getSubscriber()
             objMap.displayController = "subscription"
             objMap.manageChildren = "propertiesMembers"

@@ -73,7 +73,7 @@ class ApiPkg {
 		result.cancellationAllowances = pkg.cancellationAllowances
 		result.dateCreated      	= ApiToolkit.formatInternalDate(pkg.dateCreated)
 		result.endDate          	= ApiToolkit.formatInternalDate(pkg.endDate)
-		result.lastUpdated      	= ApiToolkit.formatInternalDate(pkg.getCalculatedLastUpdated())
+		result.lastUpdated      	= ApiToolkit.formatInternalDate(pkg._getCalculatedLastUpdated())
 		result.vendorURL        	= pkg.vendorURL
 		result.startDate        	= ApiToolkit.formatInternalDate(pkg.startDate)
 		result.listVerifiedDate     = ApiToolkit.formatInternalDate(pkg.listVerifiedDate)

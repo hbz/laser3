@@ -16,7 +16,7 @@
 
 </semui:modal>
 
-<g:if test="${license.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
+<g:if test="${license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
     <div class="ui card la-dl-no-table ">
         <div class="content">
             <h5 class="ui header">${message(code:'license.properties.consortium')}</h5>
@@ -40,7 +40,7 @@
 
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(institution)}" />
+    <g:set var="allPropDefGroups" value="${license._getCalculatedPropDefGroups(institution)}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 

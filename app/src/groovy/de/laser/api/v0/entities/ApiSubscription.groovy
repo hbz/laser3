@@ -114,13 +114,13 @@ class ApiSubscription {
 		result.cancellationAllowances 	= sub.cancellationAllowances
 		result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
 		result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
-		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub.getCalculatedLastUpdated())
+		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub._getCalculatedLastUpdated())
 		result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
 		result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
 		result.name                 	= sub.name
 		result.noticePeriod         	= sub.noticePeriod
 		result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
-		result.calculatedType       	= sub.getCalculatedType()
+		result.calculatedType       	= sub._getCalculatedType()
 
 		// RefdataValues
 
@@ -143,8 +143,8 @@ class ApiSubscription {
 		//result.organisations        = ApiCollectionReader.resolveOrgLinks(sub.orgRelations, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 		result.orgAccessPoints			= ApiCollectionReader.getOrgAccessPointCollection(sub.getOrgAccessPointsOfSubscriber())
 
-		result.predecessor = ApiStubReader.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
-		result.successor   = ApiStubReader.requestSubscriptionStub(sub.getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
+		result.predecessor = ApiStubReader.requestSubscriptionStub(sub._getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
+		result.successor   = ApiStubReader.requestSubscriptionStub(sub._getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
 		result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
 		def allOrgRoles = []
