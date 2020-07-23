@@ -210,7 +210,7 @@
                                     <div class="field">
                                         <g:if test="${institution}">
                                             <label for="functionOrg">
-                                                <g:message code="contact.belongesTo.label"/>FFF
+                                                <g:message code="contact.belongesTo.label"/>
                                             </label>
                                             <g:select class="ui search dropdown"
                                                       name="functionOrg"
@@ -221,7 +221,7 @@
                                         </g:if>
                                         <g:else>
                                             <label for="functionOrg">
-                                                <g:message code="contact.belongesTo.label"/>GGG
+                                                <g:message code="contact.belongesTo.label"/>
                                             </label>
                                             <i class="icon university la-list-icon"></i>${org?.name}
                                             <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
@@ -252,7 +252,7 @@
 
                                     <g:if test="${institution}">
                                         <label for="positionOrg">
-                                            <g:message code="contact.belongesTo.label"/>AAA
+                                            <g:message code="contact.belongesTo.label"/>
                                         </label>
                                         <g:select class="ui search dropdown"
                                                   name="positionOrg"
@@ -263,7 +263,7 @@
                                     </g:if>
                                     <g:else>
                                         <label for="positionOrg">
-                                            <g:message code="contact.belongesTo.label"/>BBB
+                                            <g:message code="contact.belongesTo.label"/>
                                         </label>
                                         <i class="icon university la-list-icon"></i>${org?.name}
                                         <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}"/>
