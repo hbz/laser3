@@ -25,7 +25,6 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.transaction.Transactional
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChildren
@@ -484,7 +483,7 @@ class YodaService {
                                 println("associated subscription is not deleted, report ...")
                                 ieDetails.action = "report"
                                 Map<String,Object> report = [subscriber:ie.subscription.getSubscriber().shortname,subscription:ie.subscription.name,title:delTIPP.title.title,package:delTIPP.pkg.name]
-                                if(ie.subscription.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.TYPE_PARTICIPATION]) {
+                                if(ie.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.TYPE_PARTICIPATION]) {
                                     report.consortium = ie.subscription.getConsortia().shortname
                                 }
                                 else {
@@ -573,7 +572,7 @@ class YodaService {
                             else {
                                 println("${ie.subscription} is current, check if action needs to be taken ...")
                                 Map<String,Object> report = [subscriber:ie.subscription.getSubscriber().shortname,subscription:ie.subscription.name,title:delTIPP.title.title,package:delTIPP.pkg.name]
-                                if(ie.subscription.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.TYPE_PARTICIPATION]) {
+                                if(ie.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.TYPE_PARTICIPATION]) {
                                     report.consortium = ie.subscription.getConsortia().shortname
                                 }
                                 else {

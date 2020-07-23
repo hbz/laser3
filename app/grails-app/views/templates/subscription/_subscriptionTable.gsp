@@ -203,7 +203,7 @@
                             <td>
                                 <g:if test="${s.isMultiYear}">
                                     <g:if test="${(s.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                                            s.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)}">
+                                            s._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)}">
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                               data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
                                             <i class="map orange icon"></i>

@@ -256,7 +256,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     boolean showUIShareButton() {
-        getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
+        _getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
     }
 
     @Override
@@ -336,7 +336,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     @Override
-    String getCalculatedType() {
+    String _getCalculatedType() {
         String result = TYPE_UNKOWN
 
         if (getCollective() && getConsortia() && instanceOf) {
@@ -666,7 +666,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         Subscription.where { instanceOf == this }.findAll()
     }
 
-    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
         def result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings

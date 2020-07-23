@@ -159,7 +159,7 @@ class LicenseController
                 }
             }
 
-            if(result.license.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) {
+            if(result.license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) {
                 du.setBenchmark('non-inherited member properties')
                 Set<License> childLics = result.license.getDerivedLicenses()
                 if(childLics) {
@@ -421,7 +421,7 @@ class LicenseController
             String query = "select s from Subscription s where s.status.id = :status and concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
             result.subscriptionsForFilter = Subscription.executeQuery( query, [status:params.status as Long, lic:GenericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
         }
-        if(result.license.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
             Map<String,Object> queryParams = [lic:GenericOIDService.getOID(result.license),status:result.status,subscriberRoleTypes:subscriberRoleTypes,linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""

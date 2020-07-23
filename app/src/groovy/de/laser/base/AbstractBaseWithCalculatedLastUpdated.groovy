@@ -44,7 +44,7 @@ abstract class AbstractBaseWithCalculatedLastUpdated extends AbstractBase
 
     abstract def afterDelete() /* { afterDeleteHandler() } */
 
-    Date getCalculatedLastUpdated() {
+    Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 }
