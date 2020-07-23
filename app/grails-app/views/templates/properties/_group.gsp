@@ -143,7 +143,7 @@
                                         <laser:remoteLink class="ui orange icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                           data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                          data-always="c3po.loadJsAfterAjax()"
+                                                          data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">
                                             <i class="icon eye la-js-editmode-icon"></i>
                                         </laser:remoteLink>
@@ -152,7 +152,7 @@
                                         <laser:remoteLink class="ui icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                           data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                          data-always="c3po.loadJsAfterAjax()"
+                                                          data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">
                                             <i class="icon eye slash la-js-editmode-icon"></i>
                                         </laser:remoteLink>
