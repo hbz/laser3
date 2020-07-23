@@ -298,7 +298,7 @@
                             </g:else>
                         </g:if>
 
-                        <semui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" field="comment" type="textarea"/>
+                        <semui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea"/>
                     </td>
                 </tr>
             </g:each>
