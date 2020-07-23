@@ -1751,6 +1751,7 @@ class AjaxController {
                         AbstractPropertyWithCalculatedLastUpdated additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
                         additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
+                        additionalProp.isPublic = true
                         additionalProp.save()
                     }
                     else {
@@ -1759,6 +1760,7 @@ class AjaxController {
                         if (matchingProps) {
                             matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
                                 memberProp.instanceOf = property
+                                memberProp.isPublic = true
                                 memberProp.save(flush:true)
                             }
                         }
@@ -1767,6 +1769,7 @@ class AjaxController {
                             AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
                             newProp = property.copyInto(newProp)
                             newProp.instanceOf = property
+                            newProp.isPublic = true
                             newProp.save()
                         }
                     }

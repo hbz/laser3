@@ -309,12 +309,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         //if(!owner.hasProperty("privateProperties")) {
             ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
-            if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
-                isPublic = true
-            }
-            else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
-                isPublic = false
-            }
         /*}
         else {
             if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
@@ -326,7 +320,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }*/
 
         //def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner)
-        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: isPublic, tenant: contextOrg)
+        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: false, tenant: contextOrg)
         newProp.setNote("")
 
         /*
