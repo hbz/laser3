@@ -66,9 +66,8 @@ class OrgRole implements ShareableTrait {
     lic         (nullable:true, blank:false)
     cluster     (nullable:true, blank:false)
     title       (nullable:true, blank:false)
-    startDate   (nullable:true, blank:false)
-    endDate     (nullable:true, blank:false)
-    isShared    (blank:false)
+    startDate   (nullable:true)
+    endDate     (nullable:true)
     sharedFrom  (nullable:true, blank:true)
 
     // Nullable is true, because values are already in the database

@@ -113,7 +113,7 @@ class PendingChange {
         msgParams(nullable:true, blank:false)
         pkg(nullable:true, blank:false)
         costItem(nullable:true, blank: false)
-        ts(nullable:true, blank:false)
+        ts (nullable:true)
         owner(nullable:true, blank:false)
         oid(nullable:true, blank:false)
         payloadChangeType       (nullable:true, blank:true)
@@ -124,7 +124,7 @@ class PendingChange {
         newValue(nullable:true, blank:true)
         desc(nullable:true, blank:false)
         status(nullable:true, blank:false)
-        actionDate(nullable:true, blank:false)
+        actionDate (nullable:true)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
