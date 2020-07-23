@@ -8,7 +8,6 @@ import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.ContextService
 import de.laser.SystemAnnouncement
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
@@ -16,7 +15,6 @@ import de.laser.controller.AbstractDebugController
 import de.laser.I10nTranslation
 import de.laser.SystemMessage
 import de.laser.exceptions.CleanupException
-import de.laser.helper.ConfigUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
@@ -1534,7 +1532,7 @@ class AdminController extends AbstractDebugController {
 
 
                     subscriberRoles.each{ role ->
-                        if (role.sub.getCalculatedType() == Subscription.TYPE_LOCAL) {
+                        if (role.sub._getCalculatedType() == Subscription.TYPE_LOCAL) {
                             role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
                             role.save()
 
@@ -1547,7 +1545,7 @@ class AdminController extends AbstractDebugController {
 
                     }*/
                     conSubscriberRoles.each { role ->
-                        if (role.sub.getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
+                        if (role.sub._getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
                             OrgRole newRole = new OrgRole(
                                     org: role.org,
                                     sub: role.sub,

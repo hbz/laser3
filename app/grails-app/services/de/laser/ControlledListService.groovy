@@ -79,7 +79,7 @@ class ControlledListService {
         }
         else if(params.ctx && params.ctx.contains(License.class.name))
             ctx = genericOIDService.resolveOID(params.ctx)
-        switch(ctx?.getCalculatedType()) {
+        switch(ctx?._getCalculatedType()) {
             case CalculatedType.TYPE_CONSORTIAL: queryString += " and s.instanceOf = null "
                 break
             case CalculatedType.TYPE_PARTICIPATION: queryString += " and s.instanceOf != null "
@@ -119,17 +119,17 @@ class ControlledListService {
 
             switch (params.ltype) {
                 case CalculatedType.TYPE_PARTICIPATION:
-                    if (s.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]){
+                    if (s._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]){
                         if(org.id == s.getConsortia().id)
                             result.results.add([name:s.dropdownNamingConvention(org), value:GenericOIDService.getOID(s)])
                     }
                     break
                 case CalculatedType.TYPE_CONSORTIAL:
-                    if (s.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+                    if (s._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
                         result.results.add([name:s.dropdownNamingConvention(org), value:GenericOIDService.getOID(s)])
                     break
                 case CalculatedType.TYPE_COLLECTIVE:
-                    if (s.getCalculatedType() == CalculatedType.TYPE_COLLECTIVE)
+                    if (s._getCalculatedType() == CalculatedType.TYPE_COLLECTIVE)
                         result.results.add([name:s.dropdownNamingConvention(org), value:GenericOIDService.getOID(s)])
                     break
                 default:
@@ -240,7 +240,7 @@ class ControlledListService {
         else if(params.ctx && params.ctx.contains(Subscription.class.name)) {
             ctx = genericOIDService.resolveOID(params.ctx)
         }
-        switch(ctx?.getCalculatedType()) {
+        switch(ctx?._getCalculatedType()) {
             case CalculatedType.TYPE_CONSORTIAL: licFilter += " and l.instanceOf = null "
                 break
             case CalculatedType.TYPE_PARTICIPATION: licFilter += " and l.instanceOf != null "
@@ -445,7 +445,7 @@ class ControlledListService {
                 Subscription subscription = (Subscription) it[0]
                 /*
                 String tenant
-                if(subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
+                if(subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
                     try {
                         tenant = " - ${subscription.getAllSubscribers().get(0).sortname}"
                     }

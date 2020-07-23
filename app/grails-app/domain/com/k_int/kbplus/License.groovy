@@ -218,7 +218,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     boolean showUIShareButton() {
-        getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
+        _getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 
     void updateShare(ShareableTrait sharedObject) {
@@ -270,7 +270,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     @Override
-    String getCalculatedType() {
+    String _getCalculatedType() {
         String result = CalculatedType.TYPE_UNKOWN
 
         if (getLicensingConsortium() && ! instanceOf) {
@@ -512,7 +512,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         License.where{ instanceOf == this }
     }
 
-    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
         Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
@@ -621,7 +621,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
         String result = ''
         result += reference + " - " + statusString + " " + period
-        if (CalculatedType.TYPE_PARTICIPATION == getCalculatedType()) {
+        if (CalculatedType.TYPE_PARTICIPATION == _getCalculatedType()) {
             result += " - " + messageSource.getMessage('license.member', null, LocaleContextHolder.getLocale())
         }
 

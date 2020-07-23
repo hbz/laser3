@@ -168,7 +168,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
         cascadingUpdateService.update(this, new Date())
     }
 
-    Date getCalculatedLastUpdated() {
+    Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 

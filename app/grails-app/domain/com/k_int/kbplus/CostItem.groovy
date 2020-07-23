@@ -208,7 +208,7 @@ class CostItem extends AbstractBase
 
     @Override
     // currently only used for API
-    String getCalculatedType() {
+    String _getCalculatedType() {
         if (isVisibleForSubscriber) {
             return CalculatedType.TYPE_CONSORTIAL // boolean flag = true -> shared consortia costs
         }

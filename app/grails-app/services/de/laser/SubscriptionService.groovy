@@ -1380,7 +1380,7 @@ class SubscriptionService {
     Map regroupSubscriptionProperties(List<Subscription> subsToCompare) {
         LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
         subsToCompare.each{ sub ->
-            Map allPropDefGroups = sub.getCalculatedPropDefGroups(org)
+            Map allPropDefGroups = sub._getCalculatedPropDefGroups(org)
             allPropDefGroups.entrySet().each { propDefGroupWrapper ->
                 //group group level
                 //There are: global, local, member (consortium@subscriber) property *groups* and orphaned *properties* which is ONE group
@@ -1581,11 +1581,11 @@ class SubscriptionService {
             try {
                 if(Links.construct([source: GenericOIDService.getOID(newLicense), destination: GenericOIDService.getOID(sub), linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
                     RefdataValue licRole
-                    if(sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
+                    if(sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
                         licRole = RDStore.OR_LICENSEE_CONS
-                    else if(sub.getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE,CalculatedType.TYPE_LOCAL])
+                    else if(sub._getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_LOCAL])
                         licRole = RDStore.OR_LICENSEE
-                    else if(sub.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+                    else if(sub._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
                         licRole = RDStore.OR_LICENSING_CONSORTIUM
                     if(licRole) {
                         OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
@@ -1612,7 +1612,7 @@ class SubscriptionService {
             String sourceOID = curLink.source
             License lic = genericOIDService.resolveOID(sourceOID)
             curLink.delete() //delete() is void, no way to check whether errors occurred or not
-            if(sub.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+            if(sub._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
                 String linkedSubsQuery = "select li from Links li where li.source = :lic and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:subscrTypes) and oo.org = :subscr)"
                 Set<Links> linkedSubs = Links.executeQuery(linkedSubsQuery, [lic: sourceOID, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])
                 if (linkedSubs.size() < 1) {

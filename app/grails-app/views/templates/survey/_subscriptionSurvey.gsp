@@ -371,7 +371,7 @@
                         <%--
                         <br>
                         <g:set var="derivedPropDefGroups"
-                               value="${subscriptionInstance.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
+                               value="${subscriptionInstance.owner?._getCalculatedPropDefGroups(contextService.getOrg())}"/>
 
                         <div class="ui form">
                             <div class="two fields">
