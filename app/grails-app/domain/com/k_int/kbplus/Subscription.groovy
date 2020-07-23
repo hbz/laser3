@@ -197,16 +197,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         manualCancellationDate (nullable:true)
         instanceOf(nullable:true, blank:false)
         comment(nullable: true, blank: true)
-        administrative(blank:false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
-        isSlaved    (blank:false)
         noticePeriod(nullable:true, blank:true)
-        isPublicForApi (blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)
         lastUpdatedCascading (nullable: true)
-        isMultiYear(nullable: true, blank: false)
-        hasPerpetualAccess(blank: false)
+        isMultiYear(nullable: true)
     }
 
     @Override
@@ -260,7 +256,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     boolean showUIShareButton() {
-        getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
+        _getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
     }
 
     @Override
@@ -340,7 +336,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     @Override
-    String getCalculatedType() {
+    String _getCalculatedType() {
         String result = TYPE_UNKOWN
 
         if (getCollective() && getConsortia() && instanceOf) {
@@ -670,7 +666,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         Subscription.where { instanceOf == this }.findAll()
     }
 
-    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
         def result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings

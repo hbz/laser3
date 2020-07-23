@@ -141,7 +141,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  startDate (nullable:true)
                    endDate (nullable:true)
                    license(nullable:true, blank:false)
-                  isPublic(blank:false)
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
                     gokbId(blank:false, unique: true, maxSize: 511)

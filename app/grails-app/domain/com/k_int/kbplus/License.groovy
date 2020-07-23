@@ -154,21 +154,20 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         type(nullable:true, blank:false)
         reference(blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
-        isPublicForApi (nullable:true, blank:true)
+        isPublicForApi (nullable:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
         instanceOf(nullable:true, blank:false)
-        isSlaved    (blank:false)
         //licenseStatus(nullable:true, blank:true)
         //lastmod(nullable:true, blank:true)
         //onixplLicense(nullable: true, blank: true)
         licenseCategory(nullable: true, blank: true)
-        startDate(nullable: true, blank: false, validator: { val, obj ->
+        startDate(nullable: true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
             }
         })
-        endDate(nullable: true, blank: false, validator: { val, obj ->
+        endDate(nullable: true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
             }
@@ -219,7 +218,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     boolean showUIShareButton() {
-        getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
+        _getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 
     void updateShare(ShareableTrait sharedObject) {
@@ -271,7 +270,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     @Override
-    String getCalculatedType() {
+    String _getCalculatedType() {
         String result = CalculatedType.TYPE_UNKOWN
 
         if (getLicensingConsortium() && ! instanceOf) {
@@ -513,7 +512,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         License.where{ instanceOf == this }
     }
 
-    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
         Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
@@ -622,7 +621,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
         String result = ''
         result += reference + " - " + statusString + " " + period
-        if (CalculatedType.TYPE_PARTICIPATION == getCalculatedType()) {
+        if (CalculatedType.TYPE_PARTICIPATION == _getCalculatedType()) {
             result += " - " + messageSource.getMessage('license.member', null, LocaleContextHolder.getLocale())
         }
 

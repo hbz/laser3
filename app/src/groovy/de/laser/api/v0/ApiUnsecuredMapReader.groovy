@@ -37,7 +37,7 @@ class ApiUnsecuredMapReader {
         result.globalUID        = lic.globalUID
         result.reference        = lic.reference
         result.normReference    = lic.sortableReference
-        result.calculatedType   = lic.getCalculatedType()
+        result.calculatedType   = lic._getCalculatedType()
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
 
@@ -130,7 +130,7 @@ class ApiUnsecuredMapReader {
 
         result.globalUID        = sub.globalUID
         result.name             = sub.name
-        result.calculatedType   = sub.getCalculatedType()
+        result.calculatedType   = sub._getCalculatedType()
         result.startDate        = ApiToolkit.formatInternalDate(sub.startDate)
         result.endDate          = ApiToolkit.formatInternalDate(sub.endDate)
 
@@ -234,7 +234,7 @@ class ApiUnsecuredMapReader {
         result.primaryUrl       = pform.primaryUrl
         //result.provenance       = pform.provenance
         result.dateCreated      = ApiToolkit.formatInternalDate(pform.dateCreated)
-        result.lastUpdated      = ApiToolkit.formatInternalDate(pform.getCalculatedLastUpdated())
+        result.lastUpdated      = ApiToolkit.formatInternalDate(pform._getCalculatedLastUpdated())
 
         // RefdataValues
         //result.type                 = pform.type?.value

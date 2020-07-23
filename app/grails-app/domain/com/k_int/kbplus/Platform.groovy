@@ -181,7 +181,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     platform
   }
 
-  Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+  Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
     Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'orphanedProperties':[] ]
 
     // ALL type depending groups without checking tenants or bindings

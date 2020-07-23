@@ -47,7 +47,6 @@ class SystemAnnouncement {
         title       (blank:false)
         content     (blank:false)
         status      (nullable:true, blank:false)
-        isPublished (blank:false)
         lastPublishingDate (nullable:true)
         dateCreated (nullable:true)
         lastUpdated (nullable:true)

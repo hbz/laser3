@@ -149,9 +149,6 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
         description_de  (nullable:true, blank:false)
         description_en  (nullable:true, blank:false)
 
-        isUnique        (blank:false)
-        isHidden        (blank:false)
-
         // Nullable is true, because values are already in the database
         dateCreated (nullable: true)
         lastUpdated (nullable: true)
@@ -171,7 +168,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
         cascadingUpdateService.update(this, new Date())
     }
 
-    Date getCalculatedLastUpdated() {
+    Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 

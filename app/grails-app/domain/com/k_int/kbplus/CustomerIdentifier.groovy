@@ -34,7 +34,6 @@ class CustomerIdentifier {
         customer (blank:false)
         platform (blank:false)
         owner    (blank:false)
-        isPublic (blank:false)
     }
 
     Org getProvider() {

@@ -110,7 +110,7 @@ class ApiOAMonitor {
             result.region       = org.region?.value
             result.country      = org.country?.value
             result.libraryType  = org.libraryType?.value
-            result.lastUpdated  = ApiToolkit.formatInternalDate(org.getCalculatedLastUpdated())
+            result.lastUpdated  = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
 
             //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
             //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
@@ -154,13 +154,13 @@ class ApiOAMonitor {
             result.cancellationAllowances 	= sub.cancellationAllowances
             result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
             result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
-            result.lastUpdated          	= ApiToolkit.formatInternalDate(sub.getCalculatedLastUpdated())
+            result.lastUpdated          	= ApiToolkit.formatInternalDate(sub._getCalculatedLastUpdated())
             result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
             result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
             result.name                 	= sub.name
             result.noticePeriod         	= sub.noticePeriod
             result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
-            result.calculatedType           = sub.getCalculatedType()
+            result.calculatedType           = sub._getCalculatedType()
 
             // RefdataValues
 
@@ -184,8 +184,8 @@ class ApiOAMonitor {
             //result.license              = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
             //removed: result.license          = ApiCollectionReader.resolveLicense(sub.owner, ApiCollectionReader.IGNORE_ALL, context) // com.k_int.kbplus.License
 
-            //result.predecessor = ApiStubReader.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
-            //result.successor   = ApiStubReader.requestSubscriptionStub(sub.getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
+            //result.predecessor = ApiStubReader.requestSubscriptionStub(sub._getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
+            //result.successor   = ApiStubReader.requestSubscriptionStub(sub._getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
             result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
             List<OrgRole> allOrgRoles = []
@@ -205,7 +205,7 @@ class ApiOAMonitor {
 
             Collection<CostItem> filtered = []
 
-            if (sub.getCalculatedType() in [Subscription.TYPE_PARTICIPATION, Subscription.TYPE_PARTICIPATION_AS_COLLECTIVE]) {
+            if (sub._getCalculatedType() in [Subscription.TYPE_PARTICIPATION, Subscription.TYPE_PARTICIPATION_AS_COLLECTIVE]) {
                 List<Org> validOwners = getAccessibleOrgs()
                 List<Org> subSubscribers = sub.getAllSubscribers()
                 //filtered = sub.costItems.findAll{ it.owner in validOwners && it.owner in subSubscribers }

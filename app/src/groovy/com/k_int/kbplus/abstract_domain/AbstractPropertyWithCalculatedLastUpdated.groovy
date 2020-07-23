@@ -71,7 +71,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
 
     abstract def afterDelete() /* { afterDeleteHandler() } */
 
-    Date getCalculatedLastUpdated() {
+    Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
