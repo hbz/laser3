@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1824    23.07.2020  rc1.5       Anja    Bug         Dropdowns der Orgs nicht nach Sichtrechten gefiltert; Zauberstab statt Button
+
 2701    23.07.2020  rc1.5       Andreas Bug         Editierbarkeitsflag korrigiert
 
 2700    22.07.2020  rc1.5       Andreas Bug         Merkmalsfilter korrigiert
