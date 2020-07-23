@@ -407,7 +407,7 @@
                                             </g:if>
                                         </g:each>
                                     </g:each>
-                                %{--</div>--}%
+                                </div>
                                 %{--<g:if test="${((((orgInstance.id == contextService.getOrg().id) || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">--}%
 
                                     %{--<div class="ui list">--}%
