@@ -12,6 +12,8 @@
 
 2696    22.07.2020  hbz-dev     Anja    Feature     Überarbeitung Darstellung Einrichtungskontakte auf org/show (Teil 2)
 
+2530    23.07.2020  hbz-dev     Andreas Feature     Punkt zwei der Einkaufsliste: die Platform-PrimaryUrl wird jetzt im Lizenz-Paketpanel angezeigt
+
 2689    22.07.2020  rc1.5       Andreas Bug         Brücke zur korrekten Verarbeitung von PendingChange-Altlasten eingebaut
 
 --      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Vertragsverwaltung
