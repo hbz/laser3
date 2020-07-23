@@ -329,7 +329,7 @@ class ApiCollectionReader {
             }
 
             //tmp.dateCreated = ApiToolkit.formatInternalDate(it.dateCreated)
-            //tmp.lastUpdated = ApiToolkit.formatInternalDate(it.calculatedLastUpdated())
+            //tmp.lastUpdated = ApiToolkit.formatInternalDate(it._getCalculatedLastUpdated())
 
             if (it instanceof LicenseProperty) {
                 tmp.paragraph = it.paragraph
