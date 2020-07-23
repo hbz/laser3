@@ -1,4 +1,3 @@
-<%@ page import="org.codehaus.groovy.grails.plugins.codecs.HTMLCodec; org.springframework.web.util.HtmlUtils" %>
 <g:if test="${address}">
 	<div class="ui item address-details">
         <% String url = ''
