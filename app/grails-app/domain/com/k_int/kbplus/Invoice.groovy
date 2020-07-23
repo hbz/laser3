@@ -33,9 +33,9 @@ class Invoice {
   }
 
   static constraints = {
-          dateOfInvoice(nullable:true, blank:false)
-          dateOfPayment(nullable:true, blank:false)
-    datePassedToFinance(nullable:true, blank:false)
+          dateOfInvoice(nullable:true)
+          dateOfPayment(nullable:true)
+    datePassedToFinance(nullable:true)
           invoiceNumber(blank:false)
               startDate (nullable:true)
                 endDate (nullable:true)

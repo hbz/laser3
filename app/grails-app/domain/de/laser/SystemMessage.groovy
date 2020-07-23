@@ -31,7 +31,6 @@ class SystemMessage {
         content_de  (nullable:true,  blank:true)
         content_en  (nullable:true,  blank:true)
         type        (blank:false)
-        isActive    (blank:false)
     }
 
     static getTypes() {

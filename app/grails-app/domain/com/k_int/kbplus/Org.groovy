@@ -223,7 +223,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
        funderHskType(nullable:true, blank:true)
          libraryType(nullable:true, blank:true)
         importSource(nullable:true, blank:true)
-      lastImportDate(nullable:true, blank:true)
+      lastImportDate(nullable:true)
            createdBy(nullable:true, blank:true)
     legallyObligedBy(nullable:true, blank:true)
       costConfigurationPreset(nullable:true, blank:false)

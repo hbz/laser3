@@ -163,12 +163,9 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         type                (blank: false)
         refdataCategory     (nullable: true)
         tenant              (nullable: true,  blank: true)
-        multipleOccurrence  (nullable: true,  blank: true)
-        mandatory           (blank: false)
-        isHardData          (blank: false)
-        isUsedForLogic      (blank: false)
-        lastUpdated         (nullable: true, blank: false)
-        dateCreated         (nullable: true, blank: false)
+        multipleOccurrence  (nullable: true)
+        lastUpdated         (nullable: true)
+        dateCreated         (nullable: true)
     }
 
     static PropertyDefinition construct(Map<String, Object> map) {

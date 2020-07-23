@@ -22,10 +22,9 @@ class ReaderNumber {
     static constraints = {
         //type            (blank:false)
         referenceGroup  (blank:false)
-        value           (nullable:true,  blank:true)
+        value           (nullable:true, blank:true)
         semester        (nullable:true, blank:false)
-        dueDate         (nullable:true, blank:false)
-
+        dueDate         (nullable:true)
         org             (blank:false)
     }
 

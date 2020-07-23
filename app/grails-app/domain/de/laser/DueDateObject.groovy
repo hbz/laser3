@@ -47,11 +47,9 @@ class DueDateObject {
 //        attribute_value_de      (nullable:false, blank:false)
 //        attribute_value_en      (nullable:false, blank:false)
 //        attribute_name          (nullable:false, blank:false)
-        date                    (blank:false)
         oid                     (blank:false)//, unique: ['attribut_name', 'ddo_oid'])
-        isDone                  (blank:false)
-        dateCreated             (nullable:true, blank:false)
-        lastUpdated             (nullable:true, blank:false)
+        dateCreated             (nullable:true)
+        lastUpdated             (nullable:true)
     }
 
 }

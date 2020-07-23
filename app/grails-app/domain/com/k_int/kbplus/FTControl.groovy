@@ -17,6 +17,6 @@ class FTControl {
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true)
     dateCreated (nullable: true)
-    active (nullable: true, blank: false)
+    active (nullable: true)
   }
 }
