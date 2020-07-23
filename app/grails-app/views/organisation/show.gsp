@@ -17,9 +17,6 @@
     <g:elseif test="${institutionalView}">
         <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
     </g:elseif>
-    <g:elseif test="${departmentalView}">
-        <g:set var="entityName" value="${message(code: 'org.department.label')}"/>
-    </g:elseif>
     <g:else>
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
@@ -77,14 +74,12 @@
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
-                        <g:if test="${departmentalView == false}">
-                            <dl>
-                                <dt><g:message code="org.shortname.label" /></dt>
-                                <dd>
-                                    <semui:xEditable owner="${orgInstance}" field="shortname"/>
-                                </dd>
-                            </dl>
-                        </g:if>
+                        <dl>
+                            <dt><g:message code="org.shortname.label" /></dt>
+                            <dd>
+                                <semui:xEditable owner="${orgInstance}" field="shortname"/>
+                            </dd>
+                        </dl>
                         <g:if test="${!isProviderOrAgency}">
                             <dl>
                                 <dt>
@@ -120,7 +115,7 @@
                         </dd>
                     </dl>
                     </g:if>
-                    <g:if test="${!departmentalView && !isProviderOrAgency}">
+                    <g:if test="${!isProviderOrAgency}">
                         <dl>
                             <dt>
                                 <g:message code="org.urlGov.label"/>
@@ -192,7 +187,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${departmentalView == false && !isProviderOrAgency}">
+            <g:if test="${!isProviderOrAgency}">
                 <div class="ui card">
                     <div class="content">
                             <dl>

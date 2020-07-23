@@ -1573,7 +1573,7 @@ join sub.orgRelations or_sub where
                     response.contentType = "text/csv"
 
                     ServletOutputStream out = response.outputStream
-                    Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements)
+                    Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements)
                     out.withWriter { writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
                     }

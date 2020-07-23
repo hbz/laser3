@@ -129,11 +129,6 @@
                                 <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
                                 <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
-                            <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
-                                <div class="divider"></div>
-
-                                <semui:securedMainNavItem role="menuitem" affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.departments" />
-                            </g:elseif>
 
                             <div class="divider"></div>
 
@@ -582,7 +577,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && (editable || accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value=='Yes'}">
                                     <button class="ui icon toggle active  button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
@@ -601,7 +596,7 @@
 
                             <r:script>
                                 $(function(){
-                                    <g:if test="${editable} || ${overwriteEditable}">
+                                    <g:if test="${editable} || ${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
                                         <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value == 'Yes'}">
                                             deckSaver.configs.editMode  = true;
                                         </g:if>
