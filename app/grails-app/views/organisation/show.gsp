@@ -320,7 +320,7 @@
                         <H3><g:message code="org.contactpersons.and.addresses.label" /></H3>
                         %{--<g:link action="myPublicContacts" controller="myInstitution"  class="ui button">${message('code':'org.edit.contacts')}</g:link>--}%
                         <g:each in="${usedRDV}" var="rdv">
-                            <strong>${rdv.getI10n('value')}</strong>
+                            <strong>${rdv.getI10n('value')}</strong><br />
                             <g:each in="${allPRMap.get(rdv.id)}" var="pr">
                                 <g:if test="pr">
                                 %{--Workaround wg NPE bei CacheEntry.getValue--}%
