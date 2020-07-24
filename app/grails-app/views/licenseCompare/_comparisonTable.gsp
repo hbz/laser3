@@ -3,7 +3,7 @@
     String unknownString = g.message(code:"default.compare.propertyNotSet")
 %>
 <laser:serviceInjection/>
-<table class="ui la-table la-table-small table">
+<table class="ui la-table compact table">
 <thead>
     <th>${key}</th>
     <g:each in="${licenses}" var="l">

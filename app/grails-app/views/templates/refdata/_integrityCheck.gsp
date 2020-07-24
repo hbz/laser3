@@ -1,5 +1,5 @@
 
-<table class="ui table la-table la-table-small">
+<table class="ui table la-table compact">
     <thead>
         <tr>
             <th>Class.Field</th>

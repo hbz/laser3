@@ -623,7 +623,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'default.usage.licenseGrid.header')}</dt>
                                 <dd>
-                                    <table class="ui la-table-small celled la-table-inCard table">
+                                    <table class="ui compact celled la-table-inCard  table">
                                         <thead>
                                         <tr>
                                             <th>${message(code: 'default.usage.reportType')}</th>
@@ -664,7 +664,7 @@
                             <dl>
                                 <dt class="control-label la-js-dont-hide-this-card">${message(code: 'default.usage.label')}</dt>
                                 <dd>
-                                    <table class="ui la-table-small celled la-table-inCard table">
+                                    <table class="ui compact celled la-table-inCard la-ignore-fixed table">
                                         <thead>
                                         <tr>
                                             <th>${message(code: 'default.usage.reportType')}

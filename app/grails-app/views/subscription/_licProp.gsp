@@ -74,9 +74,7 @@
             </g:each>
 
             <g:if test="${hiddenPropertiesMessages.size() > 0}">
-                <div>
                     <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
-                </div>
             </g:if>
 
         <%-- orphaned properties --%>
