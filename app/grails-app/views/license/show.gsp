@@ -184,6 +184,7 @@
                                                                             editmode               : editable,
                                                                             context                : license,
                                                                             subscriptionLicenseLink: true,
+                                                                            atConsortialParent     : institution == license.getLicensingConsortium(),
                                                                             link                   : link
                                                                   ]}" />
                                                         <g:if test="${editable}">
@@ -214,6 +215,7 @@
                                                     tmplModalID:'sub_add_link',
                                                     editmode: editable,
                                                     subscriptionLicenseLink: true,
+                                                    atConsortialParent: institution == license.getLicensingConsortium(),
                                                     context: license
                                           ]}" />
                             </div>

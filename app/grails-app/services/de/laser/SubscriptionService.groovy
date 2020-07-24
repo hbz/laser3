@@ -1023,7 +1023,7 @@ class SubscriptionService {
                             instanceOf: targetSub,
                             //previousSubscription: subMember?.id,
                             isSlaved: subMember.isSlaved,
-                            owner: targetSub.owner ? subMember.owner : null,
+                            //owner: targetSub.owner ? subMember.owner : null,
                             resource: targetSub.resource ?: null,
                             form: targetSub.form ?: null,
                             isPublicForApi: targetSub.isPublicForApi,
@@ -1032,9 +1032,16 @@ class SubscriptionService {
                     newSubscription.save(flush:true)
                     //ERMS-892: insert preceding relation in new data model
                     if (subMember) {
-                        Links prevLink = new Links(source: GenericOIDService.getOID(newSubscription), destination: GenericOIDService.getOID(subMember), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-                        if (!prevLink.save()) {
-                            log.error("Subscription linking failed, please check: ${prevLink.errors}")
+                        try {
+                            Links.construct([source: GenericOIDService.getOID(newSubscription), destination: GenericOIDService.getOID(subMember), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org])
+                            Set<Links> precedingLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subMember),RDStore.LINKTYPE_LICENSE)
+                            precedingLicenses.each { Links link ->
+                                Map<String,Object> successorLink = [source:link.source,destination:GenericOIDService.getOID(newSubscription),linkType:RDStore.LINKTYPE_LICENSE,owner:contextService.org]
+                                Links.construct(successorLink)
+                            }
+                        }
+                        catch (CreationException e) {
+                            log.error("Subscription linking failed, please check: ${e.stackTrace}")
                         }
                     }
 
@@ -1287,7 +1294,7 @@ class SubscriptionService {
             targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && sourceProp.tenant.id == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
-                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)
+                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub, tenant: sourceProp.tenant)
                 targetProp = sourceProp.copyInto(targetProp)
                 targetProp.isPublic = sourceProp.isPublic //provisoric, should be moved into copyInto once migration is complete
                 save(targetProp, flash)
@@ -1295,9 +1302,9 @@ class SubscriptionService {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
 
-                        Subscription.findAllByInstanceOf(targetSub).each { member ->
+                        Subscription.findAllByInstanceOf(targetSub).each { Subscription member ->
 
-                            def existingProp = SubscriptionCustomProperty.findByOwnerAndInstanceOf(member, targetProp)
+                            def existingProp = SubscriptionProperty.findByOwnerAndInstanceOf(member, targetProp)
                             if (! existingProp) {
 
                                 // multi occurrence props; add one additional with backref
@@ -1308,7 +1315,7 @@ class SubscriptionService {
                                     additionalProp.save(flush: true)
                                 }
                                 else {
-                                    def matchingProps = SubscriptionCustomProperty.findByOwnerAndType(member, targetProp.type)
+                                    def matchingProps = SubscriptionProperty.findByOwnerAndType(member, targetProp.type)
                                     // unbound prop found with matching type, set backref
                                     if (matchingProps) {
                                         matchingProps.each { memberProp ->
@@ -1327,7 +1334,7 @@ class SubscriptionService {
                             }
                         }
 
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
                                 //All ReferenceFields were copied!

@@ -228,7 +228,7 @@
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
                             <g:set var="license" value="${Links.findByDestinationAndLinkType(GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)}"/>
-                            <g:if test="${license}">
+                            <g:if test="${!license}">
                                 <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
@@ -242,7 +242,7 @@
                     </g:if>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
-                            <g:if test="${!subscriptionInstance.packages}">
+                            <g:if test="${!sub.packages}">
                                 <g:link controller="subscription" action="linkPackagesMembers" id="${subscriptionInstance.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
