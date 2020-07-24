@@ -237,6 +237,7 @@
                                                                         tmplModalID:"sub_edit_link_${link.id}",
                                                                         editmode: editable,
                                                                         context: subscription,
+                                                                        atConsortialParent: contextOrg == subscription.getConsortia(),
                                                                         link: link
                                                               ]}" />
                                                     <g:if test="${editable}">
@@ -266,6 +267,7 @@
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
                                                 editmode: editable,
+                                                atConsortialParent: contextOrg == subscription.getConsortia(),
                                                 context: subscription
                                       ]}" />
                         </div>
@@ -533,6 +535,7 @@
                                                                 editmode: editable,
                                                                 subscriptionLicenseLink: true,
                                                                 context: subscription,
+                                                                atConsortialParent: contextOrg == subscription.getConsortia(),
                                                                 link: link
                                                       ]}" />
                                             <g:if test="${editable}">
@@ -561,6 +564,7 @@
                                                     tmplModalID:'sub_add_license_link',
                                                     editmode: editable,
                                                     subscriptionLicenseLink: true,
+                                                    atConsortialParent: contextOrg == subscription.getConsortia(),
                                                     context: subscription
                                           ]}" />
                             </div>

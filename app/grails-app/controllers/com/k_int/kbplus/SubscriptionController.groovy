@@ -5806,16 +5806,6 @@ class SubscriptionController
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
-        if(result.subscription.instanceOf?.getConsortia() && !
-                (params.action in ['addMembers', 'processAddMembers',
-                                     'linkLicenseMembers', 'processLinkLicenseMembers',
-                                     'linkPackagesMembers', 'processLinkPackagesMembers',
-                                     'propertiesMembers', 'processPropertiesMembers',
-                                     'subscriptionPropertiesMembers', 'processSubscriptionPropertiesMembers'])
-        ) {
-            result.editable = false
-        }
-
         if(params.orgBasicMemberView){
             result.editable = false
         }
