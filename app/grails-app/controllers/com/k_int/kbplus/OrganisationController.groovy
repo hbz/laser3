@@ -1175,6 +1175,7 @@ class OrganisationController extends AbstractDebugController {
 
         result
     }
+
     @DebugAnnotation(test = 'checkForeignOrgComboPermAffiliation()')
     @Secured(closure = {
         ctx.accessService.checkForeignOrgComboPermAffiliationX([
@@ -1192,10 +1193,28 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        params.sort = params.sort ?: 'dueDate'
-        params.order = params.order ?: 'desc'
+        if(params.tableA) {
+            params.sortA = params.sort
+            params.orderA = params.order
+        }
+        else {
+            params.sortA = 'dueDate'
+            params.orderA = 'desc'
+        }
 
-        result.numbersInstanceList = ReaderNumber.findAllByOrg(result.orgInstance, params)
+        if(params.tableB) {
+            params.sortB = params.sort
+            params.orderB = params.order
+        }
+        else {
+            params.sortB = 'semester'
+            params.orderB = 'desc'
+        }
+        params.remove('sort')
+        params.remove('order')
+
+        result.numbersWithSemester = ReaderNumber.findAllByOrgAndSemesterIsNotNull((Org) result.orgInstance,[sort:params.sortA,order:params.orderA])
+        result.numbersWithDueDate = ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB])
 
         result
     }

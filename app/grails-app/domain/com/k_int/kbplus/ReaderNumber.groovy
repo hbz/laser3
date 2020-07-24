@@ -3,6 +3,8 @@ package com.k_int.kbplus
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
+import javax.persistence.Transient
+
 class ReaderNumber {
 
     /*@RefdataAnnotation(cat = '?')
@@ -19,13 +21,43 @@ class ReaderNumber {
 
     Org org
 
+    @Transient
+    final static String READER_NUMBER_USER = 'User'
+    @Transient
+    final static String READER_NUMBER_PEOPLE = 'Population'
+    @Transient
+    final static String READER_NUMBER_SCIENTIFIC_STAFF = 'Scientific staff'
+    @Transient
+    final static String READER_NUMBER_FTE = 'FTE'
+    @Transient
+    final static String READER_NUMBER_STUDENTS = 'Students'
+    @Transient
+    final static Set<String> CONSTANTS_WITH_SEMESTER = [READER_NUMBER_STUDENTS,READER_NUMBER_SCIENTIFIC_STAFF,READER_NUMBER_FTE]
+    @Transient
+    final static Set<String> CONSTANTS_WITH_DUE_DATE = [READER_NUMBER_PEOPLE,READER_NUMBER_USER]
+
     static constraints = {
         //type            (blank:false)
-        referenceGroup  (blank:false)
-        value           (nullable:true, blank:true)
-        semester        (nullable:true, blank:false)
-        dueDate         (nullable:true)
-        org             (blank:false)
+        referenceGroup(blank: false, validator: { String val, ReaderNumber obj ->
+            if (val in RefdataValue.findAllByValueInListAndOwner(CONSTANTS_WITH_SEMESTER, RefdataCategory.findByDesc(RDConstants.NUMBER_TYPE)) && (!obj.semester || obj.dueDate)) {
+                return ['use students, FTE or scientific staff only with semester']
+            }
+            if ((val in RefdataValue.findAllByValueInListAndOwner(CONSTANTS_WITH_DUE_DATE, RefdataCategory.findByDesc(RDConstants.NUMBER_TYPE)) || !RefdataValue.executeQuery('select rdv from RefdataValue rdv join rdv.owner rdc where :value in (rdv.value,rdv.value_de,rdv.value_en) and rdc.desc = :desc', [value: val, desc: RDConstants.NUMBER_TYPE])) && (!obj.dueDate || obj.semester)) {
+                return ['use user, people or non-refdata number types only with due date']
+            }
+        })
+        value(nullable: true, blank: true)
+        semester(nullable: true, blank: false, validator: { RefdataValue val, ReaderNumber obj ->
+            if (obj.dueDate && obj.semester) {
+                return ['no simultaneous due date and semester']
+            }
+        })
+        dueDate(nullable: true, validator: { Date val, ReaderNumber obj ->
+            if (obj.semester && obj.dueDate) {
+                return ['no simultaneous due date and semester']
+            }
+        })
+        org(blank: false)
     }
 
     static mapping = {
