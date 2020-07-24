@@ -143,7 +143,7 @@
        console.log("${lookupName}");
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=true&ctx=${GenericOIDService.getOID(context)}",
+                url: "<g:createLink controller="ajax" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${GenericOIDService.getOID(context)}",
                 cache: false
             },
             clearable: true,
