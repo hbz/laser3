@@ -246,7 +246,7 @@ class ControlledListService {
             case CalculatedType.TYPE_PARTICIPATION: licFilter += " and l.instanceOf != null "
                 break
         }
-        if(params.filterMembers) {
+        if(params.filterMembers == "true") {
             filterParams.orgRoles.removeAll([RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS])
         }
         result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
