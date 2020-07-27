@@ -14,7 +14,7 @@
 <br>
     <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.timelineProfiler')}</h2>
 
-    <table class="ui celled la-table la-table-small table">
+    <table class="ui celled la-table compact table">
         <thead>
             <tr class="center aligned">
                 <th>Timeline</th>

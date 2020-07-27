@@ -17,7 +17,7 @@
 <div class="ui grid">
     <div class="twelve wide column">
 
-        <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
+        <table class="ui sortable celled la-table compact la-ignore-fixed table">
             <thead>
                 <tr>
                     <th>Schema</th>

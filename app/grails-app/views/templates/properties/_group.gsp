@@ -7,7 +7,7 @@
 
 
 
-<table class="ui la-table-small la-table-inCard table">
+<table class="ui compact la-table-inCard table">
     <g:if test="${propDefGroup}">
         <colgroup>
             <col style="width: 129px;">

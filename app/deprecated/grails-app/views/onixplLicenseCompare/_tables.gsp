@@ -7,7 +7,7 @@
         <g:set var="table_name" value="${ table_data.remove("_title") }" />
         <h2 id="table-${ OnixPLService.getClassValue(table_name) }">${ table_name }</h2>
         <span class="filter-cell" ></span>
-        <table class="onix-matrix-STOP_JAVASCRIPT ui la-table la-table-small table">
+        <table class="onix-matrix-STOP_JAVASCRIPT ui la-table compact table">
             <thead>
                 <tr>
                     <th class="cell-1"></th>

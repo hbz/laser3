@@ -1,6 +1,6 @@
 <%@page import="de.laser.interfaces.CalculatedType" %>
 <g:if test="${data.billingSums}">
-    <table class="ui la-table-small la-table-inCard table">
+    <table class="ui compact la-table-inCard table">
         <thead>
         <tr>
             <th>${message(code:'financials.sum.billing')}</th>

@@ -26633,7 +26633,7 @@ Floated Menu / Item
   background: transparent;
   text-align: inherit;
   color: rgba(0, 0, 0, 0.87);
-  padding: 0.92857143em 0.78571429em;
+  padding: 0.92857143em 1.4em;
   vertical-align: inherit;
   font-style: none;
   font-weight: bold;
@@ -26671,7 +26671,7 @@ Floated Menu / Item
   background: #f4f8f9;
   text-align: inherit;
   color: rgba(0, 0, 0, 0.87);
-  padding: 0.78571429em 0.78571429em;
+  padding: 1.4em 1.4em;
   vertical-align: middle;
   font-style: normal;
   font-weight: normal;
@@ -26713,7 +26713,7 @@ Floated Menu / Item
 /* Table Cells */
 
 .ui.table td {
-  padding: 0.78571429em 0.78571429em;
+  padding: 1.4em 1.4em;
   text-align: inherit;
 }
 
@@ -27144,7 +27144,7 @@ Floated Menu / Item
 .ui.table tbody tr td.selectable > a:not(.ui) {
   display: block;
   color: inherit;
-  padding: 0.78571429em 0.78571429em;
+  padding: 1.4em 1.4em;
 }
 
 /* Other States */
@@ -27908,7 +27908,6 @@ Floated Menu / Item
   background: #F2F2F2;
 }
 
-.ui.table tr td,
 .ui.table tr .la-th-column {
   padding: 20px 0;
 }
@@ -28069,7 +28068,7 @@ Floated Menu / Item
 .ui.table tbody tr td.la-selectable > a:not(.ui) {
   display: block;
   color: inherit;
-  padding: 0.78571429em 0.78571429em;
+  padding: 1.4em 1.4em;
 }
 
 .ui.table thead th.la-smaller-table-head {
@@ -28096,11 +28095,17 @@ Floated Menu / Item
   background-color: #fffaf5;
 }
 
-.ui.table:not(.la-ignore-fixed) thead tr:first-child > th,
-.ui.table:not(.la-ignore-fixed) thead tr:nth-child(2) > th {
+.ui.table thead tr:first-child > th,
+.ui.table thead tr:nth-child(2) > th {
   position: -webkit-sticky !important;
   position: sticky !important;
   z-index: 2;
+}
+
+.ui.table.la-ignore-fixed thead tr:first-child > th,
+.ui.table.la-ignore-fixed thead tr:nth-child(2) > th {
+  position: static !important;
+  z-index: unset;
 }
 
 .ui.table thead tr:first-child > th,

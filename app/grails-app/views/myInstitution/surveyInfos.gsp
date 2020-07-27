@@ -96,7 +96,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
     <semui:form>
         <h3><g:message code="surveyInfo.owner.label"/>:</h3>
 
-        <table class="ui table la-table la-table-small">
+        <table class="ui table la-table compact">
             <tbody>
             <tr>
                 <td>
