@@ -347,7 +347,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         }
         else if(getConsortia() && !getAllSubscribers() && !instanceOf) {
             if(administrative) {
-                log.debug(administrative)
                 result = TYPE_ADMINISTRATIVE
             }
             else result = TYPE_CONSORTIAL

@@ -218,13 +218,9 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def genericSetValue() {
-    // [id:1, value:JISC_Collections_NESLi2_Lic_IOP_Institute_of_Physics_NESLi2_2011-2012_01012011-31122012.., type:License, action:inPlaceSave, controller:ajax
-    // def clazz=grailsApplication.domainClasses.findByFullName(params.type)
-    // log.debug("genericSetValue:${params}");
         def result = params.value
 
         try {
-
 
     // params.elementid (The id from the html element)  must be formed as domain:pk:property:otherstuff
     String[] oid_components = params.elementid.split(":");
@@ -260,7 +256,7 @@ class AjaxController {
         // log.debug("Merge: ${binding_properties}");
         // see http://grails.org/doc/latest/ref/Controllers/bindData.html
         bindData(instance, binding_properties)
-        instance.save()
+        instance.save(flush: true)
       }
       else {
         log.debug("no instance");
@@ -289,106 +285,97 @@ class AjaxController {
         def result = ''
 
         try {
+            String[] target_components = params.pk.split(":")
+            def target = genericOIDService.resolveOID(params.pk)
 
-    String[] target_components = params.pk.split(":");
-
-    def target = genericOIDService.resolveOID(params.pk);
-    if ( target ) {
-      if ( params.value == '' ) {
-        // Allow user to set a rel to null be calling set rel ''
-        target[params.name] = null
-          if ( ! target.save()){
-              Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
-              render r as JSON
-              return
-          }
-      }
-      else {
-        String[] value_components = params.value.split(":");
-        def value = genericOIDService.resolveOID(params.value);
-
-        if ( target && value ) {
-
-            if (target instanceof UserSettings) {
-                target.setValue(value)
-            } else {
-                def binding_properties = ["${params.name}": value]
-                bindData(target, binding_properties)
-                //if (target.hasProperty(params.name)) {
-                //    target."${params.name}" = value
-                //}
-                //if (target.hasProperty('owner')) {
-                //    target.owner?.save()  // avoid .. not processed by flush
-                //}
-            }
-
-            if ( ! target.save()){
-                Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
-                render r as JSON
-                return
-            }
-            if (target instanceof SurveyResult) {
-
-                Org org = contextService.getOrg()
-                //If Survey Owner set Value then set FinishDate
-                if (org?.id == target?.owner?.id && target?.finishDate == null) {
-                    String property = ""
-                    if (target?.type?.type == Integer.toString()) {
-                        property = "intValue"
-                    } else if (target?.type?.type == String.toString()) {
-                        property = "stringValue"
-                    } else if (target?.type?.type == BigDecimal.toString()) {
-                        property = "decValue"
-                    } else if (target?.type?.type == Date.toString()) {
-                        property = "dateValue"
-                    } else if (target?.type?.type == URL.toString()) {
-                        property = "urlValue"
-                    } else if (target?.type?.type == RefdataValue.toString()) {
-                        property = "refValue"
+            if ( target ) {
+                if ( params.value == '' ) {
+                    // Allow user to set a rel to null be calling set rel ''
+                    target[params.name] = null
+                    if ( ! target.save(flush: true)){
+                        Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
+                        render r as JSON
+                        return
                     }
+                }
+                else {
+                    String[] value_components = params.value.split(":")
+                    def value = genericOIDService.resolveOID(params.value)
 
-                    if (target[property] != null) {
-                        log.debug("Set/Save FinishDate of SurveyResult (${target.id})")
-                        target.finishDate = new Date()
-                        target.save()
+                    if ( target && value ) {
+                        if (target instanceof UserSettings) {
+                            target.setValue(value)
+                        }
+                        else {
+                            def binding_properties = ["${params.name}": value]
+                            bindData(target, binding_properties)
+                        }
+
+                        if ( ! target.save(flush: true)){
+                            Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
+                            render r as JSON
+                            return
+                        }
+                        if (target instanceof SurveyResult) {
+                            Org org = contextService.getOrg()
+
+                            //If Survey Owner set Value then set FinishDate
+                            if (org?.id == target?.owner?.id && target?.finishDate == null) {
+                                String property = ""
+                                if (target?.type?.type == Integer.toString()) {
+                                    property = "intValue"
+                                } else if (target?.type?.type == String.toString()) {
+                                    property = "stringValue"
+                                } else if (target?.type?.type == BigDecimal.toString()) {
+                                    property = "decValue"
+                                } else if (target?.type?.type == Date.toString()) {
+                                    property = "dateValue"
+                                } else if (target?.type?.type == URL.toString()) {
+                                    property = "urlValue"
+                                } else if (target?.type?.type == RefdataValue.toString()) {
+                                    property = "refValue"
+                                }
+
+                                if (target[property] != null) {
+                                    log.debug("Set/Save FinishDate of SurveyResult (${target.id})")
+                                    target.finishDate = new Date()
+                                    target.save(flush: true)
+                                }
+                            }
+                        }
+
+                        // We should clear the session values for a user if this is a user to force reload of the parameters.
+                        if (target instanceof User) {
+                            session.userPereferences = null
+                        }
+
+                        if (target instanceof UserSettings) {
+                            if (target.key.toString() == 'LANGUAGE') {
+                                Locale newLocale = new Locale(value.value, value.value.toUpperCase())
+                                log.debug("UserSettings: LANGUAGE changed to: " + newLocale)
+
+                                LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
+                                localeResolver.setLocale(request, response, newLocale)
+                            }
+                        }
+
+                        if ( params.resultProp ) {
+                            result = value[params.resultProp]
+                        }
+                        else {
+                            if ( value ) {
+                                result = renderObjectValue(value)
+                            }
+                        }
                     }
-            }
-        }
-
-          // We should clear the session values for a user if this is a user to force reload of the,
-          // parameters.
-          if (target instanceof User) {
-            session.userPereferences = null
-          }
-
-            if (target instanceof UserSettings) {
-                if (target.key.toString() == 'LANGUAGE') {
-                    Locale newLocale = new Locale(value.value, value.value.toUpperCase())
-                    log.debug("UserSettings: LANGUAGE changed to: " + newLocale)
-
-                    LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
-                    localeResolver.setLocale(request, response, newLocale)
+                    else {
+                        log.debug("no value (target=${target_components}, value=${value_components}");
+                    }
                 }
             }
-
-          if ( params.resultProp ) {
-            result = value[params.resultProp]
-          }
-          else {
-            if ( value ) {
-              result = renderObjectValue(value);
-              // result = value.toString()
+            else {
+                log.error("no target (target=${target_components}");
             }
-          }
-        }
-        else {
-          log.debug("no value (target=${target_components}, value=${value_components}");
-        }
-      }
-    }
-    else {
-      log.error("no target (target=${target_components}");
-    }
 
         } catch (Exception e) {
             log.error("@ genericSetRel()")
@@ -1604,7 +1591,7 @@ class AjaxController {
             else if(oo.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN)
                 oo.roleType = RDStore.OR_SUBSCRIBER_CONS
         }
-        oo.save()
+        oo.save(flush: true)
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1670,7 +1657,7 @@ class AjaxController {
             cache.put(params.oid,'locked')
             AbstractPropertyWithCalculatedLastUpdated property = genericOIDService.resolveOID(params.oid)
             property.isPublic = !property.isPublic
-            property.save()
+            property.save(flush: true)
             Org contextOrg = contextService.getOrg()
             request.setAttribute("editable", params.editable == "true")
             if(params.propDefGroup) {
@@ -1752,7 +1739,7 @@ class AjaxController {
                         additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
                         additionalProp.isPublic = true
-                        additionalProp.save()
+                        additionalProp.save(flush: true)
                     }
                     else {
                         Set<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findByOwnerAndType(member, property.type)
@@ -1770,7 +1757,7 @@ class AjaxController {
                             newProp = property.copyInto(newProp)
                             newProp.instanceOf = property
                             newProp.isPublic = true
-                            newProp.save()
+                            newProp.save(flush: true)
                         }
                     }
                 }
@@ -1980,10 +1967,10 @@ class AjaxController {
                 if (obj instanceof Task && isDone){
                     Task dueTask = (Task)obj
                     dueTask.setStatus(RDStore.TASK_STATUS_DONE)
-                    dueTask.save()
+                    dueTask.save(flush: true)
                 }
                 dueDateObject.isDone = isDone
-                dueDateObject.save()
+                dueDateObject.save(flush: true)
             } else {
                 if (isDone)   flash.error += message(code:'dashboardDueDate.err.toSetDone.doesNotExist')
                 else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
@@ -2255,7 +2242,7 @@ class AjaxController {
 
         // log.debug("Saving ${new_obj}");
         try{
-          if ( new_obj.save() ) {
+          if ( new_obj.save(flush: true) ) {
             log.debug("Saved OK");
           }
           else {
@@ -2454,8 +2441,8 @@ class AjaxController {
             if (target_object) {
                 if (params.type == 'date') {
                     SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-
                     def backup = target_object."${params.name}"
+
                     try {
                         if (params.value && params.value.size() > 0) {
                             // parse new date
@@ -2465,10 +2452,7 @@ class AjaxController {
                             // delete existing date
                             target_object."${params.name}" = null
                         }
-                        //if (target_object.hasProperty('owner')) {
-                        //    target_object.owner?.save() // avoid owner.xyz not processed by flush
-                        //}
-                        target_object.save(failOnError: true);
+                        target_object.save(flush:true, failOnError: true)
                     }
                     catch (Exception e) {
                         target_object."${params.name}" = backup
@@ -2479,9 +2463,10 @@ class AjaxController {
                             result = (target_object."${params.name}").format(message(code: 'default.date.format.notime'))
                         }
                     }
-                } else if (params.type == 'url') {
-
+                }
+                else if (params.type == 'url') {
                     def backup = target_object."${params.name}"
+
                     try {
                         if (params.value && params.value.size() > 0) {
                             target_object."${params.name}" = new URL(params.value)
@@ -2489,10 +2474,7 @@ class AjaxController {
                             // delete existing url
                             target_object."${params.name}" = null
                         }
-                        //if (target_object.hasProperty('owner')) {
-                        //    target_object.owner?.save() // avoid owner.xyz not processed by flush
-                        //}
-                        target_object.save(failOnError: true)
+                        target_object.save(flush:true, failOnError: true)
                     }
                     catch (Exception e) {
                         target_object."${params.name}" = backup
@@ -2503,7 +2485,8 @@ class AjaxController {
                             result = target_object."${params.name}"
                         }
                     }
-                } else {
+                }
+                else {
                     def binding_properties = [:]
 
                     if (target_object."${params.name}" instanceof BigDecimal) {
@@ -2512,19 +2495,23 @@ class AjaxController {
                     if (target_object."${params.name}" instanceof Boolean) {
                         params.value = params.value?.equals("1")
                     }
-                    if(params.value instanceof String) {
+                    if (params.value instanceof String) {
                         String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
                         binding_properties[params.name] = value
+                    } else {
+                        binding_properties[params.name] = params.value
                     }
-                    else binding_properties[params.name] = params.value
                     bindData(target_object, binding_properties)
 
-                    target_object.save(failOnError: true)
+                    target_object.save(flush:true, failOnError: true)
 
 
-                    if(target_object."${params.name}" instanceof BigDecimal)
-                        result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}") //is for that German users do not cry about comma-dot-change
-                    else result = target_object."${params.name}"
+                    if (target_object."${params.name}" instanceof BigDecimal) {
+                        result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}")
+                        //is for that German users do not cry about comma-dot-change
+                    } else {
+                        result = target_object."${params.name}"
+                    }
                 }
 
                 if (target_object instanceof SurveyResult) {
@@ -2550,7 +2537,7 @@ class AjaxController {
                         if (target_object[property] != null) {
                             log.debug("Set/Save FinishDate of SurveyResult (${target_object.id})")
                             target_object.finishDate = new Date()
-                            target_object.save()
+                            target_object.save(flush:true)
                         }
                     }
                 }
