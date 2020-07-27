@@ -24,7 +24,7 @@
                     <%
                         List refdatasWithI10n = RefdataCategory.getAllRefdataValuesWithI10nExplanation(RDConstants.NUMBER_TYPE, [sort:'order',order:'asc'])
                     %>
-                    <semui:dropdownWithI18nExplanations name="referenceGroup" class="referenceGroup search"
+                    <semui:dropdownWithI18nExplanations name="referenceGroup" class="referenceGroup"
                                                         from="${refdatasWithI10n}"
                                                         optionKey="id" optionValue="value" optionExpl="expl" noSelection="${message(code:'default.select.choose.label')}"
                                                         value="${numbersInstance?.referenceGroup}"
