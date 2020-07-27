@@ -74,7 +74,7 @@
 
         <%-- --%>
 
-        <table class="ui celled la-table la-table-small table">
+        <table class="ui celled la-table compact table">
             <thead>
             <tr>
                 <th>Objekte, Referenzen</th>

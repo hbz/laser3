@@ -2,7 +2,25 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2705    23.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen laut Sammelticket
+
+--      23.07.2020  rc1.5       Andreas Bug         lokale Verträge waren für Vollnutzer nicht verknüpfbar
+
+2703    23.07.2020  rc1.5       Andreas Bug         Korrektur der Knöpfe in den Merkmalspanelen, Tooltip eingebunden für Sichtbarkeit
+
+1824    23.07.2020  rc1.5       Anja    Bug         Dropdowns der Orgs nicht nach Sichtrechten gefiltert; Zauberstab statt Button
+
+2701    23.07.2020  rc1.5       Andreas Bug         Editierbarkeitsflag korrigiert
+
+2700    22.07.2020  rc1.5       Andreas Bug         Merkmalsfilter korrigiert
+
+2575    22.07.2020  rc1.5       Andreas Bug         Export der Bestände korrigiert
+
+2655    22.07.2020  rc1.5       Andreas Bug         Stift zum Umschalten des Bearbeitungsmodus für Vollnutzer bei Kindlizenzen eingefügt
+
 2696    22.07.2020  hbz-dev     Anja    Feature     Überarbeitung Darstellung Einrichtungskontakte auf org/show (Teil 2)
+
+2530    23.07.2020  hbz-dev     Andreas Feature     Punkt zwei der Einkaufsliste: die Platform-PrimaryUrl wird jetzt im Lizenz-Paketpanel angezeigt
 
 2689    22.07.2020  rc1.5       Andreas Bug         Brücke zur korrekten Verarbeitung von PendingChange-Altlasten eingebaut
 

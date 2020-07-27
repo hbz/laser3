@@ -1323,6 +1323,13 @@ join sub.orgRelations or_sub where
                     configMap.source = params.pair_new
                     configMap.destination = params.context
                 }
+                def currentObject = genericOIDService.resolveOID(params.context)
+                List childInstances = currentObject.getClass().findAllByInstanceOf(currentObject)
+                if(childInstances) {
+                    configMap.contextInstances = childInstances
+                    def pairObject = genericOIDService.resolveOID(params.pair_new)
+                    configMap.pairInstances = pairObject.getClass().findAllByInstanceOf(pairObject)
+                }
             }
             else if(params["linkType_sl_new"]) {
                 configMap.linkType = RDStore.LINKTYPE_LICENSE
@@ -1573,7 +1580,7 @@ join sub.orgRelations or_sub where
                     response.contentType = "text/csv"
 
                     ServletOutputStream out = response.outputStream
-                    Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements)
+                    Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements)
                     out.withWriter { writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
                     }

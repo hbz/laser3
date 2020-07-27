@@ -77,7 +77,7 @@
     </semui:filter>
 
 <div>
-    <table class="ui sortable celled la-table la-table-small table">
+    <table class="ui sortable celled la-table compact table">
         <thead>
         <tr>
             <g:sortableColumn property="category" title="Category"/>
