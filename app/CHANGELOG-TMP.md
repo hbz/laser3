@@ -2,6 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2716    27.07.2020  rc1.5       Andreas Bug         Mehrfachverknüpfung funktionierte nicht bei Verträgen
+
+2715    27.07.2020  rc1.5       Andreas Bug         lokale Lizenzen konnten nicht verlängert werden
+
+2714    27.07.2020  rc1.5       Andreas Bug         Einrichtungen konnten keine Merkmale anzeigen
+
+2713    27.07.2020  rc1.5       Andreas Bug         Der Tab Eigene Kosten wird nach Kopie korrekt angezeigt
+
+2712    27.07.2020  rc1.5       Andreas Bug         Paginator bei Tab Eigene Kosten korrigiert
+
 2702    23.07.2020  rc1.5       Moe     Bug         Mouseover bei dem Fragezeichen hinzufügen
 
 2705    23.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen laut Sammelticket
