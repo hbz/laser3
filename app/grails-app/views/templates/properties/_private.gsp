@@ -12,7 +12,7 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<table class="ui la-table-small la-table-inCard table">
+<table class="ui compact la-table-inCard table">
     <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant.id == contextOrg.id && cp.isPublic == false }}"/>
     <g:if test="${privateProperties}">
         <colgroup>

@@ -237,6 +237,7 @@
                                                                         tmplModalID:"sub_edit_link_${link.id}",
                                                                         editmode: editable,
                                                                         context: subscription,
+                                                                        atConsortialParent: contextOrg == subscription.getConsortia(),
                                                                         link: link
                                                               ]}" />
                                                     <g:if test="${editable}">
@@ -266,6 +267,7 @@
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
                                                 editmode: editable,
+                                                atConsortialParent: contextOrg == subscription.getConsortia(),
                                                 context: subscription
                                       ]}" />
                         </div>
@@ -492,37 +494,36 @@
                             <g:message code="license.plural"/>
                         </h5>
                         <g:if test="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
-                            <table class="ui three column table">
+                            <table class="ui fixed table">
                                 <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
-                                    <tr>
-                                        <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
+                                    <tr><g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
                                         <th scope="row" class="control-label la-js-dont-hide-this-card">${pair.licenseCategory?.getI10n("value")}</th>
                                         <td>
                                             <g:link controller="license" action="show" id="${pair.id}">
                                                 ${pair.reference} (${pair.status.getI10n("value")})
-                                            </g:link><br>
+                                            </g:link>
                                             <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
                                             <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
                                             <g:if test="${comment}">
                                                 <em>${comment.owner.content}</em>
                                             </g:if>
-                                            <div id="${link.id}Properties">
-
-                                            </div>
                                         </td>
                                         <td class="right aligned">
                                             <g:if test="${pair.propertySet}">
-                                                <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button"><i class="ui table icon"></i><i class="ui arrow down icon"></i></button>
-                                                <script>
+                                                <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
+                                                    <i class="ui angle double down icon"></i></button>
+                                                <r:script>
                                                     $("#derived-license-properties-toggle${link.id}").on('click', function() {
-                                                        $("#derived-license-properties${link.id}").toggleClass('hidden')
-                                                        if ($("#derived-license-properties${link.id}").hasClass('hidden')) {
-                                                            $(this).html('<i class="ui table icon"></i><i class="ui arrow down icon"></i>')
+                                                        $("#derived-license-properties${link.id}").transition('slide down');
+                                                        //$("#derived-license-properties${link.id}").toggleClass('hidden');
+
+                                                        if ($("#derived-license-properties${link.id}").hasClass('visible')) {
+                                                            $(this).html('<i class="ui angle double down icon"></i>')
                                                         } else {
-                                                            $(this).html('<i class="ui table icon"></i><i class="ui arrow up icon"></i>')
+                                                            $(this).html('<i class="ui angle double up icon"></i>')
                                                         }
                                                     })
-                                                </script>
+                                                </r:script>
                                             </g:if>
                                             <g:render template="/templates/links/subLinksModal"
                                                       model="${[tmplText:message(code:'subscription.details.editLink'),
@@ -533,6 +534,7 @@
                                                                 editmode: editable,
                                                                 subscriptionLicenseLink: true,
                                                                 context: subscription,
+                                                                atConsortialParent: contextOrg == subscription.getConsortia(),
                                                                 link: link
                                                       ]}" />
                                             <g:if test="${editable}">
@@ -546,8 +548,13 @@
                                                 </div>
                                                 <br />
                                             </g:if>
-                                        </td><br>
+                                        </td>
                                     </tr>
+                                    <g:if test="${pair.propertySet}">
+                                    <tr>
+                                        <td colspan="3"><div id="${link.id}Properties"></div></td>
+                                    </tr>
+                                    </g:if>
                                 </g:each>
                             </table>
                         </g:if>
@@ -561,6 +568,7 @@
                                                     tmplModalID:'sub_add_license_link',
                                                     editmode: editable,
                                                     subscriptionLicenseLink: true,
+                                                    atConsortialParent: contextOrg == subscription.getConsortia(),
                                                     context: subscription
                                           ]}" />
                             </div>
@@ -615,7 +623,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'default.usage.licenseGrid.header')}</dt>
                                 <dd>
-                                    <table class="ui la-table-small celled la-table-inCard table">
+                                    <table class="ui compact celled la-table-inCard  table">
                                         <thead>
                                         <tr>
                                             <th>${message(code: 'default.usage.reportType')}</th>
@@ -656,7 +664,7 @@
                             <dl>
                                 <dt class="control-label la-js-dont-hide-this-card">${message(code: 'default.usage.label')}</dt>
                                 <dd>
-                                    <table class="ui la-table-small celled la-table-inCard table">
+                                    <table class="ui compact celled la-table-inCard la-ignore-fixed table">
                                         <thead>
                                         <tr>
                                             <th>${message(code: 'default.usage.reportType')}

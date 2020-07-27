@@ -17,7 +17,7 @@
 
     <h4 class="ui header">Anzahl gefundener Threads: ${Thread.getAllStackTraces().keySet().size()}</h4>
 
-    <table class="ui celled la-table la-table-small table" id="contextTable">
+    <table class="ui celled la-table compact table" id="contextTable">
         <tbody>
             <g:each in="${Thread.getAllStackTraces().keySet().sort{ it.id }}" var="thread">
                 <tr>
