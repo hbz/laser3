@@ -3983,7 +3983,7 @@ class SubscriptionController
             response.sendError(401)
             return;
         }
-        def prevSubs = Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, Subscription.class.name, params.id)
+        def prevSubs = Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, Subscription.class.name, params.id)
         if (prevSubs){
             flash.error = message(code: 'subscription.renewSubExist')
             response.sendError(401)
@@ -4007,7 +4007,6 @@ class SubscriptionController
                                  sub_endDate: newEndDate? sdf.format(newEndDate) : null,
                                  sub_name: subscription.name,
                                  sub_id: subscription.id,
-                                 sub_license: subscription?.owner?.reference?:'',
                                  sub_status: RDStore.SUBSCRIPTION_INTENDED]
 
         result
@@ -4032,6 +4031,7 @@ class SubscriptionController
         def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
         def sub_status = params.subStatus
         def old_subOID = params.subscription.old_subid
+        Subscription oldSubscription = Subscription.get(old_subOID)
         def new_subname = params.subscription.name
 
         def new_subscription = new Subscription(
@@ -4040,10 +4040,9 @@ class SubscriptionController
                 name: new_subname,
                 startDate: sub_startDate,
                 endDate: sub_endDate,
-                type: Subscription.get(old_subOID)?.type ?: null,
-                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
-                resource: Subscription.get(old_subOID)?.resource ?: null,
-                form: Subscription.get(old_subOID)?.form ?: null
+                type: oldSubscription.type ?: null,
+                resource: oldSubscription.resource ?: null,
+                form: oldSubscription.form ?: null
         )
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
 
@@ -4054,8 +4053,9 @@ class SubscriptionController
                     roleType: RDStore.OR_SUBSCRIBER
             ).save();
 
+            Links prevLink
             if(old_subOID) {
-                Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                prevLink = new Links(source: GenericOIDService.getOID(new_subscription), destination: GenericOIDService.getOID(oldSubscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg)
                 prevLink.save()
             }
             else { log.error("Problem linking new subscription, ${prevLink.errors}") }
@@ -4063,7 +4063,7 @@ class SubscriptionController
             log.error("Problem saving new subscription, ${new_subscription.errors}");
         }
 
-        new_subscription.save(flush: true);
+        new_subscription.save()
 
         if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
         redirect controller: 'subscription',
