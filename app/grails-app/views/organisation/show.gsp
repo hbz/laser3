@@ -310,12 +310,12 @@
             </g:if>
 
             <g:if test="${((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) && !isProviderOrAgency}">
-                <div class="ui card">
+                <div class="ui card la-different-headings">
                     <div class="content">
                         <H3><g:message code="org.contactpersons.and.addresses.label" /></H3>
                         %{--<g:link action="myPublicContacts" controller="myInstitution"  class="ui button">${message('code':'org.edit.contacts')}</g:link>--}%
                         <g:each in="${usedRDV}" var="rdv">
-                            <strong>${rdv.getI10n('value')}</strong><br />
+                            <h4 style="font-size: 1rem">${rdv.getI10n('value')}</h4>
                             <g:each in="${allPRMap.get(rdv.id)}" var="pr">
                                 <g:if test="pr">
                                 %{--Workaround wg NPE bei CacheEntry.getValue--}%
@@ -386,7 +386,7 @@
                                         }
                                     %>
                                     <g:each in="${typeNames}" var="typeName">
-                                        <strong>${typeName}</strong><br />
+                                        <h4 style="font-size: 1rem">${typeName}</h4>
                                         <% List addresses = typeAddressMap.get(typeName) %>
                                         <g:each in="${addresses}" var="a">
                                             <g:if test="${a?.org}">
@@ -402,7 +402,7 @@
                                             </g:if>
                                         </g:each>
                                     </g:each>
-                                %{--</div>--}%
+                                </div>
                                 %{--<g:if test="${((((orgInstance.id == contextService.getOrg().id) || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">--}%
 
                                     %{--<div class="ui list">--}%
