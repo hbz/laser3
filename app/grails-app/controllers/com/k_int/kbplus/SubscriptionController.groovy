@@ -3983,7 +3983,9 @@ class SubscriptionController
             response.sendError(401)
             return;
         }
-        def prevSubs = Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, Subscription.class.name, params.id)
+
+        Subscription subscription = Subscription.get(params.id)
+        def prevSubs = Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, GenericOIDService.getOID(subscription))
         if (prevSubs){
             flash.error = message(code: 'subscription.renewSubExist')
             response.sendError(401)
@@ -3991,8 +3993,6 @@ class SubscriptionController
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
-
-        def subscription = Subscription.get(params.id)
 
         result.errors = []
         def newStartDate
