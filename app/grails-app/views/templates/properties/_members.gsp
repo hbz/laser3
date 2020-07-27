@@ -12,7 +12,7 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<table class="ui la-table-small la-table-inCard table">
+<table class="ui compact la-table-inCard table">
     <tbody>
         <g:each in="${memberProperties}" var="propType">
             <tr>

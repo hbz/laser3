@@ -30,8 +30,8 @@
 /* @rowBorder: 1px solid @internalBorderColor; */
 
 /* Table Cell */
-@cellVerticalPadding: @relativeMini;
-@cellHorizontalPadding: @relativeMini;
+@cellVerticalPadding: 1.4em;
+@cellHorizontalPadding: 1.4em;
 @cellVerticalAlign: inherit;
 @cellTextAlign: inherit;
 @cellBorder: 1px dotted @internalBorderColor;

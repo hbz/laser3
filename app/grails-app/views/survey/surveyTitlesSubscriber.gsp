@@ -59,7 +59,7 @@
         <g:set var="choosenOrgCPAs" value="${choosenOrg.getGeneralContactPersons(false)}"/>
 
         <g:if test="${choosenOrg}">
-        <table class="ui table la-table la-table-small">
+        <table class="ui table la-table compact">
             <tbody>
             <tr>
                 <td>

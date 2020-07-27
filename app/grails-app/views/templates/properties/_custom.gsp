@@ -8,7 +8,7 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<table class="ui la-table-small la-table-inCard table">
+<table class="ui compact la-table-inCard table">
     <g:if test="${orphanedProperties}">
         <colgroup>
             <col style="width: 129px;">
