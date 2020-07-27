@@ -744,7 +744,7 @@ class FinanceController extends AbstractDebugController {
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
         if(!result.copyCostsFromConsortia)
             result.taxKey = result.costItem.taxKey
-        result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[tab:result.tab, mode:"copy"])
+        result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy"])
         result.mode = "copy"
         render(template: "/finance/ajaxModal", model: result)
     }
