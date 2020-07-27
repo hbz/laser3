@@ -486,12 +486,21 @@ class MyInstitutionController extends AbstractDebugController {
         List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
         result.licenseCount = totalLicenses.size()
         du.setBenchmark('get subscriptions')
-        if(subscriptionOIDs)
-            result.allLinkedSubscriptions = Links.findAllBySourceInListAndDestinationInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },subscriptionOIDs,RDStore.LINKTYPE_LICENSE)
-        else result.allLinkedSubscriptions = Links.findAllBySourceInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },RDStore.LINKTYPE_LICENSE)
+
+        List<String> licenseOIDs = totalLicenses.collect { License l -> GenericOIDService.getOID(l) }
+
+        if (licenseOIDs && subscriptionOIDs) {
+            result.allLinkedSubscriptions = Links.findAllBySourceInListAndDestinationInListAndLinkType(licenseOIDs, subscriptionOIDs, RDStore.LINKTYPE_LICENSE)
+        } else if (licenseOIDs) {
+            result.allLinkedSubscriptions = Links.findAllBySourceInListAndLinkType(licenseOIDs, RDStore.LINKTYPE_LICENSE)
+        } else {
+            result.allLinkedSubscriptions = []
+        }
+
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
         result.orgRoles = [:]
+
         orgRoles.each { oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
