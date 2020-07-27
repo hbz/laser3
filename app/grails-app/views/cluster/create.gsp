@@ -1,6 +1,5 @@
 <%@ page import="com.k_int.kbplus.Cluster" %>
 <!doctype html>
-<r:require module="scaffolding" />
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
