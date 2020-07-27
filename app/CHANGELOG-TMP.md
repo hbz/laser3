@@ -12,6 +12,8 @@
 
 2712    27.07.2020  rc1.5       Andreas Bug         Paginator bei Tab Eigene Kosten korrigiert
 
+2702    23.07.2020  rc1.5       Moe     Bug         Mouseover bei dem Fragezeichen hinzufügen
+
 2705    23.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen laut Sammelticket
 
 --      23.07.2020  rc1.5       Andreas Bug         lokale Verträge waren für Vollnutzer nicht verknüpfbar
