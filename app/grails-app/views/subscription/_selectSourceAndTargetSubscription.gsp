@@ -20,6 +20,18 @@
             </div>
             <div class="six wide field">
                 <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: </label>
+                <div class="ui checkbox">
+                    <g:checkBox name="show.activeSubscriptions" value="nur aktive" checked="true" onchange="adjustDropdown()"/>
+                    <label for="show.activeSubscriptions">${message(code:'subscription.details.copyElementsIntoSubscription.show.activeSubscriptions.name')}</label>
+                </div><br />
+                <div class="ui checkbox">
+                    <g:checkBox name="show.subscriber" value="auch Teilnehmerlizenzen" checked="false" onchange="adjustDropdown()" />
+                    <label for="show.subscriber">${message(code:'subscription.details.copyElementsIntoSubscription.show.subscriber.name')}</label>
+                </div><br />
+                <div class="ui checkbox">
+                    <g:checkBox name="show.conntectedSubscriptions" value="auch verknüpfte Lizenzen" checked="false" onchange="adjustDropdown()"/>
+                    <label for="show.conntectedSubscriptions">${message(code:'subscription.details.copyElementsIntoSubscription.show.conntectedSubscriptions.name')}</label>
+                </div><br />
                 <g:select class="ui search dropdown"
                       name="targetSubscriptionId"
                       from="${((List<Subscription>)allSubscriptions_writeRights)?.sort {it.dropdownNamingConvention()}}"
@@ -37,3 +49,14 @@
 
     </g:form>
 </g:if>
+<g:javascript>
+    function adjustDropdown() {
+        var isActiveSubs = $("input[name='show.activeSubscriptions'").prop('checked');
+        var isSubscriber = $("input[name='show.subscriber'").prop('checked');
+        var isConnectedSubs = $("input[name='show.conntectedSubscriptions'").prop('checked');
+        var url = '<g:createLink controller="ajax" action="adjustSubscriptionList"/>'+'?isActiveSubs='+isActiveSubs+'&isSubscriber='+isSubscriber+'&isConnectedSubs='+isConnectedSubs;
+        $.ajax({
+            url: url
+        });
+    }
+</g:javascript>

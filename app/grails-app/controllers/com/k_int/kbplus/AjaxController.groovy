@@ -2686,6 +2686,29 @@ class AjaxController {
             render template:"../templates/addresses/formModal", model: model
         }
     }
+    def adjustSubscriptionList(){
+        List<Subscription> result
+//        Map queryParams = [:]
+//        if (params.isActiveSubs){
+//            queryParams.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        }
+//        if (params.isActiveSubs){
+//            queryParams.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        }
+//        if (params.isActiveSubs){
+//            queryParams.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        }
+        boolean isActiveSubs = params.isActiveSubs
+        boolean isSubscriber = params.isSubscriber// instanceOf != null???
+        boolean isConnectedSubs = params.isConnectedSubs//previousSub und folgende Sub???
+
+        result = subscriptionService.getMySubscriptions_writeRights()
+
+        if (params.isActiveSubs == "true") {
+            result = result.findAll { Subscription sub -> sub.status == RDStore.SUBSCRIPTION_CURRENT }
+        }
+        result
+    }
 
     @Secured(['ROLE_USER'])
     def AddressCreate() {
