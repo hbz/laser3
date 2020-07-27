@@ -112,16 +112,6 @@
     margin: 0;
 }
 
-/*
-TODO: remove and set in semantic css: la-table-small
- */
-
-.ui.table.la-table-small tr td {
-    padding-top: 0.6em;
-    padding-bottom: 0.6em;
-}
-
-
 /* semantic ui - upgrade to 2.3 - start */
 
 .ui.modal {

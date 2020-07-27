@@ -1889,7 +1889,7 @@ $.fn.dropdown = function(parameters) {
               }
               if($choice.children().hasClass('description')) {
                 // remove all the inner text from this span tag with the class description
-                $choice.children().remove('.description')
+                //$choice.children().remove('.description')
               }
 /*              return ($choice.data(metadata.text) !== undefined)
                 ? $choice.data(metadata.text)

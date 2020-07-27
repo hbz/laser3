@@ -28,7 +28,7 @@
                     <label for="referenceGroup">
                         <g:message code="readerNumber.referenceGroup.label" />
                     </label>
-                    <semui:dropdownWithI18nExplanations name="referenceGroup" class="referenceGroup search"
+                    <semui:dropdownWithI18nExplanations name="referenceGroup" class="referenceGroup"
                                                         from="${referenceGroups}"
                                                         optionKey="id" optionValue="value" optionExpl="expl" noSelection="${message(code:'default.select.choose.label')}"
                                                         value="${numbersInstance?.referenceGroup}"

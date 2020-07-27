@@ -40,7 +40,7 @@
                 </div>
                 <div class="content">
                     <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
-                        <table class="ui celled la-table la-table-small table">
+                        <table class="ui celled la-table compact table">
                             <thead>
                                 <tr>
                                     <th></th>

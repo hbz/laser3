@@ -27,7 +27,6 @@
                 </g:if>
                 <div class="item" onclick="addressedit(${address.id});" >
                     <g:if test="${address.name}">
-                        <br />
                         ${address.name}
                     </g:if>
                     <g:if test="${address.additionFirst}">

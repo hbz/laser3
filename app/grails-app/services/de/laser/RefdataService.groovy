@@ -143,7 +143,7 @@ class RefdataService {
             }
         }
 
-        log.debug(checkResult)
+        log.debug(checkResult.toMapString())
 
         checkResult.sort()
     }
