@@ -7,125 +7,119 @@
 <g:set var="sdf" value="${de.laser.helper.DateUtil.getSDF_NoTime()}"/>
 <!doctype html>
 <html>
-<head>
-    <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label')}"/>
-    <title>${message(code: 'laser')} : ${message(code:'menu.institutions.readerNumbers')}</title>
-</head>
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'org.label')}"/>
+        <title>${message(code: 'laser')} : ${message(code:'menu.institutions.readerNumbers')}</title>
+    </head>
 
-<body>
+    <body>
 
-<semui:breadcrumbs>
-    <g:if test="${!inContextOrg}">
-        <semui:crumb text="${orgInstance.getDesignation()}"/>
-    </g:if>
-    <semui:crumb text="${message(code:"menu.institutions.readerNumbers")}" class="active"/>
-</semui:breadcrumbs>
+        <semui:breadcrumbs>
+            <g:if test="${!inContextOrg}">
+                <semui:crumb text="${orgInstance.getDesignation()}"/>
+            </g:if>
+            <semui:crumb text="${message(code:"menu.institutions.readerNumbers")}" class="active"/>
+        </semui:breadcrumbs>
 
-<g:if test="${editable}">
-    <semui:controlButtons>
-        <g:render template="actions" />
-    </semui:controlButtons>
-</g:if>
-<g:else>
-    <br />
-</g:else>
+        <g:if test="${editable}">
+            <semui:controlButtons>
+                <g:render template="actions" />
+            </semui:controlButtons>
+        </g:if>
+        <g:else>
+            <br />
+        </g:else>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
-<g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
+        <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
-<semui:messages data="${flash}"/>
+        <semui:messages data="${flash}"/>
 
-<g:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
-<g:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withDueDate: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
-<%--<g:render template="/readerNumber/formModal" model="[formId: 'newForState',withDueDate: true,title:message(code: 'readerNumber.createForState.label')]"/>--%>
+        <g:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
+        <g:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withDueDate: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
+        <%--<g:render template="/readerNumber/formModal" model="[formId: 'newForState',withDueDate: true,title:message(code: 'readerNumber.createForState.label')]"/>--%>
 
-<table class="ui table celled sortable la-table">
-    <thead>
-        <tr>
-            <g:sortableColumn property="referenceGroup" title="${message(code: 'readerNumber.referenceGroup.label')}"
-                              params="[sort:params.sortA,order:params.orderA,table:'tableA']"/>
-            <g:sortableColumn property="value" title="${message(code: 'readerNumber.number.label')}"
-                              params="[sort:params.sortA,order:params.orderA,table:'tableA']"/>
-            <g:sortableColumn property="semester" title="${message(code: 'readerNumber.semester.label')}"
-                              params="[sort:params.sortA,order:params.orderA,table:'tableA']"/>
-            <th>${message(code: 'default.actions.label')}</th>
-        </tr>
-    </thead>
-    <tbody>
-    <g:each in="${numbersWithSemester}" var="numbersInstance">
-        <tr>
-            <td class="la-main-object">${numbersInstance.referenceGroup}</td>
-            <td><g:formatNumber number="${numbersInstance.value}" type="number"/></td>
-            <td>${numbersInstance.semester.getI10n('value')}</td>
-            <td class="x">
-                <g:if test="${editable}">
+        <g:if test="${numbersWithSemester || numbersWithDueDate}">
+            <g:if test="${numbersWithSemester}">
+                <table class="ui table celled sortable la-table">
+                    <thead>
+                        <tr>
+                            <g:sortableColumn property="semester" title="${message(code: 'readerNumber.semester.label')}"/>
+                            <g:each in="${semesterCols}" var="column">
+                                <th>${column}</th>
+                            </g:each>
+                            <th><g:message code="readerNumber.sum.label"/></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <g:each in="${numbersWithSemester}" var="numbersInstance">
+                        <tr>
+                            <td>${numbersInstance.getKey().getI10n('value')}</td>
+                            <g:each in="${semesterCols}" var="column">
+                                <td>
+                                    <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
+                                    <g:if test="${number}">
+                                        <semui:xEditable owner="${number}" field="value" format="number"/>
+                                        <g:if test="${editable}">
+                                            <g:form controller="readerNumber" action="delete">
+                                                <g:hiddenField name="id" value="${number.id}"/>
+                                                <button class="ui icon negative button" type="submit" name="_action_delete">
+                                                    <i class="trash alternate icon"></i>
+                                                </button>
+                                            </g:form>
+                                        </g:if>
+                                    </g:if>
+                                </td>
+                            </g:each>
+                            <td><g:formatNumber number="${semesterSums.get(numbersInstance.getKey())}"/></td>
+                        </tr>
+                    </g:each>
+                    </tbody>
+                </table>
+            </g:if>
 
-                    <g:form controller="readerNumber" action="delete">
-
-                        <button type="button" class="ui icon button la-popup-tooltip la-delay" data-semui="modal"
-                                href="#numbersFormModal_${numbersInstance.id}"
-                                data-content="${message(code: "readerNumber.edit.label")}"><i class="pencil icon"></i>
-                        </button>
-                        <g:hiddenField name="id" value="${numbersInstance?.id}"/>
-                        <button class="ui icon negative button" type="submit" name="_action_delete">
-                            <i class="trash alternate icon"></i>
-                        </button>
-                    </g:form>
-
-                    <g:render template="/readerNumber/formModal" model="[formId: 'numbersFormModal_' + numbersInstance.id, withSemester: true, numbersInstance: numbersInstance]"/>
-                </g:if>
-            </td>
-        </tr>
-
-
-    </g:each>
-    </tbody>
-</table>
-
-<table class="ui table celled sortable la-table">
-    <thead>
-        <tr>
-            <g:sortableColumn property="referenceGroup" title="${message(code: 'readerNumber.referenceGroup.label')}"
-                              params="[sort:params.sortB,order:params.orderB,table:'tableB']"/>
-            <g:sortableColumn property="value" title="${message(code: 'readerNumber.number.label')}"
-                              params="[sort:params.sortB,order:params.orderB,table:'tableB']"/>
-            <g:sortableColumn property="dueDate" title="${message(code: 'readerNumber.dueDate.label')}"
-                              params="[sort:params.sortB,order:params.orderB,table:'tableB']"/>
-            <th>${message(code: 'default.actions.label')}</th>
-        </tr>
-    </thead>
-    <tbody>
-    <g:each in="${numbersWithDueDate}" var="numbersInstance">
-        <tr>
-            <td class="la-main-object">${numbersInstance.referenceGroup}</td>
-            <td><g:formatNumber number="${numbersInstance.value}" type="number"/></td>
-            <td>${sdf.format(numbersInstance.dueDate)}</td>
-            <td class="x">
-                <g:if test="${editable}">
-
-                    <g:form controller="readerNumber" action="delete">
-
-                        <button type="button" class="ui icon button la-popup-tooltip la-delay" data-semui="modal"
-                                href="#numbersFormModal_${numbersInstance.id}"
-                                data-content="${message(code: "readerNumber.edit.label")}"><i class="pencil icon"></i>
-                        </button>
-                        <g:hiddenField name="id" value="${numbersInstance.id}"/>
-                        <button class="ui icon negative button" type="submit" name="_action_delete">
-                            <i class="trash alternate icon"></i>
-                        </button>
-                    </g:form>
-
-                    <g:render template="/readerNumber/formModal" model="[formId: 'numbersFormModal_' + numbersInstance.id, withDueDate: true, numbersInstance: numbersInstance]"/>
-                </g:if>
-            </td>
-        </tr>
-
-
-    </g:each>
-    </tbody>
-</table>
-
-</body>
+            <g:if test="${numbersWithDueDate}">
+                <table class="ui table celled sortable la-table">
+                    <thead>
+                        <tr>
+                            <g:sortableColumn property="dueDate" title="${message(code: 'readerNumber.dueDate.label')}"/>
+                            <g:each in="${dueDateCols}" var="column">
+                                <th>${column}</th>
+                            </g:each>
+                            <th><g:message code="readerNumber.sum.label"/></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <g:each in="${numbersWithDueDate}" var="numbersInstance">
+                            <tr>
+                                <td><g:formatDate date="${numbersInstance.getKey()}" format="${message(code:'default.date.format.notime')}"/></td>
+                                <g:each in="${dueDateCols}" var="column">
+                                    <td>
+                                        <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
+                                        <g:if test="${number}">
+                                            <semui:xEditable owner="${number}" field="value" type="number"/>
+                                            <g:if test="${editable}">
+                                                <g:form controller="readerNumber" action="delete">
+                                                    <g:hiddenField name="id" value="${number.id}"/>
+                                                    <button class="ui icon negative button" type="submit" name="_action_delete">
+                                                        <i class="trash alternate icon"></i>
+                                                    </button>
+                                                </g:form>
+                                            </g:if>
+                                        </g:if>
+                                    </td>
+                                </g:each>
+                                <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}"/></td>
+                            </tr>
+                        </g:each>
+                    </tbody>
+                </table>
+            </g:if>
+        </g:if>
+        <g:else>
+            <g:message code="readerNumber.noNumbersEntered"/>
+        </g:else>
+    </body>
 </html>

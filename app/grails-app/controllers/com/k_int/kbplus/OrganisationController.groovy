@@ -1213,8 +1213,43 @@ class OrganisationController extends AbstractDebugController {
         params.remove('sort')
         params.remove('order')
 
-        result.numbersWithSemester = ReaderNumber.findAllByOrgAndSemesterIsNotNull((Org) result.orgInstance,[sort:params.sortA,order:params.orderA])
-        result.numbersWithDueDate = ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB])
+        Map<String,Map<String,ReaderNumber>> numbersWithSemester = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndSemesterIsNotNull((Org) result.orgInstance,[sort:params.sortA,order:params.orderA]),"semester")
+        Map<String,Map<String,ReaderNumber>> numbersWithDueDate = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB]),"dueDate")
+
+        Set<String> semesterCols = [], dueDateCols = []
+        Map<String,Integer> semesterSums = [:], dueDateSums = [:]
+        numbersWithSemester.each { Map.Entry<String,Map<String,ReaderNumber>> semesters ->
+            semesters.value.each { Map.Entry<String,ReaderNumber> row ->
+                semesterCols << row.key
+                ReaderNumber rn = row.value
+                Integer semesterSum = semesterSums.get(semesters.key)
+                if(semesterSum == null) {
+                    semesterSum = rn.value
+                }
+                else semesterSum += rn.value
+                semesterSums.put(semesters.key,semesterSum)
+            }
+
+        }
+        numbersWithDueDate.each { Map.Entry<String,Map<String,ReaderNumber>> dueDates ->
+            dueDates.value.each { Map.Entry<String,ReaderNumber> row ->
+                dueDateCols << row.key
+                ReaderNumber rn = row.value
+                Integer dueDateSum = dueDateSums.get(dueDates.key)
+                if(dueDateSum == null) {
+                    dueDateSum = rn.value
+                }
+                else dueDateSum += rn.value
+                dueDateSums.put(dueDates.key,dueDateSum)
+            }
+        }
+
+        result.numbersWithSemester = numbersWithSemester
+        result.numbersWithDueDate = numbersWithDueDate
+        result.semesterCols = semesterCols
+        result.semesterSums = semesterSums
+        result.dueDateCols = dueDateCols
+        result.dueDateSums = dueDateSums
 
         result
     }
@@ -1415,20 +1450,13 @@ class OrganisationController extends AbstractDebugController {
             result.inContextOrg = result.orgInstance?.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
-            if(checkCombo) {
-                if(checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
-                    result.institutionalView = true
-                else if(checkCombo.type == RDStore.COMBO_TYPE_DEPARTMENT)
-                    result.departmentalView = true
-            }
+            if(checkCombo && checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
+                result.institutionalView = true
             //restrictions hold if viewed org is not the context org
             if(!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
                 //restrictions further concern only single users, not consortia
-                if(accessService.checkPerm("ORG_INST") && !result.departmentalView) {
-                    if(result.orgInstance.hasPerm("ORG_INST,ORG_INST_COLLECTIVE")) {
-                        return null
-                    }
-                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE") && Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT)) {
+                if(accessService.checkPerm("ORG_INST")) {
+                    if(result.orgInstance.hasPerm("ORG_INST")) {
                         return null
                     }
                 }
@@ -1461,7 +1489,7 @@ class OrganisationController extends AbstractDebugController {
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
                 break
             case 'readerNumber':
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+                isEditable = accessService.checkForeignOrgComboPermAffiliationX([org: Org.get(params.id), affiliation: "INST_EDITOR", comboPerm: "ORG_CONSORTIUM", comboAffiliation: "INST_EDITOR", specRoles: "ROLE_ADMIN,ROLE_ORG_EDITOR"])
                 break
             case 'users':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
