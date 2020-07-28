@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2721    28.07.2020  rc1.5       Andreas Bug         fehlende Berechtigung bei Anbieter bearbeiten nachgereicht
+
+2720    28.07.2020  rc1.5       Andreas Bug         Regressionsfehler bei Verknüpfen von Verträgen und Lizenzen behoben
+
 2716    27.07.2020  rc1.5       Andreas Bug         Mehrfachverknüpfung funktionierte nicht bei Verträgen
 
 2715    27.07.2020  rc1.5       Andreas Bug         lokale Lizenzen konnten nicht verlängert werden

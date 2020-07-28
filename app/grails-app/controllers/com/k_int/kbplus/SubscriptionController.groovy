@@ -429,24 +429,6 @@ class SubscriptionController
                     flash.error = message(code: 'subscription.details.unlink.notSuccessfully')
                 }
 
-                //Automatisch Paket entknüpfen, wenn das Paket in der Elternlizenz entknüpft wird
-                if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] &&
-                        accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && (result.subscription.instanceOf == null)) {
-
-                    List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
-
-                    childSubs.each {sub ->
-                        if(result.package.unlinkFromSubscription(sub, true)){
-                            flash.message = message(code: 'subscription.details.unlink.successfully')
-                        }else {
-                            flash.error = message(code: 'subscription.details.unlink.notSuccessfully')
-                        }
-                    }
-
-
-
-                }
-
                 return redirect(action:'show', id: params.subscription)
 
             } else {

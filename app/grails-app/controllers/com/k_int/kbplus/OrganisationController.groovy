@@ -1396,26 +1396,17 @@ class OrganisationController extends AbstractDebugController {
             result.inContextOrg = result.orgInstance?.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
-            if(checkCombo) {
-                if(checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
-                    result.institutionalView = true
-                else if(checkCombo.type == RDStore.COMBO_TYPE_DEPARTMENT)
-                    result.departmentalView = true
-            }
+            if(checkCombo && checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
+                result.institutionalView = true
             //restrictions hold if viewed org is not the context org
             if(!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
                 //restrictions further concern only single users, not consortia
-                if(accessService.checkPerm("ORG_INST") && !result.departmentalView) {
-                    if(result.orgInstance.hasPerm("ORG_INST,ORG_INST_COLLECTIVE")) {
-                        return null
-                    }
-                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE") && Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT)) {
-                        return null
-                    }
+                if(accessService.checkPerm("ORG_INST") && result.orgInstance.getCustomerType() == "ORG_INST") {
+                    return null
                 }
             }
         } else {
-            result.isEditable = checkIsEditable(user, org)
+            result.editable = checkIsEditable(user, org)
         }
         result
     }
@@ -1464,21 +1455,21 @@ class OrganisationController extends AbstractDebugController {
                             switch (orgInstance.getCustomerType()){
                                 case 'ORG_INST':            isEditable = false; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                case 'ORG_PROVIDER':        isEditable = false; break
+                                default:                    isEditable = false; break
                             }
                             break
                         case 'ORG_INST':
                             switch (orgInstance.getCustomerType()){
                                 case 'ORG_INST':            isEditable = false; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                case 'ORG_PROVIDER':        isEditable = userHasEditableRights; break
+                                default:                    isEditable = userHasEditableRights; break
                             }
                             break
                         case 'ORG_CONSORTIUM':
                             switch (orgInstance.getCustomerType()){
                                 case 'ORG_INST':            isEditable = true; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                case 'ORG_PROVIDER':        isEditable = userHasEditableRights; break
+                                default:                    isEditable = userHasEditableRights; break
                             }
                             break
                     }
