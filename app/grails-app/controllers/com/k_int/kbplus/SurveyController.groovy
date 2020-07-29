@@ -1895,7 +1895,7 @@ class SurveyController {
                 if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
                     Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
 
-                    if (subChild.isCurrentMultiYearSubscriptionNew()) {
+                    if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
                         existsMultiYearTerm = true
                     }
 
@@ -4550,7 +4550,7 @@ class SurveyController {
                     if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
                         Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
 
-                        if (subChild.isCurrentMultiYearSubscriptionNew()) {
+                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
                             existsMultiYearTerm = true
                         }
 
