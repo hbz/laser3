@@ -2621,4 +2621,17 @@ class OrganisationService {
         obj
     }
 
+    Map<String,Map<String,ReaderNumber>> groupReaderNumbersByProperty(List<ReaderNumber> readerNumbers,String keyProp) {
+        Map<String,Map<String,ReaderNumber>> result = [:]
+        readerNumbers.each { ReaderNumber number ->
+            Map<String,ReaderNumber> numberRow = result.get(number[keyProp]) //keyProp may be a dueDate or semester
+            if(!numberRow) {
+                numberRow = [:]
+            }
+            numberRow.put(number.referenceGroup,number)
+            result.put(number[keyProp],numberRow)
+        }
+        result
+    }
+
 }

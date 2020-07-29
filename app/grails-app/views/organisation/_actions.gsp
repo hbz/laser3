@@ -36,8 +36,9 @@
         </g:if>
 
         <g:if test="${actionName == 'readerNumber'}">
-            <semui:actionsDropdownItem data-semui="modal"
-                                       href="#create_number" message="readerNumber.create.label" />
+            <semui:actionsDropdownItem data-semui="modal" href="#newForUni" message="readerNumber.createForUni.label" />
+            <semui:actionsDropdownItem data-semui="modal" href="#newForPublic" message="readerNumber.createForPublic.label" />
+            <semui:actionsDropdownItem data-semui="modal" href="#newForState" message="readerNumber.createForState.label" />
         </g:if>
 
         <g:if test="${actionName == 'addressbook'}">
