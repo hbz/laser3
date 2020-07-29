@@ -97,67 +97,16 @@ class MyInstitutionController extends AbstractDebugController {
         result
     }
 
-    /*
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def tipview() {
-        log.debug("admin::tipview ${params}")
-        Map<String, Object> result = [:]
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def reporting() {
+        Map<String, Object> result = setResultGenerics()
 
-        result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        Org current_inst = contextService.getOrg()
-        //if(params.shortcode) current_inst = Org.findByShortcode(params.shortcode);
-        //Parameters needed for criteria searching
-        def (tip_property, property_field) = (params.sort ?: 'title-title').split("-")
-        def list_order = params.order ?: 'asc'
 
-        if (current_inst && ! accessService.checkUserIsMember(result.user, current_inst)) {
-            flash.error = message(code:'myinst.error.noMember', args:[current_inst.name]);
-            response.sendError(401)
-            return;
-        }
-
-        def criteria = TitleInstitutionProvider.createCriteria();
-        def results = criteria.list(max: result.max, offset:result.offset) {
-              //if (params.shortcode){
-              if (current_inst){
-                institution{
-                    idEq(current_inst.id)
-                }
-              }
-              if (params.search_for == "institution") {
-                institution {
-                  ilike("name", "%${params.search_str}%")
-                }
-              }
-             if (params.search_for == "provider") {
-                provider {
-                  ilike("name", "%${params.search_str}%")
-                }
-             }
-             if (params.search_for == "title") {
-                title {
-                  ilike("title", "%${params.search_str}%")
-                }
-             }
-             if(params.filter == "core" || !params.filter){
-               isNotEmpty('coreDates')
-             }else if(params.filter=='not'){
-                isEmpty('coreDates')
-             }
-             "${tip_property}"{
-                order(property_field,list_order)
-             }
-        }
-
-        result.tips = results
-        result.institution = current_inst
-        result.editable = accessService.checkMinUserOrgRole(result.user, current_inst, 'INST_EDITOR')
         result
     }
-     */
 
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
