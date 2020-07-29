@@ -265,7 +265,7 @@ class PendingChange {
                 if(target instanceof IssueEntitlementCoverage) {
                     IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
                     //no way to check whether object could actually be deleted or not
-                    targetCov.delete()
+                    targetCov.delete(flush:true)
                     done = true
                 }
                 else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${oid}! Pending change is void!")

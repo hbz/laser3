@@ -874,7 +874,7 @@ class OrganisationController extends AbstractDebugController {
         CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
         Org owner = GrailsHibernateUtil.unwrapIfProxy(ci).owner
         if (ci && owner.id == contextService.org.id) {
-            ci.delete()
+            ci.delete(flush:true)
             log.debug("Customeridentifier deleted: ${params}")
         } else {
             if ( ! ci ) {
@@ -901,7 +901,7 @@ class OrganisationController extends AbstractDebugController {
         if (owner && target) {
             if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
                 log.debug("Identifier deleted: ${params}")
-                target.delete()
+                target.delete(flush:true)
             }
         }
         redirect(url: request.getHeader('referer'))
@@ -1388,7 +1388,7 @@ class OrganisationController extends AbstractDebugController {
             def osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
             orgInstance.removeFromSubjectGroup(osg)
             orgInstance.save()
-            osg.delete()
+            osg.delete(flush:true)
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect(url: request.getHeader('referer'))
         }
@@ -1433,7 +1433,7 @@ class OrganisationController extends AbstractDebugController {
                     Combo cmb = Combo.findWhere(toOrg: result.institution,
                             fromOrg: Org.get(params.fromOrg),
                             type: RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE))
-                    cmb.delete()
+                    cmb.delete(flush:true)
                 }
                 break
         }

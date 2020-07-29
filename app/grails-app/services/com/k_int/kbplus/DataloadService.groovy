@@ -124,7 +124,7 @@ class DataloadService {
                     try {
                         result.identifiers.add([type: ident.ns.ns, value: ident.value])
                     } catch (Exception e) {
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 }
 
@@ -133,7 +133,7 @@ class DataloadService {
                     try {
                         result.platforms.add([dbId: platform.id, name: platform.name])
                     } catch (Exception e) {
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 }
 
@@ -183,7 +183,7 @@ class DataloadService {
                         try {
                             result.identifiers.add([type: ident.ns.ns, value: ident.value])
                         } catch (Exception e) {
-                            log.error(e)
+                            log.error( e.toString() )
                         }
                     }
                     //result.keyTitle = ti.keyTitle
@@ -239,7 +239,7 @@ class DataloadService {
                     try {
                         result.identifiers.add([type: ident.ns.ns, value: ident.value])
                     } catch (Exception e) {
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 }
                 result.dateCreated = pkg.dateCreated
@@ -329,7 +329,7 @@ class DataloadService {
                 try {
                     result.identifiers.add([type: ident.ns.ns, value: ident.value])
                 } catch (Exception e) {
-                    log.error(e)
+                    log.error( e.toString() )
                 }
             }
 
@@ -412,7 +412,7 @@ class DataloadService {
                         try {
                             result.identifiers.add([type: ident.ns.ns, value: ident.value])
                         } catch (Exception e) {
-                            log.error(e)
+                            log.error( e.toString() )
                         }
                     }
 

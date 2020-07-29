@@ -1076,7 +1076,7 @@ class PackageController extends AbstractDebugController {
                         linetype = 'TIPP'
                     } else {
                         log.debug("Cleaning up history line that relates to a deleted item");
-                        hl.delete();
+                        hl.delete(flush:true)
                     }
             }
             switch (hl.eventName) {

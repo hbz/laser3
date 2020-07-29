@@ -41,7 +41,7 @@ class StatusUpdateJob extends AbstractJob {
             log.info("Execute::SubscriptionUpdateJob - Finished")
         }
         catch (Exception e) {
-            log.error(e)
+            log.error( e.toString() )
         }
         SystemEvent.createEvent('SUB_UPDATE_JOB_COMPLETE')
 

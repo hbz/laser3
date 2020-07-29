@@ -278,7 +278,7 @@ class LicenseController
     @DebugAnnotation(test = 'hasAffiliation("INST_EDTIOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
-        log.debug(params)
+        log.debug( params.toMapString() )
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -602,7 +602,7 @@ class LicenseController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteMember() {
-        log.debug(params)
+        log.debug( params.toMapString() )
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -920,12 +920,12 @@ class LicenseController
       if (opl.licenses.isEmpty()) {
           opl.usageTerm.each{
             it.usageTermLicenseText.each{
-              it.delete()
+              it.delete(flush:true)
             }
           }
-          opl.delete();
-          dc.delete();
-          doc.delete();
+          opl.delete(flush:true);
+          dc.delete(flush:true);
+          doc.delete(flush:true);
       }
       if (license.hasErrors()) {
           license.errors.each {

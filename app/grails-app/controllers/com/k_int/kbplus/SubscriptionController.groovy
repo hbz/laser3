@@ -385,7 +385,7 @@ class SubscriptionController
         Long subId = ieCoverage.issueEntitlement.subscription.id
         if(ieCoverage) {
             PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:RDStore.PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
-            ieCoverage.delete()
+            ieCoverage.delete(flush:true)
             redirect action: 'index', id: subId, params: params
         }
         else log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
@@ -2432,11 +2432,11 @@ class SubscriptionController
                             SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
 
                             try {
-                                privateProp.delete()
+                                privateProp.delete(flush:true)
                                 deletedProperties++
                             } catch (Exception e)
                             {
-                                log.error(e)
+                                log.error( e.toString() )
                             }
 
                         }
@@ -2453,10 +2453,10 @@ class SubscriptionController
                             SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
 
                             try {
-                                customProp.delete()
+                                customProp.delete(flush:true)
                                 deletedProperties++
                             } catch (Exception e){
-                                log.error(e)
+                                log.error( e.toString() )
                             }
 
                         }
@@ -2525,7 +2525,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
-        log.debug(params)
+        log.debug( params.toMapString() )
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
@@ -2702,7 +2702,7 @@ class SubscriptionController
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     @Deprecated
     def deleteMember() {
-        log.debug(params)
+        log.debug( params.toMapString() )
 
         return
 
@@ -6160,7 +6160,7 @@ class SubscriptionController
                     }
                     catch (Exception e) {
                         property."${field}" = backup
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 } else if(field == "urlValue") {
 
@@ -6176,7 +6176,7 @@ class SubscriptionController
                     }
                     catch (Exception e) {
                         property."${field}" = backup
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 } else {
                     def binding_properties = [:]

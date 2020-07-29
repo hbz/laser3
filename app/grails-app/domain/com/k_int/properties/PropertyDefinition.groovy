@@ -351,10 +351,12 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
             case 'en':
-                matches = PropertyDefinition.findAllByDescrAndName_enIlike(params.desc, "%${params.q}%")
+                String query = "select pd from PropertyDefinition pd where pd.descr = :descr and lower(pd.name_en) like :name"
+                matches = PropertyDefinition.executeQuery( query, [descr: params.desc, name: "%${params.q.toLowerCase()}%"])
                 break
             case 'de':
-                matches = PropertyDefinition.findAllByDescrAndName_deIlike(params.desc, "%${params.q}%")
+                String query = "select pd from PropertyDefinition pd where pd.descr = :descr and lower(pd.name_de) like :name"
+                matches = PropertyDefinition.executeQuery( query, [descr: params.desc, name: "%${params.q.toLowerCase()}%"])
                 break
         }
 
@@ -473,7 +475,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = ?', [this])
-        this.delete();
+        this.delete(flush:true)
     }
 
     /* tmp only */

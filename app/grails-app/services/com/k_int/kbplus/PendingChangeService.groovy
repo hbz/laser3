@@ -276,7 +276,7 @@ class PendingChangeService extends AbstractLockableService {
                         //IssueEntitlementCoverage cov = genericOIDService.resolveOID(payload.changeTarget)
                         IssueEntitlementCoverage cov = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         if(cov) {
-                            if(cov.delete()) {
+                            if(cov.delete(flush:true)) {
                                 saveWithoutError = true
                             }
                             else {
@@ -381,7 +381,7 @@ class PendingChangeService extends AbstractLockableService {
 
                         log.debug("Deleting property ${targetProperty.type.name} from ${pendingChange.payloadChangeTargetOid}")
                         changeTarget.customProperties.remove(targetProperty)
-                        targetProperty.delete()
+                        targetProperty.delete(flush:true)
                     }
                     else if (changeDoc.event.endsWith('CustomProperty.updated')) {
 

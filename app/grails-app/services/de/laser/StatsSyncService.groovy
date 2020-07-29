@@ -592,7 +592,7 @@ class StatsSyncService {
         if (statsTitles.size() > 1) {
             log.warn('Found more than one item for the given Identifier')
             log.warn('Titles delivered by API: ')
-            log.warn(statsTitles)
+            log.warn( statsTitles.toString() )
         }
     }
 
