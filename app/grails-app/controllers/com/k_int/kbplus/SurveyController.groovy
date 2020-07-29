@@ -1895,7 +1895,7 @@ class SurveyController {
                 if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
                     Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
 
-                    if (subChild.isCurrentMultiYearSubscriptionNew()) {
+                    if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
                         existsMultiYearTerm = true
                     }
 
@@ -4039,19 +4039,19 @@ class SurveyController {
                 }
                 if(params.tab == 'customProperties') {
                     newMap.newCustomProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
                     } : null
                     newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
                     } : null
                 }
 
                 if(params.tab == 'privateProperties') {
                     newMap.newPrivateProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
                     } : null
                     newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
                     } : null
                 }
 
@@ -4120,7 +4120,7 @@ class SurveyController {
                         def org = sub.getSubscriber()
                         def oldSub = sub.getCalculatedPrevious()
 
-                        SurveyResult copyProperty
+                        AbstractPropertyWithCalculatedLastUpdated copyProperty
                         if (params.tab == 'surveyProperties') {
                             copyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surveyProperty, org)
                         } else {
@@ -4130,7 +4130,7 @@ class SurveyController {
                                 } : []
                             } else {
                                 copyProperty = oldSub ? oldSub.propertySet.find {
-                                    it.type.id == propDef.id
+                                    it.type.id == propDef.id && it.tenant.id == result.institution.id
                                 } : []
                             }
                         }
@@ -4320,8 +4320,6 @@ class SurveyController {
             }
         }
 
-
-
         //MultiYearTerm Subs
         result.parentSubChilds.each { sub ->
             if (sub.isCurrentMultiYearSubscriptionNew()){
@@ -4491,7 +4489,7 @@ class SurveyController {
                         }
 
                         if(oldSub){
-                            new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: memberSub.id, destination: oldSub.id, owner: contextService.getOrg(), objectType:Subscription.class.name).save(flush: true)
+                            new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: GenericOIDService.getOID(memberSub), destination: GenericOIDService.getOID(oldSub), owner: contextService.getOrg()).save()
                         }
 
                         if(org.getCustomerType() == 'ORG_INST') {
@@ -4552,7 +4550,7 @@ class SurveyController {
                     if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
                         Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
 
-                        if (subChild.isCurrentMultiYearSubscriptionNew()) {
+                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
                             existsMultiYearTerm = true
                         }
 
@@ -5138,8 +5136,8 @@ class SurveyController {
                     }
                 } else {
                     def binding_properties = [:]
-                    if (property."${field}" instanceof Double) {
-                        value = Double.parseDouble(value)
+                    if(field == "decValue") {
+                        value = new BigDecimal(value)
                     }
 
                     binding_properties["${field}"] = value

@@ -314,7 +314,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) && !isProviderOrAgency}">
+            <g:if test="${((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor)}">
                 <div class="ui card">
                     <div class="content">
                         <H3><g:message code="org.contacts.and.addresses.label" /></H3>
