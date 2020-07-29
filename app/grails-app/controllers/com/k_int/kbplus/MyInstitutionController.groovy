@@ -1053,7 +1053,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processEmptySubscription() {
-        log.debug(params)
+        log.debug( params.toMapString() )
         Map<String, Object> result = setResultGenerics()
 
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER
@@ -3647,7 +3647,7 @@ AND EXISTS (
     })
     def processManageProperties() {
         Map<String, Object> result = setResultGenerics()
-        log.debug(params)
+        log.debug( params.toMapString() )
         PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
         List withAudit = params.list("withAudit")
         String propertyType = pd.tenant ? PropertyDefinition.PRIVATE_PROPERTY : PropertyDefinition.CUSTOM_PROPERTY
@@ -3903,7 +3903,7 @@ AND EXISTS (
                         }
                     }
                 } catch(Exception e) {
-                    log.error(e)
+                    log.error( e.toString() )
                 }
 
                 privatePropDef.delete()

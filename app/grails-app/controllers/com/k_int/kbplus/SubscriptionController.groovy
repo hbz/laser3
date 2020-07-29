@@ -2436,7 +2436,7 @@ class SubscriptionController
                                 deletedProperties++
                             } catch (Exception e)
                             {
-                                log.error(e)
+                                log.error( e.toString() )
                             }
 
                         }
@@ -2456,7 +2456,7 @@ class SubscriptionController
                                 customProp.delete()
                                 deletedProperties++
                             } catch (Exception e){
-                                log.error(e)
+                                log.error( e.toString() )
                             }
 
                         }
@@ -2525,7 +2525,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
-        log.debug(params)
+        log.debug( params.toMapString() )
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
@@ -2702,7 +2702,7 @@ class SubscriptionController
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     @Deprecated
     def deleteMember() {
-        log.debug(params)
+        log.debug( params.toMapString() )
 
         return
 
@@ -6160,7 +6160,7 @@ class SubscriptionController
                     }
                     catch (Exception e) {
                         property."${field}" = backup
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 } else if(field == "urlValue") {
 
@@ -6176,7 +6176,7 @@ class SubscriptionController
                     }
                     catch (Exception e) {
                         property."${field}" = backup
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 } else {
                     def binding_properties = [:]

@@ -450,7 +450,7 @@ class AdminController extends AbstractDebugController {
           if(!newAffil.save(flush:true,failOnError:true)){
             log.error("Probem saving user roles");
             newAffil.errors.each { e ->
-              log.error(e);
+                log.error( e.toString() )
             }
             return false
           }
@@ -845,7 +845,7 @@ class AdminController extends AbstractDebugController {
           tipp.save(flush:true,failOnError:true)
           result.success = true
         }catch(Exception e){
-          log.error(e)
+            log.error( e.toString() )
           result.error += "An error occured while saving the changes."
         }
       }else{
@@ -859,7 +859,7 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def ieTransfer(){
-        log.debug(params)
+        log.debug( params.toMapString() )
         Map<String, Object> result = [:]
         if(params.sourceTIPP && params.targetTIPP){
             result.sourceTIPPObj = TitleInstancePackagePlatform.get(params.sourceTIPP)
@@ -1437,7 +1437,7 @@ class AdminController extends AbstractDebugController {
                     log.debug(q);
                     log.debug(joinclause);
                     log.debug(whereclause);
-                    log.debug(bindvars);
+                    log.debug( bindvars.toString() )
 
                     def title_search = TitleInstance.executeQuery(q+joinclause+whereclause,bindvars);
                     log.debug("Search returned ${title_search.size()} titles");
@@ -1692,7 +1692,7 @@ class AdminController extends AbstractDebugController {
                                 flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
                             }
                             catch (Exception e) {
-                                log.error(e)
+                                log.error( e.toString() )
                                 flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
                             }
 
@@ -1881,7 +1881,7 @@ class AdminController extends AbstractDebugController {
                         flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt."
                     }
                     catch (Exception e) {
-                        log.error(e)
+                        log.error( e.toString() )
                         flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt werden."
                     }
 

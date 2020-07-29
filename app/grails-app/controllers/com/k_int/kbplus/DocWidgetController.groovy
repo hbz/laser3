@@ -135,7 +135,7 @@ class DocWidgetController extends AbstractDebugController {
 
                                 doc_content2.save()
 
-                                log.debug(doc_content2)
+                                log.debug( doc_content2.toString() )
 
                                 try {
                                     def fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'

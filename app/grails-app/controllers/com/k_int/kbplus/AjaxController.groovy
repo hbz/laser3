@@ -268,7 +268,7 @@ class AjaxController {
 
         } catch (Exception e) {
             log.error("@ genericSetValue()")
-            log.error(e)
+            log.error( e.toString() )
         }
 
         log.debug("genericSetValue() returns ${result}")
@@ -379,7 +379,7 @@ class AjaxController {
 
         } catch (Exception e) {
             log.error("@ genericSetRel()")
-            log.error(e)
+            log.error( e.toString() )
         }
 
         def resp = [ newValue: result ]
@@ -1054,7 +1054,7 @@ class AjaxController {
                 } else {
                     log.error("Problem saving new org link ..")
                     new_link.errors.each { e ->
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                     //flash.error = message(code: 'default.error')
                 }
@@ -2422,7 +2422,7 @@ class AjaxController {
     }
 
   def validationException(final grails.validation.ValidationException exception){
-    log.error(exception)
+      log.error( exception.toString() )
     response.status = 400
     response.setContentType('text/plain')
     def outs = response.outputStream
@@ -2456,7 +2456,7 @@ class AjaxController {
                     }
                     catch (Exception e) {
                         target_object."${params.name}" = backup
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                     finally {
                         if (target_object."${params.name}") {
@@ -2478,7 +2478,7 @@ class AjaxController {
                     }
                     catch (Exception e) {
                         target_object."${params.name}" = backup
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                     finally {
                         if (target_object."${params.name}") {
@@ -2546,7 +2546,7 @@ class AjaxController {
 
         } catch(Exception e) {
             log.error("@ editableSetValue()")
-            log.error(e)
+            log.error( e.toString() )
         }
 
         log.debug("editableSetValue() returns ${result}")

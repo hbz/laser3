@@ -1612,7 +1612,7 @@ class SubscriptionService {
                 }
             }
             catch (CreationException e) {
-                log.error(e)
+                log.error( e.toString() )
             }
         }
         else if(unlink && curLink) {

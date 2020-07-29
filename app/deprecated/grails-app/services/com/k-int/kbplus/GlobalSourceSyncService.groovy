@@ -253,7 +253,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             result.parsed_rec.history.add(history_statement)
         }
 
-        log.debug(result);
+        log.debug( result.toMapString() )
         result
     }
     //tracker, old_rec_info, new_record_info)
@@ -1113,7 +1113,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         def jobs = GlobalRecordSource.findAll()
 
         jobs.each { sync_job ->
-            log.debug(sync_job)
+            log.debug( sync_job.toString() )
             // String identifier
             // String name
             // String type

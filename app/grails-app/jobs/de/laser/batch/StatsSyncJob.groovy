@@ -57,7 +57,7 @@ class StatsSyncJob extends AbstractJob {
             }
         }
         catch (Exception e) {
-            log.error(e)
+            log.error( e.toString() )
         }
 
         jobIsRunning = false

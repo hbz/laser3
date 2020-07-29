@@ -114,7 +114,7 @@ class LinksGenerationService {
                 }
             }
             catch (CreationException e) {
-                log.error(e)
+                log.error( e.toString() )
                 errors = messageSource.getMessage('default.linking.savingError',null, LocaleContextHolder.getLocale())
             }
         }

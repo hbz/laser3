@@ -1923,7 +1923,7 @@ class SurveyController {
                                 )
 
                                 if (surveyResult.save(flush: true)) {
-                                    log.debug(surveyResult)
+                                    log.debug( surveyResult.toString() )
                                 } else {
                                     log.error("Not create surveyResult: "+ surveyResult)
                                 }
@@ -1977,7 +1977,7 @@ class SurveyController {
                                 )
 
                                 if (surveyResult.save(flush: true)) {
-                                    log.debug(surveyResult)
+                                    log.debug( surveyResult.toString() )
                                 } else {
                                     log.error("Not create surveyResult: "+ surveyResult)
                                 }
@@ -2052,9 +2052,9 @@ class SurveyController {
                                 )
 
                                 if (surveyResult.save(flush: true)) {
-                                    log.debug(surveyResult)
+                                    log.debug( surveyResult.toString() )
                                 } else {
-                                    log.debug(surveyResult)
+                                    log.debug( surveyResult.toString() )
                                 }
                             }
                         }
@@ -4577,7 +4577,7 @@ class SurveyController {
                                     )
 
                                     if (surveyResult.save(flush: true)) {
-                                        log.debug(surveyResult)
+                                        log.debug( surveyResult.toString() )
                                     } else {
                                         log.error("Not create surveyResult: " + surveyResult)
                                     }
@@ -5116,7 +5116,7 @@ class SurveyController {
                     }
                     catch (Exception e) {
                         property."${field}" = backup
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 } else if(field == "urlValue") {
 
@@ -5132,7 +5132,7 @@ class SurveyController {
                     }
                     catch (Exception e) {
                         property."${field}" = backup
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 } else {
                     def binding_properties = [:]

@@ -67,7 +67,7 @@ class ApiWriter {
             }
             catch (Exception e) {
                 log.error("Error while importing LICENSE via API; rollback forced")
-                log.error(e)
+                log.error( e.toString() )
                 status.setRollbackOnly()
                 result = ['result': Constants.HTTP_INTERNAL_SERVER_ERROR, 'debug': e]
             }
@@ -123,7 +123,7 @@ class ApiWriter {
             }
             catch (Exception e) {
                 log.error("Error while importing ORG via API; rollback forced")
-                log.error(e)
+                log.error( e.toString() )
                 status.setRollbackOnly()
                 result = ['result': Constants.HTTP_INTERNAL_SERVER_ERROR, 'debug': e]
             }
@@ -180,7 +180,7 @@ class ApiWriter {
             }
             catch (Exception e) {
                 log.error("Error while importing SUBSCRIPTION via API; rollback forced")
-                log.error(e)
+                log.error( e.toString() )
 
                 status.setRollbackOnly()
                 result = ['result': Constants.HTTP_INTERNAL_SERVER_ERROR, 'debug': e]

@@ -1056,7 +1056,7 @@ class FinanceController extends AbstractDebugController {
                                       PendingChange.construct([target:cci,owner:cci.owner,prop:diff.prop,oldValue:diff.oldValue,newValue:diff.newValue,msgToken:diff.msgToken,status:RDStore.PENDING_CHANGE_PENDING])
                                   }
                                   catch (CreationException e) {
-                                      log.error(e)
+                                      log.error( e.toString() )
                                   }
                               }
                           }

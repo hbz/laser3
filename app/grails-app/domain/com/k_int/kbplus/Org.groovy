@@ -623,7 +623,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
       }
     }
     catch ( Exception e ) {
-      log.error(e);
+      log.error( e.toString() )
     }
 
   }
