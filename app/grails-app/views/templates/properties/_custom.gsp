@@ -8,7 +8,7 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<table class="ui la-table-small la-table-inCard table">
+<table class="ui compact la-table-inCard table">
     <g:if test="${orphanedProperties}">
         <colgroup>
             <col style="width: 129px;">
@@ -87,7 +87,7 @@
                             <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}"/>
                         </td>
                         <td class="x la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
-                            <g:if test="${overwriteEditable && !prop.instanceOf}">
+                            <g:if test="${overwriteEditable && (prop.hasProperty("instanceOf") && !prop.instanceOf)}">
                                 <g:if test="${showConsortiaFunctions}">
                                     <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 

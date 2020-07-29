@@ -18,7 +18,7 @@
 <g:each in="${quartz}" var="groupKey, group">
     <%--<h3 class="ui header">${groupKey}</h3>--%>
 
-    <table class="ui celled la-table la-table-small table">
+    <table class="ui celled la-table compact table">
         <thead>
             <tr>
                 <th>Job</th>

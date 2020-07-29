@@ -4,8 +4,6 @@
     <div class="ui divided middle aligned selection list la-flex-list la-list-border-around">
 
         <div class="ui item person-details">
-            <span></span>
-
             <div class="content la-space-right">
                 <h5 class="ui header">
                     <g:link controller="person" action="show" id="${person.id}">
@@ -91,7 +89,6 @@
                 <g:if test="${personRoleLink.org.id == personContext.id && personRoleLink.functionType}">
 
                     <div class="ui item person-details">
-                        <span></span>
                         <div class="content la-space-right">
                             ${personRoleLink.functionType.getI10n('value')}
                         </div>
@@ -139,7 +136,6 @@
                 <g:if test="${personRole.org.id == personContext.id && personRole.positionType}">
 
                     <div class="ui item person-details">
-                        <span></span>
                         <div class="content la-space-right">
                             ${personRole.positionType.getI10n('value')} (Position)
                         </div>
@@ -179,7 +175,6 @@
                 <g:if test="${personRole.org.id == personContext.id && personRole.responsibilityType}">
 
                     <div class="ui item person-details">
-                        <span></span>
                         <div class="content la-space-right">
                             ${personRole.responsibilityType.getI10n('value')} (Verantwortlichkeit)
                         </div>

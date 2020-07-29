@@ -147,11 +147,11 @@ class SurveyService {
             targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type.multipleOccurrence
             if ((!targetProp) || isAddNewProp) {
-                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub)
+                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub, tenant: sourceProp.tenant)
                 targetProp = sourceProp.copyInto(targetProp)
                 targetProp.isPublic = sourceProp.isPublic
                 save(targetProp, flash)
-                if ((sourceProp.id.toString() in auditProperties) && targetProp.isPublic) {
+                if (sourceProp.id.toString() in auditProperties) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
                         Subscription.findAllByInstanceOf(targetSub).each { member ->
@@ -161,7 +161,7 @@ class SurveyService {
 
                                 // multi occurrence props; add one additional with backref
                                 if (sourceProp.type.multipleOccurrence) {
-                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, targetProp.tenant)
                                     additionalProp = targetProp.copyInto(additionalProp)
                                     additionalProp.instanceOf = targetProp
                                     additionalProp.save(flush: true)
@@ -177,7 +177,7 @@ class SurveyService {
                                     }
                                     else {
                                         // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, targetProp.tenant)
                                         newProp = targetProp.copyInto(newProp)
                                         newProp.instanceOf = targetProp
                                         newProp.save(flush: true)

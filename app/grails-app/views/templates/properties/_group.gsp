@@ -7,7 +7,7 @@
 
 
 
-<table class="ui la-table-small la-table-inCard table">
+<table class="ui compact la-table-inCard table">
     <g:if test="${propDefGroup}">
         <colgroup>
             <col style="width: 129px;">
@@ -85,7 +85,7 @@
                         <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}"/>
                     </td>
                     <td class="x la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
-                        <g:if test="${overwriteEditable && !prop.instanceOf}">
+                        <g:if test="${overwriteEditable && (prop.hasProperty("instanceOf") && !prop.instanceOf)}">
                             <g:if test="${showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
@@ -141,7 +141,11 @@
                                 <g:if test="${(ownobj.instanceOf && !prop.instanceOf) || !ownobj.hasProperty("instanceOf")}">
                                     <g:if test="${prop.isPublic}">
                                         <laser:remoteLink class="ui orange icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
-                                                          params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
+                                                          params='[oid: GenericOIDService.getOID(prop),
+                                                                   editable:"${overwriteEditable}",
+                                                                   custom_props_div: "${custom_props_div}",
+                                                                   propDefGroup: "${GenericOIDService.getOID(propDefGroup)}",
+                                                                   showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                           data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                           data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">
@@ -150,7 +154,11 @@
                                     </g:if>
                                     <g:else>
                                         <laser:remoteLink class="ui icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
-                                                          params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
+                                                          params='[oid: GenericOIDService.getOID(prop),
+                                                                   editable:"${overwriteEditable}",
+                                                                   custom_props_div: "${custom_props_div}",
+                                                                   propDefGroup: "${GenericOIDService.getOID(propDefGroup)}",
+                                                                   showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                           data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                           data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">

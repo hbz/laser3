@@ -322,9 +322,9 @@ class PersonController extends AbstractDebugController {
         }
         
         // requesting form for adding new personRoles
-        else if('add' == cmd){ 
-            
-            def roleRdv = RefdataValue.get(params.roleTypeId)
+        else if('add' == cmd){
+
+            RefdataValue roleRdv = RefdataValue.get(params.roleTypeId)
 
             if('func' == roleType){
                 
@@ -389,8 +389,8 @@ class PersonController extends AbstractDebugController {
 
 
     def addPersonRole() {
-        def result
-        def prs = Person.get(params.id)
+        PersonRole result
+        Person prs = Person.get(params.id)
 
         if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
 
@@ -402,7 +402,8 @@ class PersonController extends AbstractDebugController {
 
                 if (prAttr in [PersonRole.TYPE_FUNCTION, PersonRole.TYPE_POSITION]) {
 
-                    if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.${prAttr} = ${rdv.id}")) {
+                    String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.${prAttr} = ${rdv.id}"
+                    if (PersonRole.find( query )) {
                         log.debug("ignore adding PersonRole because of existing duplicate")
                     }
                     else {
@@ -428,14 +429,14 @@ class PersonController extends AbstractDebugController {
     }
 
     def deletePersonRole() {
-        def prs = Person.get(params.id)
+        Person prs = Person.get(params.id)
 
         if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
 
             if (params.oid) {
                 def pr = genericOIDService.resolveOID(params.oid)
 
-                if (pr && (pr.prs.id == prs.id) && pr.delete()) {
+                if (pr && (pr.prs.id == prs.id) && pr.delete(flush: true)) {
                     log.debug("deleted PersonRole ${pr}")
                 } else {
                     log.debug("problem deleting PersonRole ${pr}")
@@ -449,7 +450,7 @@ class PersonController extends AbstractDebugController {
     private addPersonRoles(Person prs){
 
         if (params.functionType) {
-            def result
+            PersonRole result
 
             RefdataValue functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
             Org functionOrg = Org.get(params.functionOrg)
@@ -457,7 +458,8 @@ class PersonController extends AbstractDebugController {
             if (functionRdv && functionOrg) {
                 result = new PersonRole(prs: prs, functionType: functionRdv, org: functionOrg)
 
-                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${functionOrg.id} and PR.functionType = ${functionRdv.id}")) {
+                String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${functionOrg.id} and PR.functionType = ${functionRdv.id}"
+                if (PersonRole.find( query )) {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (result) {
@@ -476,7 +478,8 @@ class PersonController extends AbstractDebugController {
             if (positionRdv && positionOrg) {
                 result = new PersonRole(prs: prs, positionType: positionRdv, org: positionOrg)
 
-                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${positionOrg.id} and PR.positionType = ${positionRdv.id}")) {
+                String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${positionOrg.id} and PR.positionType = ${positionRdv.id}"
+                if (PersonRole.find( query )) {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (result) {
@@ -492,7 +495,7 @@ class PersonController extends AbstractDebugController {
 
         //@Deprecated
        params?.responsibilityType?.each{ key, value ->
-           def result
+           PersonRole result
 
            RefdataValue roleRdv = RefdataValue.get(params.responsibilityType[key])
            Org org              = Org.get(params.org[key])

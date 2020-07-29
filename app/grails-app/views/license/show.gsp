@@ -155,7 +155,10 @@
                                         <g:if test="${linkTypes.getValue().size() > 0 && linkTypes.getKey() != GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}">
                                             <g:each in="${linkTypes.getValue()}" var="link">
                                                 <tr>
-                                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${linkTypes.getKey()}</th>
+                                                    <%
+                                                        int perspectiveIndex = GenericOIDService.getOID(subscriptionInstance) == link.source ? 0 : 1
+                                                    %>
+                                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${genericOIDService.resolveOID(linkTypes.getKey()).getI10n("value").split("\\|")[perspectiveIndex]}</th>
                                                     <td>
                                                         <g:set var="pair" value="${link.getOther(license)}"/>
                                                         <g:if test="${pair instanceof License}">
@@ -183,7 +186,6 @@
                                                                             tmplModalID            :"sub_edit_link_${link.id}",
                                                                             editmode               : editable,
                                                                             context                : license,
-                                                                            subscriptionLicenseLink: true,
                                                                             atConsortialParent     : institution == license.getLicensingConsortium(),
                                                                             link                   : link
                                                                   ]}" />
@@ -214,7 +216,6 @@
                                                     tmplButtonText:message(code:'license.details.addLink'),
                                                     tmplModalID:'sub_add_link',
                                                     editmode: editable,
-                                                    subscriptionLicenseLink: true,
                                                     atConsortialParent: institution == license.getLicensingConsortium(),
                                                     context: license
                                           ]}" />

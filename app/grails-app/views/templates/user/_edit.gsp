@@ -135,7 +135,7 @@
     <sec:ifAnyGranted roles="ROLE_ADMIN">
       <h4 class="ui dividing header">${message(code:'user.role.plural')}</h4>
 
-          <table class="ui celled la-table la-table-small table">
+          <table class="ui celled la-table compact table">
             <thead>
               <tr>
                 <th>${message(code:'user.role')}</th>

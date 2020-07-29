@@ -24,7 +24,7 @@
                 </h4>
             </div>
             <div class="content">
-                <table class="ui celled la-table la-table-small table">
+                <table class="ui celled la-table compact table">
                     <tbody>
                         <g:each in="${role.value.toSorted{a,b -> a.username <=> b.username}}" var="user">
                             <tr>

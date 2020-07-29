@@ -5,7 +5,7 @@
     <g:set var="chosenOrg" value="${com.k_int.kbplus.Org.findById(params.member)}" />
     <g:set var="chosenOrgCPAs" value="${chosenOrg?.getGeneralContactPersons(false)}" />
 
-    <table class="ui table la-table la-table-small">
+    <table class="ui table la-table compact">
         <tbody>
         <tr>
             <td>

@@ -13,7 +13,7 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<table class="ui la-table-small la-table-inCard table">
+<table class="ui compact la-table-inCard table">
     <g:set var="properties" value="${showPropClass == PrivateProperty.class? ownobj.privateProperties : ownobj.customProperties}" />
     <g:if test="${properties}">
         <colgroup>

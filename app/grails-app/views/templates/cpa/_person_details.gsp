@@ -47,8 +47,6 @@
     <div class="ui divided middle aligned selection list la-flex-list la-list-border-around">
 
         <div class="ui item person-details">
-            <span></span>
-
             <div class="content la-space-right">
                 <h5 class="ui header">
                     <g:link controller="person" action="show" id="${personRole?.prs?.id}">

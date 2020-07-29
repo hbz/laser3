@@ -496,7 +496,7 @@
                     String dataTooltip = ""
                 %>
 
-                <table class="ui celled la-table-small la-table-inCard table">
+                <table class="ui celled compact la-table-inCard table">
                     <thead>
                     <tr>
                         <th colspan="4" class="center aligned">

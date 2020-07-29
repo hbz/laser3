@@ -142,8 +142,8 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
 
     static List<Person> getPublicByOrgAndFunc(Org org, String func) {
         Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = ? and pr.functionType.value = ?",
-                [org, func]
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType.value = :functionType",
+                [org: org, functionType: func]
         )
     }
 

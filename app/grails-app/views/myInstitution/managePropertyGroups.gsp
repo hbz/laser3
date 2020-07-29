@@ -34,7 +34,7 @@
                 <g:message code="propertyDefinition.${typeEntry.key}.label"/>
             </div>
             <div class="content">
-                <table class="ui celled sortable table la-table la-table-small">
+                <table class="ui celled sortable table la-table compact">
                     <thead>
                     <tr>
                         <th><g:message code="default.name.label"/></th>
