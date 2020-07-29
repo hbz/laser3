@@ -317,7 +317,7 @@
             <g:if test="${((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor)}">
                 <div class="ui card">
                     <div class="content">
-                        <H3><g:message code="org.contacts.and.addresses.label" /></H3>
+                        %{--<H3><g:message code="org.contacts.and.addresses.label" /></H3>--}%
                         %{--<g:link action="myPublicContacts" controller="myInstitution"  class="ui button">${message('code':'org.edit.contacts')}</g:link>--}%
                         <dl>
                             <dt><g:message code="org.prsLinks.label" /></dt>
