@@ -1629,7 +1629,7 @@ class SubscriptionService {
             }
             success = true
         }
-        else (sub.owner == newOwner)
+        success
     }
 
     Map subscriptionImport(CommonsMultipartFile tsvFile) {
