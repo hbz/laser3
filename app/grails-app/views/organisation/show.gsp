@@ -17,6 +17,9 @@
     <g:elseif test="${institutionalView}">
         <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
     </g:elseif>
+    <g:elseif test="${departmentalView}">
+        <g:set var="entityName" value="${message(code: 'org.department.label')}"/>
+    </g:elseif>
     <g:else>
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
@@ -74,12 +77,14 @@
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
-                        <dl>
-                            <dt><g:message code="org.shortname.label" /></dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="shortname"/>
-                            </dd>
-                        </dl>
+                        <g:if test="${departmentalView == false}">
+                            <dl>
+                                <dt><g:message code="org.shortname.label" /></dt>
+                                <dd>
+                                    <semui:xEditable owner="${orgInstance}" field="shortname"/>
+                                </dd>
+                            </dl>
+                        </g:if>
                         <g:if test="${!isProviderOrAgency}">
                             <dl>
                                 <dt>
@@ -102,20 +107,20 @@
                         </dd>
                     </dl>
                     <g:if test="${!isProviderOrAgency}">
-                    <dl>
-                        <dt>
-                            <g:message code="org.legalPatronName.label" />
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${message(code: 'org.legalPatronName.expl')}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </dt>
-                        <dd>
-                            <semui:xEditable owner="${orgInstance}" field="legalPatronName"/>
-                        </dd>
-                    </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="org.legalPatronName.label" />
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.legalPatronName.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditable owner="${orgInstance}" field="legalPatronName"/>
+                            </dd>
+                        </dl>
                     </g:if>
-                    <g:if test="${!isProviderOrAgency}">
+                    <g:if test="${!departmentalView && !isProviderOrAgency}">
                         <dl>
                             <dt>
                                 <g:message code="org.urlGov.label"/>
@@ -187,100 +192,100 @@
                 </div>
             </g:if>
 
-            <g:if test="${!isProviderOrAgency}">
+            <g:if test="${departmentalView == false && !isProviderOrAgency}">
                 <div class="ui card">
                     <div class="content">
-                            <dl>
-                                <dt>
-                                    <g:message code="org.libraryType.label" />
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.libraryType.expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </dt>
-                                <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
-                                                            config="${RDConstants.LIBRARY_TYPE}"/>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>
-                                    <g:message code="org.subjectGroup.label" />
-                                </dt>
-                                <dd>
-                                    <%
-                                        def subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
-                                    %>
-                                    <g:render template="orgSubjectGroupAsList"
-                                              model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+                        <dl>
+                            <dt>
+                                <g:message code="org.libraryType.label" />
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.libraryType.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
+                                                        config="${RDConstants.LIBRARY_TYPE}"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="org.subjectGroup.label" />
+                            </dt>
+                            <dd>
+                                <%
+                                    def subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
+                                %>
+                                <g:render template="orgSubjectGroupAsList"
+                                          model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
 
-                                    <g:render template="orgSubjectGroupModal"
-                                              model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>
-                                    <g:message code="org.libraryNetwork.label" />
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.libraryNetwork.expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </dt>
-                                <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
-                                                            config="${RDConstants.LIBRARY_NETWORK}"/>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>
-                                    <g:message code="org.funderType.label" />
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.funderType.expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </dt>
-                                <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="funderType" config="${RDConstants.FUNDER_TYPE}"/>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>
-                                    <g:message code="org.funderHSK.label" />
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.funderHSK.expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </dt>
-                                <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="funderHskType" config="${RDConstants.FUNDER_HSK_TYPE}"/>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>
-                                    <g:message code="address.country.label" />
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.country.expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </dt>
-                                <dd>
-                                    <semui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
-                                    &nbsp
-                                </dd>
-                                <dt>
-                                    <g:message code="org.region.label" />
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.region.expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </dt>
-                                <dd>
-                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
-                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
-                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
-                                </dd>
-                            </dl>
-                        </div>
+                                <g:render template="orgSubjectGroupModal"
+                                          model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="org.libraryNetwork.label" />
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.libraryNetwork.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
+                                                        config="${RDConstants.LIBRARY_NETWORK}"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="org.funderType.label" />
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.funderType.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditableRefData owner="${orgInstance}" field="funderType" config="${RDConstants.FUNDER_TYPE}"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="org.funderHSK.label" />
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.funderHSK.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditableRefData owner="${orgInstance}" field="funderHskType" config="${RDConstants.FUNDER_HSK_TYPE}"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="address.country.label" />
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.country.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
+                                &nbsp
+                            </dd>
+                            <dt>
+                                <g:message code="org.region.label" />
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.region.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
+                                <semui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
+                                <semui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
+                            </dd>
+                        </dl>
+                    </div>
                 </div><!-- .card -->
             </g:if>
 
@@ -312,118 +317,193 @@
             <g:if test="${((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) && !isProviderOrAgency}">
                 <div class="ui card">
                     <div class="content">
+                        <H3><g:message code="org.contacts.and.addresses.label" /></H3>
+                        %{--<g:link action="myPublicContacts" controller="myInstitution"  class="ui button">${message('code':'org.edit.contacts')}</g:link>--}%
                         <dl>
-                        <dt><g:message code="org.addresses.label" default="Addresses"/></dt>
-                        <dd>
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${orgInstance?.addresses?.sort { it.type?.getI10n('value') }}" var="a">
-                                    <g:if test="${a.org}">
-                                        <g:render template="/templates/cpa/address" model="${[
-                                                address             : a,
-                                                tmplShowDeleteButton: true,
-                                                controller          : 'org',
-                                                action              : 'show',
-                                                id                  : orgInstance.id,
-                                                editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                        ]}"/>
-                                    </g:if>
+                            <dt><g:message code="org.prsLinks.label" /></dt>
+                            <dd>
+                                <g:each in="${usedRDV}" var="rdv">
+                                    <h3>${rdv.getI10n('value')}</h3>
+                                    <g:each in="${allPRMap.get(rdv.id)}" var="pr">
+                                        <g:if test="pr">
+                                        %{--Workaround wg NPE bei CacheEntry.getValue--}%
+                                            <% com.k_int.kbplus.Person prs = PersonRole.get(pr.id).prs%>
+                                            <g:render template="/templates/cpa/person_full_details" model="${[
+                                                    person              : prs,
+                                                    personRole          : pr,
+                                                    personContext       : orgInstance,
+                                                    tmplShowDeleteButton    : true,
+                                                    tmplShowAddPersonRoles  : true,
+                                                    tmplShowAddContacts     : true,
+                                                    tmplShowAddAddresses    : true,
+                                                    tmplShowFunctions       : false,
+                                                    tmplShowPositions       : false,
+                                                    tmplShowResponsiblities : true,
+                                                    tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                    controller          : 'organisation',
+                                                    action              : 'show',
+                                                    id                  : orgInstance.id,
+                                                    editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                            ]}"/>
+                                        </g:if>
+                                    </g:each>
                                 </g:each>
-                            </div>
-                            <g:if test="${((((orgInstance.id == contextService.getOrg().id) || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                            <%-- </div> --%>
+                                <g:if test="${(((orgInstance.id == contextService.getOrg().id || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                                    <div class="ui list">
+                                        <div class="item">
 
-                                <div class="ui list">
-                                    <div class="item">
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalGeneralContactPerson')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModalGeneralContactPerson"/>
 
-                                        <% Map model = [:]
-                                        model.orgId = orgInstance?.id
-                                        model.redirect = '.'
-                                        model.hideType = true%>
-                                        <input class="ui icon button" type="button"
-                                               value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
-                                               onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_POSTAL.id}', '${model.redirect}', '${model.hideType}');"
-                                        >
+                                            <g:render template="/person/formModal"
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : true,
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION),
+                                                              modalId                          : 'personFormModalGeneralContactPerson',
+                                                              tmplHideFunctions: true]"/>
 
-                                        <input class="ui icon button" type="button"
-                                               value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
-                                               onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_BILLING.id}', '${model.redirect}', '${model.hideType}');"
-                                        >
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalResponsibleContact')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModalResponsibleContact"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : true,
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION),
+                                                              modalId                          : 'personFormModalResponsibleContact',
+                                                              tmplHideFunctions: true]"/>
+
+                                        </div>
+
+                                        <div class="item">
+
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalBillingContact')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModalBillingContact"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : true,
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION),
+                                                              modalId                          : 'personFormModalBillingContact',
+                                                              tmplHideFunctions: true]"/>
+
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalTechnichalSupport')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModalTechnichalSupport"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : true,
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', RDConstants.PERSON_FUNCTION),
+                                                              modalId                          : 'personFormModalTechnichalSupport',
+                                                              tmplHideFunctions: true]"/>
+
+                                            %{--<input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalOtherContact')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModal"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="['tenant'            : contextOrg,
+                                                              'org'               : orgInstance,
+                                                              'isPublic'          : true,
+                                                              'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)]"/>--}%
+
+                                        </div>
                                     </div>
-
-                                    <div class="item">
-                                        <input class="ui icon button" type="button"
-                                               value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"
-                                               onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_LEGAL_PATRON.id}', '${model.redirect}', '${model.hideType}');"
-                                        >
-
-                                    </div>
-                                </div>
-
-                            </g:if>
-                        </dd>
+                                </g:if></dd>
                         </dl>
-
+                        %{--ERMS:1236--}%
+                        %{--<dl>--}%
+                            %{--<dt><g:message code="org.contacts.label" /></dt>--}%
+                            %{--<dd>--}%
+                                %{--<div class="ui divided middle aligned selection list la-flex-list">--}%
+                                    %{--<g:each in="${orgInstance?.contacts?.toSorted()}" var="c">--}%
+                                        %{--<g:if test="${c.org}">--}%
+                                            %{--<g:render template="/templates/cpa/contact" model="${[--}%
+                                                    %{--contact             : c,--}%
+                                                    %{--tmplShowDeleteButton: true,--}%
+                                                    %{--controller          : 'organisation',--}%
+                                                    %{--action              : 'show',--}%
+                                                    %{--id                  : orgInstance.id,--}%
+                                                    %{--editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))--}%
+                                            %{--]}"/>--}%
+                                        %{--</g:if>--}%
+                                    %{--</g:each>--}%
+                                %{--</div>--}%
+                                %{--<g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">--}%
+                                    %{--<input class="ui button"--}%
+                                           %{--value="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}"--}%
+                                           %{--data-semui="modal"--}%
+                                           %{--data-href="#contactFormModal"/>--}%
+                                    %{--<g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>--}%
+                                %{--</g:if>--}%
+                            %{--</dd>--}%
+                        %{--</dl>--}%
                         <dl>
-                        <dt><g:message code="org.prsLinks.label" /></dt>
-                        <dd>
-                            <g:each in="${usedRDV}" var="rdv">
-                                <h3>${rdv.getI10n('value')}</h3>
-                                <g:each in="${allPRMap.get(rdv.id)}" var="pr">
-                                    <g:if test="pr">
-                                    %{--Workaround wg NPE bei CacheEntry.getValue--}%
-                                        <% com.k_int.kbplus.Person prs = PersonRole.get(pr.id).prs%>
-                                        <g:render template="/templates/cpa/person_full_details" model="${[
-                                                person              : prs,
-                                                personRole          : pr,
-                                                personContext       : orgInstance,
-                                                tmplShowDeleteButton    : true,
-                                                tmplShowAddPersonRoles  : true,
-                                                tmplShowAddContacts     : true,
-                                                tmplShowAddAddresses    : true,
-                                                tmplShowFunctions       : false,
-                                                tmplShowPositions       : false,
-                                                tmplShowResponsiblities : true,
-                                                tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                controller          : 'organisation',
-                                                action              : 'show',
-                                                id                  : orgInstance.id,
-                                                editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                        ]}"/>
-                                    </g:if>
-                                </g:each>
-                            </g:each>
-                            <g:if test="${((((orgInstance.id == contextService.getOrg().id) || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+
+                            <dt><g:message code="org.addresses.label" default="Addresses"/></dt>
+                            <dd>
+
+                                <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${orgInstance?.addresses?.sort { it.type?.getI10n('value') }}" var="a">
+                                        <g:if test="${a.org}">
+                                            <g:render template="/templates/cpa/address" model="${[
+                                                    address             : a,
+                                                    tmplShowDeleteButton: true,
+                                                    controller          : 'org',
+                                                    action              : 'show',
+                                                    id                  : orgInstance.id,
+                                                    editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                            ]}"/>
+                                        </g:if>
+                                    </g:each>
+                                </div>
+                                <g:if test="${((((orgInstance.id == contextService.getOrg().id) || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
 
                                 <div class="ui list">
-                                    <div class="item">
-                                        <input class="ui button" size="35"
-                                               value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
-                                               data-semui="modal"
-                                               data-href="#addressFormModalPostalAddress"/>
-                                        <g:render template="../templates/addresses/formModal"
-                                                  model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalPostalAddress', hideType: true]"/>
+                                <div class="item">
 
-                                        <input class="ui button" size="35"
-                                               value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
-                                               data-semui="modal"
-                                               data-href="#addressFormModalBillingAddress"/>
-                                        <g:render template="../templates/addresses/formModal"
-                                                  model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalBillingAddress', hideType: true]"/>
-                                    </div>
+                                <% Map model = [:]
+                                model.orgId = orgInstance?.id
+                                model.redirect = '.'
+                                model.hideType = true%>
+                                <input class="ui icon button" type="button"
+                                value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
+                                onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_POSTAL.id}', '${model.redirect}', '${model.hideType}');"
+                                >
 
-                                    <div class="item">
-
-                                        <input class="ui button" size="35"
-                                               value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"
-                                               data-semui="modal"
-                                               data-href="#addressFormModalLegalPatronAddress"/>
-                                        <g:render template="../templates/addresses/formModal"
-                                                  model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', hideType: true]"/>
-
-                                    </div>
+                                <input class="ui icon button" type="button"
+                                value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
+                                onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_BILLING.id}', '${model.redirect}', '${model.hideType}');"
+                                >
                                 </div>
 
-                            </g:if>
-                        </dd>
+                                <div class="item">
+                                <input class="ui icon button" type="button"
+                                value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"
+                                onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_LEGAL_PATRON.id}', '${model.redirect}', '${model.hideType}');"
+                                >
+
+                                </div>
+                                </div>
+
+                                </g:if>
+
+                            </dd>
                         </dl>
                     </div>
                 </div><!-- .card -->
@@ -442,17 +522,17 @@
                                                 <g:link controller="organisation" action="show" id="${orgInstance.createdBy.id}">${orgInstance.createdBy.name}</g:link>
                                             </h5>
                                             <g:if test="${createdByOrgGeneralContacts}">
-                                                    <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
-                                                        <g:render template="/templates/cpa/person_full_details" model="${[
-                                                                person              : cbogc,
-                                                                personContext       : orgInstance.createdBy,
-                                                                tmplShowFunctions       : true,
-                                                                tmplShowPositions       : true,
-                                                                tmplShowResponsiblities : true,
-                                                                tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                                editable            : false
-                                                        ]}"/>
-                                                    </g:each>
+                                                <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
+                                                    <g:render template="/templates/cpa/person_full_details" model="${[
+                                                            person              : cbogc,
+                                                            personContext       : orgInstance.createdBy,
+                                                            tmplShowFunctions       : true,
+                                                            tmplShowPositions       : true,
+                                                            tmplShowResponsiblities : true,
+                                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                            editable            : false
+                                                    ]}"/>
+                                                </g:each>
                                             </g:if>
                                         </dd>
                                     </dl>
@@ -517,12 +597,12 @@
 
 
     function showRegionsdropdown(newValue) {
-         $("*[id^=regions_]").hide();
-         if(newValue){
-             var id = newValue.split(':')[1]
-             // $("#regions_" + id).editable('setValue', null);
-             $("#regions_" + id).show();
-         }
+        $("*[id^=regions_]").hide();
+        if(newValue){
+            var id = newValue.split(':')[1]
+            // $("#regions_" + id).editable('setValue', null);
+            $("#regions_" + id).show();
+        }
     };
 
     $(document).ready(function(){
