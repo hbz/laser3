@@ -219,7 +219,7 @@ class OrganisationService {
     boolean removeDepartment(Org department) {
         Org contextOrg = contextService.org
         Combo combo = Combo.findByFromOrgAndToOrgAndType(department,contextOrg, RDStore.COMBO_TYPE_DEPARTMENT)
-        if(combo.delete()) {
+        if(combo.delete(flush:true)) {
             department.status = RDStore.O_STATUS_DELETED
             return department.save()
         }

@@ -200,7 +200,7 @@ class ChangeNotificationService extends AbstractLockableService {
         // If we got this far, all is OK, delete any pending changes
         //pc_delete_list.each { pc ->
           // log.debug("Deleting reported change ${pc.id}");
-          //pc.delete()
+          //pc.delete(flush:true)
         //}
         cleanUpGorm()
       } // queueItems.each{}

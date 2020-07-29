@@ -778,7 +778,7 @@ class YodaController {
                 'select op from OrgProperty op join op.type pd where pd.descr = :orgConf '
                 + 'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' ) and op.tenant = :context and op.isPublic = false',
                 [orgConf: PropertyDefinition.ORG_CONF, context: contextOrg]
-        ).each{ it.delete() }
+        ).each{ it.delete(flush:true) }
 
         redirect action:'dashboard'
     }

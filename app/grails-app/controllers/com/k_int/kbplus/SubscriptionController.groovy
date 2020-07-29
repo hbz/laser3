@@ -385,7 +385,7 @@ class SubscriptionController
         Long subId = ieCoverage.issueEntitlement.subscription.id
         if(ieCoverage) {
             PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:RDStore.PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
-            ieCoverage.delete()
+            ieCoverage.delete(flush:true)
             redirect action: 'index', id: subId, params: params
         }
         else log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
@@ -2432,7 +2432,7 @@ class SubscriptionController
                             SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
 
                             try {
-                                privateProp.delete()
+                                privateProp.delete(flush:true)
                                 deletedProperties++
                             } catch (Exception e)
                             {
@@ -2453,7 +2453,7 @@ class SubscriptionController
                             SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
 
                             try {
-                                customProp.delete()
+                                customProp.delete(flush:true)
                                 deletedProperties++
                             } catch (Exception e){
                                 log.error( e.toString() )

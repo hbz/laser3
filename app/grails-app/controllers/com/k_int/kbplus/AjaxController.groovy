@@ -1720,7 +1720,7 @@ class AjaxController {
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == property.id) {
-                            pc.delete()
+                            pc.delete(flush:true)
                         }
                     }
                 }
@@ -2036,7 +2036,7 @@ class AjaxController {
         break
         default: def obj = genericOIDService.resolveOID(params.oid)
           if (obj) {
-            obj.delete()
+            obj.delete(flush:true)
           }
         break
       }
@@ -2048,7 +2048,7 @@ class AjaxController {
     def deletePersonRole(){
         def obj = genericOIDService.resolveOID(params.oid)
         if (obj) {
-                obj.delete()
+                obj.delete(flush:true)
         }
     }
 
@@ -2190,7 +2190,7 @@ class AjaxController {
         if (owner && target) {
             if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
                 log.debug("Identifier deleted: ${params}")
-                target.delete()
+                target.delete(flush:true)
             }
         }
         redirect(url: request.getHeader('referer'))
@@ -2326,8 +2326,8 @@ class AjaxController {
     def target_object = resolveOID2(params.targetOid)
     if ( context_object."${params.contextProperty}".contains(target_object) ) {
       def otr = context_object."${params.contextProperty}".remove(target_object)
-      target_object.delete()
-      context_object.save(flush:true);
+      target_object.delete(flush:true)
+      context_object.save(flush:true)
     }
     redirect(url: request.getHeader('referer'))
 

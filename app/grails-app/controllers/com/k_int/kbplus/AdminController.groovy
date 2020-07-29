@@ -334,22 +334,22 @@ class AdminController extends AbstractDebugController {
         log.info("Deleting Package ")
         log.info("${pkg.id}::${pkg}")
         pkg.pendingChanges.each{
-          it.delete()
+          it.delete(flush:true)
         }
         pkg.documents.each{
-          it.delete()
+          it.delete(flush:true)
         }
         pkg.orgs.each{
-          it.delete()
+          it.delete(flush:true)
         }
 
                 pkg.subscriptions.each{
-                    it.delete()
+                    it.delete(flush:true)
                 }
                 pkg.tipps.each{
-                    it.delete()
+                    it.delete(flush:true)
                 }
-                pkg.delete()
+                pkg.delete(flush:true)
             }
             log.info("Delete Complete.")
         }
@@ -1500,7 +1500,7 @@ class AdminController extends AbstractDebugController {
             Org target = genericOIDService.resolveOID(params.target)
             def oss = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSettings.SETTING_NOT_FOUND) {
-                oss.delete()
+                oss.delete(flush:true)
             }
             target.lastUpdated = new Date()
             target.save(flush:true)
@@ -1617,7 +1617,7 @@ class AdminController extends AbstractDebugController {
                     def idns = genericOIDService.resolveOID(params.oid)
                     if (idns && Identifier.countByNs(idns) == 0) {
                         try {
-                            idns.delete()
+                            idns.delete(flush:true)
                             flash.message = "Namensraum ${idns.ns} wurde gelöscht."
                         } catch (Exception e) {
                             flash.message = "Namensraum ${idns.ns} konnte nicht gelöscht werden."
@@ -1670,7 +1670,7 @@ class AdminController extends AbstractDebugController {
                     if (pd) {
                         if (! pd.isHardData) {
                             try {
-                                pd.delete()
+                                pd.delete(flush:true)
                                 flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de])
                             }
                             catch(Exception e) {
@@ -1770,7 +1770,7 @@ class AdminController extends AbstractDebugController {
         else if (params.cmd == 'delete') {
             def pdg = genericOIDService.resolveOID(params.oid)
             try {
-                pdg.delete()
+                pdg.delete(flush:true)
                 flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
             }
             catch (e) {

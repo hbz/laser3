@@ -1618,7 +1618,7 @@ class SubscriptionService {
         else if(unlink && curLink) {
             String sourceOID = curLink.source
             License lic = genericOIDService.resolveOID(sourceOID)
-            curLink.delete() //delete() is void, no way to check whether errors occurred or not
+            curLink.delete(flush:true) //delete() is void, no way to check whether errors occurred or not
             if(sub._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
                 String linkedSubsQuery = "select li from Links li where li.source = :lic and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:subscrTypes) and oo.org = :subscr)"
                 Set<Links> linkedSubs = Links.executeQuery(linkedSubsQuery, [lic: sourceOID, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])

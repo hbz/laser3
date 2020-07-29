@@ -920,12 +920,12 @@ class LicenseController
       if (opl.licenses.isEmpty()) {
           opl.usageTerm.each{
             it.usageTermLicenseText.each{
-              it.delete()
+              it.delete(flush:true)
             }
           }
-          opl.delete();
-          dc.delete();
-          doc.delete();
+          opl.delete(flush:true);
+          dc.delete(flush:true);
+          doc.delete(flush:true);
       }
       if (license.hasErrors()) {
           license.errors.each {

@@ -1854,7 +1854,7 @@ class SurveyController {
 
         def surveyProperty = PropertyDefinition.findByIdAndTenant(params.deleteId, result.institution)
 
-        if (surveyProperty.countUsages()==0 && surveyProperty.owner.id == result.institution.id && surveyProperty.delete())
+        if (surveyProperty.countUsages()==0 && surveyProperty.owner.id == result.institution.id && surveyProperty.delete(flush:true))
         {
             //flash.message = message(code: 'default.deleted.message', args:[message(code: 'surveyProperty.label'), surveyProperty.getI10n('name')])
         }
@@ -3743,7 +3743,7 @@ class SurveyController {
                              def cig = CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )
                              if (cig) {
                                  log.debug('deleting ' + cig)
-                                 cig.delete()
+                                 cig.delete(flush:true)
                              }
                          }*/
 
