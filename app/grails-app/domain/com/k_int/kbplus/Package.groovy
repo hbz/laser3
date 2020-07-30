@@ -422,9 +422,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     removePackagePendingChanges(subList,true)
                     if (deleteIdList) {
                         deleteIdList.collate(32767).each { List chunk ->
-                            IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)", [delList: chunk])
-                            PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)", [delList: chunk])
-                            IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: chunk])
+                            IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.status = :delStatus where ie.id in (:delList)", [delList: chunk,delStatus:RDStore.TIPP_STATUS_DELETED])
                         }
                     }
 

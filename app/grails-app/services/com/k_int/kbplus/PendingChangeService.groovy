@@ -461,7 +461,8 @@ class PendingChangeService extends AbstractLockableService {
             accepted.addAll(memberACs)
         }
         result.addAll(pending.drop(configMap.pendingOffset).take(configMap.max))
-        result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
+        if(configMap.notifications)
+            result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
         result.each { PendingChange change ->
                 //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
                 if(change.subscription) {

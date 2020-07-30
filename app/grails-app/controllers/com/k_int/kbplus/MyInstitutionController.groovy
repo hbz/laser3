@@ -2048,8 +2048,12 @@ AND EXISTS (
     def changes() {
         Map<String, Object> result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),max:result.max,pendingOffset:result.offset,pending:true,notifications:false]
+
+        result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
         result
     }

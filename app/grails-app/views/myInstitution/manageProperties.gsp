@@ -55,19 +55,6 @@
 
     <g:set var="editableOld" value="${editable}"/>
 
-
-    <div class="ui segment">
-        <h4>${message(code: 'property.manageProperties.deletePropertyInfo')}</h4>
-
-        <g:link class="ui button negative js-open-confirm-modal"
-                data-confirm-tokenMsg="${message(code: 'property.manageProperties.deleteProperty.button.confirm')}"
-                data-confirm-term-how="ok" action="processDeleteProperties" id="${params.id}"
-                params="[filterPropDef: filterPropDef]">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</g:link>
-
-    </div>
-
-    <div class="divider"></div>
-
     <div class="ui segment">
         <h3><g:message code="property.manageProperties.info"/></h3>
         <g:form action="processManageProperties" method="post" class="ui form">
@@ -277,6 +264,7 @@
     </div>
 
     <div class="ui segment">
+
         <g:form action="processManageProperties" method="post" class="ui form">
             <g:hiddenField name="id" value="${params.id}"/>
 
@@ -336,7 +324,10 @@
             </div>
 
             <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
-
+            <g:link class="ui button negative js-open-confirm-modal"
+                    data-confirm-tokenMsg="${message(code: 'property.manageProperties.deleteProperty.button.confirm')}"
+                    data-confirm-term-how="ok" action="processDeleteProperties" id="${params.id}"
+                    params="[filterPropDef: filterPropDef]">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</g:link>
 
             <h3>${message(code: 'property.manageProperties.object')} <semui:totalNumber
                     total="${filteredObjs?.size()}"/></h3>
