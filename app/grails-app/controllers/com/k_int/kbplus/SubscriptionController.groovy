@@ -5590,6 +5590,36 @@ class SubscriptionController
 
                 }
 
+                if (params.subscription.copyIssueEntitlementGroupItem) {
+
+
+                    baseSubscription.ieGroups.each { ieGroup ->
+
+                        IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(
+                                name: ieGroup.name,
+                                description: ieGroup.description,
+                                sub: newSubscriptionInstance
+                        )
+                        if(issueEntitlementGroup.save()) {
+
+                                    ieGroup.items.each{  ieGroupItem ->
+                                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(newSubscriptionInstance, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
+                                        if(ie){
+                                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                                    ie: ie,
+                                                    ieGroup: issueEntitlementGroup)
+
+                                            if (!issueEntitlementGroupItem.save(flush: true)) {
+                                                log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                                            }
+                                        }
+
+                                    }
+                        }
+                    }
+
+                }
+
                 if (params.subscription.copyCustomProperties) {
                     //customProperties
                     baseSubscription.propertySet.findAll{ it.isPublic && it.tenant.id == result.institution.id }.each{ SubscriptionProperty prop ->

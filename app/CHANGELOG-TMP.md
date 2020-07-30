@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2555    30.07.2020  hbz-dev     Moe     Feature     Titelgruppen in verschiedenen Prozessen beachten
+
 2686    21.07.2020  hbz-dev     Ingrid  Feature     Bugfixing Layout Kontakt / Möglichkeit für Kopieren der Mailadresse in die Zwischenablage schaffen
 
 2693    17.07.2020  rc1.4       Moe     Bug         Umfrage Ausschüttungsfunktion 0% nicht ausschütten

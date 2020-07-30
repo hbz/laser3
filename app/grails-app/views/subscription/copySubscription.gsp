@@ -184,15 +184,31 @@
             <tr>
                 <th><g:checkBox name="subscription.copyEntitlements" value="${true}"/></th>
                 <th>${message(code: 'subscription.copyEntitlements')}</th>
-                <td><b>${message(code: 'issueEntitlement.countSubscription')}</b> ${subscription.issueEntitlements.findAll {
+                <td><b>${message(code: 'issueEntitlement.countSubscription')}</b> <g:link controller="subscription" action="index" target="_blank" id="${subscription.id}">${subscription.issueEntitlements.findAll {
                     it.status != RDStore.TIPP_STATUS_DELETED
-                }.size()}
+                }.size()}</g:link>
 
                     %{--                        <g:each in="${subscription.issueEntitlements.sort{it.tipp.title}}" var="ie">
                                                 <g:if test="${ie.status != RDStore.TIPP_STATUS_DELETED}">
                     ${ie.tipp.title.title}
                 </g:if>
                 </g:each>--}%
+                </td>
+            </tr>
+
+            <tr>
+                <th><g:checkBox name="subscription.copyIssueEntitlementGroupItem" value="${true}"/></th>
+                <th>${message(code: 'subscription.copyIssueEntitlementGroupItem')}</th>
+                <td><b>${message(code: 'subscription.details.ieGroups')}:</b><br>
+                    <ul>
+                        <g:each in="${subscription.ieGroups.sort{it.name}}" var="titleGroup" status="i">
+                            <li>
+                                <g:link action="index" id="${params.id}" params="[titleGroup: titleGroup.id]">
+                                ${titleGroup.name} (${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items.size()})
+                                    </g:link>
+                            </li>
+                        </g:each>
+                    </ul>
                 </td>
             </tr>
 
