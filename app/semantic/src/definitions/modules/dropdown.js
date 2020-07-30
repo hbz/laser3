@@ -1858,22 +1858,12 @@ $.fn.dropdown = function(parameters) {
                 $choice.find(selector.menu).remove();
                 $choice.find(selector.menuIcon).remove();
               }
-              if($choice.children().hasClass('description')) {
-                // remove all the inner text from this span tag with the class description
-                //$choice.children().remove('.description')
-              }
-/*              return ($choice.data(metadata.text) !== undefined)
+              return ($choice.data(metadata.text) !== undefined)
                 ? $choice.data(metadata.text)
                 : (preserveHTML)
                   ? $.trim($choice.html())
                   : $.trim($choice.text())
-              ;*/
-
-              //always return only the text part of of a choice
-              return ($choice.data(metadata.text) !== undefined)
-                  ? $choice.data(metadata.text)
-                  :  $choice.text().trim()
-                  ;
+              ;
             }
           },
           choiceValue: function($choice, choiceText) {
