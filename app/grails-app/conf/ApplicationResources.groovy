@@ -2,7 +2,7 @@ modules = {
 
     overrides {
         'jquery' {
-            resource id:'js', url:'js/jquery-3.2.1.min.js'
+            resource id:'js', url:'js/libs/jquery-3.2.1.min.js'
         }
     }
 
@@ -61,27 +61,27 @@ modules = {
         // legacy CRAP ..
         // legacy CRAP ..
 
-        resource url:'semantic-restoration/jquery-editable.css', attrs: [media: 'screen,print']               // updated stuff
-        resource url:'semantic-restoration/jquery.poshytip.js'                // updated stuff
-        resource url:'semantic-restoration/jquery-editable-poshytip.min.js'   // updated stuff
+        resource url:'css/jquery-editable.css', attrs: [media: 'screen,print']               // updated stuff
+        resource url:'js/libs/jquery.poshytip.js'                // updated stuff
+        resource url:'js/libs/jquery-editable-poshytip.min.js'   // updated stuff
 
         resource url:'js/libs/moment-with-locales.min.js'
         resource url:'js/libs/moment.min.js'
 
-        resource url:'semantic-restoration/jquery.readmore.min.js' // new stuff
+        resource url:'js/libs/jquery.readmore.min.js' // new stuff
 
         //resource url:'css/select2.css'            // updated stuff // new version 3.5.4
         resource url:'css/select2-laser.css', attrs: [media: 'screen,print']       // overwrite to look more like semantic ui
-        resource url:'js/select2.min.js'         // updated stuff // new version 3.5.4
-        resource url:'js/readmore.min.js'
+        resource url:'js/libs/select2.min.js'       // updated stuff // new version 3.5.4
+        resource url:'js/libs/readmore.min.js'
 
         resource url:'js/submodules/dict.js.gsp'
         resource url:'js/application.js.gsp'
-        resource url:'js/submodules/decksaver.js.gsp'
-        resource url:'js/submodules/tooltip.js.gsp'
-        resource url:'js/submodules/bb8.js.gsp'
-        resource url:'js/submodules/a11y/collections/menu.js.gsp'
-        resource url:'js/submodules/a11y/elements/icon.js.gsp'
+        resource url:'js/submodules/decksaver.js'
+        resource url:'js/submodules/tooltip.js'
+        resource url:'js/submodules/bb8.js'
+        resource url:'js/submodules/a11y/collections/menu.js'
+        resource url:'js/submodules/a11y/elements/icon.js'
     }
 
     swaggerApi {
