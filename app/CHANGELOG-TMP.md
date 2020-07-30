@@ -2,6 +2,18 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2734    30.07.2020  rc1.5       Andreas Bug         PropertyService fehlte im SubscriptionService, was zu Absturz des Merkmalfilters auf "Meine Lizenzen pro Einrichtung" führte
+
+2732    30.07.2020  rc1.5       Andreas Bug         Absturz bei Aufruf von Teilnehmerverträgen, wenn keine solche vorhanden
+
+2731    30.07.2020  rc1.5       Andreas Bug         Abfrage nach den Nutzungszahlen der allgemeinen Merkmale um Kontextorg erweitert
+
+2729    30.07.2020  rc1.5       Andreas Bug         Abfrage ließ zentral verwaltete Lizenzen bei Kindlizenzen aus
+
+2728    30.07.2020  rc1.5       Andreas Bug         Referenzwert wird bei Merkmale in Objekten verwalten gesetzt
+
+2727    30.07.2020  rc1.5       Andreas Bug         Entküpfen von Paketen sowie Löschen von Lizenzen repariert
+
 2725    30.07.2020  rc1.5       Andreas Bug         Zauberstab- und Exportmenü in Merkmale verwalten getauscht
 
 2719    30.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen im Zuge der Reaktivierung von retriggerPendingChanges
