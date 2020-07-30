@@ -87,8 +87,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 String resumption = null
                 // perform GET request, expection XML response data
                 while(more) {
-                    //Map<String,String> queryParams = [verb:'ListRecords',metadataPrefix:'gokb']
-                    Map<String,String> queryParams = [verb:'GetRecord',metadataPrefix:'gokb',identifier:'a3f41aef-8316-442e-99e9-29e2f011fc22'] //for debugging
+                    Map<String,String> queryParams = [verb:'ListRecords',metadataPrefix:'gokb']
+                    //Map<String,String> queryParams = [verb:'GetRecord',metadataPrefix:'gokb',identifier:'a3f41aef-8316-442e-99e9-29e2f011fc22'] //for debugging
                     if(resumption) {
                         queryParams.resumptionToken = resumption
                         log.info("in loop, making request with link ${source.uri}?verb=ListRecords&metadataPrefix=gokb&resumptionToken=${resumption} ...")
