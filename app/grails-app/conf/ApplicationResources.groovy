@@ -6,29 +6,29 @@ modules = {
         }
     }
 
-/*    annotations { // not used in working code of laser
-        //dependsOn 'semanticUI'
+//    annotations { // not used in working code of laser
+//        //dependsOn 'semanticUI'
+//
+//        resource url:'js/deprecated/summernote.min.js' //used in annotations.js
+//        resource url:'css/deprecated/summernote.css', attrs: [media: 'screen,print']
+//        resource url:'css/deprecated/summernote-bs2.css', attrs: [media: 'screen,print']
+//
+//        resource url:'js/deprecated/legacy.annotations.js' // used in deprecated code
+//        resource url:'css/deprecated/legacy.annotations.css', attrs: [media: 'screen,print']
+//    }
 
-        resource url:'js/deprecated/summernote.min.js' //used in annotations.js
-        resource url:'css/deprecated/summernote.css', attrs: [media: 'screen,print']
-        resource url:'css/deprecated/summernote-bs2.css', attrs: [media: 'screen,print']
+//    onixMatrix { //  modules="onixMatrix" not used in working code of laser
+//        dependsOn 'semanticUI'
+//
+//        resource url:'css/legacy.onix.css', attrs: [media: 'screen,print']
+//        resource url:'js/legacy.onix.js'
+//    }
 
-        resource url:'js/deprecated/legacy.annotations.js' // used in deprecated code
-        resource url:'css/deprecated/legacy.annotations.css', attrs: [media: 'screen,print']
-    }*/
-
-    onixMatrix { //  modules="onixMatrix" not used in working code of laser
-        dependsOn 'semanticUI'
-
-        resource url:'css/legacy.onix.css', attrs: [media: 'screen,print']
-        resource url:'js/legacy.onix.js'
-    }
-
-    deprecated {
-        //resource url:'css/select2.css'
-        resource url:'js/tmp_semui.js'   // only tmp
-        resource url:'css/tmp_semui.css', attrs: [media: 'screen,print']   // only tmp
-    }
+//    deprecated {
+//        //resource url:'css/select2.css'
+//        resource url:'js/tmp_semui.js'   // only tmp
+//        resource url:'css/tmp_semui.css', attrs: [media: 'screen,print']   // only tmp
+//    }
 
     semanticUI {
         dependsOn 'base'
@@ -55,10 +55,12 @@ modules = {
     }
     base {
         dependsOn 'jquery'
-        dependsOn 'deprecated'
 
-        // legacy CRAP ..
-        // legacy CRAP ..
+        // deprecated
+
+        resource url:'js/tmp_semui.js'   // only tmp
+        resource url:'css/tmp_semui.css', attrs: [media: 'screen,print']   // only tmp
+
         // legacy CRAP ..
 
         resource url:'css/jquery-editable.css', attrs: [media: 'screen,print']               // updated stuff
