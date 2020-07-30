@@ -2405,7 +2405,7 @@ class SubscriptionController
                         //private Property
 
                         List<SubscriptionProperty> existingProps = subChild.propertySet.findAll {
-                            it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id && !it.isPublic
+                            it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id
                         }
                         existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
@@ -2427,7 +2427,7 @@ class SubscriptionController
                         //custom Property
 
                         def existingProp = subChild.propertySet.find {
-                            it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id && it.isPublic
+                            it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id
                         }
 
 

@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2725    30.07.2020  rc1.5       Andreas Bug         Zauberstab- und Exportmenü in Merkmale verwalten getauscht
+
+2719    30.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen im Zuge der Reaktivierung von retriggerPendingChanges
+
 2711    29.07.2020  rc1.5       Moe     Bug         Hinzufügen neuer Teilnehmer zu Umfrage scheitert
 
 2721    28.07.2020  rc1.5       Andreas Bug         fehlende Berechtigung bei Anbieter bearbeiten nachgereicht

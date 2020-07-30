@@ -164,6 +164,9 @@
                         <th>${message(code: 'package.scope')}</th>
                         <th>${message(code: 'package.contentType.label')}</th>
                         <th>${message(code: 'package.packageListStatus')}</th>
+                        <sec:ifAllGranted roles="ROLE_YODA">
+                            <th class="x"></th>
+                        </sec:ifAllGranted>
                     </tr>
                     </thead>
                     <tbody>
@@ -172,36 +175,36 @@
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
                                 <!--${record} -->
-                                <!--UUID: ${record?.uuid} -->
-                                <!--Package: ${com.k_int.kbplus.Package.findByGokbId(record?.uuid)} -->
-                                <g:if test="${com.k_int.kbplus.Package.findByGokbId(record?.uuid)}">
+                                <!--UUID: ${record.uuid} -->
+                                <!--Package: ${com.k_int.kbplus.Package.findByGokbId(record.uuid)} -->
+                                <g:if test="${com.k_int.kbplus.Package.findByGokbId(record.uuid)}">
                                     <g:link controller="package" action="show"
-                                            id="${com.k_int.kbplus.Package.findByGokbId(record?.uuid).id}">${record?.name}</g:link>
+                                            id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${record.name}</g:link>
                                 </g:if>
                                 <g:else>
-                                    ${record?.name} <a target="_blank"
-                                                      href="${record?.editUrl ? record?.editUrl + '/gokb/public/packageContent/' + record?.uuid : '#'}"><i
+                                    ${record.name} <a target="_blank"
+                                                      href="${record.editUrl ? record.editUrl + '/gokb/public/packageContent/' + record.uuid : '#'}"><i
                                             title="GOKB Link" class="external alternate icon"></i></a>
                                 </g:else>
                             </td>
                             <td>
-                                <g:if test="${record?.titleCount}">
-                                    <g:if test="${record?.titleCount == 1}">
-                                        <g:if test="${com.k_int.kbplus.Package.findByGokbId(record?.uuid)}">
+                                <g:if test="${record.titleCount}">
+                                    <g:if test="${record.titleCount == 1}">
+                                        <g:if test="${com.k_int.kbplus.Package.findByGokbId(record.uuid)}">
                                             <g:link controller="package" action="current"
-                                                    id="${com.k_int.kbplus.Package.findByGokbId(record?.uuid).id}">${message(code: 'package.index.result.titles.single')}</g:link>
+                                                    id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${message(code: 'package.index.result.titles.single')}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${message(code: 'package.index.result.titles.single')}
                                         </g:else>
                                     </g:if>
                                     <g:else>
-                                        <g:if test="${com.k_int.kbplus.Package.findByGokbId(record?.uuid)}">
+                                        <g:if test="${com.k_int.kbplus.Package.findByGokbId(record.uuid)}">
                                             <g:link controller="package" action="current"
-                                                    id="${com.k_int.kbplus.Package.findByGokbId(record?.uuid).id}">${message(code: 'package.index.result.titles', args: [record?.titleCount])}</g:link>
+                                                    id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${message(code: 'package.index.result.titles', args: [record.titleCount])}</g:link>
                                         </g:if>
                                         <g:else>
-                                            ${message(code: 'package.index.result.titles', args: [record?.titleCount])}
+                                            ${message(code: 'package.index.result.titles', args: [record.titleCount])}
                                         </g:else>
 
                                     </g:else>
@@ -242,6 +245,11 @@
                                 </g:elseif>
                                 <g:else></g:else>
                             </td>
+                            <sec:ifAllGranted roles="ROLE_YODA">
+                                <td>
+                                    <g:link class="ui button" controller="yoda" action="retriggerPendingChanges" params="${[packageUUID:record.uuid]}"><g:message code="menu.yoda.retriggerPendingChanges"/></g:link>
+                                </td>
+                            </sec:ifAllGranted>
                         </tr>
                     </g:each>
                     </tbody>
