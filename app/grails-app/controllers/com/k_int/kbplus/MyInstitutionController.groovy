@@ -3643,19 +3643,7 @@ AND EXISTS (
         String propertyType = pd.tenant ? PropertyDefinition.PRIVATE_PROPERTY : PropertyDefinition.CUSTOM_PROPERTY
         if(params.newObjects) {
             params.list("newObjects").each { String id ->
-                def owner
-                switch(pd.descr) {
-                    case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
-                        break
-                    case PropertyDefinition.LIC_PROP: owner = License.get(id)
-                        break
-                    case PropertyDefinition.ORG_PROP: owner = Org.get(id)
-                        break
-                    case PropertyDefinition.PRS_PROP: owner = Person.get(id)
-                        break
-                    case PropertyDefinition.PLA_PROP: owner = Platform.get(id)
-                        break
-                }
+                def owner = resolveOwner(pd,id)
                 if(owner) {
                     AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
                     if(!prop || pd.multipleOccurrence) {
@@ -3677,31 +3665,65 @@ AND EXISTS (
             }
         }
         if(params.selectedObjects) {
-            params.list("selectedObjects").each { String id ->
-                def owner
-                switch(pd.descr) {
-                    case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
-                        break
-                    case PropertyDefinition.LIC_PROP: owner = License.get(id)
-                        break
-                    case PropertyDefinition.ORG_PROP: owner = Org.get(id)
-                        break
-                    case PropertyDefinition.PRS_PROP: owner = Person.get(id)
-                        break
-                    case PropertyDefinition.PLA_PROP: owner = Platform.get(id)
-                        break
-                }
-                if(owner) {
-                    AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
-                    if(prop)
-                        setPropValue(prop, params.filterPropValue)
+            if(params.deleteProperties) {
+                List selectedObjects = params.list("selectedObjects")
+                processDeleteProperties(pd,selectedObjects,result.institution)
+            }
+            else {
+                params.list("selectedObjects").each { String id ->
+                    def owner = resolveOwner(pd,id)
+                    if(owner) {
+                        AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
+                        if(prop)
+                            setPropValue(prop, params.filterPropValue)
+                    }
                 }
             }
         }
         redirect action: 'manageProperties', params: [filterPropDef:params.filterPropDef]
     }
 
-    boolean setPropValue(AbstractPropertyWithCalculatedLastUpdated prop, String filterPropValue) {
+    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def processDeleteProperties(PropertyDefinition propDef, selectedObjects, Org contextOrg) {
+        int deletedProperties = 0
+        selectedObjects.each { ownerId ->
+            def owner = resolveOwner(propDef,ownerId)
+            Set<AbstractPropertyWithCalculatedLastUpdated> existingProps = owner.propertySet.findAll {
+                it.owner.id == owner.id && it.type.id == propDef.id && it.tenant.id == contextOrg.id && !AuditConfig.getConfig(it)
+            }
+
+            existingProps.each { AbstractPropertyWithCalculatedLastUpdated prop ->
+                owner.propertySet.remove(prop)
+                owner.save()
+                prop.delete()
+                deletedProperties++
+            }
+        }
+    }
+
+    def resolveOwner(PropertyDefinition pd, String id) {
+        def owner
+        switch(pd.descr) {
+            case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
+                break
+            case PropertyDefinition.LIC_PROP: owner = License.get(id)
+                break
+            case PropertyDefinition.ORG_PROP: owner = Org.get(id)
+                break
+            case PropertyDefinition.PRS_PROP: owner = Person.get(id)
+                break
+            case PropertyDefinition.PLA_PROP: owner = Platform.get(id)
+                break
+        }
+        owner
+    }
+
+    //explicit assignal raises a grails warning
+    boolean setPropValue(prop, String filterPropValue) {
+        prop = (AbstractPropertyWithCalculatedLastUpdated) prop
         switch(prop.type.type) {
             case Integer.toString(): prop.intValue = Integer.parseInt(filterPropValue)
                 break

@@ -237,7 +237,7 @@
                                                                         tmplModalID:"sub_edit_link_${link.id}",
                                                                         editmode: editable,
                                                                         context: subscription,
-                                                                        atConsortialParent: contextOrg == subscription.getConsortia(),
+                                                                        atConsortialParent: contextOrg.id == subscription.getConsortia()?.id ? "true" : "false",
                                                                         link: link
                                                               ]}" />
                                                     <g:if test="${editable}">
@@ -267,7 +267,7 @@
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
                                                 editmode: editable,
-                                                atConsortialParent: contextOrg == subscription.getConsortia(),
+                                                atConsortialParent: contextOrg.id == subscription.getConsortia()?.id ? "true" : "false",
                                                 context: subscription
                                       ]}" />
                         </div>

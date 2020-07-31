@@ -80,9 +80,13 @@ class ControlledListService {
         else if(params.ctx && params.ctx.contains(License.class.name))
             ctx = genericOIDService.resolveOID(params.ctx)
         switch(ctx?.getCalculatedType()) {
-            case CalculatedType.TYPE_CONSORTIAL: queryString += " and s.instanceOf = null "
+            case CalculatedType.TYPE_CONSORTIAL:
+            case CalculatedType.TYPE_ADMINISTRATIVE:
+                queryString += " and s.instanceOf = null "
                 break
-            case CalculatedType.TYPE_PARTICIPATION: queryString += " and s.instanceOf != null "
+            case CalculatedType.TYPE_PARTICIPATION:
+            case CalculatedType.TYPE_LOCAL:
+                queryString += " and s.instanceOf != null "
                 break
         }
         if(params.status) {
@@ -226,7 +230,7 @@ class ControlledListService {
         LinkedHashMap licenses = [results:[]]
         List<License> result = []
         String licFilter = ''
-        LinkedHashMap filterParams = [org:org,orgRoles:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS]]
+        LinkedHashMap filterParams = [org:org,orgRoles:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE]]
         if(params.query && params.query.length() > 0) {
             licFilter = ' and genfunc_filter_matcher(l.reference,:query) = true '
             filterParams.put('query',params.query)
@@ -241,13 +245,14 @@ class ControlledListService {
             ctx = genericOIDService.resolveOID(params.ctx)
         }
         switch(ctx?.getCalculatedType()) {
-            case CalculatedType.TYPE_CONSORTIAL: licFilter += " and l.instanceOf = null "
+            case CalculatedType.TYPE_CONSORTIAL:
+            case CalculatedType.TYPE_ADMINISTRATIVE:
+                licFilter += " and l.instanceOf = null "
                 break
-            case CalculatedType.TYPE_PARTICIPATION: licFilter += " and l.instanceOf != null "
+            case CalculatedType.TYPE_PARTICIPATION:
+            case CalculatedType.TYPE_LOCAL:
+                licFilter += " and l.instanceOf != null "
                 break
-        }
-        if(params.filterMembers == "true") {
-            filterParams.orgRoles.removeAll([RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS])
         }
         result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
@@ -380,7 +385,6 @@ class ControlledListService {
 
     Map getLinkedObjects(Map params) {
         Map result = [results:[]]
-        Org org = contextService.getOrg()
         if(params.source) {
             Long id
             String name
@@ -392,7 +396,7 @@ class ControlledListService {
                         status = RefdataValue.get(Long.parseLong(params.status))
                     }
                     else status = RDStore.SUBSCRIPTION_CURRENT
-                    links = Subscription.executeQuery("select s.name as name, s.id as id from Subscription s where concat('"+Subscription.class.name+":',s.id) in (select li.destination from Links li where li.source = :source and li.linkType in (:linkTypes) and li.owner = :owner) and s.status = :status",[source:params.source,linkTypes:params.linkTypes,owner:org,status:status])
+                    links = Subscription.executeQuery("select s.name as name, s.id as id from Subscription s where concat('"+Subscription.class.name+":',s.id) in (select li.destination from Links li where li.source = :source and li.linkType in (:linkTypes)) and s.status = :status",[source:params.source,linkTypes:params.linkTypes,status:status])
                     break
             }
             links.each { row ->
@@ -410,7 +414,7 @@ class ControlledListService {
                         status = RefdataValue.get(Long.parseLong(params.status))
                     }
                     else status = RDStore.LICENSE_CURRENT
-                    links = License.executeQuery("select l.reference as name, l.id as id from License l where concat('"+License.class.name+":',l.id) in (select li.source from Links li where li.destination = :destination and li.linkType in (:linkTypes) and li.owner = :owner) and l.status = :status",[destination:params.destination,linkTypes:params.linkTypes,owner:org,status:status])
+                    links = License.executeQuery("select l.reference as name, l.id as id from License l where concat('"+License.class.name+":',l.id) in (select li.source from Links li where li.destination = :destination and li.linkType in (:linkTypes)) and l.status = :status",[destination:params.destination,linkTypes:params.linkTypes,status:status])
                     break
             }
             links.each { row ->
