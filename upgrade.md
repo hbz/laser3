@@ -29,11 +29,12 @@ git commit
 
 $ ./go.sh
 
+##### Docs
 
-
-
-
-
+- https://grails-plugins.github.io/grails-spring-security-core/3.2.x/
+- https://robertoschwald.github.io/grails-audit-logging-plugin/3.0.x/plugin.html
+- http://logback.qos.ch/
+- http://www.asset-pipeline.com/manual/
 
 
 

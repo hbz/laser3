@@ -1,8 +1,11 @@
 package de.laser.auth
+
+import de.laser.traits.I10nTrait
+
 //@GrailsCompileStatic
 //@EqualsAndHashCode(includes='authority')
 //@ToString(includes='authority', includeNames=true, includePackage=false)
-class Role {
+class Role implements I10nTrait {
 
 	String authority
 	String roleType

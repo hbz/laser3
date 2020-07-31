@@ -1,3 +1,4 @@
+
 // globals
 
 grails.cache.enabled = true
@@ -11,9 +12,8 @@ grails.cache.config = {
     }
 }
 
-
 grails.gorm.default.mapping = {
-    autowire true
+    autowire true            // service dependency injection enabled
     id generator: 'identity' // postgresql sequences for primary keys
 }
 
@@ -22,6 +22,10 @@ grails.gorm.default.mapping = {
 grails.plugin.databasemigration.updateOnStart                       = false
 grails.plugin.databasemigration.updateOnStartFileNames              = [ 'changelog.groovy' ]
 grails.plugin.databasemigration.changelogLocation                   = "./migrations"
+
+// audit-logging-plugin
+
+grails.plugin.auditLog.auditDomainClassName = 'org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent'
 
 // spring security plugin
 
@@ -47,14 +51,9 @@ grails.plugin.springsecurity.roleHierarchy = '''
 '''
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-        [pattern: '/monitoring',                access: ['ROLE_YODA']],
-        [pattern: '/swagger/v0/laser.yaml.gsp', access: ['permitAll']],
-        [pattern: '/',               access: ['permitAll']],
-        [pattern: '/error',          access: ['permitAll']],
-        [pattern: '/index',          access: ['permitAll']],
-        [pattern: '/index.gsp',      access: ['permitAll']],
-        [pattern: '/shutdown',       access: ['permitAll']],
+        [pattern: '/api/**',         access: ['permitAll']],
         [pattern: '/assets/**',      access: ['permitAll']],
+        [pattern: '/static/**',      access: ['permitAll']],
         [pattern: '/**/js/**',       access: ['permitAll']],
         [pattern: '/**/css/**',      access: ['permitAll']],
         [pattern: '/**/images/**',   access: ['permitAll']],
@@ -69,7 +68,3 @@ grails.plugin.springsecurity.filterChain.chainMap = [
         [pattern: '/**/favicon.ico', filters: 'none'],
         [pattern: '/**',             filters: 'JOINED_FILTERS']
 ]
-
-// audit-logging-plugin
-
-//grails.plugin.auditLog.auditDomainClassName = 'org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent'

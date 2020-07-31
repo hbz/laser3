@@ -1,11 +1,6 @@
-// This is a manifest file that'll be compiled into application.js.
+// FileName: application.css
 //
-// Any JavaScript file within this directory can be referenced here using a relative path.
-//
-// You're free to add application-wide JavaScript to this file, but it's generally better
-// to create separate JavaScript files as needed.
-//
-//= require jquery-3.3.1.min
-//= require bootstrap
-//= require popper.min
-//= require_self
+//= require jquery-3.2.1.min.js
+//= require tmp/bundle-bundle_deprecated_defer.js
+//= require tmp/bundle-bundle_base_defer.js
+//= require tmp/bundle-bundle_semanticUI_defer.js
