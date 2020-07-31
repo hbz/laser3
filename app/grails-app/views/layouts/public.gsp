@@ -16,11 +16,7 @@
     <r:require module="semanticUI" />
 
     <script>
-      var gspLocale = "${message(code:'default.locale.label')}";
-      var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
-      var gspAjaxLookupUrl = "<g:createLink controller='ajax' action='lookup'/>";
-      var gspSpotlightSearchUrl = "<g:createLink controller='search' action='spotlightSearch'/>";
-
+      <g:render template="/templates/javascript/laser.js" />
       <g:render template="/templates/javascript/dict.js" />
     </script>
 

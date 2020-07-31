@@ -72,12 +72,10 @@ modules = {
 
         resource url:'js/libs/jquery.readmore.min.js' // new stuff
 
-        //resource url:'css/select2.css'            // updated stuff // new version 3.5.4
         resource url:'css/select2-laser.css', attrs: [media: 'screen,print']       // overwrite to look more like semantic ui
         resource url:'js/libs/select2.min.js'       // updated stuff // new version 3.5.4
         resource url:'js/libs/readmore.min.js'
 
-        //resource url:'js/submodules/dict.js.gsp'
         resource url:'js/application.js'
         resource url:'js/submodules/decksaver.js'
         resource url:'js/submodules/tooltip.js'
