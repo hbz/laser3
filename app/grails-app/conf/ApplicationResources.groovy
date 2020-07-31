@@ -46,8 +46,8 @@ modules = {
 
     }
     datatables {
-        resource url:'js/libs/datatables.min.js'
-        resource url:'css/datatables.css', attrs: [media: 'screen,print']
+        resource url:'datatables/datatables.min.js'
+        resource url:'datatables/datatables.css', attrs: [media: 'screen,print']
     }
     chartist {
         resource url:'chartist/javascript/chartist.min.js'
