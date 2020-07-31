@@ -77,8 +77,8 @@ modules = {
         resource url:'js/libs/select2.min.js'       // updated stuff // new version 3.5.4
         resource url:'js/libs/readmore.min.js'
 
-        resource url:'js/submodules/dict.js.gsp'
-        resource url:'js/application.js.gsp'
+        //resource url:'js/submodules/dict.js.gsp'
+        resource url:'js/application.js'
         resource url:'js/submodules/decksaver.js'
         resource url:'js/submodules/tooltip.js'
         resource url:'js/submodules/bb8.js'

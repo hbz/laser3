@@ -15,6 +15,14 @@
     <meta name="viewport" content="initial-scale = 1.0">
     <r:require module="semanticUI" />
 
+    <script>
+      var gspLocale = "${message(code:'default.locale.label')}";
+      var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
+      var gspAjaxLookupUrl = "<g:createLink controller='ajax' action='lookup'/>";
+      var gspSpotlightSearchUrl = "<g:createLink controller='search' action='spotlightSearch'/>";
+
+      <g:render template="/templates/javascript/dict.js" />
+    </script>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
