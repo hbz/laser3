@@ -81,7 +81,7 @@
         }
     </style>
 
-    <r:require modules="swaggerApi" />
+    <r:require module="swaggerApi" />
 
     <r:layoutResources/>
 </head>

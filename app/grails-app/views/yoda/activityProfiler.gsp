@@ -1,9 +1,9 @@
-<r:require module="chartist" />
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.activityProfiler')}</title>
+    <r:require module="chartist" />
 </head>
 <body>
 
