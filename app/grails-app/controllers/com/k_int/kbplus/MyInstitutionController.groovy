@@ -1246,7 +1246,7 @@ join sub.orgRelations or_sub where
         )
 
         if (!licenseInstance.save()) {
-            log.error(licenseInstance.errors)
+            log.error(licenseInstance.errors.toString())
             flash.error = message(code:'license.create.error')
             redirect action: 'emptyLicense'
         }

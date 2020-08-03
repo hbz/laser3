@@ -37,7 +37,7 @@ class ChangeNotificationService extends AbstractLockableService {
       // log.debug("Pending change saved ok");
     }
     else {
-      log.error(new_queue_item.errors);
+      log.error(new_queue_item.errors.toString());
     }
 
   }

@@ -771,7 +771,7 @@ class FinanceController extends AbstractDebugController {
             ci.invoice = null
             ci.order = null
             if(!ci.save())
-                log.error(ci.errors)
+                log.error(ci.errors.toString())
         }
 
         redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: result.showView])
@@ -1128,7 +1128,7 @@ class FinanceController extends AbstractDebugController {
                 costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'true' ?: false
                 if(!costItem.save()) {
                     withErrors = true
-                    flash.error += costItem.getErrors()
+                    flash.error += costItem.errors
                 }
                 else {
                     if(budgetCodes) {
@@ -1148,13 +1148,13 @@ class FinanceController extends AbstractDebugController {
                             }
                             if(!bc.save()) {
                                 withErrors = true
-                                flash.error += bc.getErrors()
+                                flash.error += bc.errors
                             }
                             else {
                                 CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
                                 if(!cig.save()) {
                                     withErrors = true
-                                    flash.error += cig.getErrors()
+                                    flash.error += cig.errors
                                 }
                             }
                         }

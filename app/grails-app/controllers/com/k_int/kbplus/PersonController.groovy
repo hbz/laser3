@@ -255,7 +255,7 @@ class PersonController extends AbstractDebugController {
                 def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, personInstance, pd, org)
 
                 if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
+                    log.error(newProp.errors.toString())
                 } else {
                     log.debug("New person private property created via mandatory: " + newProp.type.name)
                 }

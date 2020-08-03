@@ -661,7 +661,7 @@ class OrganisationController extends AbstractDebugController {
 
 
                 if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
+                    log.error(newProp.errors.toString())
                 } else {
                     log.debug("New org private property created via mandatory: " + newProp.type.name)
                 }
@@ -940,7 +940,7 @@ class OrganisationController extends AbstractDebugController {
                 def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd, contextService.org)
 
                 if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
+                    log.error(newProp.errors.toString())
                 } else {
                     log.debug("New org private property created via mandatory: " + newProp.type.name)
                 }

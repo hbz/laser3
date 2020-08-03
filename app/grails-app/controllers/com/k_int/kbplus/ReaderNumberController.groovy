@@ -85,7 +85,7 @@ class ReaderNumberController extends AbstractDebugController {
 
 	        if (! numbersInstance.save(flush: true)) {
 				flash.error = message(code:'default.not.updated.message', args: [message(code: 'readerNumber.label'), numbersInstance.id])
-				log.error(numbersInstance.getErrors())
+				log.error(numbersInstance.errors.toString())
 	            redirect(url: request.getHeader('referer'))
 	            return
 	        }

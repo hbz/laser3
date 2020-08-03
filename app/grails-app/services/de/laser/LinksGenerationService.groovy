@@ -139,13 +139,13 @@ class LinksGenerationService {
                     commentContext.save()
                 }
                 else {
-                    log.error(linkComment.errors)
+                    log.error(linkComment.errors.toString())
                     errors = messageSource.getMessage('default.linking.savingError',null, LocaleContextHolder.getLocale())
                 }
             }
         }
         else if(link && link.errors) {
-            log.error(link.errors)
+            log.error(link.errors.toString())
             errors = messageSource.getMessage('default.linking.savingError',null, LocaleContextHolder.getLocale())
         }
         errors

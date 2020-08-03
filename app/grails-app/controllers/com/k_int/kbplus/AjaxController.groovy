@@ -1150,7 +1150,7 @@ class AjaxController {
             newRefdataValue = RefdataValue.construct(map)
 
             if (newRefdataValue?.hasErrors()) {
-                log.error(newRefdataValue.errors)
+                log.error(newRefdataValue.errors.toString())
                 error = message(code: 'default.error')
             }
             else {
@@ -1188,7 +1188,7 @@ class AjaxController {
             newRefdataCategory = RefdataCategory.construct(map)
 
             if (newRefdataCategory?.hasErrors()) {
-                log.error(newRefdataCategory.errors)
+                log.error(newRefdataCategory.errors.toString())
                 error = message(code: 'default.error')
             }
             else {
@@ -1258,7 +1258,7 @@ class AjaxController {
             }
 
             if (newProp?.hasErrors()) {
-                log.error(newProp.errors)
+                log.error(newProp.errors.toString())
                 error = message(code: 'default.error')
             }
             else {
@@ -1314,7 +1314,7 @@ class AjaxController {
       if (existingProp == null || type.multipleOccurrence) {
         newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type, contextOrg )
         if (newProp.hasErrors()) {
-          log.error(newProp.errors)
+          log.error(newProp.errors.toString())
         } else {
           log.debug("New custom property created: " + newProp.type.name)
         }
@@ -1450,7 +1450,7 @@ class AjaxController {
           if (existingProps.size() == 0 || type.multipleOccurrence) {
             newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type, contextService.getOrg())
             if (newProp.hasErrors()) {
-              log.error(newProp.errors)
+              log.error(newProp.errors.toString())
             } else {
               log.debug("New private property created: " + newProp.type.name)
             }
@@ -1815,7 +1815,7 @@ class AjaxController {
 
 
         if(property.hasErrors()) {
-            log.error(property.errors)
+            log.error(property.errors.toString())
         }
         else {
             log.debug("Deleted custom property: " + property.type.name)
@@ -1867,7 +1867,7 @@ class AjaxController {
     property.delete(flush:true)
 
     if(property.hasErrors()){
-      log.error(property.errors)
+      log.error(property.errors.toString())
     } else{
       log.debug("Deleted private property: " + property.type.name)
     }
