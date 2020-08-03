@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2742    03.08.2020  rc1.5       Andreas Bug         Einrichtungseinstellungen und Plattform erreichbar, Merkmale können, den Regeln entsprechend, bearbeitet und gelöscht werden
+
+2741    03.08.2020  rc1.5       Andreas Bug         Buttons bei der Zugangskonfiguration getauscht
+
+2726    03.08.2020  rc1.5       Andreas Bug         Einrichtungsmerkmale inkorrekt verarbeitet (fehlender Tenant)
+
 2055    03.08.2020  hbz-dev     Anja    Feature     Abbechen-Button für neue Subscription, Vertrag, Org, Einrichtung, Anbieter, Benutzer
 
 1265    03.08.2020  hbz-dev     Anja    Feature     Elemente einer Lizenz in eine andere Kopieren: Verfeinern der Lizenzauswahl

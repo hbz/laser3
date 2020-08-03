@@ -3750,7 +3750,7 @@ AND EXISTS (
             case Date.toString(): SimpleDateFormat sdf = DateUtil.SDF_NoTime
                 prop.dateValue = sdf.parse(filterPropValue)
                 break
-            case URL.toString(): prop.urlValue = new URL(filterPropValue)
+            case URL.toString(): prop.urlValue.startsWith('http://') ? new URL(filterPropValue) : new URL('http://'+filterPropValue)
                 break
             case RefdataValue.toString(): prop.refValue = RefdataValue.get(filterPropValue)
                 break

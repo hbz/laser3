@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <!-- _properties -->
 
-<g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), Platform.class.name)}" />
+<g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextOrg, Platform.class.name)}" />
 
 <%-- modal --%>
 
@@ -18,7 +18,7 @@
 
 <div class="ui card la-dl-no-table la-js-hideable">
 
-    <g:set var="allPropDefGroups" value="${platform._getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${platform._getCalculatedPropDefGroups(contextOrg)}" />
 
 <%-- orphaned properties --%>
 
