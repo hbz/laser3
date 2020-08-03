@@ -9,7 +9,7 @@
 
 	<body>
 	<semui:breadcrumbs>
-		<g:if test="${addressInstance.org && (RDStore.OT_PROVIDER.id in addressInstance.org.getallOrgTypeIds())}">
+		<g:if test="${addressInstance.org && (RDStore.OT_PROVIDER.id in addressInstance.org.getAllOrgTypeIds())}">
 			<semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
 			<semui:crumb message="${addressInstance.org.getDesignation()}" controller="organisation" action="show" id="${addressInstance.org.id}"/>
 		</g:if>

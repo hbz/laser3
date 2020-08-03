@@ -7,6 +7,7 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.Links
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.auth.User
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -69,6 +70,34 @@ class LinksGenerationService {
             }
         }
         links
+    }
+
+    List<Subscription> getAllLinkedSubscriptions(List<Subscription> ownerSubscriptions, User user) {
+        Set<Links> sources
+        Set<Links> destinations
+        List<Subscription> result = []
+
+        // links
+        List oIDs = ownerSubscriptions.collect {GenericOIDService.getOID(it)}
+        if (oIDs) {
+            sources = Links.findAllBySourceInList(oIDs)
+            destinations = Links.findAllByDestinationInList(oIDs)
+            //IN is from the point of view of the context object (= obj)
+
+            sources.each { Links link ->
+                def destination = genericOIDService.resolveOID(link.destination)
+                if (destination.respondsTo("isVisibleBy") && destination.isVisibleBy(user) && destination instanceof Subscription) {
+                    result.add(destination)
+                }
+            }
+            destinations.each { Links link ->
+                def source = genericOIDService.resolveOID(link.source)
+                if (source.respondsTo("isVisibleBy") && source.isVisibleBy(user) && source instanceof Subscription) {
+                    result.add(source)
+                }
+            }
+        }
+        result
     }
 
     /**
@@ -139,13 +168,13 @@ class LinksGenerationService {
                     commentContext.save()
                 }
                 else {
-                    log.error(linkComment.errors)
+                    log.error(linkComment.errors.toString())
                     errors = messageSource.getMessage('default.linking.savingError',null, LocaleContextHolder.getLocale())
                 }
             }
         }
         else if(link && link.errors) {
-            log.error(link.errors)
+            log.error(link.errors.toString())
             errors = messageSource.getMessage('default.linking.savingError',null, LocaleContextHolder.getLocale())
         }
         errors

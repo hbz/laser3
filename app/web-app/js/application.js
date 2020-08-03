@@ -38,17 +38,17 @@ r2d2 = {
                     if (month<10) month="0"+month;
                     var year = date.getFullYear();
 
-                    if ('dd.mm.yyyy' == gspDateFormat) {
+                    if ('dd.mm.yyyy' == laser.gspDateFormat) {
                         console.log('dd.mm.yyyy');
                         return day + '.' + month + '.' + year;
                     }
-                    else if ('yyyy-mm-dd' == gspDateFormat) {
+                    else if ('yyyy-mm-dd' == laser.gspDateFormat) {
                         console.log('yyyy-mm-dd');
                         return year + '-' + month + '-' + day;
                     }
                     else {
                         // TODO
-                        alert('Please report this error: ' + gspDateFormat + ' for semui-datepicker unsupported');
+                        alert('Please report this error: ' + laser.gspDateFormat + ' for semui-datepicker unsupported');
                     }
                 }
             },
@@ -92,7 +92,7 @@ r2d2 = {
 
         $("html").css("cursor", "auto");
 
-        console.log("r2d2 @ locale: " + gspLocale + " > " + gspDateFormat);
+        console.log("r2d2 - laser.gspLocale: " + laser.gspLocale + ", laser.gspDateFormat: " + laser.gspDateFormat);
     },
 
     initGlobalSemuiStuff : function() {
@@ -118,8 +118,8 @@ r2d2 = {
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,
-            lessLink: '<a href="#">${message(code:"link.readless")}</a>',
-            moreLink: '<a href="#">${message(code:"link.readmore")}</a>',
+            lessLink: '<a href="#">' + dict.get('link.readless', currLanguage) + '</a>',
+            moreLink: '<a href="#">' + dict.get('link.readmore', currLanguage) + '</a>',
             collapsedHeight: 115
         });
         //overwriting the template for input search (spotlight)
@@ -132,7 +132,7 @@ r2d2 = {
                 html += '' + '<div class="message ' + type + '">';
                 // message type
                 if (type == 'empty') {
-                    html += '' + '<div class="header">${message(code:"search.API.heading.noResults")}</div class="header">' + '<div class="description">' + message + '</div class="description">';
+                    html += '' + '<div class="header">' + dict.get('search.API.heading.noResults', currLanguage) + '</div class="header">' + '<div class="description">' + message + '</div class="description">';
                 } else {
                     html += ' <div class="description">' + message + '</div>';
                 }
@@ -146,21 +146,21 @@ r2d2 = {
 
         $('.ui.search.spotlight').search({
             error : {
-                source          : '${message(code:"search.API.source")}',
+                source          : '"' + dict.get('search.API.source', currLanguage) + '"',
                 noResults       : '',
-                logging         : '${message(code:"search.API.logging")}',
-                noEndpoint      : '${message(code:"search.API.noEndpoint")}',
-                noTemplate      : '${message(code:"search.API.noTemplate")}',
-                serverError     : '${message(code:"search.API.serverError")}',
-                maxResults      : '${message(code:"search.API.maxResults")}',
-                method          : '${message(code:"search.API.method")}',
+                logging         : '"' + dict.get('search.API.logging', currLanguage) + '"',
+                noEndpoint      : '"' + dict.get('search.API.noEndpoint', currLanguage) + '"',
+                noTemplate      : '"' + dict.get('search.API.noTemplate', currLanguage) + '"',
+                serverError     : '"' + dict.get('search.API.serverError', currLanguage) + '"',
+                maxResults      : '"' + dict.get('search.API.maxResults', currLanguage) + '"',
+                method          : '"' + dict.get('search.API.method', currLanguage) + '"'
             },
 
             type: 'category',
             minCharacters: 3,
             apiSettings: {
 
-                url: "<g:createLink controller='search' action='spotlightSearch'/>/?query={query}",
+                url: laser.gspSpotlightSearchUrl + "/?query={query}",
                 onResponse: function(elasticResponse) {
                     var response = { results : {} };
 
@@ -215,8 +215,8 @@ r2d2 = {
         console.log("r2d2.initGlobalXEditableStuff()");
 
         $.fn.editable.defaults.mode = 'inline'
-        $.fn.editableform.buttons = '<button aria-label="${message(code:'xEditable.button.ok')}" type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
-            '<button aria-label="${message(code:'xEditable.button.cancel')}" type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
+        $.fn.editableform.buttons = '<button aria-label="' + dict.get('xEditable.button.ok', currLanguage) + '" type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
+            '<button aria-label="' + dict.get('xEditable.button.cancel', currLanguage) + '" type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
         $.fn.editableform.template =
             '<form class="ui form editableform">' +
             '	<div class="control-group">' +
@@ -233,7 +233,7 @@ r2d2 = {
         $.fn.editableform.loading =
             '<div class="ui active inline loader"></div>'
 
-        // TODO $.fn.datepicker.defaults.language = gspLocale
+        // TODO $.fn.datepicker.defaults.language = laser.gspLocale
     },
 
 
@@ -246,8 +246,8 @@ r2d2 = {
 
         // DEPRECATED ?? never used
         $(ctxSel + ' .xEditable').editable({
-            language: gspLocale,
-            format:   gspDateFormat,
+            language: laser.gspLocale,
+            format:   laser.gspDateFormat,
             validate: function(value) {
                 // custom validate functions via semui:xEditable validation="xy"
                 var dVal = $(this).attr('data-validation')
@@ -276,8 +276,8 @@ r2d2 = {
         $(ctxSel + ' .xEditableValue').editable({
 
             highlight: false,
-            language: gspLocale,
-            format:   gspDateFormat,
+            language: laser.gspLocale,
+            format:   laser.gspDateFormat,
             validate: function(value) {
                 if ($(this).attr('data-format') && value) {
                     if(! (value.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/) || value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) ) {
@@ -344,8 +344,8 @@ r2d2 = {
         });
 
         $(ctxSel + ' .simpleHiddenRefdata').editable({
-            language: gspLocale,
-            format:   gspDateFormat,
+            language: laser.gspLocale,
+            format:   laser.gspDateFormat,
             url: function(params) {
                 var hidden_field_id = $(this).data('hidden-id');
                 $("#" + hidden_field_id).val(params.value);
@@ -359,7 +359,7 @@ r2d2 = {
             placeholder: "Search for...",
             minimumInputLength: 1,
             ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                url: "<g:createLink controller='ajax' action='lookup'/>",
+                url: laser.gspAjaxLookupUrl,
                 dataType: 'json',
                 data: function (term, page) {
                     return {

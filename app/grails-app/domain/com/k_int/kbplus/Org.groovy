@@ -685,18 +685,12 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         )
     }
 
-    def getallOrgType()
-    {
-        def result = []
-        getallOrgTypeIds()?.each { it ->
-                result << RefdataValue.get(it)
-        }
-        result
+    List<RefdataValue> getAllOrgTypes() {
+        RefdataValue.executeQuery("select ot from Org org join org.orgType ot where org = :org", [org: this])
     }
 
-    List getallOrgTypeIds()
-    {
-        orgType.findAll{it}.collect{it.id}
+    List getAllOrgTypeIds() {
+        RefdataValue.executeQuery("select ot.id from Org org join org.orgType ot where org = :org", [org: this])
     }
 
     boolean isInComboOfType(RefdataValue comboType) {
@@ -713,7 +707,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !hasPerm("ORG_INST")
     }
     void createCoreIdentifiersIfNotExist(){
-        if(!Combo.findByFromOrgAndType(this, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in this.getallOrgTypeIds())){
+        if(!Combo.findByFromOrgAndType(this, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in this.getAllOrgTypeIds())){
 
             boolean isChanged = false
             IdentifierNamespace.CORE_ORG_NS.each{ coreNs ->

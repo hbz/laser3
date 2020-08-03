@@ -188,7 +188,7 @@ class PendingChangeService extends AbstractLockableService {
                                 saveWithoutError = true
                             }
                             else {
-                                log.error(new_instance.errors)
+                                log.error(new_instance.errors.toString())
                             }
                         }
                         break
@@ -222,7 +222,7 @@ class PendingChangeService extends AbstractLockableService {
                                     saveWithoutError = true
                                 }
                                 else {
-                                    log.error(target_object.getErrors())
+                                    log.error(target_object.errors.toString())
                                 }
                             }
                         }
@@ -240,7 +240,7 @@ class PendingChangeService extends AbstractLockableService {
                                 saveWithoutError = true
                             }
                             else {
-                                log.error(cov.getErrors())
+                                log.error(cov.errors.toString())
                             }
                         }
                         else {
@@ -265,7 +265,7 @@ class PendingChangeService extends AbstractLockableService {
                                 saveWithoutError = true
                             }
                             else {
-                                log.error(target.getErrors())
+                                log.error(target.errors.toString())
                             }
                         }
                         else log.error("Target coverage object does not exist! The erroneous OID is: ${pendingChange.payloadChangeTargetOid}")

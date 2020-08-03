@@ -35,6 +35,7 @@ class SubscriptionService {
     FilterService filterService
     Locale locale
     GenericOIDService genericOIDService
+    LinksGenerationService linksGenerationService
 
     @javax.annotation.PostConstruct
     void init() {
@@ -365,44 +366,52 @@ class SubscriptionService {
         List tmpQ
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            tmpQ = getSubscriptionsConsortiaQuery()
+            tmpQ = getSubscriptionsConsortiaQuery(null)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsConsortialLicenseQuery()
+            tmpQ = getSubscriptionsConsortialLicenseQuery(null)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsLocalLicenseQuery()
+            tmpQ = getSubscriptionsLocalLicenseQuery(null)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         } else {
            /* tmpQ = getSubscriptionsConsortialLicenseQuery()
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))*/
 
-            tmpQ = getSubscriptionsLocalLicenseQuery()
+            tmpQ = getSubscriptionsLocalLicenseQuery(null)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
         result
     }
 
-    List getMySubscriptions_writeRights(){
+    List getMySubscriptions_writeRights(Map params){
         List result = []
         List tmpQ
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            tmpQ = getSubscriptionsConsortiaQuery()
+            tmpQ = getSubscriptionsConsortiaQuery(params)
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
+            if (params?.showSubscriber) {
+                List parents = result.clone()
+                Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
+                result.addAll(Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf in (:parents) and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parents: parents, subscriberRoleTypes:subscriberRoleTypes]))
+            }
+
+            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
-
-            tmpQ = getSubscriptionsLocalLicenseQuery()
+            tmpQ = getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         } else {
-            tmpQ = getSubscriptionsLocalLicenseQuery()
+            tmpQ = getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
-        result
+        if (params?.showConnectedSubs){
+            result.addAll(linksGenerationService.getAllLinkedSubscriptions(result, contextService.user))
+        }
+        result.sort {it.dropdownNamingConvention()}
     }
 
     List getMySubscriptionsWithMyElements_readRights(){
@@ -438,31 +447,36 @@ class SubscriptionService {
     }
 
     //Konsortiallizenzen
-    private List getSubscriptionsConsortiaQuery() {
-        Map params = [:]
-//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.showParentsAndChildsSubs = false
-//        params.showParentsAndChildsSubs = 'true'
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+    private List getSubscriptionsConsortiaQuery(Map params) {
+        Map queryParams = [:]
+        if (params?.status) {
+            queryParams.status = params.status
+        }
+        queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.org)
+        result
     }
 
     //Teilnehmerlizenzen
-    private List getSubscriptionsConsortialLicenseQuery() {
-        Map params = [:]
-//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+    private List getSubscriptionsConsortialLicenseQuery(Map params) {
+        Map queryParams = [:]
+        if (params?.status) {
+            queryParams.status = params.status
+        }
+        queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
+        queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.org)
     }
 
     //Lokallizenzen
-    private List getSubscriptionsLocalLicenseQuery() {
-        Map params = [:]
-//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+    private List getSubscriptionsLocalLicenseQuery(Map params) {
+        Map queryParams = [:]
+        if (params?.status) {
+            queryParams.status = params.status
+        }
+        queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
+        queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.org)
     }
 
     List getValidSubChilds(Subscription subscription) {
@@ -1518,7 +1532,7 @@ class SubscriptionService {
                             issueEntitlement: new_ie
                     )
                     if(!ieCoverage.save()) {
-                        throw new EntitlementCreationException(ieCoverage.getErrors())
+                        throw new EntitlementCreationException(ieCoverage.errors)
                     }
                 }
                 if(withPriceData && issueEntitlementOverwrite) {
@@ -1635,7 +1649,7 @@ class SubscriptionService {
                                 orgLicRole = new OrgRole(lic: newLicense,org: subscr,roleType: licRole)
                             }
                             if(!orgLicRole.save())
-                                log.error(orgLicRole.errors)
+                                log.error(orgLicRole.errors.toString())
                         }
                     }
                     success = true
@@ -2165,7 +2179,7 @@ class SubscriptionService {
                         if(uploadCoverageDates && ieCoverage && !ieCoverage.findEquivalent(issueEntitlement.coverages)){
                             ieCoverage.issueEntitlement = issueEntitlement
                             if (!ieCoverage.save(flush: true)) {
-                                throw new EntitlementCreationException(ieCoverage.getErrors())
+                                throw new EntitlementCreationException(ieCoverage.errors)
                             }else{
                                 countChangesCoverageDates++
                             }
@@ -2173,7 +2187,7 @@ class SubscriptionService {
                         if(uploadPriceInfo && priceItem){
                             priceItem.setGlobalUID()
                             if (!priceItem.save(flush: true)) {
-                                throw new Exception(priceItem.getErrors().toString())
+                                throw new Exception(priceItem.errors.toString())
                             }else {
 
                                 countChangesPrice++

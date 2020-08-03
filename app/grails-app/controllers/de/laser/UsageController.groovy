@@ -139,7 +139,7 @@ class UsageController extends AbstractDebugController {
         result.natstatInstitutions = institutionsForQuery ? Org.executeQuery(hql) : []
         result.cursorCount = factService.getSupplierCursorCount()
 
-        if (statsSyncService.getErrors()) {
+        if (statsSyncService.errors) {
             flash.error = statsSyncService.errors.join('</br>')
         }
         statsSyncService.errors = []
@@ -164,7 +164,7 @@ class UsageController extends AbstractDebugController {
         def result = initResult()
         statsSyncService.addFilters(params)
         statsSyncService.doSync()
-        if (statsSyncService.getErrors()) {
+        if (statsSyncService.errors) {
             flash.error = statsSyncService.errors.join('</br>')
         }
         redirect(view: "index", model: result)

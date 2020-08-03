@@ -1051,7 +1051,7 @@ class YodaController {
             entries.each { entry ->
                 SubscriptionPackage sp = new SubscriptionPackage(entry)
                 if(!sp.save())
-                    errorMsg << sp.getErrors()
+                    errorMsg << sp.errors
             }
             if(errorMsg)
                 flash.error = "Folgende Fehler sind aufgetreten: <ul><li>${errorMsg.join('</li><li>')}</li></ul>"

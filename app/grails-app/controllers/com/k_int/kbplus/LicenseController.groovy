@@ -152,7 +152,7 @@ class LicenseController
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd, result.institution)
 
                     if (newProp.hasErrors()) {
-                        log.error(newProp.errors)
+                        log.error(newProp.errors.toString())
                     } else {
                         log.debug("New license private property created via mandatory: ${newProp.type.name}")
                     }
@@ -824,7 +824,7 @@ class LicenseController
                 def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.licenseInstance, pd, result.institution)
 
                 if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
+                    log.error(newProp.errors.toString())
                 } else {
                     log.debug("New license private property created via mandatory: " + newProp.type.name)
                 }

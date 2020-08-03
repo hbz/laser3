@@ -47,20 +47,20 @@ class OrganisationController extends AbstractDebugController {
     })
     def settings() {
 
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.user
         Org org   = Org.get(params.id)
-
+        Org contextOrg = contextService.org
         if (! org) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
 
-        Boolean inContextOrg = contextService.getOrg().id == org.id
-        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
+        Boolean inContextOrg = contextOrg.id == org.id
+        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextOrg)
 
         Boolean hasAccess = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_ADM')) ||
+                (isComboRelated && accessService.checkMinUserOrgRole(user, contextOrg, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         // forbidden access
@@ -71,11 +71,11 @@ class OrganisationController extends AbstractDebugController {
         Map result = [
                 user:           user,
                 orgInstance:    org,
-                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
-                inContextOrg:   inContextOrg,
+                contextOrg:     contextOrg, //object type Org
+                editable:   	true, //as method is secured agains INST_ADMins of all kinds; this implicites editability
+                inContextOrg:   inContextOrg, //boolean to ensure if in contextOrg
                 isComboRelated: isComboRelated
         ]
-        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
 
         // adding default settings
         organisationService.initMandatorySettings(org)
@@ -661,7 +661,7 @@ class OrganisationController extends AbstractDebugController {
 
 
                 if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
+                    log.error(newProp.errors.toString())
                 } else {
                     log.debug("New org private property created via mandatory: " + newProp.type.name)
                 }
@@ -670,7 +670,7 @@ class OrganisationController extends AbstractDebugController {
 
         du.setBenchmark('identifier')
 
-        if(!Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
+        if(!Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getAllOrgTypeIds())){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
@@ -721,7 +721,7 @@ class OrganisationController extends AbstractDebugController {
         RefdataValue orgType = RDStore.OT_PROVIDER
 
         //IF ORG is a Provider
-        if(result.orgInstance?.sector == orgSector || orgType.id in result.orgInstance?.getallOrgTypeIds()) {
+        if(result.orgInstance?.sector == orgSector || orgType.id in result.orgInstance?.getAllOrgTypeIds()) {
             du.setBenchmark('editable_identifier2')
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -757,7 +757,7 @@ class OrganisationController extends AbstractDebugController {
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
 
-        if(!Combo.findByFromOrgAndType(result.orgInstance,RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
+        if(!Combo.findByFromOrgAndType(result.orgInstance,RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getAllOrgTypeIds())){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
@@ -940,7 +940,7 @@ class OrganisationController extends AbstractDebugController {
                 def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd, contextService.org)
 
                 if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
+                    log.error(newProp.errors.toString())
                 } else {
                     log.debug("New org private property created via mandatory: " + newProp.type.name)
                 }

@@ -11,15 +11,15 @@
     </head>
     <body>
     <semui:controlButtons>
-        <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg)
-                || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
-            <g:render template="actions" />
-        </g:if>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="accessPoints" params="${params + [exportXLSX: true]}">${message(code: 'accessPoint.exportAccessPoints')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
+        <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg)
+                || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
+            <g:render template="actions" />
+        </g:if>
     </semui:controlButtons>
 
     <semui:breadcrumbs>

@@ -533,7 +533,7 @@ class ApiService {
                             }
                         }
                     } else if (org.hasErrors()) {
-                        log.error("Error on saving org: ${org.getErrors()}")
+                        log.error("Error on saving org: ${org.errors}")
                         //System.exit(46)
                     }
                 }
@@ -742,7 +742,7 @@ class ApiService {
                         }
                         User.executeUpdate('update User u set u.password = :password where u.username = :username', [password: userData.password.text(), username: userData.username.text()])
                     } else if (user.hasErrors()) {
-                        log.error("error on saving user: ${user.getErrors()}")
+                        log.error("error on saving user: ${user.errors}")
                     }
                 }
                 else if(user) {
@@ -790,7 +790,7 @@ class ApiService {
                     affiliation.dateRequested = Long.parseLong(affData.dateRequested.text())
                 }
                 if (!affiliation.save() && affiliation.hasErrors()) {
-                    log.error("error on saving affiliation: ${affiliation.getErrors()}")
+                    log.error("error on saving affiliation: ${affiliation.errors}")
                 }
             }
             //insert all combos
@@ -801,7 +801,7 @@ class ApiService {
                     //log.debug("type: ${RefdataValue.getByValueAndCategory(comboData.type.rdv.text(),comboData.type.rdc.text())}, fromOrg: ${comboData.fromOrg.text()}, toOrg: ${comboData.toOrg.text()}")
                     combo = new Combo(type: RefdataValue.getByValueAndCategory(comboData.type.rdv.text(), comboData.type.rdc.text()), fromOrg: Org.findByGlobalUID(comboData.fromOrg.text()), toOrg: Org.findByGlobalUID(comboData.toOrg.text()))
                     if (!combo.save() && combo.hasErrors()) {
-                        log.error("error on saving combo: ${combo.getErrors()}")
+                        log.error("error on saving combo: ${combo.errors}")
                     }
                 }
             }
@@ -845,7 +845,7 @@ class ApiService {
                             person.contactType = RefdataValue.getByValueAndCategory(personData.contactType.rdv.text(), personData.contactType.rdc.text())
                         }
                         if (!person.save(flash: true) && person.hasErrors()) {
-                            log.error("error on saving person: ${person.getErrors()}")
+                            log.error("error on saving person: ${person.errors}")
                         }
                     } else {
                         log.info("person with ${personData.globalUID.text()} already in the database, skipping ...")
@@ -863,7 +863,7 @@ class ApiService {
                     if(!role) {
                         role = new PersonRole(org: targetOrg, prs: targetPrs, functionType: functionType)
                         if (!role.save() && role.hasErrors()) {
-                            log.error("error on saving person role: ${role.getErrors()}")
+                            log.error("error on saving person role: ${role.errors}")
                         }
                     }
                 }
@@ -926,7 +926,7 @@ class ApiService {
                         address.additionSecond = addressData.additionSecond.text()
                     }
                     if (!address.save() && address.hasErrors()) {
-                        log.error("error on saving address: ${address.getErrors()}")
+                        log.error("error on saving address: ${address.errors}")
                     }
                 }
             }
@@ -949,7 +949,7 @@ class ApiService {
                     //log.debug("type: ${RefdataValue.getByValueAndCategory(contactData.type.rdv.text(),contactData.type.rdc.text())}")
                     contact.type = RefdataValue.getByValueAndCategory(contactData.type.rdv.text(), contactData.type.rdc.text())
                     if (!contact.save() && contact.hasErrors()) {
-                        log.error("error on saving contact: ${contact.getErrors()}")
+                        log.error("error on saving contact: ${contact.errors}")
                     }
                 }
             }
