@@ -118,7 +118,7 @@ r2d2 = {
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,
-            lessLink: '<a href="#">' + dict.get('link.readmore', currLanguage) + '</a>',
+            lessLink: '<a href="#">' + dict.get('link.readless', currLanguage) + '</a>',
             moreLink: '<a href="#">' + dict.get('link.readmore', currLanguage) + '</a>',
             collapsedHeight: 115
         });
