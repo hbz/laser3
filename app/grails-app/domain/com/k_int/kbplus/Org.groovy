@@ -223,7 +223,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
        funderHskType(nullable:true, blank:true)
          libraryType(nullable:true, blank:true)
         importSource(nullable:true, blank:true)
-      lastImportDate(nullable:true, blank:true)
+      lastImportDate(nullable:true)
            createdBy(nullable:true, blank:true)
     legallyObligedBy(nullable:true, blank:true)
       costConfigurationPreset(nullable:true, blank:false)
@@ -370,7 +370,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
-    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
         Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'orphanedProperties':[] ]
 
         // ALL type depending groups without checking tenants or bindings
@@ -623,7 +623,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
       }
     }
     catch ( Exception e ) {
-      log.error(e);
+      log.error( e.toString() )
     }
 
   }

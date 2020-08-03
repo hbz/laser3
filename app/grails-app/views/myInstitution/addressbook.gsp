@@ -28,13 +28,6 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
 
         <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible" />
 
-        <g:if test="${editable}">
-            <input class="ui left floated  button la-clear-before"
-                   value="${message(code: 'person.create_new.contactPerson.label')}"
-                   data-semui="modal"
-                   data-href="#personFormModal" />
-        </g:if>
-
         <g:render template="/person/formModal" model="['org': institution,
                                                        'isPublic': false,
                                                        'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS

@@ -97,8 +97,11 @@ class SemanticUiInplaceTagLib {
                 else {
                     if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
                     }
-                    else if(attrs.field == 'decValue') {
-                        oldValue = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(attrs.owner[attrs.field])
+                    else if(attrs.field in ['decValue','listPrice','localPrice']) {
+                        NumberFormat nf = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+                        nf.setMinimumFractionDigits(2)
+                        nf.setMaximumFractionDigits(2)
+                        oldValue = nf.format(attrs.owner[attrs.field])
                     }
                     else {
                         oldValue = attrs.owner[attrs.field].encodeAsHTML()
@@ -426,7 +429,7 @@ class SemanticUiInplaceTagLib {
             out << " data-value=\"${oldValue}\" data-autotext=\"never\">"
             out << "<span class=\"la-popup-tooltip la-delay \" data-position=\"\" data-content=\""
             out << oldValue
-            out << "\"><i class=\"${attrs.iconClass ?: 'question'} icon\"></i>"
+            out << "\"><i class=\"${attrs.iconClass ?: 'info'} ${oldValue ? 'green' : 'la-light-grey'} icon\"></i>"
             out << '</span>'
 
             out << "</a>"
@@ -446,7 +449,7 @@ class SemanticUiInplaceTagLib {
                         out << attrs.owner[attrs.field]
                     }
                 }
-                out << "\"><i class=\"${attrs.iconClass ?: 'question'} icon\"></i>"
+                out << "\"><i class=\"${attrs.iconClass ?: 'info'} ${attrs.owner[attrs.field] ? 'green' : 'la-light-grey'} icon\"></i>"
                 out << '</span>'
             }
         }

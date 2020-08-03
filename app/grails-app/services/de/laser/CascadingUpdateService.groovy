@@ -51,13 +51,11 @@ class CascadingUpdateService {
     void update(AbstractPropertyWithCalculatedLastUpdated obj, Date luc) {
         log(obj, luc)
 
-        obj.class.executeUpdate("update ${obj.class.simpleName} cp set cp.lastUpdatedCascading = :luc where cp = :obj", [
+        obj.class.executeUpdate("update " + obj.class.simpleName + " prop set prop.lastUpdatedCascading = :luc where prop = :obj", [
                 luc: luc, obj: obj
         ])
 
-        if (obj.owner) {
-            update(obj.owner, luc)
-        }
+        if (obj.owner) { update(obj.owner, luc) }
     }
 
     void update(License obj, Date luc) {

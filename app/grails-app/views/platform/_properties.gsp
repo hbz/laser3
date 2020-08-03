@@ -18,7 +18,7 @@
 
 <div class="ui card la-dl-no-table la-js-hideable">
 
-    <g:set var="allPropDefGroups" value="${platform.getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${platform._getCalculatedPropDefGroups(contextService.getOrg())}" />
 
 <%-- orphaned properties --%>
 

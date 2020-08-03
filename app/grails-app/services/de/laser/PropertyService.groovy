@@ -32,7 +32,7 @@ class PropertyService {
 
         if (params.filterPropDef) {
             PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
-            base_qry += ' and ( exists ( select gProp from '+hqlVar+'.propertySet as gProp where gProp.type = :propDef and (gProp.tenant = :tenant or gProp.tenant = null) or gProp.isPublic = true or gProp.instanceOf != null '
+            base_qry += ' and ( exists ( select gProp from '+hqlVar+'.propertySet as gProp where gProp.type = :propDef and (gProp.tenant = :tenant or (gProp.tenant != :tenant and gProp.isPublic = true) or gProp.tenant is null) '
             base_qry_params.put('propDef', pd)
             base_qry_params.put('tenant', contextService.org)
             if(params.filterProp) {
@@ -171,7 +171,7 @@ class PropertyService {
         if(obj instanceof Subscription) {
             Subscription s = (Subscription) obj
             objMap.name = s.dropdownNamingConvention(contextOrg)
-            if(s.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+            if(s._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 objMap.subscriber = s.getSubscriber()
             objMap.displayController = "subscription"
             objMap.manageChildren = "propertiesMembers"

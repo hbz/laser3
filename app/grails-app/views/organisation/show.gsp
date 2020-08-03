@@ -17,9 +17,6 @@
     <g:elseif test="${institutionalView}">
         <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
     </g:elseif>
-    <g:elseif test="${departmentalView}">
-        <g:set var="entityName" value="${message(code: 'org.department.label')}"/>
-    </g:elseif>
     <g:else>
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
@@ -77,14 +74,12 @@
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
-                        <g:if test="${departmentalView == false}">
-                            <dl>
-                                <dt><g:message code="org.shortname.label" /></dt>
-                                <dd>
-                                    <semui:xEditable owner="${orgInstance}" field="shortname"/>
-                                </dd>
-                            </dl>
-                        </g:if>
+                        <dl>
+                            <dt><g:message code="org.shortname.label" /></dt>
+                            <dd>
+                                <semui:xEditable owner="${orgInstance}" field="shortname"/>
+                            </dd>
+                        </dl>
                         <g:if test="${!isProviderOrAgency}">
                             <dl>
                                 <dt>
@@ -120,7 +115,7 @@
                         </dd>
                     </dl>
                     </g:if>
-                    <g:if test="${!departmentalView && !isProviderOrAgency}">
+                    <g:if test="${!isProviderOrAgency}">
                         <dl>
                             <dt>
                                 <g:message code="org.urlGov.label"/>
@@ -192,7 +187,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${departmentalView == false && !isProviderOrAgency}">
+            <g:if test="${!isProviderOrAgency}">
                 <div class="ui card">
                     <div class="content">
                             <dl>
@@ -315,46 +310,37 @@
             </g:if>
 
             <g:if test="${((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) && !isProviderOrAgency}">
-                <div class="ui card">
+                <div class="ui card la-different-headings">
                     <div class="content">
-                        <H3><g:message code="org.contacts.and.addresses.label" /></H3>
-                        <g:link action="myPublicContacts" controller="myInstitution"  class="ui button">${message('code':'org.edit.contacts')}</g:link>
-                        <dl>
-                            <dt><g:message code="org.prsLinks.label" /></dt>
-                            <dd>
-                                <g:each in="${usedRDV}" var="rdv">
-                                    <h3>${rdv.getI10n('value')}</h3>
-                                    <g:each in="${allPRMap.get(rdv.id)}" var="pr">
-                                        <g:if test="pr">
-                                        %{--Workaround wg NPE bei CacheEntry.getValue--}%
-                                            <% com.k_int.kbplus.Person prs = PersonRole.get(pr.id).prs%>
-                                            <g:render template="/templates/cpa/person_full_details" model="${[
-                                                    person              : prs,
-                                                    personRole          : pr,
-                                                    personContext       : orgInstance,
-                                                    tmplShowDeleteButton    : true,
-                                                    tmplShowAddPersonRoles  : true,
-                                                    tmplShowAddContacts     : true,
-                                                    tmplShowAddAddresses    : true,
-                                                    tmplShowFunctions       : false,
-                                                    tmplShowPositions       : false,
-                                                    tmplShowResponsiblities : true,
-                                                    tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                    controller          : 'organisation',
-                                                    action              : 'show',
-                                                    id                  : orgInstance.id,
-                                                    editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                            ]}"/>
-                                        </g:if>
-                                    </g:each>
-                                </g:each>
-                            <%-- </div> --%>
-                            </dd>
-                        </dl>
+                        <H3><g:message code="org.contactpersons.and.addresses.label" /></H3>
+                        %{--<g:link action="myPublicContacts" controller="myInstitution"  class="ui button">${message('code':'org.edit.contacts')}</g:link>--}%
+                        <g:each in="${usedRDV}" var="rdv">
+                            <h4 style="font-size: 1rem">${rdv.getI10n('value')}</h4>
+                            <g:each in="${allPRMap.get(rdv.id)}" var="pr">
+                                <g:if test="pr">
+                                %{--Workaround wg NPE bei CacheEntry.getValue--}%
+                                    <% com.k_int.kbplus.Person prs = PersonRole.get(pr.id).prs%>
+                                    <g:render template="/templates/cpa/person_full_details" model="${[
+                                            person              : prs,
+                                            personRole          : pr,
+                                            personContext       : orgInstance,
+                                            tmplShowDeleteButton    : true,
+                                            tmplShowAddPersonRoles  : true,
+                                            tmplShowAddContacts     : true,
+                                            tmplShowAddAddresses    : true,
+                                            tmplShowFunctions       : false,
+                                            tmplShowPositions       : false,
+                                            tmplShowResponsiblities : true,
+                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                            controller          : 'organisation',
+                                            action              : 'show',
+                                            id                  : orgInstance.id,
+                                            editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                    ]}"/>
+                                </g:if>
+                            </g:each>
+                        </g:each>
                         %{--ERMS:1236
-                        <dl>
-                            <dt><g:message code="org.contacts.label" /></dt>
-                            <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${orgInstance?.contacts?.toSorted()}" var="c">
                                         <g:if test="${c.org}">
@@ -378,25 +364,43 @@
                                 </g:if>
                             </dd>
                         </dl>--}%
-                        <dl>
+                        %{--<dl>--}%
 
-                            <dt><g:message code="org.addresses.label" default="Addresses"/></dt>
-                            <dd>
+                            %{--<dt><g:message code="org.addresses.label" default="Addresses"/></dt>--}%
+                            %{--<dd>--}%
 
                             <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance?.addresses?.sort { it.type?.getI10n('value') }}" var="a">
-                                        <g:if test="${a.org}">
-                                            <g:render template="/templates/cpa/address" model="${[
-                                                    address             : a,
-                                                    tmplShowDeleteButton: true,
-                                                    controller          : 'org',
-                                                    action              : 'show',
-                                                    id                  : orgInstance.id,
-                                                    editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                            ]}"/>
-                                        </g:if>
+                                    <%
+                                        Set<String> typeNames = new TreeSet<String>()
+                                        typeNames.add(RDStore.ADRESS_TYPE_BILLING.getI10n('value'))
+                                        typeNames.add(RDStore.ADRESS_TYPE_POSTAL.getI10n('value'))
+                                        Map<String, List> typeAddressMap = [:]
+                                        orgInstance?.addresses.each{
+                                            String typeName = it.type?.getI10n('value')
+                                            typeNames.add(typeName)
+                                            List addresses = typeAddressMap.get(typeName)?: []
+                                            addresses.add(it)
+                                            typeAddressMap.put(typeName, addresses)
+                                        }
+                                    %>
+                                    <g:each in="${typeNames}" var="typeName">
+                                        <h4 style="font-size: 1rem">${typeName}</h4>
+                                        <% List addresses = typeAddressMap.get(typeName) %>
+                                        <g:each in="${addresses}" var="a">
+                                            <g:if test="${a?.org}">
+                                                <g:render template="/templates/cpa/address" model="${[
+                                                        hideAddressType     : true,
+                                                        address             : a,
+                                                        tmplShowDeleteButton: true,
+                                                        controller          : 'org',
+                                                        action              : 'show',
+                                                        id                  : orgInstance.id,
+                                                        editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                                ]}"/>
+                                            </g:if>
+                                        </g:each>
                                     </g:each>
                                 </div>
                                 %{--<g:if test="${((((orgInstance.id == contextService.getOrg().id) || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">--}%
@@ -430,8 +434,6 @@
 
                                 %{--</g:if>--}%
 
-                            </dd>
-                        </dl>
                     </div>
                 </div><!-- .card -->
 

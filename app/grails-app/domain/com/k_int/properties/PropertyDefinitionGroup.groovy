@@ -52,7 +52,6 @@ class PropertyDefinitionGroup {
         description (nullable: true,  blank: true)
         tenant      (nullable: true, blank: false)
         ownerType   (blank: false)
-        isVisible   (blank: false)
         lastUpdated (nullable: true)
         dateCreated (nullable: true)
     }

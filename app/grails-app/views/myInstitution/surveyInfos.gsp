@@ -96,7 +96,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
     <semui:form>
         <h3><g:message code="surveyInfo.owner.label"/>:</h3>
 
-        <table class="ui table la-table la-table-small">
+        <table class="ui table la-table compact">
             <tbody>
             <tr>
                 <td>
@@ -151,7 +151,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 
             </g:if>
 
-            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY}">
+            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
                 <g:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
                                                                              surveyResults: surveyResults]"/>

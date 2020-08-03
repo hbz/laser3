@@ -57,7 +57,7 @@
     <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
-    <table class="ui table la-table la-table-small">
+    <table class="ui table la-table compact">
         <tbody>
         <tr>
             <td>
@@ -95,7 +95,7 @@
                                                                                   surveyResults       : surveyResults]"/>
             </g:if>
 
-            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_GENERAL_SURVEY}">
+            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
                 <g:render template="/templates/survey/generalSurvey" model="[surveyConfig        : surveyConfig,
                                                                              costItemSums        : costItemSums,

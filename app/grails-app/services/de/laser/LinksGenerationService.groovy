@@ -3,13 +3,14 @@ package de.laser
 import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.License
 import com.k_int.kbplus.Links
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Transactional
@@ -83,13 +84,37 @@ class LinksGenerationService {
             linkComment = (Doc) configMap.comment
         Links link
         if(configMap.link instanceof Links)
-            link = (Links) configMap.links
+            link = (Links) configMap.link
         else if(!configMap.link) {
             try {
                 link = Links.construct(configMap)
+                if(configMap.contextInstances) {
+                    def sourceObj = genericOIDService.resolveOID(configMap.source), destObj = genericOIDService.resolveOID(configMap.destination)
+                    configMap.contextInstances.each { contextInstance ->
+                        def pairChild
+                        if(contextInstance instanceof Subscription) {
+                            pairChild = (Subscription) configMap.pairInstances.find { child -> child.getSubscriber() == contextInstance.getSubscriber() }
+                        }
+                        else if(contextInstance instanceof License) {
+                            pairChild = (License) configMap.pairInstances.find { child -> child.getLicensee() == contextInstance.getLicensee() }
+                        }
+                        if(pairChild) {
+                            Map<String,Object> childConfigMap = [linkType:configMap.linkType,owner:configMap.owner]
+                            if(contextInstance.instanceOf == sourceObj) {
+                                childConfigMap.source = GenericOIDService.getOID(contextInstance)
+                                childConfigMap.destination = GenericOIDService.getOID(pairChild)
+                            }
+                            else if(contextInstance.instanceOf == destObj) {
+                                childConfigMap.source = GenericOIDService.getOID(pairChild)
+                                childConfigMap.destination = GenericOIDService.getOID(contextInstance)
+                            }
+                            Links.construct(childConfigMap)
+                        }
+                    }
+                }
             }
             catch (CreationException e) {
-                log.error(e)
+                log.error( e.toString() )
                 errors = messageSource.getMessage('default.linking.savingError',null, LocaleContextHolder.getLocale())
             }
         }
@@ -102,8 +127,8 @@ class LinksGenerationService {
                 }
                 else if(configMap.commentContent.length() == 0) {
                     DocContext commentContext = DocContext.findByOwner(linkComment)
-                    if(commentContext.delete())
-                        linkComment.delete()
+                    if(commentContext.delete(flush:true))
+                        linkComment.delete(flush:true)
                 }
             }
             else if(!linkComment && configMap.commentContent.length() > 0) {
@@ -132,10 +157,21 @@ class LinksGenerationService {
             DocContext comment = DocContext.findByLink(obj)
             if(comment) {
                 Doc commentContent = comment.owner
-                comment.delete()
-                commentContent.delete()
+                comment.delete(flush:true)
+                commentContent.delete(flush:true)
             }
-            obj.delete()
+            def source = genericOIDService.resolveOID(obj.source), destination = genericOIDService.resolveOID(obj.destination)
+            Set sourceChildren = source.getClass().findAllByInstanceOf(source), destinationChildren = destination.getClass().findAllByInstanceOf(destination)
+            sourceChildren.each { sourceChild ->
+                def destinationChild
+                if(sourceChild instanceof Subscription)
+                    destinationChild = destinationChildren.find { dest -> dest.getSubscriber() == sourceChild.getSubscriber() }
+                else if(sourceChild instanceof License)
+                    destinationChild = destinationChildren.find { dest -> dest.getLicensee() == sourceChild.getLicensee() }
+                if(destinationChild)
+                    Links.executeUpdate('delete from Links li where li.source = :source and li.destination = :destination and li.linkType = :linkType and li.owner = :owner',[source:GenericOIDService.getOID(sourceChild),destination:GenericOIDService.getOID(destinationChild),linkType:obj.linkType,owner:obj.owner])
+            }
+            obj.delete(flush:true)
             true
         }
         else false

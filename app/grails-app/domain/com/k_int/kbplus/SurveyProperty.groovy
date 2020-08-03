@@ -41,7 +41,6 @@ class SurveyProperty implements I10nTrait {
         introduction(nullable: true, blank: false)
         comment(nullable: true, blank: false)
         expl(nullable: true, blank: false)
-        isHardData(blank: false)
         refdataCategory(nullable: true, blank: false)
     }
 

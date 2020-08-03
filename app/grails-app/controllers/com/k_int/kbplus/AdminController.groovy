@@ -8,7 +8,6 @@ import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.ContextService
 import de.laser.SystemAnnouncement
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
@@ -16,7 +15,6 @@ import de.laser.controller.AbstractDebugController
 import de.laser.I10nTranslation
 import de.laser.SystemMessage
 import de.laser.exceptions.CleanupException
-import de.laser.helper.ConfigUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
@@ -336,22 +334,22 @@ class AdminController extends AbstractDebugController {
         log.info("Deleting Package ")
         log.info("${pkg.id}::${pkg}")
         pkg.pendingChanges.each{
-          it.delete()
+          it.delete(flush:true)
         }
         pkg.documents.each{
-          it.delete()
+          it.delete(flush:true)
         }
         pkg.orgs.each{
-          it.delete()
+          it.delete(flush:true)
         }
 
                 pkg.subscriptions.each{
-                    it.delete()
+                    it.delete(flush:true)
                 }
                 pkg.tipps.each{
-                    it.delete()
+                    it.delete(flush:true)
                 }
-                pkg.delete()
+                pkg.delete(flush:true)
             }
             log.info("Delete Complete.")
         }
@@ -452,7 +450,7 @@ class AdminController extends AbstractDebugController {
           if(!newAffil.save(flush:true,failOnError:true)){
             log.error("Probem saving user roles");
             newAffil.errors.each { e ->
-              log.error(e);
+                log.error( e.toString() )
             }
             return false
           }
@@ -847,7 +845,7 @@ class AdminController extends AbstractDebugController {
           tipp.save(flush:true,failOnError:true)
           result.success = true
         }catch(Exception e){
-          log.error(e)
+            log.error( e.toString() )
           result.error += "An error occured while saving the changes."
         }
       }else{
@@ -861,7 +859,7 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def ieTransfer(){
-        log.debug(params)
+        log.debug( params.toMapString() )
         Map<String, Object> result = [:]
         if(params.sourceTIPP && params.targetTIPP){
             result.sourceTIPPObj = TitleInstancePackagePlatform.get(params.sourceTIPP)
@@ -1439,7 +1437,7 @@ class AdminController extends AbstractDebugController {
                     log.debug(q);
                     log.debug(joinclause);
                     log.debug(whereclause);
-                    log.debug(bindvars);
+                    log.debug( bindvars.toString() )
 
                     def title_search = TitleInstance.executeQuery(q+joinclause+whereclause,bindvars);
                     log.debug("Search returned ${title_search.size()} titles");
@@ -1502,7 +1500,7 @@ class AdminController extends AbstractDebugController {
             Org target = genericOIDService.resolveOID(params.target)
             def oss = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSettings.SETTING_NOT_FOUND) {
-                oss.delete()
+                oss.delete(flush:true)
             }
             target.lastUpdated = new Date()
             target.save(flush:true)
@@ -1534,7 +1532,7 @@ class AdminController extends AbstractDebugController {
 
 
                     subscriberRoles.each{ role ->
-                        if (role.sub.getCalculatedType() == Subscription.TYPE_LOCAL) {
+                        if (role.sub._getCalculatedType() == Subscription.TYPE_LOCAL) {
                             role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
                             role.save()
 
@@ -1547,7 +1545,7 @@ class AdminController extends AbstractDebugController {
 
                     }*/
                     conSubscriberRoles.each { role ->
-                        if (role.sub.getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
+                        if (role.sub._getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
                             OrgRole newRole = new OrgRole(
                                     org: role.org,
                                     sub: role.sub,
@@ -1619,7 +1617,7 @@ class AdminController extends AbstractDebugController {
                     def idns = genericOIDService.resolveOID(params.oid)
                     if (idns && Identifier.countByNs(idns) == 0) {
                         try {
-                            idns.delete()
+                            idns.delete(flush:true)
                             flash.message = "Namensraum ${idns.ns} wurde gelöscht."
                         } catch (Exception e) {
                             flash.message = "Namensraum ${idns.ns} konnte nicht gelöscht werden."
@@ -1672,7 +1670,7 @@ class AdminController extends AbstractDebugController {
                     if (pd) {
                         if (! pd.isHardData) {
                             try {
-                                pd.delete()
+                                pd.delete(flush:true)
                                 flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de])
                             }
                             catch(Exception e) {
@@ -1694,7 +1692,7 @@ class AdminController extends AbstractDebugController {
                                 flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
                             }
                             catch (Exception e) {
-                                log.error(e)
+                                log.error( e.toString() )
                                 flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
                             }
 
@@ -1772,7 +1770,7 @@ class AdminController extends AbstractDebugController {
         else if (params.cmd == 'delete') {
             def pdg = genericOIDService.resolveOID(params.oid)
             try {
-                pdg.delete()
+                pdg.delete(flush:true)
                 flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
             }
             catch (e) {
@@ -1883,7 +1881,7 @@ class AdminController extends AbstractDebugController {
                         flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt."
                     }
                     catch (Exception e) {
-                        log.error(e)
+                        log.error( e.toString() )
                         flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt werden."
                     }
 

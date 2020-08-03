@@ -1,5 +1,4 @@
 <!doctype html>
-<r:require module="scaffolding" />
 <%
     def addFacet = { params, facet, val ->
         def newparams = [:]

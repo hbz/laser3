@@ -36,8 +36,6 @@ class LicenseController
     def taskService
     def docstoreService
     def genericOIDService
-    def exportService
-    def escapeService
     PropertyService propertyService
     def institutionsService
     def pendingChangeService
@@ -161,7 +159,7 @@ class LicenseController
                 }
             }
 
-            if(result.license.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) {
+            if(result.license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) {
                 du.setBenchmark('non-inherited member properties')
                 Set<License> childLics = result.license.getDerivedLicenses()
                 if(childLics) {
@@ -280,7 +278,7 @@ class LicenseController
     @DebugAnnotation(test = 'hasAffiliation("INST_EDTIOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
-        log.debug(params)
+        log.debug( params.toMapString() )
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -423,7 +421,7 @@ class LicenseController
             String query = "select s from Subscription s where s.status.id = :status and concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
             result.subscriptionsForFilter = Subscription.executeQuery( query, [status:params.status as Long, lic:GenericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
         }
-        if(result.license.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
             Map<String,Object> queryParams = [lic:GenericOIDService.getOID(result.license),status:result.status,subscriberRoleTypes:subscriberRoleTypes,linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
@@ -513,7 +511,8 @@ class LicenseController
                 dateFilter += " and ((s.startDate = null or s.startDate <= :validOn) and (s.endDate = null or s.endDate >= :validOn))"
                 subQueryParams.validOn = result.dateRestriction
             }
-            Set<Subscription> subscriptions = Subscription.executeQuery("select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)${dateFilter}",subQueryParams)
+            String subscrQuery = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)${dateFilter}"
+            Set<Subscription> subscriptions = Subscription.executeQuery(subscrQuery,subQueryParams)
             if(params.status != 'FETCH_ALL') {
                 subscriptions.removeAll { Subscription s -> s.status.id != params.status as Long }
             }
@@ -603,7 +602,7 @@ class LicenseController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteMember() {
-        log.debug(params)
+        log.debug( params.toMapString() )
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -921,12 +920,12 @@ class LicenseController
       if (opl.licenses.isEmpty()) {
           opl.usageTerm.each{
             it.usageTermLicenseText.each{
-              it.delete()
+              it.delete(flush:true)
             }
           }
-          opl.delete();
-          dc.delete();
-          doc.delete();
+          opl.delete(flush:true);
+          dc.delete(flush:true);
+          doc.delete(flush:true);
       }
       if (license.hasErrors()) {
           license.errors.each {
@@ -988,7 +987,8 @@ class LicenseController
                     startDate: params.license.copyDates ? baseLicense?.startDate : null,
                     endDate: params.license.copyDates ? baseLicense?.endDate : null,
                     instanceOf: params.license.copyLinks ? baseLicense?.instanceOf : null,
-
+                    status: baseLicense?.status ?: null,
+                    openEnded: baseLicense?.openEnded
             )
 
 
@@ -1090,7 +1090,7 @@ class LicenseController
 
                     if(params.license.copyCustomProperties) {
                         //customProperties
-                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
+                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant == null && prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
                             LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.instanceOf = null
@@ -1100,7 +1100,7 @@ class LicenseController
                     if(params.license.copyPrivateProperties){
                         //privatProperties
 
-                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
+                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant?.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
                             LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.save()

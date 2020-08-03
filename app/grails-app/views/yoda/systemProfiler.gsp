@@ -32,7 +32,7 @@
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
 
-        <table class="ui celled la-table la-table-small table" id="globalTable">
+        <table class="ui celled la-table compact table" id="globalTable">
             <thead>
                 <tr>
                     <th>Url</th>
@@ -93,7 +93,7 @@
                   noSelection="['':'Alle anzeigen']"
         />
 
-        <table class="ui celled la-table la-table-small table" id="contextTable">
+        <table class="ui celled la-table compact table" id="contextTable">
             <thead>
                 <tr>
                     <th>Url</th>

@@ -5,7 +5,6 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.IssueEntitlementCoverage
-import de.laser.api.v0.entities.ApiOrgAccessPoint
 import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 
@@ -85,7 +84,7 @@ class ApiCollectionReader {
             tmp.costInLocalCurrencyAfterTax     = it.getCostInLocalCurrencyAfterTax()
             tmp.costInBillingCurrencyAfterTax   = it.getCostInBillingCurrencyAfterTax()
 
-            tmp.calculatedType      = it.getCalculatedType()
+            tmp.calculatedType      = it._getCalculatedType()
             tmp.datePaid            = ApiToolkit.formatInternalDate(it.datePaid)
             tmp.invoiceDate         = ApiToolkit.formatInternalDate(it.invoiceDate)
             tmp.financialYear       = it.financialYear
@@ -126,7 +125,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         if (generic.metaClass.getMetaMethod("getCalculatedPropDefGroups")) {
-            def groups = generic.getCalculatedPropDefGroups(context)
+            def groups = generic._getCalculatedPropDefGroups(context)
             List tmp = []
 
             // [PropertyDefinitionGroup, ..]
@@ -330,7 +329,7 @@ class ApiCollectionReader {
             }
 
             //tmp.dateCreated = ApiToolkit.formatInternalDate(it.dateCreated)
-            //tmp.lastUpdated = ApiToolkit.formatInternalDate(it.getCalculatedLastUpdated())
+            //tmp.lastUpdated = ApiToolkit.formatInternalDate(it._getCalculatedLastUpdated())
 
             if (it instanceof LicenseProperty) {
                 tmp.paragraph = it.paragraph

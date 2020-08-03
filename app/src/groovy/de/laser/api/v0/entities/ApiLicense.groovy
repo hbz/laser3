@@ -118,14 +118,14 @@ class ApiLicense {
         // removed - result.contact          = lic.contact
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
-        result.lastUpdated      = ApiToolkit.formatInternalDate(lic.getCalculatedLastUpdated())
+        result.lastUpdated      = ApiToolkit.formatInternalDate(lic._getCalculatedLastUpdated())
         //result.licenseType      = lic.licenseType
         result.reference        = lic.reference
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
         result.normReference    = lic.sortableReference
 
         // erms-888
-        result.calculatedType   = lic.getCalculatedType()
+        result.calculatedType   = lic._getCalculatedType()
 
         // RefdataValues
 

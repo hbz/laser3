@@ -44,9 +44,6 @@ class Task {
         description     (nullable:true, blank:true)
         status          (blank:false)
         creator         (blank:false)
-        endDate         (blank:false)
-        systemCreateDate (blank:false)
-        createDate      (blank:false)
         responsibleUser (nullable:true,  blank:true)
         responsibleOrg  (nullable:true,  blank:true)
 

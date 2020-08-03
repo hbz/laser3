@@ -238,7 +238,7 @@ class Identifier implements CalculatedLastUpdated {
         cascadingUpdateService.update(this, new Date())
     }
 
-    Date getCalculatedLastUpdated() {
+    Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 

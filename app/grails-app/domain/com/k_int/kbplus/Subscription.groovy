@@ -197,16 +197,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         manualCancellationDate (nullable:true)
         instanceOf(nullable:true, blank:false)
         comment(nullable: true, blank: true)
-        administrative(blank:false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
-        isSlaved    (blank:false)
         noticePeriod(nullable:true, blank:true)
-        isPublicForApi (blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)
         lastUpdatedCascading (nullable: true)
-        isMultiYear(nullable: true, blank: false)
-        hasPerpetualAccess(blank: false)
+        isMultiYear(nullable: true)
     }
 
     @Override
@@ -260,7 +256,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     boolean showUIShareButton() {
-        getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
+        _getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
     }
 
     @Override
@@ -296,7 +292,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                         }
                         if (existingOrgRoles) {
                             log.debug('found existing orgRoles, deleting: ' + existingOrgRoles)
-                            existingOrgRoles.each{ tmp -> tmp.delete() }
+                            existingOrgRoles.each{ tmp -> tmp.delete(flush:true) }
                         }
                     }
                     sharedObject.addShareForTarget_trait(sub)
@@ -340,7 +336,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     @Override
-    String getCalculatedType() {
+    String _getCalculatedType() {
         String result = TYPE_UNKOWN
 
         if (getCollective() && getConsortia() && instanceOf) {
@@ -351,7 +347,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         }
         else if(getConsortia() && !getAllSubscribers() && !instanceOf) {
             if(administrative) {
-                log.debug(administrative)
                 result = TYPE_ADMINISTRATIVE
             }
             else result = TYPE_CONSORTIAL
@@ -439,23 +434,17 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   Org getSubscriber() {
     Org result
     Org cons
-    Org coll
     
     orgRelations.each { or ->
-      if ( or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id] )
+      if ( or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id] )
         result = or.org
         
       if ( or.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
         cons = or.org
-      else if(or.roleType.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)
-        coll = or.org
     }
     
     if ( !result && cons ) {
       result = cons
-    }
-    else if(!result && coll) {
-        result = coll
     }
     
     result
@@ -585,25 +574,19 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA
             )
-            OrgRole coll = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIPTION_COLLECTIVE
-            )
             OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIBER_CONS
-            )
-            OrgRole subscrColl = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIBER_COLLECTIVE
             )
             OrgRole subscr = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIBER
             )
 
             if (perm == 'view') {
-                return cons || subscrCons || coll || subscrColl || subscr
+                return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
                 if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                    return cons || coll || subscr
+                    return cons || subscr
             }
         }
 
@@ -670,7 +653,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         Subscription.where { instanceOf == this }.findAll()
     }
 
-    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
         def result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings

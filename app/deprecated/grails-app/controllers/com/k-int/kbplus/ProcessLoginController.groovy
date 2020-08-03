@@ -81,7 +81,7 @@ class ProcessLoginController {
               }
               else {
                 new_role_allocation.errors.each { e ->
-                    com.k_int.kbplus.ProcessLoginController.log.error(e);
+                    com.k_int.kbplus.ProcessLoginController.log.error( e.toString() )
                 }
               }
             }
@@ -100,7 +100,7 @@ class ProcessLoginController {
         else {
           com.k_int.kbplus.ProcessLoginController.log.error("Problem creating user......");
           user.errors.each { err ->
-              com.k_int.kbplus.ProcessLoginController.log.error(err);
+              com.k_int.kbplus.ProcessLoginController.log.error( err.toString() )
           }
         }
       
@@ -170,7 +170,7 @@ class ProcessLoginController {
         if ( !user_org_link.save(flush:true) ) {
           com.k_int.kbplus.ProcessLoginController.log.error("Problem saving user org link");
           user_org_link.errors.each { e ->
-              com.k_int.kbplus.ProcessLoginController.log.error(e);
+              com.k_int.kbplus.ProcessLoginController.log.error( e.toString() )
           }
 
         }

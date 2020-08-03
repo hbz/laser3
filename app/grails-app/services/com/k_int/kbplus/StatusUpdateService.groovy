@@ -391,9 +391,9 @@ class StatusUpdateService extends AbstractLockableService {
             Org documentOwner
             if(dc.subscription) {
                 if(dc.isShared) {
-                    if(dc.subscription.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+                    if(dc.subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
                         documentOwner = dc.subscription.getConsortia()
-                    else if(dc.subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
+                    else if(dc.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
                         documentOwner = dc.subscription.getCollective()
                 }
                 else

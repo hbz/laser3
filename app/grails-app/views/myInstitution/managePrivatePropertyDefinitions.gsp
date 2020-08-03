@@ -17,7 +17,7 @@
         <g:render template="actions"/>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link class="item" action="managePrivatePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
+                <g:link class="item" action="${actionName}" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
     </semui:controlButtons>
@@ -40,7 +40,7 @@
                 </div>
                 <div class="content">
                     <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
-                        <table class="ui celled la-table la-table-small table">
+                        <table class="ui celled la-table compact table">
                             <thead>
                                 <tr>
                                     <th></th>

@@ -228,7 +228,7 @@
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
                             <g:set var="license" value="${Links.findByDestinationAndLinkType(GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)}"/>
-                            <g:if test="${license}">
+                            <g:if test="${!license}">
                                 <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
@@ -242,7 +242,7 @@
                     </g:if>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
-                            <g:if test="${!subscriptionInstance.packages}">
+                            <g:if test="${!sub.packages}">
                                 <g:link controller="subscription" action="linkPackagesMembers" id="${subscriptionInstance.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
@@ -267,7 +267,7 @@
 
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         <g:if test="${sub.isEditableBy(contextService.getUser())}"> <%-- needs to be checked for child subscription because of collective subscriptions! --%>
-                            <g:if test="${sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
+                            <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
                                     <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">
                                         <g:link class="ui icon button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
@@ -298,7 +298,7 @@
                             </g:else>
                         </g:if>
 
-                        <semui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" field="comment" type="textarea"/>
+                        <semui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea"/>
                     </td>
                 </tr>
             </g:each>

@@ -27,7 +27,7 @@
     <g:each in="${subRoles}" var="${c}">
         <tr>
             <td><g:link controller="subscription" action="show" id="${c[0].id}">${c[0]}</g:link></td>
-            <td>${c[0].getCalculatedType()}</td>
+            <td>${c[0]._getCalculatedType()}</td>
             <td><g:link controller="organisation" action="show" id="${c[1].org.id}">${c[1].org}</g:link></td>
         </tr>
     </g:each>
@@ -46,7 +46,7 @@
         <g:each in="${subConsRoles}" var="${c}">
             <tr>
                 <td><g:link controller="subscription" action="show" id="${c[0].id}">${c[0]}</g:link></td>
-                <td>${c[0].getCalculatedType()}</td>
+                <td>${c[0]._getCalculatedType()}</td>
                 <td><g:link controller="organisation" action="show" id="${c[1].org.id}">${c[1].org}</g:link></td>
             </tr>
         </g:each>

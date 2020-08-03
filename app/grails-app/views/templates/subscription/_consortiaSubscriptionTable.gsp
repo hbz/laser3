@@ -5,7 +5,7 @@
     <g:set var="chosenOrg" value="${com.k_int.kbplus.Org.findById(params.member)}" />
     <g:set var="chosenOrgCPAs" value="${chosenOrg?.getGeneralContactPersons(false)}" />
 
-    <table class="ui table la-table la-table-small">
+    <table class="ui table la-table compact">
         <tbody>
         <tr>
             <td>
@@ -118,7 +118,7 @@
 
                         <i class="icon clipboard outline outline la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
-                        <g:if test="${subCons.getCalculatedPrevious()}">
+                        <g:if test="${subCons._getCalculatedPrevious()}">
                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.hasPreviousSubscription')}">
                                 <i class="arrow left grey icon"></i>
                             </span>

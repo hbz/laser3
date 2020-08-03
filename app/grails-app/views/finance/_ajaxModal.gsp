@@ -1,13 +1,13 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection />
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">
     <g:if test="${costItem}">
-        <g:if test="${editConf.showVisiblitySettings && costItem.isVisibleForSubscriber}">
+        <g:if test="${editConf.showVisibilitySettings && costItem.isVisibleForSubscriber}">
             <div class="content la-twoSided-ribbon">
                 <div class="ui orange ribbon label">
-                    <strong><g:message code="financials.isVisibleForSubscriber"/>: ${costItem.sub.getSubscriber()}</strong>
+                    <strong>${costItem.sub.getSubscriber()}</strong>
                 </div>
             </div>
         </g:if>
@@ -36,7 +36,7 @@
             <g:hiddenField name="costItemId" value="${costItem.id}"/>
         </g:if>
         <g:if test="${copyCostsfromConsortia}">
-            <g:hiddenField name="copyBase" value="${costItem.class.getName()}:${costItem.id}" />
+            <g:hiddenField name="copyBase" value="${GenericOIDService.getOID(costItem)}" />
         </g:if>
         <div class="fields">
             <div class="nine wide field">

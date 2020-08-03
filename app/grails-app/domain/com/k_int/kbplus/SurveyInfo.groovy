@@ -42,9 +42,6 @@ class SurveyInfo {
         endDate (nullable:true)
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
-        isSubscriptionSurvey  (blank:false)
-        isMandatory           (blank:false)
-
     }
 
     static mapping = {

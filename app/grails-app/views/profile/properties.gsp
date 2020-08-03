@@ -25,7 +25,7 @@
             <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
         </div>
         <div class="content">
-            <table class="ui celled la-table la-table-small table">
+            <table class="ui celled la-table compact table">
                 <thead>
                 <tr>
                     <th>DE</th>
@@ -95,7 +95,7 @@
         </div>
         <div class="content">
 
-            <table class="ui celled la-table la-table-small table">
+            <table class="ui celled la-table compact table">
                 <thead>
                 <tr>
                     <th>DE</th>

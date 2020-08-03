@@ -1,9 +1,9 @@
-<r:require module="chartist" />
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.activityProfiler')}</title>
+    <r:require module="chartist" />
 </head>
 <body>
 
@@ -14,7 +14,7 @@
 <br>
     <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.activityProfiler')}</h2>
 
-    <table class="ui celled la-table la-table-small table">
+    <table class="ui celled la-table compact table">
         <thead>
             <tr class="center aligned">
                 <th>Zeitraum</th>

@@ -163,12 +163,9 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         type                (blank: false)
         refdataCategory     (nullable: true)
         tenant              (nullable: true,  blank: true)
-        multipleOccurrence  (nullable: true,  blank: true)
-        mandatory           (blank: false)
-        isHardData          (blank: false)
-        isUsedForLogic      (blank: false)
-        lastUpdated         (nullable: true, blank: false)
-        dateCreated         (nullable: true, blank: false)
+        multipleOccurrence  (nullable: true)
+        lastUpdated         (nullable: true)
+        dateCreated         (nullable: true)
     }
 
     static PropertyDefinition construct(Map<String, Object> map) {
@@ -309,12 +306,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         //if(!owner.hasProperty("privateProperties")) {
             ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
-            if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
-                isPublic = true
-            }
-            else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
-                isPublic = false
-            }
         /*}
         else {
             if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
@@ -326,7 +317,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }*/
 
         //def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner)
-        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: isPublic, tenant: contextOrg)
+        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: false, tenant: contextOrg)
         newProp.setNote("")
 
         /*
@@ -351,7 +342,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
             if (obj) {
                 ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-                Map<String, Object> calcPropDefGroups = obj.getCalculatedPropDefGroups(contextService.getOrg())
+                Map<String, Object> calcPropDefGroups = obj._getCalculatedPropDefGroups(contextService.getOrg())
                 propDefsInCalcGroups = SwissKnife.getCalculatedPropertiesForPropDefGroups(calcPropDefGroups)
             }
         }
@@ -360,10 +351,12 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
             case 'en':
-                matches = PropertyDefinition.findAllByDescrAndName_enIlike(params.desc, "%${params.q}%")
+                String query = "select pd from PropertyDefinition pd where pd.descr = :descr and lower(pd.name_en) like :name"
+                matches = PropertyDefinition.executeQuery( query, [descr: params.desc, name: "%${params.q.toLowerCase()}%"])
                 break
             case 'de':
-                matches = PropertyDefinition.findAllByDescrAndName_deIlike(params.desc, "%${params.q}%")
+                String query = "select pd from PropertyDefinition pd where pd.descr = :descr and lower(pd.name_de) like :name"
+                matches = PropertyDefinition.executeQuery( query, [descr: params.desc, name: "%${params.q.toLowerCase()}%"])
                 break
         }
 
@@ -482,7 +475,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = ?', [this])
-        this.delete();
+        this.delete(flush:true)
     }
 
     /* tmp only */

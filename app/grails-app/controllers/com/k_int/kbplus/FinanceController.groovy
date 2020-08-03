@@ -744,7 +744,7 @@ class FinanceController extends AbstractDebugController {
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
         if(!result.copyCostsFromConsortia)
             result.taxKey = result.costItem.taxKey
-        result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[tab:result.tab, mode:"copy"])
+        result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy"])
         result.mode = "copy"
         render(template: "/finance/ajaxModal", model: result)
     }
@@ -759,13 +759,13 @@ class FinanceController extends AbstractDebugController {
             List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
 
             cigs.each { CostItemGroup item ->
-                item.delete()
+                item.delete(flush:true)
                 log.debug("deleting CostItemGroup: " + item)
             }
             if(!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(ci.order,ci.id,RDStore.COST_ITEM_DELETED))
-                ci.order.delete()
+                ci.order.delete(flush:true)
             if(!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(ci.invoice,ci.id,RDStore.COST_ITEM_DELETED))
-                ci.invoice.delete()
+                ci.invoice.delete(flush:true)
             log.debug("deleting CostItem: " + ci)
             ci.costItemStatus = RDStore.COST_ITEM_DELETED
             ci.invoice = null
@@ -959,12 +959,12 @@ class FinanceController extends AbstractDebugController {
                       if(params.newOrderNumber == null || params.newOrderNumber.length() < 1) {
                           CostItem costItemWithOrder = CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(newCostItem.order,newCostItem.id,RDStore.COST_ITEM_DELETED)
                           if(!costItemWithOrder)
-                              newCostItem.order.delete()
+                              newCostItem.order.delete(flush:true)
                       }
                       if(params.newInvoiceNumber == null || params.newInvoiceNumber.length() < 1) {
                           CostItem costItemWithInvoice = CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(newCostItem.invoice,newCostItem.id,RDStore.COST_ITEM_DELETED)
                           if(!costItemWithInvoice)
-                              newCostItem.invoice.delete()
+                              newCostItem.invoice.delete(flush:true)
                       }
                   }
                   else {
@@ -982,7 +982,7 @@ class FinanceController extends AbstractDebugController {
                   newCostItem.invoice = invoice
                   //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
                   if(sub)
-                      newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
+                      newCostItem.isVisibleForSubscriber = sub._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
                   else newCostItem.isVisibleForSubscriber = false
                   newCostItem.costItemCategory = cost_item_category
                   newCostItem.costItemElement = cost_item_element
@@ -1031,7 +1031,7 @@ class FinanceController extends AbstractDebugController {
                               def cig = CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )
                               if (cig) {
                                   log.debug('deleting ' + cig)
-                                  cig.delete()
+                                  cig.delete(flush:true)
                               }
                           }
 
@@ -1056,7 +1056,7 @@ class FinanceController extends AbstractDebugController {
                                       PendingChange.construct([target:cci,owner:cci.owner,prop:diff.prop,oldValue:diff.oldValue,newValue:diff.newValue,msgToken:diff.msgToken,status:RDStore.PENDING_CHANGE_PENDING])
                                   }
                                   catch (CreationException e) {
-                                      log.error(e)
+                                      log.error( e.toString() )
                                   }
                               }
                           }
@@ -1172,7 +1172,7 @@ class FinanceController extends AbstractDebugController {
     def acknowledgeChange() {
         PendingChange changeAccepted = PendingChange.get(params.id)
         if(changeAccepted)
-            changeAccepted.delete()
+            changeAccepted.delete(flush:true)
         redirect(uri:request.getHeader('referer'))
     }
 
@@ -1196,7 +1196,7 @@ class FinanceController extends AbstractDebugController {
                             "SELECT DISTINCT cig.id FROM CostItemGroup AS cig JOIN cig.costItem AS ci JOIN cig.budgetCode AS bc WHERE ci = ? AND bc.owner = ? AND bc != ?",
                             [costItem, budgetOwner, bc] );
                     existing.each { id ->
-                        CostItemGroup.get(id).delete()
+                        CostItemGroup.get(id).delete(flush:true)
                     }
                     if (! CostItemGroup.findByCostItemAndBudgetCode(costItem, bc)) {
                         result.add(new CostItemGroup(costItem: costItem, budgetCode: bc).save(flush: true))

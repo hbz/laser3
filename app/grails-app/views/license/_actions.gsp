@@ -41,7 +41,7 @@
             </g:else>
 
             <g:if test="${actionName == 'show'}">
-                <g:if test="${(license.getLicensingConsortium()?.id == org.id) || (license.getCalculatedType() == CalculatedType.TYPE_LOCAL && license.getLicensee()?.id == org.id)}">
+                <g:if test="${(license.getLicensingConsortium()?.id == org.id) || (license._getCalculatedType() == CalculatedType.TYPE_LOCAL && license.getLicensee()?.id == org.id)}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
                 </g:if>

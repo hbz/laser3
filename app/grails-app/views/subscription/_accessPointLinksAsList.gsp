@@ -8,8 +8,10 @@
   <g:each in="${subscriptionInstance.packages}" var="sp">
     <%
       Map<String,Object> packageMetadata = [:]
+      String link
       ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
         packageMetadata = GOKbService.geElasticsearchFindings(api.baseUrl+api.fixToken, "&uuid=${sp.pkg.gokbId}", "Package", null, 1)
+        link = api.editUrl+"/resource/show/"
         if(packageMetadata.warning)
           packageMetadata = packageMetadata.warning
         else if(packageMetadata.info)
@@ -24,12 +26,12 @@
         <g:if test="${sp.pkg.contentProvider}">
           (${sp.pkg.contentProvider.name})
         </g:if>
-        <g:if test="${packageMetadata.records.size() > 0}">
+        <g:if test="${packageMetadata.records.size() > 0 && link}">
           <p>
             <em><g:message code="subscription.packages.curatoryGroups"/>
               <ul>
                 <g:each in="${packageMetadata.records.get(0).curatoryGroups}" var="curatoryGroup">
-                  <li>${curatoryGroup}</li>
+                  <li><a href="${link}">${curatoryGroup}</a></li>
                 </g:each>
               </ul>
             </em>
@@ -102,6 +104,7 @@
                 <div class="content">
                   <g:if test="${platform}">
                     <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                    <semui:linkIcon href="${platform.primaryUrl?.startsWith('http') ? platform.primaryUrl : 'http://' + platform.primaryUrl}"/>
                     <g:if test="${platform.usesPlatformAccessPoints(contextOrg, sp)}">
                       <span data-position="top right"
                             class="la-popup-tooltip la-delay"

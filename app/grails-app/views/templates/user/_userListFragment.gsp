@@ -1,7 +1,7 @@
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserRole;com.k_int.kbplus.UserSettings" %>
 <laser:serviceInjection/>
 
-<table class="ui sortable celled la-table la-table-small table">
+<table class="ui sortable celled la-table compact table">
     <thead>
     <tr>
         <%--<g:sortableColumn property="u.username" params="${params}" title="${message(code: 'user.name.label')}" />

@@ -832,9 +832,9 @@ class SemanticUiTagLib {
                         prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
                     }
                     if (attrs.mapping) {
-                        out << g.link("<strong>${p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+                        out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("<strong>${p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                        out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
                 out << "</div>" +
@@ -877,9 +877,9 @@ class SemanticUiTagLib {
                         nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
                     }
                     if (attrs.mapping) {
-                        out << g.link("<strong>${n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+                        out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("<strong>${n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                        out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
                 out << "</div>" +

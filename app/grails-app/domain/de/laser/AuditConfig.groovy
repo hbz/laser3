@@ -34,8 +34,8 @@ class AuditConfig {
         referenceId     (blank:false)
         referenceClass  (blank:false, maxSize:255)
         referenceField  (blank:false, maxSize:255)
-        lastUpdated     (nullable: true, blank: false)
-        dateCreated     (nullable: true, blank: false)
+        lastUpdated     (nullable: true)
+        dateCreated     (nullable: true)
     }
 
     static addConfig(Object obj) {

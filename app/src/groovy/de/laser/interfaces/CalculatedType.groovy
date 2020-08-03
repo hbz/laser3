@@ -10,5 +10,5 @@ interface CalculatedType {
     final static TYPE_UNKOWN         = 'Unknown'
     final static TYPE_PARTICIPATION_AS_COLLECTIVE = 'Participation as Collective'
 
-    String getCalculatedType()
+    String _getCalculatedType()
 }

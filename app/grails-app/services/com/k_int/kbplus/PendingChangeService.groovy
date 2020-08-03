@@ -105,9 +105,10 @@ class PendingChangeService extends AbstractLockableService {
                     case EVENT_PROPERTY_CHANGE :  // Generic property change
                         // TODO [ticket=1894]
                         // if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
-                        if ( pendingChange.payloadChangeTargetOid?.length() > 0 ) {
+                        if ( pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {
+                            String targetOID = pendingChange.payloadChangeTargetOid ?: payload.changeTarget
                             //def target_object = genericOIDService.resolveOID(payload.changeTarget);
-                            def target_object = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
+                            def target_object = genericOIDService.resolveOID(targetOID.replace('Custom','').replace('Private',''))
                             if ( target_object ) {
                                 target_object.refresh()
                                 // Work out if parsed_change_info.changeDoc.prop is an association - If so we will need to resolve the OID in the value
@@ -275,7 +276,7 @@ class PendingChangeService extends AbstractLockableService {
                         //IssueEntitlementCoverage cov = genericOIDService.resolveOID(payload.changeTarget)
                         IssueEntitlementCoverage cov = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         if(cov) {
-                            if(cov.delete()) {
+                            if(cov.delete(flush:true)) {
                                 saveWithoutError = true
                             }
                             else {
@@ -334,19 +335,21 @@ class PendingChangeService extends AbstractLockableService {
 
         // TODO [ticket=1894]
         //if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
-        if (pendingChange.payloadChangeTargetOid?.length() > 0) {
+        if (pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {
             //def changeTarget = genericOIDService.resolveOID(payload.changeTarget)
-            def changeTarget = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
+            String targetOID = pendingChange.payloadChangeTargetOid ?: payload.changeTarget
+            def changeTarget = genericOIDService.resolveOID(targetOID.replace('Custom','').replace('Private',''))
 
             if (changeTarget) {
-                if(! changeTarget.hasProperty('customProperties')) {
+                if(! changeTarget.hasProperty('propertySet')) {
                     log.error("Custom property change, but owner doesnt have the custom props: ${payload}")
                     return
                 }
 
                 //def srcProperty = genericOIDService.resolveOID(changeDoc.propertyOID)
                 //def srcObject = genericOIDService.resolveOID(changeDoc.OID)
-                def srcObject = genericOIDService.resolveOID(pendingChange.payloadChangeDocOid)
+                String srcOID = pendingChange.payloadChangeDocOid ?: payload.changeDoc.OID
+                def srcObject = genericOIDService.resolveOID(srcOID.replace('Custom','').replace('Private',''))
 
                 // A: get existing targetProperty by instanceOf
                 def targetProperty = srcObject.getClass().findByOwnerAndInstanceOf(changeTarget, srcObject)
@@ -378,7 +381,7 @@ class PendingChangeService extends AbstractLockableService {
 
                         log.debug("Deleting property ${targetProperty.type.name} from ${pendingChange.payloadChangeTargetOid}")
                         changeTarget.customProperties.remove(targetProperty)
-                        targetProperty.delete()
+                        targetProperty.delete(flush:true)
                     }
                     else if (changeDoc.event.endsWith('CustomProperty.updated')) {
 

@@ -4,6 +4,46 @@
 
 2555    30.07.2020  hbz-dev     Moe     Feature     Titelgruppen in verschiedenen Prozessen beachten
 
+2718    28.07.2020  hbz-dev     Andreas Feature     Umbau der Sicht Nutzerzahlen, erster Teil
+
+2716    27.07.2020  rc1.5       Andreas Bug         Mehrfachverknüpfung funktionierte nicht bei Verträgen
+
+2715    27.07.2020  rc1.5       Andreas Bug         lokale Lizenzen konnten nicht verlängert werden
+
+2714    27.07.2020  rc1.5       Andreas Bug         Einrichtungen konnten keine Merkmale anzeigen
+
+2713    27.07.2020  rc1.5       Andreas Bug         Der Tab Eigene Kosten wird nach Kopie korrekt angezeigt
+
+2712    27.07.2020  rc1.5       Andreas Bug         Paginator bei Tab Eigene Kosten korrigiert
+
+2702    23.07.2020  rc1.5       Moe     Bug         Mouseover bei dem Fragezeichen hinzufügen
+
+2705    23.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen laut Sammelticket
+
+--      23.07.2020  rc1.5       Andreas Bug         lokale Verträge waren für Vollnutzer nicht verknüpfbar
+
+2703    23.07.2020  rc1.5       Andreas Bug         Korrektur der Knöpfe in den Merkmalspanelen, Tooltip eingebunden für Sichtbarkeit
+
+1824    23.07.2020  rc1.5       Anja    Bug         Dropdowns der Orgs nicht nach Sichtrechten gefiltert; Zauberstab statt Button
+
+2701    23.07.2020  rc1.5       Andreas Bug         Editierbarkeitsflag korrigiert
+
+2700    22.07.2020  rc1.5       Andreas Bug         Merkmalsfilter korrigiert
+
+2575    22.07.2020  rc1.5       Andreas Bug         Export der Bestände korrigiert
+
+2655    22.07.2020  rc1.5       Andreas Bug         Stift zum Umschalten des Bearbeitungsmodus für Vollnutzer bei Kindlizenzen eingefügt
+
+2696    22.07.2020  hbz-dev     Anja    Feature     Überarbeitung Darstellung Einrichtungskontakte auf org/show (Teil 2)
+
+2530    23.07.2020  hbz-dev     Andreas Feature     Punkt zwei der Einkaufsliste: die Platform-PrimaryUrl wird jetzt im Lizenz-Paketpanel angezeigt
+
+2689    22.07.2020  rc1.5       Andreas Bug         Brücke zur korrekten Verarbeitung von PendingChange-Altlasten eingebaut
+
+--      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Vertragsverwaltung
+
+2646    21.07.2020  hbz-dev     Andreas Bug         Schaltschrank wird auch für INST_USER angezeigt
+
 2686    21.07.2020  hbz-dev     Ingrid  Feature     Bugfixing Layout Kontakt / Möglichkeit für Kopieren der Mailadresse in die Zwischenablage schaffen
 
 2693    17.07.2020  rc1.4       Moe     Bug         Umfrage Ausschüttungsfunktion 0% nicht ausschütten

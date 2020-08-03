@@ -93,7 +93,7 @@ class ApiStatistic {
             result.globalUID        = pkg.globalUID
             result.startDate        = ApiToolkit.formatInternalDate(pkg.startDate)
             result.endDate          = ApiToolkit.formatInternalDate(pkg.endDate)
-            result.lastUpdated      = ApiToolkit.formatInternalDate(pkg.getCalculatedLastUpdated())
+            result.lastUpdated      = ApiToolkit.formatInternalDate(pkg._getCalculatedLastUpdated())
             result.packageType      = pkg.contentType?.value
             result.packageStatus    = pkg.packageStatus?.value
             result.name             = pkg.name

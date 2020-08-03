@@ -205,7 +205,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
-                            pc.delete()
+                            pc.delete(flush:true)
                         }
                     }
                 }

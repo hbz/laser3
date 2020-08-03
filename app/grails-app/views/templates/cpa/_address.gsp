@@ -22,10 +22,11 @@
                 <i class="ui js-linkGoogle icon building map marker alternate la-list-icon"></i>
             </a>
             <div class="content la-space-right">
-                <strong>${address.type?.getI10n('value')}:</strong>
+                <g:if test="${ ! hideAddressType}">
+                    <strong>${address.type?.getI10n('value')}:</strong>
+                </g:if>
                 <div class="item" onclick="addressedit(${address.id});" >
                     <g:if test="${address.name}">
-                        <br />
                         ${address.name}
                     </g:if>
                     <g:if test="${address.additionFirst}">

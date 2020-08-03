@@ -99,7 +99,7 @@
                                             <%--<g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>+--%>
                                             let link = "<g:createLink controller="license" action="show"/>";
                                             $.each(data.results,function(k,v) {
-                                                $("#${s.id}linkedLicenses").append('<i class="icon clipboard outline outline la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br>');
+                                                $("#${s.id}linkedLicenses").append('<i class="icon balance scale la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br>');
                                             });
                                         });
                                     </script>
@@ -203,7 +203,7 @@
                             <td>
                                 <g:if test="${s.isMultiYear}">
                                     <g:if test="${(s.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                                            s.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)}">
+                                            s._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)}">
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                               data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
                                             <i class="map orange icon"></i>

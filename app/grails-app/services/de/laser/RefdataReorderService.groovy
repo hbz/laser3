@@ -13,8 +13,8 @@ class RefdataReorderService {
      */
     void reorderRefdata() {
         //semesters: take the order of insertion and make then the ID ascending
-        List semesters = RefdataValue.findAllByOwnerAndValueNotEqual(RefdataCategory.getByDesc(RDConstants.SEMESTER),'semester.not.applicable',[sort:'id', order:'asc'])
-        RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'semester.not.applicable'])
+        List semesters = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.SEMESTER),[sort:'id', order:'asc'])
+        //RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'semester.not.applicable'])
         int order = 10
         semesters.each { s ->
             s.order = order

@@ -21,7 +21,7 @@
 
         <h3 class="ui headerline"><i class="ui hdd icon"></i> Dateien</h3>
 
-        <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
+        <table class="ui sortable celled la-table compact la-ignore-fixed table">
             <thead>
                 <tr>
                     <th>Beschreibung</th>
@@ -50,7 +50,7 @@
 
         <h3 class="ui headerline"><i class="ui database icon"></i> Objekte: Doc</h3>
 
-         <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
+         <table class="ui sortable celled la-table compact la-ignore-fixed table">
             <thead>
                 <tr>
                     <th>Beschreibung</th>
@@ -101,7 +101,7 @@
 
         <h3 class="ui headerline"><i class="ui database icon"></i> Objekte: DocContext</h3>
 
-        <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
+        <table class="ui sortable celled la-table compact la-ignore-fixed table">
             <thead>
             <tr>
                 <th>Beschreibung</th>

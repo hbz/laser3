@@ -20,7 +20,7 @@
 
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${orgInstance.getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${orgInstance._getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 

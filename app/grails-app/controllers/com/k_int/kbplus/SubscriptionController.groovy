@@ -385,7 +385,7 @@ class SubscriptionController
         Long subId = ieCoverage.issueEntitlement.subscription.id
         if(ieCoverage) {
             PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:RDStore.PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
-            ieCoverage.delete()
+            ieCoverage.delete(flush:true)
             redirect action: 'index', id: subId, params: params
         }
         else log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
@@ -397,7 +397,7 @@ class SubscriptionController
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if(result.subscription.instanceOf)
             result.parentId = result.subscription.instanceOf.id
-        else if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
+        else if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
             result.parentId = result.subscription.id
 
         if (params.process  && result.editable) {
@@ -430,7 +430,7 @@ class SubscriptionController
                 }
 
                 //Automatisch Paket entknüpfen, wenn das Paket in der Elternlizenz entknüpft wird
-                if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] &&
+                if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] &&
                         accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && (result.subscription.instanceOf == null)) {
 
                     List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
@@ -505,7 +505,7 @@ class SubscriptionController
 
 
                 //Automatisch Paket entknüpfen, wenn das Paket in der Elternlizenz entknüpft wird
-                if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] &&
+                if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] &&
                         accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && (result.subscription.instanceOf == null)){
 
                     List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
@@ -1675,7 +1675,7 @@ class SubscriptionController
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         result.parentLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.parentSub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }
 
@@ -1738,10 +1738,10 @@ class SubscriptionController
             return
         }
         if(formService.validateToken(params)) {
-            result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+            result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
             /*RefdataValue licenseeRoleType = OR_LICENSEE_CONS
-            if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
+            if(result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
                 licenseeRoleType = OR_LICENSEE_COLL
 
             result.parentLicense = result.parentSub.owner*/
@@ -1839,7 +1839,7 @@ class SubscriptionController
         }
 
         def oldID = params.id
-        if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE])
+        if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE])
             params.id = result.parentSub.id
 
         ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
@@ -2040,7 +2040,7 @@ class SubscriptionController
         params.remove('filterPropDef')
 
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
         /*Sortieren
@@ -2103,7 +2103,7 @@ class SubscriptionController
 
         params.tab = params.tab ?: 'generalProperties'
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
@@ -2167,7 +2167,7 @@ class SubscriptionController
         if(formService.validateToken(params)) {
             result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-            result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+            result.parentSub = result.subscriptionInstance.instanceOf && result.subscription._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
 
             if (params.filterPropDef && params.filterPropValue) {
@@ -2405,7 +2405,7 @@ class SubscriptionController
 
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         List<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
@@ -2432,11 +2432,11 @@ class SubscriptionController
                             SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
 
                             try {
-                                privateProp.delete()
+                                privateProp.delete(flush:true)
                                 deletedProperties++
                             } catch (Exception e)
                             {
-                                log.error(e)
+                                log.error( e.toString() )
                             }
 
                         }
@@ -2453,10 +2453,10 @@ class SubscriptionController
                             SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
 
                             try {
-                                customProp.delete()
+                                customProp.delete(flush:true)
                                 deletedProperties++
                             } catch (Exception e){
-                                log.error(e)
+                                log.error( e.toString() )
                             }
 
                         }
@@ -2516,7 +2516,8 @@ class SubscriptionController
             }
         }
         result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
-        result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
+        String memberLicensesQuery = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
+        result.memberLicenses = License.executeQuery(memberLicensesQuery,[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
 
         result
     }
@@ -2524,7 +2525,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
-        log.debug(params)
+        log.debug( params.toMapString() )
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
@@ -2605,7 +2606,7 @@ class SubscriptionController
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
                                 startDate: startDate,
                                 endDate: endDate,
-                                administrative: result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
+                                administrative: result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: UUID.randomUUID().toString(),
@@ -2630,7 +2631,7 @@ class SubscriptionController
 
                         if (memberSub) {
                             if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                                if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
+                                if(result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
                                 }
                                 else {
@@ -2701,7 +2702,7 @@ class SubscriptionController
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     @Deprecated
     def deleteMember() {
-        log.debug(params)
+        log.debug( params.toMapString() )
 
         return
 
@@ -3940,7 +3941,7 @@ class SubscriptionController
 
         result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscriptionInstance, 'Specific subscription editor')
 
-        if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
+        if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
             du.setBenchmark('non-inherited member properties')
             List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
             if(childSubs) {
@@ -3982,7 +3983,9 @@ class SubscriptionController
             response.sendError(401)
             return;
         }
-        def prevSubs = Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, Subscription.class.name, params.id)
+
+        Subscription subscription = Subscription.get(params.id)
+        def prevSubs = Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, GenericOIDService.getOID(subscription))
         if (prevSubs){
             flash.error = message(code: 'subscription.renewSubExist')
             response.sendError(401)
@@ -3990,8 +3993,6 @@ class SubscriptionController
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
-
-        def subscription = Subscription.get(params.id)
 
         result.errors = []
         def newStartDate
@@ -4006,7 +4007,6 @@ class SubscriptionController
                                  sub_endDate: newEndDate? sdf.format(newEndDate) : null,
                                  sub_name: subscription.name,
                                  sub_id: subscription.id,
-                                 sub_license: subscription?.owner?.reference?:'',
                                  sub_status: RDStore.SUBSCRIPTION_INTENDED]
 
         result
@@ -4031,6 +4031,7 @@ class SubscriptionController
         def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
         def sub_status = params.subStatus
         def old_subOID = params.subscription.old_subid
+        Subscription oldSubscription = Subscription.get(old_subOID)
         def new_subname = params.subscription.name
 
         def new_subscription = new Subscription(
@@ -4039,10 +4040,9 @@ class SubscriptionController
                 name: new_subname,
                 startDate: sub_startDate,
                 endDate: sub_endDate,
-                type: Subscription.get(old_subOID)?.type ?: null,
-                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
-                resource: Subscription.get(old_subOID)?.resource ?: null,
-                form: Subscription.get(old_subOID)?.form ?: null
+                type: oldSubscription.type ?: null,
+                resource: oldSubscription.resource ?: null,
+                form: oldSubscription.form ?: null
         )
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
 
@@ -4053,8 +4053,9 @@ class SubscriptionController
                     roleType: RDStore.OR_SUBSCRIBER
             ).save();
 
+            Links prevLink
             if(old_subOID) {
-                Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                prevLink = new Links(source: GenericOIDService.getOID(new_subscription), destination: GenericOIDService.getOID(oldSubscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg)
                 prevLink.save()
             }
             else { log.error("Problem linking new subscription, ${prevLink.errors}") }
@@ -4062,7 +4063,7 @@ class SubscriptionController
             log.error("Problem saving new subscription, ${new_subscription.errors}");
         }
 
-        new_subscription.save(flush: true);
+        new_subscription.save()
 
         if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
         redirect controller: 'subscription',
@@ -4718,7 +4719,7 @@ class SubscriptionController
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
 
-        result.isConsortialSubs = (result.sourceSubscription?.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription?.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
+        result.isConsortialSubs = (result.sourceSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
@@ -4728,8 +4729,8 @@ class SubscriptionController
         result.isSubscriberVisible =
                 result.sourceSubscription &&
                 result.targetSubscription &&
-                subTypSubscriberVisible.contains(result.sourceSubscription.getCalculatedType()) &&
-                subTypSubscriberVisible.contains(result.targetSubscription.getCalculatedType())
+                subTypSubscriberVisible.contains(result.sourceSubscription._getCalculatedType()) &&
+                subTypSubscriberVisible.contains(result.targetSubscription._getCalculatedType())
 
         if (! result.isSubscriberVisible) {
             //flash.message += message(code: 'subscription.info.subscriberNotAvailable')
@@ -5035,9 +5036,12 @@ class SubscriptionController
             }
         }
 
-        result.sourceLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc",[sub:GenericOIDService.getOID(baseSub),linkType:RDStore.LINKTYPE_LICENSE])
-        if(newSub)
-            result.targetLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc",[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
+        String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+        result.sourceLicenses = License.executeQuery(sourceLicensesQuery,[sub:GenericOIDService.getOID(baseSub),linkType:RDStore.LINKTYPE_LICENSE])
+        if(newSub) {
+            String targetLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+            result.targetLicenses = License.executeQuery(targetLicensesQuery,[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
+        }
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
@@ -5223,12 +5227,13 @@ class SubscriptionController
         if (newSub) {
             result.newSub = newSub.refresh()
         }
-        subsToCompare.each{ sub ->
+        Org contextOrg = contextService.org
+        subsToCompare.each{ Subscription sub ->
             Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties.sort{it.type.getI10n('name')})
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result
@@ -5831,16 +5836,6 @@ class SubscriptionController
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
-        if(result.subscription.instanceOf?.getConsortia() && !
-                (params.action in ['addMembers', 'processAddMembers',
-                                     'linkLicenseMembers', 'processLinkLicenseMembers',
-                                     'linkPackagesMembers', 'processLinkPackagesMembers',
-                                     'propertiesMembers', 'processPropertiesMembers',
-                                     'subscriptionPropertiesMembers', 'processSubscriptionPropertiesMembers'])
-        ) {
-            result.editable = false
-        }
-
         if(params.orgBasicMemberView){
             result.editable = false
         }
@@ -5856,7 +5851,7 @@ class SubscriptionController
     }
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription.getConsortia()?.id == contextOrg.id) && subscription.getCalculatedType() in
+        return ((subscription.getConsortia()?.id == contextOrg.id) && subscription._getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
@@ -6195,7 +6190,7 @@ class SubscriptionController
                     }
                     catch (Exception e) {
                         property."${field}" = backup
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 } else if(field == "urlValue") {
 
@@ -6211,7 +6206,7 @@ class SubscriptionController
                     }
                     catch (Exception e) {
                         property."${field}" = backup
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 } else {
                     def binding_properties = [:]

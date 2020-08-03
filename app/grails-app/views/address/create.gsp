@@ -1,7 +1,6 @@
 <%@ page import="com.k_int.kbplus.Address" %>
 
 <!doctype html>
-<r:require module="scaffolding" />
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">

@@ -5,7 +5,6 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
-import grails.transaction.Transactional
 import groovy.json.JsonOutput
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.elasticsearch.ElasticsearchException
@@ -125,7 +124,7 @@ class DataloadService {
                     try {
                         result.identifiers.add([type: ident.ns.ns, value: ident.value])
                     } catch (Exception e) {
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 }
 
@@ -134,7 +133,7 @@ class DataloadService {
                     try {
                         result.platforms.add([dbId: platform.id, name: platform.name])
                     } catch (Exception e) {
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 }
 
@@ -184,7 +183,7 @@ class DataloadService {
                         try {
                             result.identifiers.add([type: ident.ns.ns, value: ident.value])
                         } catch (Exception e) {
-                            log.error(e)
+                            log.error( e.toString() )
                         }
                     }
                     //result.keyTitle = ti.keyTitle
@@ -240,7 +239,7 @@ class DataloadService {
                     try {
                         result.identifiers.add([type: ident.ns.ns, value: ident.value])
                     } catch (Exception e) {
-                        log.error(e)
+                        log.error( e.toString() )
                     }
                 }
                 result.dateCreated = pkg.dateCreated
@@ -299,15 +298,15 @@ class DataloadService {
             result.visible = 'Private'
             result.rectype = lic.getClass().getSimpleName()
 
-            switch(lic.getCalculatedType()) {
+            switch(lic._getCalculatedType()) {
                 case CalculatedType.TYPE_CONSORTIAL:
                     //result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
-                    result.availableToOrgs = Org.executeQuery("select oo.org.id from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA])
+                    result.availableToOrgs = Org.executeQuery("select oo.org.id from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA])
                     result.membersCount = License.findAllByInstanceOf(lic).size()?:0
                     break
                 case CalculatedType.TYPE_PARTICIPATION:
                     //List orgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
-                    List orgs = Org.executeQuery("select oo.org from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType in (:roleType)",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+                    List orgs = Org.executeQuery("select oo.org from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType in (:roleType)",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
                     result.availableToOrgs = orgs.collect{ Org org -> org.id }
                     result.consortiaGUID = lic.getLicensingConsortium()?.globalUID
                     result.consortiaName = lic.getLicensingConsortium()?.name
@@ -319,7 +318,7 @@ class DataloadService {
                     break
                 case CalculatedType.TYPE_LOCAL:
                     //result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
-                    result.availableToOrgs = Org.executeQuery("select oo.org.id from OrgRole oo where concat('${Subscription.class.name}:',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIBER])
+                    result.availableToOrgs = Org.executeQuery("select oo.org.id from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIBER])
                     break
             }
 
@@ -330,7 +329,7 @@ class DataloadService {
                 try {
                     result.identifiers.add([type: ident.ns.ns, value: ident.value])
                 } catch (Exception e) {
-                    log.error(e)
+                    log.error( e.toString() )
                 }
             }
 
@@ -367,7 +366,7 @@ class DataloadService {
                 result.visible = 'Private'
                 result.rectype = sub.getClass().getSimpleName()
 
-                switch (sub.getCalculatedType()) {
+                switch (sub._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
                         result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
                         result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?:0
@@ -413,7 +412,7 @@ class DataloadService {
                         try {
                             result.identifiers.add([type: ident.ns.ns, value: ident.value])
                         } catch (Exception e) {
-                            log.error(e)
+                            log.error( e.toString() )
                         }
                     }
 
@@ -631,7 +630,7 @@ class DataloadService {
             result.visible = 'Private'
             result.rectype = ie.getClass().getSimpleName()
 
-            switch (ie.subscription.getCalculatedType()) {
+            switch (ie.subscription._getCalculatedType()) {
                 case CalculatedType.TYPE_CONSORTIAL:
                     result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
                     break
@@ -708,7 +707,7 @@ class DataloadService {
             }
 
             if(subProp.isPublic) {
-                switch (subProp.owner.getCalculatedType()) {
+                switch (subProp.owner._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
                         result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
                         break
@@ -822,7 +821,7 @@ class DataloadService {
             }
 
             if(licProp.isPublic) {
-                switch(licProp.owner.getCalculatedType()) {
+                switch(licProp.owner._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
                         result.availableToOrgs = licProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
                         break

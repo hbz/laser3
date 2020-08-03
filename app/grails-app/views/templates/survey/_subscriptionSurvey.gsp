@@ -371,7 +371,7 @@
                         <%--
                         <br>
                         <g:set var="derivedPropDefGroups"
-                               value="${subscriptionInstance.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
+                               value="${subscriptionInstance.owner?._getCalculatedPropDefGroups(contextService.getOrg())}"/>
 
                         <div class="ui form">
                             <div class="two fields">
@@ -496,7 +496,7 @@
                     String dataTooltip = ""
                 %>
 
-                <table class="ui celled la-table-small la-table-inCard table">
+                <table class="ui celled compact la-table-inCard table">
                     <thead>
                     <tr>
                         <th colspan="4" class="center aligned">

@@ -461,7 +461,7 @@
                                 </td>
                                 <td>
                                     <g:if test="${ie.priceItem}">
-                                        <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice" owner="${ie.priceItem}"/> <semui:xEditableRefData field="listCurrency" owner="${ie.priceItem}" config="Currency"/> <%--<g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%><br>
+                                        <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice" owner="${ie.priceItem}" format=""/> <semui:xEditableRefData field="listCurrency" owner="${ie.priceItem}" config="Currency"/> <%--<g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%><br>
                                         <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice" owner="${ie.priceItem}"/> <semui:xEditableRefData field="localCurrency" owner="${ie.priceItem}" config="Currency"/> <%--<g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%>
                                         (<g:message code="tipp.priceDate"/> <semui:xEditable field="priceDate" type="date" owner="${ie.priceItem}"/> <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>--%>)
                                     </g:if>

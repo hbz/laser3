@@ -589,9 +589,9 @@ ${surveyInfo.name}
                             <g:link controller="subscription" action="show" id="${sub?.id}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
-                        <g:if test="${sub?.getCalculatedSuccessor()}">
+                        <g:if test="${sub?._getCalculatedSuccessor()}">
                             <br>
-                            <g:link controller="subscription" action="show" id="${sub?.getCalculatedSuccessor()?.id}"
+                            <g:link controller="subscription" action="show" id="${sub?._getCalculatedSuccessor()?.id}"
                                     class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                         </g:if>
                     </td>
@@ -640,9 +640,9 @@ ${surveyInfo.name}
                             <g:link controller="subscription" action="show" id="${sub?.id}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
-                        <g:if test="${sub?.getCalculatedSuccessor()}">
+                        <g:if test="${sub?._getCalculatedSuccessor()}">
                             <br>
-                            <g:link controller="subscription" action="show" id="${sub?.getCalculatedSuccessor()?.id}"
+                            <g:link controller="subscription" action="show" id="${sub?._getCalculatedSuccessor()?.id}"
                                     class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                         </g:if>
                     </td>
