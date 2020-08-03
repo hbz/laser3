@@ -2678,8 +2678,8 @@ class AjaxController {
         List<Subscription> data
         List result = []
         boolean showActiveSubs = params.showActiveSubs == 'true'
-        boolean showSubscriber = params.showSubscriber == 'true'// instanceOf != null???
-        boolean showConnectedSubs = params.showConnectedSubs == 'true'//previousSub und folgende Sub???
+        boolean showSubscriber = params.showSubscriber == 'true'
+        boolean showConnectedSubs = params.showConnectedSubs == 'true'
         Map queryParams = [:]
         if (showActiveSubs) { queryParams.status = RDStore.SUBSCRIPTION_CURRENT.id }
         queryParams.showSubscriber = showSubscriber
