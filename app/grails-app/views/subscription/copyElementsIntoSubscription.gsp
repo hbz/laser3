@@ -44,12 +44,15 @@
                             <i class="dolly icon"></i>${message(code:'subscription.form.label')}
                             <i class="box icon"></i>${message(code:'subscription.resource.label')}
                             <br>
-                            <i class="balance scale icon"></i>${message(code: 'license.label')}
-                            <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
-                            <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
-                            <br>
                             <i class="shipping fast icon"></i>${message(code:'subscription.isPublicForApi.label')}
                             <i class="flag outline icon"></i>${message(code:'subscription.hasPerpetualAccess.label')}
+                            <br>
+                            <i class="balance scale icon"></i>${message(code: 'license.label')}
+                            <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
+                            <i class="address card icon"></i>${message(code: 'subscription.specificSubscriptionEditors')}
+                            <br>
+                            <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
+
                         </div>
                     </div>
                 </div>
@@ -119,17 +122,20 @@
                     <div class="description">
                         <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
                         <i class="ellipsis vertical icon"></i>${message(code:'subscription.status.label')}
-                        <i class="image outline icon"></i>${message(code:'subscription.kind.label')}
                         <br>
+                        <i class="image outline icon"></i>${message(code:'subscription.kind.label')}
                         <i class="dolly icon"></i>${message(code:'subscription.form.label')}
                         <i class="box icon"></i>${message(code:'subscription.resource.label')}
                         <br>
-                        <i class="balance scale icon"></i>${message(code: 'license.label')}
-                        <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
-                        <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
-                        <br>
                         <i class="shipping fast icon"></i>${message(code:'subscription.isPublicForApi.label')}
                         <i class="flag outline icon"></i>${message(code:'subscription.hasPerpetualAccess.label')}
+                        <br>
+                        <i class="balance scale icon"></i>${message(code: 'license.label')}
+                        <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
+                        <i class="address card icon"></i>${message(code: 'subscription.specificSubscriptionEditors')}
+                        <br>
+                        <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
+
                     </div>
                 </div>
             </semui:complexSubNavItem>

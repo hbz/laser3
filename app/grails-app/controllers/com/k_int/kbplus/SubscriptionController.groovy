@@ -4976,6 +4976,17 @@ class SubscriptionController
             }
         }
 
+        if (params.subscription?.deleteSpecificSubscriptionEditors && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<PersonRole> toDeleteSpecificSubscriptionEditors = params.list('subscription.deleteSpecificSubscriptionEditors').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.deleteSpecificSubscriptionEditors(toDeleteSpecificSubscriptionEditors, newSub, flash)
+            //isTargetSubChanged = true
+        }
+        if (params.subscription?.takeSpecificSubscriptionEditors && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<PersonRole> toCopySpecificSubscriptionEditors = params.list('subscription.takeSpecificSubscriptionEditors').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.copySpecificSubscriptionEditors(toCopySpecificSubscriptionEditors, baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
         if (params.subscription?.deleteIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toDeleteIdentifiers =  []
             params.list('subscription.deleteIdentifierIds').each{ identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
@@ -5503,6 +5514,10 @@ class SubscriptionController
 
                     }
 
+                }
+                //
+                if ((params.subscription.copySpecificSubscriptionEditors)) {
+                    subscriptionService.copySpecificSubscriptionEditorOfProvideryAndAgencies(baseSubscription, newSubscriptionInstance)
                 }
 
                 //Copy Package

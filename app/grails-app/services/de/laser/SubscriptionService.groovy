@@ -846,6 +846,13 @@ class SubscriptionService {
         )
     }
 
+    boolean deleteSpecificSubscriptionEditors(List<PersonRole> toDeletePersonRoles, Subscription targetSub, def flash) {
+        PersonRole.executeUpdate(
+                "delete from PersonRole pr where pr in (:personRoles) and pr.sub = :sub",
+                [personRoles: toDeletePersonRoles, sub: targetSub]
+        )
+    }
+
 
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Subscription sourceSub, Subscription targetSub, def flash) {
         sourceSub.orgRelations?.each { or ->
@@ -866,6 +873,29 @@ class SubscriptionService {
                 }
             }
         }
+    }
+
+    boolean copySpecificSubscriptionEditors(List<PersonRole> toCopyPersonRoles, Subscription sourceSub, Subscription targetSub, def flash) {
+
+        toCopyPersonRoles.each { prRole ->
+            if(!(prRole.org in targetSub.orgRelations.org) && (prRole.org in sourceSub.orgRelations.org)){
+                OrgRole or = OrgRole.findByOrgAndSub(prRole.org, sourceSub)
+                def newProperties = or.properties
+
+                OrgRole newOrgRole = new OrgRole()
+                InvokerHelper.setProperties(newOrgRole, newProperties)
+                //Vererbung ausschalten
+                newOrgRole.sharedFrom  = null
+                newOrgRole.isShared = false
+                newOrgRole.sub = targetSub
+            }
+
+            if((prRole.org in targetSub.orgRelations.org) && !PersonRole.findWhere(prs: prRole.prs, org: prRole.org, responsibilityType: prRole.responsibilityType, sub: targetSub)){
+                PersonRole newPrsRole = new PersonRole(prs: prRole.prs, org: prRole.org, sub: targetSub, responsibilityType: prRole.responsibilityType)
+                save(newPrsRole, flash)
+            }
+        }
+
     }
 
 
@@ -2159,5 +2189,74 @@ class SubscriptionService {
         println(countChangesPrice)*/
 
         return [issueEntitlements: issueEntitlements.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
+    }
+
+    def copySpecificSubscriptionEditorOfProvideryAndAgencies(Subscription sourceSub, Subscription targetSub){
+
+        sourceSub.getProviders().each { provider ->
+            RefdataValue refdataValue = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+
+            Person.getPublicByOrgAndObjectResp(provider, sourceSub, 'Specific subscription editor').each { prs ->
+
+                if(!(provider in targetSub.orgRelations?.org)){
+                    OrgRole or = OrgRole.findByOrgAndSub(provider, sourceSub)
+                    OrgRole newOrgRole = new OrgRole()
+                    InvokerHelper.setProperties(newOrgRole, or.properties)
+                    newOrgRole.sub = targetSub
+                    newOrgRole.save()
+                }
+
+                if(!PersonRole.findWhere(prs: prs, org: provider, responsibilityType: refdataValue, sub: targetSub)){
+                    PersonRole newPrsRole = new PersonRole(prs: prs, org: provider, sub: targetSub, responsibilityType: refdataValue)
+                    newPrsRole.save()
+                }
+            }
+
+            Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, sourceSub, 'Specific subscription editor', contextService.getOrg()).each { prs ->
+                if(!(provider in targetSub.orgRelations?.org)){
+                    OrgRole or = OrgRole.findByOrgAndSub(provider, sourceSub)
+                    OrgRole newOrgRole = new OrgRole()
+                    InvokerHelper.setProperties(newOrgRole, or.properties)
+                    newOrgRole.sub = targetSub
+                    newOrgRole.save()
+                }
+
+                if(!PersonRole.findWhere(prs: prs, org: provider, responsibilityType: refdataValue, sub: targetSub)){
+                    PersonRole newPrsRole = new PersonRole(prs: prs, org: provider, sub: targetSub, responsibilityType: refdataValue)
+                    newPrsRole.save()
+                }
+            }
+        }
+        sourceSub.getAgencies().each { agency ->
+            RefdataValue refdataValue = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+
+            Person.getPublicByOrgAndObjectResp(agency, sourceSub, 'Specific subscription editor').each { prs ->
+                if(!(agency in targetSub.orgRelations.org)){
+                    OrgRole or = OrgRole.findByOrgAndSub(agency, sourceSub)
+                    OrgRole newOrgRole = new OrgRole()
+                    InvokerHelper.setProperties(newOrgRole, or.properties)
+                    newOrgRole.sub = targetSub
+                    newOrgRole.save()
+                }
+                if(!PersonRole.findWhere(prs: prs, org: agency, responsibilityType: refdataValue, sub: targetSub)){
+                    PersonRole newPrsRole = new PersonRole(prs: prs, org: agency, sub: targetSub, responsibilityType: refdataValue)
+                    newPrsRole.save()
+                }
+            }
+
+            Person.getPrivateByOrgAndObjectRespFromAddressbook(agency, sourceSub, 'Specific subscription editor', contextService.getOrg()).each { prs ->
+                if(!(agency in targetSub.orgRelations.org)){
+                    OrgRole or = OrgRole.findByOrgAndSub(agency, sourceSub)
+                    OrgRole newOrgRole = new OrgRole()
+                    InvokerHelper.setProperties(newOrgRole, or.properties)
+                    newOrgRole.sub = targetSub
+                    newOrgRole.save()
+                }
+                if(!PersonRole.findWhere(prs: prs, org: agency, responsibilityType: refdataValue, sub: targetSub)){
+                    PersonRole newPrsRole = new PersonRole(prs: prs, org: agency, sub: targetSub, responsibilityType: refdataValue)
+                    newPrsRole.save()
+                }
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.PendingChangeConfiguration" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.PendingChangeConfiguration; com.k_int.kbplus.Person;" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
@@ -174,9 +174,54 @@
                 <td>
                     <g:each in="${visibleOrgRelations.sort { it.roleType?.getI10n("value") }}" var="role">
                         <g:if test="${role.org}">
-                            <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="organisation"
+                            <b>${role.roleType?.getI10n("value")}:</b> <g:link controller="organisation"
                                                                                 action="show" target="_blank"
-                                                                                id="${role.org.id}">${role?.org?.name}</g:link><br>
+                                                                                id="${role.org.id}">${role.org.name}</g:link><br>
+                        </g:if>
+                    </g:each>
+                </td>
+            </tr>
+
+            <tr>
+                <th><g:checkBox name="subscription.copySpecificSubscriptionEditors" value="${true}" /></th>
+                <th>${message(code:'subscription.copySpecificSubscriptionEditors')}</th>
+                <td>
+                    <g:each in="${visibleOrgRelations.sort { it.roleType?.getI10n("value") }}" var="role">
+                        <g:if test="${role.org}">
+                            <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, subscription, 'Specific subscription editor', contextService.getOrg()) ||
+                                    Person.getPublicByOrgAndObjectResp(role.org, subscription, 'Specific subscription editor')}">
+                            <%-- public --%>
+                                <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, subscription, 'Specific subscription editor')}"
+                                        var="resp">
+                                        <span class="la-popup-tooltip la-delay"
+                                              data-content="${message(code: 'address.public')}"
+                                              data-position="top right">
+                                            <i class="address card icon"></i>
+                                        </span>
+                                        <g:link controller="person" action="show"
+                                                id="${resp.id}">${resp}</g:link>
+                                        (<b><i class="university icon"></i>&nbsp${role.roleType?.getI10n("value")}:</b>
+                                        <g:link controller="organisation" action="show" target="_blank"
+                                                id="${role.org.id}">${role.org.name}</g:link>)
+                                </g:each>
+                            <%-- public --%>
+                            <%-- private --%>
+
+                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, subscription, 'Specific subscription editor', contextService.getOrg())}"
+                                        var="resp">
+                                        <span class="la-popup-tooltip la-delay"
+                                              data-content="${message(code: 'address.private')}"
+                                              data-position="top right">
+                                            <i class="address card outline icon"></i>
+                                        </span>
+                                        <g:link controller="person" action="show"
+                                                id="${resp.id}">${resp}</g:link>
+                                        (<b><i class="university icon"></i>&nbsp${role.roleType?.getI10n("value")}:</b>
+                                        <g:link controller="organisation" action="show" target="_blank"
+                                                id="${role.org.id}">${role.org.name}</g:link>)
+                                </g:each>
+                            <%-- private --%>
+                            </g:if>
                         </g:if>
                     </g:each>
                 </td>
@@ -221,7 +266,7 @@
             <tr>
                 <th><g:checkBox name="subscription.copyPrivateProperties" value="${true}" /></th>
                 <th>${message(code:'subscription.copyPrivateProperty')}</th>
-                <td>${message(code:'subscription.properties.private')} ${contextOrg?.name}<br>
+                <td>${message(code:'subscription.properties.private')} ${contextOrg.name}<br>
                 </td>
             </tr>
 
@@ -229,7 +274,7 @@
                 <th><g:checkBox name="subscription.copyIds" value="${true}" /></th>
                 <th>${message(code:'subscription.copyIds')}</th>
                 <td>
-                    <g:each in="${subscription.ids?.sort { it.ns.ns }}"
+                    <g:each in="${subscription.ids.sort { it.ns.ns }}"
                             var="id">
                         <span class="ui small blue image label">
                             ${id.ns.ns}: <div class="detail">${id.value}</div>
@@ -289,7 +334,7 @@
                 <td>
                     <g:each in="${tasks}" var="tsk">
                         <div id="summary" class="summary">
-                        <b>${tsk?.title}</b> (${message(code:'task.endDate.label')}
+                        <b>${tsk.title}</b> (${message(code:'task.endDate.label')}
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>)
                         <br>
                     </g:each>
