@@ -79,20 +79,22 @@ class LinksGenerationService {
 
         // links
         List oIDs = ownerSubscriptions.collect {GenericOIDService.getOID(it)}
-        sources = Links.findAllBySourceInList(oIDs)
-        destinations = Links.findAllByDestinationInList(oIDs)
-        //IN is from the point of view of the context object (= obj)
+        if (oIDs) {
+            sources = Links.findAllBySourceInList(oIDs)
+            destinations = Links.findAllByDestinationInList(oIDs)
+            //IN is from the point of view of the context object (= obj)
 
-        sources.each { Links link ->
-            def destination = genericOIDService.resolveOID(link.destination)
-            if (destination.respondsTo("isVisibleBy") && destination.isVisibleBy(user) && destination instanceof Subscription) {
-                result.add(destination)
+            sources.each { Links link ->
+                def destination = genericOIDService.resolveOID(link.destination)
+                if (destination.respondsTo("isVisibleBy") && destination.isVisibleBy(user) && destination instanceof Subscription) {
+                    result.add(destination)
+                }
             }
-        }
-        destinations.each { Links link ->
-            def source = genericOIDService.resolveOID(link.source)
-            if (source.respondsTo("isVisibleBy") && source.isVisibleBy(user) && source instanceof Subscription) {
-                result.add(source)
+            destinations.each { Links link ->
+                def source = genericOIDService.resolveOID(link.source)
+                if (source.respondsTo("isVisibleBy") && source.isVisibleBy(user) && source instanceof Subscription) {
+                    result.add(source)
+                }
             }
         }
         result
