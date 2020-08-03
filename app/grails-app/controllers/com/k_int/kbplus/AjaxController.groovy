@@ -29,6 +29,7 @@ import java.util.regex.Pattern
 class AjaxController {
 
     def genericOIDService
+    def subscriptionService
     def contextService
     def taskService
     def controlledListService
@@ -2674,27 +2675,29 @@ class AjaxController {
         }
     }
     def adjustSubscriptionList(){
-        List<Subscription> result
-//        Map queryParams = [:]
-//        if (params.isActiveSubs){
-//            queryParams.status = RDStore.SUBSCRIPTION_CURRENT.id
-//        }
-//        if (params.isActiveSubs){
-//            queryParams.status = RDStore.SUBSCRIPTION_CURRENT.id
-//        }
-//        if (params.isActiveSubs){
-//            queryParams.status = RDStore.SUBSCRIPTION_CURRENT.id
-//        }
-        boolean isActiveSubs = params.isActiveSubs
-        boolean isSubscriber = params.isSubscriber// instanceOf != null???
-        boolean isConnectedSubs = params.isConnectedSubs//previousSub und folgende Sub???
+        List<Subscription> data
+        List result = []
+        boolean showActiveSubs = params.showActiveSubs == 'true'
+        boolean showSubscriber = params.showSubscriber == 'true'// instanceOf != null???
+        boolean showConnectedSubs = params.showConnectedSubs == 'true'//previousSub und folgende Sub???
+        Map queryParams = [:]
+        if (showActiveSubs) { queryParams.status = RDStore.SUBSCRIPTION_CURRENT.id }
+        queryParams.showSubscriber = showSubscriber
+        queryParams.showConnectedSubs = showConnectedSubs
 
-        result = subscriptionService.getMySubscriptions_writeRights()
+        data = subscriptionService.getMySubscriptions_writeRights(queryParams)
 
-        if (params.isActiveSubs == "true") {
-            result = result.findAll { Subscription sub -> sub.status == RDStore.SUBSCRIPTION_CURRENT }
+        if(data) {
+            data.sort {it.dropdownNamingConvention()}
+            data.each { Subscription s ->
+                result.add([value: s.id, text: s.dropdownNamingConvention()])
+            }
         }
-        result
+        withFormat {
+            json {
+                render result as JSON
+            }
+        }
     }
 
     @Secured(['ROLE_USER'])

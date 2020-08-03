@@ -3004,7 +3004,7 @@ class SurveyController {
         result.isConsortialSubs = (result.sourceSubscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
-        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
+        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights(null)
 
         switch (params.workFlowPart) {
             case WORKFLOW_DATES_OWNER_RELATIONS:
