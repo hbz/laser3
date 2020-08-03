@@ -171,11 +171,16 @@ class PropertyService {
         if(obj instanceof Subscription) {
             Subscription s = (Subscription) obj
             objMap.name = s.dropdownNamingConvention(contextOrg)
-            if(s._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
-                objMap.subscriber = s.getSubscriber()
+            switch(s._getCalculatedType()) {
+                case CalculatedType.TYPE_PARTICIPATION: objMap.subscriber = s.getSubscriber()
+                    break
+                case CalculatedType.TYPE_CONSORTIAL:
+                case CalculatedType.TYPE_ADMINISTRATIVE:
+                    objMap.manageChildren = "propertiesMembers"
+                    objMap.manageChildrenParams = [id:s.id,filterPropDef:GenericOIDService.getOID(propDef)]
+                    break
+            }
             objMap.displayController = "subscription"
-            objMap.manageChildren = "propertiesMembers"
-            objMap.manageChildrenParams = [id:s.id,filterPropDef:GenericOIDService.getOID(propDef)]
         }
         else if(obj instanceof License) {
             License l = (License) obj
