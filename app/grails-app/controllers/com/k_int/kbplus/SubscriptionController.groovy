@@ -4704,7 +4704,7 @@ class SubscriptionController
         result.isConsortialSubs = (result.sourceSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
-        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
+        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
         List<String> subTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
                                                 CalculatedType.TYPE_ADMINISTRATIVE]
