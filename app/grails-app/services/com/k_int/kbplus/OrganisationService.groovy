@@ -2563,7 +2563,7 @@ class OrganisationService {
                 }
             }
             else if(hbz.hasErrors()) {
-                log.error(hbz.errors)
+                log.error(hbz.errors.toString())
                 //log.error(e.getStackTrace())
             }
         }
@@ -2602,7 +2602,7 @@ class OrganisationService {
                         orgMap[customerType] = org
                     }
                     else if(org.hasErrors())
-                        log.error(org.erros)
+                        log.error(org.errors.toString())
                     //log.error(e.getStackTrace())
                 }
                 userService.setupAdminAccounts(orgMap)

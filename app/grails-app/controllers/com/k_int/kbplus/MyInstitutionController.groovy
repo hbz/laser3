@@ -1195,7 +1195,7 @@ join sub.orgRelations or_sub where
         )
 
         if (!licenseInstance.save()) {
-            log.error(licenseInstance.errors)
+            log.error(licenseInstance.errors.toString())
             flash.error = message(code:'license.create.error')
             redirect action: 'emptyLicense'
         }
@@ -3624,7 +3624,7 @@ AND EXISTS (
                                 }
                             }
                         }
-                        else log.error(prop.errors)
+                        else log.error(prop.errors.toString())
                     }
                 }
             }
@@ -3954,7 +3954,7 @@ AND EXISTS (
 
             result
         }
-        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
+        render (template: "/templates/filter/orgFilterTable", model: [orgList: result.members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')

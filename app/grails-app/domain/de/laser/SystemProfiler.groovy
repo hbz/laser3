@@ -36,7 +36,7 @@ class SystemProfiler {
     }
 
     static String getCurrentArchive() {
-        String av = Holders.grailsApplication.metadata['app.version']
+        String av = Holders.grailsApplication.metadata['app.version'] ?: 'unkown'
         List<String> avList = av.split("\\.")
         if (avList.size() >= 2) {
             return "${avList[0]}.${avList[1]}"

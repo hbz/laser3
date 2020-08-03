@@ -373,7 +373,7 @@ class SubscriptionController
             IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
             if(ieCoverage.save())
                 redirect action: 'index', id: base.subscription.id, params: params
-            else log.error("Error on creation new coverage statement: ${ieCoverage.getErrors()}")
+            else log.error("Error on creation new coverage statement: ${ieCoverage.errors}")
         }
         else log.error("Issue entitlement with ID ${params.issueEntitlement} could not be found")
     }
@@ -2180,7 +2180,7 @@ class SubscriptionController
                                 if (existingProps.size() == 0 || propDef.multipleOccurrence) {
                                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef, result.institution)
                                     if (newProp.hasErrors()) {
-                                        log.error(newProp.errors)
+                                        log.error(newProp.errors.toString())
                                     } else {
                                         log.debug("New private property created: " + newProp.type.name)
 
@@ -2207,7 +2207,7 @@ class SubscriptionController
                                 if (existingProp == null || propDef.multipleOccurrence) {
                                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef, result.institution)
                                     if (newProp.hasErrors()) {
-                                        log.error(newProp.errors)
+                                        log.error(newProp.errors.toString())
                                     } else {
                                         log.debug("New custom property created: " + newProp.type.name)
                                         newProperties++
@@ -3032,7 +3032,7 @@ class SubscriptionController
                 SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(result.subscriptionInstance,Package.get(params.packageId))
                 sp.finishDate = new Date()
                 if(!sp.save()) {
-                    flash.error = sp.getErrors()
+                    flash.error = sp.errors
                 }
                 else flash.message = message(code:'subscription.details.renewEntitlements.submitSuccess',args:[sp.pkg.name])
             }
@@ -3105,7 +3105,7 @@ class SubscriptionController
                 PriceItem pi = new PriceItem(issueEntitlement: ie)
                 pi.setGlobalUID()
                 if(!pi.save(flush: true)) {
-                    log.error(pi.errors)
+                    log.error(pi.errors.toString())
                     flash.error = message(code:'subscription.details.addEmptyPriceItem.priceItemNotSaved')
                 }
             }
@@ -3796,7 +3796,7 @@ class SubscriptionController
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd, result.contextOrg)
 
                     if (newProp.hasErrors()) {
-                        log.error(newProp.errors)
+                        log.error(newProp.errors.toString())
                     } else {
                         log.debug("New subscription private property created via mandatory: " + newProp.type.name)
                     }
@@ -5338,7 +5338,7 @@ class SubscriptionController
                 SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
 
                 if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
+                    log.error(newProp.errors.toString())
                 } else {
                     log.debug("New subscription private property created via mandatory: " + newProp.type.name)
                 }
@@ -5653,27 +5653,27 @@ class SubscriptionController
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
                     if(!parentRole.save()) {
                         withErrors = true
-                        flash.error += parentRole.getErrors()
+                        flash.error += parentRole.errors
                     }
                     if(memberRoleType && member) {
                         OrgRole memberRole = new OrgRole(roleType: memberRoleType, sub: sub, org: member)
                         if(!memberRole.save()) {
                             withErrors = true
-                            flash.error += memberRole.getErrors()
+                            flash.error += memberRole.errors
                         }
                     }
                     if(provider) {
                         OrgRole providerRole = new OrgRole(roleType: RDStore.OR_PROVIDER, sub: sub, org: provider)
                         if(!providerRole.save()) {
                             withErrors = true
-                            flash.error += providerRole.getErrors()
+                            flash.error += providerRole.errors
                         }
                     }
                     if(agency) {
                         OrgRole agencyRole = new OrgRole(roleType: RDStore.OR_AGENCY, sub: sub, org: agency)
                         if(!agencyRole.save()) {
                             withErrors = true
-                            flash.error += agencyRole.getErrors()
+                            flash.error += agencyRole.errors
                         }
                     }
                     //process subscription properties
@@ -5708,7 +5708,7 @@ class SubscriptionController
                 }
                 else {
                     withErrors = true
-                    flash.error += sub.getErrors()
+                    flash.error += sub.errors
                 }
             }
         }

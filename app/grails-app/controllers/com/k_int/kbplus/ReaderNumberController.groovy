@@ -28,7 +28,7 @@ class ReaderNumberController extends AbstractDebugController {
 		ReaderNumber numbersInstance = new ReaderNumber(params)
 		if (! numbersInstance.save()) {
 			flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')])
-			log.error(numbersInstance.errors)
+			log.error(numbersInstance.errors.toString())
 		}
 		redirect controller: 'organisation', action: 'readerNumber', params: [id:params.orgid]
     }
@@ -47,7 +47,7 @@ class ReaderNumberController extends AbstractDebugController {
 		numbersInstance.properties = params
 		if (! numbersInstance.save()) {
 			flash.error = message(code:'default.not.updated.message', args: [message(code: 'readerNumber.label'), numbersInstance.id])
-			log.error(numbersInstance.getErrors())
+			log.error(numbersInstance.errors.toString())
 		}
 		redirect controller: 'organisation', action: 'readerNumber', params: [id:params.orgid]
     }

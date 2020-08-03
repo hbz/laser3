@@ -1151,7 +1151,7 @@ class AjaxController {
             newRefdataValue = RefdataValue.construct(map)
 
             if (newRefdataValue?.hasErrors()) {
-                log.error(newRefdataValue.errors)
+                log.error(newRefdataValue.errors.toString())
                 error = message(code: 'default.error')
             }
             else {
@@ -1189,7 +1189,7 @@ class AjaxController {
             newRefdataCategory = RefdataCategory.construct(map)
 
             if (newRefdataCategory?.hasErrors()) {
-                log.error(newRefdataCategory.errors)
+                log.error(newRefdataCategory.errors.toString())
                 error = message(code: 'default.error')
             }
             else {
@@ -1259,7 +1259,7 @@ class AjaxController {
             }
 
             if (newProp?.hasErrors()) {
-                log.error(newProp.errors)
+                log.error(newProp.errors.toString())
                 error = message(code: 'default.error')
             }
             else {
@@ -1315,7 +1315,7 @@ class AjaxController {
       if (existingProp == null || type.multipleOccurrence) {
         newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type, contextOrg )
         if (newProp.hasErrors()) {
-          log.error(newProp.errors)
+          log.error(newProp.errors.toString())
         } else {
           log.debug("New custom property created: " + newProp.type.name)
         }
@@ -1451,7 +1451,7 @@ class AjaxController {
           if (existingProps.size() == 0 || type.multipleOccurrence) {
             newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type, contextService.getOrg())
             if (newProp.hasErrors()) {
-              log.error(newProp.errors)
+              log.error(newProp.errors.toString())
             } else {
               log.debug("New private property created: " + newProp.type.name)
             }
@@ -1816,7 +1816,7 @@ class AjaxController {
 
 
         if(property.hasErrors()) {
-            log.error(property.errors)
+            log.error(property.errors.toString())
         }
         else {
             log.debug("Deleted custom property: " + property.type.name)
@@ -1868,7 +1868,7 @@ class AjaxController {
     property.delete(flush:true)
 
     if(property.hasErrors()){
-      log.error(property.errors)
+      log.error(property.errors.toString())
     } else{
       log.debug("Deleted private property: " + property.type.name)
     }
@@ -2026,7 +2026,7 @@ class AjaxController {
       def dates = tip.coreDates
       log.debug("Returning ${dates}")
       request.setAttribute("editable",params.editable?:true)
-      render(template:"/templates/coreAssertionsModal",model:[message:params.message,coreDates:dates,tipID:tip.id,tip:tip]);    
+      render(template: "/templates/coreAssertionsModal",model:[message:params.message,coreDates:dates,tipID:tip.id,tip:tip]);
     }
   }
      */
@@ -2623,7 +2623,7 @@ class AjaxController {
         result.params = params
         result.taskInstance = Task.get(params.id)
         if (result.taskInstance){
-            render template:"../templates/tasks/modal_edit", model: result
+            render template: "/templates/tasks/modal_edit", model: result
 //        } else {
 //            flash.error = "Diese Aufgabe existiert nicht (mehr)."
 //            redirect(url: request.getHeader('referer'))
@@ -2638,7 +2638,7 @@ class AjaxController {
         def result     = taskService.getPreconditions(contextOrg)
         result.backendStart = backendStart
 
-        render template:"../templates/tasks/modal_create", model: result
+        render template: "/templates/tasks/modal_create", model: result
 
     }
 
@@ -2671,7 +2671,7 @@ class AjaxController {
             model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
             model.modalMsgSave = message(code: 'default.button.save_changes')
             model.url = [controller: 'address', action: 'edit']
-            render template:"../templates/addresses/formModal", model: model
+            render template: "/templates/addresses/formModal", model: model
         }
     }
     def adjustSubscriptionList(){
@@ -2722,7 +2722,7 @@ class AjaxController {
         model.modalMsgSave = message(code: 'default.button.create.label')
         model.url = [controller: 'address', action: 'create']
 
-        render template:"../templates/addresses/formModal", model: model
+        render template: "/templates/addresses/formModal", model: model
     }
 
     @Secured(['ROLE_USER'])
@@ -2731,7 +2731,7 @@ class AjaxController {
         result.params = params
         result.noteInstance = Doc.get(params.id)
 
-        render template:"/templates/notes/modal_edit", model: result
+        render template: "/templates/notes/modal_edit", model: result
     }
 
     @Secured(['ROLE_USER'])
@@ -2740,7 +2740,7 @@ class AjaxController {
         result.params = params
         result.noteInstance = Doc.get(params.id)
 
-        render template:"/templates/notes/modal_read", model: result
+        render template: "/templates/notes/modal_read", model: result
     }
 
     @Secured(['ROLE_USER'])
