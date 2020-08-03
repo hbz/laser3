@@ -1175,16 +1175,8 @@ class OrganisationController extends AbstractDebugController {
 
         result
     }
-    @DebugAnnotation(test = 'checkForeignOrgComboPermAffiliation()')
-    @Secured(closure = {
-        ctx.accessService.checkForeignOrgComboPermAffiliationX([
-                org: Org.get(request.getRequestURI().split('/').last()),
-                affiliation: "INST_USER",
-                comboPerm: "ORG_CONSORTIUM",
-                comboAffiliation: "INST_USER",
-                specRoles: "ROLE_ADMIN,ROLE_ORG_EDITOR"
-                ])
-    })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def readerNumber() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
@@ -1200,16 +1192,8 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'checkForeignOrgComboPermAffiliation()')
-    @Secured(closure = {
-        ctx.accessService.checkForeignOrgComboPermAffiliationX([
-                org: Org.get(request.getRequestURI().split('/').last()),
-                affiliation: "INST_USER",
-                comboPerm: "ORG_CONSORTIUM",
-                comboAffiliation: "INST_USER",
-                specRoles: "ROLE_ADMIN"
-        ])
-    })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def accessPoints() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
@@ -1388,7 +1372,7 @@ class OrganisationController extends AbstractDebugController {
     private Map<String, Object> setResultGenericsAndCheckAccess() {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
-        Map<String, Object> result = [user:user,institution:org,inContextOrg:true,institutionalView:false,departmentalView:false]
+        Map<String, Object> result = [user:user,institution:org,inContextOrg:true,institutionalView:false]
 
         if (params.id) {
             result.orgInstance = Org.get(params.id)
@@ -1425,15 +1409,11 @@ class OrganisationController extends AbstractDebugController {
                 isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'properties':
-            case 'accessPoints':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
                 break
             case 'addSubjectGroup':
             case 'deleteSubjectGroup':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
-                break
-            case 'readerNumber':
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
                 break
             case 'users':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
@@ -1443,6 +1423,8 @@ class OrganisationController extends AbstractDebugController {
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
                 break
             case 'show':
+            case 'readerNumber':
+            case 'accessPoints':
                 Org contextOrg = contextService.org
                 Org orgInstance = org
                 boolean inContextOrg =  orgInstance?.id == contextOrg.id

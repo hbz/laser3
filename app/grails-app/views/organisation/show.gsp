@@ -309,7 +309,6 @@
                 </div>
             </g:if>
 
-            <g:if test="${((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor)}">
                 <div class="ui card">
                     <div class="content">
                         %{--<H3><g:message code="org.contacts.and.addresses.label" /></H3>--}%
@@ -344,7 +343,7 @@
                                     </g:each>
                                 </g:each>
                             <%-- </div> --%>
-                                <g:if test="${(((orgInstance.id == contextService.getOrg().id || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                                <g:if test="${((orgInstance.id == contextService.getOrg().id  && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <div class="ui list">
                                         <div class="item">
 
@@ -417,7 +416,8 @@
 
                                         </div>
                                     </div>
-                                </g:if></dd>
+                                </g:if>
+                            </dd>
                         </dl>
                         %{--ERMS:1236--}%
                         %{--<dl>--}%
@@ -561,8 +561,6 @@
                         </div><!-- .card -->
                     </g:if>
                 </g:if>
-
-            </g:if>
 
             <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
                 <div id="new-dynamic-properties-block">
