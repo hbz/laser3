@@ -31,9 +31,9 @@ class SubscriptionService {
     def messageSource
     def escapeService
     def refdataService
+    def propertyService
     FilterService filterService
     Locale locale
-    def grailsApplication
     GenericOIDService genericOIDService
 
     @javax.annotation.PostConstruct
@@ -1629,7 +1629,7 @@ class SubscriptionService {
             }
             success = true
         }
-        else (sub.owner == newOwner)
+        success
     }
 
     Map subscriptionImport(CommonsMultipartFile tsvFile) {
