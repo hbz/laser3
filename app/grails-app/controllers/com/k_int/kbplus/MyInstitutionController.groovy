@@ -3932,7 +3932,7 @@ AND EXISTS (
 
             result
         }
-        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
+        render (template: "/templates/filter/orgFilterTable", model: [orgList: result.members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')

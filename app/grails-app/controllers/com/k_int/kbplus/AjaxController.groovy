@@ -2025,7 +2025,7 @@ class AjaxController {
       def dates = tip.coreDates
       log.debug("Returning ${dates}")
       request.setAttribute("editable",params.editable?:true)
-      render(template:"/templates/coreAssertionsModal",model:[message:params.message,coreDates:dates,tipID:tip.id,tip:tip]);    
+      render(template: "/templates/coreAssertionsModal",model:[message:params.message,coreDates:dates,tipID:tip.id,tip:tip]);
     }
   }
      */
@@ -2622,7 +2622,7 @@ class AjaxController {
         result.params = params
         result.taskInstance = Task.get(params.id)
         if (result.taskInstance){
-            render template:"../templates/tasks/modal_edit", model: result
+            render template: "/templates/tasks/modal_edit", model: result
 //        } else {
 //            flash.error = "Diese Aufgabe existiert nicht (mehr)."
 //            redirect(url: request.getHeader('referer'))
@@ -2637,7 +2637,7 @@ class AjaxController {
         def result     = taskService.getPreconditions(contextOrg)
         result.backendStart = backendStart
 
-        render template:"../templates/tasks/modal_create", model: result
+        render template: "/templates/tasks/modal_create", model: result
 
     }
 
@@ -2670,7 +2670,7 @@ class AjaxController {
             model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
             model.modalMsgSave = message(code: 'default.button.save_changes')
             model.url = [controller: 'address', action: 'edit']
-            render template:"../templates/addresses/formModal", model: model
+            render template: "/templates/addresses/formModal", model: model
         }
     }
 
@@ -2697,7 +2697,7 @@ class AjaxController {
         model.modalMsgSave = message(code: 'default.button.create.label')
         model.url = [controller: 'address', action: 'create']
 
-        render template:"../templates/addresses/formModal", model: model
+        render template: "/templates/addresses/formModal", model: model
     }
 
     @Secured(['ROLE_USER'])
@@ -2706,7 +2706,7 @@ class AjaxController {
         result.params = params
         result.noteInstance = Doc.get(params.id)
 
-        render template:"/templates/notes/modal_edit", model: result
+        render template: "/templates/notes/modal_edit", model: result
     }
 
     @Secured(['ROLE_USER'])
@@ -2715,7 +2715,7 @@ class AjaxController {
         result.params = params
         result.noteInstance = Doc.get(params.id)
 
-        render template:"/templates/notes/modal_read", model: result
+        render template: "/templates/notes/modal_read", model: result
     }
 
     @Secured(['ROLE_USER'])
