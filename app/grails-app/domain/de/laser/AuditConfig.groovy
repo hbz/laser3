@@ -56,7 +56,7 @@ class AuditConfig {
                     referenceField: field
             )
             if(!config.save(flush: true))
-                log.error(config.errors)
+                log.error(config.errors.toString())
         }
     }
 

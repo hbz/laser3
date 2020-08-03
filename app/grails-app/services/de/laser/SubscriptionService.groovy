@@ -1502,7 +1502,7 @@ class SubscriptionService {
                             issueEntitlement: new_ie
                     )
                     if(!ieCoverage.save()) {
-                        throw new EntitlementCreationException(ieCoverage.getErrors())
+                        throw new EntitlementCreationException(ieCoverage.errors)
                     }
                 }
                 if(withPriceData && issueEntitlementOverwrite) {
@@ -1619,7 +1619,7 @@ class SubscriptionService {
                                 orgLicRole = new OrgRole(lic: newLicense,org: subscr,roleType: licRole)
                             }
                             if(!orgLicRole.save())
-                                log.error(orgLicRole.errors)
+                                log.error(orgLicRole.errors.toString())
                         }
                     }
                     success = true
@@ -2149,7 +2149,7 @@ class SubscriptionService {
                         if(uploadCoverageDates && ieCoverage && !ieCoverage.findEquivalent(issueEntitlement.coverages)){
                             ieCoverage.issueEntitlement = issueEntitlement
                             if (!ieCoverage.save(flush: true)) {
-                                throw new EntitlementCreationException(ieCoverage.getErrors())
+                                throw new EntitlementCreationException(ieCoverage.errors)
                             }else{
                                 countChangesCoverageDates++
                             }
@@ -2157,7 +2157,7 @@ class SubscriptionService {
                         if(uploadPriceInfo && priceItem){
                             priceItem.setGlobalUID()
                             if (!priceItem.save(flush: true)) {
-                                throw new Exception(priceItem.getErrors().toString())
+                                throw new Exception(priceItem.errors.toString())
                             }else {
 
                                 countChangesPrice++

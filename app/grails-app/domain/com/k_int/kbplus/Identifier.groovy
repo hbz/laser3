@@ -290,12 +290,12 @@ class Identifier implements CalculatedLastUpdated {
                   result
               else {
                   static_logger.log("error saving identifier")
-                  static_logger.log(result.getErrors())
+                  static_logger.log(result.errors.toString())
               }
           }
           else {
               static_logger.log("error saving namespace")
-              static_logger.log(namespace.getErrors())
+              static_logger.log(namespace.errors.toString())
           }
       }
   }

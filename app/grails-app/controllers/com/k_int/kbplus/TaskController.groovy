@@ -100,7 +100,7 @@ class TaskController extends AbstractDebugController {
 		result.validSubscriptions.each{
 			result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.org)])
 		}
-		render template:"../templates/tasks/modal_create", model: result
+		render template: "/templates/tasks/modal_create", model: result
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -203,7 +203,7 @@ class TaskController extends AbstractDebugController {
 		result.params = params
 		result.taskInstance = Task.get(params.id)
 
-		render template:"../templates/tasks/modal_edit", model: result
+		render template: "/templates/tasks/modal_edit", model: result
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

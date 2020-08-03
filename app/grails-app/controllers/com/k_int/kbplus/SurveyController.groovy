@@ -4146,7 +4146,7 @@ class SurveyController {
                                 if (existingProps.size() == 0 || propDef.multipleOccurrence) {
                                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, org)
                                     if (newProp.hasErrors()) {
-                                        log.error(newProp.errors)
+                                        log.error(newProp.errors.toString())
                                     } else {
                                         log.debug("New private property created: " + newProp.type.name)
                                         def newValue = copyProperty.getValue()
@@ -4166,7 +4166,7 @@ class SurveyController {
                                 if (existingProp == null || propDef.multipleOccurrence) {
                                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, org)
                                     if (newProp.hasErrors()) {
-                                        log.error(newProp.errors)
+                                        log.error(newProp.errors.toString())
                                     } else {
                                         log.debug("New custom property created: " + newProp.type.name)
                                         def newValue = copyProperty.getValue()
