@@ -1175,16 +1175,8 @@ class OrganisationController extends AbstractDebugController {
 
         result
     }
-    @DebugAnnotation(test = 'checkForeignOrgComboPermAffiliation()')
-    @Secured(closure = {
-        ctx.accessService.checkForeignOrgComboPermAffiliationX([
-                org: Org.get(request.getRequestURI().split('/').last()),
-                affiliation: "INST_USER",
-                comboPerm: "ORG_CONSORTIUM",
-                comboAffiliation: "INST_USER",
-                specRoles: "ROLE_ADMIN,ROLE_ORG_EDITOR"
-                ])
-    })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def readerNumber() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
@@ -1192,24 +1184,69 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        params.sort = params.sort ?: 'dueDate'
-        params.order = params.order ?: 'desc'
+        if(params.tableA) {
+            params.sortA = params.sort
+            params.orderA = params.order
+        }
+        else {
+            params.sortA = 'dueDate'
+            params.orderA = 'desc'
+        }
 
-        result.numbersInstanceList = ReaderNumber.findAllByOrg(result.orgInstance, params)
+        if(params.tableB) {
+            params.sortB = params.sort
+            params.orderB = params.order
+        }
+        else {
+            params.sortB = 'semester'
+            params.orderB = 'desc'
+        }
+        params.remove('sort')
+        params.remove('order')
+
+        Map<String,Map<String,ReaderNumber>> numbersWithSemester = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndSemesterIsNotNull((Org) result.orgInstance,[sort:params.sortA,order:params.orderA]),"semester")
+        Map<String,Map<String,ReaderNumber>> numbersWithDueDate = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB]),"dueDate")
+
+        Set<String> semesterCols = [], dueDateCols = []
+        Map<String,Integer> semesterSums = [:], dueDateSums = [:]
+        numbersWithSemester.each { Map.Entry<String,Map<String,ReaderNumber>> semesters ->
+            semesters.value.each { Map.Entry<String,ReaderNumber> row ->
+                semesterCols << row.key
+                ReaderNumber rn = row.value
+                Integer semesterSum = semesterSums.get(semesters.key)
+                if(semesterSum == null) {
+                    semesterSum = rn.value
+                }
+                else semesterSum += rn.value
+                semesterSums.put(semesters.key,semesterSum)
+            }
+
+        }
+        numbersWithDueDate.each { Map.Entry<String,Map<String,ReaderNumber>> dueDates ->
+            dueDates.value.each { Map.Entry<String,ReaderNumber> row ->
+                dueDateCols << row.key
+                ReaderNumber rn = row.value
+                Integer dueDateSum = dueDateSums.get(dueDates.key)
+                if(dueDateSum == null) {
+                    dueDateSum = rn.value
+                }
+                else dueDateSum += rn.value
+                dueDateSums.put(dueDates.key,dueDateSum)
+            }
+        }
+
+        result.numbersWithSemester = numbersWithSemester
+        result.numbersWithDueDate = numbersWithDueDate
+        result.semesterCols = semesterCols
+        result.semesterSums = semesterSums
+        result.dueDateCols = dueDateCols
+        result.dueDateSums = dueDateSums
 
         result
     }
 
-    @DebugAnnotation(test = 'checkForeignOrgComboPermAffiliation()')
-    @Secured(closure = {
-        ctx.accessService.checkForeignOrgComboPermAffiliationX([
-                org: Org.get(request.getRequestURI().split('/').last()),
-                affiliation: "INST_USER",
-                comboPerm: "ORG_CONSORTIUM",
-                comboAffiliation: "INST_USER",
-                specRoles: "ROLE_ADMIN"
-        ])
-    })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def accessPoints() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
@@ -1388,7 +1425,7 @@ class OrganisationController extends AbstractDebugController {
     private Map<String, Object> setResultGenericsAndCheckAccess() {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
-        Map<String, Object> result = [user:user,institution:org,inContextOrg:true,institutionalView:false,departmentalView:false]
+        Map<String, Object> result = [user:user,institution:org,inContextOrg:true,institutionalView:false]
 
         if (params.id) {
             result.orgInstance = Org.get(params.id)
@@ -1396,26 +1433,17 @@ class OrganisationController extends AbstractDebugController {
             result.inContextOrg = result.orgInstance?.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
-            if(checkCombo) {
-                if(checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
-                    result.institutionalView = true
-                else if(checkCombo.type == RDStore.COMBO_TYPE_DEPARTMENT)
-                    result.departmentalView = true
-            }
+            if(checkCombo && checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
+                result.institutionalView = true
             //restrictions hold if viewed org is not the context org
             if(!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
                 //restrictions further concern only single users, not consortia
-                if(accessService.checkPerm("ORG_INST") && !result.departmentalView) {
-                    if(result.orgInstance.hasPerm("ORG_INST,ORG_INST_COLLECTIVE")) {
-                        return null
-                    }
-                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE") && Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT)) {
-                        return null
-                    }
+                if(accessService.checkPerm("ORG_INST") && result.orgInstance.getCustomerType() == "ORG_INST") {
+                    return null
                 }
             }
         } else {
-            result.isEditable = checkIsEditable(user, org)
+            result.editable = checkIsEditable(user, org)
         }
         result
     }
@@ -1434,15 +1462,11 @@ class OrganisationController extends AbstractDebugController {
                 isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'properties':
-            case 'accessPoints':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
                 break
             case 'addSubjectGroup':
             case 'deleteSubjectGroup':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
-                break
-            case 'readerNumber':
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
                 break
             case 'users':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
@@ -1452,6 +1476,8 @@ class OrganisationController extends AbstractDebugController {
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
                 break
             case 'show':
+            case 'readerNumber':
+            case 'accessPoints':
                 Org contextOrg = contextService.org
                 Org orgInstance = org
                 boolean inContextOrg =  orgInstance?.id == contextOrg.id
@@ -1464,21 +1490,21 @@ class OrganisationController extends AbstractDebugController {
                             switch (orgInstance.getCustomerType()){
                                 case 'ORG_INST':            isEditable = false; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                case 'ORG_PROVIDER':        isEditable = false; break
+                                default:                    isEditable = false; break
                             }
                             break
                         case 'ORG_INST':
                             switch (orgInstance.getCustomerType()){
                                 case 'ORG_INST':            isEditable = false; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                case 'ORG_PROVIDER':        isEditable = userHasEditableRights; break
+                                default:                    isEditable = userHasEditableRights; break
                             }
                             break
                         case 'ORG_CONSORTIUM':
                             switch (orgInstance.getCustomerType()){
                                 case 'ORG_INST':            isEditable = true; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                case 'ORG_PROVIDER':        isEditable = userHasEditableRights; break
+                                default:                    isEditable = userHasEditableRights; break
                             }
                             break
                     }

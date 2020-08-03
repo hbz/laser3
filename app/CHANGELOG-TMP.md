@@ -2,6 +2,48 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1265    03.08.2020  hbz-dev     Anja    Feature     Elemente einer Lizenz in eine andere Kopieren: Verfeinern der Lizenzauswahl
+
+2740    31.07.2020  rc1.5       Andreas Bug         Punkte 3 und 4: Vertragsfilter korrigiert, Abfrage angepasst
+
+2738    31.07.2020  rc1.5       Andreas Bug         Punkt 1: Kostenausschüttung verlangt keine Währungsangabe mehr 
+
+2737    31.07.2020  rc1.5       Andreas Bug         Berechtigungseinstellungen und Navigationsleiste der Einrichtungsseite angepasst
+
+2736    31.07.2020  rc1.5       Andreas Bug         Alle Änderungen akzeptieren unterbinden, wenn keine Pakete vorhanden 
+
+2735    31.07.2020  rc1.5       Andreas Bug         Merkmale in Objekten löschen implementiert
+
+2724    31.07.2020  rc1.5       Andreas Bug         nicht existenter Vertrag führt bei der Suche nach Lizenzen nicht mehr zum Absturz
+
+2723    31.07.2020  rc1.5       Andreas Bug         Platzhalter in Auswahl der Ziellizenz korrigiert
+
+2631    31.07.2020  rc1.5       Andreas Bug         Doppelte Darstellung des Vollnutzer-Turms behoben
+
+2734    30.07.2020  rc1.5       Andreas Bug         PropertyService fehlte im SubscriptionService, was zu Absturz des Merkmalfilters auf "Meine Lizenzen pro Einrichtung" führte
+
+2732    30.07.2020  rc1.5       Andreas Bug         Absturz bei Aufruf von Teilnehmerverträgen, wenn keine solche vorhanden
+
+2731    30.07.2020  rc1.5       Andreas Bug         Abfrage nach den Nutzungszahlen der allgemeinen Merkmale um Kontextorg erweitert
+
+2729    30.07.2020  rc1.5       Andreas Bug         Abfrage ließ zentral verwaltete Lizenzen bei Kindlizenzen aus
+
+2728    30.07.2020  rc1.5       Andreas Bug         Referenzwert wird bei Merkmale in Objekten verwalten gesetzt
+
+2727    30.07.2020  rc1.5       Andreas Bug         Entküpfen von Paketen sowie Löschen von Lizenzen repariert
+
+2725    30.07.2020  rc1.5       Andreas Bug         Zauberstab- und Exportmenü in Merkmale verwalten getauscht
+
+2719    30.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen im Zuge der Reaktivierung von retriggerPendingChanges
+
+2711    29.07.2020  rc1.5       Moe     Bug         Hinzufügen neuer Teilnehmer zu Umfrage scheitert
+
+2721    28.07.2020  rc1.5       Andreas Bug         fehlende Berechtigung bei Anbieter bearbeiten nachgereicht
+
+2720    28.07.2020  rc1.5       Andreas Bug         Regressionsfehler bei Verknüpfen von Verträgen und Lizenzen behoben
+
+2718    28.07.2020  hbz-dev     Andreas Feature     Umbau der Sicht Nutzerzahlen, erster Teil
+
 2716    27.07.2020  rc1.5       Andreas Bug         Mehrfachverknüpfung funktionierte nicht bei Verträgen
 
 2715    27.07.2020  rc1.5       Andreas Bug         lokale Lizenzen konnten nicht verlängert werden

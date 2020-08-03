@@ -23,7 +23,7 @@
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
             <semui:msg class="positive" header="" message="deletion.success.msg" />
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">${message(code:'menu.my.subscriptions')}</g:link>
-            <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE, ORG_CONSORTIUM")}">
+            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <g:link controller="subscription" action="members" id="${parentId}" class="ui button">${message(code:"subscription.details.consortiaMembers.label")}</g:link>
             </g:if>
         </g:if>

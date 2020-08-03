@@ -436,6 +436,24 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         return 0
     }
 
+    int countOwnUsages() {
+        String table = this.descr.minus('com.k_int.kbplus.').replace(" ","")
+        String tenantFilter = 'and c.tenant.id = :ctx'
+        Map<String,Long> filterParams = [type:this.id,ctx:contextService.org.id]
+        if(this.descr == "Organisation Property")
+            table = "OrgProperty"
+        else if(this.descr == "Survey Property") {
+            tenantFilter = ''
+            filterParams.remove("ctx")
+        }
+
+        if (table) {
+            int[] c = executeQuery("select count(c) from " + table + " as c where c.type.id = :type "+tenantFilter, filterParams)
+            return c[0]
+        }
+        return 0
+    }
+
 
   @Transient
   def getOccurrencesOwner(String[] cls){

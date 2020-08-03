@@ -176,7 +176,6 @@ class DeletionService {
 
                     // private properties
                     //lic.privateProperties.clear()
-                    //privateProps.each { tmp -> tmp.delete() }
 
                     // custom properties
                     lic.propertySet.clear()
@@ -185,6 +184,7 @@ class DeletionService {
                         tmp.save()
                     }*/
                     customProps.each { tmp -> tmp.delete() }
+                    privateProps.each { tmp -> tmp.delete() }
 
                     lic.delete()
 
@@ -387,15 +387,15 @@ class DeletionService {
 
                     // private properties
                     //sub.privateProperties.clear()
-                    //privateProps.each { tmp -> tmp.delete() }
 
                     // custom properties
                     sub.propertySet.clear()
-                    customProps.each { tmp -> // incomprehensible fix
+                    /*customProps.each { tmp -> // incomprehensible fix
                         tmp.owner = null
                         tmp.save()
-                    }
+                    }*/
                     customProps.each { tmp -> tmp.delete() }
+                    privateProps.each { tmp -> tmp.delete() }
 
                     // ----- keep foreign object, change state
                     // ----- keep foreign object, change state

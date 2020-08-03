@@ -29,6 +29,7 @@ import java.util.regex.Pattern
 class AjaxController {
 
     def genericOIDService
+    def subscriptionService
     def contextService
     def taskService
     def controlledListService
@@ -2671,6 +2672,30 @@ class AjaxController {
             model.modalMsgSave = message(code: 'default.button.save_changes')
             model.url = [controller: 'address', action: 'edit']
             render template: "/templates/addresses/formModal", model: model
+        }
+    }
+    def adjustSubscriptionList(){
+        List<Subscription> data
+        List result = []
+        boolean showActiveSubs = params.showActiveSubs == 'true'
+        boolean showSubscriber = params.showSubscriber == 'true'
+        boolean showConnectedSubs = params.showConnectedSubs == 'true'
+        Map queryParams = [:]
+        if (showActiveSubs) { queryParams.status = RDStore.SUBSCRIPTION_CURRENT.id }
+        queryParams.showSubscriber = showSubscriber
+        queryParams.showConnectedSubs = showConnectedSubs
+
+        data = subscriptionService.getMySubscriptions_writeRights(queryParams)
+
+        if(data) {
+            data.each { Subscription s ->
+                result.add([value: s.id, text: s.dropdownNamingConvention()])
+            }
+        }
+        withFormat {
+            json {
+                render result as JSON
+            }
         }
     }
 

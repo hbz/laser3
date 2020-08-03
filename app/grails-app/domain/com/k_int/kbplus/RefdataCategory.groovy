@@ -138,6 +138,14 @@ class RefdataCategory extends AbstractI10n {
 
       RefdataValue.executeQuery( query, [categories: category_names.collect{it.toLowerCase()}] )
   }
+    static List<RefdataValue> getAllRefdataValuesWithOrder(String category_name) {
+        if (! category_name) {
+            return []
+        }
+        String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) = :category order by rdv.order asc"
+
+        RefdataValue.executeQuery( query, [category: category_name.toLowerCase()] )
+    }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {
         List<RefdataValue> refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDescIlike(category_name),sort)

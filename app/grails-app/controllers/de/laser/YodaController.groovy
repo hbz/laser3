@@ -558,8 +558,8 @@ class YodaController {
     def retriggerPendingChanges() {
         log.debug("match IssueEntitlements to TIPPs ...")
         flash.message = "Pakete werden nachgehalten ..."
-        statusUpdateService.retriggerPendingChanges()
-        redirect(url: request.getHeader('referer'))
+        statusUpdateService.retriggerPendingChanges(params.packageUUID)
+        redirect controller: 'home', action: 'index'
     }
 
     @Secured(['ROLE_YODA'])
