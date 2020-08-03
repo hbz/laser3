@@ -188,9 +188,9 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Platform.class.name, [sort:'name', order:'asc'])
     groups.each{ it ->
 
-      PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
+      PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, contextOrg)
 
-      if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
+      if (it.tenant == null || it.tenant?.id == contextOrg.id) {
         if (binding) {
           result.local << [it, binding] // TODO: remove
           result.sorted << ['local', it, binding]

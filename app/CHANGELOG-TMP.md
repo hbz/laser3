@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2742    03.08.2020  rc1.5       Andreas Bug         Einrichtungseinstellungen und Plattform erreichbar, Merkmale können, den Regeln entsprechend, bearbeitet und gelöscht werden
+
+2741    03.08.2020  rc1.5       Andreas Bug         Buttons bei der Zugangskonfiguration getauscht
+
 2740    31.07.2020  rc1.5       Andreas Bug         Punkte 3 und 4: Vertragsfilter korrigiert, Abfrage angepasst
 
 2738    31.07.2020  rc1.5       Andreas Bug         Punkt 1: Kostenausschüttung verlangt keine Währungsangabe mehr 
