@@ -75,36 +75,67 @@ class MyInstitutionController extends AbstractDebugController {
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
     def reversemap = ['subject': 'subject', 'provider': 'provid', 'studyMode': 'presentations.studyMode', 'qualification': 'qual.type', 'level': 'qual.level']
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
-        // Work out what orgs this user has admin level access to
-        Map<String, Object> result = [:]
-        result.institution  = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-        Org currentOrg = contextService.getOrg()
-        log.debug("index for user with id ${springSecurityService.principal.id} :: ${result.user}");
-
-        if ( result.user ) {
-          if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
-              redirect controller: 'profile', action: 'index'
-          }
-        }
-        else {
-          log.error("Failed to find user in database");
-        }
-
-        result
+        redirect(action:'dashboard')
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    /*may be upgraded to
+        @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+     */
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER")
     })
     def reporting() {
+        //log.debug(params.toMapString())
         Map<String, Object> result = setResultGenerics()
-
-
+        result.formSubmit = params.formSubmit == 'true'
+        Map<RefdataValue,Set<CostItem>> costItemElementGroups = [:]
+        String instanceFilter = ''
+        if(result.institution.getCustomerType() == 'ORG_CONSORTIUM') {
+            instanceFilter += ' and sub.instanceOf is null '
+        }
+        String spQuery = 'select sp from SubscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where sub.status = :active and oo.org = :org and oo.roleType in (:roleTypes)'+instanceFilter+' order by sub.name asc'
+        Map<String,Object> spParams = [active:RDStore.SUBSCRIPTION_CURRENT,org:result.institution,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]
+        if(params.formSubmit) {
+            Set<CostItem> costItems = []
+            String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc'
+            Map<String,Object> ciParams = [owner:result.institution]
+            //we define some entry points
+            if(params.subscription) {
+                if(result.institution.getCustomerType() == 'ORG_CONSORTIUM') {
+                    ciQuery += 'and ci.sub.instanceOf = :sub'
+                }
+                else {
+                    ciQuery += 'and ci.sub = :sub'
+                }
+                costItems.addAll(CostItem.executeQuery(ciQuery+ciOrder,ciParams+[sub:Subscription.get(params.subscription)]))
+            }
+            else if(params.package) {
+                ciQuery += 'and ci.subPkg = :subPkg'
+                costItems.addAll(CostItem.executeQuery(ciQuery+ciOrder,ciParams+[subPkg:SubscriptionPackage.executeQuery(spQuery,spParams)]))
+            }
+            if(costItems) {
+                //test for ERMS-1125: group by elements
+                Set<RefdataValue> elementsOfContextOrg = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :owner',[owner:result.institution])
+                elementsOfContextOrg.each { RefdataValue element ->
+                    costItemElementGroups.put(element,costItems.findAll { CostItem ci -> ci.costItemElement == element })
+                }
+            }
+        }
+        Set<SubscriptionPackage> currentSubscriptionPackages = SubscriptionPackage.executeQuery(spQuery,spParams)
+        Set<Subscription> subscriptions = []
+        Set<Package> packages = []
+        currentSubscriptionPackages.each { SubscriptionPackage sp ->
+            subscriptions << sp.subscription
+            packages << sp.pkg
+        }
+        result.subscriptions = subscriptions
+        result.packages = packages
+        result.costItems = costItemElementGroups
         result
     }
 
