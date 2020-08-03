@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <semui:breadcrumbs>
     <g:if test="${!inContextOrg}">
-        <g:if test="${(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
+        <g:if test="${(RDStore.OT_PROVIDER.id in orgInstance.getAllOrgTypeIds())}">
             <semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
             <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
         </g:if>

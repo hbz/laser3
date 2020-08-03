@@ -670,7 +670,7 @@ class OrganisationController extends AbstractDebugController {
 
         du.setBenchmark('identifier')
 
-        if(!Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
+        if(!Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getAllOrgTypeIds())){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
@@ -721,7 +721,7 @@ class OrganisationController extends AbstractDebugController {
         RefdataValue orgType = RDStore.OT_PROVIDER
 
         //IF ORG is a Provider
-        if(result.orgInstance?.sector == orgSector || orgType.id in result.orgInstance?.getallOrgTypeIds()) {
+        if(result.orgInstance?.sector == orgSector || orgType.id in result.orgInstance?.getAllOrgTypeIds()) {
             du.setBenchmark('editable_identifier2')
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -757,7 +757,7 @@ class OrganisationController extends AbstractDebugController {
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
 
-        if(!Combo.findByFromOrgAndType(result.orgInstance,RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
+        if(!Combo.findByFromOrgAndType(result.orgInstance,RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getAllOrgTypeIds())){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
