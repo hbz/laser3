@@ -429,24 +429,6 @@ class SubscriptionController
                     flash.error = message(code: 'subscription.details.unlink.notSuccessfully')
                 }
 
-                //Automatisch Paket entknüpfen, wenn das Paket in der Elternlizenz entknüpft wird
-                if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] &&
-                        accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && (result.subscription.instanceOf == null)) {
-
-                    List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
-
-                    childSubs.each {sub ->
-                        if(result.package.unlinkFromSubscription(sub, true)){
-                            flash.message = message(code: 'subscription.details.unlink.successfully')
-                        }else {
-                            flash.error = message(code: 'subscription.details.unlink.notSuccessfully')
-                        }
-                    }
-
-
-
-                }
-
                 return redirect(action:'show', id: params.subscription)
 
             } else {
@@ -2388,9 +2370,9 @@ class SubscriptionController
         redirect(action: 'subscriptionPropertiesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processDeletePropertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -2423,7 +2405,7 @@ class SubscriptionController
                         //private Property
 
                         List<SubscriptionProperty> existingProps = subChild.propertySet.findAll {
-                            it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id && !it.isPublic
+                            it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id
                         }
                         existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
@@ -2445,7 +2427,7 @@ class SubscriptionController
                         //custom Property
 
                         def existingProp = subChild.propertySet.find {
-                            it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id && it.isPublic
+                            it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id
                         }
 
 
