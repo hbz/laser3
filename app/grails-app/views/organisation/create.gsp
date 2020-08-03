@@ -33,6 +33,7 @@
 									<i class="checkmark icon"></i>
 									<g:message code="default.button.create.label"/>
 								</button>
+								<input type="button" class="ui button js-click-control" onclick="window.history.back();" value="${message(code:'default.button.cancel.label')}" />
 							</div>
 						</fieldset>
 					</g:form>
