@@ -188,7 +188,7 @@ class ClusterController extends AbstractDebugController {
             } else {
                 log.error("Problem saving new orgRole...")
                 newOrgRole.errors.each { e ->
-                    log.error(e)
+                    log.error( e.toString() )
                 }
             }
         }

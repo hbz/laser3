@@ -10,7 +10,7 @@
         <div class="fields" style="justify-content: flex-end;">
             <div class="six wide field">
                 <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>
-                <g:select class="ui search dropdown"
+                <g:select class="ui search selection dropdown"
                       name="sourceSubscriptionId"
                       from="${((List<Subscription>)allSubscriptions_readRights)?.sort {it.dropdownNamingConvention()}}"
                       optionValue="${{it?.dropdownNamingConvention()}}"
@@ -32,14 +32,14 @@
                     <g:checkBox name="show.conntectedSubscriptions" value="auch verknüpfte Lizenzen" checked="false" onchange="adjustDropdown()"/>
                     <label for="show.conntectedSubscriptions">${message(code:'subscription.details.copyElementsIntoSubscription.show.conntectedSubscriptions.name')}</label>
                 </div><br id="element-vor-target-dropdown" />
-                <g:select class="ui search dropdown"
+                <g:select class="ui search selection dropdown"
                       id="targetSubscriptionId"
                       name="targetSubscriptionId"
                       from="${allSubscriptions_writeRights}"
                       optionValue="${{it?.dropdownNamingConvention()}}"
                       optionKey="id"
                       value="${targetSubscription?.id}"
-                      noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
+                      noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
         </div>
         <div class="fields" style="justify-content: flex-end;">

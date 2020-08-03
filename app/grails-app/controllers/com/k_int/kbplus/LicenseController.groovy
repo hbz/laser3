@@ -278,7 +278,7 @@ class LicenseController
     @DebugAnnotation(test = 'hasAffiliation("INST_EDTIOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
-        log.debug(params)
+        log.debug( params.toMapString() )
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -534,7 +534,9 @@ class LicenseController
         String subQuery = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source in (:licenses) and l.linkType = :linkType)"
         if(params.status == "FETCH_ALL")
             result.subscriptionsForFilter = Subscription.executeQuery(subQuery,[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect { License lic -> GenericOIDService.getOID(lic)}])
-        else result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect{License lic -> GenericOIDService.getOID(lic)},status:RefdataValue.get(params.status as Long)])
+        else if(validMemberLicenses) {
+            result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect{License lic -> GenericOIDService.getOID(lic)},status:RefdataValue.get(params.status as Long)])
+        }
         result.validMemberLicenses = filteredMemberLicenses
         result
     }
@@ -602,7 +604,7 @@ class LicenseController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteMember() {
-        log.debug(params)
+        log.debug( params.toMapString() )
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -920,12 +922,12 @@ class LicenseController
       if (opl.licenses.isEmpty()) {
           opl.usageTerm.each{
             it.usageTermLicenseText.each{
-              it.delete()
+              it.delete(flush:true)
             }
           }
-          opl.delete();
-          dc.delete();
-          doc.delete();
+          opl.delete(flush:true);
+          dc.delete(flush:true);
+          doc.delete(flush:true);
       }
       if (license.hasErrors()) {
           license.errors.each {

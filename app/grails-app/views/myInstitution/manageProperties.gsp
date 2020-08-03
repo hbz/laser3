@@ -55,23 +55,9 @@
 
     <g:set var="editableOld" value="${editable}"/>
 
-
     <div class="ui segment">
-        <h4>${message(code: 'property.manageProperties.deletePropertyInfo')}</h4>
-
-        <g:link class="ui button negative js-open-confirm-modal"
-                data-confirm-tokenMsg="${message(code: 'property.manageProperties.deleteProperty.button.confirm')}"
-                data-confirm-term-how="ok" action="processDeleteProperties" id="${params.id}"
-                params="[filterPropDef: filterPropDef]">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</g:link>
-
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="ui segment">
-        <h3><g:message code="property.manageProperties.info"/></h3>
+        <h3><g:message code="property.manageProperties.add"/></h3>
         <g:form action="processManageProperties" method="post" class="ui form">
-            <h4><g:message code="property.manageProperties.add"/></h4>
             <div class="field required">
                 <label for="filterPropValue">${message(code: 'subscription.property.value')}</label>
                 <g:if test="${filterPropDef.type == RefdataValue.toString()}">
@@ -277,10 +263,11 @@
     </div>
 
     <div class="ui segment">
+
         <g:form action="processManageProperties" method="post" class="ui form">
             <g:hiddenField name="id" value="${params.id}"/>
 
-            <div class="field required">
+            <div class="field">
                 <h4>${message(code: 'property.manageProperties.info')}</h4>
 
                 <div class="inline field">
@@ -311,14 +298,13 @@
 
             </div>
 
-            <div class="field required">
+            <div class="field">
                 <label for="filterPropValue">${message(code: 'subscription.property.value')}</label>
                 <g:if test="${filterPropDef.type == RefdataValue.toString()}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getI10n('value') }}"
                               from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                               name="filterPropValue" value=""
-                              required=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>
                 </g:if>
                 <g:elseif test="${filterPropDef.type == Integer.toString()}">
@@ -335,11 +321,17 @@
                 </g:else>
             </div>
 
-            <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
+            <button class="ui button" type="submit" name="saveChanges" value="true">${message(code: 'default.button.save_changes')}</button>
+            <button class="ui button negative" type="submit" name="deleteProperties" value="true">
+                <%-- TODO ask Ingrid
+                    js-open-confirm-modal
+                    data-confirm-tokenMsg="${message(code: 'property.manageProperties.deleteProperty.button.confirm')}"
+                    data-confirm-term-how="ok"
+                --%>
+                ${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}
+            </button>
 
-
-            <h3>${message(code: 'property.manageProperties.object')} <semui:totalNumber
-                    total="${filteredObjs?.size()}"/></h3>
+            <h3>${message(code: 'property.manageProperties.object')} <semui:totalNumber total="${filteredObjs?.size()}"/></h3>
             <table class="ui celled la-table table" id="existingObjTable">
                 <thead>
                     <tr>
@@ -423,11 +415,11 @@
                                                         <p><semui:xEditable owner="${customProperty}" type="text" field="paragraph"/></p>
                                                     </g:if>
                                                     <%
-                                                        if (customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) {
+                                                        if ((customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) || AuditConfig.getConfig(customProperty)) {
                                                             if (row.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                                                print '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                print '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
                                                         }
                                                     %>
@@ -486,7 +478,7 @@
                                                         <p><semui:xEditable owner="${privateProperty}" type="text" field="paragraph"/></p>
                                                     </g:if>
                                                     <%
-                                                        if (privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) {
+                                                        if ((privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) || AuditConfig.getConfig(privateProperty)) {
                                                             if (row.isSlaved) {
                                                                 println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                                             } else {
@@ -536,26 +528,26 @@
 <r:script>
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=selectedObjects]").prop('checked', true)
+            $("tr[class!=disabled] input[name=selectedObjects]").prop('checked', true);
         }
         else {
-            $("tr[class!=disabled] input[name=selectedObjects]").prop('checked', false)
+            $("tr[class!=disabled] input[name=selectedObjects]").prop('checked', false);
         }
     });
     $('#membersAddListToggler').click(function () {
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=newObjects]").prop('checked', true)
+            $("tr[class!=disabled] input[name=newObjects]").prop('checked', true);
         }
         else {
-            $("tr[class!=disabled] input[name=newObjects]").prop('checked', false)
+            $("tr[class!=disabled] input[name=newObjects]").prop('checked', false);
         }
     });
     $('#membersAuditListToggler').click(function () {
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=withAudit]").prop('checked', true)
+            $("tr[class!=disabled] input[name=withAudit]").prop('checked', true);
         }
         else {
-            $("tr[class!=disabled] input[name=withAudit]").prop('checked', false)
+            $("tr[class!=disabled] input[name=withAudit]").prop('checked', false);
         }
     });
     $('#filterTableWithoutProp').keyup(function() {

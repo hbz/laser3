@@ -168,7 +168,7 @@ class TitleController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
   def batchUpdate() {
-    log.debug(params);
+        log.debug( params.toMapString() )
         SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
         User user = User.get(springSecurityService.principal.id)
 

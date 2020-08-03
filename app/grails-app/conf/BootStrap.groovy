@@ -434,7 +434,7 @@ class BootStrap {
             dir = new File(folder.file)
         }
         catch (Exception e) {
-            log.warn(e)
+            log.warn( e.toString() )
             log.warn('fallback ..')
 
             String dirPath = grailsApplication.config.grails.plugin.databasemigration.changelogLocation + '/functions'

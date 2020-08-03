@@ -74,7 +74,7 @@ trait PendingChangeControllerTrait {
       def remaining_contexts = DocContext.findAllByOwner(pc.doc)
       if ( remaining_contexts.size() == 0 ) {
         log.debug("Change doc has no remaining contexts, delete it");
-        pc.doc.delete();
+        pc.doc.delete(flush:true)
       }
       else {
         log.debug("Change document still referenced by ${remaining_contexts.size()} contexts");

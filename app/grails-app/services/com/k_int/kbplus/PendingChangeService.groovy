@@ -276,7 +276,7 @@ class PendingChangeService extends AbstractLockableService {
                         //IssueEntitlementCoverage cov = genericOIDService.resolveOID(payload.changeTarget)
                         IssueEntitlementCoverage cov = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         if(cov) {
-                            if(cov.delete()) {
+                            if(cov.delete(flush:true)) {
                                 saveWithoutError = true
                             }
                             else {
@@ -381,7 +381,7 @@ class PendingChangeService extends AbstractLockableService {
 
                         log.debug("Deleting property ${targetProperty.type.name} from ${pendingChange.payloadChangeTargetOid}")
                         changeTarget.customProperties.remove(targetProperty)
-                        targetProperty.delete()
+                        targetProperty.delete(flush:true)
                     }
                     else if (changeDoc.event.endsWith('CustomProperty.updated')) {
 
@@ -461,7 +461,8 @@ class PendingChangeService extends AbstractLockableService {
             accepted.addAll(memberACs)
         }
         result.addAll(pending.drop(configMap.pendingOffset).take(configMap.max))
-        result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
+        if(configMap.notifications)
+            result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
         result.each { PendingChange change ->
                 //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
                 if(change.subscription) {

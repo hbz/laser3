@@ -292,7 +292,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                         }
                         if (existingOrgRoles) {
                             log.debug('found existing orgRoles, deleting: ' + existingOrgRoles)
-                            existingOrgRoles.each{ tmp -> tmp.delete() }
+                            existingOrgRoles.each{ tmp -> tmp.delete(flush:true) }
                         }
                     }
                     sharedObject.addShareForTarget_trait(sub)
@@ -899,9 +899,6 @@ select distinct oap from OrgAccessPoint oap
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id)?.sortname
                else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)?.sortname
-           }
-           else if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)?.id == contextOrg.id) {
-               additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_COLLECTIVE.id)?.sortname
            }
            else{
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())

@@ -365,8 +365,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
       log.debug("update existing note...");
       if ( note_content == '' ) {
         log.debug("Delete note doc ctx...");
-        note.delete();
-        note.owner.delete(flush:true);
+        note.delete(flush:true)
+        note.owner.delete(flush:true)
       }
       else {
         note.owner.content = note_content

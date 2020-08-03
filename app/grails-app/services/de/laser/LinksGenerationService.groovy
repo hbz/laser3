@@ -141,7 +141,7 @@ class LinksGenerationService {
                 }
             }
             catch (CreationException e) {
-                log.error(e)
+                log.error( e.toString() )
                 errors = messageSource.getMessage('default.linking.savingError',null, LocaleContextHolder.getLocale())
             }
         }
@@ -154,8 +154,8 @@ class LinksGenerationService {
                 }
                 else if(configMap.commentContent.length() == 0) {
                     DocContext commentContext = DocContext.findByOwner(linkComment)
-                    if(commentContext.delete())
-                        linkComment.delete()
+                    if(commentContext.delete(flush:true))
+                        linkComment.delete(flush:true)
                 }
             }
             else if(!linkComment && configMap.commentContent.length() > 0) {
@@ -184,8 +184,8 @@ class LinksGenerationService {
             DocContext comment = DocContext.findByLink(obj)
             if(comment) {
                 Doc commentContent = comment.owner
-                comment.delete()
-                commentContent.delete()
+                comment.delete(flush:true)
+                commentContent.delete(flush:true)
             }
             def source = genericOIDService.resolveOID(obj.source), destination = genericOIDService.resolveOID(obj.destination)
             Set sourceChildren = source.getClass().findAllByInstanceOf(source), destinationChildren = destination.getClass().findAllByInstanceOf(destination)
@@ -198,7 +198,7 @@ class LinksGenerationService {
                 if(destinationChild)
                     Links.executeUpdate('delete from Links li where li.source = :source and li.destination = :destination and li.linkType = :linkType and li.owner = :owner',[source:GenericOIDService.getOID(sourceChild),destination:GenericOIDService.getOID(destinationChild),linkType:obj.linkType,owner:obj.owner])
             }
-            obj.delete()
+            obj.delete(flush:true)
             true
         }
         else false

@@ -66,7 +66,7 @@ class ChangeAcceptJob extends AbstractJob {
             log.debug("****Change Accept Job Complete*****")
         }
         catch (Exception e) {
-            log.error(e)
+            log.error( e.toString() )
         }
 
         SystemEvent.createEvent('CAJ_JOB_COMPLETE')

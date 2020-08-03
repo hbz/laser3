@@ -1,10 +1,12 @@
 <%@ page import="com.k_int.kbplus.UserSettings" %>
 <!doctype html>
-<r:require module="chartist" />
 <html>
 <head>
     <meta name="layout" content="semanticUI">
     <title>${message(code: 'laser')} : Frontend for Developers</title>
+
+    <r:require module="chartist" />
+
     <style>
     #example .example .column .icon {
         opacity: 1;
