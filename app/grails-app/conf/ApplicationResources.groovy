@@ -46,12 +46,12 @@ modules = {
 
     }
     datatables {
-        resource url:'datatables/datatables.min.js'
-        resource url:'datatables/datatables.css', attrs: [media: 'screen,print']
+        resource url:'vendor/datatables/datatables.min.js'
+        resource url:'vendor/datatables/datatables.css', attrs: [media: 'screen,print']
     }
     chartist {
-        resource url:'chartist/javascript/chartist.min.js'
-        resource url:'chartist/css/chartist.css', attrs: [media: 'screen,print']
+        resource url:'vendor/chartist/javascript/chartist.min.js'
+        resource url:'vendor/chartist/css/chartist.css', attrs: [media: 'screen,print']
     }
     base {
         dependsOn 'jquery'
@@ -72,8 +72,8 @@ modules = {
 
         resource url:'js/libs/jquery.readmore.min.js' // new stuff
 
-        resource url:'css/select2-laser.css', attrs: [media: 'screen,print']       // overwrite to look more like semantic ui
-        resource url:'js/libs/select2.min.js'       // updated stuff // new version 3.5.4
+        resource url:'vendor/select2/css/select2-laser.css', attrs: [media: 'screen,print']       // overwrite to look more like semantic ui
+        resource url:'vendor/select2/js/select2.min.js'       // updated stuff // new version 3.5.4
         resource url:'js/libs/readmore.min.js'
 
         resource url:'js/application.js'

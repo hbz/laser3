@@ -7,7 +7,6 @@
     <script>
         <g:render template="/templates/javascript/laser.js" />
     </script>
-
 </head>
 
 <body>
