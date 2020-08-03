@@ -35,7 +35,7 @@
                 <g:select class="ui search dropdown"
                       id="targetSubscriptionId"
                       name="targetSubscriptionId"
-                      from="${((List<Subscription>)allSubscriptions_writeRights)?.sort {it.dropdownNamingConvention()}}"
+                      from="${allSubscriptions_writeRights}"
                       optionValue="${{it?.dropdownNamingConvention()}}"
                       optionKey="id"
                       value="${targetSubscription?.id}"

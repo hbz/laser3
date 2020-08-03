@@ -411,7 +411,7 @@ class SubscriptionService {
         if (params?.showConnectedSubs){
             result.addAll(linksGenerationService.getAllLinkedSubscriptions(result, contextService.user))
         }
-        result
+        result.sort {it.dropdownNamingConvention()}
     }
 
     List getMySubscriptionsWithMyElements_readRights(){

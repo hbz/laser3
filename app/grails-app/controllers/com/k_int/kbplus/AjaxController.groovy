@@ -2688,7 +2688,6 @@ class AjaxController {
         data = subscriptionService.getMySubscriptions_writeRights(queryParams)
 
         if(data) {
-            data.sort {it.dropdownNamingConvention()}
             data.each { Subscription s ->
                 result.add([value: s.id, text: s.dropdownNamingConvention()])
             }
