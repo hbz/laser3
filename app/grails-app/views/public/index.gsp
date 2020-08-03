@@ -6,6 +6,7 @@
     <title>${message(code: 'laser')}</title>
     <script>
         <g:render template="/templates/javascript/laser.js" />
+        <g:render template="/templates/javascript/dict.js" />
     </script>
 </head>
 
