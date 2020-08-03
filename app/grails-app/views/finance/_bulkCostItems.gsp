@@ -233,7 +233,7 @@
 
     $("#costItemsBulk").submit(function (e) {
         e.preventDefault();
-        if ($("[name='newCostCurrency2']").val() != 0 && $("[name='newCostCurrency2']").val() != null) {
+        //if ($("[name='newCostCurrency2']").val() != 0 && $("[name='newCostCurrency2']").val() != null) {
             var valuesCorrect = checkValues();
             if (valuesCorrect) {
                 $("#newCostCurrency2").parent(".field").removeClass("error");
@@ -243,10 +243,11 @@
             } else {
                 alert("${message(code:'financials.newCosts.calculationError')}");
             }
-        } else {
+        //}
+        /*else {
             alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
             $("#newCostCurrency2").parent(".field").addClass("error");
-        }
+        }*/
     });
 
     $("#newCostCurrency2").change(function () {
