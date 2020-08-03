@@ -5,10 +5,9 @@
     <meta name="layout" content="public"/>
     <title>${message(code: 'laser')}</title>
     <script>
-        var gspLocale = "${message(code:'default.locale.label')}";
-        var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
+        <g:render template="/templates/javascript/laser.js" />
+        <g:render template="/templates/javascript/dict.js" />
     </script>
-
 </head>
 
 <body>

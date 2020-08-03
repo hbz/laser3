@@ -91,7 +91,7 @@ class AddressController extends AbstractDebugController {
             redirect: '.',
             hideType: true
         ]
-        render template:"../templates/addresses/formModal", model: model
+        render template: "/templates/addresses/formModal", model: model
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

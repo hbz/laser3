@@ -44,7 +44,7 @@
                 <g:textArea readonly="" rows="2" style="width:95%" name="key" value="=== C O N C E A L E D ==="/>
             </g:if>
             <g:else>
-                <g:textArea readonly="" rows="2" style="width:95%" name="key" value="${currentconf.get(key)}"/>
+                <g:textArea readonly="" rows="2" style="width:95%" name="key" value="${currentconf.get(key)}" escapeHtml="false" />
             </g:else>
 
         </div>

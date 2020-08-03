@@ -688,7 +688,7 @@ class AccessPointController extends AbstractDebugController {
         aoplInstance.active = false
         if (! aoplInstance.save()) {
             log.debug("Error updateing AccessPoint for platform")
-            log.debug(aopl.errors)
+            log.debug(aopl.errors.toString())
             // TODO flash
         }
         redirect(url: request.getHeader('referer'))

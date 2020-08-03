@@ -3,7 +3,7 @@
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 
-<g:set var="objIsOrgAndInst" value="${object instanceof Org && object.getallOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)}" />
+<g:set var="objIsOrgAndInst" value="${object instanceof Org && object.getAllOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)}" />
 
 <aside class="ui segment metaboxContent accordion">
     <div class="title">

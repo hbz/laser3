@@ -3004,7 +3004,7 @@ class SurveyController {
         result.isConsortialSubs = (result.sourceSubscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
-        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
+        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights(null)
 
         switch (params.workFlowPart) {
             case WORKFLOW_DATES_OWNER_RELATIONS:
@@ -4146,7 +4146,7 @@ class SurveyController {
                                 if (existingProps.size() == 0 || propDef.multipleOccurrence) {
                                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, org)
                                     if (newProp.hasErrors()) {
-                                        log.error(newProp.errors)
+                                        log.error(newProp.errors.toString())
                                     } else {
                                         log.debug("New private property created: " + newProp.type.name)
                                         def newValue = copyProperty.getValue()
@@ -4166,7 +4166,7 @@ class SurveyController {
                                 if (existingProp == null || propDef.multipleOccurrence) {
                                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, org)
                                     if (newProp.hasErrors()) {
-                                        log.error(newProp.errors)
+                                        log.error(newProp.errors.toString())
                                     } else {
                                         log.debug("New custom property created: " + newProp.type.name)
                                         def newValue = copyProperty.getValue()
