@@ -31,14 +31,14 @@ class DocWidgetController extends AbstractDebugController {
                         content: params.licenseNote,
                         type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
                         owner: contextService.org,
-                        user: user).save()
+                        user: user).save(flush:true)
 
 
                 log.debug("Setting new context type to ${params.ownertp}..");
                 DocContext doc_context = new DocContext("${params.ownertp}": instance,
                         owner: doc_content,
                         doctype: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE))
-                doc_context.save()
+                doc_context.save(flush:true)
             } else {
                 log.debug("no instance");
             }
@@ -86,7 +86,7 @@ class DocWidgetController extends AbstractDebugController {
                             owner: contextService.getOrg())
                     // erms-790
                     //doc_content.setBlobData(input_stream, input_file.size)
-                    doc_content.save()
+                    doc_content.save(flush:true)
 
                     File new_File
                     try {
@@ -105,7 +105,7 @@ class DocWidgetController extends AbstractDebugController {
                     catch (Exception e) {
                         // fallback
                         doc_content.setBlobData(input_stream, input_file.size)
-                        doc_content.save()
+                        doc_content.save(flush:true)
                     }
 
                     DocContext doc_context = new DocContext(
@@ -133,7 +133,7 @@ class DocWidgetController extends AbstractDebugController {
                                         creator: doc_content.creator,
                                         owner: contextService.getOrg())
 
-                                doc_content2.save()
+                                doc_content2.save(flush:true)
 
                                 log.debug( doc_content2.toString() )
 
@@ -153,7 +153,7 @@ class DocWidgetController extends AbstractDebugController {
                                     // fallback
                                     log.debug("Fallback:"+ doc_content2)
                                     doc_content2.setBlobData(new_File.newInputStream(), new_File?.size())
-                                    doc_content2.save()
+                                    doc_content2.save(flush:true)
                                 }
 
                                 DocContext doc_context2 = new DocContext(
@@ -197,7 +197,7 @@ class DocWidgetController extends AbstractDebugController {
                 doc_content.title = params.upload_title ?: doc_content.filename
                 doc_content.type = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                 doc_content.owner = contextService.org
-                doc_content.save()
+                doc_content.save(flush:true)
                 doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                 if(params.targetOrg)
                     doc_context.targetOrg = Org.get(params.targetOrg)

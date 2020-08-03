@@ -344,7 +344,7 @@ class LicenseController
                         }
 
                         if (licenseCopy) {
-                            new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
+                            new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save(flush:true)
                         }
                     }
                 }
@@ -925,9 +925,9 @@ class LicenseController
               it.delete(flush:true)
             }
           }
-          opl.delete(flush:true);
-          dc.delete(flush:true);
-          doc.delete(flush:true);
+          opl.delete(flush: true)
+          dc.delete(flush: true)
+          doc.delete(flush: true)
       }
       if (license.hasErrors()) {
           license.errors.each {
@@ -994,7 +994,7 @@ class LicenseController
             )
 
 
-            if (!licenseInstance.save()) {
+            if (!licenseInstance.save(flush:true)) {
                 log.error("Problem saving license ${licenseInstance.errors}")
                 return licenseInstance
             }
@@ -1020,7 +1020,7 @@ class LicenseController
                                         user: dctx.owner.user,
                                         migrated: dctx.owner.migrated,
                                         owner: dctx.owner.owner
-                                ).save()
+                                ).save(flush:true)
 
                                 String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
@@ -1034,7 +1034,7 @@ class LicenseController
                                         domain: dctx.domain,
                                         status: dctx.status,
                                         doctype: dctx.doctype
-                                ).save()
+                                ).save(flush:true)
                             }
                         }
                         //Copy Announcements
@@ -1053,7 +1053,7 @@ class LicenseController
                                         mimeType: dctx.owner.mimeType,
                                         user: dctx.owner.user,
                                         migrated: dctx.owner.migrated
-                                ).save()
+                                ).save(flush:true)
 
                                 DocContext ndc = new DocContext(
                                         owner: clonedContents,
@@ -1061,7 +1061,7 @@ class LicenseController
                                         domain: dctx.domain,
                                         status: dctx.status,
                                         doctype: dctx.doctype
-                                ).save()
+                                ).save(flush:true)
                             }
                         }
                     }
@@ -1074,7 +1074,7 @@ class LicenseController
                             InvokerHelper.setProperties(newTask, task.properties)
                             newTask.systemCreateDate = new Date()
                             newTask.license = licenseInstance
-                            newTask.save()
+                            newTask.save(flush:true)
                         }
 
                     }
@@ -1084,7 +1084,7 @@ class LicenseController
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.lic = licenseInstance
-                            newOrgRole.save()
+                            newOrgRole.save(flush:true)
 
                             }
 
@@ -1096,7 +1096,7 @@ class LicenseController
                             LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.instanceOf = null
-                            copiedProp.save()
+                            copiedProp.save(flush:true)
                         }
                     }
                     if(params.license.copyPrivateProperties){
@@ -1105,7 +1105,7 @@ class LicenseController
                         baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant?.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
                             LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
                             copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.save()
+                            copiedProp.save(flush:true)
                         }
                     }
                 redirect controller: 'license', action: 'show', params: [id: licenseInstance.id]

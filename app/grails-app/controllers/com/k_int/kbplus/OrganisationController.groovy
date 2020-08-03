@@ -334,7 +334,7 @@ class OrganisationController extends AbstractDebugController {
         String note = params.note?.trim()
         Identifier id = Identifier.construct([value: value, reference: org, namespace: namespace])
         id.note = note
-        id.save()
+        id.save(flush:true)
 
         redirect(url: request.getHeader('referer'))
     }
@@ -368,7 +368,7 @@ class OrganisationController extends AbstractDebugController {
                     isPublic: true,
                     type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
             )
-            ci.save()
+            ci.save(flush:true)
         }
 
         redirect(url: request.getHeader('referer'))
@@ -389,7 +389,7 @@ class OrganisationController extends AbstractDebugController {
         }
         identifier.value = params.value.trim()
         identifier.note = params.note?.trim()
-        identifier.save()
+        identifier.save(flush:true)
 
         redirect(url: request.getHeader('referer'))
     }
@@ -410,7 +410,7 @@ class OrganisationController extends AbstractDebugController {
         }
         customeridentifier.value = params.value
         customeridentifier.note = params.note?.trim()
-        customeridentifier.save()
+        customeridentifier.save(flush:true)
 
         redirect(url: request.getHeader('referer'))
     }
@@ -530,10 +530,10 @@ class OrganisationController extends AbstractDebugController {
             try {
                 // createdBy will set by Org.beforeInsert()
                 orgInstance = new Org(name: params.institution, sector: orgSector, status: RDStore.O_STATUS_CURRENT)
-                orgInstance.save()
+                orgInstance.save(flush:true)
 
                 Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type: RDStore.COMBO_TYPE_CONSORTIUM)
-                newMember.save()
+                newMember.save(flush:true)
 
                 orgInstance.setDefaultCustomerType()
                 orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)) //RDStore adding causes a DuplicateKeyException
@@ -1138,7 +1138,7 @@ class OrganisationController extends AbstractDebugController {
                                  toOrg:toOrg,
                                  status:null,
                                  type:comboType)
-          consLink.save()
+          consLink.save(flush:true)
       }
       else {
         flash.message = "This Combo already exists!"
@@ -1370,7 +1370,7 @@ class OrganisationController extends AbstractDebugController {
         if(result.editable) {
             def osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
             orgInstance.removeFromSubjectGroup(osg)
-            orgInstance.save()
+            orgInstance.save(flush:true)
             osg.delete(flush:true)
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect(url: request.getHeader('referer'))
@@ -1397,7 +1397,7 @@ class OrganisationController extends AbstractDebugController {
                         type: RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE)]
                 if (! Combo.findWhere(map)) {
                     Combo cmb = new Combo(map)
-                    cmb.save()
+                    cmb.save(flush:true)
                 }
                 break
             case 'remove':

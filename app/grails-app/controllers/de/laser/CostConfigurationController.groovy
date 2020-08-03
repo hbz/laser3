@@ -80,7 +80,7 @@ class CostConfigurationController {
                 log.error("Error occurred: ${it.properties.field} has erroneous value ${it.properties.rejectedValue}, error code: ${it.properties.code}")
             }
         }
-        else ciec.save()
+        else ciec.save(flush:true)
         redirect action: 'index'
     }
 

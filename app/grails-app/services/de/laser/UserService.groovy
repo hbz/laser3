@@ -98,7 +98,7 @@ class UserService {
         User user = new User(params)
         user.enabled = true
 
-        if (! user.save()) {
+        if (! user.save(flush: true)) {
             Set errMess = []
             Object[] withArticle = new Object[messageSource.getMessage('user.withArticle.label',null,locale)]
             user.errors.fieldErrors.each { FieldError e ->

@@ -770,7 +770,7 @@ class FinanceController extends AbstractDebugController {
             ci.costItemStatus = RDStore.COST_ITEM_DELETED
             ci.invoice = null
             ci.order = null
-            if(!ci.save())
+            if(!ci.save(flush:true))
                 log.error(ci.errors.toString())
         }
 
@@ -794,11 +794,11 @@ class FinanceController extends AbstractDebugController {
 
               Order order = null
               if (params.newOrderNumber)
-                  order = Order.findByOrderNumberAndOwner(params.newOrderNumber, result.institution) ?: new Order(orderNumber: params.newOrderNumber, owner: result.institution).save()
+                  order = Order.findByOrderNumberAndOwner(params.newOrderNumber, result.institution) ?: new Order(orderNumber: params.newOrderNumber, owner: result.institution).save(flush:true)
 
               Invoice invoice = null
               if (params.newInvoiceNumber)
-                  invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save()
+                  invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save(flush:true)
 
               Set<Subscription> subsToDo = []
               if (params.newSubscription.contains("com.k_int.kbplus.Subscription:"))
@@ -1013,7 +1013,7 @@ class FinanceController extends AbstractDebugController {
                   //newCostItem.includeInSubscription = null
                   newCostItem.reference = params.newReference ? params.newReference.trim() : null
 
-                  if (newCostItem.save()) {
+                  if (newCostItem.save(flush:true)) {
                           def newBcObjs = []
 
                           params.list('newBudgetCodes')?.each { newbc ->
@@ -1021,7 +1021,7 @@ class FinanceController extends AbstractDebugController {
                               if (bc) {
                                   newBcObjs << bc
                                   if (! CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )) {
-                                      new CostItemGroup(costItem: newCostItem, budgetCode: bc).save()
+                                      new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush:true)
                                   }
                               }
                           }
@@ -1126,7 +1126,7 @@ class FinanceController extends AbstractDebugController {
                 costItem.startDate = ci.startDate ? sdf.parse(ci.startDate) : null
                 costItem.endDate = ci.endDate ? sdf.parse(ci.endDate) : null
                 costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'true' ?: false
-                if(!costItem.save()) {
+                if(!costItem.save(flush:true)) {
                     withErrors = true
                     flash.error += costItem.errors
                 }
@@ -1146,13 +1146,13 @@ class FinanceController extends AbstractDebugController {
                             if(!bc) {
                                 bc = new BudgetCode(owner: contextOrg, value: bck)
                             }
-                            if(!bc.save()) {
+                            if(!bc.save(flush:true)) {
                                 withErrors = true
                                 flash.error += bc.errors
                             }
                             else {
                                 CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
-                                if(!cig.save()) {
+                                if(!cig.save(flush:true)) {
                                     withErrors = true
                                     flash.error += cig.errors
                                 }
@@ -1344,7 +1344,7 @@ class FinanceController extends AbstractDebugController {
                             relation.obj."${params.relationField}" = params.val
                             relation.obj.owner = institution
                             log.debug("Financials :: financialRef -Creating Relation val:${params.val} field:${params.relationField} org:${institution.name}")
-                            if (relation.obj.save())
+                            if (relation.obj.save(flush:true))
                                 log.debug("Financials :: financialRef - Saved the new relational inst ${relation.obj}")
                             else
                                 result.error.add([status: "FAILED: Creating ${params.ownerField}", msg: "Invalid data received to retrieve from DB"])
@@ -1571,7 +1571,7 @@ class FinanceController extends AbstractDebugController {
                     costItem.currencyRate = cost_currency_rate ?: costItem.currencyRate
                     costItem.taxKey = tax_key ?: costItem.taxKey
 
-                    costItem.save()
+                    costItem.save(flush:true)
                 }
             }
         }

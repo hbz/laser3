@@ -952,11 +952,11 @@ class PackageController extends AbstractDebugController {
                             }
                         }
                         if (changed)
-                            tipp_to_bulk_edit.save();
+                            tipp_to_bulk_edit.save(flush: true)
                     } else {
                         log.debug("Bulk removal ${tipp_to_bulk_edit.id}");
                         tipp_to_bulk_edit.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.TIPP_STATUS)
-                        tipp_to_bulk_edit.save();
+                        tipp_to_bulk_edit.save(flush: true)
                     }
                 }
             }
@@ -990,7 +990,7 @@ class PackageController extends AbstractDebugController {
                         }
                     }
                     if (changed)
-                        tipp_to_bulk_edit.save();
+                        tipp_to_bulk_edit.save(flush: true)
                 }
             }
         }

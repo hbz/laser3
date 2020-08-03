@@ -39,7 +39,7 @@ class AddressController extends AbstractDebugController {
                 if (formService.validateToken(params)) {
 
                     Address addressInstance = new Address(params)
-                    if (!addressInstance.save()) {
+                    if (!addressInstance.save(flush:true)) {
                         flash.error = message(code: 'default.save.error.general.message')
                         log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
                         redirect(url: request.getHeader('referer'), params: params)

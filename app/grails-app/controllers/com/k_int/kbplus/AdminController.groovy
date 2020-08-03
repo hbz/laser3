@@ -92,7 +92,7 @@ class AdminController extends AbstractDebugController {
                 }
                 else if (params.cmd == 'undo') {
                     sa.isPublished = false
-                    if (sa.save()) {
+                    if (sa.save(flush:true)) {
                         flash.message = message(code: 'announcement.undo')
                     }
                     else {
@@ -223,7 +223,7 @@ class AdminController extends AbstractDebugController {
             //parsed_change_info.changeType = "PropertyChange"
             //parsed_change_info.changeDoc.propertyOID = parsed_change_info.changeDoc.OID
             it.payload = parsed_change_info
-            it.save(failOnError:true)
+            it.save(failOnError:true, flush: true)
         }
         log.debug("Pending Change Update Complete.")
         redirect(controller:'home')
@@ -250,7 +250,7 @@ class AdminController extends AbstractDebugController {
       }
       // req.actionedBy = user
       req.dateActioned = System.currentTimeMillis();
-      req.save(flush:true);
+      req.save(flush: true)
     }
     else {
       log.error("FLASH");
@@ -458,7 +458,7 @@ class AdminController extends AbstractDebugController {
         else {
           if (affil.status != existing_affil_check.status) {
             existing_affil_check.status = affil.status
-            existing_affil_check.save()
+            existing_affil_check.save(flush:true)
           }
           log.debug("Affiliation already present - skipping ${existing_affil_check}");
         }
@@ -871,7 +871,7 @@ class AdminController extends AbstractDebugController {
             def sourceIEs = IssueEntitlement.findAllByTipp(result.sourceTIPPObj)
             sourceIEs.each{
                 it.setTipp(result.targetTIPPObj)
-                it.save()
+                it.save(flush:true)
             }
         }
 
@@ -1534,10 +1534,10 @@ class AdminController extends AbstractDebugController {
                     subscriberRoles.each{ role ->
                         if (role.sub._getCalculatedType() == Subscription.TYPE_LOCAL) {
                             role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
-                            role.save()
+                            role.save(flush:true)
 
                             role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
-                            role.sub.save()
+                            role.sub.save(flush:true)
                         }
                     }
                     /*
@@ -1551,11 +1551,11 @@ class AdminController extends AbstractDebugController {
                                     sub: role.sub,
                                     roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
                             )
-                            newRole.save()
+                            newRole.save(flush:true)
 
                             // keep consortia type
                             //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
-                            //role.sub.save()
+                            //role.sub.save(flush:true)
                         }
                     }
                 }
@@ -1657,13 +1657,13 @@ class AdminController extends AbstractDebugController {
                 case 'toggleMandatory':
                     if(pd) {
                         pd.mandatory = !pd.mandatory
-                        pd.save()
+                        pd.save(flush:true)
                     }
                     break
                 case 'toggleMultipleOccurrence':
                     if(pd) {
                         pd.multipleOccurrence = !pd.multipleOccurrence
-                        pd.save()
+                        pd.save(flush:true)
                     }
                     break
                 case 'deletePropertyDefinition':

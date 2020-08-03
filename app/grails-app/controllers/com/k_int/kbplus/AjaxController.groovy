@@ -2341,7 +2341,7 @@ class AjaxController {
     def target_object = resolveOID2(params.targetOid)
     if ( context_object."${params.contextProperty}".contains(target_object) ) {
       context_object."${params.contextProperty}".remove(target_object)
-      context_object.save(flush:true);
+      context_object.save(flush: true)
     }
     redirect(url: request.getHeader('referer'))    
   }

@@ -123,7 +123,7 @@ class MigrationsController {
                 if (! orphaned.isEmpty()) {
                     orphaned.each { c ->
                         ((Identifier) c.oldId).setNs(c.newNs)
-                        ((Identifier) c.oldId).save()
+                        ((Identifier) c.oldId).save(flush:true)
                     }
                 }
             }

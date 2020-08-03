@@ -672,7 +672,7 @@ class AccessPointController extends AbstractDebugController {
                 redirect(url: request.getHeader('referer'))
                 return
             }
-            if (! oapl.save()) {
+            if (! oapl.save(flush:true)) {
                 flash.error = "Could not link AccessPoint to Platform"
             }
         }
@@ -686,7 +686,7 @@ class AccessPointController extends AbstractDebugController {
     def unlinkPlatform() {
         def aoplInstance = OrgAccessPointLink.get(params.id)
         aoplInstance.active = false
-        if (! aoplInstance.save()) {
+        if (! aoplInstance.save(flush:true)) {
             log.debug("Error updateing AccessPoint for platform")
             log.debug(aopl.errors.toString())
             // TODO flash

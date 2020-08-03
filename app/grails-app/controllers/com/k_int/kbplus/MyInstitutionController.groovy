@@ -1109,8 +1109,8 @@ join sub.orgRelations or_sub where
                     identifier: java.util.UUID.randomUUID().toString()
             )
 
-            if (new_sub.save()) {
-                new OrgRole(org: result.institution, sub: new_sub, roleType: orgRole).save()
+            if (new_sub.save(flush:true)) {
+                new OrgRole(org: result.institution, sub: new_sub, roleType: orgRole).save(flush:true)
                         
                 if (accessService.checkPerm('ORG_INST_COLLECTIVE') ||
                         (accessService.checkPerm('ORG_CONSORTIUM') && subType != RDStore.SUBSCRIPTION_TYPE_LOCAL)
@@ -1146,20 +1146,20 @@ join sub.orgRelations or_sub where
                                           isSlaved: true)
 
                         if (new_sub.administrative) {
-                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_cons_hidden).save()
+                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_cons_hidden).save(flush:true)
                         }
                         else {
-                            new OrgRole(org: cm, sub: cons_sub, roleType: memberRole).save()
+                            new OrgRole(org: cm, sub: cons_sub, roleType: memberRole).save(flush:true)
                         }
 
-                        new OrgRole(org: result.institution, sub: cons_sub, roleType: orgRole).save()
+                        new OrgRole(org: result.institution, sub: cons_sub, roleType: orgRole).save(flush:true)
                     }
                     else {
                         if(new_sub.administrative) {
-                            new OrgRole(org: cm, sub: new_sub, roleType: role_sub_cons_hidden).save()
+                            new OrgRole(org: cm, sub: new_sub, roleType: role_sub_cons_hidden).save(flush:true)
                         }
                         else {
-                            new OrgRole(org: cm, sub: new_sub, roleType: memberRole).save()
+                            new OrgRole(org: cm, sub: new_sub, roleType: memberRole).save(flush:true)
                         }
                     }
                   }
@@ -1219,7 +1219,7 @@ join sub.orgRelations or_sub where
                     copyLicense.startDate = DateUtil.parseDateGeneric(params.licenseStartDate)
                     copyLicense.endDate = DateUtil.parseDateGeneric(params.licenseEndDate)
 
-                    if (copyLicense.save()) {
+                    if (copyLicense.save(flush:true)) {
                         flash.message = message(code: 'license.createdfromTemplate.message')
                     }
 
@@ -1245,7 +1245,7 @@ join sub.orgRelations or_sub where
                 openEnded: RDStore.YNU_UNKNOWN
         )
 
-        if (!licenseInstance.save()) {
+        if (!licenseInstance.save(flush:true)) {
             log.error(licenseInstance.errors.toString())
             flash.error = message(code:'license.create.error')
             redirect action: 'emptyLicense'
@@ -1265,7 +1265,7 @@ join sub.orgRelations or_sub where
                 orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: licensee_role)
             }
 
-            if (!orgRole.save()) {
+            if (!orgRole.save(flush:true)) {
                 log.error("Problem saving org links to license ${orgRole.errors}");
             }
 
@@ -1388,7 +1388,7 @@ join sub.orgRelations or_sub where
 
             if (subs_using_this_license.size() == 0) {
                 license.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS)
-                license.save(flush: true);
+                license.save(flush: true)
             } else {
                 flash.error = message(code:'myinst.deleteLicense.error')
                 redirect(url: request.getHeader('referer'))
@@ -2546,7 +2546,7 @@ AND EXISTS (
             if (allResultHaveValue) {
                 surveyResults.each {
                     it.finishDate = new Date()
-                    it.save()
+                    it.save(flush:true)
                 }
                 sendMailToSurveyOwner = true
                 // flash.message = message(code: "surveyResult.finish.info")
@@ -2793,7 +2793,7 @@ AND EXISTS (
                             value: params.bc,
                             descr: params.descr
                     )
-                    if (bc.save()) {
+                    if (bc.save(flush:true)) {
                         flash.message = "Neuer Budgetcode wurde angelegt."
                     }
                     else {
@@ -2883,7 +2883,7 @@ AND EXISTS (
                     ]
                     if (! Combo.findWhere(map)) {
                         Combo cmb = new Combo(map)
-                        cmb.save()
+                        cmb.save(flush:true)
                     }
                 }
 
@@ -3483,7 +3483,7 @@ AND EXISTS (
                         propDefGroup.description = params.description
                         propDefGroup.ownerType = ownerType
 
-                        if (propDefGroup.save()) {
+                        if (propDefGroup.save(flush:true)) {
                             valid = true
                         }
                     }
@@ -3496,7 +3496,7 @@ AND EXISTS (
                                     ownerType: ownerType,
                                     isVisible: true
                             )
-                            if (propDefGroup.save()) {
+                            if (propDefGroup.save(flush:true)) {
                                 valid = true
                             }
                         }
@@ -3513,7 +3513,7 @@ AND EXISTS (
                             new PropertyDefinitionGroupItem(
                                     propDef: pd,
                                     propDefGroup: propDefGroup
-                            ).save()
+                            ).save(flush:true)
                         }
                     }
                 }
@@ -3670,7 +3670,7 @@ AND EXISTS (
                                     AbstractPropertyWithCalculatedLastUpdated memberProp = PropertyDefinition.createGenericProperty(propertyType,member,prop.type,result.institution)
                                     memberProp = prop.copyInto(memberProp)
                                     memberProp.instanceOf = prop
-                                    memberProp.save()
+                                    memberProp.save(flush:true)
                                     AuditConfig.addConfig(prop,AuditConfig.COMPLETE_OBJECT)
                                 }
                             }
@@ -3713,8 +3713,8 @@ AND EXISTS (
 
             existingProps.each { AbstractPropertyWithCalculatedLastUpdated prop ->
                 owner.propertySet.remove(prop)
-                owner.save()
-                prop.delete()
+                owner.save(flush:true)
+                prop.delete(flush:true)
                 deletedProperties++
             }
         }
@@ -3755,7 +3755,7 @@ AND EXISTS (
             case RefdataValue.toString(): prop.refValue = RefdataValue.get(filterPropValue)
                 break
         }
-        prop.save()
+        prop.save(flush:true)
     }
 
     /**
@@ -3775,12 +3775,12 @@ AND EXISTS (
             case 'toggleMandatory':
                 PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
                 pd.mandatory = !pd.mandatory
-                pd.save()
+                pd.save(flush:true)
                 break
             case 'toggleMultipleOccurrence':
                 PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
                 pd.multipleOccurrence = !pd.multipleOccurrence
-                pd.save()
+                pd.save(flush:true)
                 break
             case 'delete': flash.message = deletePrivatePropertyDefinition(params)
                 break
@@ -3828,10 +3828,10 @@ AND EXISTS (
             if (pd) {
                 switch(params.cmd) {
                     case 'toggleMandatory': pd.mandatory = !pd.mandatory
-                        pd.save()
+                        pd.save(flush:true)
                         break
                     case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
-                        pd.save()
+                        pd.save(flush:true)
                         break
                     case 'deletePropertyDefinition':
                         if (! pd.isHardData) {
@@ -3966,7 +3966,7 @@ AND EXISTS (
                 try {
                     if (privatePropDef.mandatory) {
                         privatePropDef.mandatory = false
-                        privatePropDef.save()
+                        privatePropDef.save(flush:true)
 
                         // delete inbetween created mandatories
                         Class.forName(
