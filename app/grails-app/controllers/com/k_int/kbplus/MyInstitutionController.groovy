@@ -3675,7 +3675,7 @@ AND EXISTS (
                                 }
                             }
                         }
-                        else log.error(prop.errors)
+                        else log.error(prop.errors.toString())
                     }
                 }
             }
