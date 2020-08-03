@@ -1002,7 +1002,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processEmptySubscription() {
-        log.debug(params)
+        log.debug( params.toMapString() )
         Map<String, Object> result = setResultGenerics()
 
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER
@@ -1898,10 +1898,10 @@ AND EXISTS (
                         DocContext comment = DocContext.findByLink(l)
                         if(comment) {
                             Doc commentContent = comment.owner
-                            comment.delete()
-                            commentContent.delete()
+                            comment.delete(flush:true)
+                            commentContent.delete(flush:true)
                         }
-                        l.delete()
+                        l.delete(flush:true)
                     }
                 }
               }
@@ -2749,7 +2749,7 @@ AND EXISTS (
             } else if (params.cmd == "deleteBudgetCode") {
                 def bc = genericOIDService.resolveOID(params.bc)
                 if (bc && bc.owner.id == result.institution.id) {
-                    bc.delete()
+                    bc.delete(flush:true)
                 }
             }
 
@@ -2900,7 +2900,7 @@ AND EXISTS (
                         fromOrg: Org.get(Long.parseLong(soId)),
                         type: RDStore.COMBO_TYPE_CONSORTIUM
                 )
-                cmb.delete()
+                cmb.delete(flush:true)
             }
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
@@ -3409,7 +3409,7 @@ AND EXISTS (
             case 'delete':
                 PropertyDefinitionGroup pdg = genericOIDService.resolveOID(params.oid)
                 try {
-                    pdg.delete()
+                    pdg.delete(flush:true)
                     flash.message = message(code:'propertyDefinitionGroup.delete.success',args:[pdg.name])
                 }
                 catch (e) {
@@ -3596,7 +3596,7 @@ AND EXISTS (
     })
     def processManageProperties() {
         Map<String, Object> result = setResultGenerics()
-        log.debug(params)
+        log.debug( params.toMapString() )
         PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
         List withAudit = params.list("withAudit")
         String propertyType = pd.tenant ? PropertyDefinition.PRIVATE_PROPERTY : PropertyDefinition.CUSTOM_PROPERTY
@@ -3712,7 +3712,7 @@ AND EXISTS (
                     case 'deletePropertyDefinition':
                         if (! pd.isHardData) {
                             try {
-                                pd.delete()
+                                pd.delete(flush:true)
                                 flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
                             }
                             catch(Exception e) {
@@ -3848,14 +3848,14 @@ AND EXISTS (
                         Class.forName(
                                 privatePropDef.getImplClass('private')
                         )?.findAllByType(privatePropDef)?.each { it ->
-                            it.delete()
+                            it.delete(flush:true)
                         }
                     }
                 } catch(Exception e) {
-                    log.error(e)
+                    log.error( e.toString() )
                 }
 
-                privatePropDef.delete()
+                privatePropDef.delete(flush:true)
                 messages += message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
             }
         }

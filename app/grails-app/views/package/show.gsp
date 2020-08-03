@@ -1,11 +1,11 @@
 <%@ page import="de.laser.helper.ConfigUtils; de.laser.helper.RDStore; de.laser.helper.RDConstants;com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
 <laser:serviceInjection/>
 <!doctype html>
-<r:require module="datatables" />
 <html>
     <head>
         <meta name="layout" content="semanticUI">
         <title>${message(code:'laser')} : ${message(code:'package.details')}</title>
+        <r:require module="datatables" />
     </head>
     <body>
 

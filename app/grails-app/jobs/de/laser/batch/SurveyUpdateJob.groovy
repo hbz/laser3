@@ -41,7 +41,7 @@ class SurveyUpdateJob extends AbstractJob {
             SystemEvent.createEvent('SURVEY_UPDATE_JOB_COMPLETE')
         }
         catch (Exception e) {
-            log.error(e)
+            log.error( e.toString() )
         }
 
         jobIsRunning = false

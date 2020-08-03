@@ -28,7 +28,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale = 1.0">
 
-    <r:require modules="${currentTheme}" />
+    <r:require module="${currentTheme}" />
 
     <script>
         var gspLocale = "${message(code:'default.locale.label')}";

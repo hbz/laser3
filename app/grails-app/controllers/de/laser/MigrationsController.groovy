@@ -117,7 +117,7 @@ class MigrationsController {
                 log.debug( 'execute ..')
                 if (! matches.isEmpty()) {
                     matches.each { c ->
-                        ((Identifier) c.oldId).delete()
+                        ((Identifier) c.oldId).delete(flush:true)
                     }
                 }
                 if (! orphaned.isEmpty()) {

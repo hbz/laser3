@@ -92,7 +92,7 @@ class CostConfigurationController {
         if(params.ciec) {
             CostItemElementConfiguration ciec = CostItemElementConfiguration.get(params.ciec)
             if(ciec)
-                ciec.delete()
+                ciec.delete(flush:true)
         }
         else {
             flash.error = message(code: 'costConfiguration.delete.noCiec')

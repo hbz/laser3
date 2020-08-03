@@ -184,7 +184,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
-                            pc.delete()
+                            pc.delete(flush:true)
                         }
                     }
                 }
