@@ -8,7 +8,7 @@
     %{--</head>--}%
     <body>
     <semui:form>
-        <g:if test="${controllerName != 'survey' && !isRenewSub}">
+        <g:if test="${!fromSurvey && !isRenewSub}">
             <g:render template="selectSourceAndTargetSubscription" model="[
                 sourceSubscription: sourceSubscription,
                 targetSubscription: targetSubscription,
@@ -17,7 +17,7 @@
         </g:if>
 
         <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceSubscriptionId}"
-                params="[workFlowPart: SubscriptionController.WORKFLOW_END, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
+                params="[workFlowPart: SubscriptionController.WORKFLOW_END, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
                 method="post" class="ui form newLicence">
 
                 <%
@@ -40,7 +40,7 @@
                     </g:if>
             <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
 
-            <g:if test="${controllerName == 'survey'}">
+            <g:if test="${fromSurvey}">
                 <g:if test="${customProperties || privateProperties}">
                     <g:set var="submitButtonText" value="${isRenewSub?
                             message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepSurvey') :

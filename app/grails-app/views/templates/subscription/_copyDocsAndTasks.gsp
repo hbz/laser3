@@ -3,7 +3,7 @@
 <semui:form>
     <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
 
-    <g:if test="${controllerName != 'survey'}">
+    <g:if test="${!fromSurvey}">
         <g:render template="selectSourceAndTargetSubscription" model="[
                 sourceSubscription: sourceSubscription,
                 targetSubscription: targetSubscription,
@@ -12,7 +12,7 @@
     </g:if>
 
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
@@ -311,7 +311,7 @@
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
                 message(code: 'subscription.details.copyElementsIntoSubscription.copyDocsAndTasks.button')}" />
 
-        <g:if test="${controllerName != 'survey'}">
+        <g:if test="${!fromSurvey}">
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
@@ -321,7 +321,7 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(Subscription.get(sourceSubscriptionId), true)}" />
-                    <g:link action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
+                    <g:link controller="survey" action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
                         <g:message code="renewalWithSurvey.back"/>
                     </g:link>
                 </div>

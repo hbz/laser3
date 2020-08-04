@@ -4700,7 +4700,7 @@ class SubscriptionController
         }
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
-        if (params.fromSurvey) {result.fromSurvey = params.fromSurvey}
+        if (params.fromSurvey && accessService.checkPerm("ORG_CONSORTIUM")) {result.fromSurvey = params.fromSurvey}
 
         result.isConsortialSubs = (result.sourceSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
@@ -4741,7 +4741,7 @@ class SubscriptionController
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks()
                 if (params.isRenewSub){
-                    if (result.isSubscriberVisible){
+                    if (!params.fromSurvey && result.isSubscriberVisible){
                         params.workFlowPart = WORKFLOW_SUBSCRIBER
                         result << loadDataFor_Subscriber()
                     } else {

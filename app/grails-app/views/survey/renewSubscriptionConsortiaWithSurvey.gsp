@@ -43,7 +43,7 @@ ${surveyInfo.name}
 <g:set var="index" value="${0}"/>
 
 
-<g:form action="processRenewalwithSurvey" method="post" enctype="multipart/form-data" params="${params}">
+<g:form action="processRenewalWithSurvey" method="post" enctype="multipart/form-data" params="${params}">
 
     <div>
         <hr/>
