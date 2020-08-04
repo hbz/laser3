@@ -163,10 +163,10 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
 
     switch ( idstr_components.size() ) {
       case 1:
-        qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ?',[idstr_components[0]])
+        qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = :val', [val: idstr_components[0]])
         break;
       case 2:
-        qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ? and lower(ident.ns.ns) = ?',[idstr_components[1],idstr_components[0]?.toLowerCase()])
+        qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = :val and lower(ident.ns.ns) = :ns', [val: idstr_components[1], ns: idstr_components[0]?.toLowerCase()])
         break;
       default:
         // static_logger.debug("Unable to split");
@@ -181,10 +181,10 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
             static_logger.debug("No matches - trying to locate via identifier group");
           switch ( idstr_components.size() ) {
             case 1:
-              qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ?', [idstr_components[0]])
+              qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = :val', [val: idstr_components[0]])
               break;
             case 2:
-              qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ? and ident.ns.ns = ?', [idstr_components[1], idstr_components[0]?.toLowerCase()])
+              qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = :val and ident.ns.ns = :ns', [val: idstr_components[1], ns: idstr_components[0]?.toLowerCase()])
               break;
             default:
               // static_logger.debug("Unable to split");
@@ -230,7 +230,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
       candidate_identifiers.each { i ->
         // TODO [ticket=1789]
         //def id1 = Identifier.executeQuery('Select io from IdentifierOccurrence as io where io.identifier.value = ?',[i.value]);
-        def id1 = Identifier.executeQuery('select ident from Identifier as ident where ident.value = ?', [i.value])
+        def id1 = Identifier.executeQuery('select ident from Identifier as ident where ident.value = :val', [val: i.value])
         id1.each {
           if ( it.ti != null ) {
             if ( ! matched.contains(it.ti) ) {

@@ -2063,15 +2063,18 @@ class AjaxController {
 
   def getProvidersWithPrivateContacts() {
     Map<String, Object> result = [:]
-    def query_params = []
     String fuzzyString = '%'
     if(params.sSearch) {
       fuzzyString+params.sSearch.trim().toLowerCase()+'%'
     }
-    query_params.add(fuzzyString)
-    query_params.add(RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS))
-    String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)"
-    String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc"
+
+      Map<String, Object> query_params = [
+              name: fuzzyString,
+              status: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
+      ]
+      String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
+      String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status) order by o.name asc"
+
     def cq = Org.executeQuery(countQry,query_params);
 
     def rq = Org.executeQuery(rowQry,

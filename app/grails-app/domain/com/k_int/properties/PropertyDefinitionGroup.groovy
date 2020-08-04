@@ -59,8 +59,8 @@ class PropertyDefinitionGroup {
     List<PropertyDefinition> getPropertyDefinitions() {
 
         PropertyDefinition.executeQuery(
-            "SELECT pd from PropertyDefinition pd, PropertyDefinitionGroupItem pdgi WHERE pdgi.propDef = pd AND pdgi.propDefGroup = ?",
-            [this]
+            "SELECT pd from PropertyDefinition pd, PropertyDefinitionGroupItem pdgi WHERE pdgi.propDef = pd AND pdgi.propDefGroup = :pdg",
+            [pdg: this]
         )
     }
 

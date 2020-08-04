@@ -209,7 +209,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
               status(nullable:true)
-          membership(nullable:true, blank:true, maxSize:128)
+          membership(nullable:true, maxSize:128)
              country(nullable:true)
               region(nullable:true)
 //        , validator: {RefdataValue val, Org obj, errors ->

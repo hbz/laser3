@@ -309,7 +309,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     // Step 1 - Make sure this package is not already attached to the sub
     // Step 2 - Connect
     List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
-            "from SubscriptionPackage where subscription = ? and pkg = ?", [subscription, this])
+            "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: subscription, pkg: this])
 
     if (!dupe){
         SubscriptionPackage new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save()
@@ -354,7 +354,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         // copy from: addToSubscription(subscription, createEntitlements) { .. }
 
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
-                "from SubscriptionPackage where subscription = ? and pkg = ?", [target, this])
+                "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: this])
 
         if (! dupe){
 

@@ -1100,8 +1100,8 @@ join sub.orgRelations or_sub where
                     params.list('selectedOrgs').each{ it ->
                         Org fo =  Org.findById(Long.valueOf(it))
                         cons_members << Combo.executeQuery(
-                                "select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?",
-                                [result.institution, fo] )
+                                "select c.fromOrg from Combo as c where c.toOrg = :toOrg and c.fromOrg = :fromOrg",
+                                [toOrg: result.institution, fromOrg:fo] )
                     }
 
                     //def cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])

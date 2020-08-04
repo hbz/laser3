@@ -60,12 +60,12 @@ class SubscriptionPackage implements Comparable {
   static def refdataFind(params) {
 
     def result = [];
-    def hqlParams = []
+    Map<String, Object> hqlParams = [:]
     String hqlString = "select sp from SubscriptionPackage as sp"
 
     if ( params.subFilter ) {
-      hqlString += ' where sp.subscription.id = ?'
-      hqlParams.add(params.long('subFilter'))
+      hqlString += ' where sp.subscription.id = :sid'
+      hqlParams.put('sid', params.long('subFilter'))
     }
 
     List<SubscriptionPackage> results = SubscriptionPackage.executeQuery(hqlString,hqlParams)

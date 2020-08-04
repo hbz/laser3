@@ -135,7 +135,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
         //TODO: Dieser Zweig passieert nicht bei GOKB Sync
       if( params.primaryUrl && (params.primaryUrl.length() > 0) ){
 
-        platform_candidates = Platform.executeQuery("from Platform where normname = ? or primaryUrl = ?",[norm_name, params.primaryUrl])
+        platform_candidates = Platform.executeQuery("from Platform where normname = :nname or primaryUrl = :url", [nname: norm_name, url: params.primaryUrl])
 
         if(platform_candidates && platform_candidates.size() == 1){
           platform = platform_candidates[0]
