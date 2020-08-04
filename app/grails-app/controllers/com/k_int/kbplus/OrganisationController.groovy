@@ -47,20 +47,20 @@ class OrganisationController extends AbstractDebugController {
     })
     def settings() {
 
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.user
         Org org   = Org.get(params.id)
-
+        Org contextOrg = contextService.org
         if (! org) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
 
-        Boolean inContextOrg = contextService.getOrg().id == org.id
-        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
+        Boolean inContextOrg = contextOrg.id == org.id
+        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextOrg)
 
         Boolean hasAccess = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_ADM')) ||
+                (isComboRelated && accessService.checkMinUserOrgRole(user, contextOrg, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         // forbidden access
@@ -71,11 +71,11 @@ class OrganisationController extends AbstractDebugController {
         Map result = [
                 user:           user,
                 orgInstance:    org,
-                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
-                inContextOrg:   inContextOrg,
+                contextOrg:     contextOrg, //object type Org
+                editable:   	true, //as method is secured agains INST_ADMins of all kinds; this implicites editability
+                inContextOrg:   inContextOrg, //boolean to ensure if in contextOrg
                 isComboRelated: isComboRelated
         ]
-        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
 
         // adding default settings
         organisationService.initMandatorySettings(org)

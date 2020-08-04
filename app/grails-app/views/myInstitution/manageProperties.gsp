@@ -125,7 +125,7 @@
                                     <g:if test="${filterPropDef.tenant == null}">
                                         <div class="item">
 
-                                            <g:set var="customProperty" value="${objWithoutProp.propertySet.find { it.tenant.id == institution.id && it.type == filterPropDef }}"/>
+                                            <g:set var="customProperty" value="${objWithoutProp.propertySet.find { it.tenant?.id == institution.id && it.type == filterPropDef }}"/>
                                             <g:if test="${customProperty}">
                                                 <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
@@ -372,7 +372,7 @@
                                     <g:if test="${filterPropDef.tenant == null}">
                                         <div class="item">
 
-                                            <g:set var="customProperty" value="${row.propertySet.find { it.tenant.id == institution.id && it.type.id == filterPropDef.id }}"/>
+                                            <g:set var="customProperty" value="${row.propertySet.find { it.tenant?.id == institution.id && it.type.id == filterPropDef.id }}"/>
                                             <g:if test="${customProperty}">
                                                 <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 

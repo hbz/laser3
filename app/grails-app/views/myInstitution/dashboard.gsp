@@ -39,10 +39,9 @@
                         <div class="item">
                             <g:link controller="myInstitution" action="changes">${message(code: 'myinst.pendingChanges.label')}</g:link>
                         </div>
-                        <semui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="announcements" message="announcement.plural" />
-                        <%--<div class="item">
-                            <g:link controller="myInstitution" action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>
-                        </div>--%>
+                        <div class="item">
+                            <g:link controller="myInstitution" action="reporting">${message(code: 'myinst.reporting')}</g:link>
+                        </div>
                         <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                     </div>
                 </div>

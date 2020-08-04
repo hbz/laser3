@@ -13,25 +13,10 @@
     </g:else>
 </head>
 <body>
-    <g:if test="${fromSurvey}">
-        <semui:breadcrumbs>
-            <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
-
-            <g:if test="${sourceSubscription}">
-                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceSubscription, true)}"/>
-                <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.surveyInfo.name}" />
-            </g:if>
-
-            <semui:crumb class="active" message="subscription.details.renewals.renew_sub.label" />
-
-        </semui:breadcrumbs>
-    </g:if>
-    <g:else>
     <g:render template="breadcrumb" model="${[params: params]}"/>
-    </g:else>
-        <br>
+    <br>
     <g:if test="${isRenewSub}">
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.renewals.renew_sub.label')} <g:if test="${sourceSubscription}">${sourceSubscription.name}</g:if></h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.renewals.renew_sub.label')} </h1>
     </g:if>
     <g:else>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.copyElementsIntoSubscription.label')} </h1>

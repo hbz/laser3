@@ -1,9 +1,8 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration
-import de.laser.PriceItem
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -14,7 +13,6 @@ import grails.converters.JSON
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.hibernate.Session
-import org.springframework.transaction.TransactionStatus
 
 import javax.persistence.Transient
 import java.text.Normalizer
@@ -408,7 +406,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
             if (deleteEntitlements) {
                 List<Long> subList = [subscription.id]
-                if(subscription.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_CONSORTIUM")) {
+                if(subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_CONSORTIUM")) {
                     Subscription.findAllByInstanceOf(subscription).each { Subscription childSub ->
                         subList.add(childSub.id)
                     }

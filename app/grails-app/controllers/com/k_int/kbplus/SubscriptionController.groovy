@@ -4700,6 +4700,7 @@ class SubscriptionController
         }
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
+        if (params.fromSurvey) {result.fromSurvey = params.fromSurvey}
 
         result.isConsortialSubs = (result.sourceSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
@@ -4765,7 +4766,13 @@ class SubscriptionController
                 if (params.isRenewSub && params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceSubscription, true)
+
+                    if(surveyConfig && result.fromSurvey) {
+                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    }else {
+                        redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    }
                 } else {
                     result << loadDataFor_Properties()
                 }
@@ -4775,7 +4782,14 @@ class SubscriptionController
                 if (params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceSubscription, true)
+
+                    if(surveyConfig && result.fromSurvey) {
+                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    }else {
+                        redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    }
                 }
                 break
             default:
@@ -4974,6 +4988,17 @@ class SubscriptionController
                     ((ShareSupport) newSub).updateShare(newSubOrgRole)
                 }
             }
+        }
+
+        if (params.subscription?.deleteSpecificSubscriptionEditors && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<PersonRole> toDeleteSpecificSubscriptionEditors = params.list('subscription.deleteSpecificSubscriptionEditors').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.deleteSpecificSubscriptionEditors(toDeleteSpecificSubscriptionEditors, newSub, flash)
+            //isTargetSubChanged = true
+        }
+        if (params.subscription?.takeSpecificSubscriptionEditors && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<PersonRole> toCopySpecificSubscriptionEditors = params.list('subscription.takeSpecificSubscriptionEditors').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.copySpecificSubscriptionEditors(toCopySpecificSubscriptionEditors, baseSub, newSub, flash)
+            //isTargetSubChanged = true
         }
 
         if (params.subscription?.deleteIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -5504,6 +5529,10 @@ class SubscriptionController
                     }
 
                 }
+                //
+                if ((params.subscription.copySpecificSubscriptionEditors)) {
+                    subscriptionService.copySpecificSubscriptionEditorOfProvideryAndAgencies(baseSubscription, newSubscriptionInstance)
+                }
 
                 //Copy Package
                 if (params.subscription.copyPackages) {
@@ -5572,6 +5601,36 @@ class SubscriptionController
                                     newIssueEntitlementCoverage.save(flush:true)
                                 }
                             }
+                        }
+                    }
+
+                }
+
+                if (params.subscription.copyIssueEntitlementGroupItem) {
+
+
+                    baseSubscription.ieGroups.each { ieGroup ->
+
+                        IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(
+                                name: ieGroup.name,
+                                description: ieGroup.description,
+                                sub: newSubscriptionInstance
+                        )
+                        if(issueEntitlementGroup.save(flush:true)) {
+
+                                    ieGroup.items.each{  ieGroupItem ->
+                                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(newSubscriptionInstance, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
+                                        if(ie){
+                                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                                    ie: ie,
+                                                    ieGroup: issueEntitlementGroup)
+
+                                            if (!issueEntitlementGroupItem.save(flush: true)) {
+                                                log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                                            }
+                                        }
+
+                                    }
                         }
                     }
 

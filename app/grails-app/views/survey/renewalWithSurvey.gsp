@@ -78,8 +78,8 @@ ${surveyInfo.name}
                 id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
 
         <g:if test="${parentSuccessorSubscription.getAllSubscribers().size() > 0}">
-        <g:link controller="survey" action="copyElementsIntoRenewalSubscription" id="${parentSubscription?.id}"
-                params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true]"
+        <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription?.id}"
+                params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true, fromSurvey: true]"
                 class="ui button ">
             <g:message code="renewalWithSurvey.newSub.change"/>
         </g:link>
