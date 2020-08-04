@@ -218,8 +218,8 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
 
     static List<Person> getPrivateByOrgAndFuncFromAddressbook(Org org, String func, Org tenant) {
         List<Person> result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
-                [org, func, tenant]
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = :org and pr.functionType.value = :functionType and p.tenant = :tenant",
+                [org: org, functionType: func, tenant: tenant]
         )
         result
     }

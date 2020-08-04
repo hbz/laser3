@@ -213,7 +213,10 @@ class CostItem extends AbstractBase
     }
 
     List<BudgetCode> getBudgetcodes() {
-        BudgetCode.executeQuery("select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = ?", [this])
+        BudgetCode.executeQuery(
+                "select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = :costitem",
+                [costitem: this]
+        )
     }
 
     def getCostInLocalCurrencyAfterTax() {
