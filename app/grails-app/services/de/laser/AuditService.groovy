@@ -150,6 +150,7 @@ class AuditService {
                                             OID     : "${obj.class.name}:${obj.id}",
                                             event   : "${obj.class.simpleName}.updated",
                                             prop    : cp,
+                                            type    : RefdataValue.toString(),
                                             old     : old_oid,
                                             oldLabel: oldMap[cp]?.toString(),
                                             new     : new_oid,

@@ -492,7 +492,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
         result.orgRoles = [:]
-        orgRoles.each { oo ->
+        orgRoles.each { OrgRole oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
         du.setBenchmark('get consortia')

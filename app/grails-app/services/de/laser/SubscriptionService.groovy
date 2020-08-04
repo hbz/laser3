@@ -1588,12 +1588,18 @@ class SubscriptionService {
             try {
                 if(Links.construct([source: GenericOIDService.getOID(newLicense), destination: GenericOIDService.getOID(sub), linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
                     RefdataValue licRole
-                    if(sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
-                        licRole = RDStore.OR_LICENSEE_CONS
-                    else if(sub.getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE,CalculatedType.TYPE_LOCAL])
-                        licRole = RDStore.OR_LICENSEE
-                    else if(sub.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-                        licRole = RDStore.OR_LICENSING_CONSORTIUM
+                    switch(sub.getCalculatedType()) {
+                        case CalculatedType.TYPE_PARTICIPATION: licRole = RDStore.OR_LICENSEE_CONS
+                            break
+                        case CalculatedType.TYPE_LOCAL: licRole = RDStore.OR_LICENSEE
+                            break
+                        case CalculatedType.TYPE_CONSORTIAL:
+                        case CalculatedType.TYPE_ADMINISTRATIVE: licRole = RDStore.OR_LICENSING_CONSORTIUM
+                            break
+                        default: log.error("no role type determinable!")
+                            break
+                    }
+
                     if(licRole) {
                         OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
                         if(!orgLicRole){
@@ -1607,8 +1613,9 @@ class SubscriptionService {
                             if(!orgLicRole.save())
                                 log.error(orgLicRole.errors)
                         }
+                        success = true
                     }
-                    success = true
+                    else log.error("role type missing for org-license linking!")
                 }
             }
             catch (CreationException e) {
