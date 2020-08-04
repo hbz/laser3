@@ -401,6 +401,9 @@ class SubscriptionController
             result.parentId = result.subscription.id
 
         if (params.process  && result.editable) {
+            result.licenses.each { License l ->
+                subscriptionService.setOrgLicRole(result.subscription,l,true)
+            }
             result.delResult = deletionService.deleteSubscription(result.subscription, false)
         }
         else {
@@ -2612,19 +2615,13 @@ class SubscriptionController
 
 
                         if (memberSub) {
-                            if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                                if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
-                                }
-                                else {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
-                                }
-                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
+                            if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
                             }
                             else {
-                                new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
-                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_coll).save()
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
                             }
+                            new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
 
                             synShareTargetList.add(memberSub)
 
@@ -2648,6 +2645,8 @@ class SubscriptionController
                                     }
                                 }
                             }
+
+                            memberSub.refresh()
 
                             packagesToProcess.each { Package pkg ->
                                 if(params.linkWithEntitlements)
