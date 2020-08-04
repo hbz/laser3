@@ -4700,6 +4700,7 @@ class SubscriptionController
         }
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
+        if (params.fromSurvey) {result.fromSurvey = params.fromSurvey}
 
         result.isConsortialSubs = (result.sourceSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
@@ -4765,7 +4766,13 @@ class SubscriptionController
                 if (params.isRenewSub && params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceSubscription, true)
+
+                    if(surveyConfig && result.fromSurvey) {
+                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    }else {
+                        redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    }
                 } else {
                     result << loadDataFor_Properties()
                 }
@@ -4775,7 +4782,14 @@ class SubscriptionController
                 if (params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceSubscription, true)
+
+                    if(surveyConfig && result.fromSurvey) {
+                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    }else {
+                        redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    }
                 }
                 break
             default:
