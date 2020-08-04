@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
@@ -137,83 +136,6 @@ class SurveyService {
         def result = SurveyResult.findBySurveyConfigAndParticipantAndType(surveyConfig, org, participationProperty)?.getResult() == RDStore.YN_YES ? true : false
 
         return result
-    }
-
-    boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
-        SubscriptionProperty targetProp
-
-
-        properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
-            targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
-            boolean isAddNewProp = sourceProp.type.multipleOccurrence
-            if ((!targetProp) || isAddNewProp) {
-                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub, tenant: sourceProp.tenant)
-                targetProp = sourceProp.copyInto(targetProp)
-                targetProp.isPublic = sourceProp.isPublic
-                save(targetProp, flash)
-                if (sourceProp.id.toString() in auditProperties) {
-                    //copy audit
-                    if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        Subscription.findAllByInstanceOf(targetSub).each { member ->
-
-                            def existingProp = SubscriptionProperty.findByOwnerAndInstanceOf(member, targetProp)
-                            if (! existingProp) {
-
-                                // multi occurrence props; add one additional with backref
-                                if (sourceProp.type.multipleOccurrence) {
-                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, targetProp.tenant)
-                                    additionalProp = targetProp.copyInto(additionalProp)
-                                    additionalProp.instanceOf = targetProp
-                                    additionalProp.save(flush: true)
-                                }
-                                else {
-                                    def matchingProps = SubscriptionProperty.findByOwnerAndType(member, targetProp.type)
-                                    // unbound prop found with matching type, set backref
-                                    if (matchingProps) {
-                                        matchingProps.each { memberProp ->
-                                            memberProp.instanceOf = targetProp
-                                            memberProp.save(flush: true)
-                                        }
-                                    }
-                                    else {
-                                        // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, targetProp.tenant)
-                                        newProp = targetProp.copyInto(newProp)
-                                        newProp.instanceOf = targetProp
-                                        newProp.save(flush: true)
-                                    }
-                                }
-                            }
-                        }
-
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
-                        auditConfigs.each {
-                            AuditConfig ac ->
-                                //All ReferenceFields were copied!
-                                AuditConfig.addConfig(targetProp, ac.referenceField)
-                        }
-                        if (!auditConfigs) {
-                            AuditConfig.addConfig(targetProp, AuditConfig.COMPLETE_OBJECT)
-                        }
-                    }
-
-                }
-            } else {
-                Object[] args = [sourceProp.type.getI10n("name") ?: sourceProp.class.getSimpleName()]
-                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, LocaleContextHolder.getLocale())
-            }
-        }
-    }
-
-
-    boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
-
-        properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
-            AuditConfig.removeAllConfigs(prop)
-        }
-
-        int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = true", [properties: properties, org: contextService.org])
-        int anzPP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = false", [properties: properties, org: contextService.org])
     }
 
     private boolean save(obj, flash) {
