@@ -82,12 +82,12 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     primaryUrl(nullable:true, blank:false)
   //originEditUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
-    type(nullable:true, blank:false)
-    status(nullable:true, blank:false)
-    serviceProvider(nullable:true, blank:false)
-    softwareProvider(nullable:true, blank:false)
+    type            (nullable:true)
+    status          (nullable:true)
+    serviceProvider (nullable:true)
+    softwareProvider(nullable:true)
     gokbId (blank:false, unique: true, maxSize:511)
-    org (nullable:true, blank:false)
+    org             (nullable:true)
     lastUpdatedCascading (nullable: true)
   }
 

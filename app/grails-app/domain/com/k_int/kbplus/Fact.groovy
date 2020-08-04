@@ -25,15 +25,15 @@ class Fact {
 
   static constraints = {
     factUid(nullable:true, blank:false,unique:true)
-    relatedTitle(nullable:true, blank:false)
-    supplier(nullable:true, blank:false)
-    inst(nullable:true, blank:false)
-    reportingYear(nullable:true, blank:false)
-    reportingMonth(nullable:true, blank:false)
+    relatedTitle    (nullable:true)
+    supplier        (nullable:true)
+    inst            (nullable:true)
+    reportingYear   (nullable:true)
+    reportingMonth  (nullable:true)
 
       // Nullable is true, because values are already in the database
-      lastUpdated (nullable: true)
-      dateCreated (nullable: true)
+      lastUpdated   (nullable: true)
+      dateCreated   (nullable: true)
   }
 
   static mapping = {

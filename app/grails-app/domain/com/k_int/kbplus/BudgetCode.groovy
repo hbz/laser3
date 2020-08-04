@@ -20,7 +20,6 @@ class BudgetCode {
     }
 
     static constraints = {
-        owner (blank:false)
         value (blank:false, unique: 'owner')
         descr (nullable:true,  blank:true, maxSize:2048)
 

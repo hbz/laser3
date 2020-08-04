@@ -20,8 +20,8 @@ class MailTemplate {
     Date lastUpdated
 
     static constraints = {
-        owner (nullable: true, blank: false)
-        text (nullable: true, blank: false)
+        owner   (nullable: true)
+        text    (nullable: true, blank: false)
     }
 
     static mapping = {

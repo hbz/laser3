@@ -150,44 +150,40 @@ class CostItem extends AbstractBase
 
     static constraints = {
         globalUID(nullable: true, blank: false, unique: true, maxSize: 255)
-        owner(blank: false)
-        type(nullable: true, blank: false)
-        sub(nullable: true, blank: false)
-        issueEntitlementGroup(nullable: true, blank: false)
-        subPkg(nullable: true, blank: false, validator: { val, obj ->
+        type    (nullable: true)
+        sub     (nullable: true)
+        issueEntitlementGroup   (nullable: true)
+        subPkg  (nullable: true, validator: { val, obj ->
             if (obj.subPkg) {
                 if (obj.subPkg.subscription.id != obj.sub.id) return ['subscriptionPackageMismatch']
             }
         })
-        issueEntitlement(nullable: true, blank: false, validator: { val, obj ->
+        issueEntitlement(nullable: true, validator: { val, obj ->
             if (obj.issueEntitlement) {
                 if (!obj.subPkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.subPkg.pkg.gokbId)) return ['issueEntitlementNotInPackage']
             }
         })
-        surveyOrg       (nullable: true, blank: false)
-        order(nullable: true, blank: false)
-        invoice(nullable: true, blank: false)
-        billingCurrency(blank: false)
-        costDescription(nullable: true, blank: false)
-        costTitle(nullable: true, blank: false)
-        costInBillingCurrency(nullable: true, blank: false)
-        datePaid (nullable: true)
-        costInLocalCurrency(nullable: true, blank: false)
-        currencyRate(nullable: true, blank: false)
-        taxCode(nullable: true, blank: false)
-        taxRate(nullable: true, blank: false)
-        taxKey(nullable: true, blank: false)
+        surveyOrg       (nullable: true)
+        order           (nullable: true)
+        invoice         (nullable: true)
+        costDescription (nullable: true, blank: false)
+        costTitle       (nullable: true, blank: false)
+        costInBillingCurrency(nullable: true)
+        datePaid        (nullable: true)
+        costInLocalCurrency (nullable: true)
+        currencyRate(nullable: true)
+        taxCode     (nullable: true)
+        taxRate     (nullable: true)
+        taxKey      (nullable: true)
         invoiceDate (nullable: true)
-        financialYear(nullable: true, blank: false)
-        //includeInSubscription   (blank: false)
-        costItemCategory(nullable: true, blank: false)
-        costItemStatus(blank: false)
-        costItemElement(nullable: true, blank: false)
-        costItemElementConfiguration(nullable: true, blank: false)
-        reference(nullable: true, blank: false)
+        financialYear(nullable: true)
+        costItemCategory    (nullable: true)
+        costItemElement     (nullable: true)
+        costItemElementConfiguration    (nullable: true)
+        reference   (nullable: true, blank: false)
         startDate   (nullable: true)
         endDate     (nullable: true)
-        copyBase(nullable: true)
+        copyBase    (nullable: true)
         //lastUpdatedBy(nullable: true)
         //createdBy(nullable: true)
     }

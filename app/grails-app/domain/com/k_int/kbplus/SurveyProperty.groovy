@@ -37,7 +37,7 @@ class SurveyProperty implements I10nTrait {
     ]
 
     static constraints = {
-        owner(nullable: true, blank: false)
+        owner(nullable: true)
         introduction(nullable: true, blank: false)
         comment(nullable: true, blank: false)
         expl(nullable: true, blank: false)

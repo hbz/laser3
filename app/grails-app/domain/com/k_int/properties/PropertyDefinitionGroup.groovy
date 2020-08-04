@@ -50,7 +50,7 @@ class PropertyDefinitionGroup {
     static constraints = {
         name        (blank: false)
         description (nullable: true,  blank: true)
-        tenant      (nullable: true, blank: false)
+        tenant      (nullable: true)
         ownerType   (blank: false)
         lastUpdated (nullable: true)
         dateCreated (nullable: true)

@@ -37,7 +37,6 @@ class I10nTranslation {
     }
 
     static constraints = {
-        referenceId     (blank:false)
         referenceClass  (blank:false, maxSize:255)
         referenceField  (blank:false, maxSize:255)
         valueDe         (nullable:true,  blank:false)

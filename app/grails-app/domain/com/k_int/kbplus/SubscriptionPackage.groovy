@@ -41,9 +41,9 @@ class SubscriptionPackage implements Comparable {
   ]
 
   static constraints = {
-    subscription(nullable:true, blank:false)
-    pkg(nullable:true, blank:false)
-    finishDate(nullable:true)
+    subscription(nullable:true)
+    pkg         (nullable:true)
+    finishDate  (nullable:true)
 
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true)

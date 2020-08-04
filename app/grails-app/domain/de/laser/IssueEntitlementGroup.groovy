@@ -21,7 +21,7 @@ class IssueEntitlementGroup {
         name        (blank: false, unique: 'sub')
         description (nullable: true, blank: true)
 
-        sub         (blank: false, unique: 'name')
+        sub         (unique: 'name')
 
     }
 

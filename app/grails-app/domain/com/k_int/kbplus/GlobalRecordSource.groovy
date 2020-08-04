@@ -44,7 +44,7 @@ class GlobalRecordSource {
   static constraints = {
      identifier(nullable:true, blank:false)
            name(nullable:true, blank:false, maxSize:2048)
-       haveUpTo(nullable:true, blank:false)
+       haveUpTo(nullable:true)
             uri(nullable:true, blank:false)
         editUri(nullable:true, blank:false)
            type(nullable:true, blank:false)
