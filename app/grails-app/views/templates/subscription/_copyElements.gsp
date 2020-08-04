@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService; de.laser.AuditConfig "%>
-<%@ page import="com.k_int.kbplus.SubscriptionController" %>
+<%@ page import="com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.RefdataValue;" %>
 <laser:serviceInjection />
 
 <semui:form>
@@ -366,9 +366,9 @@
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
                             <g:if test="${source_role.org}">
                                 <div data-oid="${GenericOIDService.getOID(source_role)}" class="la-multi-sources">
-                                    <b><i class="university icon"></i>&nbsp${source_role?.roleType?.getI10n("value")}:</b>
+                                    <b><i class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:</b>
                                     <g:link controller="organisation" action="show" target="_blank" id="${source_role.org.id}">
-                                        ${source_role?.org?.name}
+                                        ${source_role.org.name}
                                     </g:link>
 
                                 <br>
@@ -392,7 +392,7 @@
                 </g:if>
 
                 </td>
-                %{--AKTIONEN:--}%
+               %{--AKTIONEN:--}%
                 <td class="center aligned">
                     <g:each in="${source_visibleOrgRelations}" var="source_role">
                         <g:if test="${source_role.org}">
@@ -411,9 +411,9 @@
                         <g:each in="${target_visibleOrgRelations}" var="target_role">
                             <g:if test="${target_role.org}">
                                 <div data-oid="${GenericOIDService.getOID(target_role)}">
-                                    <b><i class="university icon"></i>&nbsp${target_role?.roleType?.getI10n("value")}:</b>
+                                    <b><i class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:</b>
                                     <g:link controller="organisation" action="show" target="_blank" id="${target_role.org.id}">
-                                        ${target_role?.org?.name}
+                                        ${target_role.org.name}
                                     </g:link>
                                     <g:if test="${isConsortialSubs}">
                                             <div class="right aligned wide column">
@@ -448,6 +448,185 @@
                     </g:each>
                 </td>
             </tr>
+
+            <tr>
+                <td name="subscription.takeSpecificSubscriptionEditors.source">
+                    <div>
+                        <b>
+                            <i class="address card icon"></i>
+                            ${message(code: 'subscription.specificSubscriptionEditors')}:
+                        </b>
+                        <g:each in="${source_visibleOrgRelations}" var="source_role">
+                            <g:if test="${source_role.org}">
+                                <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceSubscription, 'Specific subscription editor') ||
+                                        Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceSubscription, 'Specific subscription editor', contextService.getOrg())}">
+
+                                <%-- public --%>
+                                    <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceSubscription, 'Specific subscription editor')}"
+                                            var="resp">
+
+                                        <div data-oid="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                             class="la-multi-sources">
+                                            <span class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'address.public')}"
+                                                  data-position="top right">
+                                                <i class="address card icon"></i>
+                                            </span>
+                                            <g:link controller="person" action="show"
+                                                    id="${resp.id}">${resp}</g:link>
+                                            (<b><i
+                                                class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:
+                                        </b>
+                                            <g:link controller="organisation" action="show" target="_blank"
+                                                    id="${source_role.org.id}">${source_role.org.name}</g:link>)
+                                        </div>
+                                    </g:each>
+                                <%-- public --%>
+                                <%-- private --%>
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceSubscription, 'Specific subscription editor', contextService.getOrg())}"
+                                            var="resp">
+                                        <div data-oid="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                             class="la-multi-sources">
+                                            <span class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'address.private')}"
+                                                  data-position="top right">
+                                                <i class="address card outline icon"></i>
+                                            </span>
+                                            <g:link controller="person" action="show"
+                                                    id="${resp.id}">${resp}</g:link>
+                                            (<b><i
+                                                class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:
+                                        </b>
+                                            <g:link controller="organisation" action="show" target="_blank"
+                                                    id="${source_role.org.id}">${source_role.org.name}</g:link>)
+                                        </div>
+                                    </g:each><%-- private --%>
+                                </g:if>
+                            </g:if>
+                        </g:each>
+                    </div>
+                </td>
+                <g:if test="${isConsortialSubs}">
+                    <td class="center aligned">
+                    </td>
+                </g:if>
+
+
+            %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <g:each in="${source_visibleOrgRelations}" var="source_role">
+                        <g:if test="${source_role.org}">
+                        <%-- public --%>
+                            <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceSubscription, 'Specific subscription editor')}">
+                                <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceSubscription, 'Specific subscription editor')}"
+                                        var="resp">
+                                    <div class="ui checkbox la-toggle-radio la-replace">
+                                        <g:checkBox name="subscription.takeSpecificSubscriptionEditors"
+                                                    data-action="copy"
+                                                    value="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}" checked="${true}"/>
+                                    </div>
+                                </g:each>
+                            </g:if><%-- public --%>
+                        <%-- private --%>
+                            <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceSubscription, 'Specific subscription editor', contextService.getOrg())}">
+                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceSubscription, 'Specific subscription editor', contextService.getOrg())}"
+                                        var="resp">
+                                    <div class="ui checkbox la-toggle-radio la-replace">
+                                        <g:checkBox name="subscription.takeSpecificSubscriptionEditors"
+                                                    data-action="copy"
+                                                    value="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}" checked="${true}"/>
+                                    </div>
+                                </g:each>
+                            </g:if><%-- private --%>
+                        </g:if>
+                    </g:each>
+                </td>
+
+                <td name="subscription.takeSpecificSubscriptionEditors.target">
+                    <div>
+                        <b>
+                            <i class="address card icon"></i>
+                            ${message(code: 'subscription.specificSubscriptionEditors')}:
+                        </b>
+                        <g:each in="${target_visibleOrgRelations}" var="target_role">
+                            <g:if test="${target_role.org}">
+                                <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, targetSubscription, 'Specific subscription editor', contextService.getOrg()) ||
+                                        Person.getPublicByOrgAndObjectResp(target_role.org, targetSubscription, 'Specific subscription editor')}">
+                                <%-- public --%>
+                                    <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.org, targetSubscription, 'Specific subscription editor')}"
+                                            var="resp">
+
+                                        <div data-oid="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                             class="la-multi-sources">
+                                            <span class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'address.public')}"
+                                                  data-position="top right">
+                                                <i class="address card icon"></i>
+                                            </span>
+                                            <g:link controller="person" action="show"
+                                                    id="${resp.id}">${resp}</g:link>
+                                            (<b><i class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:</b>
+                                            <g:link controller="organisation" action="show" target="_blank"
+                                                    id="${target_role.org.id}">${target_role.org.name}</g:link>)
+                                        </div>
+                                    </g:each>
+                                <%-- public --%>
+                                <%-- private --%>
+
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, targetSubscription, 'Specific subscription editor', contextService.getOrg())}"
+                                            var="resp">
+                                        <div data-oid="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                             class="la-multi-sources">
+                                            <span class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'address.private')}"
+                                                  data-position="top right">
+                                                <i class="address card outline icon"></i>
+                                            </span>
+                                            <g:link controller="person" action="show"
+                                                    id="${resp.id}">${resp}</g:link>
+                                            (<b><i class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:</b>
+                                            <g:link controller="organisation" action="show" target="_blank"
+                                                    id="${target_role.org.id}">${target_role.org.name}</g:link>)
+                                        </div>
+                                    </g:each>
+                                <%-- private --%>
+                                </g:if>
+                            </g:if>
+                        </g:each>
+                    </div>
+                </td>
+                <td>
+                    <g:each in="${target_visibleOrgRelations}" var="target_role">
+                        <g:if test="${target_role.org}">
+
+                        <%-- public --%>
+                            <g:if test="${Person.getPublicByOrgAndObjectResp(target_role.org, sourceSubscription, 'Specific subscription editor')}">
+                                <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.org, sourceSubscription, 'Specific subscription editor')}"
+                                        var="resp">
+                                    <div class="ui checkbox la-toggle-radio la-noChange">
+                                        <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
+                                                    data-action="delete" value="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                    checked="${false}"/>
+                                    </div>
+                                </g:each>
+                            </g:if><%-- public --%>
+                        <%-- private --%>
+                            <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, sourceSubscription, 'Specific subscription editor', contextService.getOrg())}">
+                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, sourceSubscription, 'Specific subscription editor', contextService.getOrg())}"
+                                        var="resp">
+                                    <div class="ui checkbox la-toggle-radio la-noChange">
+                                        <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
+                                                    data-action="delete" value="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                    checked="${false}"/>
+                                    </div>
+                                </g:each>
+                            </g:if><%-- private --%>
+
+                        </g:if>
+                    </g:each>
+                </td>
+            </tr>
+
             <tr>
                 <td name="subscription.takeIdentifier.source">
                     <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br />
@@ -538,7 +717,9 @@
             $takeLicenses: $('input:checkbox[name="subscription.takeLicenses"]'),
             $deleteLicenses: $('input:checkbox[name="subscription.deleteLicenses"]'),
             $takeOrgRelations: $('input:checkbox[name="subscription.takeOrgRelations"]'),
-            $deleteOrgRelations: $('input:checkbox[name="subscription.deleteOrgRelations"]')
+            $deleteOrgRelations: $('input:checkbox[name="subscription.deleteOrgRelations"]'),
+            $takeSpecificSubscriptionEditors: $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
+            $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]')
         },
 
         init: function() {
@@ -615,6 +796,15 @@
             ref.$deleteOrgRelations.change( function(event) {
                 subCopyController.deleteOrgRelations(this);
             }).trigger('change')
+
+            ref.$takeSpecificSubscriptionEditors.change( function(event) {
+                subCopyController.takeSpecificSubscriptionEditors(this);
+            }).trigger('change')
+
+            ref.$deleteSpecificSubscriptionEditors.change( function(event) {
+                subCopyController.deleteSpecificSubscriptionEditors(this);
+            }).trigger('change')
+
         },
 
         takeDates: function(elem) {
@@ -798,6 +988,29 @@
                 $('.table tr td[name="subscription.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
             }
         },
+
+        takeSpecificSubscriptionEditors: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.target"] div div').addClass('willStay');
+            }
+            else {
+                $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
+                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeSpecificSubscriptionEditors') < 1) {
+                    $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.target"] div div').removeClass('willStay');
+                }
+            }
+        },
+
+        deleteSpecificSubscriptionEditors: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+            } else {
+                $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+            }
+        },
+
+
 
         getNumberOfCheckedCheckboxes: function(inputElementName) {
             var checkboxes = document.querySelectorAll('input[name="' + inputElementName + '"]');

@@ -4976,6 +4976,17 @@ class SubscriptionController
             }
         }
 
+        if (params.subscription?.deleteSpecificSubscriptionEditors && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<PersonRole> toDeleteSpecificSubscriptionEditors = params.list('subscription.deleteSpecificSubscriptionEditors').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.deleteSpecificSubscriptionEditors(toDeleteSpecificSubscriptionEditors, newSub, flash)
+            //isTargetSubChanged = true
+        }
+        if (params.subscription?.takeSpecificSubscriptionEditors && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<PersonRole> toCopySpecificSubscriptionEditors = params.list('subscription.takeSpecificSubscriptionEditors').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.copySpecificSubscriptionEditors(toCopySpecificSubscriptionEditors, baseSub, newSub, flash)
+            //isTargetSubChanged = true
+        }
+
         if (params.subscription?.deleteIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toDeleteIdentifiers =  []
             params.list('subscription.deleteIdentifierIds').each{ identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
@@ -5504,6 +5515,10 @@ class SubscriptionController
                     }
 
                 }
+                //
+                if ((params.subscription.copySpecificSubscriptionEditors)) {
+                    subscriptionService.copySpecificSubscriptionEditorOfProvideryAndAgencies(baseSubscription, newSubscriptionInstance)
+                }
 
                 //Copy Package
                 if (params.subscription.copyPackages) {
@@ -5572,6 +5587,36 @@ class SubscriptionController
                                     newIssueEntitlementCoverage.save(flush:true)
                                 }
                             }
+                        }
+                    }
+
+                }
+
+                if (params.subscription.copyIssueEntitlementGroupItem) {
+
+
+                    baseSubscription.ieGroups.each { ieGroup ->
+
+                        IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(
+                                name: ieGroup.name,
+                                description: ieGroup.description,
+                                sub: newSubscriptionInstance
+                        )
+                        if(issueEntitlementGroup.save(flush:true))) {
+
+                                    ieGroup.items.each{  ieGroupItem ->
+                                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(newSubscriptionInstance, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
+                                        if(ie){
+                                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                                    ie: ie,
+                                                    ieGroup: issueEntitlementGroup)
+
+                                            if (!issueEntitlementGroupItem.save(flush: true)) {
+                                                log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                                            }
+                                        }
+
+                                    }
                         }
                     }
 
