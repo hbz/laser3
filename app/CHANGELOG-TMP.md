@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      04.08.2020  hbz-dev     Moe     Feature     Umbau von copyElementsIntoSubscription wegen Umfrage
+
 2032    03.08.2020  hbz-dev     Moe     Feature     Anbieter-Kontakt bei Jahresübertrag fehlerhaft
 
 2742    03.08.2020  rc1.5       Andreas Bug         Einrichtungseinstellungen und Plattform erreichbar, Merkmale können, den Regeln entsprechend, bearbeitet und gelöscht werden
