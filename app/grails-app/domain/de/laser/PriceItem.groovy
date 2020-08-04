@@ -39,12 +39,11 @@ class PriceItem extends AbstractBase {
 
     static constraints = {
         globalUID           (blank: false, unique: true, maxSize: 255)
-        listPrice           (nullable: true, blank: false)
-        listCurrency        (nullable: true, blank: false)
-        localPrice          (nullable: true, blank: false)
-        localCurrency       (nullable: true, blank: false)
+        listPrice           (nullable: true)
+        listCurrency        (nullable: true)
+        localPrice          (nullable: true)
+        localCurrency       (nullable: true)
         priceDate           (nullable: true)
-        issueEntitlement    (blank: false)
         lastUpdated         (nullable: true)
         dateCreated         (nullable: true)
     }

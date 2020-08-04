@@ -94,9 +94,9 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
 
     static constraints = {
         globalUID(blank:false, unique:true, maxSize:255)
-        status(nullable:true, blank:false)
+        status(nullable:true)
         //type(nullable:true, blank:false)
-        medium(nullable:true, blank:false)
+        medium(nullable:true)
         title(nullable:true, blank:false,maxSize:2048)
         normTitle(nullable:true, blank:false,maxSize:2048)
         sortTitle(nullable:true, blank:false,maxSize:2048)

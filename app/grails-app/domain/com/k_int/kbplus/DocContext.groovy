@@ -68,19 +68,18 @@ class DocContext implements ShareableTrait {
   }
 
   static constraints = {
-    doctype(nullable:true, blank:false)
-    license(nullable:true, blank:false)
-    subscription(nullable:true, blank:false)
-    pkg(nullable:true, blank:false)
-    org(nullable: true,blank: false)
-    link(nullable:true, blank:false)
-    domain(nullable:true, blank:false)
-    status(nullable:true, blank:false)
-        globannounce    (blank:false)
-      sharedFrom(nullable:true, blank:true)
-      shareConf(nullable: true,blank: false)
-      targetOrg(nullable: true, blank: false)
-      surveyConfig (nullable: true,blank: false)
+    doctype     (nullable:true)
+    license     (nullable:true)
+    subscription(nullable:true)
+    pkg         (nullable:true)
+    org         (nullable:true)
+    link        (nullable:true)
+    domain      (nullable:true, blank:false)
+    status      (nullable:true)
+      sharedFrom    (nullable: true)
+      shareConf     (nullable: true)
+      targetOrg     (nullable: true)
+      surveyConfig  (nullable: true)
 
       // Nullable is true, because values are already in the database
       lastUpdated (nullable: true)

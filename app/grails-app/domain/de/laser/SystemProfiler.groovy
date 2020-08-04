@@ -29,10 +29,10 @@ class SystemProfiler {
 
     static constraints = {
         uri     (blank:false)
-        params  (nullable:true,  blank:true)
-        context (nullable:true,  blank:false)
-        ms      (nullable:true,  blank:false)
-        archive (nullable:true,  blank:false)
+        params  (nullable:true, blank:true)
+        context (nullable:true)
+        ms      (nullable:true)
+        archive (nullable:true, blank:false)
     }
 
     static String getCurrentArchive() {

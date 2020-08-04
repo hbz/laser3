@@ -46,8 +46,8 @@ class ReaderNumber {
                 return ['use user, people or non-refdata number types only with due date']
             }
         })
-        value(nullable: true, blank: true)
-        semester(nullable: true, blank: false, validator: { RefdataValue val, ReaderNumber obj ->
+        value(nullable: true)
+        semester(nullable: true, validator: { RefdataValue val, ReaderNumber obj ->
             if (obj.dueDate && obj.semester) {
                 return ['no simultaneous due date and semester']
             }
@@ -57,7 +57,6 @@ class ReaderNumber {
                 return ['no simultaneous due date and semester']
             }
         })
-        org(blank: false)
     }
 
     static mapping = {

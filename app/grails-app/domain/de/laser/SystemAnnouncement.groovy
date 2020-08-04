@@ -43,7 +43,6 @@ class SystemAnnouncement {
     }
 
     static constraints = {
-        user        (blank:false)
         title       (blank:false)
         content     (blank:false)
         status      (nullable:true, blank:false)
