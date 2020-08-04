@@ -382,7 +382,7 @@ class PersonController extends AbstractDebugController {
              def prsRole = PersonRole.get(value)
              if(prsRole) {
                  log.debug("deleting PersonRole ${prsRole}")
-                 prsRole.delete(flush:true);
+                 prsRole.delete(flush: true)
              }
         }
     }

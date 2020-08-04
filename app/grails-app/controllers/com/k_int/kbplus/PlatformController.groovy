@@ -390,7 +390,7 @@ class PlatformController extends AbstractDebugController {
         oapl.subPkg = subPkg
         oapl.platform = platform
         oapl.active = true
-        oapl.save()
+        oapl.save(flush:true)
         redirect(url: request.getHeader('referer'))
     }
 
@@ -432,7 +432,7 @@ class PlatformController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        if (! oapl.save()) {
+        if (! oapl.save(flush:true)) {
             flash.error = "Existing active AccessPoint for platform"
         }
 
@@ -446,7 +446,7 @@ class PlatformController extends AbstractDebugController {
         // update active aopl, set active=false
         OrgAccessPointLink aoplInstance = OrgAccessPointLink.get(params.oapl_id)
         aoplInstance.active = false
-        if (! aoplInstance.save()) {
+        if (! aoplInstance.save(flush:true)) {
             log.debug("Error updateing AccessPoint for platform")
             log.debug(aopl.errors.toString())
             // TODO flash

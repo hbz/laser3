@@ -985,7 +985,7 @@ class SurveyController {
                     //surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
                     surveyCostItem.taxKey = tax_key ?: surveyCostItem.taxKey
 
-                    surveyCostItem.save()
+                    surveyCostItem.save(flush:true)
                 }
             }
         }
@@ -1478,7 +1478,7 @@ class SurveyController {
 
         surveyResults.each {
                 it.finishDate = null
-                it.save()
+                it.save(flush:true)
         }
 
         redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
@@ -1513,7 +1513,7 @@ class SurveyController {
 
             Integer countTitleGroups = IssueEntitlementGroup.findAllBySubAndNameIlike(participantSub, 'Phase').size()
 
-            issueEntitlementGroup = new IssueEntitlementGroup(sub: participantSub, name: "Phase ${countTitleGroups+1}").save()
+            issueEntitlementGroup = new IssueEntitlementGroup(sub: participantSub, name: "Phase ${countTitleGroups+1}").save(flush:true)
         }
 
         ies.each { ie ->
@@ -1569,7 +1569,7 @@ class SurveyController {
 
                 Integer countTitleGroups = IssueEntitlementGroup.findAllBySubAndNameIlike(participantSub, 'Phase').size()
 
-                issueEntitlementGroup = new IssueEntitlementGroup(sub: participantSub, name: "Phase ${countTitleGroups+1}").save()
+                issueEntitlementGroup = new IssueEntitlementGroup(sub: participantSub, name: "Phase ${countTitleGroups+1}").save(flush:true)
             }
 
             ies.each { ie ->
@@ -2789,7 +2789,7 @@ class SurveyController {
                             comment: params.copySurvey.copyComment ? baseSurveyInfo.comment : null,
                             isMandatory: params.copySurvey.copyMandatory ? baseSurveyInfo.isMandatory : false,
                             owner: contextService.getOrg()
-                    ).save()
+                    ).save(flush:true)
 
                     SurveyConfig newSurveyConfig = new SurveyConfig(
                             type: baseSurveyConfig.type,
@@ -2800,7 +2800,7 @@ class SurveyController {
                             url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
                             url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
                             configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
-                    ).save()
+                    ).save(flush:true)
 
                     copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
 
@@ -2819,7 +2819,7 @@ class SurveyController {
                         comment: params.copySurvey.copyComment ? baseSurveyInfo.comment : null,
                         isMandatory: params.copySurvey.copyMandatory ? baseSurveyInfo.isMandatory : false,
                         owner: contextService.getOrg()
-                ).save()
+                ).save(flush:true)
 
                 SurveyConfig newSurveyConfig = new SurveyConfig(
                         type: baseSurveyConfig.type,
@@ -2829,7 +2829,7 @@ class SurveyController {
                         url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
                         url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
                         configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
-                ).save()
+                ).save(flush:true)
 
                 copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
 
@@ -2954,12 +2954,12 @@ class SurveyController {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
-                        newOrgRole.save()
+                        newOrgRole.save(flush:true)
                     }
                 }
                 //link to previous subscription
                 Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-                if (!prevLink.save()) {
+                if (!prevLink.save(flush:true)) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
                 result.newSub = newSub
@@ -4423,7 +4423,7 @@ class SurveyController {
                             isMultiYear: multiYear ?: false
                     )
 
-                    if (!memberSub.save()) {
+                    if (!memberSub.save(flush:true)) {
                         memberSub.errors.each { e ->
                             log.debug("Problem creating new sub: ${e}")
                         }
@@ -4432,25 +4432,25 @@ class SurveyController {
                     if (memberSub) {
                         if(accessService.checkPerm("ORG_CONSORTIUM")) {
 
-                            new OrgRole(org: org, sub: memberSub, roleType: role_sub).save()
-                            new OrgRole(org: institution, sub: memberSub, roleType: role_sub_cons).save()
+                            new OrgRole(org: org, sub: memberSub, roleType: role_sub).save(flush:true)
+                            new OrgRole(org: institution, sub: memberSub, roleType: role_sub_cons).save(flush:true)
 
                             if(params.transferProviderAgency) {
                                 newParentSub.getProviders().each { provider ->
-                                    new OrgRole(org: provider, sub: memberSub, roleType: role_provider).save()
+                                    new OrgRole(org: provider, sub: memberSub, roleType: role_provider).save(flush:true)
                                 }
                                 newParentSub.getAgencies().each { provider ->
-                                    new OrgRole(org: provider, sub: memberSub, roleType: role_agency).save()
+                                    new OrgRole(org: provider, sub: memberSub, roleType: role_agency).save(flush:true)
                                 }
                             }else if(params.providersSelection) {
                                 List orgIds = params.list("providersSelection")
                                 orgIds.each { orgID ->
-                                    new OrgRole(org: Org.get(orgID), sub: memberSub, roleType: role_provider).save()
+                                    new OrgRole(org: Org.get(orgID), sub: memberSub, roleType: role_provider).save(flush:true)
                                 }
                             }else if(params.agenciesSelection) {
                                 List orgIds = params.list("agenciesSelection")
                                 orgIds.each { orgID ->
-                                    new OrgRole(org: Org.get(orgID), sub: memberSub, roleType: role_agency).save()
+                                    new OrgRole(org: Org.get(orgID), sub: memberSub, roleType: role_agency).save(flush:true)
                                 }
                             }
 
@@ -4489,7 +4489,7 @@ class SurveyController {
                         }
 
                         if(oldSub){
-                            new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: GenericOIDService.getOID(memberSub), destination: GenericOIDService.getOID(oldSub), owner: contextService.getOrg()).save()
+                            new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: GenericOIDService.getOID(memberSub), destination: GenericOIDService.getOID(oldSub), owner: contextService.getOrg()).save(flush:true)
                         }
 
                         if(org.getCustomerType() == 'ORG_INST') {
@@ -5086,7 +5086,7 @@ class SurveyController {
         if (value == '' && field) {
             // Allow user to set a rel to null be calling set rel ''
             property[field] = null
-            property.save(flush: true);
+            property.save(flush: true)
         } else {
 
                 if (property && value && field){
@@ -5094,7 +5094,7 @@ class SurveyController {
                 if(field == "refValue") {
                     def binding_properties = ["${field}": value]
                     bindData(property, binding_properties)
-                    //property.save()
+                    //property.save(flush:true)
                     if(!property.save(failOnError: true, flush: true))
                     {
                         println(property.error)
@@ -5112,7 +5112,7 @@ class SurveyController {
                             // delete existing date
                             property."${field}" = null
                         }
-                        property.save(failOnError: true, flush: true);
+                        property.save(failOnError: true, flush: true)
                     }
                     catch (Exception e) {
                         property."${field}" = backup
@@ -5200,7 +5200,7 @@ class SurveyController {
                                 user: dctx.owner.user,
                                 migrated: dctx.owner.migrated,
                                 owner: dctx.owner.owner
-                        ).save()
+                        ).save(flush:true)
 
                         String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
@@ -5214,7 +5214,7 @@ class SurveyController {
                                 domain: dctx.domain,
                                 status: dctx.status,
                                 doctype: dctx.doctype
-                        ).save()
+                        ).save(flush:true)
                     }
                 }
                 //Copy Announcements
@@ -5233,7 +5233,7 @@ class SurveyController {
                                 mimeType: dctx.owner.mimeType,
                                 user: dctx.owner.user,
                                 migrated: dctx.owner.migrated
-                        ).save()
+                        ).save(flush:true)
 
                         DocContext ndc = new DocContext(
                                 owner: clonedContents,
@@ -5241,7 +5241,7 @@ class SurveyController {
                                 domain: dctx.domain,
                                 status: dctx.status,
                                 doctype: dctx.doctype
-                        ).save()
+                        ).save(flush:true)
                     }
                 }
             }
@@ -5254,7 +5254,7 @@ class SurveyController {
                     InvokerHelper.setProperties(newTask, task.properties)
                     newTask.systemCreateDate = new Date()
                     newTask.surveyConfig = newSurveyConfig
-                    newTask.save()
+                    newTask.save(flush:true)
                 }
 
             }
@@ -5263,7 +5263,7 @@ class SurveyController {
         if (params.copySurvey.copyParticipants) {
             oldSurveyConfig.orgs.each { surveyOrg ->
 
-                SurveyOrg newSurveyOrg = new SurveyOrg(surveyConfig: newSurveyConfig, org: surveyOrg.org).save()
+                SurveyOrg newSurveyOrg = new SurveyOrg(surveyConfig: newSurveyConfig, org: surveyOrg.org).save(flush:true)
             }
         }
 
@@ -5273,7 +5273,7 @@ class SurveyController {
 
                 SurveyConfigProperties configProperty = new SurveyConfigProperties(
                         surveyProperty: surveyConfigProperty.surveyProperty,
-                        surveyConfig: newSurveyConfig).save()
+                        surveyConfig: newSurveyConfig).save(flush:true)
             }
         }
     }

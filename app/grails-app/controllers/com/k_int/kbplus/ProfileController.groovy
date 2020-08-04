@@ -191,7 +191,7 @@ class ProfileController {
       }
     }
 
-        user.save()
+        user.save(flush: true)
 
         if (params.defaultDash) {
             Org org = genericOIDService.resolveOID(params.defaultDash)
@@ -262,7 +262,7 @@ class ProfileController {
     changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, RDStore.YN_NO), params.isSurveysNotMandatoryEndDate?:"N",      'profile.updateProfile.updated.surveysEndDate')
     changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE, RDStore.YN_NO),     params.isSurveysMandatoryEndDate?:"N",      'profile.updateProfile.updated.surveysMandatoryEndDate')
 
-    user.save();
+    user.save(flush: true)
 
     redirect(action: "index")
   }
@@ -303,7 +303,7 @@ class ProfileController {
 
         changeValue(user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO),    params.isNotificationForSurveysParticipationFinish?:"N",     'profile.updateProfile.updated.surveysParticipationFinish')
 
-        user.save();
+        user.save(flush: true)
 
         redirect(action: "index")
     }
@@ -361,7 +361,7 @@ class ProfileController {
                 flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error')
             }
         }
-        user.save();
+        user.save(flush: true)
 
         redirect(action: "index")
     }
@@ -377,7 +377,7 @@ class ProfileController {
             } else {
                 user.password = params.passwordNew
 
-                if (user.save()) {
+                if (user.save(flush: true)) {
                     flash.message += message(code:'profile.password.update.success')
                 }
             }

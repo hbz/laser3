@@ -26,7 +26,7 @@ class ReaderNumberController extends AbstractDebugController {
 		params.org = Org.get(params.orgid)
 		params.referenceGroup = params.referenceGroup.isLong() ? RefdataValue.findById(Long.parseLong(params.referenceGroup)).getI10n('value') : params.referenceGroup
 		ReaderNumber numbersInstance = new ReaderNumber(params)
-		if (! numbersInstance.save()) {
+		if (! numbersInstance.save(flush:true)) {
 			flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')])
 			log.error(numbersInstance.errors.toString())
 		}
@@ -45,7 +45,7 @@ class ReaderNumberController extends AbstractDebugController {
 		if(params.dueDate)
 			params.dueDate = sdf.parse(params.dueDate)
 		numbersInstance.properties = params
-		if (! numbersInstance.save()) {
+		if (! numbersInstance.save(flush:true)) {
 			flash.error = message(code:'default.not.updated.message', args: [message(code: 'readerNumber.label'), numbersInstance.id])
 			log.error(numbersInstance.errors.toString())
 		}

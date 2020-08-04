@@ -601,7 +601,7 @@ class YodaController {
             }
             if(!obj.originEditUrl) {
                 obj.originEditUrl = new URL(originEditUrl.identifier.value)
-                obj.save()
+                obj.save(flush:true)
             }
         }
         redirect controller: 'home'
@@ -707,7 +707,7 @@ class YodaController {
                 name:params.name,
                 host:params.uri)
 
-        result.newSource.save()*/
+        result.newSource.save(flush:true)*/
 
         redirect action:'manageGlobalSources'
     }
@@ -735,7 +735,7 @@ class YodaController {
                 principal:params.principal,
                 credentials:params.credentials,
                 rectype:params.int('rectype'))
-        result.newSource.save()
+        result.newSource.save(flush:true)
 
         redirect action:'manageGlobalSources'
     }
@@ -817,10 +817,10 @@ class YodaController {
 
 				if (sub._getCalculatedType() == Subscription.TYPE_LOCAL) {
 					role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
-					role.save()
+					role.save(flush:true)
 
 					sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
-					sub.save()
+					sub.save(flush:true)
 				}
             }
 
@@ -837,7 +837,7 @@ class YodaController {
                             sub: sub,
                             roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
                     )
-                    newRole.save()
+                    newRole.save(flush:true)
                 }
             }
 
@@ -1050,7 +1050,7 @@ class YodaController {
             List<String> errorMsg = []
             entries.each { entry ->
                 SubscriptionPackage sp = new SubscriptionPackage(entry)
-                if(!sp.save())
+                if(!sp.save(flush:true))
                     errorMsg << sp.errors
             }
             if(errorMsg)
@@ -1102,7 +1102,7 @@ class YodaController {
             else {
                 aps.editUrl = aps.baseUrl
             }
-            aps.save()
+            aps.save(flush:true)
         }
         globalRecordSources.each { GlobalRecordSource grs ->
             if(grs.uri.contains('phaeton.hbz-nrw')) {
@@ -1111,7 +1111,7 @@ class YodaController {
             else {
                 grs.editUri = grs.uri
             }
-            grs.save()
+            grs.save(flush:true)
         }
         flash.message = "${apiSources.size()} ApiSources und ${globalRecordSources.size()} GlobalRecordSources angepasst!"
         redirect controller: 'home', action: 'index'

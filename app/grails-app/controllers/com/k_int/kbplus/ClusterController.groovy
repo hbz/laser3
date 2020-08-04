@@ -166,7 +166,7 @@ class ClusterController extends AbstractDebugController {
         //def orgRole = AjaxController.resolveOID(params.orgRole[0])
         if(orgRole) {
             log.debug("deleting OrgRole ${orgRole}")
-            orgRole.delete(flush:true);
+            orgRole.delete(flush: true)
         }
         ajaxList()
     }

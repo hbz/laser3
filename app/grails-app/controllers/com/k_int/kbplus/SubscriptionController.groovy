@@ -371,7 +371,7 @@ class SubscriptionController
         IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
         if(base) {
             IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
-            if(ieCoverage.save())
+            if(ieCoverage.save(flush:true))
                 redirect action: 'index', id: base.subscription.id, params: params
             else log.error("Error on creation new coverage statement: ${ieCoverage.errors}")
         }
@@ -1299,7 +1299,7 @@ class SubscriptionController
                     name: params.name,
                     description: params.description ?: null,
                     sub: result.subscriptionInstance
-            ).save()
+            ).save(flush:true)
         }else{
              flash.error = g.message(code: "issueEntitlementGroup.create.fail")
         }
@@ -2603,7 +2603,7 @@ class SubscriptionController
                             memberSub[attr.referenceField] = result.subscriptionInstance[attr.referenceField]
                         }
 
-                        if (!memberSub.save()) {
+                        if (!memberSub.save(flush:true)) {
                             memberSub.errors.each { e ->
                                 log.debug("Problem creating new sub: ${e}")
                             }
@@ -2614,16 +2614,16 @@ class SubscriptionController
                         if (memberSub) {
                             if(accessService.checkPerm("ORG_CONSORTIUM")) {
                                 if(result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
+                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save(flush:true)
                                 }
                                 else {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
+                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save(flush:true)
                                 }
-                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
+                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save(flush:true)
                             }
                             else {
-                                new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
-                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_coll).save()
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save(flush:true)
+                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_coll).save(flush:true)
                             }
 
                             synShareTargetList.add(memberSub)
@@ -3031,7 +3031,7 @@ class SubscriptionController
             if(params.process == "finalise") {
                 SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(result.subscriptionInstance,Package.get(params.packageId))
                 sp.finishDate = new Date()
-                if(!sp.save()) {
+                if(!sp.save(flush:true)) {
                     flash.error = sp.errors
                 }
                 else flash.message = message(code:'subscription.details.renewEntitlements.submitSuccess',args:[sp.pkg.name])
@@ -3246,7 +3246,7 @@ class SubscriptionController
     def launchRenewalsProcess() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
 
-//        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
+//        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true)
 //
 //        log.debug("Clear basket....");
 //        shopping_basket.items?.clear();
@@ -4028,24 +4028,24 @@ class SubscriptionController
         )
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
 
-        if (new_subscription.save()) {
+        if (new_subscription.save(flush:true)) {
             // assert an org-role
             OrgRole org_link = new OrgRole(org: result.institution,
                     sub: new_subscription,
                     roleType: RDStore.OR_SUBSCRIBER
-            ).save();
+            ).save(flush: true)
 
             Links prevLink
             if(old_subOID) {
                 prevLink = new Links(source: GenericOIDService.getOID(new_subscription), destination: GenericOIDService.getOID(oldSubscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg)
-                prevLink.save()
+                prevLink.save(flush:true)
             }
             else { log.error("Problem linking new subscription, ${prevLink.errors}") }
         } else {
             log.error("Problem saving new subscription, ${new_subscription.errors}");
         }
 
-        new_subscription.save()
+        new_subscription.save(flush:true)
 
         if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
         redirect controller: 'subscription',
@@ -4115,7 +4115,7 @@ class SubscriptionController
                         //ERMS-892: insert preceding relation in new data model
                         if (subMember) {
                             Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: RDStore.LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
-                            if (!prevLink.save()) {
+                            if (!prevLink.save(flush:true)) {
                                 log.error("Subscription linking failed, please check: ${prevLink.errors}")
                             }
                         }
@@ -4126,7 +4126,7 @@ class SubscriptionController
                                 SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.instanceOf = null
-                                copiedProp.save()
+                                copiedProp.save(flush:true)
                                 //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
                         }
@@ -4158,7 +4158,7 @@ class SubscriptionController
                                 InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                 newSubscriptionPackage.subscription = newSubscription
 
-                                if(newSubscriptionPackage.save()){
+                                if(newSubscriptionPackage.save(flush:true)){
                                     pkgOapls.each{ oapl ->
                                         def oaplProperties = oapl.properties
                                         oaplProperties.globalUID = null
@@ -4387,7 +4387,7 @@ class SubscriptionController
                                     InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                     newSubscriptionPackage.subscription = newSub
 
-                                    if(newSubscriptionPackage.save()){
+                                    if(newSubscriptionPackage.save(flush:true)){
                                         pkgOapls.each{ oapl ->
                                             def oaplProperties = oapl.properties
                                             oaplProperties.globalUID = null
@@ -4451,7 +4451,7 @@ class SubscriptionController
                                     SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.instanceOf = null
-                                    copiedProp.save()
+                                    copiedProp.save(flush:true)
                                     //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                                 }
                             }
@@ -4461,7 +4461,7 @@ class SubscriptionController
                                 baseSub.propertySet.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
                                     SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
-                                    copiedProp.save()
+                                    copiedProp.save(flush:true)
                                     //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                                 }
                             }
@@ -4565,7 +4565,7 @@ class SubscriptionController
                     isPublicForApi: sub_isPublicForApi*/
             )
 
-            if (!newSub.save()) {
+            if (!newSub.save(flush:true)) {
                 log.error("Problem saving subscription ${newSub.errors}");
                 return newSub
             } else {
@@ -4589,12 +4589,12 @@ class SubscriptionController
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
-                        newOrgRole.save()
+                        newOrgRole.save(flush:true)
                     }
                 }
                 //link to previous subscription
                 Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-                if (!prevLink.save()) {
+                if (!prevLink.save(flush:true)) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
                 result.newSub = newSub
@@ -5403,7 +5403,7 @@ class SubscriptionController
             }
 
 
-            if (!newSubscriptionInstance.save()) {
+            if (!newSubscriptionInstance.save(flush:true)) {
                 log.error("Problem saving subscription ${newSubscriptionInstance.errors}");
                 return newSubscriptionInstance
             } else {
@@ -5435,7 +5435,7 @@ class SubscriptionController
                                     user: dctx.owner.user,
                                     migrated: dctx.owner.migrated,
                                     owner: dctx.owner.owner
-                            ).save()
+                            ).save(flush:true)
 
                             String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
@@ -5449,7 +5449,7 @@ class SubscriptionController
                                     domain: dctx.domain,
                                     status: dctx.status,
                                     doctype: dctx.doctype
-                            ).save()
+                            ).save(flush:true)
                         }
                     }
                     //Copy Announcements
@@ -5468,7 +5468,7 @@ class SubscriptionController
                                     mimeType: dctx.owner.mimeType,
                                     user: dctx.owner.user,
                                     migrated: dctx.owner.migrated
-                            ).save()
+                            ).save(flush:true)
 
                             DocContext ndc = new DocContext(
                                     owner: clonedContents,
@@ -5476,7 +5476,7 @@ class SubscriptionController
                                     domain: dctx.domain,
                                     status: dctx.status,
                                     doctype: dctx.doctype
-                            ).save()
+                            ).save(flush:true)
                         }
                     }
                 }
@@ -5489,7 +5489,7 @@ class SubscriptionController
                         InvokerHelper.setProperties(newTask, task.properties)
                         newTask.systemCreateDate = new Date()
                         newTask.subscription = newSubscriptionInstance
-                        newTask.save()
+                        newTask.save(flush:true)
                     }
 
                 }
@@ -5499,7 +5499,7 @@ class SubscriptionController
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSubscriptionInstance
-                        newOrgRole.save()
+                        newOrgRole.save(flush:true)
 
                     }
 
@@ -5516,14 +5516,14 @@ class SubscriptionController
                         InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                         newSubscriptionPackage.subscription = newSubscriptionInstance
 
-                        if(newSubscriptionPackage.save()){
+                        if(newSubscriptionPackage.save(flush:true)){
                             pkgOapls.each{ oapl ->
                                 def oaplProperties = oapl.properties
                                 oaplProperties.globalUID = null
                                 OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                 InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                 newOrgAccessPointLink.subPkg = newSubscriptionPackage
-                                newOrgAccessPointLink.save()
+                                newOrgAccessPointLink.save(flush:true)
                             }
                             if(params.subscription.copyPackageSettings) {
                                 pcc.each { PendingChangeConfiguration config ->
@@ -5562,14 +5562,14 @@ class SubscriptionController
                             newIssueEntitlement.ieGroups = null
                             newIssueEntitlement.coverages = null
 
-                            if(newIssueEntitlement.save()){
+                            if(newIssueEntitlement.save(flush:true)){
                                 ie.properties.coverages.each{ coverage ->
 
                                     def coverageProperties = coverage.properties
                                     IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
                                     InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                                     newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
-                                    newIssueEntitlementCoverage.save()
+                                    newIssueEntitlementCoverage.save(flush:true)
                                 }
                             }
                         }
@@ -5583,7 +5583,7 @@ class SubscriptionController
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.instanceOf = null
-                        copiedProp.save()
+                        copiedProp.save(flush:true)
                         //newSubscriptionInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                     }
                 }
@@ -5593,7 +5593,7 @@ class SubscriptionController
                     baseSubscription.propertySet.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
-                        copiedProp.save()
+                        copiedProp.save(flush:true)
                         //newSubscriptionInstance.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                     }
                 }
@@ -5637,7 +5637,7 @@ class SubscriptionController
                 Org agency = entry.agency ? genericOIDService.resolveOID(entry.agency) : null
                 if(sub.instanceOf && member)
                     sub.isSlaved = RDStore.YN_YES
-                if(sub.save()) {
+                if(sub.save(flush:true)) {
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
                     if(accessService.checkPerm("ORG_CONSORTIUM")) {
@@ -5651,27 +5651,27 @@ class SubscriptionController
                         subscriptionService.setOrgLicRole(sub,license,false)
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
-                    if(!parentRole.save()) {
+                    if(!parentRole.save(flush:true)) {
                         withErrors = true
                         flash.error += parentRole.errors
                     }
                     if(memberRoleType && member) {
                         OrgRole memberRole = new OrgRole(roleType: memberRoleType, sub: sub, org: member)
-                        if(!memberRole.save()) {
+                        if(!memberRole.save(flush:true)) {
                             withErrors = true
                             flash.error += memberRole.errors
                         }
                     }
                     if(provider) {
                         OrgRole providerRole = new OrgRole(roleType: RDStore.OR_PROVIDER, sub: sub, org: provider)
-                        if(!providerRole.save()) {
+                        if(!providerRole.save(flush:true)) {
                             withErrors = true
                             flash.error += providerRole.errors
                         }
                     }
                     if(agency) {
                         OrgRole agencyRole = new OrgRole(roleType: RDStore.OR_AGENCY, sub: sub, org: agency)
-                        if(!agencyRole.save()) {
+                        if(!agencyRole.save(flush:true)) {
                             withErrors = true
                             flash.error += agencyRole.errors
                         }
@@ -5700,9 +5700,9 @@ class SubscriptionController
                     }
                     if(entry.notes) {
                         Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: message(code:'myinst.subscriptionImport.notes.title',args:[sdf.format(new Date())]), type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: contextOrg, user: contextService.user)
-                        if(docContent.save()) {
+                        if(docContent.save(flush:true)) {
                             DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE))
-                            dc.save()
+                            dc.save(flush:true)
                         }
                     }
                 }
@@ -5752,7 +5752,7 @@ class SubscriptionController
         }
         if(note)
             prop.note = note
-        prop.save()
+        prop.save(flush:true)
     }
 
     private Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
@@ -6112,7 +6112,7 @@ class SubscriptionController
         if (value == '' && field) {
             // Allow user to set a rel to null be calling set rel ''
             property[field] = null
-            property.save(flush: true);
+            property.save(flush: true)
         } else {
 
             if (property && value && field){
@@ -6120,7 +6120,7 @@ class SubscriptionController
                 if(field == "refValue") {
                     def binding_properties = ["${field}": value]
                     bindData(property, binding_properties)
-                    //property.save()
+                    //property.save(flush:true)
                     if(!property.save(failOnError: true, flush: true))
                     {
                         println(property.error)
@@ -6138,7 +6138,7 @@ class SubscriptionController
                             // delete existing date
                             property."${field}" = null
                         }
-                        property.save(failOnError: true, flush: true);
+                        property.save(failOnError: true, flush: true)
                     }
                     catch (Exception e) {
                         property."${field}" = backup

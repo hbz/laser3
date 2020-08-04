@@ -212,7 +212,7 @@ class TitleController extends AbstractDebugController {
                 }
             }
           if (changed)
-             tipp_to_bulk_edit.save();
+             tipp_to_bulk_edit.save(flush: true)
         }
       }
     }
