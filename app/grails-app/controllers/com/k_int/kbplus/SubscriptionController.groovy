@@ -5602,7 +5602,7 @@ class SubscriptionController
                                 description: ieGroup.description,
                                 sub: newSubscriptionInstance
                         )
-                        if(issueEntitlementGroup.save(flush:true))) {
+                        if(issueEntitlementGroup.save(flush:true)) {
 
                                     ieGroup.items.each{  ieGroupItem ->
                                         IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(newSubscriptionInstance, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
