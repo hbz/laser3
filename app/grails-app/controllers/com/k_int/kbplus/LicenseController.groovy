@@ -706,11 +706,11 @@ class LicenseController
                 base_query, query_params, [max:result.max, offset:result.offset]
         )
 
-    def propertyNameHql = "select pd.name from LicenseProperty as licP, PropertyDefinition as pd where licP.id= ? and licP.type = pd"
+    String propertyNameHql = "select pd.name from LicenseProperty as licP, PropertyDefinition as pd where licP.id = :lpid and licP.type = pd"
     
     result.historyLines?.each{
       if(it.className == query_params.prop ){
-        def propertyName = LicenseProperty.executeQuery(propertyNameHql,[it.persistedObjectId.toLong()])[0]
+        def propertyName = LicenseProperty.executeQuery(propertyNameHql, [lpid: it.persistedObjectId.toLong()])[0]
         it.propertyName = propertyName
       }
     }

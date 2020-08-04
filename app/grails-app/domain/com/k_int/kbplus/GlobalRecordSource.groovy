@@ -71,21 +71,21 @@ class GlobalRecordSource {
 
   @Transient
   def getNumberLocalPackages() {
-    GlobalRecordSource.executeQuery("select count(*) from GlobalRecordTracker grt where grt.owner.source = ?",[this]);
+    GlobalRecordSource.executeQuery("select count(*) from GlobalRecordTracker grt where grt.owner.source = :source", [source: this])
   }
 
   @Transient
   static void removeSource(source_id) {
-    def rel_info = GlobalRecordSource.executeQuery("select gri from GlobalRecordInfo as gri where gri.source.id = ?",[source_id])
+    def rel_info = GlobalRecordSource.executeQuery("select gri from GlobalRecordInfo as gri where gri.source.id = :sid", [sid: source_id])
 
     if(rel_info.size() > 0){
       rel_info.each { gri ->
-        GlobalRecordSource.executeUpdate("delete GlobalRecordTracker grt where grt.owner = ?",[gri])
+        GlobalRecordSource.executeUpdate("delete GlobalRecordTracker grt where grt.owner = :owner", [owner: gri])
       }
     }
 
-    GlobalRecordSource.executeUpdate("delete GlobalRecordInfo gri where gri.source.id = ?",[source_id])
-    GlobalRecordSource.executeUpdate("delete GlobalRecordSource grs where grs.id = ?",[source_id])
+    GlobalRecordSource.executeUpdate("delete GlobalRecordInfo gri where gri.source.id = :sid", [sid: source_id])
+    GlobalRecordSource.executeUpdate("delete GlobalRecordSource grs where grs.id = :id", [id: source_id])
   }
   
 }

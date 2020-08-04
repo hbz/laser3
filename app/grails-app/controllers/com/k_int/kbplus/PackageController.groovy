@@ -257,10 +257,10 @@ class PackageController extends AbstractDebugController {
                 listA = createCompareList(params.pkgA, params.dateA, params, result)
                 listB = createCompareList(params.pkgB, params.dateB, params, result)
                 if (!params.countA) {
-                    String countHQL = "select count(elements(pkg.tipps)) from Package pkg where pkg.id = ?"
-                    params.countA = Package.executeQuery(countHQL, [result.pkgInsts.get(0).id])
+                    String countHQL = "select count(elements(pkg.tipps)) from Package pkg where pkg.id = :pid"
+                    params.countA = Package.executeQuery(countHQL, [pid: result.pkgInsts.get(0).id])
                     log.debug("countA is ${params.countA}")
-                    params.countB = Package.executeQuery(countHQL, [result.pkgInsts.get(1).id])
+                    params.countB = Package.executeQuery(countHQL, [pid: result.pkgInsts.get(1).id])
                     log.debug("countB is ${params.countB}")
                 }
             } catch (IllegalArgumentException e) {
@@ -463,7 +463,7 @@ class PackageController extends AbstractDebugController {
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.base_qry, query.qry_params, limits)
         //result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params).size()
         result.unfiltered_num_tipp_rows = TitleInstancePackagePlatform.executeQuery(
-                "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg = ?", [packageInstance]).size()
+                "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg", [pkg: packageInstance]).size()
 
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
 

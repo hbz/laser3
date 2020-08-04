@@ -2493,7 +2493,7 @@ class SubscriptionController
         result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.members_disabled = []
         result.members.each { it ->
-            if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?", [result.subscriptionInstance, it.id])) {
+            if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = :io and sor.org.id = :orgId", [io: result.subscriptionInstance, orgId: it.id])) {
                 result.members_disabled << it.id
             }
         }
