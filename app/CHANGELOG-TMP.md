@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2743    04.08.2020  rc1.5       Andreas Feature     verschiedene kleinere Ausbesserungen für Merkmale in Objekte verwalten
+
 2742    03.08.2020  rc1.5       Andreas Bug         Einrichtungseinstellungen und Plattform erreichbar, Merkmale können, den Regeln entsprechend, bearbeitet und gelöscht werden
 
 2741    03.08.2020  rc1.5       Andreas Bug         Buttons bei der Zugangskonfiguration getauscht
