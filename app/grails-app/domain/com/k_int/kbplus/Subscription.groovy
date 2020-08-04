@@ -4,8 +4,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.IssueEntitlementGroup
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -490,7 +490,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
     }
 
-    Subscription getCalculatedPrevious() {
+    Subscription _getCalculatedPrevious() {
         Links match = Links.findWhere(
                 source: GenericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
@@ -498,7 +498,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         return match ? genericOIDService.resolveOID(match.destination) : null
     }
 
-    Subscription getCalculatedSuccessor() {
+    Subscription _getCalculatedSuccessor() {
         Links match = Links.findWhere(
                 destination: GenericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
