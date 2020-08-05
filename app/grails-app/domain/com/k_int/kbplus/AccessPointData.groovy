@@ -56,6 +56,10 @@ class AccessPointData extends AbstractBase {
     def beforeUpdate() {
         super.beforeUpdateHandler()
     }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
 
     String getIPString(String format) {
         if(datatype in ['ipv4', 'ipv6']) {

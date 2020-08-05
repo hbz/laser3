@@ -201,6 +201,10 @@ class CostItem extends AbstractBase
     def beforeUpdate() {
         super.beforeUpdateHandler()
     }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
 
     @Override
     // currently only used for API

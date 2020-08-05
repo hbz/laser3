@@ -168,6 +168,10 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     def beforeUpdate() {
         super.beforeUpdateHandler()
     }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
 
   void afterDelete() {
     deletionService.deleteDocumentFromIndex(this.globalUID)

@@ -52,7 +52,7 @@ class SubscriptionService {
         DebugUtil du = new DebugUtil()
         du.setBenchmark('init data fetch')
         du.setBenchmark('consortia')
-        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [contextOrg])
+        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = :fromOrg", [fromOrg: contextOrg])
 
         def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
         du.setBenchmark('all consortia')

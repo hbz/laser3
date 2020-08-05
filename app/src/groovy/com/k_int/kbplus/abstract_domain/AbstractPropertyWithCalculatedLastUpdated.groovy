@@ -47,29 +47,50 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
-    def afterInsertHandler() {
+    protected def beforeInsertHandler() {
+        static_logger.debug("beforeInsertHandler")
+        //println("beforeInsertHandler")
+    }
+
+    protected def afterInsertHandler() {
         static_logger.debug("afterInsertHandler")
         //println("afterInsertHandler")
         cascadingUpdateService.update(this, dateCreated)
     }
 
-    def afterUpdateHandler() {
+    protected def beforeUpdateHandler() {
+        static_logger.debug("beforeUpdateHandler")
+        //println("beforeUpdateHandler")
+    }
+
+    protected def afterUpdateHandler() {
         static_logger.debug("afterUpdateHandler")
         //println("afterUpdateHandler")
         cascadingUpdateService.update(this, lastUpdated)
     }
 
-    def afterDeleteHandler() {
+    protected def beforeDeleteHandler() {
+        static_logger.debug("beforeDeleteHandler")
+        //println("beforeDeleteHandler")
+    }
+
+    protected def afterDeleteHandler() {
         static_logger.debug("afterDeleteHandler")
         //println("afterDeleteHandler")
         cascadingUpdateService.update(this, new Date())
     }
 
-    abstract def afterInsert() /* { afterInsertHandler() } */
+    abstract def beforeInsert()     /* { beforeInsertHandler() } */
 
-    abstract def afterUpdate() /* { afterUpdateHandler() } */
+    abstract def afterInsert()      /* { afterInsertHandler() } */
 
-    abstract def afterDelete() /* { afterDeleteHandler() } */
+    abstract def beforeUpdate()     /* { beforeUpdateHandler() } */
+
+    abstract def afterUpdate()      /* { afterUpdateHandler() } */
+
+    abstract def beforeDelete()     /* { beforeDeleteHandler() } */
+
+    abstract def afterDelete()      /* { afterDeleteHandler() } */
 
     Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
