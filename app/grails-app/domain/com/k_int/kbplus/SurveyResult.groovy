@@ -78,22 +78,22 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     }
 
     boolean isResultProcessed() {
-        if(type?.type == Integer.toString()) {
+        if (type.type == Integer.toString()) {
             return intValue ? true : false
         }
-        else if (type?.type == String.toString()) {
+        else if (type.type == String.toString()) {
             return stringValue ? true : false
         }
-        else if (type?.type ==  BigDecimal.toString()) {
+        else if (type.type ==  BigDecimal.toString()) {
             return decValue ? true : false
         }
-        else if (type?.type == Date.toString()) {
+        else if (type.type == Date.toString()) {
             return dateValue ? true : false
         }
-        else if (type?.type == URL.toString()) {
+        else if (type.type == URL.toString()) {
             return urlValue ? true : false
         }
-        else if (type?.type == RefdataValue.toString()) {
+        else if (type.type == RefdataValue.toString()) {
             return refValue ? true : false
         }
     }
@@ -103,22 +103,22 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     }
 
     def getResult() {
-        if(type?.type == Integer.toString()) {
+        if (type.type == Integer.toString()) {
             return intValue.toString()
         }
-        else if (type?.type == String.toString()) {
+        else if (type.type == String.toString()) {
             return stringValue
         }
-        else if (type?.type ==  BigDecimal.toString()) {
+        else if (type.type ==  BigDecimal.toString()) {
             return decValue.toString()
         }
-        else if (type?.type == Date.toString()) {
+        else if (type.type == Date.toString()) {
             return dateValue.getDateString()
         }
-        else if (type?.type == URL.toString()) {
+        else if (type.type == URL.toString()) {
             return urlValue.toString()
         }
-        else if (type?.type == RefdataValue.toString()) {
+        else if (type.type == RefdataValue.toString()) {
             return refValue ? refValue?.getI10n('value') : ""
         }
     }

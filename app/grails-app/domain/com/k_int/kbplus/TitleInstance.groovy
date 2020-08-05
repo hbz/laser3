@@ -131,6 +131,10 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     def beforeUpdate() {
         super.beforeUpdateHandler()
     }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
 
   String getIdentifierValue(String idtype) {
     String result

@@ -595,6 +595,11 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         super.beforeUpdateHandler()
     }
 
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
+
 
   static String generateSortableReference(String input_title) {
     String result = ''

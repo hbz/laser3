@@ -716,6 +716,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         super.beforeUpdateHandler()
     }
 
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
+
   def checkAndAddMissingIdentifier(ns,value) {
     boolean found = false
     println "processing identifier ${value}"

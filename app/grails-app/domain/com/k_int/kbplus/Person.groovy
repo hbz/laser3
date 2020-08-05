@@ -296,4 +296,8 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     def beforeUpdate() {
         super.beforeUpdateHandler()
     }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
 }

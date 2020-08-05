@@ -335,6 +335,11 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         super.beforeUpdateHandler()
     }
 
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
+
     static String generateShortcodeFunction(name) {
         return StringUtils.left(name.trim().replaceAll(" ","_"), 128) // FIX
     }
