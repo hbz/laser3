@@ -3,7 +3,7 @@ package de.laser
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.TitleInstancePackagePlatform
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import grails.transaction.Transactional

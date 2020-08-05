@@ -1,4 +1,4 @@
-package com.k_int.kbplus.abstract_domain
+package de.laser.base
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
@@ -6,7 +6,6 @@ import de.laser.helper.DateUtil
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.springframework.beans.factory.annotation.Autowired
 
 import javax.persistence.Transient
 
