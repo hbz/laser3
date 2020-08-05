@@ -46,9 +46,17 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
-    protected def beforeInsertHandler() {
+    protected Map<String, Object> beforeInsertHandler() {
         static_logger.debug("beforeInsertHandler")
         //println("beforeInsertHandler")
+        Map<String, Object> changes = [
+                newMap: [:]
+        ]
+        this.getDirtyPropertyNames().each { prop ->
+            changes.newMap.put( prop, this.getProperty(prop) )
+        }
+
+        return changes
     }
 
     protected def afterInsertHandler() {
@@ -57,9 +65,19 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         cascadingUpdateService.update(this, dateCreated)
     }
 
-    protected def beforeUpdateHandler() {
+    protected Map<String, Object> beforeUpdateHandler() {
         static_logger.debug("beforeUpdateHandler")
         //println("beforeUpdateHandler")
+        Map<String, Object> changes = [
+                oldMap: [:],
+                newMap: [:]
+        ]
+        this.getDirtyPropertyNames().each { prop ->
+            changes.oldMap.put( prop, this.getPersistentValue(prop) )
+            changes.newMap.put( prop, this.getProperty(prop) )
+        }
+
+        return changes
     }
 
     protected def afterUpdateHandler() {
@@ -68,9 +86,17 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         cascadingUpdateService.update(this, lastUpdated)
     }
 
-    protected def beforeDeleteHandler() {
+    protected Map<String, Object> beforeDeleteHandler() {
         static_logger.debug("beforeDeleteHandler")
         //println("beforeDeleteHandler")
+        Map<String, Object> changes = [
+                oldMap: [:]
+        ]
+        this.getDirtyPropertyNames().each { prop ->
+            changes.oldMap.put( prop, this.getPersistentValue(prop) )
+        }
+
+        return changes
     }
 
     protected def afterDeleteHandler() {

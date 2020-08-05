@@ -79,7 +79,8 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
     @Override
     def beforeInsert() {
-        super.beforeInsertHandler()
+        Map<String, Object> changes = super.beforeInsertHandler()
+        log.debug ("beforeInsert() " + changes.toMapString())
     }
     @Override
     def afterInsert() {
@@ -87,7 +88,10 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     }
     @Override
     def beforeUpdate(){
-        super.beforeUpdateHandler()
+        Map<String, Object> changes = super.beforeUpdateHandler()
+        log.debug ("beforeUpdate() " + changes.toMapString())
+
+        auditService.onChangeHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def afterUpdate() {
@@ -95,7 +99,10 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     }
     @Override
     def beforeDelete() {
-        super.beforeDeleteHandler()
+        Map<String, Object> changes = super.beforeDeleteHandler()
+        log.debug ("beforeDelete() " + changes.toMapString())
+
+        auditService.onDeleteHandler(this, changes.oldMap)
     }
     @Override
     def afterDelete() {
@@ -114,14 +121,14 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
     @Transient
     def onChange = { oldMap, newMap ->
-        log.debug("onChange ${this}")
-        auditService.onChangeHandler(this, oldMap, newMap)
+        //log.debug("onChange ${this}")
+        //auditService.onChangeHandler(this, oldMap, newMap)
     }
 
     @Transient
     def onDelete = { oldMap ->
-        log.debug("onDelete ${this}")
-        auditService.onDeleteHandler(this, oldMap)
+        //log.debug("onDelete ${this}")
+        //auditService.onDeleteHandler(this, oldMap)
     }
 
     def notifyDependencies_trait(changeDocument) {
