@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.SystemMessage" %>
+<%@ page import="de.laser.helper.ServerUtils; com.k_int.kbplus.Setting; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;de.laser.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -44,12 +44,12 @@
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">
 
-    <g:if test="${currentServer == contextService.SERVER_DEV}">
+    <g:if test="${currentServer == ServerUtils.SERVER_DEV}">
         <div class="ui green label big la-server-label" aria-label="Sie befinden sich im Developer-System">
             <span>DEV</span>
         </div>
     </g:if>
-    <g:if test="${currentServer == contextService.SERVER_QA}">
+    <g:if test="${currentServer == ServerUtils.SERVER_QA}">
         <div class="ui red label big la-server-label">
             <span>QA</span>
         </div>
@@ -129,11 +129,6 @@
                                 <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
                                 <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
-                            <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
-                                <div class="divider"></div>
-
-                                <semui:securedMainNavItem role="menuitem" affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.departments" />
-                            </g:elseif>
 
                             <div class="divider"></div>
 
@@ -228,7 +223,7 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" role="menuitem" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
-                                <g:link class="item" role="menuitem" controller="license" action="create">${message(code:'license.template.new')}</g:link>
+                                <%--<g:link class="item" role="menuitem" controller="license" action="create">${message(code:'license.template.new')}</g:link>--%>
                                 <%--<g:link class="item" role="menuitem" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>--%>
                                 <g:link class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                                 <g:link class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
@@ -304,6 +299,7 @@
                                 </div>
                             </div>
 
+                            <g:link class="item" role="menuitem" controller="admin" action="systemMessages">${message(code: 'menu.admin.systemMessage')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="systemAnnouncements">${message(code:'menu.admin.announcements')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</g:link>
 
@@ -343,7 +339,7 @@
 
                             <g:link class="item" role="menuitem" controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</g:link>
-                            <g:link class="item" role="menuitem" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</g:link>
+                            <%--<g:link class="item" role="menuitem" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</g:link>--%> <%-- property groups are always private?? --%>
                             <g:link class="item" role="menuitem" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</g:link>
                             <g:link class="item" role="menuitem" controller="admin" action="manageContentItems">${message(code:'menu.admin.manageContentItems')}</g:link>
 
@@ -373,7 +369,6 @@
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
                                     <g:link class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="appThreads">${message(code:'menu.yoda.appThreads')}</g:link>
 
@@ -451,6 +446,8 @@
                                     <%--<g:link class="item" role="menuitem" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
                                     <g:link class="item" role="menuitem" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="manageFTControl" >Manage FTControl</g:link>
+                                    <div class="divider"></div>
+                                    <g:link class="item" role="menuitem" controller="yoda" action="killDataloadService" >Kill ES Update Index</g:link>
                                 </div>
                             </div>
 
@@ -580,7 +577,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && (editable || accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value=='Yes'}">
                                     <button class="ui icon toggle active  button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
@@ -599,7 +596,7 @@
 
                             <r:script>
                                 $(function(){
-                                    <g:if test="${editable} || ${overwriteEditable}">
+                                    <g:if test="${editable} || ${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
                                         <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value == 'Yes'}">
                                             deckSaver.configs.editMode  = true;
                                         </g:if>
@@ -688,6 +685,22 @@
 
         <%-- global content container --%>
         <main class="ui main container ${visibilityContextOrgMenu} ">
+
+            <%-- system messages --%>
+            <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}" />
+            <g:if test="${systemMessages}">
+                <div class="ui segment center aligned orange">
+                    <strong>SYSTEMMELDUNG</strong>
+
+                    <g:each in="${systemMessages}" var="message">
+                        <div style="padding-top:1em">
+                            <% println message.getLocalizedContent() %>
+                        </div>
+                    </g:each>
+
+                </div>
+            </g:if>
+
             <g:layoutBody/>
         </main><!-- .main -->
 
@@ -715,26 +728,15 @@
         </r:script>
 
         <%-- maintenance --%>
-        <g:if test="${SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || SystemMessage.findAllByShowNowAndOrgIsNull(true)}">
+
+        <g:if test="${Setting.findByName('MaintenanceMode')?.value == 'true'}">
             <div id="maintenance">
                 <div class="ui segment center aligned inverted orange">
-                    <strong>ACHTUNG:</strong>
+                    <h3 class="ui header">${message(code:'system.maintenanceMode.header')}</h3>
 
-                    <div class="ui list">
-                        <g:each in="${SystemMessage.findAllByShowNow(true)}" var="message">
-                            <div class="item">
-                                <g:if test="${message.org}">
-                                    <g:if test="${contextOrg.id == message.org.id}">
-                                        ${message.text}
-                                    </g:if>
-                                </g:if>
-                                <g:else>
-                                    ${message.text}
-                                </g:else>
-                            </div>
-                        </g:each>
-                    </div>
-                </div>
+                    ${message(code:'system.maintenanceMode.message')}
+
+                <div>
             </div>
         </g:if>
 

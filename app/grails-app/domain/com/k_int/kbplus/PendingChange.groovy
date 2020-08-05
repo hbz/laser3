@@ -1,9 +1,9 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.User
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.TIPPCoverage
+
+import de.laser.IssueEntitlementCoverage
+import de.laser.PendingChangeConfiguration
+import de.laser.TIPPCoverage
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.exceptions.CreationException
 import de.laser.helper.DateUtil
@@ -41,7 +41,7 @@ class PendingChange {
     final static MSG_SU02 = 'pendingChange.message_SU02'
 
     @Transient
-    MessageSource messageSource
+    def messageSource
 
     Subscription subscription
     License license
@@ -127,8 +127,8 @@ class PendingChange {
         actionDate(nullable:true, blank:false)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     /**

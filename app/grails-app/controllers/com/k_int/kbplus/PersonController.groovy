@@ -5,6 +5,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -17,6 +18,7 @@ class PersonController extends AbstractDebugController {
     def addressbookService
     def genericOIDService
     def contextService
+    def formService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -39,36 +41,46 @@ class PersonController extends AbstractDebugController {
         	[personInstance: personInstance, userMemberships: userMemberships]
 			break
 		case 'POST':
-	        def personInstance = new Person(params)
-	        if (!personInstance.save(flush: true)) {
-                flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
-                redirect(url: request.getHeader('referer'))
-	            //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
-	            return
-	        }
-            // processing dynamic form data
-            addPersonRoles(personInstance)
+            if (formService.validateToken(params)) {
 
-            ['contact1', 'contact2', 'contact3'].each{ c ->
-                if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
-
-                    RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
-                    RefdataValue rdvTY = RefdataValue.get(params."${c}_type")
-
-                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: params."${c}_content" )
-                    contact.save(flush: true)
+                def personInstance = new Person(params)
+                if (!personInstance.save(flush: true)) {
+                    flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
+                    redirect(url: request.getHeader('referer'))
+                    //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
+                    return
                 }
+                // processing dynamic form data
+                addPersonRoles(personInstance)
+
+                ['contact1', 'contact2', 'contact3'].each { c ->
+                    if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
+
+                        RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
+                        RefdataValue rdvTY = RefdataValue.get(params."${c}_type")
+
+                        if(RDStore.CCT_EMAIL == rdvCT){
+                            if ( !formService.validateEmailAddress(params."${c}_content") ) {
+                                flash.error = message(code:'contact.create.email.error')
+                                return
+                            }
+                        }
+
+                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: params."${c}_content")
+                        contact.save(flush: true)
+                    }
+                }
+
+                flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
             }
-            
-			flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
             redirect(url: request.getHeader('referer'))
 			break
 		}
     }
 
     @Secured(['ROLE_USER'])
-    def show() {
-        def personInstance = Person.get(params.id)
+    Map<String,Object> show() {
+        Person personInstance = Person.get(params.id)
         if (! personInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
             //redirect action: 'list'
@@ -99,7 +111,8 @@ class PersonController extends AbstractDebugController {
         }.findAll()
         
 
-        def result = [
+        Map<String,Object> result = [
+                institution: contextService.org,
                 personInstance: personInstance,
                 presetOrg: gcp.size() == 1 ? gcp.first().org : fcba.size() == 1 ? fcba.first().org : personInstance.tenant,
                 editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser()),
@@ -237,9 +250,9 @@ class PersonController extends AbstractDebugController {
 
         List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.PRS_PROP, true, org)
 
-        mandatories.each{ pd ->
-            if (! PersonPrivateProperty.findWhere(owner: personInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, personInstance, pd)
+        mandatories.each{ PropertyDefinition pd ->
+            if (! PersonProperty.findWhere(owner: personInstance, type: pd)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, personInstance, pd, org)
 
                 if (newProp.hasErrors()) {
                     log.error(newProp.errors)

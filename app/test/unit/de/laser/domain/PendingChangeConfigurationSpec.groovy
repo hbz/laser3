@@ -1,5 +1,6 @@
 package de.laser.domain
 
+import de.laser.PendingChangeConfiguration
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.CalculatedType" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.CalculatedType;de.laser.helper.RDConstants;de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
+    <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.addMembers.label',args:memberType)}"/>
@@ -30,7 +30,7 @@
 <h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
 
 
-<g:if test="${consortialView || departmentalView}">
+<g:if test="${consortialView}">
 
     <semui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
@@ -43,8 +43,7 @@
         </g:form>
     </semui:filter>
 
-    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post"
-            class="ui form">
+    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" class="ui form">
 
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList          : members,
@@ -67,13 +66,12 @@
                         <label for="generateSlavedSubs">${message(code: 'myinst.separate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
                     </div>--}%
 
-                    <g:set value="${RefdataCategory.getByDesc(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS)}"
-                           var="rdcSubStatus"/>
+                    <g:set value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}" var="rdcSubStatus"/>
 
                     <br/>
                     <br/>
 
-                    <g:select from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subStatus"
@@ -83,66 +81,39 @@
 
                 <div class="field">
                     <label><g:message code="myinst.copyLicense"/></label>
-                    <g:if test="${subscriptionInstance.owner}">
-                        <g:if test="${subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE && institution.id == subscriptionInstance.getCollective().id}">
-                            <div class="ui radio checkbox">
-                                <input class="hidden" type="radio" name="attachToParticipationLic" value="true">
-                                <label><g:message code="myinst.attachToParticipationLic"/></label>
-                            </div>
-                            <div class="ui radio checkbox">
-                                <input class="hidden" type="radio" name="attachToParticipationLic" value="false" checked="checked">
-                                <label><g:message code="myinst.noAttachmentToParticipationLic"/></label>
-                            </div>
-                        </g:if>
-                        <g:else>
-                            <div class="ui radio checkbox">
-                                <g:if test="${subscriptionInstance.owner.derivedLicenses}">
-                                    <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no">
-                                </g:if>
-                                <g:else>
-                                    <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no"
-                                           checked="checked">
-                                </g:else>
-                                <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
-                            </div>
+                    <g:if test="${memberLicenses}">
+                        <div class="ui radio checkbox">
+                            <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no">
+                            <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
+                        </div>
+                        <br>
+                        <div class="ui radio checkbox">
+                            <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics" value="all" checked="checked">
+                            <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
+                        </div>
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-tooltip="${message(code:'myinst.separate_lics_all.expl')}">
+                            <i class="question circle icon la-popup"></i>
+                        </span>
+                        <br>
+                        <div class="ui radio checkbox">
+                            <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics" value="partial">
+                            <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_partial')}</label>
+                        </div>
+                        <div class="generateSlavedLicsReference-wrapper hidden">
                             <br>
-                            <div class="ui radio checkbox">
-                                <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics"
-                                       value="shared">
-                                <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_shared')}</label>
-                            </div>
-                            <br>
-                            <div class="ui radio checkbox">
-                                <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics"
-                                       value="explicit">
-                                <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_explicit')}</label>
-                            </div>
-                            <br>
-                            <g:if test="${subscriptionInstance.owner.derivedLicenses}">
-                                <div class="ui radio checkbox">
-                                    <input class="hidden" type="radio" id="generateSlavedLics3" name="generateSlavedLics"
-                                           value="reference" checked="checked">
-                                    <label for="generateSlavedLics3">${message(code: 'myinst.separate_lics_reference')}</label>
-                                </div>
-
-                                <div class="generateSlavedLicsReference-wrapper hidden">
-                                    <br/>
-                                    <g:select from="${subscriptionInstance.owner?.derivedLicenses}"
-                                              class="ui search dropdown hide"
-                                              optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
-                                              optionValue="${{ it.reference }}"
-                                              name="generateSlavedLicsReference"/>
-                                </div>
-                                <r:script>
-                                    $('*[name=generateSlavedLics]').change(function () {
-                                        $('*[name=generateSlavedLics][value=reference]').prop('checked') ?
-                                                $('.generateSlavedLicsReference-wrapper').removeClass('hidden') :
-                                                $('.generateSlavedLicsReference-wrapper').addClass('hidden');
-                                    })
-                                    $('*[name=generateSlavedLics]').trigger('change')
-                                </r:script>
-                            </g:if>
-                        </g:else>
+                            <g:select from="${memberLicenses}"
+                                      class="ui fluid search multiple dropdown hide"
+                                      optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
+                                      optionValue="${{ it.reference }}"
+                                      noSelection="${['' : message(code:'default.select.all.label')]}"
+                                      name="generateSlavedLicsReference"/>
+                        </div>
+                        <r:script>
+                            $('*[name=generateSlavedLics]').change(function () {
+                                $('*[name=generateSlavedLics][value=partial]').prop('checked') ? $('.generateSlavedLicsReference-wrapper').removeClass('hidden') : $('.generateSlavedLicsReference-wrapper').addClass('hidden');
+                            })
+                            $('*[name=generateSlavedLics]').trigger('change')
+                        </r:script>
                     </g:if>
                     <g:else>
                         <semui:msg class="info" text="${message(code:'myinst.noSubscriptionOwner')}"/>
@@ -192,31 +163,21 @@
         <br/>
         <g:if test="${members}">
             <div class="field la-field-right-aligned">
-                <input type="submit" class="ui button js-click-control"
-                       value="${message(code: 'default.button.create.label')}"/>
+                <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
             </div>
+            <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         </g:if>
     </g:form>
 
-    <g:if test="${accessService.checkPermAffiliation("ORG_INST_COLLECTIVE, ORG_CONSORTIUM","INST_ADM")}">
+    <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
         <hr/>
 
         <div class="ui info message">
             <div class="header">
-                <g:if test="${consortialView}">
-                    <g:message code="myinst.noMembers.cons.header"/>
-                </g:if>
-                <g:elseif test="${departmentalView}">
-                    <g:message code="myinst.noMembers.dept.header"/>
-                </g:elseif>
+                <g:message code="myinst.noMembers.cons.header"/>
             </div>
             <p>
-                <g:if test="${consortialView}">
-                    <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
-                </g:if>
-                <g:elseif test="${departmentalView}">
-                    <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'collective.member.plural')]}"/>
-                </g:elseif>
+                <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
             </p>
         </div>
     </g:if>

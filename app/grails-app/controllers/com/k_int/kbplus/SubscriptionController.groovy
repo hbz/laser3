@@ -2,12 +2,10 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import com.k_int.properties.PropertyDefinition
-import de.laser.AccessService
-import de.laser.AuditConfig
-import de.laser.DeletionService
+import de.laser.*
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.*
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
@@ -27,6 +25,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -37,15 +36,10 @@ import java.text.SimpleDateFormat
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 
-import static de.laser.helper.RDStore.*
-
-// 2.0
-
-//For Transform
-
-@Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SubscriptionController extends AbstractDebugController {
+class SubscriptionController
+        extends AbstractDebugController
+        implements PendingChangeControllerTrait {
 
     def springSecurityService
     def contextService
@@ -66,7 +60,7 @@ class SubscriptionController extends AbstractDebugController {
     def docstoreService
     GlobalSourceSyncService globalSourceSyncService
     def GOKbService
-    def navigationGenerationService
+    def linksGenerationService
     def financeService
     def orgTypeService
     def subscriptionsQueryService
@@ -76,6 +70,8 @@ class SubscriptionController extends AbstractDebugController {
     def deletionService
     def auditService
     def surveyService
+    FormService formService
+    AccessPointService accessPointService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -197,15 +193,15 @@ class SubscriptionController extends AbstractDebugController {
         }
         if(params.mode != 'advanced') {
             base_qry += " and ie.status = :current "
-            qry_params.current = TIPP_STATUS_CURRENT
+            qry_params.current = RDStore.TIPP_STATUS_CURRENT
         }
         else {
             base_qry += " and ie.status != :deleted "
-            qry_params.deleted = TIPP_STATUS_DELETED
+            qry_params.deleted = RDStore.TIPP_STATUS_DELETED
         }
 
         base_qry += " and ie.acceptStatus = :ieAcceptStatus "
-        qry_params.ieAcceptStatus = IE_ACCEPT_STATUS_FIXED
+        qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
 
         if (params.pkgfilter && (params.pkgfilter != '')) {
             base_qry += " and ie.tipp.pkg.id = :pkgId "
@@ -273,7 +269,7 @@ class SubscriptionController extends AbstractDebugController {
         result.num_sub_rows = entitlements.size()
         result.entitlements = entitlements.drop(result.offset).take(result.max)
 
-        Set<SubscriptionPackage> deletedSPs = result.subscriptionInstance.packages.findAll {sp -> sp.pkg.packageStatus == PACKAGE_STATUS_DELETED}
+        Set<SubscriptionPackage> deletedSPs = result.subscriptionInstance.packages.findAll {sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED}
 
         if(deletedSPs) {
             result.deletedSPs = []
@@ -292,10 +288,6 @@ class SubscriptionController extends AbstractDebugController {
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
             result.processingpc = true
         }
-
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -392,7 +384,7 @@ class SubscriptionController extends AbstractDebugController {
         IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
         Long subId = ieCoverage.issueEntitlement.subscription.id
         if(ieCoverage) {
-            PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
+            PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:RDStore.PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
             ieCoverage.delete()
             redirect action: 'index', id: subId, params: params
         }
@@ -402,13 +394,16 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if(result.subscription.instanceOf)
             result.parentId = result.subscription.instanceOf.id
         else if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
             result.parentId = result.subscription.id
 
         if (params.process  && result.editable) {
+            result.licenses.each { License l ->
+                subscriptionService.setOrgLicRole(result.subscription,l,true)
+            }
             result.delResult = deletionService.deleteSubscription(result.subscription, false)
         }
         else {
@@ -435,24 +430,6 @@ class SubscriptionController extends AbstractDebugController {
                     flash.message = message(code: 'subscription.details.unlink.successfully')
                 }else {
                     flash.error = message(code: 'subscription.details.unlink.notSuccessfully')
-                }
-
-                //Automatisch Paket entknüpfen, wenn das Paket in der Elternlizenz entknüpft wird
-                if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] &&
-                        accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && (result.subscription.instanceOf == null)) {
-
-                    List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
-
-                    childSubs.each {sub ->
-                        if(result.package.unlinkFromSubscription(sub, true)){
-                            flash.message = message(code: 'subscription.details.unlink.successfully')
-                        }else {
-                            flash.error = message(code: 'subscription.details.unlink.notSuccessfully')
-                        }
-                    }
-
-
-
                 }
 
                 return redirect(action:'show', id: params.subscription)
@@ -519,7 +496,7 @@ class SubscriptionController extends AbstractDebugController {
                     List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
                     if (childSubs) {
 
-                        List<SubscriptionPackage> spChildSubs = SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
+                        List<SubscriptionPackage> spChildSubs = childSubs.isEmpty() ? [] : SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
 
                         String queryChildSubs = "from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                         Map queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
@@ -528,7 +505,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         int numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
 
-                        int numOfCIsChildSubs = CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs,result.package)).size()
+                        int numOfCIsChildSubs = childSubs.isEmpty() ? 0 : CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)).size()
 
                         if (spChildSubs.size() > 0) {
                             Map conflict_item_pkgChildSubs = [
@@ -768,7 +745,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -839,7 +816,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 } else if (params.bulkOperation == "remove") {
                     log.debug("Updating ie ${ie.id} status to deleted")
-                    def deleted_ie = TIPP_STATUS_DELETED
+                    def deleted_ie = RDStore.TIPP_STATUS_DELETED
                     ie.status = deleted_ie
                     if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
@@ -876,10 +853,10 @@ class SubscriptionController extends AbstractDebugController {
         result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        RefdataValue tipp_deleted = TIPP_STATUS_DELETED
-        RefdataValue tipp_current = TIPP_STATUS_CURRENT
-        RefdataValue ie_deleted = TIPP_STATUS_DELETED
-        RefdataValue ie_current = TIPP_STATUS_CURRENT
+        RefdataValue tipp_deleted = RDStore.TIPP_STATUS_DELETED
+        RefdataValue tipp_current = RDStore.TIPP_STATUS_CURRENT
+        RefdataValue ie_deleted = RDStore.TIPP_STATUS_DELETED
+        RefdataValue ie_current = RDStore.TIPP_STATUS_CURRENT
 
         log.debug("filter: \"${params.filter}\"");
 
@@ -1480,16 +1457,22 @@ class SubscriptionController extends AbstractDebugController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def previous() {
-        previousAndExpected(params, 'previous');
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def unlinkLicense() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+        subscriptionService.setOrgLicRole(result.subscription,genericOIDService.resolveOID(params.licenseOID),true)
+        redirect(url: request.getHeader('referer'))
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def members() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1498,7 +1481,7 @@ class SubscriptionController extends AbstractDebugController {
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
         //if (params.showDeleted == 'Y') {
-        Set<RefdataValue> subscriberRoleTypes = [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_CONS_HIDDEN, OR_SUBSCRIBER_COLLECTIVE]
+        Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
         result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscriptionInstance,subscriberRoleTypes:subscriberRoleTypes])
         /*Sortieren --> an DB abgegeben
         result.validSubChilds = validSubChilds.sort { a, b ->
@@ -1551,10 +1534,6 @@ class SubscriptionController extends AbstractDebugController {
         //    )
         //}
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         result.filterSet = params.filterSet ? true : false
 
         SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd')
@@ -1583,8 +1562,8 @@ class SubscriptionController extends AbstractDebugController {
                     org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
-                    org.customProperties = subscr.customProperties
-                    org.privateProperties = subscr.privateProperties
+                    org.customProperties = subscr.propertySet.findAll{ it.type.tenant == null && it.tenant.id == result.institution.id && it.isPublic }
+                    org.privateProperties = subscr.propertySet.findAll{ it.type.tenant.id == result.institution.id && it.tenant.id == result.institution.id && !it.isPublic }
                     Set generalContacts = []
                     if (publicContacts.get(subscr))
                         generalContacts.addAll(publicContacts.get(subscr))
@@ -1599,7 +1578,19 @@ class SubscriptionController extends AbstractDebugController {
         if (params.exportXLS) {
             exportOrg(orgs, filename, true, 'xlsx')
             return
-        } else {
+        }else if (params.exportIPs) {
+            SXSSFWorkbook wb
+            filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportIPs.fileName'))
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(result.filteredSubChilds.orgs.flatten())
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else {
             withFormat {
                 html {
                     result
@@ -1620,7 +1611,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def surveys() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1628,9 +1619,6 @@ class SubscriptionController extends AbstractDebugController {
 //        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         result.contextOrg = contextService.getOrg()
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
 
         result.surveys = SurveyConfig.executeQuery("from SurveyConfig where subscription = :sub and surveyInfo.status not in (:invalidStatuses)",
                 [sub: result.subscription.instanceOf,
@@ -1644,17 +1632,13 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def surveysConsortia() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
 //        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
 //        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
 
         result.surveys = result.subscription ? SurveyConfig.findAllBySubscription(result.subscription) : null
 
@@ -1666,7 +1650,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1676,23 +1660,21 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentLicense = result.parentSub.owner
+        result.parentLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.parentSub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }
 
         result.validLicenses = []
 
-        def childLicenses = License.where {
-            instanceOf == result.parentLicense
-        }
+        if(result.parentLicenses) {
+            def childLicenses = License.where {
+                instanceOf in result.parentLicenses
+            }
 
-        childLicenses?.each {
-            result.validLicenses << it
+            childLicenses?.each {
+                result.validLicenses << it
+            }
         }
-
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
@@ -1730,7 +1712,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkLicenseMembers() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1740,53 +1722,32 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
+        if(formService.validateToken(params)) {
+            result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+            /*RefdataValue licenseeRoleType = OR_LICENSEE_CONS
+            if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
+                licenseeRoleType = OR_LICENSEE_COLL
 
-        /*RefdataValue licenseeRoleType = OR_LICENSEE_CONS
-        if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
-            licenseeRoleType = OR_LICENSEE_COLL
+            result.parentLicense = result.parentSub.owner*/
 
-        result.parentLicense = result.parentSub.owner*/
+            Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
-        Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+            List selectedMembers = params.list("selectedMembers")
 
-        List selectedMembers = params.list("selectedMembers")
-
-        List<GString> changeAccepted = []
-        validSubChilds.each { subChild ->
-            if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
-                if(params.processOption == 'linkLicense') {
+            List<GString> changeAccepted = []
+            validSubChilds.each { subChild ->
+                if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
                     License newLicense = License.get(params.license_All)
-                    /*if (subChild.owner != newLicense) {
-                        subChild.owner = newLicense
-                        if (subChild.save()) {
-                            //OrgRole licenseeRole = new OrgRole(org: subChild.getSubscriber(), lic: newLicense, roleType: licenseeRoleType)
-                            //if (licenseeRole.save())
-
-                        }
-                    }*/
-                    if(subscriptionService.setOrgLicRole(subChild,newLicense))
-                        changeAccepted << "${subChild.name} (${message(code: 'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
-                }
-                else if(params.processOption == 'unlinkLicense') {
-                    //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
-                    //subChild.owner.orgLinks.remove(toDelete)
-                    /*
-                    subChild.owner = null
-                    subChild.save()
-                    if (subChild.save()) {
-                        //toDelete.delete()
-                    }
-                    */
-                    if(subscriptionService.setOrgLicRole(subChild,null))
+                    if(subscriptionService.setOrgLicRole(subChild,newLicense,params.processOption == 'unlinkLicense'))
                         changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
             }
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
+            }
         }
-        if (changeAccepted) {
-            flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
-        }
+
         redirect(action: 'linkLicenseMembers', id: params.id)
     }
 
@@ -1795,7 +1756,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1804,33 +1765,31 @@ class SubscriptionController extends AbstractDebugController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
+        if(formService.validateToken(params)) {
+            result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+            //result.parentLicense = result.parentSub.owner TODO we need to iterate over ALL linked licenses!
 
-        result.parentLicense = result.parentSub.owner
+            List selectedMembers = params.list("selectedMembers")
 
-        List selectedMembers = params.list("selectedMembers")
+            def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-
-        def removeLic = []
-        validSubChilds.each { subChild ->
-            if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
-                //keep it, I need to ask Daniel for that
-                //OrgRole toDelete = OrgRole.findByOrgAndLic(subChild.getSubscriber(),subChild.owner)
-                //subChild.owner.orgLinks.remove(toDelete)
-                //subChild.owner = null
-                if (subscriptionService.setOrgLicRole(subChild,null)) {
-                    //toDelete.delete()
-                    removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+            def removeLic = []
+            validSubChilds.each { subChild ->
+                if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
+                    Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subChild),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                        License license = genericOIDService.resolveOID(li.source)
+                        if (subscriptionService.setOrgLicRole(subChild,license,true)) {
+                            removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                        }
+                    }
                 }
+
             }
-
+            if (removeLic) {
+                flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
+            }
         }
-        if (removeLic) {
-            flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
-        }
-
 
         redirect(action: 'linkLicenseMembers', id: params.id)
     }
@@ -1840,7 +1799,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkPackagesMembers() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1849,10 +1808,6 @@ class SubscriptionController extends AbstractDebugController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
@@ -1897,7 +1852,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkPackagesMembers() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1907,90 +1862,90 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        if(formService.validateToken(params)) {
+            result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def changeAccepted = []
-        def changeAcceptedwithIE = []
-        def changeFailed = []
+            List changeAccepted = []
+            List changeAcceptedwithIE = []
+            List changeFailed = []
 
-        List selectedMembers = params.list("selectedMembers")
+            List selectedMembers = params.list("selectedMembers")
 
-        if(selectedMembers && params.package_All){
-            def pkg_to_link = SubscriptionPackage.get(params.package_All).pkg
-            selectedMembers.each { id ->
-                def subChild = Subscription.get(Long.parseLong(id))
-                if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
-                    if (!(pkg_to_link in subChild.packages.pkg)) {
+            if(selectedMembers && params.package_All){
+                Package pkg_to_link = SubscriptionPackage.get(params.package_All).pkg
+                selectedMembers.each { id ->
+                    Subscription subChild = Subscription.get(Long.parseLong(id))
+                    if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
+                        if (!(pkg_to_link in subChild.packages.pkg)) {
 
-                        if (params.processOption == 'linkwithIE') {
+                            if (params.processOption == 'linkwithIE') {
 
-                            pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
-                            changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                                pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
+                                changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
-                        } else {
-                            pkg_to_link.addToSubscription(subChild, false)
-                            changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                            } else {
+                                pkg_to_link.addToSubscription(subChild, false)
+                                changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
-                        }
-                    } else {
-                        changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                    }
-
-                    if (changeAccepted) {
-                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
-                    }
-                    if (changeAcceptedwithIE) {
-                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
-                    }
-
-                    if (!changeAccepted && !changeAcceptedwithIE){
-                        flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
-                    }
-
-                }
-
-                if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
-                    if (pkg_to_link in subChild.packages.pkg) {
-
-                        if (params.processOption == 'unlinkwithIE') {
-
-                            if(pkg_to_link.unlinkFromSubscription(subChild, true)) {
-                                changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                             }
                         } else {
-                            if(pkg_to_link.unlinkFromSubscription(subChild, false)) {
-                                changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                            }
+                            changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                         }
-                    } else {
-                        changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+
+                        if (changeAccepted) {
+                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+                        }
+                        if (changeAcceptedwithIE) {
+                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+                        }
+
+                        if (!changeAccepted && !changeAcceptedwithIE){
+                            flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
+                        }
+
                     }
 
-                    if (changeAccepted) {
-                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
-                    }
-                    if (changeAcceptedwithIE) {
-                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkWithIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
-                    }
+                    if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
+                        if (pkg_to_link in subChild.packages.pkg) {
 
-                    if (!changeAccepted && !changeAcceptedwithIE){
-                        flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
-                    }
+                            if (params.processOption == 'unlinkwithIE') {
 
+                                if(pkg_to_link.unlinkFromSubscription(subChild, true)) {
+                                    changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                                }
+                            } else {
+                                if(pkg_to_link.unlinkFromSubscription(subChild, false)) {
+                                    changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                                }
+                            }
+                        } else {
+                            changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                        }
+
+                        if (changeAccepted) {
+                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+                        }
+                        if (changeAcceptedwithIE) {
+                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkWithIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+                        }
+
+                        if (!changeAccepted && !changeAcceptedwithIE){
+                            flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
+                        }
+
+                    }
                 }
-            }
 
-        }else {
-            if(!selectedMembers) {
-                flash.error = message(code: 'subscription.linkPackagesMembers.noSelectedMember')
-            }
+            }else {
+                if(!selectedMembers) {
+                    flash.error = message(code: 'subscription.linkPackagesMembers.noSelectedMember')
+                }
 
-            if(!params.package_All) {
-                flash.error = message(code: 'subscription.linkPackagesMembers.noSelectedPackage')
+                if(!params.package_All) {
+                    flash.error = message(code: 'subscription.linkPackagesMembers.noSelectedPackage')
+                }
             }
         }
-
-
 
         redirect(action: 'linkPackagesMembers', id: params.id)
     }
@@ -2000,7 +1955,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkPackagesConsortia() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2015,15 +1970,15 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+        Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
-        validSubChilds.each { subChild ->
+        validSubChilds.each { Subscription subChild ->
 
             subChild.packages.pkg.each { pkg ->
 
                     if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
-                        def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-                        def queryParams = [sub: subChild, pkg_id: pkg.id]
+                        String query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                        Map<String,Object> queryParams = [sub: subChild, pkg_id: pkg.id]
 
 
                         if (subChild.isEditableBy(result.user)) {
@@ -2050,12 +2005,12 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'linkPackagesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def propertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2065,10 +2020,6 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
         params.remove('filterPropDef')
@@ -2076,27 +2027,33 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE && result.institution.id == result.subscription.getCollective().id)
-            result.propList = result.parentSub.privateProperties.type
-        else
-            result.propList = result.parentSub.privateProperties.type + result.parentSub.customProperties.type
-
-
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-        //Sortieren
-        result.validSubChilds = validSubChilds.sort { a, b ->
+        Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
+        /*Sortieren
+        result.validSubChilds = validSubChilds.sort { Subscription a, Subscription b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }
+        }*/
+        result.validSubChilds = validSubChildren
+
+        /*String localizedName
+        switch(LocaleContextHolder.getLocale()) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }*/
+        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        Set<PropertyDefinition> propList = result.parentSub.propertySet.type + PropertyDefinition.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
+        result.propList = propList
 
         def oldID = params.id
         params.id = result.parentSub.id
 
         ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
         result.filteredSubChilds = new ArrayList<Subscription>()
-        result.validSubChilds.each { sub ->
+        result.validSubChilds.each { Subscription sub ->
             List<Org> subscr = sub.getAllSubscribers()
             def filteredSubscr = []
             subscr.each { Org subOrg ->
@@ -2119,7 +2076,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def subscriptionPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2130,10 +2087,6 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         params.tab = params.tab ?: 'generalProperties'
-
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscriptionInstance.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
@@ -2169,7 +2122,7 @@ class SubscriptionController extends AbstractDebugController {
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
             result.visibleOrgRelations = []
             result.parentSub.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -2186,7 +2139,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2196,90 +2149,92 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
+        if(formService.validateToken(params)) {
+            result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
-
-
-        if (params.filterPropDef && params.filterPropValue) {
-
-            def filterPropDef = params.filterPropDef
-            def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
+            result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
 
-            def newProperties = 0
-            def changeProperties = 0
+            if (params.filterPropDef && params.filterPropValue) {
 
-            if (propDef) {
+                def filterPropDef = params.filterPropDef
+                def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
 
-                List selectedMembers = params.list("selectedMembers")
 
-                if(selectedMembers){
-                    selectedMembers.each { subId ->
-                        Subscription subChild = Subscription.get(subId)
-                    if (propDef?.tenant != null) {
-                        //private Property
-                        def owner = subChild
+                def newProperties = 0
+                def changeProperties = 0
 
-                        def existingProps = owner.privateProperties.findAll {
-                            it.owner.id == owner.id &&  it.type.id == propDef.id
-                        }
-                        existingProps.removeAll { it.type.name != propDef.name } // dubious fix
+                if (propDef) {
 
-                        if (existingProps.size() == 0 || propDef.multipleOccurrence) {
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef)
-                            if (newProp.hasErrors()) {
-                                log.error(newProp.errors)
+                    List selectedMembers = params.list("selectedMembers")
+
+                    if(selectedMembers){
+                        selectedMembers.each { subId ->
+                            Subscription subChild = Subscription.get(subId)
+                            if (propDef?.tenant != null) {
+                                //private Property
+                                Subscription owner = subChild
+
+                                def existingProps = owner.propertySet.findAll {
+                                    it.owner.id == owner.id &&  it.type.id == propDef.id && it.tenant.id == result.institution && !it.isPublic
+                                }
+                                existingProps.removeAll { it.type.name != propDef.name } // dubious fix
+
+                                if (existingProps.size() == 0 || propDef.multipleOccurrence) {
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef, result.institution)
+                                    if (newProp.hasErrors()) {
+                                        log.error(newProp.errors)
+                                    } else {
+                                        log.debug("New private property created: " + newProp.type.name)
+
+                                        newProperties++
+                                        def prop = setProperty(newProp, params.filterPropValue)
+                                    }
+                                }
+
+                                if (existingProps.size() == 1){
+                                    def privateProp = SubscriptionProperty.get(existingProps[0].id)
+                                    changeProperties++
+                                    def prop = setProperty(privateProp, params.filterPropValue)
+
+                                }
+
                             } else {
-                                log.debug("New private property created: " + newProp.type.name)
+                                //custom Property
+                                def owner = subChild
 
-                                newProperties++
-                                def prop = setProperty(newProp, params.filterPropValue)
+                                def existingProp = owner.propertySet.find {
+                                    it.type.id == propDef.id && it.owner.id == owner.id
+                                }
+
+                                if (existingProp == null || propDef.multipleOccurrence) {
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef, result.institution)
+                                    if (newProp.hasErrors()) {
+                                        log.error(newProp.errors)
+                                    } else {
+                                        log.debug("New custom property created: " + newProp.type.name)
+                                        newProperties++
+                                        def prop = setProperty(newProp, params.filterPropValue)
+                                    }
+                                }
+
+                                if (existingProp){
+                                    SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
+                                    changeProperties++
+                                    def prop = setProperty(customProp, params.filterPropValue)
+
+                                }
                             }
-                        }
-
-                        if (existingProps?.size() == 1){
-                            def privateProp = SubscriptionPrivateProperty.get(existingProps[0].id)
-                            changeProperties++
-                            def prop = setProperty(privateProp, params.filterPropValue)
 
                         }
-
-                    } else {
-                        //custom Property
-                        def owner = subChild
-
-                        def existingProp = owner.customProperties.find {
-                            it.type.id == propDef.id && it.owner.id == owner.id
-                        }
-
-                        if (existingProp == null || propDef.multipleOccurrence) {
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef)
-                            if (newProp.hasErrors()) {
-                                log.error(newProp.errors)
-                            } else {
-                                log.debug("New custom property created: " + newProp.type.name)
-                                newProperties++
-                                def prop = setProperty(newProp, params.filterPropValue)
-                            }
-                        }
-
-                        if (existingProp){
-                            SubscriptionCustomProperty customProp = SubscriptionCustomProperty.get(existingProp.id)
-                            changeProperties++
-                            def prop = setProperty(customProp, params.filterPropValue)
-
-                        }
+                        flash.message = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
+                    }else{
+                        flash.error = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
                     }
 
                 }
-                    flash.message = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
-                }else{
-                    flash.error = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
-                }
 
             }
-
         }
 
         def filterPropDef = params.filterPropDef
@@ -2292,7 +2247,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processSubscriptionPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2418,12 +2373,12 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'subscriptionPropertiesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processDeletePropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2437,35 +2392,32 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+        List<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         if (params.filterPropDef) {
 
             def filterPropDef = params.filterPropDef
-            def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
+            PropertyDefinition propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
 
-            def deletedProperties = 0
+            int deletedProperties = 0
 
             if (propDef) {
-                validSubChilds.each { subChild ->
+                validSubChilds.each { Subscription subChild ->
 
-                    if (propDef?.tenant != null) {
+                    if (propDef.tenant != null) {
                         //private Property
-                        def owner = subChild
 
-                        def existingProps = owner.privateProperties.findAll {
-                            it.owner.id == owner.id &&  it.type.id == propDef.id
+                        List<SubscriptionProperty> existingProps = subChild.propertySet.findAll {
+                            it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id
                         }
                         existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
 
-                        if (existingProps?.size() == 1 ){
-                            def privateProp = SubscriptionPrivateProperty.get(existingProps[0].id)
+                        if (existingProps.size() == 1 ){
+                            SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
 
                             try {
-                                owner.privateProperties.remove(privateProp)
-                                owner.refresh()
-                                privateProp?.delete(failOnError: true, flush: true)
+                                privateProp.delete()
                                 deletedProperties++
                             } catch (Exception e)
                             {
@@ -2476,22 +2428,17 @@ class SubscriptionController extends AbstractDebugController {
 
                     } else {
                         //custom Property
-                        def owner = subChild
 
-                        def existingProp = owner.customProperties.find {
-                            it.type.id == propDef.id && it.owner.id == owner.id
+                        def existingProp = subChild.propertySet.find {
+                            it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id
                         }
 
 
                         if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
-                            SubscriptionCustomProperty customProp = SubscriptionCustomProperty.get(existingProp.id)
+                            SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
 
                             try {
-                                customProp?.owner = null
-                                customProp.save()
-                                owner.customProperties.remove(customProp)
-                                customProp?.delete(failOnError: true, flush: true)
-                                owner.refresh()
+                                customProp.delete()
                                 deletedProperties++
                             } catch (Exception e){
                                 log.error(e)
@@ -2512,15 +2459,15 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private ArrayList<Long> getOrgIdsForFilter() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         ArrayList<Long> resultOrgIds
         def tmpParams = params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))
-            tmpParams.comboType = COMBO_TYPE_CONSORTIUM.value
+            tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            tmpParams.comboType = COMBO_TYPE_DEPARTMENT.value
+            tmpParams.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
         def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
         if (tmpParams.filterPropDef) {
@@ -2535,34 +2482,27 @@ class SubscriptionController extends AbstractDebugController {
     def addMembers() {
         log.debug("addMembers ..")
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
 
         result.superOrgType = []
         result.memberType = []
-        if (accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
-            if(accessService.checkPerm('ORG_CONSORTIUM')) {
-                params.comboType = COMBO_TYPE_CONSORTIUM.value
-                result.superOrgType << message(code:'consortium.superOrgType')
-                result.memberType << message(code:'consortium.subscriber')
+        params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        result.superOrgType << message(code:'consortium.superOrgType')
+        result.memberType << message(code:'consortium.subscriber')
+        def fsq = filterService.getOrgComboQuery(params, result.institution)
+        result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.members_disabled = []
+        result.members.each { it ->
+            if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?", [result.subscriptionInstance, it.id])) {
+                result.members_disabled << it.id
             }
-            if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-                params.comboType = COMBO_TYPE_DEPARTMENT.value
-                result.superOrgType << message(code:'collective.superOrgType')
-                result.memberType << message(code:'collective.member.plural')
-            }
-            def fsq = filterService.getOrgComboQuery(params, result.institution)
-            result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
-            result.members_disabled = []
-            result.members.each { it ->
-                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?", [result.subscriptionInstance, it.id])) {
-                    result.members_disabled << it.id
-                }
-            }
-            result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
         }
+        result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
+        String memberLicensesQuery = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
+        result.memberLicenses = License.executeQuery(memberLicensesQuery,[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
 
         result
     }
@@ -2571,95 +2511,72 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug(params)
-
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
+        if(formService.validateToken(params)) {
 
-        List orgType = [OT_INSTITUTION.id.toString()]
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            orgType = [OT_CONSORTIUM.id.toString()]
-        }
+            List orgType = [RDStore.OT_INSTITUTION.id.toString()]
+            if (accessService.checkPerm("ORG_CONSORTIUM")) {
+                orgType = [RDStore.OT_CONSORTIUM.id.toString()]
+            }
 
-        RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: SUBSCRIPTION_CURRENT
+            RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: RDStore.SUBSCRIPTION_CURRENT
 
-        RefdataValue role_sub = OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_cons = OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_coll = OR_SUBSCRIBER_COLLECTIVE
-        RefdataValue role_sub_coll = OR_SUBSCRIPTION_COLLECTIVE
-        RefdataValue role_sub_hidden = OR_SUBSCRIBER_CONS_HIDDEN
-        RefdataValue role_lic = OR_LICENSEE_CONS
-        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            role_lic = OR_LICENSEE_COLL
-        RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
+            RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
+            RefdataValue role_sub_cons  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+            RefdataValue role_coll      = RDStore.OR_SUBSCRIBER_COLLECTIVE
+            RefdataValue role_sub_coll  = RDStore.OR_SUBSCRIPTION_COLLECTIVE
+            RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+            RefdataValue role_lic       = RDStore.OR_LICENSEE_CONS
+            RefdataValue role_lic_cons  = RDStore.OR_LICENSING_CONSORTIUM
+            RefdataValue role_provider  = RDStore.OR_PROVIDER
+            RefdataValue role_agency    = RDStore.OR_AGENCY
 
-        RefdataValue role_provider = OR_PROVIDER
-        RefdataValue role_agency = OR_AGENCY
+            if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
+                if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                    List<Org> members = []
+                    License licenseCopy
 
-            if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                List<Org> members = []
-                License licenseCopy
-
-                params.list('selectedOrgs').each { it ->
-                    members << Org.findById(Long.valueOf(it))
-                }
-
-                def subLicense = result.subscriptionInstance.owner
-
-                List<Subscription> synShareTargetList = []
-
-                Set<Package> packagesToProcess = []
-
-                //copy package data
-                if(params.linkAllPackages) {
-                    result.subscriptionInstance.packages.each { sp ->
-                        packagesToProcess << sp.pkg
+                    params.list('selectedOrgs').each { it ->
+                        members << Org.findById(Long.valueOf(it))
                     }
-                }
-                else if(params.packageSelection) {
-                    List packageIds = params.list("packageSelection")
-                    packageIds.each { spId ->
-                        packagesToProcess << SubscriptionPackage.get(spId).pkg
+
+                    List<Subscription> synShareTargetList = []
+                    List<License> licensesToProcess = []
+                    Set<Package> packagesToProcess = []
+
+                    //copy package data
+                    if(params.linkAllPackages) {
+                        result.subscriptionInstance.packages.each { sp ->
+                            packagesToProcess << sp.pkg
+                        }
                     }
-                }
-
-                Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
-
-                members.each { cm ->
-
-                    if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                        def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
-
-                        if (subLicense) {
-                            def subLicenseParams = [
-                                    lic_name     : "${subLicense.reference} (${postfix})",
-                                    isSlaved     : params.isSlaved,
-                                    asOrgType: orgType,
-                                    copyStartEnd : true
-                            ]
-
-                            if (params.generateSlavedLics == 'explicit') {
-                                licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            }
-                            else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                                licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            }
-                            else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
-                                licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
-                            }
-
-                            if (licenseCopy) {
-                                new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
-                            }
+                    else if(params.packageSelection) {
+                        List packageIds = params.list("packageSelection")
+                        packageIds.each { spId ->
+                            packagesToProcess << SubscriptionPackage.get(spId).pkg
+                        }
+                    }
+                    if(params.generateSlavedLics == "all") {
+                        licensesToProcess.addAll(License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE]))
+                    }
+                    else if(params.generateSlavedLics == "partial") {
+                        List<String> licenseKeys = params.list("generateSlavedLicsReference")
+                        licenseKeys.each { String licenseKey ->
+                            licensesToProcess << genericOIDService.resolveOID(licenseKey)
                         }
                     }
 
+                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
 
-                    //ERMS-1155
-                    //if (true) {
+                    members.each { Org cm ->
+
+
+                        //ERMS-1155
+                        //if (true) {
                         log.debug("Generating seperate slaved instances for members")
 
                         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -2680,7 +2597,6 @@ class SubscriptionController extends AbstractDebugController {
                                 identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
                                 isSlaved: true,
-                                owner: licenseCopy,
                                 resource: result.subscriptionInstance.resource ?: null,
                                 form: result.subscriptionInstance.form ?: null,
                                 isMultiYear: params.checkSubRunTimeMultiYear ?: false
@@ -2691,7 +2607,7 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         if (!memberSub.save()) {
-                            memberSub?.errors.each { e ->
+                            memberSub.errors.each { e ->
                                 log.debug("Problem creating new sub: ${e}")
                             }
                             flash.error = memberSub.errors
@@ -2699,73 +2615,66 @@ class SubscriptionController extends AbstractDebugController {
 
 
                         if (memberSub) {
-                            if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                                if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
-                                }
-                                else {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
-                                    if(cm.hasPerm("ORG_INST_COLLECTIVE")) {
-                                        new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
-                                    }
-                                }
-                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
-
-                                /*
-                                todo: IGNORED for 0.20
-
-                                if (cm.getCustomerType() == 'ORG_INST_COLLECTIVE') {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
-                                }
-                                */
+                            if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
                             }
                             else {
-                                new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
-                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_coll).save()
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
                             }
+                            new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
 
                             synShareTargetList.add(memberSub)
 
-                            SubscriptionCustomProperty.findAllByOwner(result.subscriptionInstance).each { scp ->
-                                AuditConfig ac = AuditConfig.getConfig(scp)
+                            SubscriptionProperty.findAllByOwner(result.subscriptionInstance).each { SubscriptionProperty sp ->
+                                AuditConfig ac = AuditConfig.getConfig(sp)
 
                                 if (ac) {
                                     // multi occurrence props; add one additional with backref
-                                    if (scp.type.multipleOccurrence) {
-                                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
-                                        additionalProp = scp.copyInto(additionalProp)
-                                        additionalProp.instanceOf = scp
+                                    if (sp.type.multipleOccurrence) {
+                                        SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                        additionalProp = sp.copyInto(additionalProp)
+                                        additionalProp.instanceOf = sp
                                         additionalProp.save(flush: true)
                                     }
                                     else {
                                         // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
-                                        newProp = scp.copyInto(newProp)
-                                        newProp.instanceOf = scp
+                                        SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                        newProp = sp.copyInto(newProp)
+                                        newProp.instanceOf = sp
                                         newProp.save(flush: true)
                                     }
                                 }
                             }
 
-                            packagesToProcess.each { pkg ->
+                            memberSub.refresh()
+
+                            packagesToProcess.each { Package pkg ->
                                 if(params.linkWithEntitlements)
                                     pkg.addToSubscriptionCurrentStock(memberSub, result.subscriptionInstance)
                                 else
                                     pkg.addToSubscription(memberSub, false)
                             }
 
+                            licensesToProcess.each { License lic ->
+                                subscriptionService.setOrgLicRole(memberSub,lic,false)
+                            }
+
                         }
-                    //}
+                        //}
+                    }
+
+                    result.subscriptionInstance.syncAllShares(synShareTargetList)
+
+                    redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
+                } else {
+                    redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
                 }
-
-                result.subscriptionInstance.syncAllShares(synShareTargetList)
-
-                redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
             } else {
                 redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
             }
-        } else {
-            redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
+        }
+        else {
+            redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
         }
     }
 
@@ -2778,7 +2687,7 @@ class SubscriptionController extends AbstractDebugController {
 
         return
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2824,7 +2733,7 @@ class SubscriptionController extends AbstractDebugController {
     def pendingChanges() {
         log.debug("subscription id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2852,10 +2761,6 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         result
     }
 
@@ -2868,7 +2773,7 @@ class SubscriptionController extends AbstractDebugController {
     private def previousAndExpected(params, screen) {
         log.debug("previousAndExpected ${params}");
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2913,12 +2818,12 @@ class SubscriptionController extends AbstractDebugController {
     def processAddEntitlements() {
         log.debug("addEntitlements....");
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
 
-        def ie_accept_status = IE_ACCEPT_STATUS_FIXED
+        def ie_accept_status = RDStore.IE_ACCEPT_STATUS_FIXED
         //result.user = User.get(springSecurityService.principal.id)
         //result.subscriptionInstance = Subscription.get(params.siid)
         //result.institution = result.subscriptionInstance?.subscriber
@@ -3023,7 +2928,7 @@ class SubscriptionController extends AbstractDebugController {
     def removeEntitlement() {
         log.debug("removeEntitlement....");
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
-        def deleted_ie = TIPP_STATUS_DELETED
+        def deleted_ie = RDStore.TIPP_STATUS_DELETED
         ie.status = deleted_ie;
 
         redirect action: 'index', id: params.sub
@@ -3051,7 +2956,7 @@ class SubscriptionController extends AbstractDebugController {
     def processRemoveEntitlements() {
         log.debug("processRemoveEntitlements....");
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -3098,7 +3003,7 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("processRenewEntitlements ...")
         params.id = Long.parseLong(params.id)
         params.packageId = Long.parseLong(params.packageId)
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -3106,7 +3011,7 @@ class SubscriptionController extends AbstractDebugController {
         List tippsToAdd = params."tippsToAdd".split(",")
         List tippsToDelete = params."tippsToDelete".split(",")
 
-        def ie_accept_status =RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+        def ie_accept_status = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
 
         if(result.subscriptionInstance) {
             tippsToAdd.each { tipp ->
@@ -3216,7 +3121,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def notes() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3224,9 +3129,6 @@ class SubscriptionController extends AbstractDebugController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -3234,7 +3136,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def documents() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3242,10 +3144,6 @@ class SubscriptionController extends AbstractDebugController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -3266,7 +3164,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3300,10 +3198,6 @@ class SubscriptionController extends AbstractDebugController {
         result.myTaskInstanceCount = result.myTaskInstanceList?.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         log.debug(result.taskInstanceList)
         result
     }
@@ -3311,7 +3205,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewals() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3337,14 +3231,11 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def permissionInfo() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -3352,7 +3243,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def launchRenewalsProcess() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
 
 //        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
 //
@@ -3409,8 +3300,8 @@ class SubscriptionController extends AbstractDebugController {
 
         if (subscriber || collective || consortia) {
 
-            RefdataValue licensee_role = OR_LICENSEE
-            RefdataValue licensee_cons_role = OR_LICENSING_CONSORTIUM
+            RefdataValue licensee_role = RDStore.OR_LICENSEE
+            RefdataValue licensee_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
             Org org
             if(subscription.instanceOf) {
@@ -3462,7 +3353,7 @@ class SubscriptionController extends AbstractDebugController {
             }
         }*/
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -3621,8 +3512,6 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("BuildQuery...");
 
         StringWriter sw = new StringWriter()
-
-        // sw.write("subtype:'Subscription Offered'")
         sw.write("rectype:'Package'")
 
         renewals_reversemap.each { mapping ->
@@ -3658,7 +3547,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def setupPendingChangeConfiguration() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if(!result) {
             response.sendError(403)
             return
@@ -3701,7 +3590,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def history() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3713,17 +3602,13 @@ class SubscriptionController extends AbstractDebugController {
         result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
         result.historyLinesTotal = AuditLogEvent.executeQuery("select e.id from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params).size()
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3746,10 +3631,6 @@ class SubscriptionController extends AbstractDebugController {
                 baseParams
         )[0]
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
         result
     }
 
@@ -3757,7 +3638,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def costPerUse() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3820,23 +3701,12 @@ class SubscriptionController extends AbstractDebugController {
         DebugUtil du = new DebugUtil()
         du.setBenchmark('1')
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
 
         du.setBenchmark('this-n-that')
-
-        // unlink license
-
-        if (params.cmd?.equalsIgnoreCase('unlinkLicense')) {
-            if (result.subscriptionInstance.owner) {
-                result.subscriptionInstance.setOwner(null)
-                params.remove('cmd')
-                redirect(url: request.getHeader('referer'))
-                return
-            }
-        }
 
         //if (!result.institution) {
         //    result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
@@ -3848,36 +3718,7 @@ class SubscriptionController extends AbstractDebugController {
 
         du.setBenchmark('links')
 
-        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
-        // links
-        def key = result.subscription.id
-        def sources = Links.executeQuery('select l from Links as l where l.source = :source and l.objectType = :objectType', [source: key, objectType: Subscription.class.name])
-        def destinations = Links.executeQuery('select l from Links as l where l.destination = :destination and l.objectType = :objectType', [destination: key, objectType: Subscription.class.name])
-        //IN is from the point of view of the context subscription (= params.id)
-        result.links = [:]
-
-        sources.each { link ->
-            Subscription destination = Subscription.get(link.destination)
-            if (destination.isVisibleBy(result.user)) {
-                def index = link.linkType.getI10n("value")?.split("\\|")[0]
-                if (result.links[index] == null) {
-                    result.links[index] = [link]
-                } else result.links[index].add(link)
-            }
-        }
-        destinations.each { link ->
-            Subscription source = Subscription.get(link.source)
-            if (source.isVisibleBy(result.user)) {
-                def index = link.linkType.getI10n("value")?.split("\\|")[1]
-                if (result.links[index] == null) {
-                    result.links[index] = [link]
-                } else result.links[index].add(link)
-            }
-        }
-
+        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
 
         du.setBenchmark('pending changes')
 
@@ -3928,7 +3769,7 @@ class SubscriptionController extends AbstractDebugController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
+                if (!(or.org.id == contextOrg.id) && !(or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -3943,15 +3784,15 @@ class SubscriptionController extends AbstractDebugController {
             // -- private properties
 
             result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
+            result.contextOrg = contextService.getOrg() //result.institution maps to subscriber
 
             // create mandatory OrgPrivateProperties if not existing
 
             List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.contextOrg)
 
-            mandatories.each { pd ->
-                if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
-                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
+            mandatories.each { PropertyDefinition pd ->
+                if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscriptionInstance, pd, result.institution, false)) {
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd, result.contextOrg)
 
                     if (newProp.hasErrors()) {
                         log.error(newProp.errors)
@@ -3997,7 +3838,7 @@ class SubscriptionController extends AbstractDebugController {
                     log.debug('Found different content platforms for this subscription, cannot show usage')
                 } else {
                     def supplier_id = suppliers[0]
-                    def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+                    def platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
                     result.natStatSupplierId = platform?.stringValue ?: null
                     result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                     if (result.institutional_usage_identifier) {
@@ -4081,6 +3922,25 @@ class SubscriptionController extends AbstractDebugController {
 
         result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscriptionInstance, 'Specific subscription editor')
 
+        if(result.subscription.getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
+            du.setBenchmark('non-inherited member properties')
+            List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+                String localizedName
+                switch(LocaleContextHolder.getLocale()) {
+                    case Locale.GERMANY:
+                    case Locale.GERMAN: localizedName = "name_de"
+                        break
+                    default: localizedName = "name_en"
+                        break
+                }
+                String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
+
+                result.memberProperties = memberProperties
+            }
+        }
+
         List bm = du.stopBenchmark()
         result.benchMark = bm
 
@@ -4093,7 +3953,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewSubscription_Local() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
 
         if (!accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
@@ -4104,7 +3964,9 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401)
             return;
         }
-        def prevSubs = Links.findByLinkTypeAndObjectTypeAndDestination(LINKTYPE_FOLLOWS, Subscription.class.name, params.id)
+
+        Subscription subscription = Subscription.get(params.id)
+        def prevSubs = Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, GenericOIDService.getOID(subscription))
         if (prevSubs){
             flash.error = message(code: 'subscription.renewSubExist')
             response.sendError(401)
@@ -4112,8 +3974,6 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
-
-        def subscription = Subscription.get(params.id)
 
         result.errors = []
         def newStartDate
@@ -4128,8 +3988,7 @@ class SubscriptionController extends AbstractDebugController {
                                  sub_endDate: newEndDate? sdf.format(newEndDate) : null,
                                  sub_name: subscription.name,
                                  sub_id: subscription.id,
-                                 sub_license: subscription?.owner?.reference?:'',
-                                 sub_status: SUBSCRIPTION_INTENDED]
+                                 sub_status: RDStore.SUBSCRIPTION_INTENDED]
 
         result
     }
@@ -4138,7 +3997,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processSimpleRenewal_Local() {
         log.debug("-> renewalsUpload params: ${params}");
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -4153,6 +4012,7 @@ class SubscriptionController extends AbstractDebugController {
         def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
         def sub_status = params.subStatus
         def old_subOID = params.subscription.old_subid
+        Subscription oldSubscription = Subscription.get(old_subOID)
         def new_subname = params.subscription.name
 
         def new_subscription = new Subscription(
@@ -4161,10 +4021,9 @@ class SubscriptionController extends AbstractDebugController {
                 name: new_subname,
                 startDate: sub_startDate,
                 endDate: sub_endDate,
-                type: Subscription.get(old_subOID)?.type ?: null,
-                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
-                resource: Subscription.get(old_subOID)?.resource ?: null,
-                form: Subscription.get(old_subOID)?.form ?: null
+                type: oldSubscription.type ?: null,
+                resource: oldSubscription.resource ?: null,
+                form: oldSubscription.form ?: null
         )
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
 
@@ -4172,11 +4031,12 @@ class SubscriptionController extends AbstractDebugController {
             // assert an org-role
             OrgRole org_link = new OrgRole(org: result.institution,
                     sub: new_subscription,
-                    roleType: OR_SUBSCRIBER
+                    roleType: RDStore.OR_SUBSCRIBER
             ).save();
 
+            Links prevLink
             if(old_subOID) {
-                Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
+                prevLink = new Links(source: GenericOIDService.getOID(new_subscription), destination: GenericOIDService.getOID(oldSubscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg)
                 prevLink.save()
             }
             else { log.error("Problem linking new subscription, ${prevLink.errors}") }
@@ -4184,7 +4044,7 @@ class SubscriptionController extends AbstractDebugController {
             log.error("Problem saving new subscription, ${new_subscription.errors}");
         }
 
-        new_subscription.save(flush: true);
+        new_subscription.save()
 
         if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
         redirect controller: 'subscription',
@@ -4198,7 +4058,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(['ROLE_YODA'])
     def renewSubscriptionConsortia() {
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
@@ -4227,7 +4087,7 @@ class SubscriptionController extends AbstractDebugController {
                     Subscription subMember = Subscription.findById(sub)
 
                     //ChildSub Exist
-                    ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, LINKTYPE_FOLLOWS, Subscription.class.name)
+                    ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, RDStore.LINKTYPE_FOLLOWS, Subscription.class.name)
                     if (prevLinks.size() == 0) {
 
                         /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
@@ -4253,22 +4113,23 @@ class SubscriptionController extends AbstractDebugController {
                         newSubscription.save(flush: true)
                         //ERMS-892: insert preceding relation in new data model
                         if (subMember) {
-                            Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
+                            Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: RDStore.LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
                             if (!prevLink.save()) {
                                 log.error("Subscription linking failed, please check: ${prevLink.errors}")
                             }
                         }
 
-                        if (subMember.customProperties) {
+                        if (subMember.propertySet) {
                             //customProperties
-                            for (prop in subMember.customProperties) {
-                                SubscriptionCustomProperty copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
+                            for (prop in subMember.propertySet) {
+                                SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.instanceOf = null
-                                copiedProp.save(flush: true)
+                                copiedProp.save()
                                 //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
                         }
+                        /*
                         if (subMember.privateProperties) {
                             //privatProperties
 
@@ -4284,6 +4145,7 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             }
                         }
+                        */
 
                         if (subMember.packages && newSubConsortia.packages) {
                             //Package
@@ -4311,7 +4173,7 @@ class SubscriptionController extends AbstractDebugController {
 
                             subMember.issueEntitlements?.each { ie ->
 
-                                if (ie.status != TIPP_STATUS_DELETED) {
+                                if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                                     def ieProperties = ie.properties
                                     ieProperties.globalUID = null
 
@@ -4401,7 +4263,7 @@ class SubscriptionController extends AbstractDebugController {
                                     newDocContext.owner = newDoc
                                     newDocContext.save(flush: true)
 
-                                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                                     Path target = new File("${fPath}/${newDoc.uuid}").toPath()
@@ -4465,7 +4327,7 @@ class SubscriptionController extends AbstractDebugController {
 
                 if (params.baseSubscription) {
 
-                    ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
+                    ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
                     if (previousSubscriptions.size() > 0) {
                         flash.error = message(code: 'subscription.renewSubExist')
                     } else {
@@ -4494,7 +4356,7 @@ class SubscriptionController extends AbstractDebugController {
                             if (params.subscription.takeLinks) {
                                 //License
                                 if(baseSub.owner)
-                                    subscriptionService.setOrgLicRole(newSub,baseSub.owner)
+                                    subscriptionService.setOrgLicRole(newSub,baseSub.owner,false)
                             }
                             //Copy References
                             //OrgRole
@@ -4508,7 +4370,7 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             }
                             //link to previous subscription
-                            Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
+                            Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
                             if (!prevLink.save(flush: true)) {
                                 log.error("Problem linking to previous subscription: ${prevLink.errors}")
                             }
@@ -4556,7 +4418,7 @@ class SubscriptionController extends AbstractDebugController {
 
                                 baseSub.issueEntitlements.each { ie ->
 
-                                    if (ie.status != TIPP_STATUS_DELETED) {
+                                    if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                                         def properties = ie.properties
                                         properties.globalUID = null
 
@@ -4582,28 +4444,24 @@ class SubscriptionController extends AbstractDebugController {
 
                             }
 
-
                             if (params.subscription.takeCustomProperties) {
                                 //customProperties
-                                for (prop in baseSub.customProperties) {
-                                    def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
+                                baseSub.propertySet.findAll{ it.tenant == result.institution && it.isPublic }.each { SubscriptionProperty prop ->
+                                    SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.instanceOf = null
-                                    copiedProp.save(flush: true)
+                                    copiedProp.save()
                                     //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                                 }
                             }
                             if (params.subscription.takePrivateProperties) {
                                 //privatProperties
-                                Org contextOrg = contextService.getOrg()
 
-                                baseSub.privateProperties.each { prop ->
-                                    if (prop.type?.tenant?.id == contextOrg?.id) {
-                                        def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
-                                        copiedProp = prop.copyInto(copiedProp)
-                                        copiedProp.save(flush: true)
-                                        //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-                                    }
+                                baseSub.propertySet.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                                    SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
+                                    copiedProp = prop.copyInto(copiedProp)
+                                    copiedProp.save()
+                                    //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                                 }
                             }
 
@@ -4615,10 +4473,6 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
 
-            LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
-            result.navPrevSubscription = links.prevLink
-            result.navNextSubscription = links.nextLink
-
             // tasks
             Org contextOrg = contextService.getOrg()
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
@@ -4627,7 +4481,7 @@ class SubscriptionController extends AbstractDebugController {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -4666,14 +4520,14 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processSimpleRenewal_Consortia() {
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
         Subscription baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSub), RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
@@ -4710,7 +4564,7 @@ class SubscriptionController extends AbstractDebugController {
                     isPublicForApi: sub_isPublicForApi*/
             )
 
-            if (!newSub.save(flush: true)) {
+            if (!newSub.save()) {
                 log.error("Problem saving subscription ${newSub.errors}");
                 return newSub
             } else {
@@ -4734,17 +4588,15 @@ class SubscriptionController extends AbstractDebugController {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
-                        newOrgRole.save(flush: true)
+                        newOrgRole.save()
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
-                if (!prevLink.save(flush: true)) {
+                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                if (!prevLink.save()) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
                 result.newSub = newSub
-
-                //LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
 
                 if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
                 result.isRenewSub = true
@@ -4762,7 +4614,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewSubscription_Consortia() {
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         result.institution = contextService.org
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
@@ -4785,7 +4637,6 @@ class SubscriptionController extends AbstractDebugController {
                                  sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
                                  sub_name     : subscription.name,
                                  sub_id       : subscription.id,
-                                 sub_license  : subscription?.owner?.reference ?: '',
                                  sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
                                  sub_type     : subscription.type?.id.toString(),
                                  sub_form     : subscription.form?.id.toString(),
@@ -4802,11 +4653,11 @@ class SubscriptionController extends AbstractDebugController {
     private getMySubscriptions_readRights(){
         def params = [:]
         List result
-        params.status = SUBSCRIPTION_CURRENT.id
-        params.orgRole = OR_SUBSCRIPTION_CONSORTIA.value
+        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-        params.orgRole = OR_SUBSCRIBER.value
+        params.orgRole = RDStore.OR_SUBSCRIBER.value
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         result
@@ -4814,14 +4665,14 @@ class SubscriptionController extends AbstractDebugController {
     private getMySubscriptions_writeRights(){
         List result
         Map params = [:]
-        params.status = SUBSCRIPTION_CURRENT.id
-        params.orgRole = OR_SUBSCRIPTION_CONSORTIA.value
+        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
         params = [:]
-        params.status = SUBSCRIPTION_CURRENT.id
-        params.orgRole = OR_SUBSCRIBER.value
-        params.subTypes = "${SUBSCRIPTION_TYPE_LOCAL.id}"
+        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIBER.value
+        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         result
@@ -4831,7 +4682,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoSubscription() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -4998,7 +4849,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_DatesOwnerRelations() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -5091,23 +4942,13 @@ class SubscriptionController extends AbstractDebugController {
         else if(!params.toggleSharePerpetualAccess && AuditConfig.getConfig(newSub, 'hasPerpetualAccess'))
             AuditConfig.removeConfig(newSub, 'hasPerpetualAccess')
 
-        if (params.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, null)) {
-                Object[] args = [message(code:'license.label')]
-                flash.error += message(code:'default.delete.error.message',args:args)
-            }
-            //isTargetSubChanged = true
-        }else if (params.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            if(!subscriptionService.setOrgLicRole(newSub, baseSub.owner)) {
-                Object[] args = [message(code:'license.label')]
-                flash.error += message(code:'default.save.error.message',args:args)
-            }
-            //isTargetSubChanged = true
+        if (params.subscription?.deleteLicenses && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<License> toDeleteLicenses = params.list('subscription.deleteLicenses').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.deleteLicenses(toDeleteLicenses, newSub, flash)
+        }else if (params.subscription?.takeLicenses && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<License> toCopyLicenses = params.list('subscription.takeLicenses').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.copyLicenses(toCopyLicenses, newSub, flash)
         }
-        if(params.toggleShareOwner)
-            AuditConfig.addConfig(newSub,'owner')
-        else if(!params.toggleShareOwner && AuditConfig.getConfig(newSub, 'owner'))
-            AuditConfig.removeConfig(newSub, 'owner')
 
         if (params.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
             List<OrgRole> toDeleteOrgRelations = params.list('subscription.deleteOrgRelations').collect { genericOIDService.resolveOID(it) }
@@ -5157,7 +4998,7 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
     private loadDataFor_DatesOwnerRelations(){
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -5176,6 +5017,13 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
+        String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+        result.sourceLicenses = License.executeQuery(sourceLicensesQuery,[sub:GenericOIDService.getOID(baseSub),linkType:RDStore.LINKTYPE_LICENSE])
+        if(newSub) {
+            String targetLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+            result.targetLicenses = License.executeQuery(targetLicensesQuery,[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
+        }
+
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
@@ -5183,7 +5031,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_DocsAnnouncementsTasks() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -5274,7 +5122,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private loadDataFor_DocsAnnouncementsTasks() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -5289,7 +5137,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_Subscriber() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -5306,7 +5154,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private loadDataFor_Subscriber() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         result.sourceSubscription = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         result.validSourceSubChilds = subscriptionService.getValidSubChilds(result.sourceSubscription)
         if (params.targetSubscriptionId) {
@@ -5360,19 +5208,20 @@ class SubscriptionController extends AbstractDebugController {
         if (newSub) {
             result.newSub = newSub.refresh()
         }
-        subsToCompare.each{ sub ->
+        Org contextOrg = contextService.org
+        subsToCompare.each{ Subscription sub ->
             Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties.sort{it.type.getI10n('name')})
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result
     }
 
     private copySubElements_PackagesEntitlements() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -5432,7 +5281,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private loadDataFor_PackagesEntitlements() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
@@ -5453,42 +5302,39 @@ class SubscriptionController extends AbstractDebugController {
 
     def copySubscription() {
 
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
 
         // tasks
-        Org contextOrg = contextService.getOrg()
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-        def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
+        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.subscriptionInstance)
+        def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
         result << preCon
 
 
         result.visibleOrgRelations = []
         result.subscriptionInstance.orgRelations?.each { or ->
-            if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+            if (!(or.org.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                 result.visibleOrgRelations << or
             }
         }
 
         // -- private properties
 
-        result.authorizedOrgs = result.user?.authorizedOrgs
-        result.contextOrg = contextService.getOrg()
+        //result.authorizedOrgs = result.user?.authorizedOrgs
+        //result.contextOrg = contextService.getOrg()
 
         // create mandatory OrgPrivateProperties if not existing
 
-        def mandatories = []
-        result.user?.authorizedOrgs?.each { org ->
-            List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, org)
-            if (ppd) {
-                mandatories << ppd
-            }
+        Set<PropertyDefinition> mandatories = []
+        List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.institution)
+        if (ppd) {
+            mandatories << ppd
         }
         mandatories.flatten().each { pd ->
-            if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
+            if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscriptionInstance, pd, result.institution, false)) {
+                SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
 
                 if (newProp.hasErrors()) {
                     log.error(newProp.errors)
@@ -5527,7 +5373,7 @@ class SubscriptionController extends AbstractDebugController {
     def processcopySubscription() {
 
         params.id = params.baseSubscription
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -5540,7 +5386,7 @@ class SubscriptionController extends AbstractDebugController {
 
             def newSubscriptionInstance = new Subscription(
                     name: sub_name,
-                    status: params.subscription.copyStatus ? baseSubscription.status : SUBSCRIPTION_NO_STATUS,
+                    status: params.subscription.copyStatus ? baseSubscription.status : RDStore.SUBSCRIPTION_NO_STATUS,
                     type: baseSubscription.type,
                     kind: params.subscription.copyKind ? baseSubscription.kind : null,
                     identifier: java.util.UUID.randomUUID().toString(),
@@ -5550,21 +5396,24 @@ class SubscriptionController extends AbstractDebugController {
                     resource: params.subscription.copyResource ? baseSubscription.resource : null,
                     form: params.subscription.copyForm ? baseSubscription.form : null,
             )
-            //Copy License
-            if (params.subscription.copyLicense) {
-                newSubscriptionInstance.owner = baseSubscription.owner ?: null
-            }
             //Copy InstanceOf
             if (params.subscription.copylinktoSubscription) {
                 newSubscriptionInstance.instanceOf = baseSubscription?.instanceOf ?: null
             }
 
 
-            if (!newSubscriptionInstance.save(flush: true)) {
+            if (!newSubscriptionInstance.save()) {
                 log.error("Problem saving subscription ${newSubscriptionInstance.errors}");
                 return newSubscriptionInstance
             } else {
                 log.debug("Save ok")
+                //Copy License
+                if (params.subscription.copyLicense) {
+                    Set<Links> baseSubscriptionLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSubscription), RDStore.LINKTYPE_LICENSE)
+                    baseSubscriptionLicenses.each { Links link ->
+                        subscriptionService.setOrgLicRole(newSubscriptionInstance,genericOIDService.resolveOID(link.source),false)
+                    }
+                }
 
                 baseSubscription.documents?.each { dctx ->
 
@@ -5587,7 +5436,7 @@ class SubscriptionController extends AbstractDebugController {
                                     owner: dctx.owner.owner
                             ).save()
 
-                            String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                            String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                             Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                             Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
@@ -5604,7 +5453,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                     //Copy Announcements
                     if (params.subscription.copyAnnouncements) {
-                        if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                        if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
                             Doc clonedContents = new Doc(
                                     blobContent: dctx.owner.blobContent,
                                     status: dctx.owner.status,
@@ -5644,8 +5493,8 @@ class SubscriptionController extends AbstractDebugController {
 
                 }
                 //Copy References
-                baseSubscription.orgRelations?.each { or ->
-                    if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (params.subscription.copyLinks)) {
+                baseSubscription.orgRelations.each { OrgRole or ->
+                    if ((or.org.id == result.institution.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (params.subscription.copyLinks)) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSubscriptionInstance
@@ -5702,7 +5551,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     baseSubscription.issueEntitlements.each { ie ->
 
-                        if (ie.status != TIPP_STATUS_DELETED) {
+                        if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                             def properties = ie.properties
                             properties.globalUID = null
 
@@ -5729,8 +5578,8 @@ class SubscriptionController extends AbstractDebugController {
 
                 if (params.subscription.copyCustomProperties) {
                     //customProperties
-                    for (prop in baseSubscription.customProperties) {
-                        def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscriptionInstance)
+                    baseSubscription.propertySet.findAll{ it.isPublic && it.tenant.id == result.institution.id }.each{ SubscriptionProperty prop ->
+                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.instanceOf = null
                         copiedProp.save()
@@ -5739,15 +5588,12 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 if (params.subscription.copyPrivateProperties) {
                     //privatProperties
-                    Org contextOrg = contextService.getOrg()
 
-                    baseSubscription.privateProperties.each { prop ->
-                        if (prop.type?.tenant?.id == contextOrg?.id) {
-                            def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscriptionInstance)
-                            copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.save()
-                            //newSubscriptionInstance.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-                        }
+                    baseSubscription.propertySet.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance, isPublic: prop.isPublic, tenant: prop.tenant)
+                        copiedProp = prop.copyInto(copiedProp)
+                        copiedProp.save()
+                        //newSubscriptionInstance.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                     }
                 }
 
@@ -5774,47 +5620,34 @@ class SubscriptionController extends AbstractDebugController {
                 //create object itself
                 Subscription sub = new Subscription(name: entry.name,
                         status: genericOIDService.resolveOID(entry.status),
-                        type: genericOIDService.resolveOID(entry.type),
+                        kind: genericOIDService.resolveOID(entry.kind),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
+                /* TODO [ticket=2276]
                 if(sub.type == SUBSCRIPTION_TYPE_ADMINISTRATIVE)
-                    sub.administrative = true
-                //sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
+                    sub.administrative = true*/
                 sub.instanceOf = entry.instanceOf ? genericOIDService.resolveOID(entry.instanceOf) : null
                 Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
                 Org provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
                 Org agency = entry.agency ? genericOIDService.resolveOID(entry.agency) : null
                 if(sub.instanceOf && member)
-                    sub.isSlaved = YN_YES
+                    sub.isSlaved = RDStore.YN_YES
                 if(sub.save()) {
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
-                    switch(sub.type) {
-                        case SUBSCRIPTION_TYPE_CONSORTIAL:
-                            parentRoleType = OR_SUBSCRIPTION_CONSORTIA
-                            memberRoleType = OR_SUBSCRIBER_CONS
-                            break
-                        case SUBSCRIPTION_TYPE_ADMINISTRATIVE:
-                            parentRoleType = OR_SUBSCRIPTION_CONSORTIA
-                            memberRoleType = OR_SUBSCRIBER_CONS_HIDDEN
-                            break
-                        default:
-                            if (contextOrg.getCustomerType() == 'ORG_INST_COLLECTIVE') {
-                                parentRoleType = OR_SUBSCRIPTION_COLLECTIVE
-                                memberRoleType = OR_SUBSCRIBER_COLLECTIVE
-                            }
-                            else {
-                                parentRoleType = OR_SUBSCRIBER
-                            }
-                            break
+                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                        parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
+                        memberRoleType = RDStore.OR_SUBSCRIBER_CONS
                     }
-                    if(entry.owner) {
-                        License owner = genericOIDService.resolveOID(entry.owner)
-                        subscriptionService.setOrgLicRole(sub,owner)
+                    else
+                        parentRoleType = RDStore.OR_SUBSCRIBER
+                    entry.licenses.each { String licenseOID ->
+                        License license = genericOIDService.resolveOID(licenseOID)
+                        subscriptionService.setOrgLicRole(sub,license,false)
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
                     if(!parentRole.save()) {
@@ -5829,14 +5662,14 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
                     if(provider) {
-                        OrgRole providerRole = new OrgRole(roleType: OR_PROVIDER, sub: sub, org: provider)
+                        OrgRole providerRole = new OrgRole(roleType: RDStore.OR_PROVIDER, sub: sub, org: provider)
                         if(!providerRole.save()) {
                             withErrors = true
                             flash.error += providerRole.getErrors()
                         }
                     }
                     if(agency) {
-                        OrgRole agencyRole = new OrgRole(roleType: OR_AGENCY, sub: sub, org: agency)
+                        OrgRole agencyRole = new OrgRole(roleType: RDStore.OR_AGENCY, sub: sub, org: agency)
                         if(!agencyRole.save()) {
                             withErrors = true
                             flash.error += agencyRole.getErrors()
@@ -5855,7 +5688,7 @@ class SubscriptionController extends AbstractDebugController {
                             //in most cases, valueList is a list with one entry
                             valueList.each { value ->
                                 try {
-                                    createProperty(propDef,sub,contextOrg,value,v.propNote)
+                                    createProperty(propDef,sub,contextOrg,value.trim(),v.propNote)
                                 }
                                 catch (Exception e) {
                                     withErrors = true
@@ -5888,11 +5721,11 @@ class SubscriptionController extends AbstractDebugController {
         AbstractPropertyWithCalculatedLastUpdated prop
         if(propDef.tenant == contextOrg) {
             //process private property
-            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef)
+            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, contextOrg)
         }
         else {
             //process custom property
-            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef)
+            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, contextOrg)
         }
         switch(propDef.type) {
             case Integer.toString(): int intVal = Integer.parseInt(value)
@@ -5927,12 +5760,15 @@ class SubscriptionController extends AbstractDebugController {
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
+        result.contextOrg = contextService.getOrg()
+        result.licenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.subscription),RDStore.LINKTYPE_LICENSE).collect {Links li -> genericOIDService.resolveOID(li.source)}
 
-        result.showConsortiaFunctions = showConsortiaFunctions(contextService.getOrg(), result.subscription)
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.subscription))
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
+
+        result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.subscription)
         result.consortialView = result.showConsortiaFunctions
-
-        result.showCollectiveFunctions = showCollectiveFunctions(contextService.getOrg(), result.subscription)
-        result.departmentalView = result.showCollectiveFunctions
 
         Map args = [:]
         if(result.consortialView) {
@@ -5941,15 +5777,9 @@ class SubscriptionController extends AbstractDebugController {
             args.memberType = [message(code:'consortium.subscriber')]
             args.memberTypeGenitive = [message(code:'consortium.subscriber')]
         }
-        else if(result.departmentalView) {
-            args.superOrgType = [message(code:'collective.superOrgType')]
-            args.memberTypeSingle = [message(code:'collective.member')]
-            args.memberType = [message(code:'collective.member.plural')]
-            args.memberTypeGenitive = [message(code:'collective.member.genitive')]
-        }
         result.args = args
 
-        if (checkOption in [accessService.CHECK_VIEW, accessService.CHECK_VIEW_AND_EDIT]) {
+        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.subscriptionInstance?.isVisibleBy(result.user)) {
                 log.debug("--- NOT VISIBLE ---")
                 return null
@@ -5957,23 +5787,11 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
-        if(result.subscription.getCollective()?.id == contextService.getOrg().id &&
-                (result.subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ||
-                result.subscription.instanceOf?.getConsortia()) &&
-                ! (params.action in ['addMembers', 'processAddMembers',
-                                     'linkLicenseMembers', 'processLinkLicenseMembers',
-                                     'linkPackagesMembers', 'processLinkPackagesMembers',
-                                     'propertiesMembers', 'processPropertiesMembers',
-                                     'subscriptionPropertiesMembers', 'processSubscriptionPropertiesMembers'])
-        ) {
-            result.editable = false
-        }
-
         if(params.orgBasicMemberView){
             result.editable = false
         }
 
-        if (checkOption in [accessService.CHECK_EDIT, accessService.CHECK_VIEW_AND_EDIT]) {
+        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.editable) {
                 log.debug("--- NOT EDITABLE ---")
                 return null
@@ -5984,13 +5802,8 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getConsortia()?.id == contextOrg?.id) && subscription.getCalculatedType() in
+        return ((subscription.getConsortia()?.id == contextOrg.id) && subscription.getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
-    }
-
-    static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getCollective()?.id == contextOrg?.id) && subscription.getCalculatedType() in
-                [CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {
@@ -6264,12 +6077,6 @@ class SubscriptionController extends AbstractDebugController {
     private def setProperty(def property, def value) {
 
         def field = null
-
-
-        if(property instanceof SubscriptionCustomProperty || property instanceof SubscriptionPrivateProperty)
-        {
-
-        }
 
         if(property.type.type == Integer.toString()) {
             field = "intValue"

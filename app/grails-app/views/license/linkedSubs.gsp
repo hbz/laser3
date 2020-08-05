@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Person; de.laser.interfaces.CalculatedType; com.k_int.kbplus.Subscription; de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Person; de.laser.interfaces.CalculatedType; com.k_int.kbplus.Subscription; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -26,7 +26,7 @@
 
 <g:render template="nav" />
 
-    <g:render template="../templates/filter/javascript" />
+    <g:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="linkedSubs" controller="license" params="${[id:params.id]}" method="get" class="ui form">
             <div class="three fields">
@@ -124,11 +124,6 @@
                     <i class="map orange icon"></i>
                 </span>
             </th>
-            <g:if test="${editable}">
-                <th class="la-action-info">
-
-                </th>
-            </g:if>
         </tr>
     </thead>
     <tbody>
@@ -142,7 +137,7 @@
                 <g:set var="sub" value="${row}"/>
             </g:else>
             <%
-                LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, sub.id)
+                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(sub))
                 Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                 Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
             %>
@@ -156,13 +151,6 @@
                         <g:if test="${sub.isSlaved}">
                             <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'license.details.isSlaved.tooltip')}">
                                 <i class="thumbtack blue icon"></i>
-                            </span>
-                        </g:if>
-
-                        <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${subscr.getCustomerTypeI10n()}">
-                                <i class="chess rook grey icon"></i>
                             </span>
                         </g:if>
 
@@ -227,15 +215,6 @@
                         </span>
                     </g:if>
                 </td>
-                <g:if test="${editable}">
-                    <td class="x">
-                        <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="license" action="unlinkSubscription" params="${[subscription:sub.id,license:license.id]}"
-                                data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
-                                data-confirm-how = "unlink">
-                            <i class="unlink icon"></i>
-                        </g:link>
-                    </td>
-                </g:if>
             </tr>
         </g:each>
 

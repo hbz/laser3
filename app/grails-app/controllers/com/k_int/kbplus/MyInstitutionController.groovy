@@ -1,25 +1,22 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.DashboardDueDatesService
-import de.laser.SystemAnnouncement
-
-//import de.laser.TaskService //unused for quite a long time
+import de.laser.*
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.AbstractI10nTranslatable
-
-//import de.laser.TaskService //unused for quite a long time
-
 import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
+
+//import de.laser.TaskService //unused for quite a long time
+
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
@@ -30,13 +27,12 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.mozilla.universalchardet.UniversalDetector
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.nio.charset.Charset
-import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
@@ -63,6 +59,9 @@ class MyInstitutionController extends AbstractDebugController {
     def organisationService
     def financeService
     def surveyService
+    def formService
+    LinksGenerationService linksGenerationService
+    ComparisonService comparisonService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -251,12 +250,13 @@ class MyInstitutionController extends AbstractDebugController {
                 qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
                 qry3 += "   or genfunc_filter_matcher(o.shortname, :query) = true "
                 qry3 += ")"
+                qry3 += " group by p, s"
                 qryParams3.put('query', "${params.q}")
-            } else {
-                qry3 += "order by p.normname asc"
             }
-
-            qry3 += " group by p, s"
+            else {
+                qry3 += " group by p, s"
+                qry3 += " order by p.normname asc"
+            }
 
             List platformSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
 
@@ -297,25 +297,13 @@ class MyInstitutionController extends AbstractDebugController {
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def actionLicenses() {
-        log.debug("actionLicenses :: ${params}")
-        if (params['copy-license']) {
-            newLicense_DEPR(params)
-        } /*else if (params['delete-license']) {
-            deleteLicense(params)
-        } */
-    }
-
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentLicenses() {
 
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def date_restriction = null
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -339,9 +327,6 @@ class MyInstitutionController extends AbstractDebugController {
 
         String base_qry
         Map qry_params
-
-        @Deprecated
-        String qry = INSTITUTIONAL_LICENSES_QUERY
 
         result.filterSet = params.filterSet ? true : false
 
@@ -383,7 +368,7 @@ class MyInstitutionController extends AbstractDebugController {
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
             base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
-            + " or exists ( select s from Subscription as s where s.owner = l and genfunc_filter_matcher(s.name, :name_filter) = true ) " // filter by subscription
+                    // + " or exists ( select s from Subscription as s where concat('${Subscription.class.name}:',s.id) in (select li.destination from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType) and genfunc_filter_matcher(s.name, :name_filter) = true ) " filter by subscription
             + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
             + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
             + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
@@ -438,14 +423,55 @@ class MyInstitutionController extends AbstractDebugController {
             qry_params.categorisations = categorisations
         }
 
-        if(params.subKind) {
-            base_qry += " and ( exists ( select s from l.subscriptions as s where s.kind.id in (:subKinds) ) ) "
-            List<Long> subKinds = []
-            List<String> selKinds = params.list('subKind')
-            selKinds.each { String sel ->
-                subKinds << Long.parseLong(sel)
+        Set<String> subscriptionOIDs
+        if(params.subKind || params.subStatus || (params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || !params.filterSubmit) {
+            Set<String> subscrQueryFilter = []
+            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s"
+            Map<String,Object> subscrQueryParams = [:]
+
+            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
+                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
+                subscrQueryParams.name_filter = params['keyword-search']
+                result.keyWord = params['keyword-search']
             }
-            qry_params.subKinds = subKinds
+
+            if(params.subStatus || !params.filterSubmit) {
+                subscrQueryFilter <<  "s.status.id = :subStatus"
+                if(!params.filterSubmit) {
+                    params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                    result.filterSet = true
+                }
+                subscrQueryParams.subStatus = params.subStatus as Long
+            }
+
+            if(params.subKind) {
+                subscrQueryFilter << "s.kind.id in (:subKinds)"
+                List<Long> subKinds = []
+                List<String> selKinds = params.list('subKind')
+                selKinds.each { String sel ->
+                    subKinds << Long.parseLong(sel)
+                }
+                subscrQueryParams.subKinds = subKinds
+            }
+
+            if(subscrQueryFilter)
+                subscrQuery += " where "+subscrQueryFilter.join(" and ")
+
+            subscriptionOIDs = Subscription.executeQuery(subscrQuery,subscrQueryParams)
+            base_qry += " and ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
+            qry_params.linkType = RDStore.LINKTYPE_LICENSE
+            if(subscriptionOIDs)
+                qry_params.subOIDs = subscriptionOIDs
+            else qry_params.subOIDs = ['false'] //workaround against empty list
+        }
+
+        if(params.status || !params.filterSubmit) {
+            base_qry += " and l.status.id = :status "
+            if(!params.filterSubmit) {
+                params.status = RDStore.LICENSE_CURRENT.id
+                result.filterSet = true
+            }
+            qry_params.status = params.status as Long
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -456,16 +482,22 @@ class MyInstitutionController extends AbstractDebugController {
 
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
-
-        List totalLicenses = License.executeQuery("select l ${base_qry}", qry_params)
+        du.setBenchmark('execute query')
+        List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
         result.licenseCount = totalLicenses.size()
+        du.setBenchmark('get subscriptions')
+        if(subscriptionOIDs)
+            result.allLinkedSubscriptions = Links.findAllBySourceInListAndDestinationInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },subscriptionOIDs,RDStore.LINKTYPE_LICENSE)
+        else result.allLinkedSubscriptions = Links.findAllBySourceInListAndLinkType(totalLicenses.collect { License l -> GenericOIDService.getOID(l) },RDStore.LINKTYPE_LICENSE)
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
         result.orgRoles = [:]
-        orgRoles.each { oo ->
+        orgRoles.each { OrgRole oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
-        Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority in ('ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM')) order by os.org.name asc")
+        du.setBenchmark('get consortia')
+        Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM') order by os.org.name asc")
+        du.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
         result.orgs = orgs
@@ -483,13 +515,30 @@ class MyInstitutionController extends AbstractDebugController {
                 g.message(code:'license.startDate'),
                 g.message(code:'license.endDate')
         ]
+        Map<License,Set<License>> licChildMap = [:]
+        List<License> childLicsOfSet = totalLicenses.isEmpty() ? [] : License.findAllByInstanceOfInList(totalLicenses)
+        childLicsOfSet.each { License child ->
+            Set<License> children = licChildMap.get(child.instanceOf)
+            if(!children)
+                children = []
+            children << child
+            licChildMap.put(child.instanceOf,children)
+        }
         Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP],result.institution)
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
+        Map objectNames = [:]
+        if(childLicsOfSet) {
+            Set rows = OrgRole.executeQuery('select oo.sub,oo.org.sortname from OrgRole oo where oo.sub in (:subChildren) and oo.roleType = :licType',[subChildren:childLicsOfSet,licType:RDStore.OR_LICENSEE_CONS])
+            rows.each { row ->
+                log.debug("now processing ${row[0]}:${row[1]}")
+                objectNames.put(row[0],row[1])
+            }
+        }
         if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             List rows = []
-            totalLicenses.each { licObj ->
+            totalLicenses.each { License licObj ->
                 License license = (License) licObj
                 List row = [[field:license.reference.replaceAll(',',' '),style:'bold']]
                 List linkedSubs = license.subscriptions.collect { sub ->
@@ -500,23 +549,7 @@ class MyInstitutionController extends AbstractDebugController {
                 row.add([field:license.licensor ? license.licensor.name : '',style:null])
                 row.add([field:license.startDate ? sdf.format(license.startDate) : '',style:null])
                 row.add([field:license.endDate ? sdf.format(license.endDate) : '',style:null])
-                row.addAll(exportService.processPropertyListValues(propertyDefinitions,'xls',license))
-                /*
-                List customProps = license.customProperties.collect { customProp ->
-                    if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
-                        "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
-                    else
-                        "${customProp.type.getI10n('name')}: ${customProp.getValue()}"
-                }
-                row.add([field:customProps.join(", "),style:null])
-                List privateProps = license.privateProperties.collect { privateProp ->
-                    if(privateProp.type.type == RefdataValue.toString() && privateProp.refValue)
-                        "${privateProp.type.getI10n('name')}: ${privateProp.refValue.getI10n('value')}"
-                    else
-                        "${privateProp.type.getI10n('name')}: ${privateProp.getValue()}"
-                }
-                row.add([field:privateProps.join(", "),style:null])
-                */
+                row.addAll(exportService.processPropertyListValues(propertyDefinitions,'xls',license,licChildMap,objectNames))
                 rows.add(row)
             }
             Map sheetData = [:]
@@ -552,23 +585,7 @@ class MyInstitutionController extends AbstractDebugController {
                     row.add(license.licensor)
                     row.add(license.startDate ? sdf.format(license.startDate) : '')
                     row.add(license.endDate ? sdf.format(license.endDate) : '')
-                    row.addAll(row.addAll(exportService.processPropertyListValues(propertyDefinitions,'csv',license)))
-                    /*
-                    List customProps = license.customProperties.collect { customProp ->
-                        if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
-                            "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
-                        else
-                            "${customProp.type.getI10n('name')}: ${customProp.getValue()}"
-                    }
-                    row.add(customProps.join("; "))
-                    List privateProps = license.privateProperties.collect { privateProp ->
-                        if(privateProp.type.type == RefdataValue.toString() && privateProp.refValue)
-                            "${privateProp.type.getI10n('name')}: ${privateProp.refValue.getI10n('value')}"
-                        else
-                            "${privateProp.type.getI10n('name')}: ${privateProp.getValue()}"
-                    }
-                    row.add(privateProps.join("; "))
-                    */
+                    row.addAll(row.addAll(exportService.processPropertyListValues(propertyDefinitions,'csv',license,licChildMap,objectNames)))
                     rows.add(row)
                 }
                 out.withWriter { writer ->
@@ -636,7 +653,7 @@ class MyInstitutionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def emptyLicense() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -677,8 +694,7 @@ class MyInstitutionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
-
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
 
@@ -777,104 +793,27 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
+        Map<String, Object> result = setResultGenerics()
 
-        def result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
-		du.setBenchmark('init')
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
-
-        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
-        result.allConsortia = Org.executeQuery(
-                """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
-                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
-                        os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) 
-                        order by lower(o.name)""",
-                [roles: consRoles]
-        )
-
-        def viableOrgs = []
-
-        if ( result.availableConsortia ){
-          result.availableConsortia.each {
-            viableOrgs.add(it)
-          }
-        }
-
-        viableOrgs.add(result.institution)
-
-        def date_restriction = null;
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-
-        if (params.validOn == null || params.validOn.trim() == '') {
-            result.validOn = ""
-        } else {
-            result.validOn = params.validOn
-            date_restriction = sdf.parse(params.validOn)
-        }
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
-        if (! params.status) {
-            if (params.isSiteReloaded != "yes") {
-                params.status = RDStore.SUBSCRIPTION_CURRENT.id
-                result.defaultSet = true
-            }
-            else {
-                params.status = 'FETCH_ALL'
-            }
-        }
-
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.filterSet = tmpQ[2]
-        List<Subscription> subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
-        if(!params.exportXLS)
-        result.num_sub_rows = subscriptions.size()
-
-        result.date_restriction = date_restriction;
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        if (OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
-            result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
-        }
-
-        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
-
-        if(params.sort && params.sort.indexOf("§") >= 0) {
-            switch(params.sort) {
-                case "orgRole§provider":
-                    result.subscriptions.sort { x,y ->
-                        String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
-                        String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
-
-                        if(params.order.equals("desc")){
-                            b.compareToIgnoreCase a
-                        } else {
-                            a.compareToIgnoreCase b
-                        }
-                    }
-                break
-            }
-        }
-
+		//du.setBenchmark('init')
+        result.tableConfig = ['showActions','showLicense']
+        result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
 
         // Write the output to a file
-        sdf = DateUtil.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
-		List bm = du.stopBenchmark()
-		result.benchMark = bm
+		//List bm = du.stopBenchmark()
+		//result.benchMark = bm
 
         if ( params.exportXLS ) {
 
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(subscriptions, "xls", result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(result.allSubscriptions, "xls", result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -892,7 +831,7 @@ join sub.orgRelations or_sub where
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write((String) exportcurrentSubscription(subscriptions,"csv", result.institution))
+                    writer.write((String) exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
                 }
                 out.close()
             }
@@ -914,75 +853,91 @@ join sub.orgRelations or_sub where
                        g.message(code: 'subscription.manualCancellationDate.label'),
                        g.message(code: 'default.identifiers.label'),
                        g.message(code: 'default.status.label'),
-                       g.message(code: 'subscription.type.label'),
                        g.message(code: 'subscription.kind.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
                        g.message(code: 'subscription.isPublicForApi.label'),
                        g.message(code: 'subscription.hasPerpetualAccess.label')]
         boolean asCons = false
-        if(accessService.checkPerm('ORG_INST_COLLECTIVE, ORG_CONSORTIUM')) {
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
             asCons = true
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
-        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
+        //Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
+        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where (sp.owner in (:subscriptions) or sp.owner.instanceOf in (:subscriptions)) and sp.tenant = :ctx",[subscriptions:subscriptions,ctx:contextOrg])
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
-        Map<Subscription,Set> providers = [:]
-        Map<Subscription,Set> agencies = [:]
-        Map<Subscription,Set> identifiers = [:]
+        Map<Subscription,Set> providers = [:], agencies = [:], identifiers = [:], licenseReferences = [:], subChildMap = [:]
         Map costItemCounts = [:]
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         List allIdentifiers = Identifier.findAllBySubIsNotNull()
+        List allLicenses = Links.executeQuery("select li from Links li where li.destination in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions.collect{ Subscription sub -> GenericOIDService.getOID(sub) },linkType:RDStore.LINKTYPE_LICENSE])
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
-        allProviders.each { provider ->
-            Set subProviders
-            if(providers.get(provider.sub)) {
-                subProviders = providers.get(provider.sub)
-            }
-            else subProviders = new TreeSet()
+        allProviders.each { OrgRole provider ->
+            Set subProviders = providers.get(provider.sub)
+            if(!providers.get(provider.sub))
+                subProviders = new TreeSet()
             String providerName = provider.org.name ? provider.org.name : ' '
             subProviders.add(providerName)
             providers.put(provider.sub,subProviders)
         }
-        allAgencies.each { agency ->
-            Set subAgencies
-            if(agencies.get(agency.sub)) {
-                subAgencies = agencies.get(agency.sub)
-            }
-            else subAgencies = new TreeSet()
+        allAgencies.each { OrgRole agency ->
+            Set subAgencies = agencies.get(agency.sub)
+            if(!agencies.get(agency.sub))
+                subAgencies = new TreeSet()
             String agencyName = agency.org.name ? agency.org.name : ' '
             subAgencies.add(agencyName)
             agencies.put(agency.sub,subAgencies)
         }
-        allIdentifiers.each { identifier ->
-            Set subIdentifiers
-            if(identifiers.get(identifier.sub))
-                subIdentifiers = identifiers.get(identifier.sub)
-            else subIdentifiers = new TreeSet()
+        allIdentifiers.each { Identifier identifier ->
+            Set subIdentifiers = identifiers.get(identifier.sub)
+            if(!identifiers.get(identifier.sub))
+                subIdentifiers = new TreeSet()
             subIdentifiers.add("(${identifier.ns.ns}) ${identifier.value}")
             identifiers.put(identifier.sub,subIdentifiers)
         }
         allCostItems.each { row ->
             costItemCounts.put(row[1],row[0])
         }
+        allLicenses.each { Links row ->
+            Subscription s = genericOIDService.resolveOID(row.destination)
+            License l = genericOIDService.resolveOID(row.source)
+            Set subLicenses = licenseReferences.get(s)
+            if(!subLicenses)
+                subLicenses = new TreeSet()
+            subLicenses.add(l.reference)
+            licenseReferences.put(s,subLicenses)
+        }
         List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf != null group by s.instanceOf.id')
         Map subscriptionMembers = [:]
         membershipCounts.each { row ->
             subscriptionMembers.put(row[1],row[0])
         }
+        List<Subscription> childSubsOfSet = subscriptions.isEmpty() ? [] : Subscription.findAllByInstanceOfInList(subscriptions)
+        childSubsOfSet.each { Subscription child ->
+            Set<Subscription> children = subChildMap.get(child.instanceOf)
+            if(!children)
+                children = []
+            children << child
+            subChildMap.put(child.instanceOf,children)
+        }
+        Map objectNames = [:]
+        if(childSubsOfSet) {
+            Set rows = OrgRole.executeQuery('select oo.sub,oo.org.sortname from OrgRole oo where oo.sub in (:subChildren) and oo.roleType in (:subscrTypes)',[subChildren:childSubsOfSet,subscrTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+            rows.each { row ->
+                log.debug("now processing ${row[0]}:${row[1]}")
+                objectNames.put(row[0],row[1])
+            }
+        }
         List subscriptionData = []
-        subscriptions.each { sub ->
+        subscriptions.each { Subscription sub ->
             List row = []
             switch (format) {
                 case "xls":
                 case "xlsx":
                     row.add([field: sub.name ?: "", style: 'bold'])
                     row.add([field: sub.globalUID, style: null])
-                    List ownerReferences = sub.owner?.collect {
-                        it.reference
-                    }
-                    row.add([field: ownerReferences ? ownerReferences.join(", ") : '', style: null])
+                    row.add([field: licenseReferences.get(sub) ? licenseReferences.get(sub).join(", ") : '', style: null])
                     List packageNames = sub.packages?.collect {
                         it.pkg.name
                     }
@@ -995,7 +950,6 @@ join sub.orgRelations or_sub where
                     row.add([field: sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '', style: null])
                     row.add([field: identifiers.get(sub) ? identifiers.get(sub).join(", ") : '',style: null])
                     row.add([field: sub.status?.getI10n("value"), style: null])
-                    row.add([field: sub.type?.getI10n("value"), style: null])
                     row.add([field: sub.kind?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
@@ -1005,38 +959,35 @@ join sub.orgRelations or_sub where
                         row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
                         row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
                     }
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames))
                     subscriptionData.add(row)
                     break
                 case "csv":
                     row.add(sub.name ? sub.name.replaceAll(',',' ') : "")
                     row.add(sub.globalUID)
-                    List ownerReferences = sub.owner?.collect {
-                        it.reference
-                    }
-                    row.add(ownerReferences ? ownerReferences.join("; ") : '')
+                    row.add(licenseReferences.get(sub) ? licenseReferences.get(sub).join("; ") : '')
                     List packageNames = sub.packages?.collect {
                         it.pkg.name
                     }
                     row.add(packageNames ? packageNames.join("; ") : '')
                     row.add(sub.getConsortia()?.name ?: '')
-                    row.add(providers.get(sub) ? providers.get(sub).join("; ") : '')
-                    row.add(agencies.get(sub) ? agencies.get(sub).join("; ") : '')
+                    row.add(providers.get(sub) ? providers.get(sub).join("; ").replace(',','') : '')
+                    row.add(agencies.get(sub) ? agencies.get(sub).join("; ").replace(',','') : '')
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
                     row.add(sub.endDate ? sdf.format(sub.endDate) : '')
                     row.add(sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '')
                     row.add(identifiers.get(sub) ? identifiers.get(sub).join("; ") : '')
                     row.add(sub.status?.getI10n("value"))
-                    row.add(sub.type?.getI10n("value"))
+                    row.add(sub.kind?.getI10n("value"))
                     row.add(sub.form?.getI10n("value"))
                     row.add(sub.resource?.getI10n("value"))
                     row.add(sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                     row.add(sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                     if(asCons) {
-                        row.add(subscriptionMembers.get(sub.id) ?: 0)
-                        row.add(costItemCounts.get(sub.id) ?: 0)
+                        row.add(subscriptionMembers.get(sub.id) ? (int) subscriptionMembers.get(sub.id) : 0)
+                        row.add(costItemCounts.get(sub.id) ? (int) costItemCounts.get(sub.id) : 0)
                     }
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames))
                     subscriptionData.add(row)
                     break
             }
@@ -1051,81 +1002,12 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def addSubscription() {
-        def result = setResultGenerics()
-
-        def date_restriction = null;
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-
-        if (params.validOn == null) {
-            result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            date_restriction = sdf.parse(result.validOn)
-        } else if (params.validOn.trim() == '') {
-            result.validOn = "" 
-        } else {
-            result.validOn = params.validOn
-            date_restriction = sdf.parse(params.validOn)
-        }
-
-        // if ( ! permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM') ) {
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
-            response.sendError(401)
-            result.is_inst_admin = false;
-            // render(status: '401', text:"You do not have permission to add subscriptions to ${result.institution.name}. Please request editor access on the profile page");
-            return;
-        }
-
-        result.is_inst_admin = result.user?.hasAffiliation('INST_ADM')
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-        // def base_qry = " from Subscription as s where s.type.value = 'Subscription Offered' and s.isPublic=?"
-        def qry_params = []
-        String base_qry = " from Package as p where lower(p.name) like ?"
-
-        if (params.q == null) {
-            qry_params.add("%");
-        } else {
-            qry_params.add("%${params.q.trim().toLowerCase()}%");
-        }
-
-        if (date_restriction) {
-            base_qry += " and p.startDate <= ? and p.endDate >= ? "
-            qry_params.add(date_restriction)
-            qry_params.add(date_restriction)
-        }
-
-        // Only list subscriptions where the user has view perms against the org
-        // base_qry += "and ( ( exists select or from OrgRole where or.org =? and or.user = ? and or.perms.contains'view' ) "
-
-        // Or the user is a member of an org who has a consortial membership that has view perms
-        // base_qry += " or ( 2==2 ) )"
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += " order by ${params.sort} ${params.order}"
-        } else {
-            base_qry += " order by p.name asc"
-        }
-
-        result.num_pkg_rows = Package.executeQuery("select p.id " + base_qry, qry_params).size()
-        result.packages = Package.executeQuery("select p ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
-
-        result
-    }
-
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def emptySubscription() {
-        def result = setResultGenerics()
-        
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        Map<String, Object> result = setResultGenerics()
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
@@ -1163,7 +1045,7 @@ join sub.orgRelations or_sub where
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processEmptySubscription() {
         log.debug(params)
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER
         RefdataValue role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
@@ -1242,7 +1124,6 @@ join sub.orgRelations or_sub where
                         String postfix = cm.get(0).shortname ?: cm.get(0).name
 
                         Subscription cons_sub = new Subscription(
-                                            // type: RefdataValue.getByValue("Subscription Taken"),
                                           type: subType,
                                           kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
                                           name: params.newEmptySubName,
@@ -1288,47 +1169,6 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @Deprecated
-    def buildQuery(params) {
-        log.debug("BuildQuery...");
-
-        StringWriter sw = new StringWriter()
-
-        if (params?.q?.length() > 0)
-            sw.write(params.q)
-        else
-            sw.write("*:*")
-
-        reversemap.each { mapping ->
-
-            // log.debug("testing ${mapping.key}");
-
-            if (params[mapping.key] != null) {
-                if (params[mapping.key].class == java.util.ArrayList) {
-                    params[mapping.key].each { p ->
-                        sw.write(" AND ")
-                        sw.write(mapping.value)
-                        sw.write(":")
-                        sw.write("\"${p}\"")
-                    }
-                } else {
-                    // Only add the param if it's length is > 0 or we end up with really ugly URLs
-                    // II : Changed to only do this if the value is NOT an *
-                    if (params[mapping.key].length() > 0 && !(params[mapping.key].equalsIgnoreCase('*'))) {
-                        sw.write(" AND ")
-                        sw.write(mapping.value)
-                        sw.write(":")
-                        sw.write("\"${params[mapping.key]}\"")
-                    }
-                }
-            }
-        }
-
-        sw.write(" AND type:\"Subscription Offered\"");
-        def result = sw.toString();
-        result;
-    }
-
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processEmptyLicense() {
@@ -1347,14 +1187,14 @@ join sub.orgRelations or_sub where
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name])
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
-            return;
+            return
         }
 
-        def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
+        def baseLicense = params.baselicense ? License.get(params.baselicense) : null
         //Nur wenn von Vorlage ist
         if (baseLicense) {
             if (!baseLicense?.hasPerm("view", user)) {
-                log.debug("return 401....");
+                log.debug("return 401....")
                 flash.error = message(code: 'myinst.newLicense.error')
                 response.sendError(401)
             }
@@ -1363,20 +1203,20 @@ join sub.orgRelations or_sub where
                         baseLicense, params, InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD)
 
                 if (copyLicense.hasErrors()) {
-                    log.error("Problem saving license ${copyLicense.errors}");
+                    log.error("Problem saving license ${copyLicense.errors}")
                     render view: 'editLicense', model: [licenseInstance: copyLicense]
                 } else {
                     copyLicense.reference = params.licenseName
                     copyLicense.startDate = DateUtil.parseDateGeneric(params.licenseStartDate)
                     copyLicense.endDate = DateUtil.parseDateGeneric(params.licenseEndDate)
 
-                    if (copyLicense.save(flush: true)) {
+                    if (copyLicense.save()) {
                         flash.message = message(code: 'license.createdfromTemplate.message')
                     }
 
                     if( params.sub) {
                         Subscription subInstance = Subscription.get(params.sub)
-                        subscriptionService.setOrgLicRole(subInstance,copyLicense)
+                        subscriptionService.setOrgLicRole(subInstance,copyLicense,false)
                         //subInstance.owner = copyLicense
                         //subInstance.save(flush: true)
                     }
@@ -1392,20 +1232,21 @@ join sub.orgRelations or_sub where
         License licenseInstance = new License(type: license_type, reference: params.licenseName,
                 startDate:params.licenseStartDate ? DateUtil.parseDateGeneric(params.licenseStartDate) : null,
                 endDate: params.licenseEndDate ? DateUtil.parseDateGeneric(params.licenseEndDate) : null,
-                status: RefdataValue.get(params.status)
+                status: RefdataValue.get(params.status),
+                openEnded: RDStore.YNU_UNKNOWN
         )
 
-        if (!licenseInstance.save(flush: true)) {
+        if (!licenseInstance.save()) {
             log.error(licenseInstance.errors)
             flash.error = message(code:'license.create.error')
             redirect action: 'emptyLicense'
         }
         else {
-            log.debug("Save ok");
+            log.debug("Save ok")
             RefdataValue licensee_role = RDStore.OR_LICENSEE
             RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
-            log.debug("adding org link to new license");
+            log.debug("adding org link to new license")
 
 
             OrgRole orgRole
@@ -1415,54 +1256,95 @@ join sub.orgRelations or_sub where
                 orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: licensee_role)
             }
 
-            if (orgRole.save(flush: true)) {
-            } else {
-                log.error("Problem saving org links to license ${org.errors}");
-            }
-            if(params.sub) {
-                Subscription subInstance = Subscription.get(params.sub)
-                subscriptionService.setOrgLicRole(subInstance,licenseInstance)
-                /*subInstance.owner = licenseInstance
-                subInstance.save(flush: true)*/
+            if (!orgRole.save()) {
+                log.error("Problem saving org links to license ${orgRole.errors}");
             }
 
             redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
         }
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    @Deprecated
-    def newLicense_DEPR(params) {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = contextService.getOrg()
-
-        if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
-            flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
-            response.sendError(401)
-            // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
-            return;
+    /**
+     * connects the context subscription with the given pair.
+     *
+     * @return void, redirects to main page
+     */
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def linkObjects() {
+        //error when no pair is given!
+        params.keySet().each {
+            if(it.contains("pair_")) {
+                def pairCheck = params.get(it)
+                if(!pairCheck) {
+                    flash.error = message(code:'default.linking.noLinkError')
+                    redirect(url: request.getHeader('referer'))
+                    return
+                }
+            }
         }
-
-        def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
-
-        if (! baseLicense?.hasPerm("view", user)) {
-            log.debug("return 401....");
-            flash.error = message(code:'myinst.newLicense.error')
-            response.sendError(401)
-
+        //distinct between insert and update - if a link id exists, then proceed with edit, else create new instance
+        Map<String,Object> configMap = [owner:contextService.org]
+        //perspectiveIndex 0: source -> dest, 1: dest -> source
+        if(params.link) {
+            configMap.link = genericOIDService.resolveOID(params.link)
+            if(params.commentID)
+                configMap.comment = genericOIDService.resolveOID(params.commentID)
+            if(params["linkType_${configMap.link.id}"]) {
+                String linkTypeString = params["linkType_${configMap.link.id}"].split("§")[0]
+                int perspectiveIndex = Integer.parseInt(params["linkType_${configMap.link.id}"].split("§")[1])
+                RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
+                configMap.commentContent = params["linkComment_${configMap.link.id}"].trim()
+                if(perspectiveIndex == 0) {
+                    configMap.source = params.context
+                    configMap.destination = params["pair_${configMap.link.id}"]
+                }
+                else if(perspectiveIndex == 1) {
+                    configMap.source = params["pair_${configMap.link.id}"]
+                    configMap.destination = params.context
+                }
+                configMap.linkType = linkType
+            }
+            else if(!params["linkType_${configMap.link.id}"]) {
+                flash.error = message(code:'default.linking.linkTypeError')
+            }
         }
         else {
-            //Moe fragen
-            /*def copyLicense = institutionsService.copyLicense(baseLicense, params)
-            if (copyLicense.hasErrors() ){ */
-                log.error("Problem saving license ${copyLicense.errors}");
-                render view: 'editLicense', model: [licenseInstance: copyLicense]
-           /* }else{
-                flash.message = message(code: 'license.created.message')
-                redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
-            }*/
+            if(params["linkType_new"]) {
+                String linkTypeString = params["linkType_new"].split("§")[0]
+                int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
+                configMap.linkType = genericOIDService.resolveOID(linkTypeString)
+                configMap.commentContent = params.linkComment_new
+                if(perspectiveIndex == 0) {
+                    configMap.source = params.context
+                    configMap.destination = params.pair_new
+                }
+                else if(perspectiveIndex == 1) {
+                    configMap.source = params.pair_new
+                    configMap.destination = params.context
+                }
+            }
+            else if(params["linkType_sl_new"]) {
+                configMap.linkType = RDStore.LINKTYPE_LICENSE
+                configMap.commentContent = params.linkComment_sl_new
+                configMap.source = params.pair_sl_new
+                configMap.destination = params.context
+            }
+            else if(!params["linkType_new"] && !params["linkType_sl_new"]) {
+                flash.error = message(code:'default.linking.linkTypeError')
+            }
         }
+        def error = linksGenerationService.createOrUpdateLink(configMap)
+        if(error != false)
+            flash.error = error
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def unlinkObjects() {
+        linksGenerationService.deleteLink(params.oid)
+        redirect(url: request.getHeader('referer'))
     }
 
     /*
@@ -1471,7 +1353,7 @@ join sub.orgRelations or_sub where
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteLicense(params) {
         log.debug("deleteLicense ${params}");
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
@@ -1510,7 +1392,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
-        Map result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         result
     }
 
@@ -1524,53 +1406,6 @@ join sub.orgRelations or_sub where
         docstoreService.unifiedDeleteDocuments(params)
 
         redirect controller: 'myInstitution', action: 'documents' /*, fragment: 'docstab' */
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def processAddSubscription() {
-
-        User user = User.get(springSecurityService.principal.id)
-        Org institution = contextService.getOrg()
-
-        if (! accessService.checkUserIsMember(user, institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            // render(status: '401', text:"You do not have permission to access ${institution.name}. Please request access on the profile page");
-            return;
-        }
-
-        log.debug("processAddSubscription ${params}");
-
-        Package basePackage = Package.get(params.packageId);
-
-        if (basePackage) {
-            //
-            boolean add_entitlements = (params.createSubAction == 'copy' ? true : false)
-
-            def new_sub = basePackage.createSubscription("Subscription Taken",
-                    "A New subscription....",
-                    "A New subscription identifier.....",
-                    basePackage.startDate,
-                    basePackage.endDate,
-                    basePackage.getConsortia(),
-                    add_entitlements)
-
-            OrgRole new_sub_link = new OrgRole(
-                    org: institution,
-                    sub: new_sub,
-                    roleType: RDStore.OR_SUBSCRIBER
-            ).save();
-
-            // This is done by basePackage.createSubscription
-            // def new_sub_package = new SubscriptionPackage(subscription: new_sub, pkg: basePackage).save();
-
-            flash.message = message(code: 'subscription.created.message', args: [message(code: 'default.subscription.label'), basePackage.id])
-            redirect controller: 'subscription', action: 'index', params: params, id: new_sub.id
-        } else {
-            flash.message = message(code: 'subscription.unknown.message')
-            redirect action: 'addSubscription', params: params
-        }
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
@@ -1738,7 +1573,7 @@ join sub.orgRelations or_sub where
                     response.contentType = "text/csv"
 
                     ServletOutputStream out = response.outputStream
-                    Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements)
+                    Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements)
                     out.withWriter { writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
                     }
@@ -1796,7 +1631,7 @@ join sub.orgRelations or_sub where
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
-        currentSubIds = Subscription.executeQuery("select s.id ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
+        currentSubIds = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
 
         idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
@@ -1833,8 +1668,8 @@ join sub.orgRelations or_sub where
                 qryParams3.put('query', "${params.pkg_q}")
             }
 
-            qry3 += "order by pkg.name ${params.order ?: 'asc'}"
             qry3 += " group by pkg, s"
+            qry3 += " order by pkg.name " + (params.order ?: 'asc')
 
             List packageSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
             /*, [max:result.max, offset:result.offset])) */
@@ -2024,6 +1859,7 @@ AND EXISTS (
         return qry_map
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def availableLicenses() {
@@ -2065,7 +1901,7 @@ AND EXISTS (
         result
     }
 
-    // RDStore.SUBSCRIPTION_DELETED is removed
+    /* RDStore.SUBSCRIPTION_DELETED is removed
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -2093,7 +1929,7 @@ AND EXISTS (
                 
                 if(subscription.save(flush: true)) {
                     //delete eventual links, bugfix for ERMS-800 (ERMS-892)
-                    Links.executeQuery('select l from Links as l where l.objectType = :objType and :subscription in (l.source,l.destination)',[objType:Subscription.class.name,subscription:subscription]).each { l ->
+                    Links.executeQuery('select l from Links as l where :subscription in (l.source,l.destination)',[subscription:GenericOIDService.getOID(subscription)]).each { l ->
                         DocContext comment = DocContext.findByLink(l)
                         if(comment) {
                             Doc commentContent = comment.owner
@@ -2114,12 +1950,12 @@ AND EXISTS (
 
         redirect action: 'currentSubscriptions'
     }
+     */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def dashboard() {
-
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
@@ -2128,8 +1964,6 @@ AND EXISTS (
         }
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.pendingOffset = 0
@@ -2171,7 +2005,7 @@ AND EXISTS (
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
 
-        result.dueDates = de.laser.DashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDates = DashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
         result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
@@ -2195,8 +2029,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def modal_create() {
-
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
@@ -2213,10 +2046,14 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),max:result.max,pendingOffset:result.offset,pending:true,notifications:false]
+
+        result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
         result
     }
@@ -2225,7 +2062,7 @@ AND EXISTS (
     //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     @Secured(['ROLE_ADMIN'])
     def announcements() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         result.itemsTimeWindow = 365
         result.recentAnnouncements = Doc.executeQuery(
@@ -2239,7 +2076,7 @@ AND EXISTS (
 
     @Secured(['ROLE_YODA'])
     def changeLog() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         def exporting = ( params.format == 'csv' ? true : false )
 
@@ -2254,10 +2091,10 @@ AND EXISTS (
           result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }
 
-        PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = ?',[result.institution]).each {
+        PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
           result.institutional_objects.add(['com.k_int.kbplus.License:'+it.id,"${message(code:'license.label')}: "+it.reference]);
         }
-        PendingChange.executeQuery('select distinct(pc.subscription) from PendingChange as pc where pc.owner = ?',[result.institution]).each {
+        PendingChange.executeQuery('select distinct(pc.subscription) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
           result.institutional_objects.add(['com.k_int.kbplus.Subscription:'+it.id,"${message(code:'subscription')}: "+it.name]);
         }
 
@@ -2312,7 +2149,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def financeImport() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         result.mappingCols = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
                               "currency","exchangeRate","taxType","taxRate","value","subscription","package",
                               "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
@@ -2358,7 +2195,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processFinanceImport() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         CommonsMultipartFile tsvFile = params.tsvFile
         if(tsvFile && tsvFile.size > 0) {
             String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
@@ -2389,7 +2226,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def subscriptionImport() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         result.mappingCols = ["name","owner","status","type","form","resource","provider","agency","startDate","endDate","instanceOf",
                               "manualCancellationDate","member","customProperties","privateProperties","notes"]
         result
@@ -2400,7 +2237,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processSubscriptionImport() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         CommonsMultipartFile tsvFile = params.tsvFile
         if(tsvFile && tsvFile.size > 0) {
             String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
@@ -2433,20 +2270,27 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def currentSurveys() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        Map<String, Object> result = setResultGenerics()
 
         //result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         //result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         params.tab = params.tab ?: 'new'
 
+        if(params.tab != 'new'){
+            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+        }
+
+        /*if (params.validOnYear == null || params.validOnYear == '') {
+            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+        }*/
+
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution])
+
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
-        result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIBER_CONS, 'activeInst': result.institution])
@@ -2502,22 +2346,11 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfos() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
+        Map<String, Object> result = setResultGenerics()
         result.contextOrg = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : result.surveyInfo.surveyConfigs[0]
-
-        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
 
@@ -2527,29 +2360,37 @@ AND EXISTS (
             result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
             result.subscription = result.subscriptionInstance
             result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
+            result.costItemSums = [:]
             result.visibleOrgRelations = []
-            result.subscriptionInstance?.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                    result.visibleOrgRelations << or
+            if(result.subscriptionInstance) {
+                result.subscriptionInstance.orgRelations?.each { or ->
+                    if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                        result.visibleOrgRelations << or
+                    }
+                }
+                result.visibleOrgRelations.sort { it.org.sortname }
+
+                //costs dataToDisplay
+                result.dataToDisplay = ['subscr']
+                result.offsets = [subscrOffset: 0]
+                result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
+
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+                //cost items
+                //params.forExport = true
+                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+                if (costItems?.subscr) {
+                    result.costItemSums.subscrCosts = costItems.subscr.costItems
                 }
             }
-            result.visibleOrgRelations.sort { it.org.sortname }
 
-            //costs dataToDisplay
-            result.dataToDisplay = ['subscr']
-            result.offsets = [subscrOffset:0]
-            result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
+            if(result.surveyConfig.subSurveyUseForTransfer) {
+                result.successorSubscription = result.surveyConfig.subscription.getCalculatedSuccessor()
 
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
-            //cost items
-            //params.forExport = true
-            LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
-            result.costItemSums = [:]
-            if (costItems?.subscr) {
-                result.costItemSums.subscrCosts = costItems.subscr.costItems
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
+
         }
 
         if ( params.exportXLSX ) {
@@ -2581,16 +2422,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfosIssueEntitlements() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        Map<String, Object> result = setResultGenerics()
 
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
@@ -2627,9 +2459,6 @@ AND EXISTS (
             }
             result.visibleOrgRelations.sort { it.org.sortname }
         }
-
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
-
         result
     }
 
@@ -2639,11 +2468,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfoFinish() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        Map<String, Object> result = setResultGenerics()
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2730,11 +2555,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyResultFinish() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        Map<String, Object> result = setResultGenerics()
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2763,7 +2584,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tip() {
-      def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
       log.debug("tip :: ${params}")
       result.tip = TitleInstitutionProvider.get(params.id)
@@ -2800,9 +2621,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def userList() {
-        Map result = setResultGenerics()
-        //overwrite
-        result.editable = result.user.hasRole('ROLE_ADMIN') || result.user.hasAffiliation('INST_ADM')
+        Map<String, Object> result = setResultGenerics()
 
         Map filterParams = params
         filterParams.status = UserOrg.STATUS_APPROVED
@@ -2850,7 +2669,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def userCreate() {
-        Map result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
         result.orgInstance = result.institution
         result.editor = result.user
         result.inContextOrg = true
@@ -2897,15 +2716,12 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
-
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         result.propList =
                 PropertyDefinition.findAllWhere(
@@ -2922,16 +2738,13 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def myPublicContacts() {
-
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         params.org = result.institution
         List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         result.propList =
                 PropertyDefinition.findAllWhere(
@@ -2951,8 +2764,6 @@ AND EXISTS (
     })
     Map<String, Object> budgetCodes() {
         Map<String, Object> result = setResultGenerics()
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         if (result.editable) {
 
@@ -2994,7 +2805,7 @@ AND EXISTS (
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if (params.deleteId) {
             Task dTask = Task.get(params.deleteId)
@@ -3026,7 +2837,6 @@ AND EXISTS (
         result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         def preCon = taskService.getPreconditions(contextService.getOrg())
         result << preCon
 
@@ -3035,37 +2845,33 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def addMembers() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         // new: filter preset
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            result.comboType = 'Consortium'
-            params.orgType   = RDStore.OT_INSTITUTION.id?.toString()
-        }
-        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            result.comboType = 'Department'
-            params.orgType   = RDStore.OT_DEPARTMENT.id?.toString()
-        }
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id?.toString()
+        result.comboType = 'Consortium'
+        params.orgType   = RDStore.OT_INSTITUTION.id.toString()
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
         if (params.selectedOrgs) {
-            log.debug('adding orgs to consortia/institution')
+            if(formService.validateToken(params)) {
+                log.debug('adding orgs to consortia/institution')
 
-            params.list('selectedOrgs').each { soId ->
-                Map map = [
-                        toOrg: result.institution,
-                        fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.getByValueAndCategory(result.comboType,RDConstants.COMBO_TYPE)
-                ]
-                if (! Combo.findWhere(map)) {
-                    Combo cmb = new Combo(map)
-                    cmb.save()
+                params.list('selectedOrgs').each { soId ->
+                    Map map = [
+                            toOrg: result.institution,
+                            fromOrg: Org.findById( Long.parseLong(soId)),
+                            type: RefdataValue.getByValueAndCategory(result.comboType,RDConstants.COMBO_TYPE)
+                    ]
+                    if (! Combo.findWhere(map)) {
+                        Combo cmb = new Combo(map)
+                        cmb.save()
+                    }
                 }
-            }
 
+            }
             redirect action: 'manageMembers'
         }
         result.filterSet = params.filterSet ? true : false
@@ -3112,43 +2918,28 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def manageMembers() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
         du.setBenchmark('start')
 
         // new: filter preset
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
-            if (params.selectedOrgs) {
-                log.debug('remove orgs from consortia')
+        result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
+        if (params.selectedOrgs) {
+            log.debug('remove orgs from consortia')
 
-                params.list('selectedOrgs').each { soId ->
-                    def cmb = Combo.findWhere(
-                            toOrg: result.institution,
-                            fromOrg: Org.get(Long.parseLong(soId)),
-                            type: RDStore.COMBO_TYPE_CONSORTIUM
-                    )
-                    cmb.delete()
-                }
-            }
-        }
-        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            result.comboType = RDStore.COMBO_TYPE_DEPARTMENT
-            if (params.selectedOrgs) {
-                log.debug('remove orgs from department')
-                params.list('selectedOrgs').each { soId ->
-                    Org department = Org.get(soId)
-                    if(!organisationService.removeDepartment(department)) {
-                        flash.error(message(code:'default.not.deleted.message',args:[message(code:'org.department.label'),department.name]))
-                        redirect(url: request.getHeader('referer'))
-                    }
-                }
+            params.list('selectedOrgs').each { soId ->
+                def cmb = Combo.findWhere(
+                        toOrg: result.institution,
+                        fromOrg: Org.get(Long.parseLong(soId)),
+                        type: RDStore.COMBO_TYPE_CONSORTIUM
+                )
+                cmb.delete()
             }
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
@@ -3176,14 +2967,8 @@ AND EXISTS (
         String header
         String exportHeader
 
-        if(result.comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
-            header = message(code: 'menu.my.consortia')
-            exportHeader = message(code: 'export.my.consortia')
-        }
-        else if(result.comboType == RDStore.COMBO_TYPE_DEPARTMENT) {
-            header = g.message(code: 'menu.my.departments')
-            exportHeader = message(code: 'export.my.departments')
-        }
+        header = message(code: 'menu.my.consortia')
+        exportHeader = message(code: 'export.my.consortia')
         SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
         // Write the output to a file
         String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
@@ -3219,206 +3004,20 @@ AND EXISTS (
         }
     }
 
-    @DebugAnnotation(perm="ORG_INST_COLLECTIVE", affil="INST_ADM", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
-    def removeDepartment() {
-        Org department = Org.get(params.dept)
-        if(organisationService.removeDepartment(department))
-            redirect action: 'manageMembers'
-        else {
-            flash.error(message(code:'default.not.deleted.message',args:[message(code:'org.department.label'),department.name]))
-            redirect(url: request.getHeader('referer'))
-        }
-    }
-
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
 
         Map<String,Object> result = setResultGenerics()
-
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('filterService')
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-        Map fsq = filterService.getOrgComboQuery([comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort: 'o.sortname'], contextService.getOrg())
-        result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
-
-        du.setBenchmark('filterSubTypes & filterPropList')
-
-        if(params.filterSet)
-            result.filterSet = params.filterSet
-
-        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(
-                RDStore.SUBSCRIPTION_TYPE_LOCAL
-        )
-        result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
-
-        /*
-        String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
-                "join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
-                "where orgK = :org and orgK = roleK.org and roleK.roleType = :rdvCons " +
-                "and orgK = roleTK.org and roleTK.roleType = :rdvCons " +
-                "and roleT.roleType = :rdvSubscr "
-        */
-
-        // CostItem ci
-
-        du.setBenchmark('filter query')
-
-        String query = "select ci, subT, roleT.org " +
-                " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
-                " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
-                " where roleK.org = :org and roleK.roleType = :rdvCons " +
-                " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
-                " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) " +
-                " and ( ci is null or (ci.owner = :org and ci.costItemStatus != :deleted) )"
-
-
-        Map qarams = [org      : result.institution,
-                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
-                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN,
-                      deleted  : RDStore.COST_ITEM_DELETED
-        ]
-
-        if (params.member?.size() > 0) {
-            query += " and roleT.org.id = :member "
-            qarams.put('member', params.long('member'))
-        }
-
-        if (params.identifier?.length() > 0) {
-            query += " and exists (select ident from Identifier ident join ident.org ioorg " +
-                    " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
-            qarams.put('identifier', "%${params.identifier}%")
-        }
-
-        if (params.validOn?.size() > 0) {
-            result.validOn = params.validOn
-
-            query += " and ( "
-            query += "( ci.startDate <= :validOn OR (ci.startDate is null AND (subT.startDate <= :validOn OR subT.startDate is null) ) ) and "
-            query += "( ci.endDate >= :validOn OR (ci.endDate is null AND (subT.endDate >= :validOn OR subT.endDate is null) ) ) "
-            query += ") "
-
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-            qarams.put('validOn', new Timestamp(sdf.parse(params.validOn).getTime()))
-        }
-
-        if (params.status?.size() > 0) {
-            query += " and subT.status.id = :status "
-            qarams.put('status', params.long('status'))
-        } else if(!params.filterSet) {
-            query += " and subT.status.id = :status "
-            qarams.put('status', RDStore.SUBSCRIPTION_CURRENT.id)
-            params.status = RDStore.SUBSCRIPTION_CURRENT.id
-            result.defaultSet = true
-        }
-
-        if (params.filterPropDef?.size() > 0) {
-            def psq = propertyService.evalFilterQuery(params, query, 'subT', qarams)
-            query = psq.query
-            qarams = psq.queryParams
-        }
-
-        if (params.form?.size() > 0) {
-            query += " and subT.form.id = :form "
-            qarams.put('form', params.long('form'))
-        }
-        if (params.resource?.size() > 0) {
-            query += " and subT.resource.id = :resource "
-            qarams.put('resource', params.long('resource'))
-        }
-        if (params.subTypes?.size() > 0) {
-            query += " and subT.type.id in (:subTypes) "
-            qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
-        }
-
-        if (params.containsKey('subKinds')) {
-            query += " and subT.kind.id in (:subKinds) "
-            qarams.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
-        }
-
-        if (params.isPublicForApi) {
-            query += "and subT.isPublicForApi = :isPublicForApi "
-            qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
-        }
-
-        if (params.hasPerpetualAccess) {
-            query += "and subT.hasPerpetualAccess = :hasPerpetualAccess "
-            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
-        }
-
-        if (params.subRunTimeMultiYear || params.subRunTime) {
-
-            if (params.subRunTimeMultiYear && !params.subRunTime) {
-                query += " and subT.isMultiYear = :subRunTimeMultiYear "
-                qarams.put('subRunTimeMultiYear', true)
-            }else if (!params.subRunTimeMultiYear && params.subRunTime){
-                query += " and subT.isMultiYear = :subRunTimeMultiYear "
-                qarams.put('subRunTimeMultiYear', false)
-            }
-        }
-
-
-
-        String orderQuery = " order by roleT.org.sortname, subT.name"
-        if (params.sort?.size() > 0) {
-            orderQuery = " order by " + params.sort + " " + params.order
-        }
-
-        if(params.filterSet && !params.member && !params.validOn && !params.status && !params.filterPropDef && !params.filterProp && !params.form && !params.resource && !params.subTypes)
-            result.filterSet = false
-
-        //log.debug( query + " " + orderQuery )
-        // log.debug( qarams )
-
-        du.setBenchmark('costs')
-
-        String totalMembersQuery = query.replace("ci, subT, roleT.org", "roleT.org")
-
-        result.totalMembers    = CostItem.executeQuery(
-                totalMembersQuery, qarams
-        )
-
-        List costs = CostItem.executeQuery(
-                query + " " + orderQuery, qarams
-        )
-        result.countCostItems = costs.size()
-        if(params.exportXLS || params.format)
-            result.costItems = costs
-        else result.costItems = costs.drop((int) result.offset).take((int) result.max)
-
-        result.finances = {
-            Map entries = [:]
-            result.costItems.each { obj ->
-                if (obj[0]) {
-                    CostItem ci = obj[0]
-                    if (!entries."${ci.billingCurrency}") {
-                        entries."${ci.billingCurrency}" = 0.0
-                    }
-
-                    if (ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE) {
-                        entries."${ci.billingCurrency}" += ci.costInBillingCurrencyAfterTax
-                    }
-                    else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
-                        entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
-                    }
-                }
-            }
-            entries
-        }()
-
-        List bm = du.stopBenchmark()
-        result.benchMark = bm
+        result.tableConfig = ['withCostItems']
+        result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
 
         LinkedHashMap<Subscription,List<Org>> providers = [:]
         Map<Org,Set<String>> mailAddresses = [:]
         BidiMap subLinks = new DualHashBidiMap()
         if(params.format || params.exportXLS) {
-            Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
+            Links.findAllByLinkType(RDStore.LINKTYPE_FOLLOWS).each { Links link ->
+                if(link.source.contains(Subscription.class.name) && link.destination.contains(Subscription.class.name))
                 subLinks.put(link.source,link.destination)
             }
             OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
@@ -3773,7 +3372,7 @@ AND EXISTS (
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
     def manageParticipantSurveys() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
         du.setBenchmark('filterService')
@@ -3786,6 +3385,17 @@ AND EXISTS (
         result.participant = Org.get(Long.parseLong(params.id))
 
         params.tab = params.tab ?: 'new'
+
+        if(params.tab != 'new'){
+            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+        }
+
+        /*if (params.validOnYear == null || params.validOnYear == '') {
+            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+        }*/
+
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.participant])
 
         params.consortiaOrg = result.institution
 
@@ -3822,81 +3432,318 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    Map<String,Object> managePropertyGroups() {
+    def managePropertyGroups() {
         Map<String,Object> result = setResultGenerics()
         //result.editable = true // true, because action is protected (is it? I doubt; INST_USERs have at least reading rights to this page!)
+        switch(params.cmd) {
+            case 'new': result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+                render template: '/templates/properties/propertyGroupModal', model: result
+                return
+            case 'edit':
+                result.pdGroup = genericOIDService.resolveOID(params.oid)
+                result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
 
-        if (params.cmd == 'new') {
-            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+                render template: '/templates/properties/propertyGroupModal', model: result
+                return
+            case 'delete':
+                PropertyDefinitionGroup pdg = genericOIDService.resolveOID(params.oid)
+                try {
+                    pdg.delete()
+                    flash.message = message(code:'propertyDefinitionGroup.delete.success',args:[pdg.name])
+                }
+                catch (e) {
+                    flash.error = message(code:'propertyDefinitionGroup.delete.failure',args:[pdg.name])
+                }
+                break
+            case 'processing':
+                if(formService.validateToken(params)) {
+                    boolean valid
+                    PropertyDefinitionGroup propDefGroup
+                    String ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
 
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
+                    if (params.oid) {
+                        propDefGroup = genericOIDService.resolveOID(params.oid)
+                        propDefGroup.name = params.name ?: propDefGroup.name
+                        propDefGroup.description = params.description
+                        propDefGroup.ownerType = ownerType
+
+                        if (propDefGroup.save()) {
+                            valid = true
+                        }
+                    }
+                    else {
+                        if (params.name && ownerType) {
+                            propDefGroup = new PropertyDefinitionGroup(
+                                    name: params.name,
+                                    description: params.description,
+                                    tenant: result.institution,
+                                    ownerType: ownerType,
+                                    isVisible: true
+                            )
+                            if (propDefGroup.save()) {
+                                valid = true
+                            }
+                        }
+                    }
+
+                    if (valid) {
+                        PropertyDefinitionGroupItem.executeUpdate(
+                                "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                                [pdg: propDefGroup]
+                        )
+
+                        params.list('propertyDefinition')?.each { pd ->
+
+                            new PropertyDefinitionGroupItem(
+                                    propDef: pd,
+                                    propDefGroup: propDefGroup
+                            ).save()
+                        }
+                    }
+                }
+                break
         }
-        else if (params.cmd == 'edit') {
-            result.pdGroup = genericOIDService.resolveOID(params.oid)
-            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
 
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
+        Set<PropertyDefinitionGroup> unorderedPdgs = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
+        result.propDefGroups = [:]
+        PropertyDefinition.AVAILABLE_GROUPS_DESCR.each { String propDefGroupType ->
+            result.propDefGroups.put(propDefGroupType,unorderedPdgs.findAll { PropertyDefinitionGroup pdg -> pdg.ownerType == PropertyDefinition.getDescrClass(propDefGroupType)})
         }
-        else if (params.cmd == 'delete') {
-            def pdg = genericOIDService.resolveOID(params.oid)
-            try {
-                pdg.delete()
-                flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
+
+        if(params.cmd == 'exportXLS') {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyGroupUsageXLS(result.propDefGroups))
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.propertyGroups')}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        else
+            result
+    }
+
+    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def manageProperties() {
+        def result = setResultGenerics()
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        PropertyDefinition propDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
+
+        //params.remove('filterPropDef')
+
+        //Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
+        /*Sortieren
+        result.validSubChilds = validSubChilds.sort { Subscription a, Subscription b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
+        }*/
+        //result.validSubChilds = validSubChildren
+
+        String localizedName
+        switch(LocaleContextHolder.getLocale()) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
+                [ctx:result.institution,availableTypes:[PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]])
+        result.propList = propList
+        result.filteredObjs = []
+        result.objectsWithoutProp = []
+
+        if(propDef) {
+            Set filteredObjs = [], objectsWithoutProp = []
+            Map<String,Object> parameterMap = [type:propDef,ctx:result.institution], orgFilterParams = [:]
+            String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = '', orgFilterClause = ''
+            if(accessService.checkPerm('ORG_CONSORTIUM')) {
+                subFilterClause += 'and oo.sub.instanceOf = null'
+                spOwnerFilterClause += 'and sp.owner.instanceOf = null'
+                licFilterClause += 'and oo.lic.instanceOf = null'
+                lpOwnerFilterClause += 'and lp.owner.instanceOf = null'
             }
-            catch (e) {
-                flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
+            else if(accessService.checkPerm('ORG_BASIC_MEMBER')) {
+                orgFilterClause += 'and ot in (:providerAgency)'
+                orgFilterParams.providerAgency = [RDStore.OT_AGENCY,RDStore.OT_PROVIDER,RefdataValue.getByValueAndCategory('Broker',RDConstants.ORG_TYPE),RefdataValue.getByValueAndCategory('Content Provider',RDConstants.ORG_TYPE),RefdataValue.getByValueAndCategory('Vendor',RDConstants.ORG_TYPE)]
             }
+            switch(propDef.descr) {
+                case PropertyDefinition.SUB_PROP: objectsWithoutProp.addAll(Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :ctx '+subFilterClause+' and oo.roleType in (:roleTypes) and not exists (select sp from SubscriptionProperty sp where sp.owner = oo.sub and sp.tenant = :ctx and sp.type = :type) order by oo.sub.name asc, oo.sub.startDate asc, oo.sub.endDate asc',parameterMap+[roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]))
+                    filteredObjs.addAll(SubscriptionProperty.executeQuery('select sp.owner from SubscriptionProperty sp where sp.type = :type and sp.tenant = :ctx '+spOwnerFilterClause+' order by sp.owner.name asc',parameterMap))
+                    result.auditable = propDef.tenant == null //blocked until inheritance of private property is cleared
+                    result.manageChildren = true
+                    break
+                case PropertyDefinition.LIC_PROP: objectsWithoutProp.addAll(License.executeQuery('select oo.lic from OrgRole oo where oo.org = :ctx '+licFilterClause+' and oo.roleType in (:roleTypes) and not exists (select lp from LicenseProperty lp where lp.owner = oo.lic and lp.tenant = :ctx and lp.type = :type) order by oo.lic.reference asc, oo.lic.startDate asc, oo.lic.endDate asc',parameterMap+[roleTypes:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSEE]]))
+                    filteredObjs.addAll(LicenseProperty.executeQuery('select lp.owner from LicenseProperty lp where lp.type = :type and lp.tenant = :ctx '+lpOwnerFilterClause+' order by lp.owner.reference asc',parameterMap))
+                    result.auditable = propDef.tenant == null //blocked until inheritance of private property is cleared
+                    break
+                case PropertyDefinition.PRS_PROP: objectsWithoutProp.addAll(Person.executeQuery('select p from Person p where (p.tenant = :ctx or p.tenant = null) and not exists (select pp from PersonProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) order by p.last_name asc, p.first_name asc',parameterMap))
+                    filteredObjs.addAll(PersonProperty.executeQuery('select pp.owner from PersonProperty pp where pp.type = :type and pp.tenant = :ctx order by pp.owner.last_name asc, pp.owner.first_name asc',parameterMap))
+                    break
+                case PropertyDefinition.ORG_PROP: objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) '+orgFilterClause+' order by o.sortname asc, o.name asc',parameterMap+orgFilterParams+[deleted:RDStore.ORG_STATUS_DELETED]))
+                    filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx order by op.owner.sortname asc, op.owner.name asc',parameterMap))
+                    result.sortname = true
+                    break
+                case PropertyDefinition.PLA_PROP: objectsWithoutProp.addAll(Platform.executeQuery('select pl from Platform pl where pl.status != :deleted and not exists (select plp from PlatformProperty plp where plp.owner = plp and plp.tenant = :ctx and plp.type = :type) order by pl.name asc',parameterMap+[deleted:RDStore.PLATFORM_STATUS_DELETED]))
+                    filteredObjs.addAll(PlatformProperty.executeQuery('select plp.owner from PlatformProperty plp where plp.type = :type and plp.tenant = :ctx order by plp.owner.name asc',parameterMap))
+                    break
+            }
+            objectsWithoutProp.each { obj ->
+                result.objectsWithoutProp << propertyService.processObjects(obj,result.institution,propDef)
+            }
+            filteredObjs.each { obj ->
+                result.filteredObjs << propertyService.processObjects(obj,result.institution,propDef)
+            }
+            result.filterPropDef = propDef
         }
-        else if (params.cmd == 'processing') {
-            def valid
-            def propDefGroup
-            def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
 
-            if (params.oid) {
-                propDefGroup = genericOIDService.resolveOID(params.oid)
-                propDefGroup.name = params.name ?: propDefGroup.name
-                propDefGroup.description = params.description
-                propDefGroup.ownerType = ownerType
+        /*
+        def oldID = params.id
+        params.id = result.parentSub.id
 
-                if (propDefGroup.save(flush:true)) {
-                    valid = true
+        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
+        result.filteredSubChilds = new ArrayList<Subscription>()
+        result.validSubChilds.each { Subscription sub ->
+            List<Org> subscr = sub.getAllSubscribers()
+            def filteredSubscr = []
+            subscr.each { Org subOrg ->
+                if (filteredOrgIds.contains(subOrg.id)) {
+                    filteredSubscr << subOrg
                 }
             }
-            else {
-                if (params.name && ownerType) {
-                    propDefGroup = new PropertyDefinitionGroup(
-                            name: params.name,
-                            description: params.description,
-                            tenant: result.institution,
-                            ownerType: ownerType,
-                            visible: true
-                    )
-                    if (propDefGroup.save(flush:true)) {
-                        valid = true
+            if (filteredSubscr) {
+                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+            }
+        }
+
+        params.id = oldID*/
+
+        result
+    }
+
+    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def processManageProperties() {
+        Map<String, Object> result = setResultGenerics()
+        log.debug(params)
+        PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
+        List withAudit = params.list("withAudit")
+        String propertyType = pd.tenant ? PropertyDefinition.PRIVATE_PROPERTY : PropertyDefinition.CUSTOM_PROPERTY
+        if(params.newObjects) {
+            params.list("newObjects").each { String id ->
+                def owner = resolveOwner(pd,id)
+                if(owner) {
+                    AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
+                    if(!prop || pd.multipleOccurrence) {
+                        prop = PropertyDefinition.createGenericProperty(propertyType,owner,pd,result.institution)
+                        if(setPropValue(prop,params.filterPropValue)) {
+                            if(id in withAudit) {
+                                owner.getClass().findAllByInstanceOf(owner).each { member ->
+                                    AbstractPropertyWithCalculatedLastUpdated memberProp = PropertyDefinition.createGenericProperty(propertyType,member,prop.type,result.institution)
+                                    memberProp = prop.copyInto(memberProp)
+                                    memberProp.instanceOf = prop
+                                    memberProp.save()
+                                    AuditConfig.addConfig(prop,AuditConfig.COMPLETE_OBJECT)
+                                }
+                            }
+                        }
+                        else log.error(prop.errors)
                     }
                 }
             }
-
-            if (valid) {
-                PropertyDefinitionGroupItem.executeUpdate(
-                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
-                        [pdg: propDefGroup]
-                )
-
-                params.list('propertyDefinition')?.each { pd ->
-
-                    new PropertyDefinitionGroupItem(
-                            propDef: pd,
-                            propDefGroup: propDefGroup
-                    ).save(flush: true)
+        }
+        if(params.selectedObjects) {
+            if(params.deleteProperties) {
+                List selectedObjects = params.list("selectedObjects")
+                processDeleteProperties(pd,selectedObjects,result.institution)
+            }
+            else {
+                params.list("selectedObjects").each { String id ->
+                    def owner = resolveOwner(pd,id)
+                    if(owner) {
+                        AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
+                        if(prop)
+                            setPropValue(prop, params.filterPropValue)
+                    }
                 }
             }
         }
+        redirect action: 'manageProperties', params: [filterPropDef:params.filterPropDef]
+    }
 
-        result.propDefGroups = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
-        result
+    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def processDeleteProperties(PropertyDefinition propDef, selectedObjects, Org contextOrg) {
+        int deletedProperties = 0
+        selectedObjects.each { ownerId ->
+            def owner = resolveOwner(propDef,ownerId)
+            Set<AbstractPropertyWithCalculatedLastUpdated> existingProps = owner.propertySet.findAll {
+                it.owner.id == owner.id && it.type.id == propDef.id && it.tenant.id == contextOrg.id && !AuditConfig.getConfig(it)
+            }
+
+            existingProps.each { AbstractPropertyWithCalculatedLastUpdated prop ->
+                owner.propertySet.remove(prop)
+                owner.save()
+                prop.delete()
+                deletedProperties++
+            }
+        }
+    }
+
+    def resolveOwner(PropertyDefinition pd, String id) {
+        def owner
+        switch(pd.descr) {
+            case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
+                break
+            case PropertyDefinition.LIC_PROP: owner = License.get(id)
+                break
+            case PropertyDefinition.ORG_PROP: owner = Org.get(id)
+                break
+            case PropertyDefinition.PRS_PROP: owner = Person.get(id)
+                break
+            case PropertyDefinition.PLA_PROP: owner = Platform.get(id)
+                break
+        }
+        owner
+    }
+
+    //explicit assignal raises a grails warning
+    boolean setPropValue(prop, String filterPropValue) {
+        prop = (AbstractPropertyWithCalculatedLastUpdated) prop
+        switch(prop.type.type) {
+            case Integer.toString(): prop.intValue = Integer.parseInt(filterPropValue)
+                break
+            case String.toString(): prop.stringValue = filterPropValue
+                break
+            case BigDecimal.toString(): prop.decValue = new BigDecimal(filterPropValue)
+                break
+            case Date.toString(): SimpleDateFormat sdf = DateUtil.SDF_NoTime
+                prop.dateValue = sdf.parse(filterPropValue)
+                break
+            case URL.toString(): prop.urlValue.startsWith('http://') ? new URL(filterPropValue) : new URL('http://'+filterPropValue)
+                break
+            case RefdataValue.toString(): prop.refValue = RefdataValue.get(filterPropValue)
+                break
+        }
+        prop.save()
     }
 
     /**
@@ -3906,32 +3753,55 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    Map<String, Object> managePrivatePropertyDefinitions() {
+    def managePrivatePropertyDefinitions() {
         Map<String, Object> result = setResultGenerics()
 
-        if('add' == params.cmd) {
-            List rl = addPrivatePropertyDefinition(params)
-            flash."${rl[0]}" = rl[1]
+        switch(params.cmd) {
+            case 'add':List rl = addPrivatePropertyDefinition(params)
+                flash."${rl[0]}" = rl[1]
+                break
+            case 'toggleMandatory':
+                PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+                pd.mandatory = !pd.mandatory
+                pd.save()
+                break
+            case 'toggleMultipleOccurrence':
+                PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+                pd.multipleOccurrence = !pd.multipleOccurrence
+                pd.save()
+                break
+            case 'delete': flash.message = deletePrivatePropertyDefinition(params)
+                break
         }
 
-        else if('delete' == params.cmd) {
-            flash.message = deletePrivatePropertyDefinition(params)
-        }
-        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
+        result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+
         Map<String, Set<PropertyDefinition>> propDefs = [:]
-        PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
+        PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { String it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
             propDefs[it] = itResult
         }
 
         result.propertyDefinitions = propDefs
 
-        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails()
         result.usedPdList = usedPdList
         result.attrMap = attrMap
+        result.multiplePdList = multiplePdList
         //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
         result.propertyType = 'private'
-        result
+        if(params.cmd == 'exportXLS') {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyUsageExportXLS(propDefs))
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.privateProperties')}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        else
+            result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
@@ -3941,7 +3811,33 @@ AND EXISTS (
     Object managePropertyDefinitions() {
         Map<String,Object> result = setResultGenerics()
 
-        result.languageSuffix = AbstractI10nTranslatable.getLanguageSuffix()
+        if(params.pd) {
+            PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+            if (pd) {
+                switch(params.cmd) {
+                    case 'toggleMandatory': pd.mandatory = !pd.mandatory
+                        pd.save()
+                        break
+                    case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
+                        pd.save()
+                        break
+                    case 'deletePropertyDefinition':
+                        if (! pd.isHardData) {
+                            try {
+                                pd.delete()
+                                flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
+                            }
+                            catch(Exception e) {
+                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
+                            }
+                        }
+                        break
+                }
+            }
+        }
+
+        result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!
@@ -3949,13 +3845,23 @@ AND EXISTS (
         }
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
-        result.editable = false
         result.propertyDefinitions = propDefs
-        //result.attrMap = attrMap
-        //result.usedPdList = usedPdList
+        result.attrMap = attrMap
+        result.usedPdList = usedPdList
 
         result.propertyType = 'custom'
-        render view: 'managePropertyDefinitions', model: result
+        if(params.cmd == 'exportXLS') {
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyUsageExportXLS(propDefs))
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.customProperties')}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        else
+            render view: 'managePrivatePropertyDefinitions', model: result
     }
 
     @Secured(['ROLE_USER'])
@@ -3980,12 +3886,12 @@ AND EXISTS (
     private List addPrivatePropertyDefinition(params) {
         log.debug("trying to add private property definition for institution: " + params)
 
-        def tenant = GrailsHibernateUtil.unwrapIfProxy(contextService.getOrg())
+        Org tenant = contextService.getOrg()
 
         def privatePropDef = PropertyDefinition.findWhere(
                 name:   params.pd_name,
                 descr:  params.pd_descr,
-               // type:   params.pd_type,
+                //type:   params.pd_type,
                 tenant: tenant,
         )
 
@@ -3993,14 +3899,14 @@ AND EXISTS (
             return ['error', message(code: 'propertyDefinition.name.unique')]
         }
         else {
-            def rdc
+            RefdataCategory rdc = null
 
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
             }
 
             Map<String, Object> map = [
-                    token       : params.pd_name,
+                    token       : UUID.randomUUID(),
                     category    : params.pd_descr,
                     type        : params.pd_type,
                     rdc         : rdc?.getDesc(),
@@ -4012,16 +3918,16 @@ AND EXISTS (
                             expl_de: params.pd_expl?.trim(),
                             expl_en: params.pd_expl?.trim()
                     ],
-                    tenant      : tenant?.globalUID
+                    tenant      : tenant.globalUID
             ]
 
             privatePropDef = PropertyDefinition.construct(map)
 
             if (privatePropDef.save(flush: true)) {
-                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])]
+                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
             }
             else {
-                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.name])]
+                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
             }
         }
     }
@@ -4068,23 +3974,12 @@ AND EXISTS (
         messages
     }
 
-    private Map<String, Object> setResultGenerics() {
-
-        Map<String, Object> result = [:]
-        result.user         = contextService.getUser()
-        //result.institution  = Org.findByShortcode(params.shortcode)
-        result.institution  = contextService.getOrg()
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
-        result
-    }
-
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def ajaxEmptySubscription() {
+        Map<String, Object> result = setResultGenerics()
 
-        def result = setResultGenerics()
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
             if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
@@ -4099,35 +3994,6 @@ AND EXISTS (
             result
         }
         render (template: "../templates/filter/orgFilterTable", model: [orgList: result.members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
-    }
-
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def actionAffiliationRequestOrg() {
-        log.debug("actionMembershipRequestOrg");
-        UserOrg req = UserOrg.get(params.req);
-        User user = User.get(springSecurityService.principal.id)
-        Org currentOrg = contextService.getOrg()
-        if ( req != null && req.org == currentOrg) {
-            switch(params.act) {
-                case 'approve':
-                    req.status = UserOrg.STATUS_APPROVED
-                    break;
-                case 'deny':
-                    req.status = UserOrg.STATUS_REJECTED
-                    break;
-                default:
-                    log.error("FLASH UNKNOWN CODE");
-                    break;
-            }
-            req.dateActioned = System.currentTimeMillis();
-            req.save(flush:true);
-        }
-        else {
-            log.error("FLASH");
-        }
-        redirect(action: "manageAffiliationRequests")
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
@@ -4161,29 +4027,25 @@ AND EXISTS (
                 return;
             }
         }
-
     }
 
     private def getSurveyParticipantCounts(Org participant){
         Map<String, Object> result = [:]
 
-        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
-
-        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
-        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
                 [participant: participant]).groupBy {it.id[1]}.size()
 
-        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
                 [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
                  participant: participant]).groupBy {it.id[1]}.size()
-
-
         return result
     }
 
@@ -4198,7 +4060,6 @@ AND EXISTS (
                      org   : participant,
                      owner : contextOrg]).groupBy { it.id[1] }.size()
 
-
             result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null)) and surInfo.owner = :owner",
                     [status: RDStore.SURVEY_SURVEY_STARTED,
                      org   : participant,
@@ -4209,17 +4070,22 @@ AND EXISTS (
                     [org  : participant,
                      owner: contextOrg]).groupBy { it.id[1] }.size()
 
-            result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where (surInfo.status in (:status) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null)) and surInfo.owner = :owner",
+            result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surConfig.subSurveyUseForTransfer = false and (surInfo.status in (:status) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null)) and surInfo.owner = :owner",
                     [status : [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
                      org    : participant,
                      owner  : contextOrg]).groupBy { it.id[1] }.size()
+
+            result.termination = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surConfig.subSurveyUseForTransfer = true and (surInfo.status in (:status) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null)) and surInfo.owner = :owner",
+                    [status : [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
+                     org    : participant,
+                     owner  : contextOrg]).groupBy { it.id[1] }.size()
+
         }else {
 
             result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                     "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org))",
                     [status: RDStore.SURVEY_SURVEY_STARTED,
                      org   : participant]).groupBy { it.id[1] }.size()
-
 
             result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null))",
                     [status: RDStore.SURVEY_SURVEY_STARTED,
@@ -4237,8 +4103,62 @@ AND EXISTS (
                     [status : [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
                      org    : participant]).groupBy { it.id[1] }.size()
         }
-
-
         return result
     }
+
+    private Map<String, Object> setResultGenerics() {
+        Map<String, Object> result = [:]
+        switch(params.action){
+            case 'currentSurveys':
+            case 'surveyInfos':
+            case 'surveyInfoFinish':
+            case 'surveyInfosIssueEntitlements':
+            case 'surveyResultFinish':
+                result.user = User.get(springSecurityService.principal.id)
+                break
+            default:
+                result.user = contextService.getUser()
+        }
+        //result.institution  = Org.findByShortcode(params.shortcode)
+        result.institution  = contextService.getOrg()
+        result.editable = checkIsEditable(result.user, result.institution)
+        result
+    }
+
+    private boolean checkIsEditable(User user, Org org){
+        boolean isEditable
+        switch(params.action){
+            case 'ajaxEmptySubscription':
+            case 'currentLicenses':
+            case 'currentSurveys':
+            case 'dashboard':
+            case 'emptySubscription':
+            case 'surveyInfoFinish':
+            case 'surveyResultFinish':
+                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')
+                break
+            case 'addressbook':
+            case 'budgetCodes':
+            case 'tasks':
+            case 'myPublicContacts':
+                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                break
+            case 'surveyInfos':
+                isEditable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
+                break
+            case 'surveyInfosIssueEntitlements':
+                isEditable = surveyService.isEditableIssueEntitlementsSurvey(org, SurveyConfig.get(params.id))
+                break
+            case 'userList':
+                isEditable = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')
+                break
+            case 'managePropertyDefinitions':
+                isEditable = false
+                break
+            default:
+                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
+        }
+        isEditable
+    }
+
 }

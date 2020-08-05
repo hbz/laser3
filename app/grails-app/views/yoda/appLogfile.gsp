@@ -3,7 +3,7 @@
 <head>
 <meta name="layout" content="semanticUI"/>
 <title>${message(code:'laser')} : Logfile</title>
-<r:script type="JavaScript" >
+<r:script>
   var initScroll = false;
 
   (function($) {

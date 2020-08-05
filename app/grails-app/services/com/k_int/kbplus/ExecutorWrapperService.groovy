@@ -1,10 +1,14 @@
 package com.k_int.kbplus
 
-import java.util.concurrent.ConcurrentHashMap
+import grails.transaction.Transactional
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ExecutorService
+
+@Transactional
 class ExecutorWrapperService {
 
-	def executorService
+	ExecutorService executorService
 	def genericOIDService
 	ConcurrentHashMap<Object,java.util.concurrent.FutureTask> activeFuture = [:]
 

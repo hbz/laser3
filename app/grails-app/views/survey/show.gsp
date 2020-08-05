@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.SurveyResult;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.SurveyResult; com.k_int.kbplus.SurveyConfig;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -19,10 +19,12 @@
             <g:link class="item" controller="survey" action="show"
                     params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
         </semui:exportDropdownItem>
+        <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
         <semui:exportDropdownItem>
             <g:link class="item" controller="survey" action="show"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </semui:exportDropdownItem>
+        </g:if>
     </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
@@ -51,12 +53,24 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.startDate.label')}</dt>
-                            <dd><semui:xEditable owner="${surveyInfo}" field="startDate" type="date"/></dd>
+                            <dd>
+                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                    <semui:xEditable owner="${surveyInfo}" field="startDate" type="date"/>
+                                </g:if><g:else>
+                                    <semui:xEditable owner="${surveyInfo}" field="startDate" type="date" overwriteEditable="false"/>
+                                </g:else>
+                            </dd>
 
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.endDate.label')}</dt>
-                            <dd><semui:xEditable owner="${surveyInfo}" field="endDate" type="date"/></dd>
+                            <dd>
+                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id, RDStore.SURVEY_SURVEY_STARTED.id]}">
+                                    <semui:xEditable owner="${surveyInfo}" field="endDate" type="date"/>
+                                </g:if><g:else>
+                                    <semui:xEditable owner="${surveyInfo}" field="endDate" type="date" overwriteEditable="false"/>
+                                </g:else>
+                            </dd>
 
                         </dl>
 
@@ -165,7 +179,7 @@
 
             <br>
             <g:if test="${surveyConfig}">
-                <g:if test="${surveyConfig.type == "Subscription"}">
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
                     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                 costItemSums: costItemSums,
@@ -175,7 +189,7 @@
                                                                 properties: properties]"/>
                 </g:if>
 
-                <g:if test="${surveyConfig.type == "IssueEntitlementsSurvey"}">
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
 
                     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                                       subscriptionInstance: surveyConfig.subscription,
@@ -184,7 +198,7 @@
                                                                                       properties: properties]"/>
                 </g:if>
 
-                <g:if test="${surveyConfig.type == "GeneralSurvey"}">
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
                     <g:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
                                                                     costItemSums: costItemSums,

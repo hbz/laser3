@@ -1,6 +1,9 @@
 package de.laser.api.v0
 
-import com.k_int.kbplus.*
+
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Person
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -25,7 +28,7 @@ class ApiMapReader {
             // References
             result.contacts     = ApiCollectionReader.getContactCollection(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact
             result.addresses    = ApiCollectionReader.getAddressCollection(prs.addresses, allowedAddressTypes) // com.k_int.kbplus.Address
-            result.properties   = ApiCollectionReader.getPrivatePropertyCollection(prs.privateProperties, context) // com.k_int.kbplus.PersonPrivateProperty
+            result.properties   = ApiCollectionReader.getPrivatePropertyCollection(prs.propertySet, context) // com.k_int.kbplus.PersonPrivateProperty
         }
         return ApiToolkit.cleanUp(result, true, true)
     }

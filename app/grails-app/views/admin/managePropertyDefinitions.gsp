@@ -1,5 +1,4 @@
-<%@ page import="de.laser.domain.I10nTranslation; com.k_int.properties.PropertyDefinition" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.I10nTranslation; com.k_int.properties.PropertyDefinition; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.GenericOIDService" %>
 <!doctype html>
 <html>
 	<head>
@@ -11,6 +10,20 @@
 			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
 			<semui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>
 		</semui:breadcrumbs>
+
+        <semui:controlButtons>
+            <%--<g:render template="actions"/>--%>
+            <%--
+            <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
+            --%>
+            <%-- included in case someone of the admins wishes this export
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="managePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
+                </semui:exportDropdownItem>
+            </semui:exportDropdown>--%>
+        </semui:controlButtons>
+
         <br>
 		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.managePropertyDefinitions"/></h1>
 
@@ -18,22 +31,14 @@
 
 		<semui:messages data="${flash}" />
 
-            <div class="content ui form">
-                <div class="fields">
-                    <div class="field">
-                        <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
-                    </div>
-                </div>
-            </div>
-
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
+                    <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
                 </div>
                 <div class="content">
-                    <table class="ui celled la-table la-table-small table">
+                    <table class="ui celled la-table compact table">
                         <thead>
                         <tr>
                             <th></th>
@@ -125,15 +130,40 @@
                                     </td>
                                     <td class="x">
 
-                                        <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                            <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SUR_PROP, null)}">
-                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
-                                                    <g:link class="ui icon button" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
-                                                        <i class="copy icon"></i>
-                                                    </g:link>
-                                                </span>
+                                        <g:if test="${pd.mandatory}">
+                                            <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left"
+                                                    params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon yellow button">
+                                                <i class="star icon"></i>
+                                            </g:link>
+                                        </g:if>
+                                        <g:else>
+                                            <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left"
+                                                    params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
+                                                <i class="star yellow icon"></i>
+                                            </g:link>
+                                        </g:else>
+                                        <g:if test="${!multiplePdList?.contains(pd.id)}">
+                                            <g:if test="${pd.multipleOccurrence}">
+                                                <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left"
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon orange button">
+                                                    <i class="redo slash icon"></i>
+                                                </g:link>
                                             </g:if>
-                                        </sec:ifAnyGranted>
+                                            <g:else>
+                                                <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left"
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
+                                                    <i class="redo orange icon"></i>
+                                                </g:link>
+                                            </g:else>
+                                        </g:if>
+
+                                        <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SUR_PROP, null)}">
+                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
+                                                <g:link class="ui icon button" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
+                                                    <i class="copy icon"></i>
+                                                </g:link>
+                                            </span>
+                                        </g:if>
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
@@ -150,7 +180,7 @@
 
                                         <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
                                             <g:link controller="admin" action="managePropertyDefinitions"
-                                                    params="${[cmd: 'deletePropertyDefinition', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon negative button">
+                                                    params="${[cmd: 'deletePropertyDefinition', pd: GenericOIDService.getOID(pd)]}" class="ui icon negative button">
                                                 <i class="trash alternate icon"></i>
                                             </g:link>
                                         </g:if>

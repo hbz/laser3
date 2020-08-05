@@ -19,7 +19,7 @@
         <g:if test="${editable}">
             <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
         </g:if>
-        <g:render template="../templates/filter/javascript" />
+        <g:render template="/templates/filter/javascript" />
         <semui:filter showFilterButton="true">
             <form class="ui form">
                 <div class="four fields">

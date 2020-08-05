@@ -2,31 +2,27 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.PriceItem
-import de.laser.domain.TIPPCoverage
+import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.DateUtil
-import de.laser.helper.FactoryResult
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
+import grails.transaction.Transactional
 import grails.util.Holders
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
-import static de.laser.helper.RDStore.*
-
+@Transactional
 class SubscriptionService {
     def contextService
     def accessService
@@ -35,13 +31,333 @@ class SubscriptionService {
     def messageSource
     def escapeService
     def refdataService
+    def propertyService
+    FilterService filterService
     Locale locale
-    def grailsApplication
+    GenericOIDService genericOIDService
 
     @javax.annotation.PostConstruct
     void init() {
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+    }
+
+    //ex SubscriptionController.currentSubscriptions()
+    Map<String,Object> getMySubscriptions(GrailsParameterMap params, User contextUser, Org contextOrg) {
+        Map<String,Object> result = [:]
+        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        DebugUtil du = new DebugUtil()
+        du.setBenchmark('init data fetch')
+        du.setBenchmark('consortia')
+        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [contextOrg])
+
+        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
+        du.setBenchmark('all consortia')
+        result.allConsortia = Org.executeQuery(
+                """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
+                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
+                        os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) 
+                        order by lower(o.name)""",
+                [roles: consRoles]
+        )
+
+        def viableOrgs = []
+
+        if ( result.availableConsortia ){
+            result.availableConsortia.each {
+                viableOrgs.add(it)
+            }
+        }
+
+        viableOrgs.add(contextOrg)
+
+        def date_restriction = null
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+
+        if (params.validOn == null || params.validOn.trim() == '') {
+            result.validOn = ""
+        } else {
+            result.validOn = params.validOn
+            date_restriction = sdf.parse(params.validOn)
+        }
+
+        result.editable = accessService.checkMinUserOrgRole(contextUser, contextOrg, 'INST_EDITOR')
+
+        if (! params.status) {
+            if (params.isSiteReloaded != "yes") {
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            }
+            else {
+                params.status = 'FETCH_ALL'
+            }
+        }
+
+        du.setBenchmark('get base query')
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
+        result.filterSet = tmpQ[2]
+        List<Subscription> subscriptions
+        du.setBenchmark('fetch subscription data')
+        if(params.sort == "providerAgency") {
+            subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ).collect{ row -> row[0] }
+        }
+        else {
+            subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+        }
+        result.allSubscriptions = subscriptions
+        /*du.setBenchmark('fetch licenses')
+        result.allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        du.setBenchmark('process licenses')
+        allLinkedLicenses.each { Links li ->
+            Set<String> linkedLicenses = result.allLinkedLicenses.get(li.destination)
+            if(!linkedLicenses)
+                linkedLicenses = []
+            linkedLicenses << li.source
+            result.allLinkedLicenses.put(li.destination,linkedLicenses)
+        }
+        du.setBenchmark('after licenses')*/
+        if(!params.exportXLS)
+            result.num_sub_rows = subscriptions.size()
+
+        result.date_restriction = date_restriction
+        du.setBenchmark('get properties')
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
+        /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
+        if (OrgSettings.get(contextOrg, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
+            result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
+            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+        }
+         */
+        du.setBenchmark('end properties')
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        List bm = du.stopBenchmark()
+        result.benchMark = bm
+        result
+    }
+
+    Map<String,Object> getMySubscriptionsForConsortia(GrailsParameterMap params,User contextUser, Org contextOrg,List<String> tableConf) {
+        Map<String,Object> result = [:]
+
+        DebugUtil du = new DebugUtil()
+        du.setBenchmark('filterService')
+
+        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        Map fsq = filterService.getOrgComboQuery([comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort: 'o.sortname'], contextOrg)
+        result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
+
+        du.setBenchmark('filterSubTypes & filterPropList')
+
+        if(params.filterSet)
+            result.filterSet = params.filterSet
+
+        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(
+                RDStore.SUBSCRIPTION_TYPE_LOCAL
+        )
+        result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
+
+        /*
+        String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
+                "join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
+                "where orgK = :org and orgK = roleK.org and roleK.roleType = :rdvCons " +
+                "and orgK = roleTK.org and roleTK.roleType = :rdvCons " +
+                "and roleT.roleType = :rdvSubscr "
+        */
+
+        // CostItem ci
+
+        du.setBenchmark('filter query')
+
+        String query
+        Map qarams
+
+        if('withCostItems' in tableConf) {
+            query = "select ci, subT, roleT.org " +
+                    " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
+                    " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
+                    " where roleK.org = :org and roleK.roleType = :rdvCons " +
+                    " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
+                    " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) " +
+                    " and ( ci is null or (ci.owner = :org and ci.costItemStatus != :deleted) )"
+            qarams = [org      : contextOrg,
+                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN,
+                      deleted  : RDStore.COST_ITEM_DELETED
+            ]
+        }
+        else if('onlyMemberSubs' in tableConf) {
+            query = "select subT, roleT.org " +
+                    " from Subscription subT join subT.instanceOf subK " +
+                    " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
+                    " where roleK.org = :org and roleK.roleType = :rdvCons " +
+                    " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
+                    " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) "
+            qarams = [org      : contextOrg,
+                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+            ]
+        }
+
+        if (params.selSubscription?.size() > 0) {
+            query += " and subT.instanceOf in (:subscriptions) "
+            Set<Subscription> subscriptions = []
+            List<String> selSubs = params.selSubscription.split(',')
+            selSubs.each { String sub ->
+                subscriptions << genericOIDService.resolveOID(sub)
+            }
+            qarams.put('subscriptions', subscriptions)
+        }
+
+        if (params.member?.size() > 0) {
+            query += " and roleT.org.id = :member "
+            qarams.put('member', params.long('member'))
+        }
+
+        if (params.identifier?.length() > 0) {
+            query += " and exists (select ident from Identifier ident join ident.org ioorg " +
+                    " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
+            qarams.put('identifier', "%${params.identifier}%")
+        }
+
+        if (params.validOn?.size() > 0) {
+            result.validOn = params.validOn
+
+            if('withCostItems' in tableConf) {
+                query += " and ( "
+                query += "( ci.startDate <= :validOn OR (ci.startDate is null AND (subT.startDate <= :validOn OR subT.startDate is null) ) ) and "
+                query += "( ci.endDate >= :validOn OR (ci.endDate is null AND (subT.endDate >= :validOn OR subT.endDate is null) ) ) "
+                query += ") "
+            }
+            else if('onlyMemberSubs' in tableConf) {
+                query += " and ( "
+                query += "(subT.startDate <= :validOn OR subT.startDate is null) and "
+                query += "(subT.endDate <= :validOn OR subT.endDate is null)"
+                query += ") "
+            }
+
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            qarams.put('validOn', new Timestamp(sdf.parse(params.validOn).getTime()))
+        }
+
+        if (params.status?.size() > 0) {
+            query += " and subT.status.id = :status "
+            qarams.put('status', params.long('status'))
+        } else if(!params.filterSet) {
+            query += " and subT.status.id = :status "
+            qarams.put('status', RDStore.SUBSCRIPTION_CURRENT.id)
+            params.status = RDStore.SUBSCRIPTION_CURRENT.id
+            result.defaultSet = true
+        }
+
+        if (params.filterPropDef?.size() > 0) {
+            def psq = propertyService.evalFilterQuery(params, query, 'subT', qarams)
+            query = psq.query
+            qarams = psq.queryParams
+        }
+
+        if (params.form?.size() > 0) {
+            query += " and subT.form.id = :form "
+            qarams.put('form', params.long('form'))
+        }
+        if (params.resource?.size() > 0) {
+            query += " and subT.resource.id = :resource "
+            qarams.put('resource', params.long('resource'))
+        }
+        if (params.subTypes?.size() > 0) {
+            query += " and subT.type.id in (:subTypes) "
+            qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
+        }
+
+        if (params.containsKey('subKinds')) {
+            query += " and subT.kind.id in (:subKinds) "
+            qarams.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+        }
+
+        if (params.isPublicForApi) {
+            query += "and subT.isPublicForApi = :isPublicForApi "
+            qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+
+        if (params.hasPerpetualAccess) {
+            query += "and subT.hasPerpetualAccess = :hasPerpetualAccess "
+            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+
+        if (params.subRunTimeMultiYear || params.subRunTime) {
+
+            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                query += " and subT.isMultiYear = :subRunTimeMultiYear "
+                qarams.put('subRunTimeMultiYear', true)
+            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                query += " and subT.isMultiYear = :subRunTimeMultiYear "
+                qarams.put('subRunTimeMultiYear', false)
+            }
+        }
+
+        String orderQuery = " order by roleT.org.sortname, subT.name"
+        if (params.sort?.size() > 0) {
+            orderQuery = " order by " + params.sort + " " + params.order
+        }
+
+        if(params.filterSet && !params.member && !params.validOn && !params.status && !params.filterPropDef && !params.filterProp && !params.form && !params.resource && !params.subTypes)
+            result.filterSet = false
+
+        //log.debug( query + " " + orderQuery )
+        // log.debug( qarams )
+
+        if('withCostItems' in tableConf) {
+            du.setBenchmark('costs')
+
+            String totalMembersQuery = query.replace("ci, subT, roleT.org", "roleT.org")
+
+            result.totalMembers    = CostItem.executeQuery(
+                    totalMembersQuery, qarams
+            )
+
+            List costs = CostItem.executeQuery(
+                    query + " " + orderQuery, qarams
+            )
+            result.totalCount = costs.size()
+            if(params.exportXLS || params.format)
+                result.entries = costs
+            else result.entries = costs.drop((int) result.offset).take((int) result.max)
+
+            result.finances = {
+                Map entries = [:]
+                result.entries.each { obj ->
+                    if (obj[0]) {
+                        CostItem ci = obj[0]
+                        if (!entries."${ci.billingCurrency}") {
+                            entries."${ci.billingCurrency}" = 0.0
+                        }
+
+                        if (ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE) {
+                            entries."${ci.billingCurrency}" += ci.costInBillingCurrencyAfterTax
+                        }
+                        else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
+                            entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
+                        }
+                    }
+                }
+                entries
+            }()
+        }
+        else if('onlyMemberSubs') {
+            Set<Subscription> memberSubscriptions = Subscription.executeQuery(query,qarams)
+            result.memberSubscriptions = memberSubscriptions
+            result.totalCount = memberSubscriptions.size()
+            result.entries = memberSubscriptions.drop((int) result.offset).take((int) result.max)
+        }
+
+        List bm = du.stopBenchmark()
+        result.benchMark = bm
+
+        result
     }
 
     List getMySubscriptions_readRights(){
@@ -50,20 +366,20 @@ class SubscriptionService {
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         } else {
            /* tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))*/
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))*/
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
         result
     }
@@ -74,17 +390,17 @@ class SubscriptionService {
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         } else {
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
         result
     }
@@ -96,10 +412,10 @@ class SubscriptionService {
         if(accessService.checkPerm("ORG_INST")) {
 
             tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         }
         result
@@ -112,10 +428,10 @@ class SubscriptionService {
         if(accessService.checkPerm("ORG_INST")) {
 
             tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
 
         result
@@ -124,28 +440,28 @@ class SubscriptionService {
     //Konsortiallizenzen
     private List getSubscriptionsConsortiaQuery() {
         Map params = [:]
-//        params.status = SUBSCRIPTION_CURRENT.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.showParentsAndChildsSubs = false
 //        params.showParentsAndChildsSubs = 'true'
-        params.orgRole = OR_SUBSCRIPTION_CONSORTIA.value
+        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 
     //Teilnehmerlizenzen
     private List getSubscriptionsConsortialLicenseQuery() {
         Map params = [:]
-//        params.status = SUBSCRIPTION_CURRENT.id
-        params.orgRole = OR_SUBSCRIBER.value
-        params.subTypes = SUBSCRIPTION_TYPE_CONSORTIAL.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIBER.value
+        params.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 
     //Lokallizenzen
     private List getSubscriptionsLocalLicenseQuery() {
         Map params = [:]
-//        params.status = SUBSCRIPTION_CURRENT.id
-        params.orgRole = OR_SUBSCRIBER.value
-        params.subTypes = SUBSCRIPTION_TYPE_LOCAL.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIBER.value
+        params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 
@@ -157,7 +473,7 @@ class SubscriptionService {
     List getCurrentValidSubChilds(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatus(
                 subscription,
-                SUBSCRIPTION_CURRENT
+                RDStore.SUBSCRIPTION_CURRENT
         )
         if(validSubChilds) {
             validSubChilds = validSubChilds?.sort { a, b ->
@@ -172,7 +488,10 @@ class SubscriptionService {
     List getValidSurveySubChilds(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
-                [SUBSCRIPTION_CURRENT, SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
+                [RDStore.SUBSCRIPTION_CURRENT,
+                 RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION,
+                 RDStore.SUBSCRIPTION_INTENDED,
+                 RDStore.SUBSCRIPTION_ORDERED]
         )
         if(validSubChilds) {
             validSubChilds = validSubChilds?.sort { a, b ->
@@ -187,7 +506,7 @@ class SubscriptionService {
     List getValidSurveySubChildOrgs(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
-                [SUBSCRIPTION_CURRENT, SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
+                [RDStore.SUBSCRIPTION_CURRENT, RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
         )
 
         List orgs = OrgRole.findAllBySubInListAndRoleType(validSubChilds, RDStore.OR_SUBSCRIBER_CONS)
@@ -202,7 +521,7 @@ class SubscriptionService {
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                        [sub: subscription, del: TIPP_STATUS_DELETED])
+                        [sub: subscription, del: RDStore.TIPP_STATUS_DELETED])
                 : []
         ies.sort {it.tipp.title.title}
         ies
@@ -254,11 +573,11 @@ class SubscriptionService {
 
             if(params.mode != 'advanced') {
                 base_qry += " and ie.status = :current "
-                qry_params.current = TIPP_STATUS_CURRENT
+                qry_params.current = RDStore.TIPP_STATUS_CURRENT
             }
             else {
                 base_qry += " and ie.status != :deleted "
-                qry_params.deleted = TIPP_STATUS_DELETED
+                qry_params.deleted = RDStore.TIPP_STATUS_DELETED
             }
 
             if(params.ieAcceptStatusFixed) {
@@ -434,7 +753,7 @@ class SubscriptionService {
 
 
     boolean deleteStatus(Subscription targetSub, def flash) {
-        targetSub.status = SUBSCRIPTION_NO_STATUS
+        targetSub.status = RDStore.SUBSCRIPTION_NO_STATUS
         return save(targetSub, flash)
     }
 
@@ -505,25 +824,25 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
-    /*
-    boolean deleteOwner(Subscription targetSub, def flash) {
-        targetSub.owner = null
-        return save(targetSub, flash)
+
+    boolean deleteLicenses(List<License> toDeleteLicenses, Subscription targetSub, def flash) {
+        toDeleteLicenses.each { License lic ->
+            setOrgLicRole(targetSub,lic,true)
+        }
     }
 
 
-    boolean copyOwner(Subscription sourceSub, Subscription targetSub, def flash) {
-        //Vertrag/License
-        targetSub.owner = sourceSub.owner ?: null
-        return save(targetSub, flash)
+    boolean copyLicenses(List<License> toCopyLicenses, Subscription targetSub, def flash) {
+        toCopyLicenses.each { License lic ->
+            setOrgLicRole(targetSub,lic,false)
+        }
     }
-    */
 
 
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
         OrgRole.executeUpdate(
                 "delete from OrgRole o where o in (:orgRelations) and o.sub = :sub and o.roleType not in (:roleTypes)",
-                [orgRelations: toDeleteOrgRelations, sub: targetSub, roleTypes: [OR_SUBSCRIPTION_CONSORTIA, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER]]
+                [orgRelations: toDeleteOrgRelations, sub: targetSub, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         )
     }
 
@@ -555,7 +874,7 @@ class SubscriptionService {
 //        targetSub.issueEntitlements.each{ ie ->
         getIssueEntitlements(targetSub).each{ ie ->
             if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id } ) {
-                ie.status = TIPP_STATUS_DELETED
+                ie.status = RDStore.TIPP_STATUS_DELETED
                 save(ie, flash)
             }
         }
@@ -628,7 +947,7 @@ class SubscriptionService {
 
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
         entitlementsToDelete.each {
-            it.status = TIPP_STATUS_DELETED
+            it.status = RDStore.TIPP_STATUS_DELETED
             save(it, flash)
         }
 //        IssueEntitlement.executeUpdate(
@@ -639,8 +958,8 @@ class SubscriptionService {
 
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
         entitlementsToTake.each { ieToTake ->
-            if (ieToTake.status != TIPP_STATUS_DELETED) {
-                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != TIPP_STATUS_DELETED}
+            if (ieToTake.status != RDStore.TIPP_STATUS_DELETED) {
+                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED}
                 if (list?.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
                     Object[] args = [ieToTake.tipp.title.title]
@@ -673,9 +992,9 @@ class SubscriptionService {
     void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
         targetSub.refresh()
         List<Subscription> targetChildSubs = getValidSubChilds(targetSub)
-        subscriptionToTake.each { subMember ->
+        subscriptionToTake.each { Subscription subMember ->
             //Gibt es mich schon in der Ziellizenz?
-            Org found = targetChildSubs?.find { targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
+            Org found = targetChildSubs?.find { Subscription targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
 
             if (found) {
                 // mich gibts schon! Fehlermeldung ausgeben!
@@ -684,7 +1003,7 @@ class SubscriptionService {
 //                diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem
             } else {
                 //ChildSub Exist
-//                ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, LINKTYPE_FOLLOWS, Subscription.class.name)
+//                ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, RDStore.LINKTYPE_FOLLOWS, Subscription.class.name)
 //                if (prevLinks.size() == 0) {
 
                     /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
@@ -704,7 +1023,7 @@ class SubscriptionService {
                             instanceOf: targetSub,
                             //previousSubscription: subMember?.id,
                             isSlaved: subMember.isSlaved,
-                            owner: targetSub.owner ? subMember.owner : null,
+                            //owner: targetSub.owner ? subMember.owner : null,
                             resource: targetSub.resource ?: null,
                             form: targetSub.form ?: null,
                             isPublicForApi: targetSub.isPublicForApi,
@@ -713,35 +1032,44 @@ class SubscriptionService {
                     newSubscription.save(flush:true)
                     //ERMS-892: insert preceding relation in new data model
                     if (subMember) {
-                        Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
-                        if (!prevLink.save()) {
-                            log.error("Subscription linking failed, please check: ${prevLink.errors}")
+                        try {
+                            Links.construct([source: GenericOIDService.getOID(newSubscription), destination: GenericOIDService.getOID(subMember), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org])
+                            Set<Links> precedingLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subMember),RDStore.LINKTYPE_LICENSE)
+                            precedingLicenses.each { Links link ->
+                                Map<String,Object> successorLink = [source:link.source,destination:GenericOIDService.getOID(newSubscription),linkType:RDStore.LINKTYPE_LICENSE,owner:contextService.org]
+                                Links.construct(successorLink)
+                            }
+                        }
+                        catch (CreationException e) {
+                            log.error("Subscription linking failed, please check: ${e.stackTrace}")
                         }
                     }
 
-                    if (subMember.customProperties) {
+                    if (subMember.propertySet) {
                         //customProperties
-                        for (prop in subMember.customProperties) {
-                            def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
+                        for (prop in subMember.propertySet) {
+                            SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.save()
                             //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                         }
                     }
+                    /*
                     if (subMember.privateProperties) {
                         //privatProperties
-                        List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [OR_SUBSCRIBER_CONS, OR_SUBSCRIPTION_CONSORTIA]]).collect {
+                        List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]]).collect {
                             it -> it.id
                         }
                         subMember.privateProperties?.each { prop ->
                             if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
-                                def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
+                                def copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.save()
                                 //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                             }
                         }
                     }
+                    */
 
                     if (subMember.packages && targetSub.packages) {
                         //Package
@@ -794,7 +1122,7 @@ class SubscriptionService {
 
                     //OrgRole
                     subMember.orgRelations?.each { or ->
-                        if ((or.org.id == contextService.getOrg().id) || (or.roleType in [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_CONS_HIDDEN, OR_SUBSCRIPTION_COLLECTIVE]) || (targetSub.orgRelations.size() >= 1)) {
+                        if ((or.org.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_COLLECTIVE]) || (targetSub.orgRelations.size() >= 1)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.sub = newSubscription
@@ -842,7 +1170,7 @@ class SubscriptionService {
         toCopyTasks.each { tsk ->
             def task = Task.findBySubscriptionAndId(sourceSub, tsk)
             if (task) {
-                if (task.status != TASK_STATUS_DONE) {
+                if (task.status != RDStore.TASK_STATUS_DONE) {
                     Task newTask = new Task()
                     InvokerHelper.setProperties(newTask, task.properties)
                     newTask.systemCreateDate = new Date()
@@ -921,7 +1249,7 @@ class SubscriptionService {
     def deleteDocs(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
         def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
-        [del: DOC_CTX_STATUS_DELETED, ids: toDeleteDocs])
+        [del: RDStore.DOC_CTX_STATUS_DELETED, ids: toDeleteDocs])
         log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
     }
 
@@ -942,7 +1270,7 @@ class SubscriptionService {
                         newDocContext.owner = newDoc
                         save(newDocContext, flash)
 
-                        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                        String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                         Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                         Path target = new File("${fPath}/${newDoc.uuid}").toPath()
@@ -959,33 +1287,24 @@ class SubscriptionService {
 
 
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
-        Org contextOrg = contextService.getOrg()
-        def targetProp
+        SubscriptionProperty targetProp
 
 
-        properties?.each { sourceProp ->
-            if (sourceProp instanceof CustomProperty) {
-                targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
-            }
-            if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
-                targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
-            }
+        properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
+            targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
-                if (sourceProp instanceof CustomProperty) {
-                    targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
-                } else {
-                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
-                }
+                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub, tenant: sourceProp.tenant)
                 targetProp = sourceProp.copyInto(targetProp)
+                targetProp.isPublic = sourceProp.isPublic //provisoric, should be moved into copyInto once migration is complete
                 save(targetProp, flash)
-                if (((sourceProp.id.toString() in auditProperties)) && targetProp instanceof CustomProperty) {
+                if (((sourceProp.id.toString() in auditProperties)) && targetProp.isPublic) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
 
-                        Subscription.findAllByInstanceOf(targetSub).each { member ->
+                        Subscription.findAllByInstanceOf(targetSub).each { Subscription member ->
 
-                            def existingProp = SubscriptionCustomProperty.findByOwnerAndInstanceOf(member, targetProp)
+                            def existingProp = SubscriptionProperty.findByOwnerAndInstanceOf(member, targetProp)
                             if (! existingProp) {
 
                                 // multi occurrence props; add one additional with backref
@@ -996,7 +1315,7 @@ class SubscriptionService {
                                     additionalProp.save(flush: true)
                                 }
                                 else {
-                                    def matchingProps = SubscriptionCustomProperty.findByOwnerAndType(member, targetProp.type)
+                                    def matchingProps = SubscriptionProperty.findByOwnerAndType(member, targetProp.type)
                                     // unbound prop found with matching type, set backref
                                     if (matchingProps) {
                                         matchingProps.each { memberProp ->
@@ -1015,7 +1334,7 @@ class SubscriptionService {
                             }
                         }
 
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
                                 //All ReferenceFields were copied!
@@ -1027,7 +1346,7 @@ class SubscriptionService {
                     }
                 }
             } else {
-                Object[] args = [sourceProp?.type?.getI10n("name") ?: sourceProp.class.getSimpleName()]
+                Object[] args = [sourceProp.type.getI10n("name") ?: sourceProp.class.getSimpleName()]
                 flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
             }
         }
@@ -1040,8 +1359,8 @@ class SubscriptionService {
                 AuditConfig.removeAllConfigs(prop)
             }
         }
-        int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)",[properties: properties])
-        int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
+        int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = true",[properties: properties, org: contextService.org])
+        int anzPP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = false",[properties: properties, org: contextService.org])
     }
 
     private boolean delete(obj, flash) {
@@ -1134,7 +1453,7 @@ class SubscriptionService {
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
         }
-        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, TIPP_STATUS_CURRENT))
+        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT))
             {
                 throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
         } else {
@@ -1220,7 +1539,7 @@ class SubscriptionService {
             return false
         }
         else {
-            ie.status = TIPP_STATUS_DELETED
+            ie.status = RDStore.TIPP_STATUS_DELETED
             if(ie.save()) {
                 return true
             }
@@ -1236,7 +1555,7 @@ class SubscriptionService {
             return false
         }
         else {
-            ie.status = TIPP_STATUS_DELETED
+            ie.status = RDStore.TIPP_STATUS_DELETED
             if(ie.save()) {
                 return true
             }
@@ -1261,47 +1580,63 @@ class SubscriptionService {
         }
     }
 
-    boolean setOrgLicRole(Subscription sub, License newOwner) {
+    boolean setOrgLicRole(Subscription sub, License newLicense, boolean unlink) {
         boolean success = false
-        if(sub.owner != newOwner) {
-            Org subscr = sub.getSubscriber()
-            if(newOwner == null) {
-                Map<String,Object> licParams = [lic:sub.owner,subscriber:subscr]
-                Set<Subscription> linkedSubs = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.owner = :lic and oo.org = :subscriber and oo.roleType in (:roleTypes)',licParams+[roleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN,OR_SUBSCRIBER_COLLECTIVE]])
-                //size == 1 is correct because this is the last subscription to be linked for that org
-                if(linkedSubs.size() == 1) {
-                    log.info("no more license <-> subscription links between org -> removing licensee role")
-                    if(OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber",licParams))
-                        success = true
-                }
-            }
-            else if(newOwner != null) {
-                RefdataValue licRole
-                if(sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
-                    licRole = OR_LICENSEE_CONS
-                else if(sub.getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE,CalculatedType.TYPE_LOCAL])
-                    licRole = OR_LICENSEE
-                else if(sub.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-                    licRole = OR_LICENSING_CONSORTIUM
-                if(licRole) {
-                    OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newOwner,subscr,licRole)
-                    if(!orgLicRole){
-                        orgLicRole = OrgRole.findByLicAndOrgAndRoleType(sub.owner,subscr,licRole)
-                        if(orgLicRole && orgLicRole.lic != newOwner) {
-                            orgLicRole.lic = newOwner
-                        }
-                        else {
-                            orgLicRole = new OrgRole(lic: newOwner,org: subscr,roleType: licRole)
-                        }
-                        if(orgLicRole.save())
-                            success = true
+        Links curLink = Links.findBySourceAndDestinationAndLinkType(GenericOIDService.getOID(newLicense),GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)
+        Org subscr = sub.getSubscriber()
+        if(!unlink && !curLink) {
+            try {
+                if(Links.construct([source: GenericOIDService.getOID(newLicense), destination: GenericOIDService.getOID(sub), linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
+                    RefdataValue licRole
+                    switch(sub.getCalculatedType()) {
+                        case CalculatedType.TYPE_PARTICIPATION: licRole = RDStore.OR_LICENSEE_CONS
+                            break
+                        case CalculatedType.TYPE_LOCAL: licRole = RDStore.OR_LICENSEE
+                            break
+                        case CalculatedType.TYPE_CONSORTIAL:
+                        case CalculatedType.TYPE_ADMINISTRATIVE: licRole = RDStore.OR_LICENSING_CONSORTIUM
+                            break
+                        default: log.error("no role type determinable!")
+                            break
                     }
+
+                    if(licRole) {
+                        OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
+                        if(!orgLicRole){
+                            orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
+                            if(orgLicRole && orgLicRole.lic != newLicense) {
+                                orgLicRole.lic = newLicense
+                            }
+                            else {
+                                orgLicRole = new OrgRole(lic: newLicense,org: subscr,roleType: licRole)
+                            }
+                            if(!orgLicRole.save())
+                                log.error(orgLicRole.errors)
+                        }
+                        success = true
+                    }
+                    else log.error("role type missing for org-license linking!")
                 }
             }
-            sub.owner = newOwner
-            success && sub.save()
+            catch (CreationException e) {
+                log.error(e)
+            }
         }
-        else (sub.owner == newOwner)
+        else if(unlink && curLink) {
+            String sourceOID = curLink.source
+            License lic = genericOIDService.resolveOID(sourceOID)
+            curLink.delete() //delete() is void, no way to check whether errors occurred or not
+            if(sub.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+                String linkedSubsQuery = "select li from Links li where li.source = :lic and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:subscrTypes) and oo.org = :subscr)"
+                Set<Links> linkedSubs = Links.executeQuery(linkedSubsQuery, [lic: sourceOID, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])
+                if (linkedSubs.size() < 1) {
+                    log.info("no more license <-> subscription links between org -> removing licensee role")
+                    OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber", [lic: lic, subscriber: subscr])
+                }
+            }
+            success = true
+        }
+        success
     }
 
     Map subscriptionImport(CommonsMultipartFile tsvFile) {
@@ -1309,12 +1644,8 @@ class SubscriptionService {
         RefdataValue comboType
         String[] parentSubType
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            comboType = COMBO_TYPE_CONSORTIUM
-            parentSubType = [SUBSCRIPTION_TYPE_CONSORTIAL.getI10n('value')]
-        }
-        else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-            comboType = COMBO_TYPE_DEPARTMENT
-            parentSubType = [SUBSCRIPTION_TYPE_LOCAL.getI10n('value')]
+            comboType = RDStore.COMBO_TYPE_CONSORTIUM
+            parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
         }
         Map colMap = [:]
         Map<String, Map> propMap = [:]
@@ -1334,13 +1665,13 @@ class SubscriptionService {
                 case "teilnehmer": colMap.member = c
                     break
                 case "vertrag":
-                case "license": colMap.owner = c
+                case "license": colMap.licenses = c
                     break
                 case "elternlizenz":
                 case "konsortiallizenz":
                 case "parent subscription":
                 case "consortial subscription":
-                    if(accessService.checkPerm("ORG_INST_COLLECTIVE, ORG_CONSORTIUM"))
+                    if(accessService.checkPerm("ORG_CONSORTIUM"))
                         colMap.instanceOf = c
                     break
                 case "status": colMap.status = c
@@ -1357,7 +1688,7 @@ class SubscriptionService {
                     break
                 case "lizenztyp":
                 case "subscription type":
-                case "type": colMap.type = c
+                case "type": colMap.kind = c
                     break
                 case "lizenzform":
                 case "subscription form":
@@ -1384,8 +1715,8 @@ class SubscriptionService {
                         isNotesCol = true
                         propDefString = headerCol.split('\\$\\$')[0].toLowerCase()
                     }
-                    Map queryParams = [propDef:propDefString,pdClass:PropertyDefinition.class.name,contextOrg:contextOrg]
-                    List<PropertyDefinition> possiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd, I10nTranslation i where i.referenceId = pd.id and i.referenceClass = :pdClass and (lower(i.valueDe) = :propDef or lower(i.valueEn) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
+                    Map queryParams = [propDef:propDefString,contextOrg:contextOrg]
+                    List<PropertyDefinition> possiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where (lower(pd.name_de) = :propDef or lower(pd.name_en) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
                     if(possiblePropDefs.size() == 1) {
                         PropertyDefinition propDef = possiblePropDefs[0]
                         if(isNotesCol) {
@@ -1428,21 +1759,21 @@ class SubscriptionService {
                     else {
                         //missing case one: invalid status key
                         //default to subscription not set
-                        candidate.status = "${SUBSCRIPTION_NO_STATUS.class.name}:${SUBSCRIPTION_NO_STATUS.id}"
+                        candidate.status = "${RDStore.SUBSCRIPTION_NO_STATUS.class.name}:${RDStore.SUBSCRIPTION_NO_STATUS.id}"
                         mappingErrorBag.noValidStatus = statusKey
                     }
                 }
                 else {
                     //missing case two: no status key set
                     //default to subscription not set
-                    candidate.status = "${SUBSCRIPTION_NO_STATUS.class.name}:${SUBSCRIPTION_NO_STATUS.id}"
+                    candidate.status = "${RDStore.SUBSCRIPTION_NO_STATUS.class.name}:${RDStore.SUBSCRIPTION_NO_STATUS.id}"
                     mappingErrorBag.statusNotSet = true
                 }
             }
             else {
                 //missing case three: the entire column is missing
                 //default to subscription not set
-                candidate.status = "${SUBSCRIPTION_NO_STATUS.class.name}:${SUBSCRIPTION_NO_STATUS.id}"
+                candidate.status = "${RDStore.SUBSCRIPTION_NO_STATUS.class.name}:${RDStore.SUBSCRIPTION_NO_STATUS.id}"
                 mappingErrorBag.statusNotSet = true
             }
             //moving on to optional attributes
@@ -1452,28 +1783,29 @@ class SubscriptionService {
                 if(name)
                     candidate.name = name
             }
-            //owner(nullable:true, blank:false) -> to license
-            if(colMap.owner != null) {
-                String ownerKey = cols[colMap.owner].trim()
-                if(ownerKey) {
-                    List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:ownerKey,roleTypes:[OR_LICENSEE_CONS,OR_LICENSING_CONSORTIUM,OR_LICENSEE],contextOrg:contextOrg])
+            //licenses
+            if(colMap.licenses != null) {
+                List<String> licenseKeys = cols[colMap.licenses].split(',')
+                candidate.licenses = []
+                licenseKeys.each { String licenseKey ->
+                    List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:licenseKey,roleTypes:[RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE],contextOrg:contextOrg])
                     if(licCandidates.size() == 1) {
-                        License owner = licCandidates[0]
-                        candidate.owner = "${owner.class.name}:${owner.id}"
+                        License license = licCandidates[0]
+                        candidate.licenses << GenericOIDService.getOID(license)
                     }
                     else if(licCandidates.size() > 1)
-                        mappingErrorBag.multipleLicenseError = ownerKey
+                        mappingErrorBag.multipleLicenseError << licenseKey
                     else
-                        mappingErrorBag.noValidLicense = ownerKey
+                        mappingErrorBag.noValidLicense << licenseKey
                 }
             }
             //type(nullable:true, blank:false) -> to type
-            if(colMap.type != null) {
-                String typeKey = cols[colMap.type].trim()
+            if(colMap.kind != null) {
+                String typeKey = cols[colMap.kind].trim()
                 if(typeKey) {
-                    String type = refdataService.retrieveRefdataValueOID(typeKey, RDConstants.SUBSCRIPTION_TYPE)
+                    String type = refdataService.retrieveRefdataValueOID(typeKey, RDConstants.SUBSCRIPTION_KIND)
                     if(type) {
-                        candidate.type = type
+                        candidate.kind = type
                     }
                     else {
                         mappingErrorBag.noValidType = typeKey
@@ -1578,7 +1910,7 @@ class SubscriptionService {
                 String idCandidate = cols[colMap.instanceOf].trim()
                 String memberIdCandidate = cols[colMap.member].trim()
                 if(idCandidate && memberIdCandidate) {
-                    List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [OR_SUBSCRIPTION_CONSORTIA, OR_SUBSCRIPTION_COLLECTIVE], idCandidate: idCandidate])
+                    List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIPTION_COLLECTIVE], idCandidate: idCandidate])
                     // TODO [ticket=1789]
                     //  List<Org> possibleOrgs = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc, Combo c join idOcc.identifier id where c.fromOrg = idOcc.org and :idCandidate in (cast(idOcc.org.id as string),idOcc.org.globalUID) or (id.value = :idCandidate and id.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type",[idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
                     List<Org> possibleOrgs = Org.executeQuery("select distinct ident.org from Identifier ident, Combo c where c.fromOrg = ident.org and :idCandidate in (cast(ident.org.id as string), ident.org.globalUID) or (ident.value = :idCandidate and ident.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type", [idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
@@ -1835,5 +2167,4 @@ class SubscriptionService {
 
         return [issueEntitlements: issueEntitlements.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
     }
-
 }

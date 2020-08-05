@@ -5,18 +5,16 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PriceItem
-import de.laser.domain.SystemProfiler
-import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import grails.transaction.Transactional
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 
 //@CompileStatic
+//@Transactional
 class DeletionService {
 
     SubscriptionService subscriptionService
@@ -41,7 +39,7 @@ class DeletionService {
 
         // gathering references
 
-        List links = Links.where { objectType == lic.class.name && (source == lic.id || destination == lic.id) }.findAll()
+        List links = Links.where { source == GenericOIDService.getOID(lic) || destination == GenericOIDService.getOID(lic) }.findAll()
 
         List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
@@ -57,14 +55,14 @@ class DeletionService {
         List packages       = new ArrayList(lic.pkgs)  // Package
         List pendingChanges = new ArrayList(lic.pendingChanges)
         List privateProps   = new ArrayList(lic.privateProperties)
-        List customProps    = new ArrayList(lic.customProperties)
+        List customProps    = new ArrayList(lic.propertySet)
 
         // collecting informations
 
         result.info = []
         result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
 
-        result.info << ['Links: Verträge', links]
+        result.info << ['Links: Verträge bzw. Lizenzen', links]
         result.info << ['Aufgaben', tasks]
         result.info << ['Merkmalsgruppen', propDefGroupBindings]
         result.info << ['Lizenzen', subs]
@@ -78,8 +76,8 @@ class DeletionService {
         result.info << ['Personen', pRoles]     // delete ? personRole->person
         result.info << ['Pakete', packages]
         result.info << ['Anstehende Änderungen', pendingChanges]
-        result.info << ['Private Merkmale', lic.privateProperties]
-        result.info << ['Allgemeine Merkmale', lic.customProperties]
+        result.info << ['Private Merkmale', lic.propertySet.findAll { it.type.tenant != null }]
+        result.info << ['Allgemeine Merkmale', lic.propertySet.findAll { it.type.tenant == null }]
 
         // checking constraints and/or processing
 
@@ -124,7 +122,7 @@ class DeletionService {
                     }
                     // custom properties
                     customProps.each{ tmp ->
-                        List changeList = LicenseCustomProperty.findAllByInstanceOf(tmp)
+                        List changeList = LicenseProperty.findAllByInstanceOf(tmp)
                         changeList.each { tmp2 ->
                             tmp2.instanceOf = null
                             tmp2.save(flush:true)
@@ -133,11 +131,6 @@ class DeletionService {
                     // packages
                     packages.each{ tmp ->
                         tmp.license = null
-                        tmp.save(flush:true)
-                    }
-                    // subscription
-                    subs.each{ tmp ->
-                        tmp.owner = null
                         tmp.save(flush:true)
                     }
 
@@ -182,16 +175,16 @@ class DeletionService {
                     pendingChanges.each { tmp -> tmp.delete() }
 
                     // private properties
-                    lic.privateProperties.clear()
-                    privateProps.each { tmp -> tmp.delete() }
+                    //lic.privateProperties.clear()
 
                     // custom properties
-                    lic.customProperties.clear()
+                    lic.propertySet.clear()
                     /*customProps.each { tmp -> // incomprehensible fix
                         tmp.owner = null
                         tmp.save()
                     }*/
                     customProps.each { tmp -> tmp.delete() }
+                    privateProps.each { tmp -> tmp.delete() }
 
                     lic.delete()
 
@@ -199,7 +192,7 @@ class DeletionService {
                 }
                 catch (Exception e) {
                     println 'error while deleting license ' + lic.id + ' .. rollback'
-                    println e.message
+                    println 'error while deleting license ' + e.message
                     e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
@@ -220,7 +213,7 @@ class DeletionService {
         List ref_instanceOf = Subscription.findAllByInstanceOf(sub)
         List ref_previousSubscription = Subscription.findAllByPreviousSubscription(sub)
 
-        List links = Links.where { objectType == sub.class.name && (source == sub.id || destination == sub.id) }.findAll()
+        List links = Links.where { source == GenericOIDService.getOID(sub) || destination == GenericOIDService.getOID(sub) }.findAll()
 
         List tasks                  = Task.findAllBySubscription(sub)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllBySub(sub)
@@ -240,8 +233,8 @@ class DeletionService {
         List nonDeletedCosts = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus != RDStore.COST_ITEM_DELETED })
         List deletedCosts   = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus == RDStore.COST_ITEM_DELETED })
         List oapl           = new ArrayList(sub.packages?.oapls)
-        List privateProps   = new ArrayList(sub.privateProperties)
-        List customProps    = new ArrayList(sub.customProperties)
+        List privateProps   = new ArrayList(sub.propertySet.findAll { it.type.tenant != null })
+        List customProps    = new ArrayList(sub.propertySet.findAll { it.type.tenant == null })
 
         List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriber(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
 
@@ -269,8 +262,8 @@ class DeletionService {
         result.info << ['nicht gelöschte Kostenposten', nonDeletedCosts, FLAG_BLOCKER]
         result.info << ['gelöschte Kostenposten', deletedCosts]
         result.info << ['OrgAccessPointLink', oapl]
-        result.info << ['Private Merkmale', sub.privateProperties]
-        result.info << ['Allgemeine Merkmale', sub.customProperties]
+        result.info << ['Private Merkmale', sub.propertySet.findAll { it.type.tenant != null }]
+        result.info << ['Allgemeine Merkmale', sub.propertySet.findAll { it.type.tenant == null }]
         result.info << ['Umfragen', surveys, sub.instanceOf ? FLAG_WARNING : FLAG_BLOCKER]
 
         // checking constraints and/or processing
@@ -316,7 +309,7 @@ class DeletionService {
                     }
                     // custom properties
                     customProps.each{ tmp ->
-                        List changeList = SubscriptionCustomProperty.findAllByInstanceOf(tmp)
+                        List changeList = SubscriptionProperty.findAllByInstanceOf(tmp)
                         changeList.each { tmp2 ->
                             tmp2.instanceOf = null
                             tmp2.save()
@@ -393,16 +386,16 @@ class DeletionService {
                     }
 
                     // private properties
-                    sub.privateProperties.clear()
-                    privateProps.each { tmp -> tmp.delete() }
+                    //sub.privateProperties.clear()
 
                     // custom properties
-                    sub.customProperties.clear()
-                    customProps.each { tmp -> // incomprehensible fix
+                    sub.propertySet.clear()
+                    /*customProps.each { tmp -> // incomprehensible fix
                         tmp.owner = null
                         tmp.save()
-                    }
+                    }*/
                     customProps.each { tmp -> tmp.delete() }
+                    privateProps.each { tmp -> tmp.delete() }
 
                     // ----- keep foreign object, change state
                     // ----- keep foreign object, change state
@@ -462,7 +455,7 @@ class DeletionService {
                 }
                 catch (Exception e) {
                     println 'error while deleting subscription ' + sub.id + ' .. rollback'
-                    println e.message
+                    println 'error while deleting subscription ' + e.message
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
                 }
@@ -478,7 +471,7 @@ class DeletionService {
 
         // gathering references
 
-        List links = Links.where { objectType == org.class.name && (source == org.id || destination == org.id) }.findAll()
+        List links = Links.where { source == GenericOIDService.getOID(org) || destination == GenericOIDService.getOID(org) }.findAll()
 
         List ids            = new ArrayList(org.ids)
         List outgoingCombos = new ArrayList(org.outgoingCombos)
@@ -499,8 +492,8 @@ class DeletionService {
         //List tips           = TitleInstitutionProvider.findAllByInstitution(org)
         //List tipsProviders  = TitleInstitutionProvider.findAllByProvider(org)
 
-        List customProperties       = new ArrayList(org.customProperties)
-        List privateProperties      = new ArrayList(org.privateProperties)
+        List customProperties       = new ArrayList(org.propertySet.findAll { it.type.tenant == null })
+        List privateProperties      = new ArrayList(org.propertySet.findAll { it.type.tenant != null })
         List propertyDefinitions    = PropertyDefinition.findAllByTenant(org)
         List propDefGroups          = PropertyDefinitionGroup.findAllByTenant(org)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllByOrg(org)
@@ -516,7 +509,6 @@ class DeletionService {
         List pendingChanges     = PendingChange.findAllByOwner(org)
         List tasks              = Task.findAllByOrg(org)
         List tasksResp          = Task.findAllByResponsibleOrg(org)
-        List systemMessages     = SystemMessage.findAllByOrg(org)
         List systemProfilers    = SystemProfiler.findAllByContext(org)
 
         List facts              = Fact.findAllByInst(org)
@@ -572,7 +564,6 @@ class DeletionService {
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_BLOCKER]
         result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
         result.info << ['Aufgaben (responsibility)', tasksResp, FLAG_BLOCKER]
-        result.info << ['SystemMessages', systemMessages, FLAG_BLOCKER]
         result.info << ['SystemProfilers', systemProfilers]
 
         result.info << ['Facts', facts, FLAG_BLOCKER]
@@ -644,11 +635,11 @@ class DeletionService {
                     contacts.each{ tmp -> tmp.delete() }
 
                     // private properties
-                    org.privateProperties.clear()
-                    privateProperties.each { tmp -> tmp.delete() }
+                    //org.privateProperties.clear()
+                    //privateProperties.each { tmp -> tmp.delete() }
 
                     // custom properties
-                    org.customProperties.clear()
+                    org.propertySet.clear()
                     customProperties.each { tmp -> // incomprehensible fix // ??
                         tmp.owner = null
                         tmp.save()
@@ -674,7 +665,7 @@ class DeletionService {
                 }
                 catch (Exception e) {
                     println 'error while deleting org ' + org.id + ' .. rollback'
-                    println e.message
+                    println 'error while deleting org ' + e.message
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
                 }
@@ -791,7 +782,7 @@ class DeletionService {
                 }
                 catch (Exception e) {
                     println 'error while deleting user ' + user.id + ' .. rollback'
-                    println e.message
+                    println 'error while deleting user ' + e.message
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
                 }
@@ -844,7 +835,7 @@ class DeletionService {
             }
             catch(Exception e) {
                 println 'error while deleting package ' + pkg.id + ' .. rollback'
-                e.printStackTrace()
+                println 'error while deleting package ' + e.printStackTrace()
                 status.setRollbackOnly()
                 return false
             }
@@ -864,7 +855,7 @@ class DeletionService {
                 }
                 catch(Exception e) {
                     println 'error while deleting tipp ' + tipp.id + ' .. rollback'
-                    println e.printStackTrace()
+                    println 'error while deleting tipp ' + e.printStackTrace()
                     status.setRollbackOnly()
                     return false
                 }
@@ -894,7 +885,7 @@ class DeletionService {
             }
             catch (Exception e) {
                 println 'error while deleting tipp collection ' + tippsToDelete + ' .. rollback'
-                println e.message
+                println 'error while deleting tipp collection ' + e.message
                 status.setRollbackOnly()
                 return false
             }
@@ -912,7 +903,7 @@ class DeletionService {
             }
             catch (Exception e) {
                 println 'error while deleting issue entitlement ' + ie + ' .. rollback'
-                println e.message
+                println 'error while deleting issue entitlement ' + e.message
                 status.setRollbackOnly()
                 return false
             }
@@ -930,6 +921,7 @@ class DeletionService {
             esclient.close()
         }catch(Exception e) {
             log.error("deleteDocumentFromIndex with id=${id} failed because: " + e)
+            esclient.close()
         }
     }
 }

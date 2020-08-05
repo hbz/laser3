@@ -88,4 +88,17 @@ class SwissKnife {
     static String toSnakeCase(String text) {
         text.replaceAll( /([A-Z])/, /_$1/ ).toLowerCase().replaceAll( /^_/, '' )
     }
+
+    static Map deepClone(Map map) {
+        Map cloned = [:]
+        map.each { k,v ->
+            if (v instanceof Map) {
+                cloned[k] = deepClone(v)
+            }
+            else {
+                cloned[k] = v
+            }
+        }
+        return cloned
+    }
 }

@@ -5,12 +5,16 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
+import de.laser.helper.ConfigUtils
+import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import grails.plugin.mail.MailService
+import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
-import static de.laser.helper.RDStore.*
-
+//@Transactional
 class DashboardDueDatesService {
 
     QueryService queryService
@@ -23,12 +27,12 @@ class DashboardDueDatesService {
     String from
     String replyTo
     boolean update_running = false
-    private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
+    private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user and uo.status=1 ) order by o.name"
 
     @javax.annotation.PostConstruct
     void init() {
-        from = grailsApplication.config.notifications.email.from
-        replyTo = grailsApplication.config.notifications.email.replyTo
+        from = ConfigUtils.getNotificationsEmailFrom()
+        replyTo = ConfigUtils.getNotificationsEmailReplyTo()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         log.debug("Initialised DashboardDueDatesService...")
@@ -80,7 +84,7 @@ class DashboardDueDatesService {
         List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
 //        List<User> users = [User.get(96)]
         users.each { user ->
-            List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
+            List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, [user: user])
             orgs.each {org ->
                 List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
                 dueObjects.each { obj ->
@@ -144,9 +148,9 @@ class DashboardDueDatesService {
 
             List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
             users.each { user ->
-                boolean userWantsEmailReminder = YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, YN_NO).rdValue)
+                boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
                 if (userWantsEmailReminder) {
-                    List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
+                    List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, [user: user])
                     orgs.each { org ->
                         List<DashboardDueDate> dashboardEntries = DashboardDueDatesService.getDashboardDueDates(user, org, false, false)
                         sendEmail(user, org, dashboardEntries)
@@ -164,17 +168,17 @@ class DashboardDueDatesService {
     }
 
     private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
-        def emailReceiver = user.getEmail()
-        Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
-        def currentServer = grailsApplication.config.getCurrentServer()
-        String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+        String emailReceiver = user.getEmail()
+        Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
+        String currentServer = ServerUtils.getCurrentServer()
+        String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
         String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, language) + " (" + org.name + ")")
         if (emailReceiver == null || emailReceiver.isEmpty()) {
             log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);
         } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
             log.debug("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
         } else {
-            boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, YN_NO)?.rdValue == YN_YES
+            boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
             String ccAddress = null
             if (isRemindCCbyEmail){
                 ccAddress = user.getSetting(UserSettings.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
@@ -186,8 +190,7 @@ class DashboardDueDatesService {
                     cc      ccAddress
                     replyTo replyTo
                     subject mailSubject
-                    body    (view: "/mailTemplates/text/dashboardDueDates", model: [user: user, org: org, dueDates:
-                                                                                            dashboardEntries])
+                    body    (view: "/mailTemplates/text/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
                 }
             } else {
                 mailService.sendMail {
@@ -195,8 +198,7 @@ class DashboardDueDatesService {
                     from    from
                     replyTo replyTo
                     subject mailSubject
-                    body    (view: "/mailTemplates/text/dashboardDueDates", model: [user: user, org: org, dueDates:
-                            dashboardEntries])
+                    body    (view: "/mailTemplates/text/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
                 }
             }
             log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);

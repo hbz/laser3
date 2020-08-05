@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.kbplus.CostItem; com.k_int.kbplus.Links; com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -46,6 +46,19 @@
                     <g:link class="item" action="members" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
                 </g:else>
             </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:if test="${filterSet}">
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-term-how="ok" controller="subscription" action="members"
+                            params="${params+[exportIPs:true]}">
+                        ${message(code:'subscriptionDetails.members.exportIPs')}
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="item" action="members" params="${params+[exportIPs:true]}">${message(code:'subscriptionDetails.members.exportIPs')}</g:link>
+                </g:else>
+            </semui:exportDropdownItem>
         </semui:exportDropdown>
         <g:render template="actions" />
     </semui:controlButtons>
@@ -76,7 +89,7 @@
         </form>
     </semui:filter>
     --%>
-    <g:render template="../templates/filter/javascript" />
+    <g:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <%
@@ -104,7 +117,7 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code:'default.sortname.label')}</th>
                 <th>${message(code:'subscriptionDetails.members.members')}</th>
-                <th>
+                <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.previous.label')}">
                         <i class="arrow left icon"></i>
@@ -112,20 +125,27 @@
                 </th>
                 <th>${message(code:'default.startDate.label')}</th>
                 <th>${message(code:'default.endDate.label')}</th>
-                <th>
+                <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.next.label')}">
                         <i class="arrow right icon"></i>
                     </span>
                 </th>
-                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                    <th>${message(code: 'subscription.linktoLicense')}</th>
-                </g:if>
+                <th class="center aligned la-no-uppercase">
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
+                        <i class="balance scale icon"></i>
+                    </span>
+                </th>
+                <th class="center aligned la-no-uppercase">
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
+                        <i class="gift icon"></i>
+                    </span>
+                </th>
                 <th>${message(code:'default.status.label')}</th>
-                <th class="la-no-uppercase">
+                <th class="center aligned la-no-uppercase">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                        <i class="map orange icon"></i>
+                        <i class="map icon"></i>
                     </span>
                 </th>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
@@ -189,7 +209,7 @@
                         <td></td>
                     </g:if>
                     <%
-                        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, sub.id)
+                        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(sub))
                         Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                         Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
                     %>
@@ -207,11 +227,30 @@
                     </td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
-                            <g:if test="${sub?.owner?.id}">
-                                <g:link controller="license" action="show" id="${sub?.owner?.id}"><i class=" inverted circular balance scale green link icon"></i></g:link>
+                            <g:set var="license" value="${Links.findByDestinationAndLinkType(GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)}"/>
+                            <g:if test="${!license}">
+                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon ">
+                                    <i class="circular la-light-grey inverted minus icon"></i>
+                                </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon ">
+                                    <i class="circular la-license icon"></i>
+                                </g:link>
+                            </g:else>
+                        </td>
+                    </g:if>
+                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                        <td class="center aligned">
+                            <g:if test="${!sub.packages}">
+                                <g:link controller="subscription" action="linkPackagesMembers" id="${subscriptionInstance.id}" class="ui icon ">
+                                    <i class="circular la-light-grey inverted minus icon"></i>
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="subscription" action="linkPackagesMembers" id="${subscriptionInstance.id}" class="ui icon ">
+                                    <i class="circular la-package icon"></i>
+                                </g:link>
                             </g:else>
                         </td>
                     </g:if>
@@ -225,6 +264,7 @@
                         </g:if>
                     </td>
                     <td class="x">
+
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         <g:if test="${sub.isEditableBy(contextService.getUser())}"> <%-- needs to be checked for child subscription because of collective subscriptions! --%>
                             <g:if test="${sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
@@ -250,19 +290,21 @@
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <div class="ui icon negative buttons la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
-                                    <button class="ui disabled button la-selectable-button">
+                                <span class="la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
+                                    <button class="ui disabled icon negative button">
                                         <i class="trash alternate icon"></i>
                                     </button>
-                                </div>
+                                </span>
                             </g:else>
                         </g:if>
+
+                        <semui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea"/>
                     </td>
                 </tr>
             </g:each>
         </tbody>
         </table>
-                <g:render template="../templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
+                <g:render template="/templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">

@@ -2,6 +2,28 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.115
+
+- added new endpoint: __/OrgAccessPoint__
+- added new attribute: `Org.orgAccessPoints`
+- added new attribute: `Subscription.orgAccessPoints`
+
+#### 0.114
+
+- internal refactoring
+
+#### 0.113
+
+- internal refactoring
+
+#### 0.112
+
+- internal refactoring
+
+#### 0.111
+
+- internal refactoring
+
 #### 0.110
 
 - added new attribute: `CostItem.isVisibleForSubscriber`

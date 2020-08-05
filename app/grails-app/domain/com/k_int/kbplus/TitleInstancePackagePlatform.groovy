@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
-import de.laser.domain.TIPPCoverage
+import de.laser.base.AbstractBase
+import de.laser.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -13,7 +13,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
-class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements AuditableTrait*/ {
+class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTrait*/ {
   @Transient
   def grailsLinkGenerator
 
@@ -131,7 +131,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        gokbId (nullable:false, blank:false, unique: true, maxSize:511)
+        gokbId (blank:false, unique: true, maxSize:511)
         //originEditUrl(nullable:true, blank:false)
         status(nullable:true, blank:false)
         delayedOA(nullable:true, blank:false)
@@ -141,10 +141,10 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
         option(nullable:true, blank:false)
         hostPlatformURL(nullable:true, blank:true, maxSize:2048)
         //derivedFrom(nullable:true, blank:true)
-        accessStartDate(nullable:true, blank:true)
-        accessEndDate(nullable:true, blank:true)
-        coreStatusStart(nullable:true, blank:true)
-        coreStatusEnd(nullable:true, blank:true)
+        accessStartDate (nullable:true)
+        accessEndDate (nullable:true)
+        coreStatusStart (nullable:true)
+        coreStatusEnd (nullable:true)
         /*
         startDate(nullable:true, blank:true)
         startVolume(nullable:true, blank:true)
@@ -158,21 +158,19 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
          */
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     @Override
     def beforeUpdate(){
         touchPkgLastUpdated()
-
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
     @Override
     def beforeInsert() {
         touchPkgLastUpdated()
-
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
 
   @Transient

@@ -3,14 +3,15 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.AuditConfig
 import de.laser.SubscriptionService
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.TIPPCoverage
+import de.laser.IssueEntitlementCoverage
+import de.laser.PendingChangeConfiguration
+import de.laser.TIPPCoverage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
@@ -21,6 +22,7 @@ import org.springframework.transaction.TransactionStatus
 import java.text.SimpleDateFormat
 import java.time.Duration
 
+@Transactional
 class PendingChangeService extends AbstractLockableService {
 
     def genericOIDService
@@ -28,7 +30,7 @@ class PendingChangeService extends AbstractLockableService {
     def springSecurityService
     SubscriptionService subscriptionService
     LinkGenerator grailsLinkGenerator
-    MessageSource messageSource
+    def messageSource
 
 
     final static EVENT_OBJECT_NEW = 'New Object'
@@ -103,9 +105,10 @@ class PendingChangeService extends AbstractLockableService {
                     case EVENT_PROPERTY_CHANGE :  // Generic property change
                         // TODO [ticket=1894]
                         // if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
-                        if ( pendingChange.payloadChangeTargetOid?.length() > 0 ) {
+                        if ( pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {
+                            String targetOID = pendingChange.payloadChangeTargetOid ?: payload.changeTarget
                             //def target_object = genericOIDService.resolveOID(payload.changeTarget);
-                            def target_object = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
+                            def target_object = genericOIDService.resolveOID(targetOID.replace('Custom','').replace('Private',''))
                             if ( target_object ) {
                                 target_object.refresh()
                                 // Work out if parsed_change_info.changeDoc.prop is an association - If so we will need to resolve the OID in the value
@@ -208,7 +211,7 @@ class PendingChangeService extends AbstractLockableService {
                                     payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
                                 }
 
-                                if(payload.changeDoc?.status) //continue here: reset DB, perform everything, then check process at this line - status of retired TIPPs goes miraculously to null
+                                if(payload.changeDoc?.status)
                                 {
                                     payload.changeDoc?.status = payload.changeDoc?.status?.id
                                 }
@@ -332,19 +335,21 @@ class PendingChangeService extends AbstractLockableService {
 
         // TODO [ticket=1894]
         //if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
-        if (pendingChange.payloadChangeTargetOid?.length() > 0) {
+        if (pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {
             //def changeTarget = genericOIDService.resolveOID(payload.changeTarget)
-            def changeTarget = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
+            String targetOID = pendingChange.payloadChangeTargetOid ?: payload.changeTarget
+            def changeTarget = genericOIDService.resolveOID(targetOID.replace('Custom','').replace('Private',''))
 
             if (changeTarget) {
-                if(! changeTarget.hasProperty('customProperties')) {
+                if(! changeTarget.hasProperty('propertySet')) {
                     log.error("Custom property change, but owner doesnt have the custom props: ${payload}")
                     return
                 }
 
                 //def srcProperty = genericOIDService.resolveOID(changeDoc.propertyOID)
                 //def srcObject = genericOIDService.resolveOID(changeDoc.OID)
-                def srcObject = genericOIDService.resolveOID(pendingChange.payloadChangeDocOid)
+                String srcOID = pendingChange.payloadChangeDocOid ?: payload.changeDoc.OID
+                def srcObject = genericOIDService.resolveOID(srcOID.replace('Custom','').replace('Private',''))
 
                 // A: get existing targetProperty by instanceOf
                 def targetProperty = srcObject.getClass().findByOwnerAndInstanceOf(changeTarget, srcObject)
@@ -360,7 +365,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 // C: create new targetProperty
                 if (! targetProperty) {
-                    targetProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcObject.type)
+                    targetProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcObject.type, srcObject.tenant)
                     setInstanceOf = true
                 }
 
@@ -372,17 +377,17 @@ class PendingChangeService extends AbstractLockableService {
                         targetProperty.save(flush: true)
                     }
 
-                    if (changeDoc.event.endsWith('CustomProperty.deleted')) {
+                    if (changeDoc.event.endsWith('Property.deleted')) {
 
                         log.debug("Deleting property ${targetProperty.type.name} from ${pendingChange.payloadChangeTargetOid}")
                         changeTarget.customProperties.remove(targetProperty)
                         targetProperty.delete()
                     }
-                    else if (changeDoc.event.endsWith('CustomProperty.updated')) {
+                    else if (changeDoc.event.endsWith('Property.updated')) {
 
                         log.debug("Update custom property ${targetProperty.type.name}")
 
-                        if (changeDoc.type == RefdataValue.toString()){
+                        if (RefdataValue.toString() in [targetProperty.type.type,changeDoc.type]){
                             def newProp = genericOIDService.resolveOID(changeDoc.new instanceof String ?: (changeDoc.new.class + ':' + changeDoc.new.id))
 
                             // Backward compatible
@@ -412,7 +417,7 @@ class PendingChangeService extends AbstractLockableService {
                         targetProperty.save(flush:true)
                     }
                     else {
-                        log.error("ChangeDoc event '${changeDoc.event}'' not recognized.")
+                        log.error("ChangeDoc event '${changeDoc.event}' not recognized.")
                     }
                 }
                 else {
@@ -441,8 +446,8 @@ class PendingChangeService extends AbstractLockableService {
             //queryCount += ' and ' + queryClauses.join(" and ")
         }
         Set<PendingChange> result = []
-        Set<PendingChange> pending = PendingChange.executeQuery("${queryOwn} and pc.status = :queryStatus order by pc.ts desc",queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING])
-        Set<PendingChange> accepted = PendingChange.executeQuery("${queryOwn} and pc.status = :queryStatus order by pc.ts desc",queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])
+        Set<PendingChange> pending = PendingChange.executeQuery( queryOwn + " and pc.status = :queryStatus order by pc.ts desc", queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING] )
+        Set<PendingChange> accepted = PendingChange.executeQuery( queryOwn + " and pc.status = :queryStatus order by pc.ts desc", queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED] )
         //int pendingCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING])[0]
         //int notificationsCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])[0]
         Set<SubscriptionPackage> pendingChangePackages = []
@@ -450,13 +455,14 @@ class PendingChangeService extends AbstractLockableService {
             String queryMember = "select pc from PendingChange pc join pc.subscription sub join sub.orgRelations oo where oo.roleType = :subRoleType and oo.org = :contextOrg "
             if(queryClauses)
                 queryMember += ' and '+queryClauses.join(" and ")
-            Set<PendingChange> memberPCs = PendingChange.executeQuery("${queryMember} and pc.status = :queryStatus",queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_PENDING])
-            Set<PendingChange> memberACs = PendingChange.executeQuery("${queryMember} and pc.status = :queryStatus",queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])
+            Set<PendingChange> memberPCs = PendingChange.executeQuery( queryMember + " and pc.status = :queryStatus", queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_PENDING] )
+            Set<PendingChange> memberACs = PendingChange.executeQuery( queryMember + " and pc.status = :queryStatus", queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_ACCEPTED] )
             pending.addAll(memberPCs)
             accepted.addAll(memberACs)
         }
         result.addAll(pending.drop(configMap.pendingOffset).take(configMap.max))
-        result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
+        if(configMap.notifications)
+            result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
         result.each { PendingChange change ->
                 //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
                 if(change.subscription) {

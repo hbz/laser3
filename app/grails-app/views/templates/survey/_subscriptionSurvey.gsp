@@ -36,6 +36,17 @@
 
         <div class="ui card ">
             <div class="content">
+
+                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM') && surveyOrg}">
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
+
+                    </dl>
+                </g:if>
+
                 <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
                     <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                         <dl>
@@ -82,7 +93,33 @@
                         <g:if test="${surveyConfig.url}">
                             <semui:linkIcon href="${surveyConfig.url}"/>
                         </g:if>
-                            <br/>&nbsp<br/>&nbsp<br/>
+
+                        </dd>
+
+                    </dl>
+
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.url2.label')}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
+                        <g:if test="${surveyConfig.url2}">
+                            <semui:linkIcon href="${surveyConfig.url2}"/>
+                        </g:if>
+
+                        </dd>
+
+                    </dl>
+
+                    <dl>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.url3.label')}
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="url3" type="text"/>
+                        <g:if test="${surveyConfig.url3}">
+                            <semui:linkIcon href="${surveyConfig.url3}"/>
+                        </g:if>
+
                         </dd>
 
                     </dl>
@@ -139,7 +176,39 @@
 
                             <semui:linkIcon href="${surveyConfig.url}"/>
 
-                                <br/>&nbsp<br/>&nbsp<br/>
+
+                            </dd>
+
+                        </dl>
+                    </g:if>
+
+                    <g:if test="${surveyConfig.url2}">
+                        <dl>
+                            <dt class="control-label">
+                                ${message(code: 'surveyConfig.url2.label')}
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="url2" type="text"
+                                                 overwriteEditable="${false}"/>
+
+                            <semui:linkIcon href="${surveyConfig.url2}"/>
+
+
+                            </dd>
+
+                        </dl>
+                    </g:if>
+
+                    <g:if test="${surveyConfig.url3}">
+                        <dl>
+                            <dt class="control-label">
+                                ${message(code: 'surveyConfig.url3.label')}
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="url3" type="text"
+                                                 overwriteEditable="${false}"/>
+
+                            <semui:linkIcon href="${surveyConfig.url3}"/>
+
+
                             </dd>
 
                         </dl>
@@ -159,16 +228,6 @@
                         </div>
                     </div>
                 </g:else>
-
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER') && surveyOrg}">
-                    <dl>
-                        <dt class="control-label">
-                                ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
-                        </dt>
-                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
-
-                    </dl>
-                </g:if>
 
                 <br>
 
@@ -190,6 +249,9 @@
             </div>
         </div>
 
+        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+            <g:render template="/templates/survey/propertiesCompareInfo" model="[customProperties: customProperties]"/>
+        </g:if>
 
         <div id="subscription-info" class="la-inline-lists hidden">
 
@@ -306,7 +368,7 @@
                             </div>
                         </div>
 
-
+                        <%--
                         <br>
                         <g:set var="derivedPropDefGroups"
                                value="${subscriptionInstance.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
@@ -374,6 +436,7 @@
                             <g:set var="editable" value="${oldEditable ?: false}" scope="page"/>
                             <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
                         </div>
+                    --%>
 
                     </div>
                 </g:if>
@@ -420,7 +483,8 @@
            value="${surveyOrg ? CostItem.findBySurveyOrg(surveyOrg) : null}"/>
 
     <g:if test="${surveyInfo.owner.id != institution.id && ((costItemSums && costItemSums.subscrCosts) || costItemSurvey)}">
-        <div class="ui card la-time-card">
+        <g:set var="showCostItemSurvey" value="${true}"/>
+           <div class="ui card la-time-card">
 
             <div class="content">
                 <div class="header"><g:message code="surveyConfigsInfo.costItems"/></div>
@@ -433,7 +497,7 @@
                     String dataTooltip = ""
                 %>
 
-                <table class="ui celled la-table-small la-table-inCard table">
+                <table class="ui celled compact la-table-inCard table">
                     <thead>
                     <tr>
                         <th colspan="4" class="center aligned">
@@ -525,7 +589,8 @@
                                 </td>
 
                                 <g:if test="${costItemSurvey && costItemSurvey.costItemElement == costItem.costItemElement}">
-                                    <td>
+                                    <g:set var="showCostItemSurvey" value="${false}"/>
+                                       <td>
                                         <%
                                             elementSign = 'notSet'
                                             icon = ''
@@ -626,7 +691,7 @@
                         </g:each>
                     </g:if>
 
-                    <g:if test="${!costItemSums && !costItemSums.subscrCosts && costItemSurvey}">
+                    <g:if test="${showCostItemSurvey && costItemSurvey}">
                         <tr>
 
                             <td></td>
@@ -724,9 +789,9 @@
         <div class="ui card la-dl-no-table">
             <div class="content">
                 <g:if test="${costItemSums.ownCosts}">
-                    <g:if test="${(!(contextOrg.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id]) && subscriptionInstance.instanceOf) || !subscriptionInstance.instanceOf}">
-                        <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.ownCosts')}</h5>
-                        <g:render template="/subscription/financials" model="[data:costItemSums.ownCosts]"/>
+                    <g:if test="${(!(contextOrg.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id]) && subscriptionInstance.instanceOf) || !subscriptionInstance.instanceOf}">
+                        <h5 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')}</h5>
+                        <g:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
                     </g:if>
                 </g:if>
                 <g:if test="${costItemSums.consCosts}">
@@ -915,7 +980,8 @@
                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">
                                 <g:if test="${refdataValue.getI10n('value')}">
-                                    <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                    <g:set var="refdataValues"
+                                           value="${refdataValues + refdataValue.getI10n('value')}"/>
                                 </g:if>
                             </g:each>
                             <br>

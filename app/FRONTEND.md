@@ -83,6 +83,25 @@ data-confirm-term-how="concludeBinding":
         </div>
 </g:form>
 ```
+
+#### Form with Ajax Update
+
+```
+<div id="${wrapper}">
+    <laser:remoteForm   url="[controller: 'ajax', action: 'somethingWithProperties']"
+                        name="demo" 
+                        class="ui form"
+                        data-update="${wrapper}"
+                        data-before="alert('before')"
+                        data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${wrapper}')"
+                        data-always="c3po.loadJsAfterAjax()">
+
+                            <input type="hidden" name="blah" value="blubb"/>
+                            <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+    </laser:remoteForm>
+</div>
+```
+
 #### Use in Link with AJAX Call
 
 ```
@@ -94,7 +113,7 @@ data-confirm-term-how="concludeBinding":
                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                   data-confirm-term-how="delete"
                   data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                  data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}')"
+                  data-always="c3po.loadJsAfterAjax()"
                   data-update="${custom_props_div}"
                   role="button"
 >

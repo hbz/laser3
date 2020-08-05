@@ -2,6 +2,9 @@ package de.laser
 
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
+import org.springframework.context.i18n.LocaleContextHolder
+
+import java.text.NumberFormat
 
 @Transactional
 class EscapeService {
@@ -33,5 +36,10 @@ class EscapeService {
         String uniformedThousandSeparator = input.replaceAll("[',.]/d{3}","")
         BigDecimal output = new BigDecimal(uniformedThousandSeparator.replaceAll(",","."))
         output
+    }
+
+    String outputFinancialValue(input) {
+        NumberFormat nf = NumberFormat.getCurrencyInstance(LocaleContextHolder.getLocale())
+        nf.format(input)
     }
 }

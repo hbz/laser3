@@ -1,10 +1,13 @@
 <g:if test="${contact}">
-	<div class="ui item contact-details">
-		<semui:contactIcon type="${contact?.contentType.('value')}" />
+	<div class="ui js-copyTriggerParent item contact-details">
+        <div style="display: flex">
+            <semui:contactIcon type="${contact?.contentType.('value')}" />
 
-        <div class="content la-space-right">
-            <semui:xEditable owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
+            <div class="content la-space-right">
+                <semui:xEditable class="js-copyTopic" owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
+            </div>
         </div>
+
 
         <div class="content">
             <g:if test="${['Mail', 'E-Mail'].contains(contact?.contentType?.value)}">

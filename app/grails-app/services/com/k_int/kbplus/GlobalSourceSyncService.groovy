@@ -1,15 +1,17 @@
 package com.k_int.kbplus
 
 import de.laser.SystemEvent
-import de.laser.domain.AbstractCoverage
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PendingChangeConfiguration
-import de.laser.domain.TIPPCoverage
+import de.laser.base.AbstractCoverage
+import de.laser.IssueEntitlementCoverage
+import de.laser.PendingChangeConfiguration
+import de.laser.TIPPCoverage
+import de.laser.exceptions.CreationException
 import de.laser.exceptions.SyncException
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
+import grails.transaction.Transactional
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.NodeChildren
@@ -28,6 +30,7 @@ import java.util.concurrent.ExecutorService
 /**
  * Implements the synchronisation workflow according to https://dienst-wiki.hbz-nrw.de/display/GDI/GOKB+Sync+mit+LASER
  */
+//@Transactional
 class GlobalSourceSyncService extends AbstractLockableService {
 
     SessionFactory sessionFactory
@@ -85,6 +88,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 // perform GET request, expection XML response data
                 while(more) {
                     Map<String,String> queryParams = [verb:'ListRecords',metadataPrefix:'gokb']
+                    //Map<String,String> queryParams = [verb:'GetRecord',metadataPrefix:'gokb',identifier:'a3f41aef-8316-442e-99e9-29e2f011fc22'] //for debugging
                     if(resumption) {
                         queryParams.resumptionToken = resumption
                         log.info("in loop, making request with link ${source.uri}?verb=ListRecords&metadataPrefix=gokb&resumptionToken=${resumption} ...")
@@ -128,6 +132,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 else {
                     log.info("all OAI info fetched, no records to update. Leaving timestamp as is ...")
                 }
+                cleanUpGorm()
                 notifyDependencies(tippsToNotify)
                 log.info("sync job finished")
                 SystemEvent.createEvent('GSSS_OAI_COMPLETE',['jobId',source.id])
@@ -200,7 +205,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * created with the given remote record data, otherwise, the local record is going to be updated. The {@link TitleInstancePackagePlatform records}
      * in the {@link Package} will be checked for differences and if there are such, the according fields updated. Same counts for the {@link TIPPCoverage} records
      * in the {@link TitleInstancePackagePlatform}s. If {@link Subscription}s are linked to the {@link Package}, the {@link IssueEntitlement}s (just as their
-     * {@link de.laser.domain.IssueEntitlementCoverage}s) are going to be notified; it is up to the respective subscription tenants to accept the changes or not.
+     * {@link IssueEntitlementCoverage}s) are going to be notified; it is up to the respective subscription tenants to accept the changes or not.
      * Replaces the method GokbDiffEngine.diff and the onNewTipp, onUpdatedTipp and onUnchangedTipp closures
      *
      * @param packageData - A {@link NodeChildren} list containing a OAI-PMH record extract for a given package
@@ -540,7 +545,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     TitleInstance createOrUpdateTitle(String titleUUID) throws SyncException {
         GPathResult titleOAI = fetchRecord(source.uri,'titles',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:titleUUID])
         if(titleOAI) {
-            TitleInstance.withSession { Session session ->
+            TitleInstance.withNewSession { Session session ->
                 GPathResult titleRecord = titleOAI.record.metadata.gokb.title
                 log.info("title record loaded, converting XML record and reconciling title record for UUID ${titleUUID} ...")
                 TitleInstance titleInstance = TitleInstance.findByGokbId(titleUUID)
@@ -654,10 +659,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 if(eventData.date.text()) {
                                     Set<TitleInstance> from = [], to = []
                                     eventData.from.each { fromEv ->
-                                        from << createOrUpdateHistoryParticipant(fromEv,titleInstance.class.name)
+                                        try {
+                                            from << createOrUpdateHistoryParticipant(fromEv,titleInstance.class.name)
+                                        }
+                                        catch (SyncException e) {
+                                            throw e
+                                        }
                                     }
                                     eventData.to.each { toEv ->
-                                        to << createOrUpdateHistoryParticipant(toEv,titleInstance.class.name)
+                                        try {
+                                            to << createOrUpdateHistoryParticipant(toEv,titleInstance.class.name)
+                                        }
+                                        catch (SyncException e) {
+                                            throw e
+                                        }
                                     }
                                     Date eventDate = DateUtil.parseDateGeneric(eventData.date.text())
                                     String baseQuery = "select the from TitleHistoryEvent the where the.eventDate = :eventDate"
@@ -921,22 +936,25 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Compares two package entries against each other, retrieving the differences between both.
-     * @param tippa - the old TIPP (as {@link TitleInstancePackagePlatform} which is already persisted)
-     * @param tippb - the new TIPP (as unprocessed {@link Map})
+     * @param tippa - the old TIPP
+     * @param tippb - the new TIPP
      * @return a {@link Set} of {@link Map}s with the differences
      */
-    Set<Map<String,Object>> getTippDiff(TitleInstancePackagePlatform tippa, Map<String,Object> tippb) {
-        log.info("processing diffs; the respective GOKb UUIDs are: ${tippa.gokbId} (LAS:eR) vs. ${tippb.uuid} (remote)")
+    Set<Map<String,Object>> getTippDiff(tippa, tippb) {
+        if(tippa instanceof TitleInstancePackagePlatform && tippb instanceof Map)
+            log.info("processing diffs; the respective GOKb UUIDs are: ${tippa.gokbId} (LAS:eR) vs. ${tippb.uuid} (remote)")
+        else if(tippa instanceof IssueEntitlement && tippb instanceof TitleInstancePackagePlatform)
+            log.info("processing diffs; the respective objects are: ${tippa.id} (IssueEntitlement) pointing to ${tippb.id} (TIPP)")
         Set<Map<String, Object>> result = []
 
-        if (tippa.hostPlatformURL != tippb.hostPlatformURL) {
+        if (tippa.hasProperty("hostPlatformURL") && tippa.hostPlatformURL != tippb.hostPlatformURL) {
             result.add([prop: 'hostPlatformURL', newValue: tippb.hostPlatformURL, oldValue: tippa.hostPlatformURL])
         }
 
         // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
         // the question marks are necessary because only JournalInstance's TIPPs are supposed to have coverage statements
         if(tippa.coverages?.size() > 0 && tippb.coverages?.size() > 0){
-            Set<Map<String, Object>> coverageDiffs = getCoverageDiffs(tippa,(List<Map<String,Object>>) tippb.coverages)
+            Set<Map<String, Object>> coverageDiffs = getCoverageDiffs(tippa,tippb.coverages)
             if(!coverageDiffs.isEmpty())
                 result.add([prop: 'coverage', covDiffs: coverageDiffs])
         }
@@ -949,8 +967,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
             result.add([prop: 'accessEndDate', newValue: tippb.accessEndDate, oldValue: tippa.accessEndDate])
         }
 
-        if(tippa.status != tippStatus.get(tippb.status)) {
-            result.add([prop: 'status', newValue: tippStatus.get(tippb.status).id, oldValue: tippa.status.id])
+        if(tippa instanceof TitleInstancePackagePlatform && tippb instanceof Map) {
+            if(tippa.status != tippStatus.get(tippb.status)) {
+                result.add([prop: 'status', newValue: tippStatus.get(tippb.status).id, oldValue: tippa.status.id])
+            }
+        }
+        else if(tippa instanceof IssueEntitlement && tippb instanceof TitleInstancePackagePlatform) {
+            if(tippa.status != tippb.status) {
+                result.add([prop: 'status', newValue: tippb.status.id, oldValue: tippa.status.id])
+            }
         }
 
         result
@@ -958,18 +983,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Compares two coverage entries against each other, retrieving the differences between both.
-     * @param tippA - the old {@link TitleInstancePackagePlatform} object, containing the current {@link Set} of {@link TIPPCoverage}s
-     * @param covListB - the new coverage statements (a {@link List} of not persisted remote records, kept in {@link Map}s)
+     * @param tippA - the old {@link TitleInstancePackagePlatform} object, containing the current {@link Set} of coverages
+     * @param covListB - the new coverage statements (a {@link List} of remote records, kept in {@link Map}s)
      * @return a {@link Set} of {@link Map}s reflecting the differences between the coverage statements
      */
-    Set<Map<String,Object>> getCoverageDiffs(TitleInstancePackagePlatform tippA,List<Map<String,Object>> covListB) {
-        Set<Map<String, Object>> covDiffs = []
-        Set<TIPPCoverage> covListA = tippA.coverages
+    Set<Map<String,Object>> getCoverageDiffs(tippA,covListB) {
+        Set covDiffs = []
+        Set covListA = tippA.coverages
         if(covListA.size() == covListB.size()) {
             //coverage statements may have changed or not, no deletions or insertions
             //sorting has been done by mapping (listA) resp. when converting XML data (listB)
             covListB.each { covB ->
-                TIPPCoverage covA = locateEquivalent(covB,covListA)
+                def covA = locateEquivalent(covB,covListA)
                 Set<Map<String,Object>> currDiffs = covA.compareWith(covB)
                 if(currDiffs)
                     covDiffs << [event: 'update', target: covA, diffs: currDiffs]
@@ -977,9 +1002,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         else if(covListA.size() > covListB.size()) {
             //coverage statements have been deleted
-            Set<TIPPCoverage> toKeep = []
+            Set toKeep = []
             covListB.each { covB ->
-                TIPPCoverage covA = locateEquivalent(covB,covListA)
+                def covA = locateEquivalent(covB,covListA)
                 if(covA) {
                     toKeep << covA
                     Set<Map<String,Object>> currDiffs = covA.compareWith(covB)
@@ -988,22 +1013,24 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 else {
                     //a new statement may have been added for which I cannot determine an equivalent
-                    TIPPCoverage newStatement = new TIPPCoverage(
-                            startDate: (Date) covB.startDate,
-                            startVolume: covB.startVolume,
-                            startIssue: covB.startIssue,
-                            endDate: (Date) covB.endDate,
-                            endVolume: covB.endVolume,
-                            endIssue: covB.endIssue,
-                            embargo: covB.embargo,
-                            coverageDepth: covB.coverageDepth,
-                            coverageNote: covB.coverageNote,
-                            tipp: tippA
-                    )
+                    Map<String,Object> params = [startDate: (Date) covB.startDate,
+                                                 startVolume: covB.startVolume,
+                                                 startIssue: covB.startIssue,
+                                                 endDate: (Date) covB.endDate,
+                                                 endVolume: covB.endVolume,
+                                                 endIssue: covB.endIssue,
+                                                 embargo: covB.embargo,
+                                                 coverageDepth: covB.coverageDepth,
+                                                 coverageNote: covB.coverageNote]
+                    AbstractCoverage newStatement
+                    if(tippA instanceof TitleInstancePackagePlatform)
+                        newStatement = new TIPPCoverage(params+[tipp: tippA])
+                    else if(tippA instanceof IssueEntitlement)
+                        newStatement = new IssueEntitlementCoverage(params+[issueEntitlement: tippA])
                     covDiffs << [event: 'add', target: newStatement]
                 }
             }
-            covListA.each { TIPPCoverage covA ->
+            covListA.each { covA ->
                 if(!toKeep.contains(covA)) {
                     covDiffs << [event: 'delete', target: covA]
                 }
@@ -1012,25 +1039,27 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else if(covListA.size() < covListB.size()) {
             //coverage statements have been added
             covListB.each { covB ->
-                TIPPCoverage covA = locateEquivalent(covB,covListA)
+                def covA = locateEquivalent(covB,covListA)
                 if(covA) {
                     Set<Map<String,Object>> currDiffs = covA.compareWith(covB)
                     if(currDiffs)
                         covDiffs << [event: 'update', target: covA, diffs: currDiffs]
                 }
                 else {
-                    TIPPCoverage newStatement = new TIPPCoverage(
-                            startDate: (Date) covB.startDate,
-                            startVolume: covB.startVolume,
-                            startIssue: covB.startIssue,
-                            endDate: (Date) covB.endDate,
-                            endVolume: covB.endVolume,
-                            endIssue: covB.endIssue,
-                            embargo: covB.embargo,
-                            coverageDepth: covB.coverageDepth,
-                            coverageNote: covB.coverageNote,
-                            tipp: tippA
-                    )
+                    Map<String,Object> params = [startDate: (Date) covB.startDate,
+                                                 startVolume: covB.startVolume,
+                                                 startIssue: covB.startIssue,
+                                                 endDate: (Date) covB.endDate,
+                                                 endVolume: covB.endVolume,
+                                                 endIssue: covB.endIssue,
+                                                 embargo: covB.embargo,
+                                                 coverageDepth: covB.coverageDepth,
+                                                 coverageNote: covB.coverageNote]
+                    AbstractCoverage newStatement
+                    if(tippA instanceof TitleInstancePackagePlatform)
+                        newStatement = new TIPPCoverage(params+[tipp: tippA])
+                    if(tippA instanceof IssueEntitlement)
+                        newStatement = new IssueEntitlementCoverage(params+[issueEntitlement: tippA])
                     covDiffs << [event: 'add', target: newStatement]
                 }
             }
@@ -1044,12 +1073,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param listA - a {@link Collection} on {@link TIPPCoverage} statements, the list to be updated
      * @return the equivalent LAS:eR {@link TIPPCoverage} from the collection
      */
-    TIPPCoverage locateEquivalent(Map<String,Object> covB, Collection<TIPPCoverage> listA) {
-        TIPPCoverage equivalent = null
+    AbstractCoverage locateEquivalent(covB, listA) {
+        AbstractCoverage equivalent = null
         for (String k : ['startDate','startVolume','endDate','endVolume']) {
             if(k in ['startDate','endDate']) {
                 Calendar calA = Calendar.getInstance(), calB = Calendar.getInstance()
-                listA.each { TIPPCoverage covA ->
+                listA.each { covA ->
                     if(covA[k] != null && covB[k] != null) {
                         calA.setTime(covA[k])
                         calB.setTime(covB[k])
@@ -1080,7 +1109,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     Set<SubscriptionPackage> spConcerned = SubscriptionPackage.findAllByPkg(target)
                     if(notify.event == 'pkgPropUpdate') {
                         spConcerned.each { SubscriptionPackage sp ->
-                            Map<String,Object> changeMap = [target:sp.subscription, oid:"${target.class.name}:${target.id}"]
+                            Map<String,Object> changeMap = [target:sp.subscription, oid:GenericOIDService.getOID(target)]
                             notify.diffs.each { diff ->
                                 changeMap.oldValue = diff.oldValue
                                 changeMap.newValue = diff.newValue
@@ -1091,7 +1120,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     else if(notify.event == 'pkgDelete') {
                         spConcerned.each { SubscriptionPackage sp ->
-                            changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:"${target.class.name}:${target.id}"],PendingChangeConfiguration.PACKAGE_DELETED,sp)
+                            changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:GenericOIDService.getOID(target)],PendingChangeConfiguration.PACKAGE_DELETED,sp)
                         }
                     }
                 }
@@ -1100,7 +1129,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(notify.event == 'add') {
                         Set<SubscriptionPackage> spConcerned = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg',[pkg:target.pkg])
                         spConcerned.each { SubscriptionPackage sp ->
-                            changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:"${target.class.name}:${target.id}"],PendingChangeConfiguration.NEW_TITLE,sp)
+                            changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:GenericOIDService.getOID(target)],PendingChangeConfiguration.NEW_TITLE,sp)
                         }
                     }
                     else {
@@ -1119,7 +1148,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                     if(ieCov) {
                                                         covEntry.diffs.each { covDiff ->
                                                             changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
-                                                            changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                            changeMap.oid = GenericOIDService.getOID(ieCov)
                                                             changeMap.prop = covDiff.prop
                                                             changeMap.oldValue = ieCov[covDiff.prop]
                                                             changeMap.newValue = covDiff.newValue
@@ -1141,7 +1170,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                     IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
                                                     if(ieCov) {
                                                         changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
-                                                        changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                        changeMap.oid = GenericOIDService.getOID(ieCov)
                                                         changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                                     }
                                                     break
@@ -1150,7 +1179,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     }
                                     else {
                                         changeDesc = PendingChangeConfiguration.TITLE_UPDATED
-                                        changeMap.oid = "${ie.class.name}:${ie.id}"
+                                        changeMap.oid = GenericOIDService.getOID(ie)
                                         changeMap.prop = diff.prop
                                         if(diff.prop in PendingChange.REFDATA_FIELDS)
                                             changeMap.oldValue = ie[diff.prop].id
@@ -1165,7 +1194,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     break
                                 case 'delete':
                                     changeDesc = PendingChangeConfiguration.TITLE_DELETED
-                                    changeMap.oid = "${ie.class.name}:${ie.id}"
+                                    changeMap.oid = GenericOIDService.getOID(ie)
                                     changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                     break
                             }
@@ -1173,7 +1202,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                 }
-                //cleanUpGorm()
+                cleanUpGorm()
             }
         }
     }

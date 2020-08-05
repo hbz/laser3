@@ -97,6 +97,24 @@ r2d2 = {
 
     initGlobalSemuiStuff : function() {
         console.log("r2d2.initGlobalSemuiStuff()")
+        // copy email adress next to icon and putting it in cache
+
+        $('.js-copyTrigger').click(function(){
+            var element = $(this).parents('.js-copyTriggerParent').find('.js-copyTopic')
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val($(element).text()).select();
+            document.execCommand("copy");
+            $temp.remove();
+        });
+        $('.js-copyTrigger').hover(
+            function(){ $(this).addClass('open') },
+            function(){ $(this).removeClass('open') }
+        )
+        $('.js-linkGoogle').hover(
+            function(){ $(this).removeClass('alternate') },
+            function(){ $(this).addClass('alternate') }
+        )
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,
@@ -489,26 +507,36 @@ r2d2 = {
         $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').dropdown({
             duration: 150,
             transition: 'fade',
+            forceSelection: false,
+            selectOnKeydown: false,
             apiSettings: {
-                cache: false
-            }
+                    cache: false
+                }
         });
 
         $(ctxSel + ' form').attr('autocomplete', 'off');
 
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
             clearable: true
         });
 
         $(ctxSel + ' .ui.dropdown.la-clearable').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
             clearable: true
         });
 
         $(ctxSel + ' .ui.search.dropdown:not(.la-not-clearable)').dropdown({ // default behaviour
+            forceSelection: false,
+            selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true
         });
         $(ctxSel + ' .ui.search.dropdown.la-not-clearable').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
             fullTextSearch: 'exact'
         });
 
@@ -584,9 +612,6 @@ r2d2 = {
             $(this).data("lastClicked", e.timeStamp);
         });
 
-        //WCAG Improvement
-        $(ctxSel + ' .search.dropdown').children('.search').attr("aria-labelledby","la-legend-searchDropdown");
-
         // confirmation modal
         var buildConfirmationModal =
             function(that){
@@ -655,7 +680,7 @@ r2d2 = {
                                 window.location.href = url;
                             }
                             if (remoteLink) {
-                                bb8.ajax(that)
+                                bb8.ajax4remoteLink(that)
                             }
                             $('#js-confirmation-content-term').html('');
                         },

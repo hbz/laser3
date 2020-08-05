@@ -32,7 +32,7 @@
                     custom_props_div: "custom_props_div_${authOrg.id}",
                     tenant: authOrg]}"/>
 
-            <r:script language="JavaScript">
+            <r:script>
                 $(document).ready(function(){
                     c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                 });

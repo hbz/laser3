@@ -1,10 +1,11 @@
 package com.k_int.kbplus
 
-
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+@Transactional
 class GenericOIDService {
 
   GrailsApplication grailsApplication

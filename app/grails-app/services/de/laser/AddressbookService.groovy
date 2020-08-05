@@ -6,8 +6,10 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Person
 import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.transaction.Transactional
 import org.codehaus.groovy.syntax.Numbers
 
+@Transactional
 class AddressbookService {
 
     def springSecurityService

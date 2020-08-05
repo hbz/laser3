@@ -1,9 +1,11 @@
 package com.k_int.kbplus
 
 import de.laser.helper.RDConstants
+import grails.transaction.Transactional
 import org.hibernate.Session
 
-class PackageService{
+@Transactional
+class PackageService {
 
 	  /**
    * @return The scope value to be used by "Master Packages"

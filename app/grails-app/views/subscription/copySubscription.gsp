@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
@@ -117,13 +117,16 @@
                 <th><g:checkBox name="subscription.copyLicense" value="${true}" /></th>
                 <th>${message(code:'subscription.copyLicense')}</th>
                 <td>
-                    <b>${message(code:'subscription.linktoLicense')}:</b>
-                    <g:if test="${subscription.owner}">
-                        <g:link controller="license" action="show" target="_blank" id="${subscription.owner?.id}">${subscription.owner?.reference}</g:link>
-                    </g:if>
-                    <g:else>
+                    <g:each in="${licenses}" var="license">
+                        <b>${message(code:'subscription.linktoLicense')}:</b>
+                        <g:link controller="license" action="show" target="_blank" id="${license.id}">${license.reference}</g:link>
+                        <g:if test="${license.licenseCategory}">
+                            (${license.licenseCategory.getI10n("value")})
+                        </g:if><br>
+                    </g:each>
+                    <g:if test="${!licenses}">
                         ${message(code:'subscription.linktoLicenseEmpty')}
-                    </g:else>
+                    </g:if>
                 </td>
             </tr>
             <tr>
@@ -145,7 +148,7 @@
                 <th><g:checkBox name="subscription.copyPackageSettings" value="${true}" /></th>
                 <th>${message(code:'subscription.copyPackageSettings')}</th>
                 <td>
-                    <g:set var="excludes" value="${[de.laser.domain.PendingChangeConfiguration.PACKAGE_PROP,de.laser.domain.PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                    <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                     <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.config.header')} - ${sp.pkg.name}:</b>
                         <ul>

@@ -10,6 +10,8 @@ abstract class AbstractDebugController {
 
     def beforeInterceptor = {
 
+        // TODO: grails-upgrade: http://docs.grails.org/latest/guide/theWebLayer.html#interceptors
+
         SessionCacheWrapper cache = contextService.getSessionCache()
         DebugUtil debugUtil = cache.get(DebugUtil.SYSPROFILER_SESSION)
         if (debugUtil) {
@@ -19,6 +21,9 @@ abstract class AbstractDebugController {
 
 
     def afterInterceptor = {
+
+        // TODO: grails-upgrade: http://docs.grails.org/latest/guide/theWebLayer.html#interceptors
+
         //DebugUtil debugUtil = debugService.getDebugUtilAsSingleton()
 
         //long delta = debugUtil.stopSimpleBench(session.id + '@' + actionUri)

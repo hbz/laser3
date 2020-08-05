@@ -2,14 +2,17 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
+import de.laser.interfaces.CalculatedType
+import grails.transaction.Transactional
 
+@Transactional
 class PropertyService {
 
     def grailsApplication
     def genericOIDService
+    def contextService
 
     private List<String> splitQueryFromOrderBy(String sql) {
         String order_by = null
@@ -28,15 +31,10 @@ class PropertyService {
 
 
         if (params.filterPropDef) {
-            def pd = genericOIDService.resolveOID(params.filterPropDef)
-            String propGroup
-            if (pd.tenant) {
-                propGroup = "privateProperties"
-            } else {
-                propGroup = "customProperties"
-            }
-            base_qry += " and ( exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef "
+            PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
+            base_qry += ' and ( exists ( select gProp from '+hqlVar+'.propertySet as gProp where gProp.type = :propDef and (gProp.tenant = :tenant or (gProp.tenant != :tenant and gProp.isPublic = true) or gProp.tenant is null) '
             base_qry_params.put('propDef', pd)
+            base_qry_params.put('tenant', contextService.org)
             if(params.filterProp) {
                 switch (pd.type) {
                     case RefdataValue.toString():
@@ -115,18 +113,19 @@ class PropertyService {
     }
 
     def getUsageDetails() {
-        def usedPdList  = []
-        def detailsMap = [:]
+        List usedPdList  = []
+        Map detailsMap = [:]
+        List multiplePdList = []
 
         grailsApplication.getArtefacts("Domain").toList().each { dc ->
 
-            if (dc.shortName.endsWith('CustomProperty') || dc.shortName.endsWith('PrivateProperty')) {
+            if (dc.shortName.endsWith('Property') && !SurveyProperty.class.name.contains(dc.name)) {
 
                 //log.debug( dc.shortName )
-                def query = "SELECT DISTINCT type FROM ${dc.name}"
+                String query = "SELECT DISTINCT type FROM " + dc.name
                 //log.debug(query)
 
-                def pds = PropertyDefinition.executeQuery(query)
+                Set<PropertyDefinition> pds = PropertyDefinition.executeQuery(query)
                 //log.debug(pds)
                 detailsMap << ["${dc.shortName}": pds.collect{ it -> "${it.id}:${it.type}:${it.descr}"}.sort()]
 
@@ -134,10 +133,13 @@ class PropertyService {
                 pds.each{ it ->
                     usedPdList << it.id
                 }
+
+                String query2 = "select p.type.id from ${dc.name} p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
+                multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.org] ))
             }
         }
 
-        [usedPdList.unique().sort(), detailsMap.sort()]
+        [usedPdList.unique().sort(), detailsMap.sort(), multiplePdList]
     }
 
     Map<String, Object> getRefdataCategoryUsage() {
@@ -158,6 +160,46 @@ class PropertyService {
         }
 
         result
+    }
+
+    Map<String,Object> processObjects(obj,Org contextOrg,PropertyDefinition propDef) {
+        Map<String,Object> objMap = [id:obj.id,propertySet:obj.propertySet,displayAction:"show"]
+        if(obj instanceof Subscription) {
+            Subscription s = (Subscription) obj
+            objMap.name = s.dropdownNamingConvention(contextOrg)
+            switch(s.getCalculatedType()) {
+                case CalculatedType.TYPE_PARTICIPATION: objMap.subscriber = s.getSubscriber()
+                    break
+                case CalculatedType.TYPE_CONSORTIAL:
+                case CalculatedType.TYPE_ADMINISTRATIVE:
+                    objMap.manageChildren = "propertiesMembers"
+                    objMap.manageChildrenParams = [id:s.id,filterPropDef:GenericOIDService.getOID(propDef)]
+                    break
+            }
+            objMap.displayController = "subscription"
+        }
+        else if(obj instanceof License) {
+            License l = (License) obj
+            objMap.name = l.dropdownNamingConvention()
+            objMap.displayController = "license"
+        }
+        else if(obj instanceof Org) {
+            Org o = (Org) obj
+            objMap.name = o.name
+            objMap.sortname = o.sortname
+            objMap.displayController = "org"
+        }
+        else if(obj instanceof Platform) {
+            Platform p = (Platform) obj
+            objMap.name = p.name
+            objMap.displayController = "platform"
+        }
+        else if(obj instanceof Person) {
+            Person p = (Person) obj
+            objMap.name = "${p.title} ${p.last_name}, ${p.first_name}"
+            objMap.displayController = "person"
+        }
+        objMap
     }
 
     def replacePropertyDefinitions(PropertyDefinition pdFrom, PropertyDefinition pdTo) {
@@ -183,27 +225,29 @@ class PropertyService {
         count
     }
 
-    List<CustomProperty> getOrphanedProperties(Object obj, List<List> sorted) {
+    List<AbstractPropertyWithCalculatedLastUpdated> getOrphanedProperties(Object obj, List<List> sorted) {
 
-        List<CustomProperty> result = []
-        List orphanedIds = obj.customProperties.collect{ it.id }
+        List<AbstractPropertyWithCalculatedLastUpdated> result = []
+        List orphanedIds = obj.propertySet.findAll{ it.type.tenant == null }.collect{ it.id }
 
-        sorted.each{ entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
+        sorted.each{ List entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
 
-        switch (obj.class.simpleName) {
+        if (! orphanedIds.isEmpty()) {
+            switch (obj.class.simpleName) {
 
-            case License.class.simpleName:
-                result = LicenseCustomProperty.findAllByIdInList(orphanedIds)
-                break
-            case Subscription.class.simpleName:
-                result = SubscriptionCustomProperty.findAllByIdInList(orphanedIds)
-                break
-            case Org.class.simpleName:
-                result = OrgCustomProperty.findAllByIdInList(orphanedIds)
-                break
-            case Platform.class.simpleName:
-                result = PlatformCustomProperty.findAllByIdInList(orphanedIds)
-                break
+                case License.class.simpleName:
+                    result = LicenseProperty.findAllByIdInList(orphanedIds)
+                    break
+                case Subscription.class.simpleName:
+                    result = SubscriptionProperty.findAllByIdInList(orphanedIds)
+                    break
+                case Org.class.simpleName:
+                    result = OrgProperty.findAllByIdInList(orphanedIds)
+                    break
+                case Platform.class.simpleName:
+                    result = PlatformProperty.findAllByIdInList(orphanedIds)
+                    break
+            }
         }
 
         log.debug('object             : ' + obj.class.simpleName + ' - ' + obj)

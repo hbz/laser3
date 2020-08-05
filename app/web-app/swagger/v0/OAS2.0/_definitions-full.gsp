@@ -624,7 +624,7 @@
           lastUpdated:
             type: string
             format: date
-          license: # mapping attr owner
+          license: # mapping attr owner //TODO moved to Links where subscription is destination, license is source and both are stored with OID!
             $ref: "#/definitions/LicenseStub"
           manualCancellationDate:
             type: string

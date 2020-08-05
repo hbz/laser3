@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
-
-import de.laser.domain.AbstractBaseDomain
+import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -11,7 +10,7 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 
 @Log4j
-class OrgAccessPoint extends AbstractBaseDomain {
+class OrgAccessPoint extends AbstractBase {
 
     String name
     Org org
@@ -43,7 +42,16 @@ class OrgAccessPoint extends AbstractBaseDomain {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         name(unique: ['org'])
   }
-    
+
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
+    }
+
     static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
@@ -69,7 +77,7 @@ class OrgAccessPoint extends AbstractBaseDomain {
                 return ipRanges.compact().toRangeStrings()
                 break
             case 'input':
-                return ipRanges.toInputStrings()
+                return ipRanges.toInputStrings().sort{it}
                 break
             default:
                 return []
@@ -125,5 +133,41 @@ class OrgAccessPoint extends AbstractBaseDomain {
             }
         }
         active
+    }
+
+    Map getAccessPointIpRanges() {
+        Map accessPointIpRanges = [:]
+
+        accessPointIpRanges.ipv4Ranges = []
+        accessPointIpRanges.ipv6Ranges = []
+
+
+        accessPointData.each { accPD ->
+
+            Map apd = [:]
+
+            if (accPD.datatype == 'ipv4') {
+                apd.id = accPD.id
+                apd.name = name
+                apd.ipRange = accPD.getIPString('range')
+                apd.ipCidr = accPD.getIPString('cidr')
+                apd.ipInput = accPD.getIPString('input')
+                accessPointIpRanges.ipv4Ranges << apd
+            }
+            if (accPD.datatype == 'ipv6') {
+                apd.id = accPD.id
+                apd.name = name
+                apd.ipRange = accPD.getIPString('range')
+                apd.ipCidr = accPD.getIPString('cidr')
+                apd.ipInput = accPD.getIPString('input')
+                accessPointIpRanges.ipv6Ranges << apd
+            }
+        }
+
+        accessPointIpRanges.ipv4Ranges = accessPointIpRanges.ipv4Ranges.sort{it.ipInput}
+        accessPointIpRanges.ipv6Ranges = accessPointIpRanges.ipv6Ranges.sort{it.ipInput}
+
+        accessPointIpRanges
+
     }
 }

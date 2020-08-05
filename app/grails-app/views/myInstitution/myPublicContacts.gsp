@@ -52,7 +52,7 @@
                                        placeholder="${message(code: 'person.filter.name')}" />
                             </div>
                         </div>
-                        <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+                        <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
                     </div>
 
                     <div class="field la-field-right-aligned">

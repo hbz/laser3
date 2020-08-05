@@ -11,7 +11,7 @@
         <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}</g:link>
     </g:else>
 
-    <g:if test="${showConsortiaFunctions || showCollectiveFunctions}">
+    <g:if test="${(showConsortiaFunctions || showCollectiveFunctions ) && !subscriptionInstance.instanceOf}">
         <%
             String message
             if(showConsortiaFunctions)
@@ -28,7 +28,11 @@
         </sec:ifAnyGranted>
     </g:if>
 
-    <g:if test="${((contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']) || params.orgBasicMemberView)&& subscriptionInstance?.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
+    <g:if test="${((contextService.org.getCustomerType() in ['ORG_CONSORTIUM']) && subscriptionInstance.instanceOf)}">
+    <semui:securedSubNavItem orgPerm="ORG_CONSORTIUM" controller="subscription" action="surveys" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+    </g:if>
+
+    <g:if test="${((contextService.org.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']) || params.orgBasicMemberView)&& subscriptionInstance?.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
         <semui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
 

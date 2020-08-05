@@ -112,16 +112,6 @@
     margin: 0;
 }
 
-/*
-TODO: remove and set in semantic css: la-table-small
- */
-
-.ui.table.la-table-small tr td {
-    padding-top: 0.6em;
-    padding-bottom: 0.6em;
-}
-
-
 /* semantic ui - upgrade to 2.3 - start */
 
 .ui.modal {
@@ -279,13 +269,11 @@ aside.metaboxContent + .metaboxContent-spacer {
     width: 100%;
     bottom: 0;
     text-shadow: 1px 1px 2px rgba(0,0,0, 0.5);
+    font-size: 1.1em;
 }
 #maintenance > .segment {
-    padding: 3em 0 4em;
-}
-
-#maintenance > .segment strong {
-    font-size: 1.4em;
+    padding: 3em 0;
+    font-size: 1.1em;
 }
 
 /* fix: bouncing top nav bar */
@@ -317,15 +305,15 @@ h1 .icon.h1-icon-overwrite {
 .ui.la-table.table tr td.table-td-error   { background-color: rgba(255,0,0, 0.1); }
 
 .ui.label.survey-renewal {
-    background-color: greenyellow;
+    background-color: greenyellow  !important;
 }
 
 .ui.label.survey-interest {
-    background-color: deepskyblue;
+    background-color: deepskyblue  !important;
 }
 
 .ui.label.survey-selection {
-    background-color: #ffdf00;
+    background-color: #ffdf00  !important;
 }
 
 

@@ -36,41 +36,41 @@
         ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution.name])}<br/>
         <table class="ui celled la-table table">
             <tbody>
-            <input type="hidden" name="subscription.old_subid" value="${permissionInfo?.sub_id}"/>
+                <input type="hidden" name="subscription.old_subid" value="${permissionInfo?.sub_id}"/>
 
-            <tr>
-                <th>${message(code: 'myinst.renewalUpload.props')}</th>
-                <th>${message(code: 'default.value.label')}</th>
-            </tr>
-            <tr>
-                <th>${message(code: 'myinst.emptySubscription.name')}</th>
-                <td>
-                    <div class="ui input">
-                        <input type="text" name="subscription.name" value="${permissionInfo?.sub_name}">
-                    </div>
-                </td>
+                <tr>
+                    <th>${message(code: 'myinst.renewalUpload.props')}</th>
+                    <th>${message(code: 'default.value.label')}</th>
+                </tr>
+                <tr>
+                    <th>${message(code: 'myinst.emptySubscription.name')}</th>
+                    <td>
+                        <div class="ui input">
+                            <input type="text" name="subscription.name" value="${permissionInfo?.sub_name}">
+                        </div>
+                    </td>
 
-            </tr>
-            <tr>
-                <th>${message(code: 'default.startDate.label')}</th>
-                <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
-            </tr>
-            <tr>
-                <th>${message(code: 'default.endDate.label')}</th>
-                <td><semui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
-            </tr>
-            <tr>
-                <th>${message(code: 'default.status.label')}</th>
-                <td>
-                <g:set value="${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS)}"
-                       var="rdcSubStatus"/>
-                <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
-                          optionKey="id"
-                          optionValue="${{ it.getI10n('value') }}"
-                          name="subStatus"
-                          value="${de.laser.helper.RDStore.SUBSCRIPTION_INTENDED.id.toString()}"/>
-                </td>
-            </tr>
+                </tr>
+                <tr>
+                    <th>${message(code: 'default.startDate.label')}</th>
+                    <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
+                </tr>
+                <tr>
+                    <th>${message(code: 'default.endDate.label')}</th>
+                    <td><semui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
+                </tr>
+                <tr>
+                    <th>${message(code: 'default.status.label')}</th>
+                    <td>
+                    <g:set value="${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS)}"
+                           var="rdcSubStatus"/>
+                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subStatus"
+                              value="${de.laser.helper.RDStore.SUBSCRIPTION_INTENDED.id.toString()}"/>
+                    </td>
+                </tr>
             </tbody>
         </table>
 

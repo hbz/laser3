@@ -3,7 +3,9 @@ package com.k_int.kbplus
 
 import grails.plugin.cache.CachePut
 import grails.plugin.cache.Cacheable
+import grails.transaction.Transactional
 
+@Transactional
 class MessageService {
 
   String getMessage(String key, String locale) {
@@ -28,7 +30,7 @@ class MessageService {
     return result;
   }
 
-  @Cacheable(value='message', key='#key+#locale')
+  //@Cacheable(value='message', key='#key+#locale')
   String internalGetMessage(String key,String locale) {
     log.debug("getMessage(${key},${locale})");
     def ci=ContentItem.findByKeyAndLocale(key,locale)
@@ -41,7 +43,7 @@ class MessageService {
     return null
   }
 
-  @Cacheable('message')
+  //@Cacheable('message')
   String internalGetMessage(String key) {
     log.debug("getMessage(${key})");
     def ci = ContentItem.findByKeyAndLocale(key,'')
@@ -51,7 +53,7 @@ class MessageService {
     return null
   }
 
-  @CachePut('message')
+  //@CachePut('message')
   String update(String key,String locale) {
     log.debug("getMessage(${key},${locale})");
     def ci=ContentItem.findByKeyAndLocale(key,locale)

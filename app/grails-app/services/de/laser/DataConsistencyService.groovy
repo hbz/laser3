@@ -3,11 +3,13 @@ package de.laser
 import com.k_int.kbplus.*
 import de.laser.helper.DateUtil
 import de.laser.helper.SwissKnife
+import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
+@Transactional
 class DataConsistencyService {
 
     def grailsApplication

@@ -79,6 +79,33 @@ class ComparisonService {
       result
     }
 
+  Map comparePropertiesWithAudit(Collection<AbstractPropertyWithCalculatedLastUpdated> props, boolean compareValue, boolean compareNote) {
+
+    Map result = [:]
+
+    props.sort{it.type.getI10n('name')}.each { prop ->
+
+      //Vererbung
+      if(AuditConfig.getConfig(prop)) {
+
+        List propertyList = result.get(prop.type.class.name+":"+prop.type.id)
+        if (propertyList == null) {
+          propertyList = [prop]
+        } else {
+          propertyList.add(prop)
+        }
+        result.put(prop.type.class.name+":"+prop.type.id, propertyList)
+        if (propertyList.size() == 2){
+          if((compareValue && propertyList[0].getValue() != propertyList[1].getValue()) || (compareNote && propertyList[0].note != propertyList[1].note) ) {
+          }else{
+            result.remove(prop.type.class.name+":"+prop.type.id)
+          }
+        }
+      }
+    }
+    result
+  }
+
   /**
    * Builds from a given {@link List} a {@link Map} of {@link TitleInstancePackagePlatform}s to compare the {@link Subscription}s of each {@link IssueEntitlement}
    *

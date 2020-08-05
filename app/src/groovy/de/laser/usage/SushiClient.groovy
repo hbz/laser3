@@ -1,11 +1,10 @@
 package de.laser.usage
 
-
+import de.laser.helper.ConfigUtils
 import groovy.util.logging.Log4j
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
-
-import static groovyx.net.http.ContentType.ANY
+import groovyx.net.http.ContentType
 
 @Log4j
 class SushiClient {
@@ -21,7 +20,7 @@ class SushiClient {
     }
 
     def getUri() {
-        new URIBuilder(grails.util.Holders.grailsApplication.config.statsApiUrl)
+        new URIBuilder(ConfigUtils.getStatsApiUrl())
     }
 
     def getBaseUrl() {
@@ -43,7 +42,7 @@ class SushiClient {
         def iType = clientOptions.statsIdentifierType ?: 'zdbid'
         getClient().get(
             path: getPath(),
-            contentType: ANY, // We get no XmlSlurper Objects for value XML
+            contentType: ContentType.ANY, // We get no XmlSlurper Objects for value XML
             query: [
                 APIKey        : clientOptions.apiKey,
                 RequestorID   : clientOptions.requestor,

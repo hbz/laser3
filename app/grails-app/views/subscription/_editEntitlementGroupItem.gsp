@@ -35,7 +35,7 @@
                                             ${titleGroup.items.size()}
                                         </td>
                                         <td>
-                                            <g:if test="${de.laser.domain.IssueEntitlementGroupItem.findByIeAndIeGroup(ie, titleGroup)}">
+                                            <g:if test="${de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ie, titleGroup)}">
                                                 <input type="checkbox" checked="checked" name="titleGroup" value="${titleGroup.id}" />
                                             </g:if>
                                             <g:else>

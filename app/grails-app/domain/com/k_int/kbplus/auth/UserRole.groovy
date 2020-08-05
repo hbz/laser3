@@ -22,8 +22,8 @@ class UserRole implements Serializable, Comparable {
     }
 
     static constraints = {
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     boolean equals(other) {

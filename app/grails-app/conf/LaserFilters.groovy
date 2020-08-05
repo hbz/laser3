@@ -1,4 +1,5 @@
 import com.k_int.kbplus.auth.User
+import de.laser.helper.ConfigUtils
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -7,6 +8,8 @@ class LaserFilters {
     def springSecurityService
 
     def filters = {
+
+        // TODO: grails-upgrade: http://docs.grails.org/latest/guide/theWebLayer.html#interceptors
 
         globalUIDFilter(controller:'*', action:'*') {
 
@@ -50,7 +53,7 @@ class LaserFilters {
                 }
 
                 if ( session.sessionPreferences == null ) {
-                    session.sessionPreferences = grailsApplication.config.appDefaultPrefs
+                    session.sessionPreferences = ConfigUtils.getAppDefaultPrefs()
                 }
                 else {
                 }

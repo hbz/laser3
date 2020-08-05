@@ -15,7 +15,7 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
-                     params="[surveyConfigID: surveyConfig]" text="${surveyConfig.getConfigNameShort()}"/>
+                     params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}"/>
     </g:if>
     <semui:crumb message="surveyCostItems.label" class="active"/>
 </semui:breadcrumbs>
@@ -46,7 +46,7 @@
 <br>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type == 'Subscription'}">
+    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
             ${surveyConfig.subscription?.name}
@@ -236,7 +236,7 @@
                                        style="width:50%"
                                        name="percentOnOldPrice"
                                        placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
-                                       value="${0.0}" step="0.01"/>
+                                       value="" step="0.01"/>
                                 <div class="ui basic label">%</div>
                                 </div>
                             </div>

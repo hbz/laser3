@@ -2359,7 +2359,7 @@ aside.ui.accordion .title:not(.ui) {
 .ui.buttons .or {
   position: relative;
   width: 0.3em;
-  height: 2.57142857em;
+  height: 2.97142857em;
   z-index: 3;
 }
 
@@ -2372,11 +2372,11 @@ aside.ui.accordion .title:not(.ui) {
   left: 50%;
   background-color: #FFFFFF;
   text-shadow: none;
-  margin-top: -0.89285714em;
-  margin-left: -0.89285714em;
-  width: 1.78571429em;
-  height: 1.78571429em;
-  line-height: 1.78571429em;
+  margin-top: -1.09285714em;
+  margin-left: -1.09285714em;
+  width: 2.18571429em;
+  height: 2.18571429em;
+  line-height: 2.18571429em;
   color: rgba(0, 0, 0, 0.4);
   font-style: normal;
   font-weight: bold;
@@ -13484,91 +13484,113 @@ i.icon.la-laser:before {
   vertical-align: super;
 }
 
-.circular.icon.la-search-license {
-  display: inline-block;
-  background-color: #008C25;
-  border-color: #008C25;
+/* Light Grey */
+
+i.la-light-grey.icon {
+  color: #e8e8e8 !important;
 }
 
-.circular.icon.la-search-license:before {
+i.inverted.la-light-grey.icon {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+i.inverted.bordered.la-light-grey.icon,
+i.inverted.circular.la-light-grey.icon {
+  background-color: #e8e8e8 !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.circular.icon.la-license,
+.circular.icon.la-package,
+.circular.icon.la-subscription,
+.circular.icon.la-organisation,
+.circular.icon.la-platform,
+.circular.icon.la-journal,
+.circular.icon.la-database,
+.circular.icon.la-ebook {
+  display: inline-block;
+  -webkit-box-shadow: 0em 0em 0em 0em rgba(0, 0, 0, 0) inset;
+  box-shadow: 0em 0em 0em 0em rgba(0, 0, 0, 0) inset;
+}
+
+.icon.la-license {
+  background-color: #008C25;
+}
+
+.icon.la-license:before {
   content: "\f24e";
   color: white;
 }
 
-.circular.icon.la-search-package {
-  display: inline-block;
+.icon.la-package {
   background-color: #76007A;
-  border-color: #76007A;
 }
 
-.circular.icon.la-search-package:before {
+.icon.la-package:before {
   content: "\f06b";
   color: white;
 }
 
-.circular.icon.la-search-subscription {
-  display: inline-block;
+.icon.la-subscription {
   background-color: #fa820a;
-  border-color: #fa820a;
 }
 
-.circular.icon.la-search-subscription:before {
+.icon.la-subscription:before {
   content: "\f328";
   color: white;
 }
 
-.circular.icon.la-search-organisation {
-  display: inline-block;
+.icon.la-organisation {
   background-color: #00B5AD;
-  border-color: #00B5AD;
 }
 
-.circular.icon.la-search-organisation:before {
+.icon.la-organisation:before {
   content: "\f19c";
   color: white;
 }
 
-.circular.icon.la-search-platform {
-  display: inline-block;
+.icon.la-platform {
   background-color: #FBC71C;
-  border-color: #FBC71C;
 }
 
-.circular.icon.la-search-platform:before {
+.icon.la-platform:before {
   content: "\f0c2";
   color: white;
 }
 
-.circular.icon.la-search-journal {
-  display: inline-block;
+.icon.la-journal {
   background-color: #004678;
-  border-color: #004678;
 }
 
-.circular.icon.la-search-journal:before {
+.icon.la-journal:before {
   content: "\f1ea";
   color: white;
 }
 
-.circular.icon.la-search-database {
-  display: inline-block;
+.icon.la-database {
   background-color: #004678;
-  border-color: #004678;
 }
 
-.circular.icon.la-search-database:before {
+.icon.la-database:before {
   content: "\f1c0";
   color: white;
 }
 
-.circular.icon.la-search-ebook {
-  display: inline-block;
+.icon.la-ebook {
   background-color: #004678;
-  border-color: #004678;
 }
 
-.circular.icon.la-search-ebook:before {
+.icon.la-ebook:before {
   content: "\f3fa";
+  color: white;
+}
+
+.icon.la-book {
+  background-color: #004678;
+}
+
+.icon.la-book:before {
+  content: "\f02d";
   color: white;
 }
 
@@ -17162,6 +17184,21 @@ ol.ui.horizontal.list li:before,
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  table-layout: unset;
+}
+
+.ui.divided.middle.la-flex-list .item:after {
+  content: unset;
+  display: unset;
+  height: unset;
+  clear: unset;
+  visibility: unset;
 }
 
 .ui.divided.middle.la-flex-list .item .button {
@@ -17188,29 +17225,6 @@ ol.ui.horizontal.list li:before,
 
 .ui.divided.middle.la-flex-list .item .button:focus {
   opacity: 1;
-}
-
-.ui.list.la-flex-list > .item > span {
-  -ms-flex-item-align: center;
-  align-self: center;
-}
-
-.ui.list.la-flex-list > .item > span + .content {
-  -ms-flex-preferred-size: 90%;
-  flex-basis: 90%;
-  -ms-flex-item-align: center;
-  align-self: center;
-}
-
-.ui.list.la-flex-list > .item > span + .content + .content {
-  -ms-flex-preferred-size: 10%;
-  flex-basis: 10%;
-  -ms-flex-item-align: center;
-  align-self: center;
-  text-align: right;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
 }
 
 .la-list-border-around {
@@ -26619,7 +26633,7 @@ Floated Menu / Item
   background: transparent;
   text-align: inherit;
   color: rgba(0, 0, 0, 0.87);
-  padding: 0.92857143em 0.78571429em;
+  padding: 0.92857143em 1.4em;
   vertical-align: inherit;
   font-style: none;
   font-weight: bold;
@@ -26657,7 +26671,7 @@ Floated Menu / Item
   background: #f4f8f9;
   text-align: inherit;
   color: rgba(0, 0, 0, 0.87);
-  padding: 0.78571429em 0.78571429em;
+  padding: 1.4em 1.4em;
   vertical-align: middle;
   font-style: normal;
   font-weight: normal;
@@ -26699,7 +26713,7 @@ Floated Menu / Item
 /* Table Cells */
 
 .ui.table td {
-  padding: 0.78571429em 0.78571429em;
+  padding: 1.4em 1.4em;
   text-align: inherit;
 }
 
@@ -27130,7 +27144,7 @@ Floated Menu / Item
 .ui.table tbody tr td.selectable > a:not(.ui) {
   display: block;
   color: inherit;
-  padding: 0.78571429em 0.78571429em;
+  padding: 1.4em 1.4em;
 }
 
 /* Other States */
@@ -27894,7 +27908,6 @@ Floated Menu / Item
   background: #F2F2F2;
 }
 
-.ui.table tr td,
 .ui.table tr .la-th-column {
   padding: 20px 0;
 }
@@ -28055,7 +28068,7 @@ Floated Menu / Item
 .ui.table tbody tr td.la-selectable > a:not(.ui) {
   display: block;
   color: inherit;
-  padding: 0.78571429em 0.78571429em;
+  padding: 1.4em 1.4em;
 }
 
 .ui.table thead th.la-smaller-table-head {
@@ -28082,11 +28095,17 @@ Floated Menu / Item
   background-color: #fffaf5;
 }
 
-.ui.table:not(.la-ignore-fixed) thead tr:first-child > th,
-.ui.table:not(.la-ignore-fixed) thead tr:nth-child(2) > th {
+.ui.table thead tr:first-child > th,
+.ui.table thead tr:nth-child(2) > th {
   position: -webkit-sticky !important;
   position: sticky !important;
   z-index: 2;
+}
+
+.ui.table.la-ignore-fixed thead tr:first-child > th,
+.ui.table.la-ignore-fixed thead tr:nth-child(2) > th {
+  position: static !important;
+  z-index: unset;
 }
 
 .ui.table thead tr:first-child > th,

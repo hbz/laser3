@@ -6,16 +6,11 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.AuditConfig
-import de.laser.DashboardDueDate
-import de.laser.DashboardDueDatesService
-import de.laser.DueDateObject
-import de.laser.domain.AbstractI10nOverride
-import de.laser.domain.AbstractI10nTranslatable
-import de.laser.domain.I10nTranslation
-import de.laser.domain.SystemProfiler
+import de.laser.*
+import de.laser.base.AbstractI10n
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
+import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -23,11 +18,12 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
 class AjaxController {
@@ -38,7 +34,7 @@ class AjaxController {
     def controlledListService
     def dataConsistencyService
     def accessService
-    def debugService
+    def escapeService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -614,10 +610,10 @@ class AjaxController {
         rq.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
-            if ( it instanceof AbstractI10nTranslatable) {
+            if ( it instanceof I10nTrait ) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
-            else if ( it instanceof AbstractI10nOverride) {
+            else if ( it instanceof AbstractI10n ) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
             else {
@@ -655,42 +651,42 @@ class AjaxController {
                 if(propDef.tenant) {
                     switch(params.domain) {
                         case 'currentSubscriptions':
-                        case 'manageConsortiaSubscriptions': values = SubscriptionPrivateProperty.findAllByType(propDef)
+                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
-                        case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
+                        case 'currentLicenses': values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
                         case 'listProvider':
                         case 'currentProviders':
-                        case 'manageMembers': values = OrgPrivateProperty.findAllByType(propDef)
+                        case 'manageMembers': values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
-                        case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
+                        case 'addressbook': values = PersonProperty.findAllByType(propDef)
                             break
                     }
                 }
                 else {
                     switch(params.domain) {
                         case 'currentSubscriptions':
-                        case 'manageConsortiaSubscriptions': values = SubscriptionCustomProperty.executeQuery('select scp from SubscriptionCustomProperty scp join scp.owner s join s.orgRelations oo where scp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
-                        case 'currentLicenses': values = LicenseCustomProperty.executeQuery('select lcp from LicenseCustomProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                        case 'currentLicenses': values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgLinks oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
                         case 'listProvider':
                         case 'currentProviders':
-                        case 'manageMembers': values = OrgCustomProperty.executeQuery('select ocp from OrgCustomProperty ocp where ocp.type = :propDef',[propDef:propDef])
+                        case 'manageMembers': values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.org])
                             break
                     }
                 }
 
                 if(values) {
                     if(propDef.type == Integer.toString()) {
-                        values.each { v ->
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.intValue != null)
                                 result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
                         }
                         result = result.sort { x, y -> x.text.compareTo y.text}
                     }
                     else {
-                        values.each { v ->
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.getValue() != null)
                                 result.add([value:v.getValue(),text:v.getValue()])
                         }
@@ -716,13 +712,13 @@ class AjaxController {
         boolean defaultOrder = true
 
         if (config == null) {
-            String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+            String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
             defaultOrder = false
             // If we werent able to locate a specific config override, assume the ID is just a refdata key
             config = [
                 domain      :'RefdataValue',
-                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
-                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}' order by rdv.value_${locale}",
+                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.value_" + locale,
                 qryParams   :[],
                 cols        :['value'],
                 format      :'simple'
@@ -765,10 +761,10 @@ class AjaxController {
           }
           // default ..
           else {
-              if (it instanceof AbstractI10nTranslatable) {
+              if (it instanceof I10nTrait) {
                   result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
               }
-              else if (it instanceof AbstractI10nOverride) {
+              else if (it instanceof AbstractI10n) {
                   result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
               }
               else {
@@ -803,18 +799,36 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def lookupIssueEntitlements() {
     params.checkView = true
-    render controlledListService.getIssueEntitlements(params) as JSON
+    if(params.sub != "undefined")
+        render controlledListService.getIssueEntitlements(params) as JSON
+    else {
+        Map entry = ["results": []]
+        render entry as JSON
+    }
   }
 
   @Secured(['ROLE_USER'])
   def lookupTitleGroups() {
      params.checkView = true
-     render controlledListService.getTitleGroups(params) as JSON
+     if(params.sub != "undefined")
+        render controlledListService.getTitleGroups(params) as JSON
+      else {
+         Map empty = [results: []]
+         render empty as JSON
+     }
     }
 
   @Secured(['ROLE_USER'])
   def lookupSubscriptions() {
     render controlledListService.getSubscriptions(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupSubscriptionsLicenses() {
+    Map result = [results:[]]
+    result.results.addAll(controlledListService.getSubscriptions(params).results)
+    result.results.addAll(controlledListService.getLicenses(params).results)
+    render result as JSON
   }
 
   @Secured(['ROLE_USER'])
@@ -825,13 +839,35 @@ class AjaxController {
 
   @Secured(['ROLE_USER'])
   def lookupSubscriptionPackages() {
-      render controlledListService.getSubscriptionPackages(params) as JSON
+      if(params.ctx != "undefined")
+        render controlledListService.getSubscriptionPackages(params) as JSON
+      else render [:] as JSON
   }
 
   @Secured(['ROLE_USER'])
   def lookupLicenses() {
     render controlledListService.getLicenses(params) as JSON
   }
+
+    @Secured(['ROLE_USER'])
+    def getLinkedSubscriptions() {
+        render controlledListService.getLinkedObjects([source:params.license,destinationType:Subscription.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE],status:params.status]) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getLinkedLicenses() {
+        render controlledListService.getLinkedObjects([destination:params.subscription,sourceType:License.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE],status:params.status]) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getLicensePropertiesForSubscription() {
+        License loadFor = genericOIDService.resolveOID(params.loadFor)
+        if(loadFor) {
+            Map<String,Object> derivedPropDefGroups = loadFor.getCalculatedPropDefGroups(contextService.org)
+            render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
+        }
+        else null
+    }
 
     @Secured(['ROLE_USER'])
     def lookupProviderAndPlatforms() {
@@ -991,107 +1027,6 @@ class AjaxController {
       if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
           success.success = true
       render success as JSON
-  }
-
-  /**
-   * connects the context subscription with the given pair.
-   *
-   * @return void, redirects to main page
-   */
-  @Secured(['ROLE_USER'])
-  def linkSubscriptions() {
-      boolean linkError = false
-    //error when no pair is given!
-    params.keySet().each {
-        if(it.contains("pair_")) {
-            def pairCheck = params.get(it)
-            if(!pairCheck) {
-                linkError = true
-            }
-        }
-    }
-      if(linkError) {
-          flash.error = "Bitte Verknüpfungsziel angeben!"
-          redirect(url: request.getHeader('referer'))
-          return
-      }
-      def context = genericOIDService.resolveOID(params.context)
-      Doc linkComment = genericOIDService.resolveOID(params.commentID)
-      Links link
-      String commentContent
-      //distinct between insert and update - if a link id exists, then proceed with edit, else create new instance
-      //perspectiveIndex 0: source -> dest, 1: dest -> source
-      if(params.link) {
-          link = genericOIDService.resolveOID(params.link)
-          if(params["linkType_${link.id}"]) {
-              def pair = genericOIDService.resolveOID(params["pair_${link.id}"])
-              String linkTypeString = params["linkType_${link.id}"].split("§")[0]
-              int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
-              RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
-              commentContent = params["linkComment_${link.id}"].trim()
-              if(perspectiveIndex == 0) {
-                  link.source = context.id
-                  link.destination = pair.id
-              }
-              else if(perspectiveIndex == 1) {
-                  link.source = pair.id
-                  link.destination = context.id
-              }
-              link.linkType = linkType
-              log.debug(linkType)
-          }
-          else if(!params["linkType_${link.id}"]) {
-              flash.error = message(code:'default.linking.linkTypeError')
-          }
-      }
-      else {
-        if(params["linkType_new"]) {
-            def pair = genericOIDService.resolveOID(params.pair_new)
-            String linkTypeString = params["linkType_new"].split("§")[0]
-            int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
-            RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
-            commentContent = params.linkComment_new
-            Long source, destination
-            if(perspectiveIndex == 0) {
-                source = context.id
-                destination = pair.id
-            }
-            else if(perspectiveIndex == 1) {
-                source = pair.id
-                destination = context.id
-            }
-            link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:context.class.name)
-        }
-        else if(!params["linkType_new"]) {
-            flash.error = message(code:'default.linking.linkTypeError')
-        }
-      }
-      if(link && link.save(flush:true)) {
-        if(linkComment) {
-          if(commentContent.length() > 0) {
-            linkComment.content = commentContent
-            linkComment.save(true)
-          }
-          else if(commentContent.length() == 0) {
-            DocContext commentContext = DocContext.findByOwner(linkComment)
-            if(commentContext.delete())
-              linkComment.delete()
-          }
-        }
-        else if(!linkComment && commentContent.length() > 0) {
-          RefdataValue typeNote = RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE)
-          linkComment = new Doc([content:commentContent,type:typeNote])
-          if(linkComment.save(true)) {
-            DocContext commentContext = new DocContext([doctype:typeNote,link:link,owner:linkComment])
-            commentContext.save(true)
-          }
-        }
-      }
-      else if(link && link.errors) {
-          log.error(link.errors)
-          flash.error = message(code:'default.linking.savingError')
-      }
-    redirect(url: request.getHeader('referer'))
   }
 
     @Secured(['ROLE_USER'])
@@ -1370,7 +1305,7 @@ class AjaxController {
 
             render(template: "/templates/properties/custom", model: [
                     ownobj: owner,
-                    customProperties: owner.customProperties,
+                    customProperties: owner.propertySet,
                     newProp: newProp,
                     error: error,
                     message: msg,
@@ -1386,11 +1321,11 @@ class AjaxController {
       def newProp
       def owner = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
       def type = PropertyDefinition.get(params.propIdent.toLong())
-
-      def existingProp = owner.customProperties.find { it.type.name == type.name }
+      Org contextOrg = contextService.getOrg()
+      def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant.id == contextOrg.id }
 
       if (existingProp == null || type.multipleOccurrence) {
-        newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type)
+        newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type, contextOrg )
         if (newProp.hasErrors()) {
           log.error(newProp.errors)
         } else {
@@ -1404,14 +1339,13 @@ class AjaxController {
 
       request.setAttribute("editable", params.editable == "true")
       boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-      boolean showCollectiveFunctions = Boolean.parseBoolean(params.showCollectiveFunctions)
       if (params.propDefGroup) {
         render(template: "/templates/properties/group", model: [
                 ownobj          : owner,
+                contextOrg      : contextOrg,
                 newProp         : newProp,
                 error           : error,
                 showConsortiaFunctions: showConsortiaFunctions,
-                showCollectiveFunctions: showCollectiveFunctions,
                 propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc       : type.descr // form data
@@ -1422,9 +1356,9 @@ class AjaxController {
 
           Map<String, Object> modelMap =  [
                   ownobj                : owner,
+                  contextOrg            : contextOrg,
                   newProp               : newProp,
                   showConsortiaFunctions: showConsortiaFunctions,
-                  showCollectiveFunctions: showCollectiveFunctions,
                   error                 : error,
                   custom_props_div      : "${params.custom_props_div}", // JS markup id
                   prop_desc             : type.descr, // form data
@@ -1470,8 +1404,7 @@ class AjaxController {
                 ownobj: ownobj,
                 availPropDefGroups: availPropDefGroups,
                 editable: params.editable,
-                showConsortiaFunctions: params.showConsortiaFunctions,
-                showCollectiveFunctions: params.showCollectiveFunctions
+                showConsortiaFunctions: params.showConsortiaFunctions
         ])
     }
 
@@ -1513,15 +1446,22 @@ class AjaxController {
           error = message(code:'propertyDefinition.private.deactivated')
         }
         else {
-          def existingProps = owner.privateProperties.findAll {
-            it.owner.id == owner.id &&
-            it.type.id == type.id // this sucks due lazy proxy problem
-          }
+            Set<AbstractPropertyWithCalculatedLastUpdated> existingProps
+            if(owner.hasProperty("privateProperties")) {
+                existingProps = owner.propertySet.findAll {
+                    it.owner.id == owner.id && it.type.id == type.id // this sucks due lazy proxy problem
+                }
+            }
+            else {
+                existingProps = owner.propertySet.findAll { AbstractPropertyWithCalculatedLastUpdated prop ->
+                    prop.owner.id == owner.id && prop.type.id == type.id && prop.tenant.id == tenant.id && !prop.isPublic
+                }
+            }
           existingProps.removeAll { it.type.name != type.name } // dubious fix
 
 
           if (existingProps.size() == 0 || type.multipleOccurrence) {
-            newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
+            newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type, contextService.getOrg())
             if (newProp.hasErrors()) {
               log.error(newProp.errors)
             } else {
@@ -1540,12 +1480,13 @@ class AjaxController {
                 tenant: tenant,
                 newProp: newProp,
                 error: error,
+                contextOrg: contextService.org,
                 custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
                 prop_desc: type?.descr // form data
         ])
       }
       else  {
-        log.error("Form submitted with mising values")
+        log.error("Form submitted with missing values")
       }
     }
 
@@ -1723,12 +1664,56 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    def togglePropertyIsPublic() {
+        EhcacheWrapper cache = contextService.getCache("/subscription/togglePropertyIsPublic/", contextService.USER_SCOPE)
+        if(!cache.get("${params.oid}")) {
+            cache.put(params.oid,'locked')
+            AbstractPropertyWithCalculatedLastUpdated property = genericOIDService.resolveOID(params.oid)
+            property.isPublic = !property.isPublic
+            property.save()
+            Org contextOrg = contextService.getOrg()
+            request.setAttribute("editable", params.editable == "true")
+            if(params.propDefGroup) {
+                render(template: "/templates/properties/group", model: [
+                        ownobj          : property.owner,
+                        newProp         : property,
+                        contextOrg      : contextOrg,
+                        showConsortiaFunctions: params.showConsortiaFunctions == "true",
+                        propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                        custom_props_div: "${params.custom_props_div}", // JS markup id
+                        prop_desc       : property.type.descr // form data
+                ])
+            }
+            else {
+                Map<String, Object>  allPropDefGroups = property.owner.getCalculatedPropDefGroups(contextOrg)
+
+                Map<String, Object> modelMap =  [
+                        ownobj                : property.owner,
+                        newProp               : property,
+                        contextOrg            : contextOrg,
+                        showConsortiaFunctions: params.showConsortiaFunctions == "true",
+                        custom_props_div      : "${params.custom_props_div}", // JS markup id
+                        prop_desc             : property.type.descr, // form data
+                        orphanedProperties    : allPropDefGroups.orphanedProperties
+                ]
+                render(template: "/templates/properties/custom", model: modelMap)
+            }
+            cache.remove(params.oid)
+            log.debug("lock released")
+        }
+        else {
+            log.debug("request already handled!")
+        }
+    }
+
+    @Secured(['ROLE_USER'])
     def togglePropertyAuditConfig() {
         def className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
         def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
+        Org contextOrg = contextService.getOrg()
 
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
 
@@ -1763,26 +1748,29 @@ class AjaxController {
 
                     // multi occurrence props; add one additional with backref
                     if (property.type.multipleOccurrence) {
-                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
+                        AbstractPropertyWithCalculatedLastUpdated additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
                         additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
-                        additionalProp.save(flush: true)
+                        additionalProp.isPublic = true
+                        additionalProp.save()
                     }
                     else {
-                        def matchingProps = property.getClass().findByOwnerAndType(member, property.type)
+                        Set<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findByOwnerAndTypeAndTenant(member, property.type, contextOrg)
                         // unbound prop found with matching type, set backref
                         if (matchingProps) {
-                            matchingProps.each { memberProp ->
+                            matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
                                 memberProp.instanceOf = property
-                                memberProp.save(flush: true)
+                                memberProp.isPublic = true
+                                memberProp.save(flush:true)
                             }
                         }
                         else {
                             // no match found, creating new prop with backref
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
+                            AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
                             newProp = property.copyInto(newProp)
                             newProp.instanceOf = property
-                            newProp.save(flush: true)
+                            newProp.isPublic = true
+                            newProp.save()
                         }
                     }
                 }
@@ -1798,6 +1786,7 @@ class AjaxController {
                   newProp         : property,
                   showConsortiaFunctions: params.showConsortiaFunctions,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                  contextOrg      : contextOrg,
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
@@ -1811,6 +1800,7 @@ class AjaxController {
                     showConsortiaFunctions: params.showConsortiaFunctions,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
+                    contextOrg            : contextOrg,
                     orphanedProperties    : allPropDefGroups.orphanedProperties
             ]
             render(template: "/templates/properties/custom", model: modelMap)
@@ -1824,6 +1814,7 @@ class AjaxController {
         def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
+        Org contextOrg = contextService.getOrg()
 
         AuditConfig.removeAllConfigs(property)
 
@@ -1849,17 +1840,19 @@ class AjaxController {
                   ownobj          : owner,
                   newProp         : property,
                   showConsortiaFunctions: showConsortiaFunctions,
+                  contextOrg      : contextOrg,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
         }
         else {
-            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
             Map<String, Object> modelMap =  [
                     ownobj                : owner,
                     newProp               : property,
                     showConsortiaFunctions: showConsortiaFunctions,
+                    contextOrg            : contextOrg,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
                     orphanedProperties    : allPropDefGroups.orphanedProperties
@@ -1883,7 +1876,7 @@ class AjaxController {
     def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
     def prop_desc = property.getType().getDescr()
 
-    owner.privateProperties.remove(property)
+    owner.propertySet.remove(property)
     property.delete(flush:true)
 
     if(property.hasErrors()){
@@ -1896,6 +1889,7 @@ class AjaxController {
             ownobj: owner,
             tenant: tenant,
             newProp: property,
+            contextOrg: contextService.org,
             custom_props_div: "custom_props_div_${tenant.id}",  // JS markup id
             prop_desc: prop_desc // form data
     ])
@@ -2052,17 +2046,6 @@ class AjaxController {
     def delete() {
       switch(params.cmd) {
         case 'deletePersonRole': deletePersonRole()
-        break
-        case 'deleteLink': Links obj = genericOIDService.resolveOID(params.oid)
-          if (obj) {
-            DocContext comment = DocContext.findByLink(obj)
-            if(comment) {
-              Doc commentContent = comment.owner
-              comment.delete()
-              commentContent.delete()
-            }
-            obj.delete()
-          }
         break
         default: def obj = genericOIDService.resolveOID(params.oid)
           if (obj) {
@@ -2380,14 +2363,14 @@ class AjaxController {
         Set result = []
         if (params.orgIdList){
             List<Long> orgIds = params.orgIdList.split ','
-            List<Org> orgList = Org.findAllByIdInList(orgIds)
+            List<Org> orgList = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds)
             boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
             boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
 
             List<RefdataValue> selectedRoleTypes = null
             if (params.selectedRoleTypIds) {
                 List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
-                selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
+                selectedRoleTypes = selectedRoleTypIds.isEmpty() ? [] : RefdataValue.findAllByIdInList(selectedRoleTypIds)
             }
 
             String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
@@ -2424,6 +2407,30 @@ class AjaxController {
             }
 
         }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getRegions() {
+        List<RefdataValue> result = []
+        if (params.country) {
+            List<Long> countryIds = params.country.split ','
+            countryIds.each {
+                switch (RefdataValue.get(it).value) {
+                    case 'DE':
+                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE])
+                        break;
+                    case 'AT':
+                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_AT])
+                        break;
+                    case 'CH':
+                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_CH])
+                        break;
+                }
+            }
+        }
+        result = result.flatten()
+
         render result as JSON
     }
 
@@ -2499,8 +2506,8 @@ class AjaxController {
                 } else {
                     def binding_properties = [:]
 
-                    if (target_object."${params.name}" instanceof Double) {
-                        params.value = Double.parseDouble(params.value)
+                    if (target_object."${params.name}" instanceof BigDecimal) {
+                        params.value = escapeService.parseFinancialValue(params.value)
                     }
                     if (target_object."${params.name}" instanceof Boolean) {
                         params.value = params.value?.equals("1")
@@ -2514,7 +2521,10 @@ class AjaxController {
 
                     target_object.save(failOnError: true)
 
-                    result = target_object."${params.name}"
+
+                    if(target_object."${params.name}" instanceof BigDecimal)
+                        result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}") //is for that German users do not cry about comma-dot-change
+                    else result = target_object."${params.name}"
                 }
 
                 if (target_object instanceof SurveyResult) {
@@ -2642,6 +2652,65 @@ class AjaxController {
 
         render template:"../templates/tasks/modal_create", model: result
 
+    }
+
+    @Secured(['ROLE_USER'])
+    def AddressEdit() {
+        Map model = [:]
+        model.addressInstance = Address.get(params.id)
+        if (model.addressInstance){
+            model.modalId = 'addressFormModal'
+            String messageCode = 'person.address.label'
+            switch (model.addressInstance.type){
+                case RDStore.ADRESS_TYPE_LEGAL_PATRON:
+                    messageCode = 'addressFormModalLegalPatronAddress'
+                    break
+                case RDStore.ADRESS_TYPE_BILLING:
+                    messageCode = 'addressFormModalBillingAddress'
+                    break
+                case RDStore.ADRESS_TYPE_POSTAL:
+                    messageCode = 'addressFormModalPostalAddress'
+                    break
+                case RDStore.ADRESS_TYPE_DELIVERY:
+                    messageCode = 'addressFormModalDeliveryAddress'
+                    break
+                case RDStore.ADRESS_TYPE_LIBRARY:
+                    messageCode = 'addressFormModalLibraryAddress'
+                    break
+            }
+
+            model.typeId = model.addressInstance.type.id
+            model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
+            model.modalMsgSave = message(code: 'default.button.save_changes')
+            model.url = [controller: 'address', action: 'edit']
+            render template:"../templates/addresses/formModal", model: model
+        }
+    }
+
+    @Secured(['ROLE_USER'])
+    def AddressCreate() {
+        Map model = [:]
+        model.orgId = params.orgId
+        model.prsId = params.prsId
+        model.redirect = params.redirect
+        model.typeId = Long.valueOf(params.typeId)
+        model.hideType = params.hideType
+        if (model.orgId && model.typeId) {
+            String messageCode = 'addressFormModalLibraryAddress'
+            if (model.typeId == RDStore.ADRESS_TYPE_LEGAL_PATRON.id)  {messageCode = 'addressFormModalLegalPatronAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_BILLING.id)  {messageCode = 'addressFormModalBillingAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_POSTAL.id)   {messageCode = 'addressFormModalPostalAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_DELIVERY.id) {messageCode = 'addressFormModalDeliveryAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_LIBRARY.id)  {messageCode = 'addressFormModalLibraryAddress'}
+
+            model.modalText = message(code: 'default.create.label', args: [message(code: messageCode)])
+        } else {
+            model.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
+        }
+        model.modalMsgSave = message(code: 'default.button.create.label')
+        model.url = [controller: 'address', action: 'create']
+
+        render template:"../templates/addresses/formModal", model: model
     }
 
     @Secured(['ROLE_USER'])

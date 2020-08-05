@@ -222,7 +222,7 @@ class UserController extends AbstractDebugController {
         }
 
         result.breadcrumb = 'breadcrumb'
-        result.availableOrgs = Org.executeQuery('from Org o where o.sector = ? order by o.name', [RDStore.O_SECTOR_HIGHER_EDU])
+        result.availableOrgs = Org.executeQuery('from Org o where o.sector = :sector order by o.name', [sector: RDStore.O_SECTOR_HIGHER_EDU])
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
         render view: '/templates/user/_create', model: result

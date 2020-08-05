@@ -3,19 +3,24 @@ package de.laser
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.RefdataAnnotation
+import grails.transaction.Transactional
 
+@Transactional
 class RefdataService {
 
     def grailsApplication
     def genericOIDService
 
     List getUsageDetails() {
-        def detailsMap = [:]
-        def usedRdvList = []
+        def detailsMap      = [:]
+        def usedRdvList     = []
+        def allDcs          = [:]
 
-        def allDcs = [:]
+        List classes = grailsApplication.getArtefacts("Domain").toList().findAll {
+            ! it.clazz.toString().endsWith('CustomProperty') && ! it.clazz.toString().endsWith('PrivateProperty') // tmp
+        }
 
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+        classes.each { dc ->
             def dcFields = []
             def cls = dc.clazz
 
@@ -36,7 +41,7 @@ class RefdataService {
             def dfMap = [:]
 
             dcFields.each { df ->
-                def rdvs = RefdataValue.executeQuery("SELECT DISTINCT ${df.name} FROM ${dcName}")
+                Set<RefdataValue> rdvs = RefdataValue.executeQuery( "SELECT DISTINCT " + df.name + " FROM " + dcName )
 
                 dfMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
 
@@ -111,9 +116,8 @@ class RefdataService {
 
                             RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)
                             if (anno && ! [RefdataAnnotation.GENERIC, RefdataAnnotation.UNKOWN].contains(anno.cat()) ) {
-                                List fieldCats = RefdataValue.executeQuery(
-                                        "SELECT DISTINCT dummy.${it.name}, rdc FROM ${cls.simpleName} dummy JOIN dummy.${it.name}.owner rdc",
-                                )
+                                String query = "SELECT DISTINCT dummy.${it.name}, rdc FROM ${cls.simpleName} dummy JOIN dummy.${it.name}.owner rdc"
+                                List fieldCats = RefdataValue.executeQuery( query )
                                 Map fieldCheck = [:]
 
                                 fieldCats.each { it2 ->

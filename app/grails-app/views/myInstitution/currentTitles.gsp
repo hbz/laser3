@@ -70,7 +70,7 @@
 <semui:totalNumber total="${num_ti_rows}"/>
 </h1>
 
-<g:render template="../templates/filter/javascript" />
+<g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
 

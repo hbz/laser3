@@ -3,13 +3,15 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
-import de.laser.AuditService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.ConfigUtils
 
+import grails.transaction.Transactional
 import java.nio.file.Files
 import java.nio.file.Path
 
+@Transactional
 class InstitutionsService {
 
     def contextService
@@ -28,15 +30,14 @@ class InstitutionsService {
 
         String lic_name = params.lic_name ?: "Kopie von ${base.reference}"
 
-        boolean slavedBool = true //params.isSlaved is never settable; may be subject of change
-
         License licenseInstance = new License(
                 reference: lic_name,
                 status: base.status,
                 noticePeriod: base.noticePeriod,
                 licenseUrl: base.licenseUrl,
                 instanceOf: base,
-                isSlaved: slavedBool
+                openEnded: base.openEnded,
+                isSlaved: true //is default as of June 25th with ticket ERMS-2635
         )
 
         Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceId(License.class.name,base.id)
@@ -53,29 +54,29 @@ class InstitutionsService {
 
             if (option == InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED) {
 
-                LicenseCustomProperty.findAllByOwner(base).each { lcp ->
-                    AuditConfig ac = AuditConfig.getConfig(lcp)
+                LicenseProperty.findAllByOwner(base).each { LicenseProperty lp ->
+                    AuditConfig ac = AuditConfig.getConfig(lp)
 
                     if (ac) {
                         // multi occurrence props; add one additional with backref
-                        if (lcp.type.multipleOccurrence) {
-                            def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
-                            additionalProp = lcp.copyInto(additionalProp)
-                            additionalProp.instanceOf = lcp
+                        if (lp.type.multipleOccurrence) {
+                            LicenseProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lp.type, lp.tenant)
+                            additionalProp = lp.copyInto(additionalProp)
+                            additionalProp.instanceOf = lp
                             additionalProp.save()
                         }
                         else {
                             // no match found, creating new prop with backref
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
-                            newProp = lcp.copyInto(newProp)
-                            newProp.instanceOf = lcp
+                            LicenseProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lp.type, lp.tenant)
+                            newProp = lp.copyInto(newProp)
+                            newProp.instanceOf = lp
                             newProp.save()
                         }
                     }
                 }
 
-                // documents
-                base.documents?.each { dctx ->
+                // documents (test if documents is really never null)
+                base.documents.each { DocContext dctx ->
 
                     if (dctx.isShared) {
                         DocContext ndc = new DocContext(
@@ -92,8 +93,8 @@ class InstitutionsService {
             }
             else if (option == InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD) {
 
-                for (prop in base.customProperties) {
-                    LicenseCustomProperty copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                for (prop in base.propertySet) {
+                    LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
                     copiedProp = prop.copyInto(copiedProp)
                     copiedProp.instanceOf = null
                     copiedProp.save()
@@ -117,7 +118,7 @@ class InstitutionsService {
                             migrated: dctx.owner.migrated
                     ).save()
 
-                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                     Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
@@ -184,8 +185,8 @@ class InstitutionsService {
             licenseInstance.startDate = baseLicense?.startDate
             licenseInstance.endDate = baseLicense?.endDate
         }
-        for (prop in baseLicense?.customProperties) {
-            def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+        for (prop in baseLicense?.propertySet) {
+            def copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
             copiedProp = prop.copyInto(copiedProp)
             copiedProp.instanceOf = null
             copiedProp.save(flush: true)
@@ -236,7 +237,7 @@ class InstitutionsService {
                         user: dctx.owner.user,
                         migrated: dctx.owner.migrated).save()
 
-                String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+                String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
                 Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                 Path target = new File("${fPath}/${clonedContents.uuid}").toPath()

@@ -5,8 +5,8 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ContextService
-import de.laser.domain.AbstractI10nOverride
-import de.laser.domain.I10nTranslation
+import de.laser.I10nTranslation
+import de.laser.base.AbstractI10n
 import de.laser.helper.SwissKnife
 import grails.util.Holders
 import groovy.util.logging.Log4j
@@ -16,25 +16,26 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
+import javax.validation.UnexpectedTypeException
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import javax.validation.UnexpectedTypeException
-
 @Log4j
-class PropertyDefinition extends AbstractI10nOverride implements Serializable, Comparable<PropertyDefinition> {
+class PropertyDefinition extends AbstractI10n implements Serializable, Comparable<PropertyDefinition> {
 
     static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
     @Transient
-    final static CUSTOM_PROPERTY  = "CUSTOM_PROPERTY"
+    final static String CUSTOM_PROPERTY  = "CUSTOM_PROPERTY"
     @Transient
-    final static PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
+    final static String PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
 
     @Transient
     final static String LIC_PROP    = 'License Property'
     @Transient
     final static String ORG_PROP    = 'Organisation Property'
+    @Transient
+    final static String ORG_CONF    = 'Organisation Config'
     @Transient
     final static String PRS_PROP    = 'Person Property'
     @Transient
@@ -44,34 +45,33 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     @Transient
     final static String SUR_PROP    = 'Survey Property'
 
-    @Transient
-    final static String ORG_CONF    = 'Organisation Config'
-    @Transient
-    final static String SYS_CONF    = 'System Config'
+    //sorting is for German terms for the next three arrays; I10n is todo for later
 
     @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [
-            LIC_PROP,
-            ORG_CONF,
+            PRS_PROP,
+            ORG_PROP,
             SUB_PROP,
             PLA_PROP,
-            ORG_PROP,
-            SUR_PROP
+            SUR_PROP,
+            LIC_PROP
     ]
     @Transient
     final static String[] AVAILABLE_PRIVATE_DESCR = [
-            LIC_PROP,
-            SUB_PROP,
-            ORG_PROP,
             PRS_PROP,
-            SUR_PROP
+            ORG_PROP,
+            SUB_PROP,
+            PLA_PROP,
+            SUR_PROP,
+            LIC_PROP
     ]
 
     @Transient
     final static String[] AVAILABLE_GROUPS_DESCR = [
-            LIC_PROP,
+            ORG_PROP,
             SUB_PROP,
-            ORG_PROP
+            PLA_PROP,
+            LIC_PROP
     ]
 
     String name
@@ -100,6 +100,9 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     Date dateCreated
     Date lastUpdated
 
+    @Transient
+    def contextService
+
     //Map keys can change and they wont affect any of the functionality
     @Deprecated
     @Transient
@@ -112,7 +115,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
 
     @Transient
     static def validTypes2 = [
-            'class java.lang.Integer'             : ['de': 'Zahl', 'en': 'Number'],
+            'class java.lang.Integer'             : ['de': 'Ganzzahl', 'en': 'Number'],
             'class java.lang.String'              : ['de': 'Text', 'en': 'Text'],
             'class com.k_int.kbplus.RefdataValue' : ['de': 'Referenzwert', 'en': 'Refdata'],
             'class java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
@@ -151,19 +154,19 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     }
 
     static constraints = {
-        name                (nullable: false, blank: false)
+        name                (blank: false)
         name_de             (nullable: true, blank: false)
         name_en             (nullable: true, blank: false)
         expl_de             (nullable: true, blank: false)
         expl_en             (nullable: true, blank: false)
         descr               (nullable: true,  blank: false)
-        type                (nullable: false, blank: false)
+        type                (blank: false)
         refdataCategory     (nullable: true)
         tenant              (nullable: true,  blank: true)
         multipleOccurrence  (nullable: true,  blank: true)
-        mandatory           (nullable: false, blank: false)
-        isHardData          (nullable: false, blank: false)
-        isUsedForLogic      (nullable: false, blank: false)
+        mandatory           (blank: false)
+        isHardData          (blank: false)
+        isUsedForLogic      (blank: false)
         lastUpdated         (nullable: true, blank: false)
         dateCreated         (nullable: true, blank: false)
     }
@@ -299,19 +302,25 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
      *
      * @param owner: The class that will hold the property, e.g License
      */
-    static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(def flag, def owner, PropertyDefinition type) {
+    static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(String flag, def owner, PropertyDefinition type, Org contextOrg) {
         String classString = owner.getClass().toString()
         def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
+        boolean isPublic
 
-        if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
-            ownerClassName = "com.k_int.kbplus.${ownerClassName}CustomProperty"
-        }
-        else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
-            ownerClassName = "com.k_int.kbplus.${ownerClassName}PrivateProperty"
-        }
+        //if(!owner.hasProperty("privateProperties")) {
+            ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
+        /*}
+        else {
+            if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
+                ownerClassName = "com.k_int.kbplus.${ownerClassName}CustomProperty"
+            }
+            else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
+                ownerClassName = "com.k_int.kbplus.${ownerClassName}PrivateProperty"
+            }
+        }*/
 
         //def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner)
-        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner)
+        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: false, tenant: contextOrg)
         newProp.setNote("")
 
         /*
@@ -343,7 +352,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
 
         List<PropertyDefinition> matches = []
 
-        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
             case 'en':
                 matches = PropertyDefinition.findAllByDescrAndName_enIlike(params.desc, "%${params.q}%")
                 break
@@ -385,10 +394,12 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         result
     }
 
+    @Deprecated
     String getImplClass(String customOrPrivate) {
         getImplClass(this.descr, customOrPrivate)
     }
 
+    @Deprecated
     static String getImplClass(String descr, String customOrPrivate) {
         String result
         String[] parts = descr.split(" ")
@@ -414,11 +425,31 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         result
     }
 
-    def countUsages() {
-        def table = getImplClass('private')?.minus('com.k_int.kbplus.')
+    int countUsages() {
+        String table = this.descr.minus('com.k_int.kbplus.').replace(" ","")
+        if(this.descr == "Organisation Property")
+            table = "OrgProperty"
 
         if (table) {
-            def c = PropertyDefinition.executeQuery("select count(c) from " + table + " as c where c.type = ?", [this])
+            int[] c = executeQuery("select count(c) from " + table + " as c where c.type.id = :type", [type:this.id])
+            return c[0]
+        }
+        return 0
+    }
+
+    int countOwnUsages() {
+        String table = this.descr.minus('com.k_int.kbplus.').replace(" ","")
+        String tenantFilter = 'and c.tenant.id = :ctx'
+        Map<String,Long> filterParams = [type:this.id,ctx:contextService.org.id]
+        if(this.descr == "Organisation Property")
+            table = "OrgProperty"
+        else if(this.descr == "Survey Property") {
+            tenantFilter = ''
+            filterParams.remove("ctx")
+        }
+
+        if (table) {
+            int[] c = executeQuery("select count(c) from " + table + " as c where c.type.id = :type "+tenantFilter, filterParams)
             return c[0]
         }
         return 0
@@ -458,13 +489,11 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
 
     @Transient
     void removeProperty() {
-        log.debug("Remove");
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseCustomProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicensePrivateProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionCustomProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgCustomProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgPrivateProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonPrivateProperty c where c.type = ?', [this])
+        log.debug("Remove")
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = ?', [this])
         this.delete();
     }
 
@@ -478,7 +507,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     }
 
     static getLocalizedValue(key){
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
         //println locale
         if (PropertyDefinition.validTypes2.containsKey(key)) {
@@ -506,6 +535,15 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
         String a = this.getI10n('name') ?:''
         String b = pd.getI10n('name') ?:''
         return a.toLowerCase()?.compareTo(b.toLowerCase())
+    }
+
+    String getPropertyType(){
+       if(type == Integer.toString()){ return "intValue" }
+        if(type == String.toString()){ return "stringValue" }
+        if(type == BigDecimal.toString()){ return "decValue" }
+        if(type == Date.toString()){ return "dateValue" }
+        if(type == URL.toString()){ return "urlValue" }
+        if(type == RefdataValue.toString()){ return "refValue"}
     }
 }
 

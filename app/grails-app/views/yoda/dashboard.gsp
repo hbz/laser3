@@ -26,13 +26,13 @@
                         <g:link controller="admin" action="systemEvents" target="_blank">${message(code:'menu.admin.systemEvents')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="yoda" action="manageSystemMessage" target="_blank">${message(code: 'menu.admin.systemMessage')}</g:link>
-                    </div>
-                    <div class="item">
                         <g:link class="item" controller="yoda" action="appConfig" target="_blank">${message(code:'menu.yoda.appConfig')}</g:link>
                     </div>
                     <div class="item">
                         <g:link controller="yoda" action="appThreads" target="_blank">${message(code:'menu.yoda.appThreads')}</g:link>
+                    </div>
+                    <div class="item">
+                        <g:link controller="admin" action="systemMessages" target="_blank">${message(code: 'menu.admin.systemMessage')}</g:link>
                     </div>
                 </div>
             </div>

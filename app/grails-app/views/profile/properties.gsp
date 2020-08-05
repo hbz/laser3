@@ -1,4 +1,4 @@
-<%@ page import="de.laser.domain.I10nTranslation; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue"  %>
+<%@ page import="de.laser.I10nTranslation; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue"  %>
 <!doctype html>
 <html>
 <head>
@@ -22,10 +22,10 @@
         <g:if test="${entry.key != "System Config"}">
         <div class="title">
             <i class="dropdown icon"></i>
-            <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
+            <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
         </div>
         <div class="content">
-            <table class="ui celled la-table la-table-small table">
+            <table class="ui celled la-table compact table">
                 <thead>
                 <tr>
                     <th>DE</th>
@@ -95,7 +95,7 @@
         </div>
         <div class="content">
 
-            <table class="ui celled la-table la-table-small table">
+            <table class="ui celled la-table compact table">
                 <thead>
                 <tr>
                     <th>DE</th>

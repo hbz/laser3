@@ -30,12 +30,12 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="../templates/filter/javascript" />
+<g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="manageParticipantSurveys" controller="myInstitution" method="post" id="${params.id}"
             params="[tab: params.tab]" class="ui small form">
 
-        <div class="two fields">
+        <div class="three fields">
             <div class="field">
                 <label for="name">${message(code: 'surveyInfo.name.label')}
                 </label>
@@ -49,6 +49,16 @@
 
             <div class="field fieldcontain">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${params.validOn}" />
+            </div>
+
+            <div class="field fieldcontain">
+                <label>${message(code: 'default.valid_onYear.label')}</label>
+                <g:select name="validOnYear"
+                          from="${surveyYears}"
+                          class="ui fluid search selection dropdown"
+                          value="${params.validOnYear}"
+                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+
             </div>
 
         </div>
@@ -117,7 +127,7 @@
     <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
-    <table class="ui table la-table la-table-small">
+    <table class="ui table la-table compact">
         <tbody>
         <tr>
             <td>
@@ -148,18 +158,21 @@
 
         <semui:tabs actionName="${actionName}">
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                            params="${[id: params.id, tab: 'new']}" text="neu" tab="new"
+                            params="${[id: params.id, tab: 'new']}" text="${message(code: "surveys.tabs.new")}" tab="new"
                             counts="${countSurveys?.new}"/>
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                            params="${[id: params.id, tab: 'processed']}" text="bearbeitet" tab="processed"
+                            params="${[id: params.id, tab: 'processed']}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
                             counts="${countSurveys?.processed}"/>
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                            params="${[id: params.id, tab: 'finish']}" text="abgeschlossen" tab="finish"
+                            params="${[id: params.id, tab: 'finish']}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
                             counts="${countSurveys?.finish}"/>
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui red"
                             countsClass="red"
-                            params="${[id: params.id, tab: 'notFinish']}" text="vorsorgliche Kündigungen"
-                            tab="notFinish"
+                            params="${[id: params.id, tab: 'termination']}" text="${message(code: "surveys.tabs.termination")}"
+                            tab="termination"
+                            counts="${countSurveys?.termination}"/>
+            <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui orange" countsClass="orange"
+                            params="${[id: params.id, tab: 'notFinish']}" text="${message(code: "surveys.tabs.notFinish")}" tab="notFinish"
                             counts="${countSurveys?.notFinish}"/>
         </semui:tabs>
 

@@ -1,15 +1,23 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyOrg" %>
-<g:set var="participants"
-       value="${params.tab == 'participantsViewAllFinish' ? participantsFinish : (params.tab == 'participantsViewAllNotFinish' ? participantsNotFinish : participants)}"/>
 
 <semui:form>
+
+    <semui:filter>
+        <g:form action="surveyEvaluation" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
+            <g:render template="/templates/filter/orgFilter"
+                      model="[
+                              tmplConfigShow      : [['name', 'libraryType'], ['region', 'libraryNetwork', 'property']],
+                              tmplConfigFormFilter: true,
+                              useNewLayouter      : true
+                      ]"/>
+        </g:form>
+    </semui:filter>
 
     <h4><g:message code="surveyParticipants.hasAccess"/></h4>
 
     <g:set var="surveyParticipantsHasAccess"
-           value="${participants.findAll { it.participant.hasAccessOrg() }.sort {
-               it.participant.sortname
-           }}"/>
+           value="${surveyResult.findAll { it.participant.hasAccessOrg() }}"/>
 
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasAccess}">
@@ -30,23 +38,20 @@
             <th class="center aligned">
                 ${message(code: 'sidewide.number')}
             </th>
-            <th>
-                ${message(code: 'default.name.label')}
+            <g:sortableColumn params="${params}" title="${message(code: 'default.name.label')}" property="surResult.participant.sortname"/>
             </th>
             <g:each in="${surveyParticipantsHasAccess.groupBy {
                 it.type.id
             }.sort { it.value[0].type.name }}" var="property">
-                <th>
-                    <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
-                    ${surveyProperty.getI10n('name')}
-
+                <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
+                <semui:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}" property="surResult.${surveyProperty.getPropertyType()}, surResult.participant.sortname ASC">
                     <g:if test="${surveyProperty.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${surveyProperty.getI10n('expl')}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
-                </th>
+                </semui:sortableColumn>
             </g:each>
         </tr>
         </thead>
@@ -184,7 +189,7 @@
     <h4><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
     <g:set var="surveyParticipantsHasNotAccess"
-           value="${participants.findAll { !it.participant.hasAccessOrg() }.sort { it.participant.sortname }}"/>
+           value="${surveyResult.findAll { !it.participant.hasAccessOrg() }}"/>
 
     <div class="four wide column">
         <g:if test="${surveyParticipantsHasNotAccess}">
@@ -205,23 +210,19 @@
             <th class="center aligned">
                 ${message(code: 'sidewide.number')}
             </th>
-            <th>
-                ${message(code: 'default.name.label')}
-            </th>
+            <g:sortableColumn params="${params}" title="${message(code: 'default.name.label')}" property="surResult.participant.sortname"/>
             <g:each in="${surveyParticipantsHasNotAccess.groupBy {
                 it.type.id
             }.sort { it.value[0].type.name }}" var="property">
-                <th>
-                    <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
-                    ${surveyProperty.getI10n('name')}
-
+                <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
+                <semui:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}" property="surResult.${surveyProperty.getPropertyType()}, surResult.participant.sortname ASC">
                     <g:if test="${surveyProperty.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${surveyProperty.getI10n('expl')}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
-                </th>
+                </semui:sortableColumn>
             </g:each>
         </tr>
         </thead>

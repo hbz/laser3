@@ -3,7 +3,7 @@ package com.k_int.properties
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import de.laser.CacheService
-import de.laser.domain.I10nTranslation
+import de.laser.I10nTranslation
 import de.laser.helper.EhcacheWrapper
 import grails.util.Holders
 import groovy.util.logging.Log4j
@@ -48,13 +48,13 @@ class PropertyDefinitionGroup {
     }
 
     static constraints = {
-        name        (nullable: false, blank: false)
+        name        (blank: false)
         description (nullable: true,  blank: true)
         tenant      (nullable: true, blank: false)
-        ownerType   (nullable: false, blank: false)
-        isVisible   (nullable: false, blank: false)
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        ownerType   (blank: false)
+        isVisible   (blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     List<PropertyDefinition> getPropertyDefinitions() {
@@ -70,7 +70,7 @@ class PropertyDefinitionGroup {
         List result = []
         def givenIds = getPropertyDefinitions().collect{ it.id }
 
-        currentObject?.customProperties?.each{ cp ->
+        currentObject?.propertySet?.each{ cp ->
             if (cp.type.id in givenIds) {
                 result << GrailsHibernateUtil.unwrapIfProxy(cp)
             }
@@ -111,7 +111,7 @@ class PropertyDefinitionGroup {
         }
 
         cache.get('propDefs').each { it ->
-            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
                 case 'en':
                     if (params.q == '*' || it.en?.toLowerCase()?.contains(params.q?.toLowerCase())) {
                         result.add([id:"${it.id}", text:"${it.en}"])

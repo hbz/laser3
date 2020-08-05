@@ -99,7 +99,6 @@
                                           data-confirm-term-how="ok"
 
                                           data-done=""
-                                          data-always="bb8.init('#container-table')"
                                           data-update="container-table"
                                           role="button"
                         >
@@ -115,7 +114,6 @@
                                           data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin wieder auf Ihrem Dashboard anzeigen lassen? "
                                           data-confirm-term-how="ok"
                                           data-done=""
-                                          data-always="bb8.init('#container-table')"
                                           data-update="container-table"
                                           role="button"
                         >
@@ -129,7 +127,6 @@
                                           params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
                                           id="${dashDueDate.id}"
                                           data-done=""
-                                          data-always="bb8.init('#container-table')"
                                           data-update="container-table"
                                           role="button"
                         >
@@ -147,7 +144,6 @@
                                       data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin auf NICHT erledigt sezten? "
                                       data-confirm-term-how="ok"
                                       data-done=""
-                                      data-always="bb8.init('#container-table')"
                                       data-update="container-table"
                                       role="button"
                     >
@@ -164,7 +160,6 @@
                                       params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
                                       id="${dashDueDate.dueDateObject.id}"
                                       data-done=""
-                                      data-always="bb8.init('#container-table')"
                                       data-update="container-table"
                                       role="button"
                     >

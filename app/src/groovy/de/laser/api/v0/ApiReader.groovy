@@ -1,10 +1,6 @@
 package de.laser.api.v0
-
-
-import com.k_int.kbplus.License
 //import com.k_int.kbplus.OnixplLicense
-import com.k_int.kbplus.Org
-import de.laser.api.v0.entities.ApiDoc
+
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 
@@ -22,6 +18,7 @@ class ApiReader {
             'oamonitor/organisations/list': [Constants.MIME_APPLICATION_JSON],
             'oamonitor/organisations':      [Constants.MIME_APPLICATION_JSON],
             'oamonitor/subscriptions':      [Constants.MIME_APPLICATION_JSON],
+            'orgAccessPoint':             [Constants.MIME_APPLICATION_JSON],
             'organisation':             [Constants.MIME_APPLICATION_JSON],
             'package':                  [Constants.MIME_APPLICATION_JSON],
             'platform':                 [Constants.MIME_APPLICATION_JSON],

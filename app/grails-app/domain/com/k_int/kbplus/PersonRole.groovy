@@ -60,7 +60,6 @@ class PersonRole implements Comparable<PersonRole>{
         positionType        (nullable:true)
         functionType        (nullable:true)
         responsibilityType  (nullable:true)
-        prs         (nullable:false)
         lic         (nullable:true)
         org         (nullable:true)
         cluster     (nullable:true)
@@ -71,8 +70,8 @@ class PersonRole implements Comparable<PersonRole>{
         end_date    (nullable:true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     /**

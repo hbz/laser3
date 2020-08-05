@@ -13,10 +13,13 @@ import de.laser.SystemAnnouncement
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.I10nTranslation
+import de.laser.I10nTranslation
+import de.laser.SystemMessage
 import de.laser.exceptions.CleanupException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import de.laser.helper.SessionCacheWrapper
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -25,8 +28,10 @@ import grails.util.Holders
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
+import de.laser.helper.ConfigUtils
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -55,7 +60,7 @@ class AdminController extends AbstractDebugController {
     GlobalSourceSyncService globalSourceSyncService
     def GOKbService
     def docstoreService
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     def apiService
 
@@ -167,11 +172,13 @@ class AdminController extends AbstractDebugController {
         jobList.each { job ->
             if (job instanceof String) {
                 log.info('processing: ' + job)
-                result.stats."${job}" = Org.executeQuery("select count(obj) from ${job} obj join obj.status s where lower(s.value) like 'deleted'")
+                String query = "select count(obj) from ${job} obj join obj.status s where lower(s.value) like 'deleted'"
+                result.stats."${job}" = Org.executeQuery( query )
             }
             else {
                 log.info('processing: ' + job[0])
-                result.stats."${job[0]}" = Org.executeQuery("select count(obj) from ${job[0]} obj join obj.${job[1]} s where lower(s.value) like 'deleted'")
+                String query = "select count(obj) from ${job[0]} obj join obj.${job[1]} s where lower(s.value) like 'deleted'"
+                result.stats."${job[0]}" = Org.executeQuery( query )
             }
         }
         result
@@ -517,7 +524,7 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def updateQASubscriptionDates() {
-        if (grailsApplication.config.getCurrentServer() in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) {
+        if (ServerUtils.getCurrentServer() in [ServerUtils.SERVER_QA, ServerUtils.SERVER_LOCAL]) {
             def updateReport = statusUpdateService.updateQASubscriptionDates()
             if(updateReport instanceof Boolean)
                 flash.message = message(code:'subscription.qaTestDateUpdate.success')
@@ -595,7 +602,7 @@ class AdminController extends AbstractDebugController {
     def fileConsistency() {
         Map<String, Object> result = [:]
 
-        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+        result.filePath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Closure fileCheck = { Doc doc ->
 
@@ -688,7 +695,7 @@ class AdminController extends AbstractDebugController {
     def recoveryDoc() {
         Map<String, Object> result = [:]
 
-        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+        result.filePath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Closure fileCheck = { Doc doc ->
 
@@ -732,7 +739,7 @@ class AdminController extends AbstractDebugController {
     def processRecoveryDoc() {
         Map<String, Object> result = [:]
 
-        result.filePath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+        result.filePath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Closure fileCheck = { Doc doc ->
 
@@ -807,7 +814,7 @@ class AdminController extends AbstractDebugController {
             if ( request.method.equalsIgnoreCase("post")) {
                 contentItem.content = params.content
                 contentItem.save(flush:true)
-                messageService.update(key,locale)
+                messageService.update(key,locale) // TODO: refactoring legacy
                 redirect(action:'manageContentItems');
             }
         }
@@ -910,7 +917,7 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def orgsExport() {
         Date now = new Date()
-        File basicDataDir = new File(grailsApplication.config.basicDataPath)
+        File basicDataDir = new File(ConfigUtils.getBasicDataPath())
         if(basicDataDir) {
             GPathResult oldBase
             XmlSlurper slurper = new XmlSlurper()
@@ -918,7 +925,7 @@ class AdminController extends AbstractDebugController {
             List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
                 @Override
                 boolean accept(File dir, String name) {
-                    return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
+                    return name.matches("${ConfigUtils.getOrgDumpFileNamePattern()}.*")
                 }
             })
             if(dumpFiles.size() > 0) {
@@ -930,7 +937,7 @@ class AdminController extends AbstractDebugController {
                 oldBase = slurper.parse(lastDump)
             }
             else {
-                File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
+                File f = new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getBasicDataFileName()}")
                 lastDumpDate = new Date(f.lastModified())
                 if(f.exists()) {
                     //complicated way - determine most recent org and user creation dates
@@ -970,7 +977,7 @@ class AdminController extends AbstractDebugController {
                 //data collected: prepare export!
                 if(newOrgData || newUserData) {
                     //List<Person> newPersonData = Person.executeQuery('select pr.prs from PersonRole pr where pr.org in :org',[org:newOrgData])
-                    File newDump = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.orgDumpFileNamePattern}${now.format("yyyy-MM-dd")}${grailsApplication.config.orgDumpFileExtension}")
+                    File newDump = new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getOrgDumpFileNamePattern()}${now.format("yyyy-MM-dd")}${ConfigUtils.getOrgDumpFileExtension()}")
                     StringBuilder exportReport = new StringBuilder()
                     exportReport.append("<p>Folgende Organisationen wurden erfolgreich exportiert: <ul><li>")
                     newDump.withWriter { writer ->
@@ -1331,11 +1338,11 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def orgsImport() {
-        File basicDataDir = new File("${grailsApplication.config.documentStorageLocation}/basic_data_dumps/")
+        File basicDataDir = new File(ConfigUtils.getDocumentStorageLocation() + "/basic_data_dumps/")
         List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
             @Override
             boolean accept(File dir, String name) {
-                return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
+                return name.matches("${ConfigUtils.getOrgDumpFileNamePattern()}.*")
             }
         })
         if(dumpFiles.size() > 0) {
@@ -1639,64 +1646,80 @@ class AdminController extends AbstractDebugController {
                 editable: true, // TODO check role and editable !!!
                 identifierNamespaceInstance: identifierNamespaceInstance,
                 identifierNamespaces: IdentifierNamespace.where{}.sort('ns'),
-                currentLang: I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+                currentLang: I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
         ]
     }
 
     @Secured(['ROLE_ADMIN'])
     def managePropertyDefinitions() {
 
-        if (params.cmd == 'deletePropertyDefinition') {
-            def pd = genericOIDService.resolveOID(params.pd)
+        if (params.cmd){
+            PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+            switch(params.cmd) {
+                case 'toggleMandatory':
+                    if(pd) {
+                        pd.mandatory = !pd.mandatory
+                        pd.save()
+                    }
+                    break
+                case 'toggleMultipleOccurrence':
+                    if(pd) {
+                        pd.multipleOccurrence = !pd.multipleOccurrence
+                        pd.save()
+                    }
+                    break
+                case 'deletePropertyDefinition':
+                    if (pd) {
+                        if (! pd.isHardData) {
+                            try {
+                                pd.delete()
+                                flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de])
+                            }
+                            catch(Exception e) {
+                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.name_de])
+                            }
+                        }
+                    }
+                    break
+                case 'replacePropertyDefinition':
+                    if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
+                        PropertyDefinition pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
+                        PropertyDefinition pdTo = genericOIDService.resolveOID(params.xcgPdTo)
 
-            if (pd) {
-                if (! pd.isHardData) {
-                    try {
-                        pd.delete(flush:true)
-                        flash.message = "${params.pd} wurde gelöscht."
+                        if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
+
+                            try {
+                                def count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
+
+                                flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
+                            }
+                            catch (Exception e) {
+                                log.error(e)
+                                flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
+                            }
+
+                        }
+                    } else {
+                        flash.error = "Keine ausreichenden Rechte!"
                     }
-                    catch(Exception e) {
-                        flash.error = "${params.pd} konnte nicht gelöscht werden."
-                    }
-                }
+                    break
             }
         }
-        else if (params.cmd == 'replacePropertyDefinition') {
-            if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
-                def pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
-                def pdTo = genericOIDService.resolveOID(params.xcgPdTo)
 
-                if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
-
-                    try {
-                        def count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
-
-                        flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
-                    }
-                    catch (Exception e) {
-                        log.error(e)
-                        flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
-                    }
-
-                }
-            } else {
-                flash.error = "Keine ausreichenden Rechte!"
-            }
-        }
-
-        def propDefs = [:]
-        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+        Map<String,Object> propDefs = [:]
+        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { String it ->
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
             propDefs << ["${it}": itResult]
         }
 
-        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails()
 
         render view: 'managePropertyDefinitions', model: [
                 editable    : true,
                 propertyDefinitions: propDefs,
                 attrMap     : attrMap,
-                usedPdList  : usedPdList
+                usedPdList  : usedPdList,
+                multiplePdList : multiplePdList
         ]
     }
 
@@ -1877,7 +1900,7 @@ class AdminController extends AbstractDebugController {
 
         render view: 'manageRefdatas', model: [
                 editable    : true,
-                rdCategories: RefdataCategory.where{}.sort('desc_' + I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())),
+                rdCategories: RefdataCategory.where{}.sort('desc_' + I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())),
                 attrMap     : attrMap,
                 usedRdvList : usedRdvList,
                 integrityCheckResult : integrityCheckResult
@@ -1887,7 +1910,6 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def titleEnrichment() {
         Map<String, Object> result = [:]
-
 
         if(params.kbartPreselect) {
             CommonsMultipartFile kbartFile = params.kbartPreselect
@@ -1987,6 +2009,39 @@ class AdminController extends AbstractDebugController {
 
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def systemMessages() {
 
+        Map<String, Object> result = [:]
+        result.user = springSecurityService.currentUser
 
+        if (params.create){
+            SystemMessage sm = new SystemMessage(
+                    content_de: params.content_de ?: '',
+                    content_en: params.content_en ?: '',
+                    type: params.type,
+                    isActive: false)
+
+            if (sm.save(flush: true)){
+                flash.message = 'Systemmeldung erstellt'
+            } else {
+                flash.error = 'Systemmeldung wurde nicht erstellt'
+            }
+        }
+
+        result.systemMessages = SystemMessage.executeQuery('select sm from SystemMessage sm order by sm.isActive desc, sm.lastUpdated desc')
+        result.editable = true
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def deleteSystemMessage(Long id) {
+
+        if (SystemMessage.get(id)){
+            SystemMessage.get(id).delete(flush: true)
+            flash.message = 'Systemmeldung wurde gelöscht'
+        }
+
+        redirect(action: 'systemMessages')
+    }
 }

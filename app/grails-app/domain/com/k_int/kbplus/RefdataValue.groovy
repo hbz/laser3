@@ -1,15 +1,15 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
-import de.laser.domain.AbstractI10nOverride
-import de.laser.domain.I10nTranslation
+import de.laser.base.AbstractI10n
+import de.laser.I10nTranslation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
-class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataValue> {
+class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
 
     static Log static_logger = LogFactory.getLog(RefdataValue)
 
@@ -65,7 +65,7 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
     static constraints = {
         icon     (nullable:true)
         group    (nullable:true,  blank:false)
-        isHardData (nullable:false, blank:false)
+        isHardData (blank:false)
         order    (nullable:true,  blank: false)
         value_de (nullable: true, blank: false)
         value_en (nullable: true, blank: false)
@@ -73,8 +73,8 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
         expl_en  (nullable: true, blank: false)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     static RefdataValue construct(Map<String, Object> map) {
@@ -119,7 +119,7 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
             matches = RefdataValue.findAll()
         }
         else {
-            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
                 case 'en':
                     matches = RefdataValue.findAllByValue_enIlike("%${params.q}%")
                     break
@@ -152,29 +152,23 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
     }
 
     static RefdataValue getByCategoryDescAndI10nValueDe(String categoryName, String value) {
-
-        List<RefdataValue> data = RefdataValue.executeQuery(
-                "select rdv from RefdataValue as rdv, RefdataCategory as rdc "
-                    + " where rdv.owner = rdc and rdc.desc = ? and rdv.value_de = ?"
-                    , ["${categoryName}", "${value}"] )
-
-        if (data.size() > 0) {
-            return data[0]
+        if (!categoryName || !value) {
+            return null
         }
+        String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and rdc.desc = :category and rdv.value_de = :value_de"
+        List<RefdataValue> data = RefdataValue.executeQuery( query, [category: categoryName, value_de: value] )
 
-        null
+        return (data.size() > 0) ? data[0] : null
     }
 
-    static RefdataValue getByCategoriesDescAndI10nValueDe(String[] categoryNames, String value) {
-        List<RefdataValue> data = RefdataValue.executeQuery(
-                "select rdv from RefdataValue as rdv, RefdataCategory as rdc "
-                    + " where rdv.owner = rdc and rdc.desc in (:cat) and rdv.value_de = :value_de"
-                    , [categories: categoryNames, value_de: value] )
-
-        if (data.size() > 0) {
-            return data[0]
+    static RefdataValue getByCategoriesDescAndI10nValueDe(List categoryNames, String value) {
+        if (!categoryNames || !value) {
+            return null
         }
-        null
+        String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and rdc.desc in (:categories) and rdv.value_de = :value_de"
+        List<RefdataValue> data = RefdataValue.executeQuery( query, [categories: categoryNames, value_de: value] )
+
+        return (data.size() > 0) ? data[0] : null
     }
 
     int compareTo(RefdataValue rdv) {
@@ -207,7 +201,8 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
     **/
     @Override
     boolean equals (Object o) {
-        def obj = ClassUtils.deproxy(o)
+        //def obj = ClassUtils.deproxy(o)
+        def obj = GrailsHibernateUtil.unwrapIfProxy(o)
         if (obj != null) {
             if ( obj instanceof RefdataValue ) {
                 return obj.id == id

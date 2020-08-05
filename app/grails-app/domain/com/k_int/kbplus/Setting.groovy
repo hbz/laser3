@@ -25,13 +25,13 @@ class Setting {
     }
 
     static constraints = {
-        name        (nullable:false, blank:false)
-        tp          (nullable:false, blank:false)
+        name        (blank:false)
+        tp          (blank:false)
         defvalue    (nullable:true, blank:true, maxSize:1024)
         value       (nullable:true, blank:true, maxSize:1024)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 }

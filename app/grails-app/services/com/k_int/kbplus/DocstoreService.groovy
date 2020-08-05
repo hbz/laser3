@@ -1,12 +1,16 @@
 package com.k_int.kbplus
 
+import de.laser.helper.ConfigUtils
+import de.laser.helper.RDStore
 import gov.loc.repository.bagit.BagFactory
 import gov.loc.repository.bagit.PreBag
+import grails.transaction.Transactional
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.apache.http.entity.mime.HttpMultipartMode
 import org.apache.http.entity.mime.MultipartEntity
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.codehaus.groovy.runtime.InvokerHelper
 
 import java.nio.file.Files
@@ -14,14 +18,13 @@ import java.nio.file.Path
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-import static de.laser.helper.RDStore.DOC_CTX_STATUS_DELETED
-
+@Transactional
 class DocstoreService {
   
   def grailsApplication
   def genericOIDService
   def sessionFactory
-  def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+  def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
   def uploadStream(source_stream, original_filename, title) {
 
@@ -382,7 +385,7 @@ class DocstoreService {
         newDocContext.owner = newDoc
         newDocContext.save(flush: true)
 
-        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+        String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Path sourceFile = new File("${fPath}/${it.owner.uuid}").toPath()
         Path targetFile = new File("${fPath}/${newDoc.uuid}").toPath()
@@ -451,7 +454,7 @@ class DocstoreService {
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
                 DocContext docctx = DocContext.get(docctx_to_delete)
-                docctx.status = DOC_CTX_STATUS_DELETED
+                docctx.status = RDStore.DOC_CTX_STATUS_DELETED
                 docctx.save(flush: true)
             }
             if (p.key.startsWith('_deleteflag"@.') ) { // PackageController
@@ -459,7 +462,7 @@ class DocstoreService {
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
                 DocContext docctx = DocContext.get(docctx_to_delete)
-                docctx.status = DOC_CTX_STATUS_DELETED
+                docctx.status = RDStore.DOC_CTX_STATUS_DELETED
                 docctx.save(flush: true)
             }
         }
@@ -469,7 +472,7 @@ class DocstoreService {
             log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
             DocContext docctx = DocContext.get(docctx_to_delete)
-            docctx.status = DOC_CTX_STATUS_DELETED
+            docctx.status = RDStore.DOC_CTX_STATUS_DELETED
             docctx.save(flush: true)
         }
     }

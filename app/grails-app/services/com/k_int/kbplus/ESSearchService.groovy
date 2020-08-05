@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DateUtil
+import grails.transaction.Transactional
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
@@ -10,6 +12,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.sort.FieldSortBuilder
 import org.elasticsearch.search.sort.SortOrder
 
+@Transactional
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields
   def reversemap = ['rectype':'rectype',
@@ -171,6 +174,11 @@ class ESSearchService{
           sw.write("${params.q}")
           sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
         }else{
+
+          if(DateUtil.isDate(params.q)){
+            params.q = DateUtil.parseDateGeneric(params.q).format("yyyy-MM-dd").toString()
+          }
+
           params.q = params.q.replaceAll('\\"', '')
           sw.write("${params.q}")
           sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
@@ -192,8 +200,8 @@ class ESSearchService{
                   "AND ( NOT rectype:\"SurveyOrg\" ) AND ( NOT rectype:\"SurveyConfig\" ) " +
                   "AND ( NOT rectype:\"Task\" ) AND ( NOT rectype:\"Note\" ) AND ( NOT rectype:\"Document\" ) " +
                   "AND ( NOT rectype:\"IssueEntitlement\" )" +
-                  "AND ( NOT rectype:\"SubscriptionCustomProperty\" ) AND ( NOT rectype:\"SubscriptionPrivateProperty\" ) " +
-                  "AND ( NOT rectype:\"LicenseCustomProperty\" ) AND ( NOT rectype:\"LicensePrivateProperty\" )" +
+                  "AND ( NOT rectype:\"SubscriptionProperty\" ) " +
+                  "AND ( NOT rectype:\"LicenseProperty\" )" +
                   ") ")
 
           params[mapping.key].each { p ->
@@ -288,9 +296,9 @@ class ESSearchService{
       es_url = grailsApplication.config.aggr_es_gokb_url ?: (ElasticsearchSource.findByIdentifier('gokb')?.url ?: "")
     }else
     {
-      es_cluster_name = grailsApplication.config.aggr_es_cluster  ?: 'elasticsearch'
-      es_index_name   = grailsApplication.config.aggr_es_index    ?: 'kbplus'
-      es_host         = grailsApplication.config.aggr_es_hostname ?: 'localhost'
+      es_cluster_name = ConfigUtils.getAggrEsCluster()  ?: 'elasticsearch'
+      es_index_name   = ConfigUtils.getAggrEsIndex()    ?: 'kbplus'
+      es_host         = ConfigUtils.getAggrEsHostname() ?: 'localhost'
     }
     log.debug("es_cluster = ${es_cluster_name}");
     log.debug("es_index_name = ${es_index_name}");

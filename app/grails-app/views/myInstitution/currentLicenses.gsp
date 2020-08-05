@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.Links;com.k_int.kbplus.GenericOIDService" %>
 <!doctype html>
 <html>
   <head>
@@ -74,9 +74,18 @@
               <div class="field">
                   <semui:datepicker label="license.valid_on" id="validOn" name="validOn" placeholder="default.date.label" value="${validOn}" />
               </div>
-              <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+              <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
           </div>
-          <div class="four fields">
+          <div class="three fields">
+              <div class="field">
+                  <label for="status">${message(code: 'license.status')}</label>
+                  <laser:select class="ui dropdown" name="status"
+                                from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
+                                optionKey="id"
+                                optionValue="value"
+                                value="${params.status}"
+                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+              </div>
               <div class="field">
                   <label for="licensor"><g:message code="license.licensor.label"/></label>
                   <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
@@ -95,6 +104,17 @@
                       </g:each>
                   </select>
               </div>
+          </div>
+          <div class="three fields">
+              <div class="field">
+                  <label for="subStatus">${message(code: 'subscription.status.label')}</label>
+                  <laser:select class="ui dropdown" name="subStatus"
+                                from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
+                                optionKey="id"
+                                optionValue="value"
+                                value="${params.subStatus}"
+                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+              </div>
               <div class="field">
                   <label for="subKind"><g:message code="license.subscription.kind.label"/></label>
                   <select id="subKind" name="subKind" multiple="" class="ui search selection fluid dropdown">
@@ -107,7 +127,7 @@
               <div class="field la-field-right-aligned">
                   <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
                   <input type="hidden" name="filterSet" value="true">
-                  <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
+                  <input type="submit" name="filterSubmit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
               </div>
           </div>
       </form>
@@ -148,21 +168,34 @@
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>
-                              <%--<g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">--%>
-                                  <g:each in="${l.subscriptions}" var="sub">
-                                      <g:if test="${sub.status.id == RDStore.SUBSCRIPTION_CURRENT.id}">
-                                          <g:if test="${institution.id in sub.orgRelations.org.id || accessService.checkPerm("ORG_CONSORTIUM")}">
-                                              <div class="la-flexbox">
-                                                  <i class="icon clipboard outline outline la-list-icon"></i>
-                                                  <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
-                                              </div>
-                                          </g:if>
+                              <div id="${l.id}linkedSubscriptions">
+                                  <script>
+                                      $.ajax({
+                                          url: "<g:createLink controller="ajax" action="getLinkedSubscriptions" />",
+                                          data: {
+                                              license: "${GenericOIDService.getOID(l)}",
+                                              status: ${params.subStatus}
+                                          }
+                                      }).done(function(data) {
+                                          <%--<g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>+--%>
+                                          let link = "<g:createLink controller="subscription" action="show"/>";
+                                          $.each(data.results,function(k,v) {
+                                              $("#${l.id}linkedSubscriptions").append('<i class="icon clipboard outline outline la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br>');
+                                          });
+                                      });
+                                  </script>
+                              </div>
+                              <%--<g:each in="${allLinkedSubscriptions.findAll { Links li -> li.source == GenericOIDService.getOID(l) }}" var="row">
+                                  <g:set var="sub" value="${genericOIDService.resolveOID(row.destination)}"/>
+                                  <g:if test="${sub.status.id == RDStore.SUBSCRIPTION_CURRENT.id}">
+                                      <%--<g:if test="${institution.id in orgRelations.org.id/* || accessService.checkPerm("ORG_CONSORTIUM")*/}">
+                                          <div class="la-flexbox">
+                                              <i class="icon clipboard outline outline la-list-icon"></i>
+                                              <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
+                                          </div>
                                       </g:if>
-                                  </g:each>
-                              <%--</g:if>--%>
-                              <%--<g:else>
-                                  <br>${message(code:'myinst.currentLicenses.no_subs')}
-                              </g:else>--%>
+                                  </g:if>
+                              </g:each>--%>
                           </td>
                           <g:if test="${'memberLicenses' in licenseFilterTable}">
                               <td>

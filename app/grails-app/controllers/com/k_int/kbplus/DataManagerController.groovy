@@ -2,17 +2,15 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import de.laser.DeletionService
+import com.k_int.kbplus.auth.UserOrg
 import de.laser.YodaService
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.MailTemplate
+import de.laser.MailTemplate
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
-import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
 
@@ -99,7 +97,7 @@ class DataManagerController extends AbstractDebugController {
     // From the list of users, extract and who have the INST_ADM role
     def rolesMa = []
     if ( auditActors )
-      rolesMa = com.k_int.kbplus.auth.UserOrg.executeQuery(
+      rolesMa = UserOrg.executeQuery(
         'select distinct(userorg.user.username) from UserOrg as userorg ' +
         'where userorg.formalRole = (:formal_role) and userorg.user.username in (:actors)',
         [formal_role:formal_role,actors:auditActors])
@@ -336,8 +334,8 @@ class DataManagerController extends AbstractDebugController {
             }
         }
 
-        result.titleInstanceTotal = Subscription.executeQuery("select t.id "+base_qry, qry_params ).size()
-        result.titleList = Subscription.executeQuery("select t ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
+        result.titleInstanceTotal = Subscription.executeQuery( "select t.id " + base_qry, qry_params ).size()
+        result.titleList = Subscription.executeQuery( "select t " + base_qry, qry_params, [max:result.max, offset:result.offset] )
 
         result
     }
@@ -366,8 +364,8 @@ class DataManagerController extends AbstractDebugController {
             }
         }
 
-        result.orgTotal = Org.executeQuery("select o.id " + query, qry_params ).size()
-        result.orgList = Org.executeQuery("select o ${query}", qry_params, [max:result.max, offset:result.offset])
+        result.orgTotal = Org.executeQuery( "select o.id " + query, qry_params ).size()
+        result.orgList = Org.executeQuery( "select o " + query, qry_params, [max:result.max, offset:result.offset] )
 
         result
     }

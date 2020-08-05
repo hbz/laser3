@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; de.laser.domain.I10nTranslation" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation; com.k_int.kbplus.GenericOIDService" %>
 
 <!doctype html>
 <html>
@@ -12,32 +12,35 @@
     <semui:breadcrumbs>
         <semui:crumb message="menu.institutions.manage_props" class="active" />
     </semui:breadcrumbs>
+
+    <semui:controlButtons>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="${actionName}" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
+        <g:render template="actions"/>
+    </semui:controlButtons>
+
     <br>
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
+
 
     <g:render template="nav" />
 
     <semui:messages data="${flash}" />
 
-    <g:if test="${editable}">
-        <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
-               data-semui="modal" data-href="#addPropertyDefinitionModal" type="submit">
-    </g:if>
-
     <g:if test="${propertyDefinitions}">
 
-        <div class="ui info message">
-            ${message(code:'propertyDefinition.private.info')}
-        </div>
         <div class="ui styled fluid accordion">
             <g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
+                    <g:message code="propertyDefinition.${entry.key}.label" />
                 </div>
                 <div class="content">
                     <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
-                        <table class="ui celled la-table la-table-small table">
+                        <table class="ui celled la-table compact table">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -87,8 +90,8 @@
                                             <semui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
                                         </td>
                                         <td>
-                                            ${PropertyDefinition.getLocalizedValue(pd?.type)}
-                                            <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                            ${PropertyDefinition.getLocalizedValue(pd.type)}
+                                            <g:if test="${pd.type == 'class com.k_int.kbplus.RefdataValue'}">
                                                 <g:set var="refdataValues" value="${[]}"/>
                                                 <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
                                                         var="refdataValue">
@@ -101,20 +104,63 @@
                                             </g:if>
                                         </td>
                                         <td>
-                                            <span class="ui circular label">${pd.countUsages()}</span>
+                                            <span class="ui circular label">
+                                                <g:if test="${pd.descr == PropertyDefinition.LIC_PROP}">
+                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:GenericOIDService.getOID(pd)]}">${pd.countOwnUsages()}</g:link>
+                                                </g:if>
+                                                <g:elseif test="${pd.descr == PropertyDefinition.SUB_PROP}">
+                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:GenericOIDService.getOID(pd)]}">${pd.countOwnUsages()}</g:link>
+                                                </g:elseif>
+                                                <%-- TODO platforms and orgs do not have property filters yet, they must be built! --%>
+                                                <g:else>
+                                                    ${pd.countOwnUsages()}
+                                                </g:else>
+                                            </span>
                                         </td>
                                         <g:if test="${editable}">
                                             <td class="x">
+                                                <g:if test="${pd.mandatory}">
+                                                    <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
+                                                            params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon yellow button">
+                                                        <i class="star icon"></i>
+                                                    </g:link>
+                                                </g:if>
+                                                <g:else>
+                                                    <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left center"
+                                                            params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
+                                                        <i class="star yellow icon"></i>
+                                                    </g:link>
+                                                </g:else>
+                                                <g:if test="${!multiplePdList?.contains(pd.id)}">
+                                                    <g:if test="${pd.multipleOccurrence}">
+                                                        <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon orange button">
+                                                            <i class="redo slash icon"></i>
+                                                        </g:link>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left center"
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
+                                                            <i class="redo orange icon"></i>
+                                                        </g:link>
+                                                    </g:else>
+                                                </g:if>
                                                 <g:if test="${pd.countUsages()==0}">
                                                     <g:link action="managePrivatePropertyDefinitions"
                                                             params="[cmd:'delete', deleteIds: pd?.id]"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name")])}"
+                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name_de")])}"
                                                             data-confirm-term-how="delete"
                                                             class="ui icon negative button js-open-confirm-modal"
                                                             role="button">
                                                         <i class="trash alternate icon"></i>
                                                     </g:link>
                                                 </g:if>
+                                                <g:else>
+                                                    <%-- hidden fake button to keep the other button in place --%>
+                                                    <div class="ui icon button la-hidden">
+                                                        <i class="coffe icon"></i>
+                                                    </div>
+                                                </g:else>
                                             </td>
                                         </g:if>
                                     </tr>

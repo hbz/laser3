@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.Role
+
 import com.k_int.kbplus.auth.User
 import de.laser.EscapeService
 import de.laser.controller.AbstractDebugController
@@ -163,18 +163,18 @@ class PackageController extends AbstractDebugController {
 
 
         log.debug(base_qry + ' <<< ' + qry_params)
-        result.packageInstanceTotal = Subscription.executeQuery("select p.id " + base_qry, qry_params).size()
+        result.packageInstanceTotal = Subscription.executeQuery( "select p.id " + base_qry, qry_params ).size()
 
 
         withFormat {
             html {
-                result.packageInstanceList = Subscription.executeQuery("select p ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
+                result.packageInstanceList = Subscription.executeQuery( "select p " + base_qry, qry_params, [max: result.max, offset: result.offset] )
                 result
             }
             csv {
                 response.setHeader("Content-disposition", "attachment; filename=\"packages.csv\"")
                 response.contentType = "text/csv"
-                def packages = Subscription.executeQuery("select p ${base_qry}", qry_params)
+                def packages = Subscription.executeQuery( "select p " + base_qry, qry_params )
                 def out = response.outputStream
                 log.debug('colheads');
                 out.withWriter { writer ->
@@ -190,93 +190,6 @@ class PackageController extends AbstractDebugController {
                 out.close()
             }
         }
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def consortia() {
-        redirect controller: 'package', action: 'show', params: params
-        return
-
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.packageInstance = Package.get(params.id)
-        result.editable = isEditable()
-        result.id = params.id
-
-        def hasAccess
-        def isAdmin
-        if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
-            isAdmin = true;
-        } else {
-            hasAccess = result.packageInstance.orgs.find {
-                it.roleType?.value == 'Package Consortia' && accessService.checkMinUserOrgRole(result.user, it.org, 'INST_ADM')
-            }
-        }
-
-        if (!isAdmin && hasAccess == null) {
-            flash.error = "Consortia screen only available to institution administrators for Packages with Package Consortium link."
-            response.sendError(401)
-            return
-        }
-        def packageInstance = result.packageInstance
-
-        RefdataValue type = RefdataValue.getByValueAndCategory('Consortium', 'Combo Type')
-
-        String institutions_in_consortia_hql = "select c.fromOrg from Combo as c where c.type = ? and c.toOrg in ( select org_role.org from Package as p join p.orgs as org_role where org_role.roleType.value = 'Package Consortia' and p = ?) order by c.fromOrg.name"
-        def consortiaInstitutions = Combo.executeQuery(institutions_in_consortia_hql, [type, packageInstance])
-
-        String package_consortia = "select org_role.org from Package as p join p.orgs as org_role where org_role.roleType.value = 'Package Consortia' and p = ?"
-        def consortia = Package.executeQuery(package_consortia, [packageInstance]);
-
-
-        def consortiaInstsWithStatus = [:]
-
-        String hql = "SELECT role.org FROM OrgRole as role WHERE role.org = ? AND (role.roleType.value = 'Subscriber') AND ( EXISTS ( select sp from role.sub.packages as sp where sp.pkg = ? ) )"
-        consortiaInstitutions.each { org ->
-            log.debug("looking up all orgs based on consortia org ${org} and package ${packageInstance}");
-            def queryParams = [org, packageInstance]
-            def hasPackage = OrgRole.executeQuery(hql, queryParams)
-            if (hasPackage) {
-                consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("Yes", RDConstants.Y_N_O))
-            } else {
-                consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("No", RDConstants.Y_N_O))
-            }
-        }
-        result.consortia = consortia
-        result.consortiaInstsWithStatus = consortiaInstsWithStatus
-
-        // log.debug("institutions with status are ${consortiaInstsWithStatus}")
-
-        result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def generateSlaveSubscriptions() {
-        params.each { p ->
-            if (p.key.startsWith("_create.")) {
-                def orgID = p.key.substring(8)
-                Org orgaisation = Org.get(orgID)
-                if (orgaisation)
-                    log.debug("Create slave subscription for ${orgaisation.name}")
-                createNewSubscription(orgaisation, params.id, params.genSubName);
-            }
-        }
-        redirect controller: 'package', action: 'consortia', params: [id: params.id]
-    }
-
-
-    @Deprecated
-    private def createNewSubscription(org, packageId, genSubName) {
-        //Initialize default subscription values
-        log.debug("Create slave with org ${org} and packageID ${packageId}")
-
-        String defaultSubIdentifier = java.util.UUID.randomUUID().toString()
-        Package pkg_to_link = Package.get(packageId)
-        log.debug("Sub start Date ${pkg_to_link.startDate} and end date ${pkg_to_link.endDate}")
-        pkg_to_link.createSubscription("Subscription Taken", genSubName ?: "Slave subscription for ${pkg_to_link.name}", defaultSubIdentifier,
-                pkg_to_link.startDate, pkg_to_link.endDate, org, "Subscriber", true, true)
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -1108,7 +1021,7 @@ class PackageController extends AbstractDebugController {
 
         // postgresql migration
         String subQuery = 'select cast(id as string) from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
-        def subQueryResult = AuditLogEvent.executeQuery(subQuery, [pkgid: params.id])
+        def subQueryResult = TitleInstancePackagePlatform.executeQuery(subQuery, [pkgid: params.id])
 
         //def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string)) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'
         //def query_params = [ pkgcls:'com.k_int.kbplus.Package', tippcls:'com.k_int.kbplus.TitleInstancePackagePlatform', pkgid:params.id, subQueryResult:subQueryResult]

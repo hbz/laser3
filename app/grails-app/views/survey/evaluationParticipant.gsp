@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.SurveyConfig;" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -16,13 +16,19 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+                     params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
     <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+        <g:if test="${surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id && surveyConfig.isResultsSetFinishByOrg(participant)}">
+            <semui:actionsDropdown>
+            <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                       message="openSurveyAgainForParticipant.button"/>
+            </semui:actionsDropdown>
+        </g:if>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -51,7 +57,7 @@
     <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
-    <table class="ui table la-table la-table-small">
+    <table class="ui table la-table compact">
         <tbody>
         <tr>
             <td>
@@ -80,7 +86,7 @@
 
         <div class="la-inline-lists">
 
-            <g:if test="${surveyConfig.type == "Subscription"}">
+            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
                 <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                                   costItemSums        : costItemSums,
@@ -89,14 +95,13 @@
                                                                                   surveyResults       : surveyResults]"/>
             </g:if>
 
-            <g:if test="${surveyConfig.type == "GeneralSurvey"}">
+            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
                 <g:render template="/templates/survey/generalSurvey" model="[surveyConfig        : surveyConfig,
                                                                              costItemSums        : costItemSums,
                                                                              subscriptionInstance: surveyConfig.subscription,
                                                                              tasks               : tasks,
-                                                                             visibleOrgRelations : visibleOrgRelations,
-                                                                             properties          : properties]"/>
+                                                                             visibleOrgRelations : visibleOrgRelations]"/>
             </g:if>
 
         </div>

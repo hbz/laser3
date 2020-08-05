@@ -28,13 +28,13 @@ class CustomerIdentifier {
     }
 
     static constraints = {
-        type     (nullable:false, blank:false)
-        value    (nullable:false, blank:true)
+        type     (blank:false)
+        value    (blank:true)
         note     (nullable:true, blank:true)
-        customer (nullable:false, blank:false)
-        platform (nullable:false, blank:false)
-        owner    (nullable:false, blank:false)
-        isPublic (nullable:false, blank:false)
+        customer (blank:false)
+        platform (blank:false)
+        owner    (blank:false)
+        isPublic (blank:false)
     }
 
     Org getProvider() {

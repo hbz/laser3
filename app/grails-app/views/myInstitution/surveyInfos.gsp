@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.SurveyConfig;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -96,7 +96,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
     <semui:form>
         <h3><g:message code="surveyInfo.owner.label"/>:</h3>
 
-        <table class="ui table la-table la-table-small">
+        <table class="ui table la-table compact">
             <tbody>
             <tr>
                 <td>
@@ -141,7 +141,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
     <div class="sixteen wide column">
 
         <div class="la-inline-lists">
-            <g:if test="${surveyInfo && surveyConfig.type == "Subscription"}">
+            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
                 <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                                   costItemSums        : costItemSums,
@@ -151,7 +151,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 
             </g:if>
 
-            <g:if test="${surveyInfo && surveyConfig.type == "GeneralSurvey"}">
+            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
                 <g:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
                                                                              surveyResults: surveyResults]"/>

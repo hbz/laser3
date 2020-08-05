@@ -26,13 +26,14 @@
                     propDefGroup: propDefGroup,
                     prop_desc: prop_desc,
                     ownobj: ownobj,
+                    editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
                     custom_props_div: custom_props_div
             ]}"/>
         </div>
     </div>
 <%--</div><!--.card-->--%>
 
-<r:script language="JavaScript">
+<r:script>
         $(document).ready(function(){
             c3po.initGroupedProperties("<g:createLink controller='ajax' action='lookup'/>", "#${custom_props_div}");
         });

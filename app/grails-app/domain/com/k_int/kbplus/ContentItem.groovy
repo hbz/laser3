@@ -20,13 +20,13 @@ class ContentItem {
   }
 
   static constraints = {
-        key(nullable:false, blank:false)
-     locale(nullable:false, blank:true)
-    content(nullable:false, blank:false)
+        key (blank:false)
+     locale (blank:true)
+    content (blank:false)
 
     // Nullable is true, because values are already in the database
-    lastUpdated (nullable: true, blank: false)
-    dateCreated (nullable: true, blank: false)
+    lastUpdated (nullable: true)
+    dateCreated (nullable: true)
   }
 
   static ContentItem lookupOrCreate(String key, String locale, String content) {

@@ -187,13 +187,13 @@
 </table>
 <g:if test="${data.costItems}">
     <g:if test="${fixedSubscription}">
-        <semui:paginate mapping="subfinance" params="${params+[view:'subscr']}"
+        <semui:paginate mapping="subfinance" params="${params+[showView:'subscr']}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${subscrOffset ? subscrOffset : 0}" total="${data.count}"/>
     </g:if>
     <g:else>
-        <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'subscr']}"
+        <semui:paginate action="finance" controller="myInstitution" params="${params+[showView:'subscr']}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${subscrOffset ? subscrOffset : 0}" total="${data.count}"/>

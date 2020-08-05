@@ -1,11 +1,9 @@
-<%@ page import="com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
 
 <g:if test="${person && personContext}">
     <div class="ui divided middle aligned selection list la-flex-list la-list-border-around">
 
         <div class="ui item person-details">
-            <span></span>
-
             <div class="content la-space-right">
                 <h5 class="ui header">
                     <g:link controller="person" action="show" id="${person.id}">
@@ -52,10 +50,14 @@
                     </g:if>
 
                     <g:if test="${tmplShowAddAddresses}">
-                        <input class="ui mini icon button" type="button" data-semui="modal"
-                               data-href="#addressFormModal${personRole.id}"
-                               value="${message(code: 'person.addresses.label')}">
-                        <g:render template="/address/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'addressFormModal' + personRole.id]"/>
+                        <% Map model = [:]
+                        model.prsId = person?.id
+                        model.typeId = RDStore.ADRESS_TYPE_LIBRARY
+                        model.redirect = '.'
+                        model.hideType = true%>
+                        <input class="ui mini icon button" type="button"
+                               value="${message(code: 'person.addresses.label')}"
+                               onclick="addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
                     </g:if>
 
                 </g:if>
@@ -87,7 +89,6 @@
                 <g:if test="${personRoleLink.org.id == personContext.id && personRoleLink.functionType}">
 
                     <div class="ui item person-details">
-                        <span></span>
                         <div class="content la-space-right">
                             ${personRoleLink.functionType.getI10n('value')}
                         </div>
@@ -135,7 +136,6 @@
                 <g:if test="${personRole.org.id == personContext.id && personRole.positionType}">
 
                     <div class="ui item person-details">
-                        <span></span>
                         <div class="content la-space-right">
                             ${personRole.positionType.getI10n('value')} (Position)
                         </div>
@@ -175,7 +175,6 @@
                 <g:if test="${personRole.org.id == personContext.id && personRole.responsibilityType}">
 
                     <div class="ui item person-details">
-                        <span></span>
                         <div class="content la-space-right">
                             ${personRole.responsibilityType.getI10n('value')} (Verantwortlichkeit)
                         </div>

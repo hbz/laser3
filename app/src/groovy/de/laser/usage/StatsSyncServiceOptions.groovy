@@ -80,8 +80,8 @@ class StatsSyncServiceOptions {
     }
 
     LinkedHashMap getQueryParams(Org org_inst, Platform supplier_inst) {
-        PlatformCustomProperty platform = PlatformCustomProperty.executeQuery(
-            "select pcp from PlatformCustomProperty pcp where pcp.owner = :supplier and pcp.type.name = 'NatStat Supplier ID'",[supplier:supplier_inst]).get(0)
+        PlatformProperty platform = PlatformProperty.executeQuery(
+            "select pcp from PlatformProperty pcp where pcp.owner = :supplier and pcp.type.name = 'NatStat Supplier ID'",[supplier:supplier_inst]).get(0)
         String customer = org_inst.getIdentifierByType('wibid').value
         String apiKey = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)?.getValue()
         String requestor = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)?.getValue()

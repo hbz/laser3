@@ -126,7 +126,7 @@ class TitleController extends AbstractDebugController {
         }
 
         result.duplicates = reusedIdentifiers(result.ti);
-        result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = ?", [result.ti] )
+        result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = :participant", [participant: result.ti] )
 
         result
     }
@@ -286,15 +286,6 @@ class TitleController extends AbstractDebugController {
         }
         result.formattedHistoryLines.add(line_to_add);
     }
-
-    result
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def availability() {
-    Map<String, Object> result = [:]
-    result.ti = TitleInstance.get(params.id)
-    result.availability = IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.tipp.title = ?",[result.ti]);
 
     result
   }

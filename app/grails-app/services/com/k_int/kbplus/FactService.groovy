@@ -1,12 +1,14 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
-import de.laser.domain.StatsTripleCursor
+import de.laser.StatsTripleCursor
 import de.laser.helper.RDConstants
-import org.apache.commons.net.ntp.TimeStamp
+import grails.transaction.Transactional
 import org.hibernate.criterion.CriteriaSpecification
+
 import java.time.YearMonth
 
+@Transactional
 class FactService {
 
   def sessionFactory
@@ -449,7 +451,7 @@ class FactService {
 
   private Map<String,List> getUsageRanges(supplier_id, Org org, Subscription subscription) {
     String customer = org.getIdentifierByType('wibid')?.value
-    String supplierId = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+    String supplierId = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
     List factTypes = StatsTripleCursor.findAllByCustomerIdAndSupplierId(customer, supplierId).factType.unique()
 
     String titleRangesHql = "select stc from StatsTripleCursor as stc where " +

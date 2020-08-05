@@ -2,18 +2,17 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import grails.plugin.mail.MailService
 import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -23,21 +22,20 @@ class SurveyService {
 
     AccessService accessService
     ContextService contextService
-    MessageSource messageSource
+    def messageSource
     ExportService exportService
-    Locale locale
     MailService mailService
     EscapeService escapeService
     GrailsApplication grailsApplication
+    String replyTo
 
     SimpleDateFormat formatter = DateUtil.getSDF_dmy()
     String from
 
     @javax.annotation.PostConstruct
     void init() {
-        from = grailsApplication.config.notifications.email.from
+        from = ConfigUtils.getNotificationsEmailFrom()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
     }
 
 
@@ -98,7 +96,7 @@ class SurveyService {
         def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo.surveyConfigs).sort { it.surveyConfig.configOrder }
 
         int currentOrder = surveyConfig.configOrder
-        List<Integer> configOrders = SurveyConfig.findAllByIdInList(surveyResults.findAll { it.surveyConfig.type == 'Subscription' }.groupBy { it.surveyConfig.id }.keySet()).configOrder
+        List<Integer> configOrders = SurveyConfig.findAllByIdInList(surveyResults.findAll { it.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION }.groupBy { it.surveyConfig.id }.keySet()).configOrder
         int currentOrderIndex = configOrders.indexOf(currentOrder)
 
         if (currentOrderIndex > 0) {
@@ -142,30 +140,53 @@ class SurveyService {
     }
 
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties) {
-        Org contextOrg = contextService.getOrg()
-        def targetProp
+        SubscriptionProperty targetProp
 
 
-        properties?.each { sourceProp ->
-            if (sourceProp instanceof CustomProperty) {
-                targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
-            }
-            if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
-                targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
-            }
-            boolean isAddNewProp = sourceProp.type?.multipleOccurrence
+        properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
+            targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
+            boolean isAddNewProp = sourceProp.type.multipleOccurrence
             if ((!targetProp) || isAddNewProp) {
-                if (sourceProp instanceof CustomProperty) {
-                    targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
-                } else {
-                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
-                }
+                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub, tenant: sourceProp.tenant)
                 targetProp = sourceProp.copyInto(targetProp)
+                targetProp.isPublic = sourceProp.isPublic
                 save(targetProp, flash)
-                if ((sourceProp.id.toString() in auditProperties) && targetProp instanceof CustomProperty) {
+                if (sourceProp.id.toString() in auditProperties) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                        Subscription.findAllByInstanceOf(targetSub).each { member ->
+
+                            def existingProp = SubscriptionProperty.findByOwnerAndInstanceOf(member, targetProp)
+                            if (! existingProp) {
+
+                                // multi occurrence props; add one additional with backref
+                                if (sourceProp.type.multipleOccurrence) {
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, targetProp.tenant)
+                                    additionalProp = targetProp.copyInto(additionalProp)
+                                    additionalProp.instanceOf = targetProp
+                                    additionalProp.save(flush: true)
+                                }
+                                else {
+                                    def matchingProps = SubscriptionProperty.findByOwnerAndType(member, targetProp.type)
+                                    // unbound prop found with matching type, set backref
+                                    if (matchingProps) {
+                                        matchingProps.each { memberProp ->
+                                            memberProp.instanceOf = targetProp
+                                            memberProp.save(flush: true)
+                                        }
+                                    }
+                                    else {
+                                        // no match found, creating new prop with backref
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, targetProp.tenant)
+                                        newProp = targetProp.copyInto(newProp)
+                                        newProp.instanceOf = targetProp
+                                        newProp.save(flush: true)
+                                    }
+                                }
+                            }
+                        }
+
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
                                 //All ReferenceFields were copied!
@@ -178,8 +199,8 @@ class SurveyService {
 
                 }
             } else {
-                Object[] args = [sourceProp?.type?.getI10n("name") ?: sourceProp.class.getSimpleName()]
-                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
+                Object[] args = [sourceProp.type.getI10n("name") ?: sourceProp.class.getSimpleName()]
+                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, LocaleContextHolder.getLocale())
             }
         }
     }
@@ -191,8 +212,8 @@ class SurveyService {
             AuditConfig.removeAllConfigs(prop)
         }
 
-        int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)", [properties: properties])
-        int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)", [properties: properties])
+        int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = true", [properties: properties, org: contextService.org])
+        int anzPP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = false", [properties: properties, org: contextService.org])
     }
 
     private boolean save(obj, flash) {
@@ -202,7 +223,7 @@ class SurveyService {
         } else {
             log.error("Problem saving ${obj.errors}")
             Object[] args = [obj]
-            flash.error += messageSource.getMessage('default.save.error.message', args, locale)
+            flash.error += messageSource.getMessage('default.save.error.message', args, LocaleContextHolder.getLocale())
             return false
         }
     }
@@ -221,17 +242,19 @@ class SurveyService {
             if (exportForSurveyOwner) {
                 titles.addAll([messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
                                 messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale())])
-                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                     titles.push(messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()))
                 }
-                if (surveyConfig.type == 'GeneralSurvey') {
-                    titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale())])
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
+                    titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale())])
                 }
 
-                titles.add(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
+                titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale())])
 
-                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                     titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()),
@@ -262,8 +285,12 @@ class SurveyService {
             } else {
                 titles.push(messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()))
                 titles.push(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
-                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
-                    titles.addAll([messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()),
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                    titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()),
@@ -280,9 +307,11 @@ class SurveyService {
                         titles.push(messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale()))
                     }
                 }
-                if (surveyConfig.type == 'GeneralSurvey') {
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                     titles.push(messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()))
                     titles.push(messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()))
                 }
             }
 
@@ -296,19 +325,21 @@ class SurveyService {
                     row.add([field: surveyOrg.org.sortname ?: '', style: null])
                     row.add([field: surveyOrg.org.name ?: '', style: null])
 
-                    if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+                    if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
                         OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
                         subscription =  orgRole ? orgRole.sub : null
                         row.add([field: subscription?.name ?: surveyName ?: '', style: null])
                     }
-                    if (surveyConfig.type == 'GeneralSurvey') {
+                    if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                         row.add([field: surveyName ?: '', style: null])
-                        row.add([field: surveyConfig.url ?: '', style: null])
                     }
+                    row.add([field: surveyConfig.url ?: '', style: null])
+                    row.add([field: surveyConfig.url2 ?: '', style: null])
+                    row.add([field: surveyConfig.url3 ?: '', style: null])
                     row.add([field: surveyConfig.comment ?: '', style: null])
 
-                    if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+                    if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                         //Performance lastig providers und agencies
                         row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                         row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
@@ -371,13 +402,21 @@ class SurveyService {
                 row.add([field: surveyConfig.surveyInfo.owner.name ?: '', style: null])
                 row.add([field: surveyConfig.comment ?: '', style: null])
 
-                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                    row.add([field: surveyConfig.url ?: '', style: null])
+                    row.add([field: surveyConfig.url2 ?: '', style: null])
+                    row.add([field: surveyConfig.url3 ?: '', style: null])
                     subscription = surveyConfig.subscription.getDerivedSubscriptionBySubscribers(contextOrg) ?: null
                     row.add([field: subscription?.name ?: surveyConfig.getConfigNameShort() ?: "", style: null])
                     row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
-                    row.add([field: subscription?.owner?.reference ?: '', style: null])
+                    List licenseNames = []
+                    Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                        License l = genericOIDService.resolveOID(li.destination)
+                        licenseNames << l.reference
+                    }
+                    row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
                     List packageNames = subscription?.packages?.collect {
                         it.pkg.name
                     }
@@ -398,9 +437,11 @@ class SurveyService {
                     }
                 }
 
-                if (surveyConfig.type == 'GeneralSurvey') {
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                     row.add([field: surveyConfig.getConfigNameShort() ?: '', style: null])
                     row.add([field: surveyConfig.url ?: '', style: null])
+                    row.add([field: surveyConfig.url2 ?: '', style: null])
+                    row.add([field: surveyConfig.url3 ?: '', style: null])
                 }
 
                 surveyData.add(row)
@@ -463,16 +504,18 @@ class SurveyService {
 
                 titles.addAll([messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
                                messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale())])
-                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey' ) {
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT ) {
                     titles.push(messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()))
                 }
-                if (surveyConfig.type == 'GeneralSurvey') {
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                     titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale())])
                 }
 
-                titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale())])
+                titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale())])
 
-                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey' ) {
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT ) {
                     titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
@@ -495,19 +538,21 @@ class SurveyService {
                     row.add([field: surveyOrg.org.sortname ?: '', style: null])
                     row.add([field: surveyOrg.org.name ?: '', style: null])
 
-                    if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+                    if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
                         OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
                         subscription =  orgRole ? orgRole.sub : null
                         row.add([field: subscription?.name ?: surveyName ?: '', style: null])
                     }
-                    if (surveyConfig.type == 'GeneralSurvey') {
+                    if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                         row.add([field: surveyName ?: '', style: null])
                     }
 
                     row.add([field: surveyConfig.url ?: '', style: null])
+                    row.add([field: surveyConfig.url2 ?: '', style: null])
+                    row.add([field: surveyConfig.url3 ?: '', style: null])
 
-                    if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+                    if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                         row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                         row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
@@ -537,6 +582,8 @@ class SurveyService {
 
             titles.addAll([messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.type.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
@@ -561,10 +608,12 @@ class SurveyService {
 
                 row.add([field: surveyConfig.surveyInfo.owner.name ?: '', style: null])
                 row.add([field: surveyConfig.url ?: '', style: null])
+                row.add([field: surveyConfig.url2 ?: '', style: null])
+                row.add([field: surveyConfig.url3 ?: '', style: null])
                 row.add([field: surveyName ?: '', style: null])
                 row.add([field: surveyConfig.surveyInfo.type?.getI10n('value') ?: '', style: null])
 
-                if (surveyConfig.type == 'Subscription' || surveyConfig.type == 'IssueEntitlementsSurvey') {
+                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                     subscription = surveyConfig.subscription.getDerivedSubscriptionBySubscribers(contextOrg) ?: null
                     row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
@@ -614,9 +663,9 @@ class SurveyService {
 
                     User user = userOrg.user
                     Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
-                    def emailReceiver = user.getEmail()
-                    def currentServer = grailsApplication.config.getCurrentServer()
-                    def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+                    String emailReceiver = user.getEmail()
+                    String currentServer = ServerUtils.getCurrentServer()
+                    String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
                     String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, language) +  " (" + participationFinish.sortname + ")")
 
                         try {
@@ -648,13 +697,13 @@ class SurveyService {
                                     }
                                 }
 
-                                log.debug("emailToSurveyOwnerbyParticipationFinish - finished sendEmail() to " + user.displayName + " (" + user.email + ") " + surveyInfo.owner.name);
+                                log.debug("emailToSurveyOwnerbyParticipationFinish - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + surveyInfo.owner.name);
                             }
                         } catch (Exception e) {
                             String eMsg = e.message
 
-                            log.error("emailToSurveyOwnerbyParticipationFinish - sendEmail() :: Unable to perform email due to exception ${eMsg}")
-                            SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user, org: participationFinish, survey: surveyInfo])
+                            log.error("emailToSurveyOwnerbyParticipationFinish - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                            SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
                         }
                 }
             }
@@ -674,6 +723,8 @@ class SurveyService {
                            messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
@@ -705,25 +756,33 @@ class SurveyService {
                         row.add([field: surveyResult.participant.sortname ?: '', style: null])
                         row.add([field: surveyResult.participant.name ?: '', style: null])
 
-                        if (surveyResult.surveyConfig.type == 'Subscription' || surveyResult.surveyConfig.type == 'IssueEntitlementsSurvey') {
+                        if (surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
                             OrgRole orgRole = Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(participant, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription)) : null
                             subscription =  orgRole ? orgRole.sub : null
                             row.add([field: subscription?.name ?: surveyName ?: '', style: null])
                         }
-                        if (surveyResult.surveyConfig.type == 'GeneralSurvey') {
+                        if (surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                             row.add([field: surveyName ?: '', style: null])
 
                         }
                         row.add([field: surveyResult.surveyConfig.url ?: '', style: null])
+                        row.add([field: surveyResult.surveyConfig.url2 ?: '', style: null])
+                        row.add([field: surveyResult.surveyConfig.url3 ?: '', style: null])
                         row.add([field: surveyResult.surveyConfig.comment ?: '', style: null])
 
-                        if (surveyResult.surveyConfig.type == 'Subscription' || surveyResult.surveyConfig.type == 'IssueEntitlementsSurvey') {
+                        if (surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                             //Performance lastig providers und agencies
                             row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                             row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
-                            row.add([field: subscription?.owner?.reference ?: '', style: null])
+                            List licenseNames = []
+                            Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                                License l = genericOIDService.resolveOID(li.destination)
+                                licenseNames << l.reference
+                            }
+                            row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
+
                             List packageNames = subscription?.packages?.collect {
                                 it.pkg.name
                             }
@@ -789,5 +848,119 @@ class SurveyService {
 
 
         return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    def emailsToSurveyUsers(List surveyInfoIds){
+
+        def surveys = SurveyInfo.findAllByIdInList(surveyInfoIds)
+
+        def orgs = surveys?.surveyConfigs?.orgs?.org?.flatten()
+
+        if(orgs)
+        {
+            //Only User that approved
+            List<UserOrg> userOrgs = UserOrg.findAllByOrgInListAndStatus(orgs, 1)
+
+            //Only User with Notification by Email and for Surveys Start
+            userOrgs.each { userOrg ->
+                if(userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                {
+
+                    def orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
+                            "LEFT JOIN s.surveyConfigs surConf " +
+                            "LEFT JOIN surConf.orgs surOrg  " +
+                            "WHERE surOrg.org IN (:org) " +
+                            "AND s.id IN (:survey)", [org: userOrg.org, survey: surveys?.id])
+
+                    sendSurveyEmail(userOrg.user, userOrg.org, orgSurveys, false)
+                }
+            }
+
+        }
+
+    }
+
+    def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
+
+        //Only User that approved
+        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(org, UserOrg.STATUS_APPROVED)
+
+        //Only User with Notification by Email and for Surveys Start
+        userOrgs.each { userOrg ->
+            if(userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                    userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+            {
+                sendSurveyEmail(userOrg.user, userOrg.org, [surveyInfo], reminderMail)
+            }
+        }
+    }
+
+    private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
+
+        if (grailsApplication.config.grails.mail.disabled == true) {
+            println 'SurveyService.sendSurveyEmail() failed due grailsApplication.config.grails.mail.disabled = true'
+        }else {
+
+            String emailReceiver = user.getEmail()
+            String currentServer = ServerUtils.getCurrentServer()
+            String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+
+            surveyEntries.each { survey ->
+                try {
+                    if (emailReceiver == null || emailReceiver.isEmpty()) {
+                        log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                    } else {
+                        boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                        String ccAddress = null
+                        if (isNotificationCCbyEmail) {
+                            ccAddress = user.getSetting(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                        }
+
+                        List generalContactsEMails = []
+
+                        survey.owner.getGeneralContactPersons(false)?.each { person ->
+                            person.contacts.each { contact ->
+                                if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                                    generalContactsEMails << contact.content
+                                }
+                            }
+                        }
+
+                        replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
+                        Object[] args = ["${survey.type.getI10n('value')}"]
+                        Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
+
+                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + (reminderMail ? messageSource.getMessage('email.subject.surveysReminder', args, language)  : messageSource.getMessage('email.subject.surveys', args, language)) + " (" + survey.name + ")")
+
+                        if (isNotificationCCbyEmail && ccAddress) {
+                            mailService.sendMail {
+                                to emailReceiver
+                                from from
+                                cc ccAddress
+                                replyTo replyTo
+                                subject mailSubject
+                                body(view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                            }
+                        } else {
+                            mailService.sendMail {
+                                to emailReceiver
+                                from from
+                                replyTo replyTo
+                                subject mailSubject
+                                body(view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                            }
+                        }
+
+                        log.debug("SurveyService - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + org.name);
+                    }
+                } catch (Exception e) {
+                    String eMsg = e.message
+
+                    log.error("SurveyService - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                    SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: org.name, survey: survey.name])
+                }
+            }
+        }
     }
 }

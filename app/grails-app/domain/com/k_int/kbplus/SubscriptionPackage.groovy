@@ -1,11 +1,11 @@
 package com.k_int.kbplus
 
-import de.laser.domain.PendingChangeConfiguration
+import de.laser.PendingChangeConfiguration
 import de.laser.helper.RDStore
 
 import javax.persistence.Transient
 
-class SubscriptionPackage {
+class SubscriptionPackage implements Comparable {
 
   Subscription subscription
   Package pkg
@@ -46,9 +46,14 @@ class SubscriptionPackage {
     finishDate(nullable:true, blank:false)
 
     // Nullable is true, because values are already in the database
-    lastUpdated (nullable: true, blank: false)
-    dateCreated (nullable: true, blank: false)
+    lastUpdated (nullable: true)
+    dateCreated (nullable: true)
     //oapls   batchSize: 10
+  }
+
+  @Override
+  int compareTo(Object o) {
+    return this.pkg.name.compareTo(o.pkg.name)
   }
 
   @Transient
@@ -129,5 +134,4 @@ class SubscriptionPackage {
   PendingChangeConfiguration getPendingChangeConfig(String config) {
     PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(this,config)
   }
-
 }

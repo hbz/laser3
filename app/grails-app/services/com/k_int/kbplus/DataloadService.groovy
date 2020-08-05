@@ -2,9 +2,12 @@ package com.k_int.kbplus
 
 import de.laser.SystemEvent
 import de.laser.helper.RDStore
+import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
+import grails.transaction.Transactional
 import groovy.json.JsonOutput
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.DocWriteResponse
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
@@ -25,8 +28,10 @@ import org.elasticsearch.rest.RestStatus
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.hibernate.ScrollMode
 
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
+//@Transactional
 class DataloadService {
 
     def stats = [:]
@@ -38,10 +43,10 @@ class DataloadService {
         'License Data'
     ]
 
-    def executorService
+    ExecutorService executorService
     def ESWrapperService
     def sessionFactory
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
 
     def es_index
@@ -133,6 +138,8 @@ class DataloadService {
                     }
                 }
 
+                result.dateCreated = org.dateCreated
+                result.lastUpdated = org.lastUpdated
 
             result
         }
@@ -182,6 +189,10 @@ class DataloadService {
                     }
                     //result.keyTitle = ti.keyTitle
                     //result.normTitle = ti.normTitle
+
+                    result.dateCreated = ti.dateCreated
+                    result.lastUpdated = ti.lastUpdated
+
                 } else {
                     log.warn("Title with no title string - ${ti.id}")
                 }
@@ -232,6 +243,8 @@ class DataloadService {
                         log.error(e)
                     }
                 }
+                result.dateCreated = pkg.dateCreated
+                result.lastUpdated = pkg.lastUpdated
 
 /*                if (pkg.startDate) {
                     GregorianCalendar c = new GregorianCalendar()
@@ -269,6 +282,9 @@ class DataloadService {
                 result.orgName = plat.org?.name
                 result.titleCountCurrent = plat.getCurrentTipps().size()?:0
 
+                result.dateCreated = plat.dateCreated
+                result.lastUpdated = plat.lastUpdated
+
             result
         }
 
@@ -285,12 +301,14 @@ class DataloadService {
 
             switch(lic.getCalculatedType()) {
                 case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
+                    //result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
+                    result.availableToOrgs = Org.executeQuery("select oo.org.id from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA])
                     result.membersCount = License.findAllByInstanceOf(lic).size()?:0
                     break
                 case CalculatedType.TYPE_PARTICIPATION:
-                    List orgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
-                    result.availableToOrgs = orgs?.id
+                    //List orgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
+                    List orgs = Org.executeQuery("select oo.org from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType in (:roleType)",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+                    result.availableToOrgs = orgs.collect{ Org org -> org.id }
                     result.consortiaGUID = lic.getLicensingConsortium()?.globalUID
                     result.consortiaName = lic.getLicensingConsortium()?.name
 
@@ -300,7 +318,8 @@ class DataloadService {
                     }
                     break
                 case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                    //result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                    result.availableToOrgs = Org.executeQuery("select oo.org.id from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIBER])
                     break
             }
 
@@ -329,6 +348,8 @@ class DataloadService {
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
+            result.dateCreated = lic.dateCreated
+            result.lastUpdated = lic.lastUpdated
 
             result
         }
@@ -422,6 +443,9 @@ class DataloadService {
                     }
                 }
 
+                result.dateCreated = sub.dateCreated
+                result.lastUpdated = sub.lastUpdated
+
             result
         }
 
@@ -456,6 +480,9 @@ class DataloadService {
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
+            result.dateCreated = surveyConfig.dateCreated
+            result.lastUpdated = surveyConfig.lastUpdated
+
             result
         }
 
@@ -487,6 +514,9 @@ class DataloadService {
                 c.setTime(surOrg.surveyConfig.surveyInfo.endDate)
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
+
+            result.dateCreated = surOrg.dateCreated
+            result.lastUpdated = surOrg.lastUpdated
 
             result
         }
@@ -535,6 +565,9 @@ class DataloadService {
                 result.objectClassName = task.surveyConfig.getClass().getSimpleName().toLowerCase()
             }
 
+            result.dateCreated = task.dateCreated
+            result.lastUpdated = task.lastUpdated
+
             result
         }
 
@@ -579,6 +612,9 @@ class DataloadService {
                 result.objectName = docCon.surveyConfig.getSurveyName()
                 result.objectClassName = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
             }
+
+            result.dateCreated = docCon.dateCreated
+            result.lastUpdated = docCon.lastUpdated
 
             result
         }
@@ -635,71 +671,81 @@ class DataloadService {
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
+            result.dateCreated = ie.dateCreated
+            result.lastUpdated = ie.lastUpdated
+
             result
         }
 
-        updateES(com.k_int.kbplus.SubscriptionCustomProperty.class) { subCustProp ->
+        updateES(SubscriptionProperty.class) { SubscriptionProperty subProp ->
             def result = [:]
 
-            result._id = subCustProp.getClass().getSimpleName().toLowerCase()+":"+subCustProp.id
+            result._id = subProp.getClass().getSimpleName().toLowerCase()+":"+subProp.id
             result.priority = 45
-            result.dbId = subCustProp.id
-            result.name = subCustProp.type?.name
+            result.dbId = subProp.id
+            result.name = subProp.type?.name
 
             result.visible = 'Private'
-            result.rectype = subCustProp.getClass().getSimpleName()
+            result.rectype = subProp.getClass().getSimpleName()
 
-            if(subCustProp.type.type == Integer.toString()){
-                result.description = subCustProp.intValue
+            if(subProp.type.type == Integer.toString()){
+                result.description = subProp.intValue
             }
-            else if(subCustProp.type.type == String.toString()){
-                result.description = subCustProp.stringValue
+            else if(subProp.type.type == String.toString()){
+                result.description = subProp.stringValue
             }
-            else if(subCustProp.type.type == BigDecimal.toString()){
-                result.description = subCustProp.decValue
+            else if(subProp.type.type == BigDecimal.toString()){
+                result.description = subProp.decValue
             }
-            else if(subCustProp.type.type == Date.toString()){
-                result.description = subCustProp.dateValue
+            else if(subProp.type.type == Date.toString()){
+                result.description = subProp.dateValue
             }
-            else if(subCustProp.type.type == URL.toString()){
-                result.description = subCustProp.urlValue
+            else if(subProp.type.type == URL.toString()){
+                result.description = subProp.urlValue
             }
-            else if(subCustProp.type.type == RefdataValue.toString()){
-                result.description = subCustProp.refValue?.value
-            }
-
-            switch (subCustProp.owner.getCalculatedType()) {
-                case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_PARTICIPATION:
-                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value, RDStore.OR_SUBSCRIBER_COLLECTIVE.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_COLLECTIVE:
-                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value]}?.org?.id
-                    break
-            /*              case CalculatedType.TYPE_ADMINISTRATIVE:
-                              result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
-                              break*/
-                case CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE:
-                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value, RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
-                    break
+            else if(subProp.type.type == RefdataValue.toString()){
+                result.description = subProp.refValue?.value
             }
 
-            if(subCustProp.owner){
-                result.objectId = subCustProp.owner.id
-                result.objectName = subCustProp.owner.name
-                result.objectTypeId = subCustProp.owner.type?.id
-                result.objectClassName = subCustProp.owner.getClass().getSimpleName().toLowerCase()
+            if(subProp.isPublic) {
+                switch (subProp.owner.getCalculatedType()) {
+                    case CalculatedType.TYPE_CONSORTIAL:
+                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
+                        break
+                    case CalculatedType.TYPE_PARTICIPATION:
+                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value, RDStore.OR_SUBSCRIBER_COLLECTIVE.value]}?.org?.id
+                        break
+                    case CalculatedType.TYPE_COLLECTIVE:
+                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value]}?.org?.id
+                        break
+                /*              case CalculatedType.TYPE_ADMINISTRATIVE:
+                                  result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                                  break*/
+                    case CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE:
+                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value, RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                        break
+                    case CalculatedType.TYPE_LOCAL:
+                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                        break
+                }
             }
+            else result.availableToOrgs = [subProp.type.tenant?.id ?: 0]
+
+            if(subProp.owner){
+                result.objectId = subProp.owner.id
+                result.objectName = subProp.owner.name
+                result.objectTypeId = subProp.owner.type?.id
+                result.objectClassName = subProp.owner.getClass().getSimpleName().toLowerCase()
+            }
+
+            result.dateCreated = subProp.dateCreated
+            result.lastUpdated = subProp.lastUpdated
 
             result
         }
 
-        updateES(com.k_int.kbplus.SubscriptionPrivateProperty.class) { subPrivProp ->
+        /*
+        updateES(SubscriptionPrivateProperty.class) { subPrivProp ->
             def result = [:]
 
             result._id = subPrivProp.getClass().getSimpleName().toLowerCase()+":"+subPrivProp.id
@@ -729,7 +775,6 @@ class DataloadService {
                 result.description = subPrivProp.refValue?.value
             }
 
-            result.availableToOrgs = [subPrivProp.type.tenant?.id ?: 0]
 
 
             if(subPrivProp.owner){
@@ -739,62 +784,73 @@ class DataloadService {
                 result.objectClassName = subPrivProp.owner.getClass().getSimpleName().toLowerCase()
             }
 
+            result.dateCreated = subPrivProp.dateCreated
+            result.lastUpdated = subPrivProp.lastUpdated
+
             result
         }
+         */
 
-        updateES(com.k_int.kbplus.LicenseCustomProperty.class) { licCustProp ->
+        updateES(LicenseProperty.class) { LicenseProperty licProp ->
             def result = [:]
 
-            result._id = licCustProp.getClass().getSimpleName().toLowerCase()+":"+licCustProp.id
+            result._id = licProp.getClass().getSimpleName().toLowerCase()+":"+licProp.id
             result.priority = 45
-            result.dbId = licCustProp.id
-            result.name = licCustProp.type?.name
+            result.dbId = licProp.id
+            result.name = licProp.type?.name
 
             result.visible = 'Private'
-            result.rectype = licCustProp.getClass().getSimpleName()
+            result.rectype = licProp.getClass().getSimpleName()
 
-            if(licCustProp.type.type == Integer.toString()){
-                result.description = licCustProp.intValue
+            if(licProp.type.type == Integer.toString()){
+                result.description = licProp.intValue
             }
-            else if(licCustProp.type.type == String.toString()){
-                result.description = licCustProp.stringValue
+            else if(licProp.type.type == String.toString()){
+                result.description = licProp.stringValue
             }
-            else if(licCustProp.type.type == BigDecimal.toString()){
-                result.description = licCustProp.decValue
+            else if(licProp.type.type == BigDecimal.toString()){
+                result.description = licProp.decValue
             }
-            else if(licCustProp.type.type == Date.toString()){
-                result.description = licCustProp.dateValue
+            else if(licProp.type.type == Date.toString()){
+                result.description = licProp.dateValue
             }
-            else if(licCustProp.type.type == URL.toString()){
-                result.description = licCustProp.urlValue
+            else if(licProp.type.type == URL.toString()){
+                result.description = licProp.urlValue
             }
-            else if(licCustProp.type.type == RefdataValue.toString()){
-                result.description = licCustProp.refValue?.value
-            }
-
-            switch(licCustProp.owner.getCalculatedType()) {
-                case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_PARTICIPATION:
-                    result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
-                    break
+            else if(licProp.type.type == RefdataValue.toString()){
+                result.description = licProp.refValue?.value
             }
 
-            if(licCustProp.owner){
-                result.objectId = licCustProp.owner.id
-                result.objectName = licCustProp.owner.reference
-                result.objectTypeId = licCustProp.owner.type?.id
-                result.objectClassName = licCustProp.owner.getClass().getSimpleName().toLowerCase()
+            if(licProp.isPublic) {
+                switch(licProp.owner.getCalculatedType()) {
+                    case CalculatedType.TYPE_CONSORTIAL:
+                        result.availableToOrgs = licProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
+                        break
+                    case CalculatedType.TYPE_PARTICIPATION:
+                        result.availableToOrgs = licProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
+                        break
+                    case CalculatedType.TYPE_LOCAL:
+                        result.availableToOrgs = licProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                        break
+                }
             }
+            else result.availableToOrgs = [licProp.type.tenant?.id ?: 0]
+
+            if(licProp.owner){
+                result.objectId = licProp.owner.id
+                result.objectName = licProp.owner.reference
+                result.objectTypeId = licProp.owner.type?.id
+                result.objectClassName = licProp.owner.getClass().getSimpleName().toLowerCase()
+            }
+
+            result.dateCreated = licProp.dateCreated
+            result.lastUpdated = licProp.lastUpdated
 
             result
         }
 
-        updateES( com.k_int.kbplus.LicensePrivateProperty.class) { licPrivProp ->
+        /*
+        updateES( LicensePrivateProperty.class) { licPrivProp ->
             def result = [:]
 
             result._id = licPrivProp.getClass().getSimpleName().toLowerCase()+":"+licPrivProp.id
@@ -834,8 +890,12 @@ class DataloadService {
                 result.objectClassName = licPrivProp.owner.getClass().getSimpleName().toLowerCase()
             }
 
+            result.dateCreated = licPrivProp.dateCreated
+            result.lastUpdated = licPrivProp.lastUpdated
+
             result
         }
+        */
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
         update_running = false
@@ -875,103 +935,126 @@ class DataloadService {
             highest_timestamp = latest_ft_record.lastTimestamp
             //log.debug("Got existing ftcontrol record for ${domain.name} max timestamp is ${highest_timestamp} which is ${new Date(highest_timestamp)}");
         }
+        if(latest_ft_record.active) {
 
-        //log.debug("result of findByDomain: ${latest_ft_record}")
+            //log.debug("result of findByDomain: ${latest_ft_record}")
 
-        log.debug("updateES ${domain.name} since ${new Date(latest_ft_record.lastTimestamp)}")
-        Date from = new Date(latest_ft_record.lastTimestamp)
-        // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
+            log.debug("updateES ${domain.name} since ${new Date(latest_ft_record.lastTimestamp)}")
+            Date from = new Date(latest_ft_record.lastTimestamp)
+            // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
 
-        def c = domain.createCriteria()
-        c.setReadOnly(true)
-        c.setCacheable(false)
-        c.setFetchSize(Integer.MIN_VALUE)
+            def c = domain.createCriteria()
+            c.setReadOnly(true)
+            c.setCacheable(false)
+            c.setFetchSize(Integer.MIN_VALUE)
 
-        c.buildCriteria{
-            or {
-                gt('lastUpdated', from)
-                and {
-                    gt('dateCreated', from)
-                    isNull('lastUpdated')
+
+            Class domainClass = grailsApplication.getDomainClass(domain.name).clazz
+            if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
+                c.buildCriteria {
+                    or {
+                        and {
+                            isNotNull('lastUpdatedCascading')
+                            gt('lastUpdatedCascading', from)
+                        }
+                        gt('lastUpdated', from)
+                        and {
+                            gt('dateCreated', from)
+                            isNull('lastUpdated')
+                        }
+                    }
+                    order("lastUpdated", "asc")
                 }
-            }
-            order("lastUpdated", "asc")
-        }
-
-        def results = c.scroll(ScrollMode.FORWARD_ONLY)
-
-        //log.debug("Query completed .. processing rows ..")
-
-        String rectype
-        while (results.next()) {
-          Object r = results.get(0);
-          def idx_record = recgen_closure(r)
-          def future
-          if(idx_record['_id'] == null) {
-            log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
-            continue
-          }
-
-          def recid = idx_record['_id'].toString()
-          idx_record.remove('_id');
-
-            IndexRequest request = new IndexRequest(es_index);
-            request.id(recid);
-            String jsonString = idx_record as JSON
-            //String jsonString = JsonOutput.toJson(idx_record)
-            //println(jsonString)
-            request.source(jsonString, XContentType.JSON)
-
-            IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
-
-            String index = indexResponse.getIndex();
-            String id = indexResponse.getId();
-            if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
-                //log.debug("CREATED ${domain.name}")
-            } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
-                //log.debug("UPDATED ${domain.name}")
-            }else {
-                log.debug("ELSE ${domain.name}: ${indexResponse.getResult()}")
-            }
-            ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
-            if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
-
-            }
-            if (shardInfo.getFailed() > 0) {
-                for (ReplicationResponse.ShardInfo.Failure failure :
-                        shardInfo.getFailures()) {
-                    String reason = failure.reason();
-                    println(reason)
+            } else {
+                c.buildCriteria {
+                    or {
+                        gt('lastUpdated', from)
+                        and {
+                            gt('dateCreated', from)
+                            isNull('lastUpdated')
+                        }
+                    }
+                    order("lastUpdated", "asc")
                 }
             }
 
-          //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
-          if (r.lastUpdated?.getTime() > highest_timestamp) {
-              highest_timestamp = r.lastUpdated?.getTime();
-          }
+            def results = c.scroll(ScrollMode.FORWARD_ONLY)
 
-          count++
-          total++
-          if ( count == 100 ) {
-            count = 0;
-            log.debug("processed ${total} records (${domain.name})")
-              latest_ft_record.lastTimestamp = highest_timestamp
-              latest_ft_record.esElements = latest_ft_record.esElements ?: 0
-              latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
-            latest_ft_record.save(flush:true);
-            cleanUpGorm();
-          }
+            //log.debug("Query completed .. processing rows ..")
+
+            String rectype
+            while (results.next()) {
+                Object r = results.get(0);
+                def idx_record = recgen_closure(r)
+                def future
+                if (idx_record['_id'] == null) {
+                    log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
+                    continue
+                }
+
+                def recid = idx_record['_id'].toString()
+                idx_record.remove('_id');
+
+                IndexRequest request = new IndexRequest(es_index);
+                request.id(recid);
+                String jsonString = idx_record as JSON
+                //String jsonString = JsonOutput.toJson(idx_record)
+                //println(jsonString)
+                request.source(jsonString, XContentType.JSON)
+
+                IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
+
+                String index = indexResponse.getIndex();
+                String id = indexResponse.getId();
+                if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
+                    //log.debug("CREATED ${domain.name}")
+                } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
+                    //log.debug("UPDATED ${domain.name}")
+                } else {
+                    log.debug("ELSE ${domain.name}: ${indexResponse.getResult()}")
+                }
+                ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
+                if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
+
+                }
+                if (shardInfo.getFailed() > 0) {
+                    for (ReplicationResponse.ShardInfo.Failure failure :
+                            shardInfo.getFailures()) {
+                        String reason = failure.reason();
+                        println(reason)
+                    }
+                }
+
+                //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
+                if (r.lastUpdated?.getTime() > highest_timestamp) {
+                    highest_timestamp = r.lastUpdated?.getTime();
+                }
+
+                count++
+                total++
+                if (count == 100) {
+                    count = 0;
+                    log.debug("processed ${total} records (${domain.name})")
+                    latest_ft_record.lastTimestamp = highest_timestamp
+                    latest_ft_record.esElements = latest_ft_record.esElements ?: 0
+                    latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
+                    latest_ft_record.save(flush: true);
+                    cleanUpGorm();
+                }
+            }
+            results.close();
+
+            log.debug("Processed ${total} records for ${domain.name}")
+
+            // update timestamp
+            latest_ft_record.lastTimestamp = highest_timestamp
+
+            latest_ft_record.esElements = latest_ft_record.esElements ?: 0
+            latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
+            latest_ft_record.save(flush: true);
+        }else{
+            log.debug("updateES ${domain.name}: FTControle is not active")
         }
-        results.close();
-
-        log.debug("Processed ${total} records for ${domain.name}")
-
-        // update timestamp
-        latest_ft_record.lastTimestamp = highest_timestamp
-
-        latest_ft_record.esElements = latest_ft_record.esElements ?: 0
-        latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
-        latest_ft_record.save(flush:true);
 
     }
     catch ( Exception e ) {
@@ -981,9 +1064,14 @@ class DataloadService {
     }
     finally {
       log.debug("Completed processing on ${domain.name} - saved ${total} records")
-
+        try {
+            esclient.close()
+        }
+        catch ( Exception e ) {
+            log.error("Problem by Close ES Client",e);
+        }
     }
-        esclient.close()
+
   }
 
     def lookupOrCreateCanonicalIdentifier(ns, value) {
@@ -1157,51 +1245,72 @@ class DataloadService {
 
         log.debug("Begin to check ES Elements with DB Elements")
 
-        FTControl.list().each { ft ->
+        RestHighLevelClient esclient = ESWrapperService.getClient()
 
-            RestHighLevelClient esclient = ESWrapperService.getClient()
+        try {
+            FTControl.list().each { ft ->
 
-            Class domainClass = grailsApplication.getDomainClass(ft.domainClassName).clazz
+                if (ft.active) {
 
-            String query_str = "rectype: '${ft.domainClassName.replaceAll("com.k_int.kbplus.","")}'"
+                    Class domainClass = grailsApplication.getDomainClass(ft.domainClassName).clazz
 
-            if (ft.domainClassName.replaceAll("com.k_int.kbplus.","") == 'DocContext'){
-                query_str = "rectype:'Note' OR rectype:'Document'"
+                    String query_str = "rectype: '${ft.domainClassName.replaceAll("com.k_int.kbplus.", "")}'"
+
+                    if (ft.domainClassName == DocContext.name) {
+                        query_str = "rectype:'Note' OR rectype:'Document'"
+                    }
+
+                    if (ft.domainClassName == TitleInstance.name) {
+                        query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
+                    }
+
+                    //println(query_str)
+
+                    String index = ESWrapperService.getESSettings().indexName
+
+                    CountRequest countRequest = new CountRequest(index);
+                    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+                    searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
+                    countRequest.source(searchSourceBuilder);
+
+                    CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
+
+                    ft.dbElements = domainClass.findAll().size()
+                    ft.esElements = countResponse ? countResponse.getCount().toInteger() : 0
+
+                    //println(ft.dbElements +' , '+ ft.esElements)
+
+                    if (ft.dbElements != ft.esElements) {
+                        log.debug("****ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} -> RESET lastTimestamp****")
+                        //ft.lastTimestamp = 0
+                    }
+
+                    ft.save(flush: true)
+
+
+                }
             }
-
-            if (ft.domainClassName.replaceAll("com.k_int.kbplus.","") == 'TitleInstance'){
-                query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
-            }
-
-            //println(query_str)
-
-            String index = ESWrapperService.getESSettings().indexName
-
-            CountRequest countRequest = new CountRequest(index);
-            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
-            countRequest.source(searchSourceBuilder);
-
-            CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
-
-            ft.dbElements = domainClass.findAll().size()
-            ft.esElements = countResponse ? countResponse.getCount().toInteger() :0
-
-            //println(ft.dbElements +' , '+ ft.esElements)
-
-            if(ft.dbElements != ft.esElements) {
-                log.debug("****ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} -> RESET lastTimestamp****")
-                //ft.lastTimestamp = 0
-            }
-
-            ft.save(flush: true)
-            esclient.close()
-
         }
+            finally {
+                try {
+                    esclient.close()
+                }
+                catch (Exception e) {
+                    log.error("Problem by Close ES Client", e);
+                }
+            }
 
         log.debug("End to check ES Elements with DB Elements")
 
         return true
 
     }
+
+    public synchronized void killDataloadService() {
+        if (activeFuture != null) {
+            activeFuture.cancel(true)
+            log.debug("kill DataloadService done!")
+        }
+    }
+
 }

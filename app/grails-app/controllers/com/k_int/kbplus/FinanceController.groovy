@@ -1,10 +1,9 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import de.laser.CacheService
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.IssueEntitlementGroup
-import de.laser.domain.PendingChangeConfiguration
+import de.laser.IssueEntitlementGroup
+import de.laser.PendingChangeConfiguration
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
@@ -43,8 +42,6 @@ class FinanceController extends AbstractDebugController {
     def accessService
     def contextService
     def genericOIDService
-    def navigationGenerationService
-    CacheService cacheService
     def financeService
     def escapeService
     def exportService
@@ -77,9 +74,6 @@ class FinanceController extends AbstractDebugController {
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
-            Map navigation = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
-            result.navNextSubscription = navigation.nextLink
-            result.navPrevSubscription = navigation.prevLink
             result
         }
         catch (FinancialDataException e) {
@@ -714,6 +708,12 @@ class FinanceController extends AbstractDebugController {
         result.modalText = message(code:'financials.addNewCost')
         result.submitButtonLabel = message(code:'default.button.create_new.label')
         result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
+        Set<String> pickedSubscriptions = []
+        JSON.parse(params.preselectedSubscriptions).each { String ciId ->
+            CostItem ci = CostItem.get(Long.parseLong(ciId))
+            pickedSubscriptions << "'${GenericOIDService.getOID(ci.sub)}'"
+        }
+        result.pickedSubscriptions = pickedSubscriptions
         render(template: "/finance/ajaxModal", model: result)
     }
 
@@ -744,7 +744,7 @@ class FinanceController extends AbstractDebugController {
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
         if(!result.copyCostsFromConsortia)
             result.taxKey = result.costItem.taxKey
-        result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[tab:result.tab, mode:"copy"])
+        result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy"])
         result.mode = "copy"
         render(template: "/finance/ajaxModal", model: result)
     }
@@ -756,14 +756,20 @@ class FinanceController extends AbstractDebugController {
 
         CostItem ci = CostItem.get(params.id)
         if (ci) {
-            def cigs = CostItemGroup.findAllByCostItem(ci)
+            List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
 
-            cigs.each { item ->
+            cigs.each { CostItemGroup item ->
                 item.delete()
                 log.debug("deleting CostItemGroup: " + item)
             }
+            if(!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(ci.order,ci.id,RDStore.COST_ITEM_DELETED))
+                ci.order.delete()
+            if(!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(ci.invoice,ci.id,RDStore.COST_ITEM_DELETED))
+                ci.invoice.delete()
             log.debug("deleting CostItem: " + ci)
             ci.costItemStatus = RDStore.COST_ITEM_DELETED
+            ci.invoice = null
+            ci.order = null
             if(!ci.save())
                 log.error(ci.errors)
         }
@@ -788,11 +794,11 @@ class FinanceController extends AbstractDebugController {
 
               Order order = null
               if (params.newOrderNumber)
-                  order = Order.findByOrderNumberAndOwner(params.newOrderNumber, result.institution) ?: new Order(orderNumber: params.newOrderNumber, owner: result.institution).save(flush: true);
+                  order = Order.findByOrderNumberAndOwner(params.newOrderNumber, result.institution) ?: new Order(orderNumber: params.newOrderNumber, owner: result.institution).save()
 
               Invoice invoice = null
               if (params.newInvoiceNumber)
-                  invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save(flush: true);
+                  invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save()
 
               Set<Subscription> subsToDo = []
               if (params.newSubscription.contains("com.k_int.kbplus.Subscription:"))
@@ -818,7 +824,13 @@ class FinanceController extends AbstractDebugController {
                       break
                   default:
                       if (params.newLicenseeTarget) {
-                          subsToDo = [genericOIDService.resolveOID(params.newLicenseeTarget)]
+                          if(params.newLicenseeTarget instanceof String)
+                            subsToDo << genericOIDService.resolveOID(params.newLicenseeTarget)
+                          else if(params.newLicenseeTarget instanceof String[]) {
+                              params.newLicenseeTarget.each { newLicenseeTarget ->
+                                  subsToDo << genericOIDService.resolveOID(newLicenseeTarget)
+                              }
+                          }
                       }
                       break
               }
@@ -871,7 +883,7 @@ class FinanceController extends AbstractDebugController {
                   }
               }
 
-              println(issueEntitlementGroup)
+              //println(issueEntitlementGroup)
               RefdataValue billing_currency = RefdataValue.get(params.newCostCurrency)
 
               //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
@@ -944,6 +956,16 @@ class FinanceController extends AbstractDebugController {
                       newCostItem = CostItem.get(Long.parseLong(params.costItemId))
                       //get copied cost items
                       copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqual(newCostItem, RDStore.COST_ITEM_DELETED)
+                      if(params.newOrderNumber == null || params.newOrderNumber.length() < 1) {
+                          CostItem costItemWithOrder = CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(newCostItem.order,newCostItem.id,RDStore.COST_ITEM_DELETED)
+                          if(!costItemWithOrder)
+                              newCostItem.order.delete()
+                      }
+                      if(params.newInvoiceNumber == null || params.newInvoiceNumber.length() < 1) {
+                          CostItem costItemWithInvoice = CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(newCostItem.invoice,newCostItem.id,RDStore.COST_ITEM_DELETED)
+                          if(!costItemWithInvoice)
+                              newCostItem.invoice.delete()
+                      }
                   }
                   else {
                       newCostItem = new CostItem()

@@ -21,6 +21,12 @@
     "endDate": {
       "type": "date"
     },
+    "dateCreated": {
+      "type": "date"
+    },
+    "lastUpdated": {
+      "type": "date"
+    },
     "dbId": {
       "type": "long",
       "index": false

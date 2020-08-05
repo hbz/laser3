@@ -1,32 +1,35 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import de.laser.domain.StatsTripleCursor
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
+import grails.transaction.Transactional
 import groovy.json.JsonOutput
 import groovyx.gpars.GParsPool
-import groovyx.net.http.HttpResponseDecorator
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.ExecutorService
 
+@Transactional
 class StatsSyncService {
 
     static final THREAD_POOL_SIZE = 1
     static final SYNC_STATS_FROM = '2012-01-01'
 
     def grailsApplication
-    def executorService
+    ExecutorService executorService
     def sessionFactory
     def factService
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
     def errors = []
     Map<String,List> availableReportCache = [:]
@@ -105,7 +108,7 @@ class StatsSyncService {
     void internalDoSync() {
         try {
             log.debug("create thread pool")
-            String statsApi = grailsApplication.config.statsApiUrl ?: ''
+            String statsApi = ConfigUtils.getStatsApiUrl() ?: ''
             if (statsApi == '') {
                 log.error("Stats API URL not set in config")
                 errors.add("Stats API URL not set in config")
@@ -155,7 +158,7 @@ class StatsSyncService {
             return availableReportCache[queryParamsHash]
         }
         try {
-            URIBuilder uri = new URIBuilder(grailsApplication.config.statsApiUrl)
+            URIBuilder uri = new URIBuilder(ConfigUtils.getStatsApiUrl())
             String baseUrl = uri.getScheme() + "://" + uri.getHost()
             String basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
             String path = basePath + 'Sushiservice/reports'

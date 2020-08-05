@@ -6,12 +6,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
-import de.laser.domain.ActivityProfiler
-import de.laser.domain.SystemProfiler
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -275,8 +270,7 @@ class YodaController {
 
         result.hibernateSession = sessionFactory
 
-        result.ehcacheManager = cacheService.getCacheManager(cacheService.EHCACHE)
-        result.plugincacheManager = cacheService.getCacheManager(cacheService.PLUGINCACHE)
+        result.ehcacheManager = cacheService.getCacheManager()
 
         if (params.cmd?.equals('clearCache')) {
             def cache
@@ -288,10 +282,6 @@ class YodaController {
                 cache = cacheService.getCache(result.ehcacheManager, params.cache)
                 cacheService.clear(cache)
             }
-            else {
-                cache = cacheService.getCache(result.plugincacheManager, params.cache)
-                cacheService.clear(cache)
-            }
 
             params.remove('cmd')
             params.remove('type')
@@ -299,17 +289,6 @@ class YodaController {
 
             redirect controller: 'yoda', action: 'cacheInfo', params: params
         }
-        /* else if (params.cmd?.equals('deleteCache')) {
-            if (params.type?.equals('ehcache')) {
-                result.ehcacheManager.removeCache(params.cache)
-            }
-
-            params.remove('cmd')
-            params.remove('type')
-            params.remove('cache')
-
-            redirect controller: 'yoda', action: 'cacheInfo', params: params
-        } */
 
         result
     }
@@ -579,8 +558,8 @@ class YodaController {
     def retriggerPendingChanges() {
         log.debug("match IssueEntitlements to TIPPs ...")
         flash.message = "Pakete werden nachgehalten ..."
-        statusUpdateService.retriggerPendingChanges()
-        redirect(url: request.getHeader('referer'))
+        statusUpdateService.retriggerPendingChanges(params.packageUUID)
+        redirect controller: 'home', action: 'index'
     }
 
     @Secured(['ROLE_YODA'])
@@ -650,6 +629,17 @@ class YodaController {
 
        log.debug("Clear ES")
        dataloadService.clearDownAndInitES()
+
+        log.debug("redirecting to home ..")
+
+        redirect controller:'home'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def killDataloadService() {
+
+        log.debug("kill DataloadService")
+        dataloadService.killDataloadService()
 
         log.debug("redirecting to home ..")
 
@@ -753,39 +743,41 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def migrateNatStatSettings() {
         Map<String, Object> result = [:]
+        Org contextOrg = contextService.getOrg()
 
-        List<OrgCustomProperty> ocpList = OrgCustomProperty.executeQuery(
-                'select ocp from OrgCustomProperty ocp join ocp.type pd where pd.descr = :orgConf', [
-                orgConf: PropertyDefinition.ORG_CONF
+        List<OrgProperty> opList = OrgProperty.executeQuery(
+                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf and op.tenant = :context and op.isPublic = false', [
+                orgConf: PropertyDefinition.ORG_CONF,
+                context: contextOrg
         ])
 
-        ocpList.each { ocp ->
-            if (ocp.type.name == 'API Key') {
-                def oss = OrgSettings.get(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)
+        opList.each { OrgProperty op ->
+            if (op.type.name == 'API Key') {
+                def oss = OrgSettings.get(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)
 
                 if (oss == OrgSettings.SETTING_NOT_FOUND) {
-                    OrgSettings.add(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY, ocp.getValue())
+                    OrgSettings.add(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY, op.getValue())
                 }
                 else {
-                    oss.setValue(ocp)
+                    oss.setValue(op)
                 }
             }
-            else if (ocp.type.name == 'RequestorID') {
-                def oss = OrgSettings.get(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+            else if (op.type.name == 'RequestorID') {
+                def oss = OrgSettings.get(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
 
                 if (oss == OrgSettings.SETTING_NOT_FOUND) {
-                    OrgSettings.add(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, ocp.getValue())
+                    OrgSettings.add(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, op.getValue())
                 }
                 else {
-                    oss.setValue(ocp)
+                    oss.setValue(op)
                 }
             }
         }
 
-        OrgCustomProperty.executeQuery(
-                'select ocp from OrgCustomProperty ocp join ocp.type pd where pd.descr = :orgConf '
-                + 'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' )',
-                [orgConf: PropertyDefinition.ORG_CONF]
+        OrgProperty.executeQuery(
+                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf '
+                + 'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' ) and op.tenant = :context and op.isPublic = false',
+                [orgConf: PropertyDefinition.ORG_CONF, context: contextOrg]
         ).each{ it.delete() }
 
         redirect action:'dashboard'
@@ -794,7 +786,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def settings() {
         Map<String, Object> result = [:]
-        result.settings = Setting.list();
+        result.settings = Setting.executeQuery('select s from Setting s where s.name != \'MaintenanceMode\' order by s.name asc')
         result
     }
 
@@ -976,46 +968,6 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def manageSystemMessage() {
-        Map<String, Object> result = [:]
-        result.user = springSecurityService.currentUser
-
-        if(params.create)
-        {
-
-            if(!SystemMessage.findAllByText(params.text)) {
-
-                def systemMessage = new SystemMessage(office: params.office ?: null,
-                        text: params.text ?: '',
-                        showNow: params.showNow ?: 0)
-
-                if (systemMessage.save(flush: true)) {
-                    flash.message = 'System Nachricht erstellt'
-                } else {
-                    flash.error = 'System Nachricht wurde nicht erstellt!!'
-                }
-            }else {
-                flash.error = 'System Nachricht schon im System!!'
-            }
-        }
-
-
-        result.systemMessages = SystemMessage.findAll()
-        result.editable = true
-        result
-    }
-
-    @Secured(['ROLE_YODA'])
-    def deleteSystemMessage(Long id) {
-        if(SystemMessage.get(id)) {
-            SystemMessage.get(id).delete(flush: true)
-            flash.message = 'System Nachricht wurde gelöscht!!'
-        }
-
-        redirect(action: 'manageSystemMessage')
-    }
-
-    @Secured(['ROLE_YODA'])
     def dueDates_updateDashboardDB(){
         flash.message = "DB wird upgedatet...<br/>"
         dashboardDueDatesService.takeCareOfDueDates(true, false, flash)
@@ -1190,11 +1142,11 @@ class YodaController {
     def makeshiftLaserOrgExport() {
         log.info("Export institutions in XML, structure follows LAS:eR-DB-structure")
         try {
-            File dir = new File(grailsApplication.config.basicDataPath)
+            File dir = new File(ConfigUtils.getBasicDataPath())
             if(!dir.exists()) {
                 dir.mkdir()
             }
-            new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}").withWriter { writer ->
+            new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getBasicDataFileName()}").withWriter { writer ->
                 MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
                 orgDataBuilder.data {
                     organisations {
@@ -1694,30 +1646,34 @@ class YodaController {
     def dbmFixPrivateProperties() {
         Map<String, Object> result = [:]
 
-        def opp = OrgPrivateProperty.executeQuery(
-                "SELECT pp FROM OrgPrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+        def opp = OrgProperty.executeQuery(
+                "SELECT pp FROM OrgProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.isPublic = false " +
                         "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') "
         )
 
-        def spp = SubscriptionPrivateProperty.executeQuery(
-                "SELECT pp FROM SubscriptionPrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+        def spp = SubscriptionProperty.executeQuery(
+                "SELECT pp FROM SubscriptionProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                "AND pp.isPublic = false " +
                 "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
                 "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                 "AND (pp.note IS null OR pp.note = '') "
         )
 
-        def lpp = LicensePrivateProperty.executeQuery(
-                "SELECT pp FROM LicensePrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+        def lpp = LicenseProperty.executeQuery(
+                "SELECT pp FROM LicenseProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.isPublic = false " +
                         "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') " +
                         "AND (pp.paragraph IS null OR pp.paragraph = '') "
         )
 
-        def ppp = PersonPrivateProperty.executeQuery(
-                "SELECT pp FROM PersonPrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+        def ppp = PersonProperty.executeQuery(
+                "SELECT pp FROM PersonProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.isPublic = false " +
                         "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') "
@@ -1726,34 +1682,34 @@ class YodaController {
         if (params.cmd == 'doIt') {
             println opp.collect{ it.id }
             if (opp.size() > 0) {
-                OrgPrivateProperty.executeUpdate('DELETE FROM OrgPrivateProperty opp WHERE opp.id in :idList',
+                OrgProperty.executeUpdate('DELETE FROM OrgProperty opp WHERE opp.id in :idList',
                         [idList: opp.collect { it.id }]
                 )
             }
 
             println spp.collect{ it.id }
             if (spp.size() > 0) {
-                SubscriptionPrivateProperty.executeUpdate('DELETE FROM SubscriptionPrivateProperty spp WHERE spp.id in :idList',
+                SubscriptionProperty.executeUpdate('DELETE FROM SubscriptionProperty spp WHERE spp.id in :idList',
                         [idList: spp.collect { it.id }]
                 )
             }
 
             println lpp.collect{ it.id }
             if (lpp.size() > 0) {
-                LicensePrivateProperty.executeUpdate('DELETE FROM LicensePrivateProperty lpp WHERE lpp.id in :idList',
+                LicenseProperty.executeUpdate('DELETE FROM LicenseProperty lpp WHERE lpp.id in :idList',
                         [idList: lpp.collect { it.id }]
                 )
             }
 
             println ppp.collect{ it.id }
             if (ppp.size() > 0) {
-                PersonPrivateProperty.executeUpdate('DELETE FROM PersonPrivateProperty ppp WHERE ppp.id in :idList',
+                PersonProperty.executeUpdate('DELETE FROM PersonProperty ppp WHERE ppp.id in :idList',
                         [idList: ppp.collect { it.id }]
                 )
             }
         }
 
-        result.candidates = [OrgPrivateProperty: opp, SubscriptionPrivateProperty: spp, LicensePrivateProperty: lpp, PersonPrivateProperty: ppp]
+        result.candidates = [OrgProperty: opp, SubscriptionProperty: spp, LicenseProperty: lpp, PersonProperty: ppp]
 
         render view: 'databaseMigration', model: result
     }
@@ -1771,10 +1727,10 @@ class YodaController {
             def parentSubscription = surConfig?.subscription
             def parentSubChilds = subscriptionService.getCurrentValidSubChilds(parentSubscription)
             def parentSuccessorSubscription = surConfig?.subscription?.getCalculatedSuccessor()
-            def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
-            parentSubChilds?.each { sub ->
-                if (sub?.getCalculatedSuccessor()) {
-                    sub?.getAllSubscribers().each { org1 ->
+            //def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
+            parentSubChilds.each { sub ->
+                if (sub.getCalculatedSuccessor()) {
+                    sub.getAllSubscribers().each { org1 ->
 
                         def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org1)
                         if(surveyResult?.size() > 0) {
@@ -1808,8 +1764,8 @@ class YodaController {
                     }
 
                 } else {
-                    if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
-                        if (sub?.customProperties?.find {
+                   /* if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
+                        if (sub?.propertySet?.find {
                             it?.type?.id == property?.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
 
@@ -1845,7 +1801,7 @@ class YodaController {
 
                             }
                         }
-                    }
+                    }*/
                 }
             }
 
@@ -1881,6 +1837,28 @@ class YodaController {
 
         result
 
+        redirect action: 'dashboard'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def cleanUpSurveyOrgFinishDate() {
+
+        Integer changes = 0
+        List<SurveyOrg> surveyOrgs = SurveyOrg.findAllByFinishDateIsNull()
+
+        surveyOrgs.each { surveyOrg ->
+
+            List<SurveyResult> surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(surveyOrg.surveyConfig, surveyOrg.org)
+            List<SurveyResult> surveyResultsFinish = SurveyResult.findAllBySurveyConfigAndParticipantAndFinishDateIsNotNull(surveyOrg.surveyConfig, surveyOrg.org)
+
+            if(surveyResults.size() == surveyResultsFinish.size()){
+                surveyOrg.finishDate = surveyResultsFinish[0].finishDate
+                surveyOrg.save(flush: true)
+                changes++
+            }
+
+        }
+        flash.message = "Es wurden ${changes} FinishDate in SurveyOrg geändert!"
         redirect action: 'dashboard'
     }
 

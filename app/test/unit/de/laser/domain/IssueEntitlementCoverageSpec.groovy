@@ -1,5 +1,6 @@
 package de.laser.domain
 
+import de.laser.IssueEntitlementCoverage
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 

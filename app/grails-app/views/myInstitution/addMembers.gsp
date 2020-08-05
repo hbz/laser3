@@ -1,3 +1,4 @@
+<%@page import="de.laser.FormService" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -72,6 +73,7 @@
                   ]"/>
 
         <br/>
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
     </g:form>
     </g:if>

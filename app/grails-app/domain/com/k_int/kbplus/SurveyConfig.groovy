@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
-import de.laser.domain.I10nTranslation
+import de.laser.I10nTranslation
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import grails.util.Holders
@@ -25,6 +25,15 @@ class SurveyConfig {
     @Transient
     public static final ALL_RESULTS_HALF_PROCESSED_BY_ORG = "Half Processed"
 
+    @Transient
+    public static final SURVEY_CONFIG_TYPE_SUBSCRIPTION = "Subscription"
+
+    @Transient
+    public static final SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT = "IssueEntitlementsSurvey"
+
+    @Transient
+    public static final SURVEY_CONFIG_TYPE_GENERAL_SURVEY = "GeneralSurvey"
+
     Integer configOrder
 
     Subscription subscription
@@ -40,6 +49,8 @@ class SurveyConfig {
     String comment
     String internalComment
     String url
+    String url2
+    String url3
 
     Date dateCreated
     Date lastUpdated
@@ -57,7 +68,7 @@ class SurveyConfig {
             documents       : DocContext,
             surveyProperties: SurveyConfigProperties,
             orgs            : SurveyOrg,
-            surResults      : SurveyResult
+            propertySet      : SurveyResult
     ]
 
     static constraints = {
@@ -71,13 +82,15 @@ class SurveyConfig {
         orgs(nullable: true, blank: false)
         configFinish(nullable: true, blank: false)
         costItemsFinish (nullable: true, blank: false)
-        scheduledStartDate (nullable: true, blank: false)
-        scheduledEndDate (nullable: true, blank: false)
+        scheduledStartDate (nullable: true)
+        scheduledEndDate (nullable: true)
         internalComment(nullable: true, blank: false)
         url(nullable: true, blank: false, maxSize:512)
+        url2(nullable: true, blank: false, maxSize:512)
+        url3(nullable: true, blank: false, maxSize:512)
         evaluationFinish (nullable: true, blank: false)
         subSurveyUseForTransfer (nullable: true, blank: false)
-        surResults(nullable: true, blank: false)
+        propertySet(nullable: true, blank: false)
         transferWorkflow (nullable: true, blank: false)
         createTitleGroups (nullable: true, blank: false)
 
@@ -92,6 +105,8 @@ class SurveyConfig {
         comment column: 'surconf_comment', type: 'text'
         internalComment column: 'surconf_internal_comment', type: 'text'
         url column: 'surconf_url'
+        url2 column: 'surconf_url_2'
+        url3 column: 'surconf_url_3'
         pickAndChoose column: 'surconf_pickandchoose'
         createTitleGroups column: 'surconf_create_title_groups'
         configFinish column: 'surconf_config_finish'
@@ -125,7 +140,7 @@ class SurveyConfig {
     ]
 
     static getLocalizedValue(key) {
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
         //println locale
         if (SurveyConfig.validTypes.containsKey(key)) {
@@ -322,8 +337,7 @@ class SurveyConfig {
 
     List<CostItem> getSurveyConfigCostItems(){
 
-        return CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(this.orgs, RDStore.COST_ITEM_DELETED)
-
+        return this.orgs ? CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(this.orgs, RDStore.COST_ITEM_DELETED) : []
     }
 
     JSONElement getTransferWorkflowAsJSON() {

@@ -101,15 +101,15 @@ class UserSettings {
     }
 
     static constraints = {
-        user       (nullable: false, unique: 'key')
-        key        (nullable: false, unique: 'user')
+        user       (unique: 'key')
+        key        (unique: 'user')
         strValue   (nullable: true)
         rdValue    (nullable: true)
         orgValue   (nullable: true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     /*

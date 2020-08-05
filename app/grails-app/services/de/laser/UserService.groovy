@@ -9,10 +9,12 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.FlashScope
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.FieldError
 
+@Transactional
 class UserService {
 
     def instAdmService

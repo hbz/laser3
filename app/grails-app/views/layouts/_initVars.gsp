@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.auth.UserOrg;com.k_int.kbplus.SystemTicket" %>
+<%@ page import="de.laser.helper.ServerUtils; com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.auth.UserOrg;com.k_int.kbplus.SystemTicket" %>
 <%@ page import="com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;" %>
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;org.springframework.web.servlet.LocaleResolver;org.springframework.web.servlet.support.RequestContextUtils;" %>
 
@@ -8,7 +8,7 @@
     // -- part 1
     // -- set in semanticUI.gsp (scope: page)
 
-    currentServer   = grailsApplication.config.getCurrentServer()
+    currentServer   = ServerUtils.getCurrentServer()
     currentUser     = contextService.getUser()
     currentLang     = 'de'
     currentTheme    = 'semanticUI'

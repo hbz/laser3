@@ -35,7 +35,7 @@
 <semui:totalNumber total="${num_sub_rows}"/>
 </h1>
 
-<g:render template="../templates/filter/javascript" />
+<g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="createSubscriptionSurvey" controller="survey" method="get" class="ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -78,7 +78,7 @@
         <div class="four fields">
 
             <!-- 2-1 + 2-2 -->
-            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
 
             <!-- 2-3 -->
             <div class="field">
@@ -140,10 +140,6 @@
                     ${message(code: 'license.details.linked_pkg')}
                 </th>
 
-                <g:if test="${params.orgRole == 'Subscriber'}">
-                    <th rowspan="2">${message(code: 'consortium')}</th>
-                </g:if>
-
                 <g:sortableColumn params="${params}" property="orgRole§provider"
                                   title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"
                                   rowspan="2"/>
@@ -152,10 +148,16 @@
                                   title="${message(code: 'default.startDate.label')}"/>
 
 
-                <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                    <th rowspan="2">${message(code: 'subscription.numberOfLicenses.label')}</th>
-                    <th rowspan="2">${message(code: 'subscription.numberOfCostItems.label')}</th>
-                </g:if>
+                <th scope="col" rowspan="2">
+                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                        <i class="users large icon"></i>
+                    </a>
+                </th>
+                <th scope="col" rowspan="2">
+                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                        <i class="money bill large icon"></i>
+                    </a>
+                </th>
 
                 <th rowspan="2" class="two wide"></th>
 
@@ -182,27 +184,26 @@
                                 </g:else>
                                 <g:if test="${s.instanceOf}">
                                     <g:if test="${s.consortia && s.consortia == institution}">
-                                        ( ${s.subscriber?.name} )
+                                        ( ${s.subscriber.name} )
                                     </g:if>
                                 </g:if>
                             </g:link>
-                            <g:if test="${s.owner}">
+                            <g:each in="${allLinkedLicenses.get(s)}" var="license">
                                 <div class="la-flexbox">
                                     <i class="icon balance scale la-list-icon"></i>
-                                    <g:link controller="license" action="show"
-                                            id="${s.owner.id}">${s.owner?.reference ?: message(code: 'missingLicenseReference', default: '** No License Reference Set **')}</g:link>
+                                    <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
                                 </div>
-                            </g:if>
+                            </g:each>
                         </td>
                         <td>
                         <!-- packages -->
-                            <g:each in="${s.packages.sort { it?.pkg?.name }}" var="sp" status="ind">
+                            <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                 <g:if test="${ind < 10}">
                                     <div class="la-flexbox">
                                         <i class="icon gift la-list-icon"></i>
                                         <g:link controller="subscription" action="index" id="${s.id}"
-                                                params="[pkgfilter: sp.pkg?.id]"
-                                                title="${sp.pkg?.contentProvider?.name}">
+                                                params="[pkgfilter: sp.pkg.id]"
+                                                title="${sp.pkg.contentProvider?.name}">
                                             ${sp.pkg.name}
                                         </g:link>
                                     </div>
@@ -219,11 +220,6 @@
                     </td>
                     --%>
 
-                        <g:if test="${params.orgRole == 'Subscriber'}">
-                            <td>
-                                ${s.getConsortia()?.name}
-                            </td>
-                        </g:if>
                         <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
@@ -234,32 +230,21 @@
                                         id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br/>
                             </g:each>
                         </td>
-                        <%--
-                        <td>
-                            <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                                <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
-                                    <g:link controller="organisation" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
-                                </g:each>
-                            </g:if>
-                        </td>
-                        --%>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
                             <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                         </td>
-                        <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <td>
                                 <g:link controller="subscription" action="members" params="${[id: s.id]}">
-                                    ${Subscription.findAllByInstanceOf(s)?.size()}
+                                    ${Subscription.findAllByInstanceOf(s).size()}
                                 </g:link>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: s.id]}">
-                                    ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
+                                    ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED).size()}
                                 </g:link>
                             </td>
-                        </g:if>
 
 
                         <td class="x">

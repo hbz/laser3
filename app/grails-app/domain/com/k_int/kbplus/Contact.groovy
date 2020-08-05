@@ -43,13 +43,12 @@ class Contact implements Comparable<Contact>{
     static constraints = {
         content     (nullable:true, blank:true)
         contentType (nullable:true, blank:true)
-        type        (nullable:false)
         prs         (nullable:true)
         org         (nullable:true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
     
     static List<RefdataValue> getAllRefdataValues(String category) {

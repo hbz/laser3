@@ -1,6 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person" %>
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionController.*" %>
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -25,9 +23,9 @@ if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId]
 
 <semui:subNav>
 
-    <semui:complexSubNavItem class="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}"
+    <semui:complexSubNavItem class="${workFlowPart == SubscriptionController.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}"
                              controller="subscription" action="copyMyElements"
-                             params="${params << [workFlowPart: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
+                             params="${params << [workFlowPart: SubscriptionController.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
         <div class="content">
             <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.attachements.label')}</div>
 
@@ -39,8 +37,8 @@ if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId]
         </div>
     </semui:complexSubNavItem>
 
-    <semui:complexSubNavItem class="${workFlowPart == WORKFLOW_PROPERTIES ? 'active' : ''}" controller="subscription"
-                             action="copyMyElements" params="${params << [workFlowPart: WORKFLOW_PROPERTIES]}">
+    <semui:complexSubNavItem class="${workFlowPart == SubscriptionController.WORKFLOW_PROPERTIES ? 'active' : ''}" controller="subscription"
+                             action="copyMyElements" params="${params << [workFlowPart: SubscriptionController.WORKFLOW_PROPERTIES]}">
         <div class="content">
             <div class="title">${message(code: 'properties')}</div>
 
@@ -60,10 +58,10 @@ if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId]
     <span class="la-added">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willStay')}</span>
     <span class="la-removed">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willBeReplaced')}</span>
 </div>
-<g:if test="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+<g:if test="${workFlowPart == SubscriptionController.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
     <g:render template="/templates/subscription/copyDocsAndTasks"/>
 </g:if>
-<g:elseif test="${workFlowPart == WORKFLOW_PROPERTIES}">
+<g:elseif test="${workFlowPart == SubscriptionController.WORKFLOW_PROPERTIES}">
     <g:render template="/templates/subscription/copyPrivatePropertiesCompare"/>
 </g:elseif>
 <g:javascript src="copyPropertiesCompare.js"/>

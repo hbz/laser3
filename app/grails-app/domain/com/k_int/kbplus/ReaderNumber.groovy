@@ -20,13 +20,13 @@ class ReaderNumber {
     Org org
 
     static constraints = {
-        //type            (nullable:false, blank:false)
-        referenceGroup  (nullable:false, blank:false)
+        //type            (blank:false)
+        referenceGroup  (blank:false)
         value           (nullable:true,  blank:true)
         semester        (nullable:true, blank:false)
         dueDate         (nullable:true, blank:false)
 
-        org             (nullable:false, blank:false)
+        org             (blank:false)
     }
 
     static mapping = {

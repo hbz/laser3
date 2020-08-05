@@ -3,8 +3,8 @@
 <table id="platformTable" class="ui celled la-table table compact">
   <thead>
   <tr>
-    <g:sortableColumn property="platform" title="${message(code: "platform.label")}" />
-    <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
+    <th>${message(code: "platform.label")}</th>
+    <g:if test="${ (accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg ) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') )}">
       <th>${message(code: "accessPoint.subscriptions.label")}</th>
       <th>${message(code: 'accessPoint.platformLink.action')}</th>
     </g:if>
@@ -19,7 +19,7 @@
           <g:link controller="Subscription" action="show" id="${linkedSub.id}">${linkedSub.name} ${(linkedSub.status != de.laser.helper.RDStore.SUBSCRIPTION_CURRENT) ? '('+ com.k_int.kbplus.RefdataValue.getByValueAndCategory(linkedSub.status.value, de.laser.helper.RDConstants.SUBSCRIPTION_STATUS).getI10n('value') +')': ''}</g:link><br/>
         </g:each>
       </td>
-      <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
+      <g:if test="${ (accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg ) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
         <td class="center aligned">
           <g:link class="ui negative icon button button js-open-confirm-modal" id="${linkedPlatform.aplink.id}"
                   controller="accessPoint" action="unlinkPlatform"

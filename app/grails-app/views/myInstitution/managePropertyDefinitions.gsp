@@ -1,4 +1,4 @@
-<%@ page import="de.laser.domain.I10nTranslation; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="de.laser.I10nTranslation; com.k_int.properties.PropertyDefinition" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!doctype html>
 <html>
@@ -12,6 +12,15 @@
     <semui:breadcrumbs>
         <semui:crumb message="menu.institutions.manage_props" class="active" />
     </semui:breadcrumbs>
+
+    <semui:controlButtons>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="managePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
+        <g:render template="actions"/>
+    </semui:controlButtons>
     <br>
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
 
@@ -19,27 +28,14 @@
 
     <semui:messages data="${flash}" />
 
-    <g:if test="${false}">
-        <div class="content ui form">
-            <div class="fields">
-                <div class="field">
-                    <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
-                </div>
-            </div>
-        </div>
-    </g:if>
-    <g:else>
-        <br />
-        <br />
-    </g:else>
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
+                    <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
                 </div>
                 <div class="content">
-                    <table class="ui celled la-table la-table-small table">
+                    <table class="ui celled la-table compact table">
                         <thead>
                         <tr>
                             <th></th>

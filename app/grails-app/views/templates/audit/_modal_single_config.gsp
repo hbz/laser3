@@ -8,7 +8,7 @@
         <g:hiddenField name="target" value="${ownobj.getId()}"/>
 
         <div class="field">
-            <table id="org_role_tab" class="ui celled la-table la-table-small table">
+            <table id="org_role_tab" class="ui celled la-table compact table">
                 <thead>
                 <tr>
                     <th>Eigenschaft</th>

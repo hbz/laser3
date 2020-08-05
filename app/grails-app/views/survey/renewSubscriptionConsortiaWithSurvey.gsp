@@ -13,7 +13,8 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+                     params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
     <semui:crumb message="surveyInfo.renewal" class="active"/>
 </semui:breadcrumbs>
@@ -102,23 +103,6 @@ ${surveyInfo.name}
                 <td class="center aligned">
                     <div class="ui checkbox">
                         <input type="checkbox" name="auditList" value="status" ${AuditConfig.getConfig(subscription, 'status') ? 'checked': ''} />
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <th>${message(code: 'subscription.type.label')}</th>
-                <td>
-                    <g:set var="rdcSubType" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_TYPE)}"/>
-                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)}" class="ui dropdown"
-                              optionKey="id"
-                              optionValue="${{ it.getI10n('value') }}"
-                              name="subType"
-                              value="${permissionInfo?.sub_type}"
-                              />
-                </td>
-                <td class="center aligned">
-                    <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="type" ${AuditConfig.getConfig(subscription, 'type') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>

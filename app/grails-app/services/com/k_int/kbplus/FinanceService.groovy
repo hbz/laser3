@@ -2,12 +2,16 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.AccessService
-import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.EscapeService
+import de.laser.LinksGenerationService
 import de.laser.exceptions.FinancialDataException
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.RDStore
+import de.laser.helper.RDConstants
+import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
@@ -20,10 +24,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Year
 
-import static de.laser.helper.RDStore.*
-import static de.laser.helper.RDConstants.*
-import static de.laser.interfaces.CalculatedType.*
-
 /**
  * This service will subsequently replace the very complicatedly written methods in the FinanceController class.
  *
@@ -34,12 +34,13 @@ class FinanceService {
 
     ContextService contextService
     GenericOIDService genericOIDService
-    MessageSource messageSource
+    def messageSource
     AccessService accessService
     EscapeService escapeService
     SpringSecurityService springSecurityService
+    LinksGenerationService linksGenerationService
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
-    Map<String,RefdataValue> genericExcludeParams = [deleted:COST_ITEM_DELETED]
+    Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
 
     /**
      * Will replace the methods index and financialData methods in FinanceController class for a single subscription.
@@ -87,7 +88,7 @@ class FinanceService {
                                 'from CostItem as ci where ci.owner = :owner and ci.sub in (select sub from Subscription as sub where sub.instanceOf = :sub '+
                                 filterQuery.subFilter + ')' + genericExcludes + filterQuery.ciFilter +
                                 ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
-                                [owner:org,sub:sub,roleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
+                                [owner:org,sub:sub,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                         result.cons = [count:consCostRows.size()]
                         if(consCostRows) {
                             List<CostItem> consCostItems = consCostRows.collect { row -> row[0]}
@@ -112,7 +113,7 @@ class FinanceService {
                                 'from CostItem as ci where ci.owner = :owner and ci.sub in (select sub from Subscription as sub where sub.instanceOf = :sub '+
                                 filterQuery.subFilter + ')' + genericExcludes + filterQuery.ciFilter +
                                 ' order by '+configMap.sortConfig.collSort+' '+configMap.sortConfig.collOrder,
-                                [owner:org,sub:sub,roleType:OR_SUBSCRIBER_COLLECTIVE]+genericExcludeParams+filterQuery.filterData)
+                                [owner:org,sub:sub,roleType:RDStore.OR_SUBSCRIBER_COLLECTIVE]+genericExcludeParams+filterQuery.filterData)
                         result.coll = [count:0]
                         if(collCostRows) {
                             Set<CostItem> collCostItems = collCostRows.collect { row -> row[0]}
@@ -205,15 +206,15 @@ class FinanceService {
                         'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType in (:subscrType)'+
                         genericExcludes+filterQuery.subFilter+filterQuery.ciFilter+
                         ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
-                        [org:org,consortialType:OR_SUBSCRIPTION_CONSORTIA,subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
                         List<CostItem> consortialCostItems = consortialCostRows.collect { row -> row[0] }
                         //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
                         if(configMap.sortConfig.consSort == 'sortname') {
                             consortialCostItems = consortialCostItems.sort{ ciA, ciB ->
-                                ciA.sub?.orgRelations?.find{ oo -> oo.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname ?:
-                                        ciA.sub?.orgRelations?.find { oo -> oo.roleType in [OR_AGENCY,OR_PROVIDER]}?.org?.name <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [OR_AGENCY,OR_PROVIDER]}?.org?.name}
+                                ciA.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname ?:
+                                        ciA.sub?.orgRelations?.find { oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name}
                         }
                         result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
                         result.cons.sums = calculateResults(consortialCostItems)
@@ -230,7 +231,7 @@ class FinanceService {
                         'where orgC = :org and orgC = roleC.org and roleMC.roleType = :collectiveType and orgRoles.roleType in (:subscrType)'+
                         genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
                         ' order by '+configMap.sortConfig.collSort+' '+configMap.sortConfig.collOrder,
-                        [org:org,collectiveType:OR_SUBSCRIPTION_COLLECTIVE,subscrType:[OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,collectiveType:RDStore.OR_SUBSCRIPTION_COLLECTIVE,subscrType:[RDStore.OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
                     result.coll = [count:0]
                     if(collectiveCostRows) {
                         Set<CostItem> collectiveCostItems = collectiveCostRows.collect { row -> row[0] }
@@ -250,7 +251,7 @@ class FinanceService {
                         'where orgC = roleC.org and roleC.roleType in :consType and orgRoles.org = :org and orgRoles.roleType in :subscrType and ci.isVisibleForSubscriber = true'+
                         genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
                         ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder,
-                        [org:org,consType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,consType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE],subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
                         result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
@@ -280,7 +281,7 @@ class FinanceService {
             subFilterQuery += " and sub in (:filterSubMembers) "
             List<Subscription> filterSubMembers = []
             String[] subMembers = params.list("filterSubMembers")
-            subMembers.each { subMember ->
+            subMembers.each { String subMember ->
                 filterSubMembers.add(Subscription.get(Long.parseLong(subMember)))
             }
             queryParams.filterSubMembers = filterSubMembers
@@ -291,7 +292,7 @@ class FinanceService {
             subFilterQuery += " and orgRoles.org in (:filterConsMembers) "
             List<Org> filterConsMembers = []
             String[] consMembers = params.list("filterConsMembers")
-            consMembers.each { consMember ->
+            consMembers.each { String consMember ->
                 filterConsMembers.add(Org.get(Long.parseLong(consMember)))
             }
             queryParams.filterConsMembers = filterConsMembers
@@ -305,7 +306,7 @@ class FinanceService {
             if(params.filterSubProviders.contains(","))
                 subProviders = params.filterSubProviders.split(',')
             else subProviders = [params.filterSubProviders]
-            subProviders.each { subProvider ->
+            subProviders.each { String subProvider ->
                 filterSubProviders.add(genericOIDService.resolveOID(subProvider))
             }
             queryParams.filterSubProviders = filterSubProviders
@@ -321,7 +322,7 @@ class FinanceService {
         //!params.filterSubStatus is insufficient because it checks also the presence of a value - but the absence of a value is a valid setting (= all status except deleted; that is captured by the genericExcludes field)
         else if(!params.subscription && !params.sub && !params.id && !params.containsKey('filterSubStatus')) {
             subFilterQuery += " and sub.status = :filterSubStatus "
-            queryParams.filterSubStatus = SUBSCRIPTION_CURRENT
+            queryParams.filterSubStatus = RDStore.SUBSCRIPTION_CURRENT
         }
         //cost item filter settings
         //cost item title
@@ -336,7 +337,7 @@ class FinanceService {
             costItemFilterQuery += " and sub in (:filterCISub) "
             List<Subscription> filterSubs = []
             String[] subscriptions = params.filterCISub.split(',')
-            subscriptions.each { sub ->
+            subscriptions.each { String sub ->
                 filterSubs.add((Subscription) genericOIDService.resolveOID(sub))
             }
             queryParams.filterCISub = filterSubs
@@ -347,7 +348,7 @@ class FinanceService {
             costItemFilterQuery += " and ci.subPkg in (:filterCISPkg) "
             List<SubscriptionPackage> filterSubPackages = []
             String[] subscriptionPackages = params."filterCISPkg".split(',')
-            subscriptionPackages.each { subPkg ->
+            subscriptionPackages.each { String subPkg ->
                 filterSubPackages.add((SubscriptionPackage) genericOIDService.resolveOID(subPkg))
             }
             queryParams.filterCISPkg = filterSubPackages
@@ -358,7 +359,7 @@ class FinanceService {
             costItemFilterQuery += " and ci in (select cig.costItem from CostItemGroup cig where cig.budgetCode in (:filterCIBudgetCode)) "
             List<BudgetCode> filterBudgetCodes = []
             String[] budgetCodes = params."filterCIBudgetCode".split(',')
-            budgetCodes.each { bc ->
+            budgetCodes.each { String bc ->
                 filterBudgetCodes.add(BudgetCode.get(Long.parseLong(bc)))
             }
             queryParams.filterCIBudgetCode = filterBudgetCodes
@@ -376,7 +377,7 @@ class FinanceService {
             costItemFilterQuery += " and ci.invoice.invoiceNumber in (:filterCIInvoiceNumber) "
             List<String> filterInvoiceNumbers = []
             String[] invoiceNumbers = params."filterCIInvoiceNumber".split(',')
-            invoiceNumbers.each { invNum ->
+            invoiceNumbers.each { String invNum ->
                 filterInvoiceNumbers.add(invNum)
             }
             queryParams.filterCIInvoiceNumber = filterInvoiceNumbers
@@ -387,7 +388,7 @@ class FinanceService {
             costItemFilterQuery += " and ci.order.orderNumber in (:filterCIOrderNumber) "
             List<String> filterOrderNumbers = []
             String[] orderNumbers = params."filterCIOrderNumber".split(',')
-            orderNumbers.each { orderNum ->
+            orderNumbers.each { String orderNum ->
                 filterOrderNumbers.add(orderNum)
             }
             queryParams.filterCIOrderNumber = filterOrderNumbers
@@ -398,7 +399,7 @@ class FinanceService {
             costItemFilterQuery += " and ci.costItemElement in (:filterCIElement) "
             List<RefdataValue> filterElements = []
             String[] costItemElements = params.list('filterCIElement')
-            costItemElements.each { cie ->
+            costItemElements.each { String cie ->
                 filterElements.add(genericOIDService.resolveOID(cie))
             }
             queryParams.filterCIElement = filterElements
@@ -409,7 +410,7 @@ class FinanceService {
             costItemFilterQuery += " and ci.costItemStatus in (:filterCIStatus) "
             List<RefdataValue> filterStatus = []
             String[] costItemStatus = params.list("filterCIStatus")
-            costItemStatus.each { cis ->
+            costItemStatus.each { String cis ->
                 filterStatus.add(genericOIDService.resolveOID(cis))
             }
             queryParams.filterCIStatus = filterStatus
@@ -703,9 +704,9 @@ class FinanceService {
                     //fetch possible identifier namespaces
                     List<Subscription> subMatches
                     if(accessService.checkPerm("ORG_CONSORTIUM"))
-                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIBER]])
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
                     else if(accessService.checkPerm("ORG_INST"))
-                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER]])
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier
                     else if(subMatches.size() > 1)
@@ -948,15 +949,15 @@ class FinanceService {
                     else if(taxRate == 19)
                         taxKey = CostItem.TAX_TYPES.TAXABLE_19
                     else if(taxRate == 0) {
-                        RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey, TAX_TYPE)
+                        RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey, RDConstants.TAX_TYPE)
                         if(!taxType)
-                            taxType = RefdataValue.getByCategoryDescAndI10nValueDe(TAX_TYPE, taxTypeKey)
+                            taxType = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.TAX_TYPE, taxTypeKey)
                         switch(taxType) {
-                            case RefdataValue.getByValueAndCategory('not taxable', TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                            case RefdataValue.getByValueAndCategory('not taxable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                                 break
-                            case RefdataValue.getByValueAndCategory('not applicable', TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                            case RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                                 break
-                            case RefdataValue.getByValueAndCategory('taxable tax-exempt', TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
+                            case RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
                                 break
                             default: mappingErrorBag.invalidTaxType = true
                                 break
@@ -990,9 +991,9 @@ class FinanceService {
             if(colMap.status != null) {
                 String statusKey = cols[colMap.status]
                 if(statusKey) {
-                    RefdataValue status = RefdataValue.getByValueAndCategory(statusKey, COST_ITEM_STATUS)
+                    RefdataValue status = RefdataValue.getByValueAndCategory(statusKey, RDConstants.COST_ITEM_STATUS)
                     if(!status)
-                        status = RefdataValue.getByCategoryDescAndI10nValueDe(COST_ITEM_STATUS, statusKey)
+                        status = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_STATUS, statusKey)
                     if(!status)
                         mappingErrorBag.noValidStatus = statusKey
                     costItem.costItemStatus = status
@@ -1002,9 +1003,9 @@ class FinanceService {
             if(colMap.element != null) {
                 String elementKey = cols[colMap.element]
                 if(elementKey) {
-                    RefdataValue element = RefdataValue.getByValueAndCategory(elementKey, COST_ITEM_ELEMENT)
+                    RefdataValue element = RefdataValue.getByValueAndCategory(elementKey, RDConstants.COST_ITEM_ELEMENT)
                     if(!element)
-                        element = RefdataValue.getByCategoryDescAndI10nValueDe(COST_ITEM_ELEMENT,elementKey)
+                        element = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_ELEMENT,elementKey)
                     if(!element)
                         mappingErrorBag.noValidElement = elementKey
                     costItem.costItemElement = element
@@ -1014,9 +1015,9 @@ class FinanceService {
             if(colMap.costItemSign != null) {
                 String elementSign = cols[colMap.costItemSign]
                 if(elementSign) {
-                    RefdataValue ciec = RefdataValue.getByValueAndCategory(elementSign, COST_CONFIGURATION)
+                    RefdataValue ciec = RefdataValue.getByValueAndCategory(elementSign, RDConstants.COST_CONFIGURATION)
                     if(!ciec)
-                        ciec = RefdataValue.getByCategoryDescAndI10nValueDe(COST_CONFIGURATION, elementSign)
+                        ciec = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_CONFIGURATION, elementSign)
                     if(!ciec)
                         mappingErrorBag.noValidSign = elementSign
                     costItem.costItemElementConfiguration = ciec
@@ -1056,12 +1057,13 @@ class FinanceService {
         // created in bootstrap.groovy with e.g. [key:'EUR']
         // TODO: migrate old values to new ones
         Set<RefdataValue> allCurrencies = []
-        List<String> staticOrder = grails.util.Holders.config?.financials?.currency?.split("[|]")
+        //List<String> staticOrder = grails.util.Holders.config?.financials?.currency?.split("[|]")
+        List<String> staticOrder = ConfigUtils.getFinancialsCurrency()?.split("[|]")
 
         staticOrder.each { String important ->
-            allCurrencies << RefdataValue.getByValueAndCategory(important,CURRENCY)
+            allCurrencies << RefdataValue.getByValueAndCategory(important,RDConstants.CURRENCY)
         }
-        allCurrencies.addAll(RefdataCategory.getAllRefdataValues(CURRENCY))
+        allCurrencies.addAll(RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY))
 
         List<Map<String,Object>> result = [[id:0,text:messageSource.getMessage('financials.currency.none',null, LocaleContextHolder.getLocale())]] //is only provisorical, TODO [ticket=2107]
         result.addAll(allCurrencies.collect { rdv ->
@@ -1076,12 +1078,12 @@ class FinanceService {
      * @return basic parameters for manipulating cost items
      */
     Map<String,Object> setEditVars(Org org) {
-        [costItemStatus:RefdataCategory.getAllRefdataValues(COST_ITEM_STATUS)-COST_ITEM_DELETED,
-         costItemCategory:RefdataCategory.getAllRefdataValues(COST_ITEM_CATEGORY),
-         costItemSigns:RefdataCategory.getAllRefdataValues(COST_CONFIGURATION),
+        [costItemStatus:RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)-RDStore.COST_ITEM_DELETED,
+         costItemCategory:RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_CATEGORY),
+         costItemSigns:RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION),
          costItemElements:CostItemElementConfiguration.findAllByForOrganisation(org),
-         taxType:RefdataCategory.getAllRefdataValues(TAX_TYPE),
-         yn:RefdataCategory.getAllRefdataValues(Y_N),
+         taxType:RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE),
+         yn:RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
          budgetCodes:BudgetCode.findAllByOwner(org),
          currency:orderedCurrency()]
     }
@@ -1115,6 +1117,9 @@ class FinanceService {
             result.subscription = Subscription.get(subId)
             if(!(result.subscription instanceof Subscription))
                 throw new FinancialDataException("Invalid or no subscription found!")
+            Map navigation = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.subscription))
+            result.navNextSubscription = navigation.nextLink
+            result.navPrevSubscription = navigation.prevLink
         }
         /*
             Decision tree
@@ -1154,7 +1159,7 @@ class FinanceService {
                             result.showConsortiaFunctions = true
                             result.sortConfig.consSort = 'ci.costTitle'
                             result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
-                            result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
+                            result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                             result.editConf.showVisibilitySettings = true
                             editable = true
                         }
@@ -1165,7 +1170,7 @@ class FinanceService {
                         result.showView = 'cons'
                         result.showConsortiaFunctions = true
                         result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
-                        result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
+                        result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                         result.editConf.showVisibilitySettings = true
                         editable = true
                     }
@@ -1183,7 +1188,7 @@ class FinanceService {
                                     'join subC.orgRelations roleC ' +
                                     'join s.orgRelations roleMC ' +
                                     'join s.orgRelations oo ' +
-                                    'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,consortialType:OR_SUBSCRIPTION_CONSORTIA,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
+                                    'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                     result.consMembers = consMembers
                     result.editConf.showVisibilitySettings = true
                     editable = true
@@ -1195,7 +1200,7 @@ class FinanceService {
                     //cases five to nine: subscription has a parent
                     if(result.subscription.instanceOf) {
                         //case five, six, eight and nine: child of local subscription or of consortial subscription, department level
-                        if(result.subscription.getCalculatedType() == TYPE_PARTICIPATION){
+                        if(result.subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION){
                             //cases six and nine: department subscription preview
                             if(params.orgBasicMemberView) {
                                 dataToDisplay << 'subscr'
@@ -1212,12 +1217,12 @@ class FinanceService {
                             }
                         }
                         //case seven: child of consortial subscription, collective level
-                        else if(result.subscription.getCalculatedType() == TYPE_PARTICIPATION_AS_COLLECTIVE){
+                        else if(result.subscription.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE){
                             dataToDisplay.addAll(['own','subscr','coll'])
                             result.showView = 'subscr'
                             result.showCollectiveFunctions = true
                             result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
-                            result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
+                            result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                             result.editConf.showVisibilitySettings = true
                             result.editConf.enableNewAndCopy = true
                             editable = true
@@ -1229,7 +1234,7 @@ class FinanceService {
                         result.showView = 'coll'
                         result.showCollectiveFunctions = true
                         result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
-                        result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
+                        result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                         result.editConf.showVisibilitySettings = true
                         editable = true
                     }
@@ -1247,9 +1252,9 @@ class FinanceService {
                                     'join subC.orgRelations roleC ' +
                                     'join s.orgRelations roleMC ' +
                                     'join s.orgRelations oo ' +
-                                    'where roleC.org = :contextOrg and roleMC.roleType = :collectiveType and oo.roleType = :subscrRole order by sortname asc',[contextOrg:result.institution,collectiveType: OR_SUBSCRIPTION_COLLECTIVE,subscrRole:OR_SUBSCRIBER_COLLECTIVE]).collect { row -> row[0]}
+                                    'where roleC.org = :contextOrg and roleMC.roleType = :collectiveType and oo.roleType = :subscrRole order by sortname asc',[contextOrg:result.institution,collectiveType: RDStore.OR_SUBSCRIPTION_COLLECTIVE,subscrRole:RDStore.OR_SUBSCRIBER_COLLECTIVE]).collect { row -> row[0]}
                     result.consMembers = consMembers
-                    //result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo join s.instanceOf.orgRelations parent where oo.roleType in :subscrRoles and parent.org = :contextOrg order by sortname asc',[contextOrg:result.institution,subscrRoles:[OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
+                    //result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo join s.instanceOf.orgRelations parent where oo.roleType in :subscrRoles and parent.org = :contextOrg order by sortname asc',[contextOrg:result.institution,subscrRoles:[RDStore.OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
                     editable = true
                 }
                 break

@@ -42,16 +42,16 @@ class SystemTicket {
     }
 
     static constraints = {
-        author      (nullable:false, blank:false)
-        title       (nullable:false, blank:false)
+        author       (blank:false)
+        title        (blank:false)
         described   (nullable:true, blank:true)
         expected    (nullable:true, blank:true)
         info        (nullable:true, blank:true)
-        meta        (nullable:false, blank:true)
-        status      (nullable:false, blank:false)
-        category    (nullable:false, blank:false)
-        dateCreated (nullable:false, blank:false)
-        lastUpdated (nullable:false, blank:false)
+        meta         (blank:true)
+        status       (blank:false)
+        category     (blank:false)
+        dateCreated  (blank:false)
+        lastUpdated  (blank:false)
         jiraReference(nullable:true, blank:true)
     }
 

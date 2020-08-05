@@ -2,6 +2,120 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2749    04.08.2020  rc1.5       Andreas Bug         Konsorten haben Zugriff auf Tab "Lizenzen" unter Vertrag
+
+2748    04.08.2020  rc1.5       Andreas Bug         Entknüpfen des Teilnehmers wirkte sich nicht auf Org-Vertrag-Verknüpfung aus
+
+2746    04.08.2020  rc1.5       Andreas Bug         Merkmalsvererbung funktionierte nicht, wenn Vollnutzer Merkmal in Teilnehmerlizenz gesetzt hat
+
+2745    04.08.2020  rc1.5       Andreas Bug         Durchreichen der Vererbungsinformation funktionierte nicht
+
+2743    04.08.2020  rc1.5       Andreas Feature     verschiedene kleinere Ausbesserungen für Merkmale in Objekte verwalten
+
+2742    03.08.2020  rc1.5       Andreas Bug         Einrichtungseinstellungen und Plattform erreichbar, Merkmale können, den Regeln entsprechend, bearbeitet und gelöscht werden
+
+2741    03.08.2020  rc1.5       Andreas Bug         Buttons bei der Zugangskonfiguration getauscht
+
+2726    03.08.2020  rc1.5       Andreas Bug         Einrichtungsmerkmale inkorrekt verarbeitet (fehlender Tenant)
+
+2740    31.07.2020  rc1.5       Andreas Bug         Punkte 3 und 4: Vertragsfilter korrigiert, Abfrage angepasst
+
+2738    31.07.2020  rc1.5       Andreas Bug         Punkt 1: Kostenausschüttung verlangt keine Währungsangabe mehr 
+
+2737    31.07.2020  rc1.5       Andreas Bug         Berechtigungseinstellungen und Navigationsleiste der Einrichtungsseite angepasst
+
+2736    31.07.2020  rc1.5       Andreas Bug         Alle Änderungen akzeptieren unterbinden, wenn keine Pakete vorhanden 
+
+2735    31.07.2020  rc1.5       Andreas Bug         Merkmale in Objekten löschen implementiert
+
+2724    31.07.2020  rc1.5       Andreas Bug         nicht existenter Vertrag führt bei der Suche nach Lizenzen nicht mehr zum Absturz
+
+2723    31.07.2020  rc1.5       Andreas Bug         Platzhalter in Auswahl der Ziellizenz korrigiert
+
+2631    31.07.2020  rc1.5       Andreas Bug         Doppelte Darstellung des Vollnutzer-Turms behoben
+
+2734    30.07.2020  rc1.5       Andreas Bug         PropertyService fehlte im SubscriptionService, was zu Absturz des Merkmalfilters auf "Meine Lizenzen pro Einrichtung" führte
+
+2732    30.07.2020  rc1.5       Andreas Bug         Absturz bei Aufruf von Teilnehmerverträgen, wenn keine solche vorhanden
+
+2731    30.07.2020  rc1.5       Andreas Bug         Abfrage nach den Nutzungszahlen der allgemeinen Merkmale um Kontextorg erweitert
+
+2729    30.07.2020  rc1.5       Andreas Bug         Abfrage ließ zentral verwaltete Lizenzen bei Kindlizenzen aus
+
+2728    30.07.2020  rc1.5       Andreas Bug         Referenzwert wird bei Merkmale in Objekten verwalten gesetzt
+
+2727    30.07.2020  rc1.5       Andreas Bug         Entküpfen von Paketen sowie Löschen von Lizenzen repariert
+
+2725    30.07.2020  rc1.5       Andreas Bug         Zauberstab- und Exportmenü in Merkmale verwalten getauscht
+
+2719    30.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen im Zuge der Reaktivierung von retriggerPendingChanges
+
+2711    29.07.2020  rc1.5       Moe     Bug         Hinzufügen neuer Teilnehmer zu Umfrage scheitert
+
+2721    28.07.2020  rc1.5       Andreas Bug         fehlende Berechtigung bei Anbieter bearbeiten nachgereicht
+
+2720    28.07.2020  rc1.5       Andreas Bug         Regressionsfehler bei Verknüpfen von Verträgen und Lizenzen behoben
+
+2716    27.07.2020  rc1.5       Andreas Bug         Mehrfachverknüpfung funktionierte nicht bei Verträgen
+
+2715    27.07.2020  rc1.5       Andreas Bug         lokale Lizenzen konnten nicht verlängert werden
+
+2714    27.07.2020  rc1.5       Andreas Bug         Einrichtungen konnten keine Merkmale anzeigen
+
+2713    27.07.2020  rc1.5       Andreas Bug         Der Tab Eigene Kosten wird nach Kopie korrekt angezeigt
+
+2712    27.07.2020  rc1.5       Andreas Bug         Paginator bei Tab Eigene Kosten korrigiert
+
+2702    23.07.2020  rc1.5       Moe     Bug         Mouseover bei dem Fragezeichen hinzufügen
+
+2705    23.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen laut Sammelticket
+
+--      23.07.2020  rc1.5       Andreas Bug         lokale Verträge waren für Vollnutzer nicht verknüpfbar
+
+2703    23.07.2020  rc1.5       Andreas Bug         Korrektur der Knöpfe in den Merkmalspanelen, Tooltip eingebunden für Sichtbarkeit
+
+1824    23.07.2020  rc1.5       Anja    Bug         Dropdowns der Orgs nicht nach Sichtrechten gefiltert; Zauberstab statt Button
+
+2701    23.07.2020  rc1.5       Andreas Bug         Editierbarkeitsflag korrigiert
+
+2700    22.07.2020  rc1.5       Andreas Bug         Merkmalsfilter korrigiert
+
+2575    22.07.2020  rc1.5       Andreas Bug         Export der Bestände korrigiert
+
+2655    22.07.2020  rc1.5       Andreas Bug         Stift zum Umschalten des Bearbeitungsmodus für Vollnutzer bei Kindlizenzen eingefügt
+
+2689    22.07.2020  rc1.5       Andreas Bug         Brücke zur korrekten Verarbeitung von PendingChange-Altlasten eingebaut
+
+--      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Vertragsverwaltung
+
+2646    21.07.2020  hbz-dev     Andreas Bug         Schaltschrank wird auch für INST_USER angezeigt
+
+2686    21.07.2020  hbz-dev     Ingrid  Feature     Bugfixing Layout Kontakt / Möglichkeit für Kopieren der Mailadresse in die Zwischenablage schaffen
+
+2697    21.07.2020  hbz-dev     Andreas Feature     Sicht "Eigene Merkmale" kann als Excel exportiert werden
+
+--      21.07.2020  hbz-dev     Andreas Feature     verschiedene kleinere Ausbesserungen hinsichtlich Merkmalsverwaltung
+
+2681    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Teilnehmer wieder freischalten
+
+2497    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Merkmale nach Wert sortieren
+
+2695    20.07.2020  hbz-dev     Moe     Feature     Umfrage-Auswertung: Nach Merkmale Wert filtern
+
+2693    17.07.2020  rc1.4       Moe     Bug         Umfrage Ausschüttungsfunktion 0% nicht ausschütten
+
+--      17.07.2020  hbz-dev     Moe     Feature     Umfrage Jahres Filter + Umfrage Standard Sortierung 
+
+2509    17.07.2020  hbz-dev     Moe     Feature     Länderauswahl-Filter verfeinern
+
+--      17.07.2020  hbz-dev     Andreas Bug         Filterverarbeitung von BudgetCodes, Rechnung und Auftrag korrigiert
+
+--      17.07.2020  hbz-dev     Andreas Bug         Absturzfehler behoben, der bei fehlendem GOKb-Paket-Eintrag auf /subscription/show auftrat
+
+2694    17.07.2020  hbz-dev     Andreas Feature     Neue Seite zur Massenverwaltung von Merkmalen angelegt
+
+2043    17.07.2020  hbz-dev     Andreas Feature     Link zu vorbelegtem Filter bei Merkmalsnutzung angelegt (vorerst nur Lizenz und Vertrag)
+
 --      15.07.2020  rc1.4       Moe     Bug         Sortierung Umfrage
 
 --      15.07.2020  rc1.4       Moe     Bug         Für die Umfrage wieder das ConfigFinish Flag anzeigen
@@ -12,7 +126,39 @@
 
 --      15.07.2020  rc1.4       Moe     Bug         Bug bei Kostenanzeigen in der Umfragesicht eine Teilnehmer für die Konsortialstelle
 
+2139    15.07.2020  hbz-dev     Andreas Bug         Sicherung gegen Mehrfachversand von Formularen an systemkritischen Stellen eingebaut
+
+1878    14.07.2020  hbz-dev     Andreas Feature     gewünschte Anpassungen in den Verknüpfungssichten umgesetzt
+
+2168    14.07.2020  hbz-dev     Moe     Feature     Paketsymbol analog zu Vertragssymbol unter Lizenz --> Teilnehmer
+
+2674    13.07.2020  hbz-dev     Moe     Feature     Suchbegriff im Filter "Meine Lizenzen" muss optimiert werden
+
+2675    13.07.2020  hbz-dev     Moe     Feature     Umfrage: Eingabe von zwei weiteren URLs
+
+2593    13.07.2020  hbz-dev     Andreas Bug         inkorrekte Darstellung von Dezimalwerten bei Merkmalen
+
+2614    13.07.2020  hbz-dev     Andreas Bug         Rechnungs- und Auftragsnummer konnten nicht gelöscht werden
+
+2426    13.07.2020  hbz-dev     Andreas Feature     Merkmale sind hinsichtlich ihrer Mehrfachvergabe und Pflichtsetzung konfigurierbar
+
+2679    10.07.2020  hbz-dev     Moe     Feature     Umfrage: Umfragereiter auch bei Kindlizenz für Konsortialstelle anzeigen
+
+2609    09.07.2020  hbz-dev     Moe     Feature     API Schnittstelle für Zugangskonfiguration
+
+1580    09.07.2020  hbz-dev     Andreas Feature     Umbau der Merkmalsverwaltung
+
+2654    08.07.2020  hbz-dev     Moe     Feature     Überarbeitung Zugangskonfiguration
+
+2098    07.07.2020  hbz-dev     Moe     Feature     Freitextfeld in Teilnehmerübersicht ermöglichen
+
+2664    07.07.2020  hbz-dev     Andreas Feature     Vorbelegung von auszuwählenden Lizenzen für Finanzmodal per Checkbox
+
+2657    07.07.2020  hbz-dev     David   Feature     Refactoring: Wrapper für Konfigurationszugriff
+
 2459    07.07.2020  rc1.4       Moe     Bug         Beim Kopieren von Objekten werden Dokumenten nicht richtig kopiert
+
+2659    06.07.2020  hbz-dev     Moe     Feature     Sortierung "Nicht abgeschlossen" auch für Konsortialsicht bauen bei Teilnehmer-Umfragen
 
 2660    06.07.2020  rc1.4       Moe     Bug         API Endpunkt CostItemList muss alle CostItems zurückgeben
 
@@ -28,15 +174,39 @@
 
 2645    03.07.2020  rc1.4       Moe     Bug         Blocker: /myInstitution/tasks nicht aufrufbar
 
+2358    02.07.2020  hbz-dev     Andreas Feature     neue Sicht für Merkmale in Teilnehmerlizenzen eingesetzt
+
+1896    01.07.2020  hbz-dev     Moe     Feature     Show Seite für IE umbauen
+
+2301    01.07.2020  hbz-dev     Anja    Feature     Org Views: Views and Permissions
+
+2647    01.07.2020  hbz-dev     Moe     Feature     Umbauen der Zugangskonfiguration
+
 1710    30.06.2020  rc1.4       Andreas Bug         Performanz bei Laden der Änderungen verbessert
 
 2636    30.06.2020  rc1.4       Andreas Bug         Weitere Korrektur zur Nichtprozessierung von Titeldaten im Sync
+
+1771    26.06.2020  hbz-dev     Anja    Feature     Org: Rechteprüfung normieren
+
+2641    26.06.2020  hbz-dev     David   Feature     API 0.110 - Neue Vertrags-/Lizenz-Struktur anpassen
+
+2195    24.06.2020  hbz-dev     Moe     Feature     ES Suche nur mit engl. Datumformat möglich
+
+2170    24.06.2020  hbz-dev     Moe     Feature     aktive Flag für FTControl
+
+2629    24.06.2020  hbz-dev     Moe     Feature     ES: Suche über Erstellungsdatum bzw. Aktualisierungsdatum
 
 2630    24.06.2020  rc1.4       Andreas Feature     Steuersätze 5 und 16 % hinzugefügt
 
 2238    24.06.2020  rc1.4       Andreas Bug         fehlende Vertragskategorisierungen nachgereicht
 
 1476    24.06.2020  rc1.4       Andreas Bug         Verschiedene Verbesserungen am Synchronisationsprozess
+
+2100    23.06.2020  hbz-dev     Moe     Feature     E-Mails mit Umlauten
+
+2620    23.06.2020  hbz-dev     Moe     Feature     Verlängerungsumfrage: Veränderung an zukünftigen Merkmal einblenden
+
+2627    22.06.2020  hbz-dev     Moe     Feature     "Späteinsteiger" & "Mehrjahres ausgewählt" nicht mehr für Logik nutzen
 
 --      22.06.2020  rc1.4       Moe     Bug         Wrong using of getCustomerType
 
@@ -46,13 +216,29 @@
 
 2621    19.06.2020  rc1.4       David   Feature     API 0.108: license.status
 
+2171    19.06.2020  hbz-dev     Anja    Feature     Umbau Adressen / Refactoring
+
 2568    18.06.2020  rc1.4       Moe     Bug         Vertragsfilter "Konsortium" nicht auf GASCO-Konsortien beschränkt
 
 2594    17.06.2020  rc1.4       David   Feature     SchemaSpy automatisiert ausführen
 
 2596    17.06.2020  rc1.4       Moe     Bug         Bei Löschen einer Lizenz soll auch die Umfrage gelöscht werden
 
+2600    17.06.2020  hbz-dev     Moe     Bug         Zugangskonfigurationen für Konsorten eintragen
+
+2599    17.06.2020  hbz-dev     Moe     Bug         Export von Zugangskonfiguration
+
 2450    16.06.2020  rc1.4       Moe     Bug         Fehlermeldung im Bereich Zugangskonfiguartion
+
+2258    16.06.2020  hbz-dev     Moe     Bug         Neue Identifikatoren kommen nicht in den ES Index
+
+2331    16.06.2020  hbz-dev     Moe     Feature     Eingegebene IP-Bereiche sortieren
+
+2540    16.06.2020  hbz-dev     David   Feature     News-Bereich der Startseite dynamisch machen
+
+2573    15.06.2020  hbz-dev     Moe     Feature     GlobalData Sync Logs in separate Log führen
+
+2593    12.06.2020  hbz-dev     Andreas Bug         Merkmalstypen von DFG Förderung Höhe und Fachstatistik / Klassifikation auf String geändert
 
 2589    10.06.2020  rc1.4       Andreas Bug         Private Merkmale wurden bei Verträgen nicht angezeigt
 
@@ -81,6 +267,8 @@
 2171    04.06.2020  rc1.4       Andreas Bug         Temporäre Brücke gebaut zum Schließen von Kontaktmodals
 
 2550    04.06.2020  rc1.4       Andreas Bug         Titelauswahl konnte nicht weitergeblättert werden
+
+1824    03.06.2020  hbz-dev     Anja    Bugfix      "Kontakt hinzufügen" - Dropdown der Orgs nicht nach Sichtrechten gefiltert
 
 --      03.06.2020  rc1.4       Andreas Bug         Abfragen im statusUpdateService auf executeQuery umgestellt
 
@@ -126,6 +314,8 @@
 
 2154    27.05.2020  rc1.3       Anja    Hotfix      Rechte geändert für Kundennummern (anzeigen, ändern, löschen)
 
+248     27.05.2020  hbz-dev     David   Feature     Entfernen von subscription offered / taken (subscription_type)
+
 2528    27.05.2020  rc1.4       Moe     Bug         Eigenes Merkmal "EGP-Nr." kann nicht hinzugefügt werden (LAS:eR-Backoffice)
 
 2467    27.05.2020  rc1.4       Moe     Feature     Schalter "zentral verhandelt" und "lokal verhandelt" umbenennen in "zentral verwaltet" und "lokal verwaltet"
@@ -149,6 +339,10 @@
 2407    25.05.2020  rc1.3       Anja    Hotfix      regions.de aus DB-Backup wiederherstellen; Anzeigeproblem region-Dropdown auf org/show
 
 2520    22.05.2020  rc1.4       Daniel  Feature     Überarbeitung Properties, Refdatas
+
+2178    25.05.2020  hbz-dev     David   Feature     Mehrfachanlegen von Adressen durch mehrfaches Klicken von "Anlegen-Button" soll unterbunden werden
+
+2131    25.05.2020  hbz-dev     David   Bug         Merkmalsgruppen werden mehrfach angelegt
 
 2444    22.05.2020  rc1.4       Andreas Bug         Rückverweis beim Entknüpfen von Teilnehmer angepasst
 

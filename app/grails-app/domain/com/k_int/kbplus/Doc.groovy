@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import org.hibernate.Session
@@ -97,7 +98,7 @@ class Doc {
         def contentLength
 
         try {
-            String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+            String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
             File file = new File("${fPath}/${uuid}")
             output = file.getBytes()
             contentLength = output.length

@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractI10nTranslatable
-import de.laser.domain.I10nTranslation
+import de.laser.I10nTranslation
+import de.laser.traits.I10nTrait
 import groovy.util.logging.Log4j
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -9,7 +9,7 @@ import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
-class SurveyProperty extends AbstractI10nTranslatable {
+class SurveyProperty implements I10nTrait {
 
     String name
     String type
@@ -41,7 +41,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
         introduction(nullable: true, blank: false)
         comment(nullable: true, blank: false)
         expl(nullable: true, blank: false)
-        isHardData(nullable: false, blank: false)
+        isHardData(blank: false)
         refdataCategory(nullable: true, blank: false)
     }
 
@@ -64,7 +64,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
     }
 
     static getLocalizedValue(key) {
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
         //println locale
         if (SurveyProperty.validTypes.containsKey(key)) {

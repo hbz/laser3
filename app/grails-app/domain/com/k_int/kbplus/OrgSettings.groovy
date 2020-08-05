@@ -61,15 +61,15 @@ class OrgSettings {
     }
 
     static constraints = {
-        org        (nullable: false, unique: 'key')
-        key        (nullable: false, unique: 'org')
+        org        (unique: 'key')
+        key        (unique: 'org')
         strValue   (nullable: true)
         rdValue    (nullable: true)
         roleValue  (nullable: true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     // only these settings are editable by orgs themselves

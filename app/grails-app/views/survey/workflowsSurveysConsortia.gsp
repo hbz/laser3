@@ -32,7 +32,7 @@
 <semui:filter showFilterButton="true">
     <g:form action="workflowsSurveysConsortia" controller="survey" method="post" class="ui small form"
             params="[tab: params.tab]">
-        <div class="three fields">
+        <div class="four fields">
             <div class="field">
                 <label for="name">${message(code: 'surveyInfo.name.label')}
                 </label>
@@ -54,6 +54,16 @@
             <div class="field fieldcontain">
                 <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
                                   placeholder="filter.placeholder" value="${params.endDate}"/>
+            </div>
+
+            <div class="field fieldcontain">
+                <label>${message(code: 'default.valid_onYear.label')}</label>
+                <g:select name="validOnYear"
+                          from="${surveyYears}"
+                          class="ui fluid search selection dropdown"
+                          value="${params.validOnYear}"
+                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+
             </div>
 
         </div>
@@ -201,14 +211,23 @@
                     <th rowspan="2" scope="col">${message(code: 'surveyProperty.plural.label')}</th>
 
 
-                    <th rowspan="2" scope="col">${message(code: 'surveyConfigDocs.label')}</th>
+                    <th rowspan="2" scope="col">
+                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
+                            <i class="file alternate large icon"></i>
+                        </a>
+                    </th>
 
-                    <th rowspan="2" scope="col">${message(code: 'surveyParticipants.label')}</th>
+                    <th scope="col" rowspan="2">
+                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyParticipants.label')}" data-position="top center">
+                            <i class="users large icon"></i>
+                        </a>
+                    </th>
 
-
-                    <th rowspan="2" scope="col">${message(code: 'surveyCostItems.label')}</th>
-
-
+                    <th scope="col" rowspan="2">
+                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
+                            <i class="money bill large icon"></i>
+                        </a>
+                    </th>
 
                     <th rowspan="2" scope="col">${message(code: 'surveyInfo.finished')}</th>
                     <th rowspan="2" scope="col"></th>
@@ -310,7 +329,7 @@
 
 
                         <td class="center aligned">
-                            <g:if test="${surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose && surveyInfo.type in [RDStore.SURVEY_TYPE_RENEWAL]}">
+                            <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
                                 <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                                     <div class="ui circular ${surveyConfig?.costItemsFinish ? "green" : ""} label">

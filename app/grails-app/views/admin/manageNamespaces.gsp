@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IdentifierNamespace; com.k_int.kbplus.Identifier;de.laser.domain.I10nTranslation" %>
+<%@ page import="com.k_int.kbplus.IdentifierNamespace; com.k_int.kbplus.Identifier;de.laser.I10nTranslation" %>
 <!doctype html>
 <html>
 	<head>
@@ -90,7 +90,7 @@
             </g:form>
         </semui:form>
 
-                <table class="ui celled la-table la-table-small table">
+                <table class="ui celled la-table compact table">
                     <thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>

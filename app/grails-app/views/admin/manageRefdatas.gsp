@@ -1,4 +1,4 @@
-<%@ page import="de.laser.domain.I10nTranslation; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.I10nTranslation; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!doctype html>
 <html>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="content">
 
-                    <table class="ui celled la-table la-table-small table">
+                    <table class="ui celled la-table compact table">
                         <thead>
                         <tr>
                             <th>Kategorie (Schlüssel)</th>

@@ -10,7 +10,7 @@
         <div class="fields" style="justify-content: flex-end;">
             <div class="six wide field">
                 <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>
-                <g:select class="ui search dropdown"
+                <g:select class="ui search selection dropdown"
                       name="sourceSubscriptionId"
                       from="${((List<Subscription>)allSubscriptions_readRights)?.sort {it.dropdownNamingConvention()}}"
                       optionValue="${{it?.dropdownNamingConvention()}}"
@@ -20,13 +20,14 @@
             </div>
             <div class="six wide field">
                 <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: </label>
-                <g:select class="ui search dropdown"
+                <g:select class="ui search selection dropdown"
                       name="targetSubscriptionId"
                       from="${((List<Subscription>)allSubscriptions_writeRights)?.sort {it.dropdownNamingConvention()}}"
                       optionValue="${{it?.dropdownNamingConvention()}}"
                       optionKey="id"
                       value="${targetSubscription?.id}"
-                      noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
+                          noSelection="${['':message(code: 'default.select.choose.label')]}"
+                />
             </div>
         </div>
         <div class="fields" style="justify-content: flex-end;">

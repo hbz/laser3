@@ -40,19 +40,19 @@ class Task {
         pkg             (nullable:true, blank:false)
         subscription    (nullable:true, blank:false)
         surveyConfig      (nullable:true, blank:false)
-        title           (nullable:false, blank:false)
+        title           (blank:false)
         description     (nullable:true, blank:true)
-        status          (nullable:false, blank:false)
-        creator         (nullable:false, blank:false)
-        endDate         (nullable:false, blank:false)
-        systemCreateDate (nullable:false, blank:false)
-        createDate      (nullable:false, blank:false)
+        status          (blank:false)
+        creator         (blank:false)
+        endDate         (blank:false)
+        systemCreateDate (blank:false)
+        createDate      (blank:false)
         responsibleUser (nullable:true,  blank:true)
         responsibleOrg  (nullable:true,  blank:true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     static mapping = {

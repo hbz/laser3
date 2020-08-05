@@ -16,7 +16,8 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+                     params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
     <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </semui:breadcrumbs>
@@ -54,9 +55,6 @@
     <table class="ui celled sortable table la-table">
         <thead>
         <tr>
-            <g:if test="${addSurveyConfigs}">
-                <th class="left aligned"></th>
-            </g:if>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
             <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
                 <g:set var="SUBSTITUTE" value="de"/>
@@ -75,16 +73,6 @@
 
         <g:each in="${properties.sort { it."name_${SUBSTITUTE}"?.toLowerCase() }}" var="property" status="i">
             <tr>
-                <g:if test="${addSurveyConfigs}">
-                    <td>
-                        <g:if test="${SurveyConfig.findBySurveyInfoAndSurveyProperty(surveyInfo, property)}">
-                            <i class="check circle icon green"></i>
-                        </g:if>
-                        <g:else>
-                            <g:checkBox name="selectedProperty" value="${property.id}" checked="false"/>
-                        </g:else>
-                    </td>
-                </g:if>
                 <td class="center aligned">
                     ${i + 1}
                 </td>

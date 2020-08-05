@@ -187,11 +187,10 @@
 
 
     <%-- <g:render template="enhanced_select" contextPath="../templates" /> --%>
-    <g:render template="orgLinksModal" 
-              contextPath="../templates" 
+    <g:render template="/templates/orgLinksModal"
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
 
-    <r:script language="JavaScript">
+    <r:script>
       $(function(){
         $.fn.editable.defaults.mode = 'inline';
         $('.xEditableValue').editable();

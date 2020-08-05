@@ -3,7 +3,9 @@ package de.laser
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
 import grails.util.Holders
 import net.sf.json.JSON
 
@@ -41,14 +43,14 @@ class SystemAnnouncement {
     }
 
     static constraints = {
-        user        (nullable:false, blank:false)
-        title       (nullable:false, blank:false)
-        content     (nullable:false, blank:false)
-        status      (nullable:true,  blank:false)
-        isPublished (nullable:false, blank:false)
-        lastPublishingDate (nullable:true, blank:false)
-        dateCreated (nullable:true, blank:false)
-        lastUpdated (nullable:true, blank:false)
+        user        (blank:false)
+        title       (blank:false)
+        content     (blank:false)
+        status      (nullable:true, blank:false)
+        isPublished (blank:false)
+        lastPublishingDate (nullable:true)
+        dateCreated (nullable:true)
+        lastUpdated (nullable:true)
     }
 
     static List<SystemAnnouncement> getPublished(int periodInDays) {
@@ -128,8 +130,8 @@ class SystemAnnouncement {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
 
-        String currentServer = grailsApplication.config.getCurrentServer()
-        String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+        String currentServer = ServerUtils.getCurrentServer()
+        String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
         String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', null, language)
 
         boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
@@ -143,9 +145,9 @@ class SystemAnnouncement {
         if (isRemindCCbyEmail && ccAddress) {
             mailService.sendMail {
                 to      user.getEmail()
-                from    grailsApplication.config.notifications.email.from
+                from    ConfigUtils.getNotificationsEmailFrom()
                 cc      ccAddress
-                replyTo grailsApplication.config.notifications.email.replyTo
+                replyTo ConfigUtils.getNotificationsEmailReplyTo()
                 subject mailSubject
                 body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: this])
             }
@@ -153,8 +155,8 @@ class SystemAnnouncement {
         else {
             mailService.sendMail {
                 to      user.getEmail()
-                from    grailsApplication.config.notifications.email.from
-                replyTo grailsApplication.config.notifications.email.replyTo
+                from    ConfigUtils.getNotificationsEmailFrom()
+                replyTo ConfigUtils.getNotificationsEmailReplyTo()
                 subject mailSubject
                 body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: this])
             }

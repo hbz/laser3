@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
-
-import com.k_int.kbplus.auth.User
+import de.laser.exceptions.CreationException
 
 import javax.persistence.Transient
 
@@ -16,9 +15,8 @@ class Links {
     def genericOIDService
 
     Long id
-    Long source
-    Long destination
-    String objectType
+    String source
+    String destination
     RefdataValue linkType
     Org     owner
     Date    dateCreated
@@ -28,7 +26,7 @@ class Links {
         id          column: 'l_id'
         source      column: 'l_source_fk',      index: 'l_source_idx'
         destination column: 'l_destination_fk', index: 'l_dest_idx'
-        objectType  column: 'l_object'
+        //objectType  column: 'l_object'
         linkType    column: 'l_link_type_rv_fk'
         owner       column: 'l_owner_fk'
         autoTimestamp true
@@ -37,32 +35,41 @@ class Links {
     }
 
     static constraints = {
-        source        (nullable: false, blank: false)
-        destination   (nullable: false, blank: false)
-        objectType    (nullable: false, blank: false)
-        linkType      (nullable: false, blank: false)
-        owner         (nullable: false, blank: false)
+        source        (blank: false)
+        destination   (blank: false)
+        //objectType    (blank: false)
+        linkType      (blank: false)
+        owner         (blank: false)
 
         // Nullable is true, because values are already in the database
-        dateCreated (nullable: true, blank: false)
+        dateCreated (nullable: true)
 
+    }
+
+    static Links construct(Map<String, Object> configMap) throws CreationException {
+        Links links = new Links(source:configMap.source,destination:configMap.destination,owner:configMap.owner,linkType:configMap.linkType)
+        if(links.save())
+            links
+        else {
+            throw new CreationException(links.errors)
+        }
     }
 
     def getOther(key) {
         def context
         if(key instanceof Subscription || key instanceof License)
-            context = key
+            context = GenericOIDService.getOID(key)
         else if(key instanceof GString || key instanceof String)
-            context = genericOIDService.resolveOID(key)
+            context = key
         else {
             log.error("No context key!")
             return null
         }
 
-        if(context.id == source)
-            return genericOIDService.resolveOID("${objectType}:${destination}")
-        else if(context.id == destination)
-            return genericOIDService.resolveOID("${objectType}:${source}")
+        if(context == source)
+            return genericOIDService.resolveOID(destination)
+        else if(context == destination)
+            return genericOIDService.resolveOID(source)
         else return null
     }
 }

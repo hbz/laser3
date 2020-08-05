@@ -6,11 +6,15 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
+import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder
 
+@Transactional
 class InstAdmService {
 
     GrailsApplication grailsApplication
@@ -120,7 +124,7 @@ class InstAdmService {
 
     void sendMail(User user, String subj, String view, Map model) {
 
-        if (grailsApplication.config.getCurrentServer() == ContextService.SERVER_LOCAL) {
+        if (ServerUtils.getCurrentServer() == ServerUtils.SERVER_LOCAL) {
             println "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
             return
         }
@@ -131,9 +135,9 @@ class InstAdmService {
 
             mailService.sendMail {
                 to      user.email
-                from    grailsApplication.config.notifications.email.from
-                replyTo grailsApplication.config.notifications.email.replyTo
-                subject grailsApplication.config.laserSystemId + ' - ' + subj
+                from    ConfigUtils.getNotificationsEmailFrom()
+                replyTo ConfigUtils.getNotificationsEmailReplyTo()
+                subject ConfigUtils.getLaserSystemId() + ' - ' + subj
                 body    view: view, model: model
             }
         }

@@ -4,16 +4,16 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomainWithCalculatedLastUpdated
-import de.laser.domain.IssueEntitlementGroup
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.IssueEntitlementGroup
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.AuditableSupport
+import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
-import de.laser.interfaces.CalculatedType
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
 import org.apache.commons.logging.Log
@@ -23,9 +23,8 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
-class Subscription
-        extends AbstractBaseDomainWithCalculatedLastUpdated
-        implements CalculatedType, Permissions, AuditableSupport, ShareSupport {
+class Subscription extends AbstractBaseWithCalculatedLastUpdated
+        implements AuditableSupport, CalculatedType, Permissions, ShareSupport {
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
@@ -54,7 +53,8 @@ class Subscription
     def subscriptionService
     @Transient
     def auditService
-
+    @Transient
+    def genericOIDService
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -85,6 +85,9 @@ class Subscription
   Date manualCancellationDate
   String cancellationAllowances
 
+  //Only for Consortia: ERMS-2098
+  String comment
+
   Subscription instanceOf
   Subscription previousSubscription //deleted as ERMS-800
   // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
@@ -96,24 +99,24 @@ class Subscription
     Date lastUpdated
     Date lastUpdatedCascading
 
-  License owner
   SortedSet issueEntitlements
+  SortedSet packages
 
   static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
 
   static hasMany = [
-                     ids: Identifier,
-                     packages : SubscriptionPackage,
-                     issueEntitlements: IssueEntitlement,
-                     documents: DocContext,
-                     orgRelations: OrgRole,
-                     prsLinks: PersonRole,
-                     derivedSubscriptions: Subscription,
-                     pendingChanges: PendingChange,
-                     customProperties: SubscriptionCustomProperty,
-                     privateProperties: SubscriptionPrivateProperty,
-                     costItems: CostItem,
-                     ieGroups: IssueEntitlementGroup
+          ids                 : Identifier,
+          packages            : SubscriptionPackage,
+          issueEntitlements   : IssueEntitlement,
+          documents           : DocContext,
+          orgRelations        : OrgRole,
+          prsLinks            : PersonRole,
+          derivedSubscriptions: Subscription,
+          pendingChanges      : PendingChange,
+          propertySet         : SubscriptionProperty,
+          //privateProperties: SubscriptionPrivateProperty,
+          costItems           : CostItem,
+          ieGroups            : IssueEntitlementGroup
   ]
 
   static mappedBy = [
@@ -126,8 +129,8 @@ class Subscription
                       derivedSubscriptions: 'instanceOf',
                       pendingChanges: 'subscription',
                       costItems: 'sub',
-                      customProperties: 'owner',
-                      privateProperties: 'owner',
+                      propertySet: 'owner',
+                      //privateProperties: 'owner',
                       ]
 
     static mapping = {
@@ -138,10 +141,11 @@ class Subscription
         status      column:'sub_status_rv_fk'
         type        column:'sub_type_rv_fk',        index: 'sub_type_idx'
         kind        column:'sub_kind_rv_fk'
-        owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
+        //owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
         name        column:'sub_name'
+        comment     column: 'sub_comment', type: 'text'
         identifier  column:'sub_identifier'
         startDate   column:'sub_start_date',        index: 'sub_dates_idx'
         endDate     column:'sub_end_date',          index: 'sub_dates_idx'
@@ -166,59 +170,75 @@ class Subscription
         orgRelations        batchSize: 10
         prsLinks            batchSize: 10
         derivedSubscriptions    batchSize: 10
-        customProperties    batchSize: 10
-        privateProperties   batchSize: 10
+        propertySet    batchSize: 10
+        //privateProperties   batchSize: 10
         costItems           batchSize: 10
     }
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:false, blank:false)
+        status(blank:false)
         type(nullable:true, blank:false)
         kind(nullable:true, blank:false)
-        owner(nullable:true, blank:false)
+        //owner(nullable:true, blank:false)
         form        (nullable:true, blank:false)
         resource    (nullable:true, blank:false)
-        startDate(nullable:true, blank:false, validator: { val, obj ->
+        startDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
             }
         })
-        endDate(nullable:true, blank:false, validator: { val, obj ->
+        endDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
             }
         })
-        manualRenewalDate(nullable:true, blank:false)
-        manualCancellationDate(nullable:true, blank:false)
+        manualRenewalDate (nullable:true)
+        manualCancellationDate (nullable:true)
         instanceOf(nullable:true, blank:false)
-        administrative(nullable:false, blank:false)
+        comment(nullable: true, blank: true)
+        administrative(blank:false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
-        isSlaved    (nullable:false, blank:false)
+        isSlaved    (blank:false)
         noticePeriod(nullable:true, blank:true)
-        isPublicForApi (nullable:false, blank:false)
+        isPublicForApi (blank:false)
         cancellationAllowances(nullable:true, blank:true)
-        lastUpdated(nullable: true, blank: true)
-        lastUpdatedCascading (nullable: true, blank: false)
+        lastUpdated(nullable: true)
+        lastUpdatedCascading (nullable: true)
         isMultiYear(nullable: true, blank: false)
-        hasPerpetualAccess(nullable: false, blank: false)
+        hasPerpetualAccess(blank: false)
     }
 
     @Override
-    def afterInsert() {
-        static_logger.debug("afterInsert")
-        cascadingUpdateService.update(this, dateCreated)
-
-        if(owner != null)
-            subscriptionService.setOrgLicRole(this,owner)
+    Collection<String> getLogIncluded() {
+        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges' ]
     }
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        super.afterDeleteHandler()
 
         deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
+    }
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        super.beforeUpdateHandler()
     }
 
     @Transient
@@ -408,26 +428,28 @@ class Subscription
         isSlaved ? "Yes" : "No"
     }
 
+    Set<License> getLicenses() {
+        Set<License> result = []
+        Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+            result << genericOIDService.resolveOID(l.source)
+        }
+        result
+    }
+
   Org getSubscriber() {
     Org result
     Org cons
-    Org coll
     
     orgRelations.each { or ->
-      if ( or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id] )
+      if ( or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id] )
         result = or.org
         
       if ( or.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
         cons = or.org
-      else if(or.roleType.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)
-        coll = or.org
     }
     
     if ( !result && cons ) {
       result = cons
-    }
-    else if(!result && coll) {
-        result = coll
     }
     
     result
@@ -470,25 +492,23 @@ class Subscription
 
     List<Org> getDerivedSubscribers() {
         List<Subscription> subs = Subscription.findAllByInstanceOf(this)
-        OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
+        subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
     }
 
     Subscription getCalculatedPrevious() {
         Links match = Links.findWhere(
-                source: this.id,
-                objectType: Subscription.class.name,
+                source: GenericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
         )
-        return match ? Subscription.get(match?.destination) : null
+        return match ? genericOIDService.resolveOID(match.destination) : null
     }
 
     Subscription getCalculatedSuccessor() {
         Links match = Links.findWhere(
-                destination: this.id,
-                objectType: Subscription.class.name,
+                destination: GenericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
         )
-        return match ? Subscription.get(match?.source) : null
+        return match ? genericOIDService.resolveOID(match.source) : null
     }
 
     boolean isMultiYearSubscription()
@@ -559,25 +579,19 @@ class Subscription
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA
             )
-            OrgRole coll = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIPTION_COLLECTIVE
-            )
             OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIBER_CONS
-            )
-            OrgRole subscrColl = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIBER_COLLECTIVE
             )
             OrgRole subscr = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIBER
             )
 
             if (perm == 'view') {
-                return cons || subscrCons || coll || subscrColl || subscr
+                return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
                 if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                    return cons || coll || subscr
+                    return cons || subscr
             }
         }
 
@@ -649,7 +663,7 @@ class Subscription
 
         // ALL type depending groups without checking tenants or bindings
         List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name, [sort:'name', order:'asc'])
-        groups.each{ it ->
+        groups.each{ PropertyDefinitionGroup it ->
 
             // cons_members
             if (this.instanceOf) {
@@ -665,15 +679,24 @@ class Subscription
                         result.sorted << ['global', it, null]
                     }
                 }
-                // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextOrg?.id) {
+                // consortium @ member or single user; getting group by tenant (and instanceOf.binding)
+                if (it.tenant?.id == contextOrg.id) {
                     if (binding) {
-                        result.member << [it, binding] // TODO: remove
-                        result.sorted << ['member', it, binding]
+                        if(contextOrg.id == this.getConsortia().id) {
+                            result.member << [it, binding] // TODO: remove
+                            result.sorted << ['member', it, binding]
+                        }
+                        else {
+                            result.local << [it, binding]
+                            result.sorted << ['local', it, binding]
+                        }
+                    } else {
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
                 // subscriber consortial; getting group by consortia and instanceOf.binding
-                else if (it.tenant?.id == this.instanceOf.getConsortia()?.id) {
+                else if (it.tenant?.id == this.getConsortia()?.id) {
                     if (binding) {
                         result.member << [it, binding] // TODO: remove
                         result.sorted << ['member', it, binding]
@@ -684,7 +707,7 @@ class Subscription
             else {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg.id) {
                     if (binding) {
                         result.local << [it, binding] // TODO: remove
                         result.sorted << ['local', it, binding]
@@ -882,9 +905,6 @@ select distinct oap from OrgAccessPoint oap
                else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)?.sortname
            }
-           else if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)?.id == contextOrg.id) {
-               additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_COLLECTIVE.id)?.sortname
-           }
            else{
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
@@ -943,6 +963,14 @@ select distinct oap from OrgAccessPoint oap
             result.startDate = startDate
             result.endDate = endDate
         }
+
+        result
+    }
+
+    List<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
+        List<OrgAccessPoint> result = []
+
+        result = this.getSubscriber().accessPoints
 
         result
     }

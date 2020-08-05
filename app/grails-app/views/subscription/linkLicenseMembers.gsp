@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.Links; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -62,7 +62,7 @@
     <div class="ui segment">
     <g:form action="processLinkLicenseMembers" method="post" class="ui form">
         <g:hiddenField name="id" value="${params.id}"/>
-
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <div class="field required">
             <h4>${message(code: 'subscription.linkLicenseMembers.info', args: args.memberType)}</h4>
@@ -152,13 +152,6 @@
                                 </span>
                             </g:if>
 
-                            <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${subscr.getCustomerTypeI10n()}">
-                                    <i class="chess rook grey icon"></i>
-                                </span>
-                            </g:if>
-
                         </td>
                     </g:each>
                     <g:if test="${!sub.getAllSubscribers()}">
@@ -170,10 +163,9 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                     <td>${sub.status.getI10n('value')}</td>
                     <td>
-                        <g:if test="${sub?.owner?.id}">
-                            <g:link controller="license" action="show"
-                                    id="${sub.owner.id}">${sub.owner.reference}</g:link>
-                        </g:if>
+                        <g:each in="${Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }}" var="license">
+                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
+                        </g:each>
                     </td>
                     <td>
                         <g:if test="${sub.isMultiYear}">
@@ -201,7 +193,7 @@
     <br><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
 </g:else>
 
-<r:script language="JavaScript">
+<r:script>
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)

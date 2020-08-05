@@ -6,7 +6,6 @@ import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.StatsTripleCursor
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import org.hibernate.criterion.CriteriaSpecification
@@ -193,7 +192,7 @@ class UsageController extends AbstractDebugController {
 
         if (params.supplier != 'null'){
             platform = Platform.get(params.supplier)
-            def cp = platform.customProperties.find(){
+            def cp = platform.propertySet.find(){
                 it.type.name = "NatStat Supplier ID"
             }
             supplier = cp.stringValue

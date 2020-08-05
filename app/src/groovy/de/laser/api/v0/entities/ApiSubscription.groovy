@@ -1,15 +1,7 @@
 package de.laser.api.v0.entities
 
-import com.k_int.kbplus.CostItem
-import com.k_int.kbplus.Identifier
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgRole
-import com.k_int.kbplus.Subscription
-import de.laser.api.v0.ApiBox
-import de.laser.api.v0.ApiCollectionReader
-import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiStubReader
-import de.laser.api.v0.ApiToolkit
+import com.k_int.kbplus.*
+import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import grails.converters.JSON
@@ -148,10 +140,8 @@ class ApiSubscription {
 		//result.derivedSubscriptions = ApiStubReader.getStubCollection(sub.derivedSubscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
 		result.identifiers          = ApiCollectionReader.getIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
 		result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
-		result.license              = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
-		//removed: result.license          = ApiCollectionReader.resolveLicense(sub.owner, ApiCollectionReader.IGNORE_ALL, context) // com.k_int.kbplus.License
-
 		//result.organisations        = ApiCollectionReader.resolveOrgLinks(sub.orgRelations, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+		result.orgAccessPoints			= ApiCollectionReader.getOrgAccessPointCollection(sub.getOrgAccessPointsOfSubscriber())
 
 		result.predecessor = ApiStubReader.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
 		result.successor   = ApiStubReader.requestSubscriptionStub(sub.getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
@@ -183,6 +173,12 @@ class ApiSubscription {
 				sub.prsLinks,  true, true, context
 		) // com.k_int.kbplus.PersonRole
 		*/
+
+		//result.license = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
+		result.licenses = []
+		sub.getLicenses().each { lic ->
+			result.licenses.add( ApiStubReader.requestLicenseStub(lic, context) )
+		}
 
 		if (isInvoiceTool) {
 			result.costItems = ApiCollectionReader.getCostItemCollection(sub.costItems)

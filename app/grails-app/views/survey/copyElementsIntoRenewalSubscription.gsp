@@ -1,6 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person" %>
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionController.*"%>
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController"%>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -42,7 +40,7 @@
     %>
     <g:if test="${isRenewSub}">
         <div class="ui tablet stackable steps la-clear-before">
-            <div class="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''} step">
+            <div class="${workFlowPart == SubscriptionController.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''} step">
                 <div class="content">
                     <div class="content" >
                         <div class="title">
@@ -58,10 +56,10 @@
                     </div>
                 </div>
             </div>
-            <div class="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''} step">
+            <div class="${workFlowPart == SubscriptionController.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''} step">
                 <div class="content" >
                     <div class="title">
-                        <g:link controller="survey" action="copyElementsIntoRenewalSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}">
+                        <g:link controller="survey" action="copyElementsIntoRenewalSubscription" params="${params << [workFlowPart: SubscriptionController.WORKFLOW_DATES_OWNER_RELATIONS]}">
                             ${message(code: 'subscription.details.copyElementsIntoSubscription.inventory.label')}
                         </g:link>
                     </div>
@@ -71,10 +69,10 @@
                     </div>
                 </div>
             </div>
-            <div class="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''} step">
+            <div class="${workFlowPart == SubscriptionController.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''} step">
                 <div class="content">
                     <div class="title">
-                        <g:link controller="survey" action="copyElementsIntoRenewalSubscription" params="${params << [workFlowPart: WORKFLOW_PACKAGES_ENTITLEMENTS]}">
+                        <g:link controller="survey" action="copyElementsIntoRenewalSubscription" params="${params << [workFlowPart: SubscriptionController.WORKFLOW_PACKAGES_ENTITLEMENTS]}">
                             ${message(code: 'subscription.details.copyElementsIntoSubscription.attachements.label')}
                         </g:link>
                     </div>
@@ -86,10 +84,10 @@
                 </div>
             </div>
 
-            <div class="${workFlowPart == WORKFLOW_PROPERTIES ? 'active' : ''} step">
+            <div class="${workFlowPart == SubscriptionController.WORKFLOW_PROPERTIES ? 'active' : ''} step">
                 <div class="content">
                     <div class="title">
-                        <g:link controller="survey" action="copyElementsIntoRenewalSubscription" params="${params << [workFlowPart: WORKFLOW_SUBSCRIBER]}">
+                        <g:link controller="survey" action="copyElementsIntoRenewalSubscription" params="${params << [workFlowPart: SubscriptionController.WORKFLOW_SUBSCRIBER]}">
                             ${message(code: 'properties')}
                         </g:link>
                     </div>
@@ -107,16 +105,16 @@
         <span class="la-added">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willStay')}</span>
         <span class="la-removed">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willBeReplaced')}</span>
     </div>
-    <g:if test="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+    <g:if test="${workFlowPart == SubscriptionController.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <g:render template="/templates/subscription/copyDocsAndTasks" />
     </g:if>
-    <g:elseif test="${workFlowPart == WORKFLOW_PROPERTIES}">
+    <g:elseif test="${workFlowPart == SubscriptionController.WORKFLOW_PROPERTIES}">
         <g:render template="/templates/subscription/copyPropertiesCompare" />
     </g:elseif>
-    <g:elseif test="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS}">
+    <g:elseif test="${workFlowPart == SubscriptionController.WORKFLOW_PACKAGES_ENTITLEMENTS}">
         <g:render template="/templates/subscription/copyPackagesAndIEs" />
     </g:elseif>
-    %{--<g:elseif test="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS}">--}%
+    %{--<g:elseif test="${workFlowPart == SubscriptionController.WORKFLOW_DATES_OWNER_RELATIONS}">--}%
     <g:else>
         <g:render template="/templates/subscription/copyElements" />
     </g:else>
