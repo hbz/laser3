@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 
 class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
@@ -43,15 +43,27 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
     ]
 
     @Override
-    def afterDelete() {
-        super.afterDeleteHandler()
+    def beforeInsert() {
+        super.beforeInsertHandler()
     }
     @Override
     def afterInsert() {
         super.afterInsertHandler()
     }
     @Override
+    def beforeUpdate(){
+        super.beforeUpdateHandler()
+    }
+    @Override
     def afterUpdate() {
         super.afterUpdateHandler()
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
     }
 }

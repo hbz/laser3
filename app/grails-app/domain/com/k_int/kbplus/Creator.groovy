@@ -35,11 +35,16 @@ class Creator extends AbstractBase {
         title       (nullable:true)
     }
 
+    @Override
     def beforeInsert() {
         super.beforeInsertHandler()
     }
-
+    @Override
     def beforeUpdate() {
         super.beforeUpdateHandler()
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 }

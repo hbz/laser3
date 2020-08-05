@@ -32,4 +32,8 @@ class OrgAccessPointLink extends AbstractBase {
     def beforeUpdate() {
         super.beforeUpdateHandler()
     }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
 }

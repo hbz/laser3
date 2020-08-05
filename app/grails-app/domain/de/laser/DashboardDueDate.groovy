@@ -5,7 +5,7 @@ import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.UserSettings
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import de.laser.helper.SqlDateUtils
 import groovy.util.logging.Log4j

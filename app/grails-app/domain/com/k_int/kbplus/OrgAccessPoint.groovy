@@ -51,6 +51,10 @@ class OrgAccessPoint extends AbstractBase {
     def beforeUpdate() {
         super.beforeUpdateHandler()
     }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
 
     static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)

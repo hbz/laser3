@@ -44,4 +44,8 @@ class CostItemElementConfiguration extends AbstractBase {
     def beforeUpdate() {
         super.beforeUpdateHandler()
     }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
 }

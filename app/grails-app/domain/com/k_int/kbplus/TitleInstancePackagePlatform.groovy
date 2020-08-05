@@ -172,6 +172,10 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         touchPkgLastUpdated()
         super.beforeInsertHandler()
     }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
 
   @Transient
   void touchPkgLastUpdated() {
