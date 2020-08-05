@@ -11,7 +11,9 @@ import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.codehaus.groovy.grails.web.json.JSONElement
+import org.hibernate.Session
 
 @Transactional
 class StatusUpdateService extends AbstractLockableService {
@@ -19,6 +21,7 @@ class StatusUpdateService extends AbstractLockableService {
     def globalSourceSyncService
     def changeNotificationService
     def contextService
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     /**
      * Cronjob-triggered.
@@ -322,85 +325,90 @@ class StatusUpdateService extends AbstractLockableService {
      * a new pending change is registered
      */
     void retriggerPendingChanges(String packageUUID) {
-        Org contextOrg = contextService.org
         Package pkg = Package.findByGokbId(packageUUID)
-        //consider only the parent level!
-        Set<IssueEntitlement> allIEs = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :deleted and ie.subscription.instanceOf is null',[deleted:RDStore.TIPP_STATUS_DELETED,pkg:pkg])
-        //A and B are naming convention for A (old entity which is out of sync) and B (new entity with data up to date)
-        allIEs.eachWithIndex { IssueEntitlement ieA, int index ->
-            Map<String,Object> changeMap = [target:ieA.subscription]
-            String changeDesc
-            if(ieA.tipp.status != RDStore.TIPP_STATUS_DELETED) {
-                TitleInstancePackagePlatform tippB = ieA.tipp
-                Set<Map<String,Object>> diffs = globalSourceSyncService.getTippDiff(ieA,tippB)
-                diffs.each { Map<String,Object> diff ->
-                    log.debug("now processing entry #${index}, payload: ${diff}")
-                    if(diff.prop == 'coverage') {
-                        //the city Coventry is beautiful, isn't it ... but here is the COVerageENTRY meant.
-                        diff.covDiffs.each { covEntry ->
-                            def tippCov = covEntry.target
-                            switch(covEntry.event) {
-                                case 'update': IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ieA.coverages)
-                                    if(ieCov) {
-                                        covEntry.diffs.each { covDiff ->
-                                            changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
-                                            changeMap.oid = GenericOIDService.getOID(ieA)
-                                            changeMap.prop = covDiff.prop
-                                            changeMap.oldValue = ieCov[covDiff.prop]
-                                            changeMap.newValue = covDiff.newValue
-                                            changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ieA.subscription,pkg))
-                                        }
+        Set<SubscriptionPackage> allSPs = SubscriptionPackage.findAllByPkg(pkg)
+        //Set<SubscriptionPackage> allSPs = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.subscription.status = :status and sp.pkg = :pkg and sp.subscription.instanceOf is null',[status:RDStore.SUBSCRIPTION_CURRENT,pkg:pkg]) //activate for debugging
+        allSPs.each { SubscriptionPackage sp ->
+            SubscriptionPackage.withNewSession { Session sess ->
+                //for session refresh
+                Set<IssueEntitlement> currentIEs = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.status != :deleted and ie.subscription = :sub and ie.tipp.pkg = :pkg',[sub:sp.subscription,pkg:pkg,deleted:RDStore.TIPP_STATUS_DELETED])
+                //A and B are naming convention for A (old entity which is out of sync) and B (new entity with data up to date)
+                currentIEs.eachWithIndex { IssueEntitlement ieA, int index ->
+                    Map<String,Object> changeMap = [target:ieA.subscription]
+                    String changeDesc
+                    if(ieA.tipp.status != RDStore.TIPP_STATUS_DELETED) {
+                        TitleInstancePackagePlatform tippB = TitleInstancePackagePlatform.get(ieA.tipp.id) //for session refresh
+                        Set<Map<String,Object>> diffs = globalSourceSyncService.getTippDiff(ieA,tippB)
+                        diffs.each { Map<String,Object> diff ->
+                            log.debug("now processing entry #${index}, payload: ${diff}")
+                            if(diff.prop == 'coverage') {
+                                //the city Coventry is beautiful, isn't it ... but here is the COVerageENTRY meant.
+                                diff.covDiffs.each { covEntry ->
+                                    def tippCov = covEntry.target
+                                    switch(covEntry.event) {
+                                        case 'update': IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ieA.coverages)
+                                            if(ieCov) {
+                                                covEntry.diffs.each { covDiff ->
+                                                    changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
+                                                    changeMap.oid = GenericOIDService.getOID(ieA)
+                                                    changeMap.prop = covDiff.prop
+                                                    changeMap.oldValue = ieCov[covDiff.prop]
+                                                    changeMap.newValue = covDiff.newValue
+                                                    changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
+                                                }
+                                            }
+                                            else {
+                                                changeDesc = PendingChangeConfiguration.NEW_COVERAGE
+                                                changeMap.oid = GenericOIDService.getOID(tippCov)
+                                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
+                                            }
+                                            break
+                                        case 'add':
+                                            changeDesc = PendingChangeConfiguration.NEW_COVERAGE
+                                            changeMap.oid = GenericOIDService.getOID(tippCov)
+                                            changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
+                                            break
+                                        case 'delete':
+                                            IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ieA.coverages)
+                                            if(ieCov) {
+                                                changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
+                                                changeMap.oid = GenericOIDService.getOID(ieCov)
+                                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
+                                            }
+                                            break
                                     }
-                                    else {
-                                        changeDesc = PendingChangeConfiguration.NEW_COVERAGE
-                                        changeMap.oid = GenericOIDService.getOID(tippCov)
-                                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ieA.subscription,pkg))
-                                    }
-                                    break
-                                case 'add':
-                                    changeDesc = PendingChangeConfiguration.NEW_COVERAGE
-                                    changeMap.oid = GenericOIDService.getOID(tippCov)
-                                    changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ieA.subscription,pkg))
-                                    break
-                                case 'delete':
-                                    IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ieA.coverages)
-                                    if(ieCov) {
-                                        changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
-                                        changeMap.oid = GenericOIDService.getOID(ieCov)
-                                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ieA.subscription,pkg))
-                                    }
-                                    break
+                                }
+                            }
+                            else {
+                                changeDesc = PendingChangeConfiguration.TITLE_UPDATED
+                                changeMap.oid = GenericOIDService.getOID(ieA)
+                                changeMap.prop = diff.prop
+                                if(diff.prop in PendingChange.REFDATA_FIELDS)
+                                    changeMap.oldValue = ieA[diff.prop].id
+                                else if(diff.prop in ['hostPlatformURL'])
+                                    changeMap.oldValue = diff.oldValue
+                                else
+                                    changeMap.oldValue = ieA[diff.prop]
+                                changeMap.newValue = diff.newValue
+                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                             }
                         }
                     }
                     else {
-                        changeDesc = PendingChangeConfiguration.TITLE_UPDATED
+                        changeDesc = PendingChangeConfiguration.TITLE_DELETED
                         changeMap.oid = GenericOIDService.getOID(ieA)
-                        changeMap.prop = diff.prop
-                        if(diff.prop in PendingChange.REFDATA_FIELDS)
-                            changeMap.oldValue = ieA[diff.prop].id
-                        else if(diff.prop in ['hostPlatformURL'])
-                            changeMap.oldValue = diff.oldValue
-                        else
-                            changeMap.oldValue = ieA[diff.prop]
-                        changeMap.newValue = diff.newValue
-                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ieA.subscription,pkg))
+                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                     }
                 }
-            }
-            else {
-                changeDesc = PendingChangeConfiguration.TITLE_DELETED
-                changeMap.oid = GenericOIDService.getOID(ieA)
-                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ieA.subscription,pkg))
-            }
-        }
-        Set<SubscriptionPackage> spConcerned = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.instanceOf is null',[pkg:pkg])
-        spConcerned.each { SubscriptionPackage sp ->
-            Set<TitleInstancePackagePlatform> currentTIPPs = sp.subscription.issueEntitlements.collect { IssueEntitlement ie -> ie.tipp }
-            Set<TitleInstancePackagePlatform> inexistentTIPPs = pkg.tipps.findAll { TitleInstancePackagePlatform tipp -> !currentTIPPs.contains(tipp) && tipp.status != RDStore.TIPP_STATUS_DELETED }
-            inexistentTIPPs.each { TitleInstancePackagePlatform tippB ->
-                log.debug("adding new TIPP ${tippB} to subscription ${sp.subscription.dropdownNamingConvention(contextOrg)}")
-                changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:GenericOIDService.getOID(tippB)],PendingChangeConfiguration.NEW_TITLE,sp)
+                Set<TitleInstancePackagePlatform> currentTIPPs = sp.subscription.issueEntitlements.collect { IssueEntitlement ie -> ie.tipp }
+                Set<TitleInstancePackagePlatform> inexistentTIPPs = pkg.tipps.findAll { TitleInstancePackagePlatform tipp -> !currentTIPPs.contains(tipp) && tipp.status != RDStore.TIPP_STATUS_DELETED }
+                inexistentTIPPs.each { TitleInstancePackagePlatform tippB ->
+                    log.debug("adding new TIPP ${tippB} to subscription ${sp.subscription.id}")
+                    changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:GenericOIDService.getOID(tippB)],PendingChangeConfiguration.NEW_TITLE,sp)
+                }
+                sess.flush()
+                //sess.clear()
+                //propertyInstanceMap.get().clear()
             }
         }
     }
