@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated; com.k_int.kbplus.UserSettings; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 <g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
