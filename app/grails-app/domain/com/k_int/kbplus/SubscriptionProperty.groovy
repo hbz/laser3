@@ -106,7 +106,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     def notifyDependencies_trait(changeDocument) {
         log.debug("notifyDependencies_trait(${changeDocument})")
 
-        if (changeDocument.event.equalsIgnoreCase('SubscriptionCustomProperty.updated')) {
+        if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.updated')) {
 
             // legacy ++
 
@@ -174,7 +174,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                 pendingChangeService.performAccept(spc)
             }
         }
-        else if (changeDocument.event.equalsIgnoreCase('SubscriptionCustomProperty.deleted')) {
+        else if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.deleted')) {
 
             List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.payload is not null and pc.oid = :objectID",
                     [objectID: "${this.class.name}:${this.id}"] )

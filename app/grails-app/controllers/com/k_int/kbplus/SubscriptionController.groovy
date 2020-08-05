@@ -401,6 +401,9 @@ class SubscriptionController
             result.parentId = result.subscription.id
 
         if (params.process  && result.editable) {
+            result.licenses.each { License l ->
+                subscriptionService.setOrgLicRole(result.subscription,l,true)
+            }
             result.delResult = deletionService.deleteSubscription(result.subscription, false)
         }
         else {
@@ -2648,6 +2651,8 @@ class SubscriptionController
                                     }
                                 }
                             }
+
+                            memberSub.refresh()
 
                             packagesToProcess.each { Package pkg ->
                                 if(params.linkWithEntitlements)

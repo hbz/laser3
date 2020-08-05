@@ -1743,7 +1743,7 @@ class AjaxController {
                         additionalProp.save(flush: true)
                     }
                     else {
-                        Set<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findByOwnerAndType(member, property.type)
+                        Set<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findByOwnerAndTypeAndTenant(member, property.type, contextOrg)
                         // unbound prop found with matching type, set backref
                         if (matchingProps) {
                             matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->

@@ -377,17 +377,17 @@ class PendingChangeService extends AbstractLockableService {
                         targetProperty.save(flush: true)
                     }
 
-                    if (changeDoc.event.endsWith('CustomProperty.deleted')) {
+                    if (changeDoc.event.endsWith('Property.deleted')) {
 
                         log.debug("Deleting property ${targetProperty.type.name} from ${pendingChange.payloadChangeTargetOid}")
                         changeTarget.customProperties.remove(targetProperty)
                         targetProperty.delete(flush:true)
                     }
-                    else if (changeDoc.event.endsWith('CustomProperty.updated')) {
+                    else if (changeDoc.event.endsWith('Property.updated')) {
 
                         log.debug("Update custom property ${targetProperty.type.name}")
 
-                        if (changeDoc.type == RefdataValue.toString()){
+                        if (RefdataValue.toString() in [targetProperty.type.type,changeDoc.type]){
                             def newProp = genericOIDService.resolveOID(changeDoc.new instanceof String ?: (changeDoc.new.class + ':' + changeDoc.new.id))
 
                             // Backward compatible
@@ -417,7 +417,7 @@ class PendingChangeService extends AbstractLockableService {
                         targetProperty.save(flush:true)
                     }
                     else {
-                        log.error("ChangeDoc event '${changeDoc.event}'' not recognized.")
+                        log.error("ChangeDoc event '${changeDoc.event}' not recognized.")
                     }
                 }
                 else {

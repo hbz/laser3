@@ -115,7 +115,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     def notifyDependencies_trait(changeDocument) {
         log.debug("notifyDependencies_trait(${changeDocument})")
 
-        if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.updated')) {
+        if (changeDocument.event.equalsIgnoreCase('LicenseProperty.updated')) {
             // legacy ++
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
@@ -195,7 +195,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                 pendingChangeService.performAccept(spc)
             }
         }
-        else if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.deleted')) {
+        else if (changeDocument.event.equalsIgnoreCase('LicenseProperty.deleted')) {
 
             List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.oid = :objectID",
                     [objectID: "${this.class.name}:${this.id}"] )

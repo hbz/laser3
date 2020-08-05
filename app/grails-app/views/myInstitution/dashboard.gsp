@@ -209,7 +209,7 @@
             </div>
         </g:if>
 
-        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges'}" data-tab="acceptedchanges">
+        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges">
             <div class="la-float-right">
                 <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
             </div>

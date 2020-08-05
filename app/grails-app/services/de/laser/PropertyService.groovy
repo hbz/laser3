@@ -121,10 +121,6 @@ class PropertyService {
 
             if (dc.shortName.endsWith('Property') && !SurveyProperty.class.name.contains(dc.name)) {
 
-                if (dc.shortName.endsWith('CustomProperty') || dc.shortName.endsWith('PrivateProperty')) {
-                    return // tmp. workaround
-                }
-
                 //log.debug( dc.shortName )
                 String query = "SELECT DISTINCT type FROM " + dc.name
                 //log.debug(query)

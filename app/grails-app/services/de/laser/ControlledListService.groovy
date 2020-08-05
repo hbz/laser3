@@ -385,6 +385,7 @@ class ControlledListService {
 
     Map getLinkedObjects(Map params) {
         Map result = [results:[]]
+        Org contextOrg = contextService.org
         if(params.source) {
             Long id
             String name
@@ -396,7 +397,7 @@ class ControlledListService {
                         status = RefdataValue.get(Long.parseLong(params.status))
                     }
                     else status = RDStore.SUBSCRIPTION_CURRENT
-                    links = Subscription.executeQuery("select s.name as name, s.id as id from Subscription s where concat('"+Subscription.class.name+":',s.id) in (select li.destination from Links li where li.source = :source and li.linkType in (:linkTypes)) and s.status = :status",[source:params.source,linkTypes:params.linkTypes,status:status])
+                    links = Subscription.executeQuery("select s.name as name, s.id as id from Subscription s join s.orgRelations oo where concat('"+Subscription.class.name+":',s.id) in (select li.destination from Links li where li.source = :source and li.linkType in (:linkTypes)) and s.status = :status and oo.org = :context",[source:params.source,linkTypes:params.linkTypes,status:status,context:contextOrg])
                     break
             }
             links.each { row ->
@@ -414,7 +415,7 @@ class ControlledListService {
                         status = RefdataValue.get(Long.parseLong(params.status))
                     }
                     else status = RDStore.LICENSE_CURRENT
-                    links = License.executeQuery("select l.reference as name, l.id as id from License l where concat('"+License.class.name+":',l.id) in (select li.source from Links li where li.destination = :destination and li.linkType in (:linkTypes)) and l.status = :status",[destination:params.destination,linkTypes:params.linkTypes,status:status])
+                    links = License.executeQuery("select l.reference as name, l.id as id from License l join l.orgLinks oo where concat('"+License.class.name+":',l.id) in (select li.source from Links li where li.destination = :destination and li.linkType in (:linkTypes)) and l.status = :status and oo.org = :context",[destination:params.destination,linkTypes:params.linkTypes,status:status,context:contextOrg])
                     break
             }
             links.each { row ->
