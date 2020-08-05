@@ -390,7 +390,7 @@ class FilterService {
         }
 
         if(params.name) {
-            query += " and (genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
+            query += " and (genfunc_filter_matcher(surInfo.name, :name) = true or exists ( select surC from SurveyConfig as surC where surC.surveyInfo = surC and (genfunc_filter_matcher(surC.subscription.name, :name) = true))) "
             queryParams << [name:"${params.name}"]
             params.filterSet = true
         }
@@ -517,7 +517,7 @@ class FilterService {
         List query = []
         Map<String,Object> queryParams = [:]
         if(params.name) {
-            query << "(genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
+            query << " (genfunc_filter_matcher(surInfo.name, :name) = true or exists ( select surC from SurveyConfig as surC where surC.surveyInfo = surC and (genfunc_filter_matcher(surC.subscription.name, :name) = true))) "
             queryParams << [name:"${params.name}"]
         }
         if(params.status) {
@@ -629,7 +629,7 @@ class FilterService {
         }
 
         if(params.name) {
-            query << "(genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
+            query << " (genfunc_filter_matcher(surInfo.name, :name) = true or exists ( select surC from SurveyConfig as surC where surC.surveyInfo = surC and (genfunc_filter_matcher(surC.subscription.name, :name) = true))) "
             queryParams << [name:"${params.name}"]
         }
         if(params.status) {
