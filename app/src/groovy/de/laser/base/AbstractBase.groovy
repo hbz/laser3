@@ -21,18 +21,22 @@ abstract class AbstractBase {
         }
     }
 
-    protected beforeInsertHandler() {
+    protected def beforeInsertHandler() {
         if (! globalUID) {
             setGlobalUID()
         }
     }
-    protected beforeUpdateHandler() {
+    protected def beforeUpdateHandler() {
         if (! globalUID) {
             setGlobalUID()
         }
+    }
+    protected def beforeDeleteHandler() {
     }
 
     abstract def beforeInsert() /* { beforeInsertHandler() } */
 
     abstract def beforeUpdate() /* { beforeUpdateHandler() } */
+
+    abstract def beforeDelete() /* { beforeDeleteHandler() } */
 }

@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
@@ -1743,7 +1743,7 @@ class AjaxController {
                         additionalProp.save(flush: true)
                     }
                     else {
-                        Set<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findByOwnerAndType(member, property.type)
+                        Set<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findByOwnerAndTypeAndTenant(member, property.type, contextOrg)
                         // unbound prop found with matching type, set backref
                         if (matchingProps) {
                             matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
@@ -2063,15 +2063,18 @@ class AjaxController {
 
   def getProvidersWithPrivateContacts() {
     Map<String, Object> result = [:]
-    def query_params = []
     String fuzzyString = '%'
     if(params.sSearch) {
       fuzzyString+params.sSearch.trim().toLowerCase()+'%'
     }
-    query_params.add(fuzzyString)
-    query_params.add(RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS))
-    String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)"
-    String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc"
+
+      Map<String, Object> query_params = [
+              name: fuzzyString,
+              status: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
+      ]
+      String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
+      String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status) order by o.name asc"
+
     def cq = Org.executeQuery(countQry,query_params);
 
     def rq = Org.executeQuery(rowQry,

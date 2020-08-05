@@ -150,18 +150,17 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(blank:false)
-        type(nullable:true, blank:false)
+        type        (nullable:true)
         reference(blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
         isPublicForApi (nullable:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
-        instanceOf(nullable:true, blank:false)
+        instanceOf  (nullable:true)
         //licenseStatus(nullable:true, blank:true)
         //lastmod(nullable:true, blank:true)
         //onixplLicense(nullable: true, blank: true)
-        licenseCategory(nullable: true, blank: true)
+        licenseCategory (nullable: true)
         startDate(nullable: true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
@@ -594,6 +593,11 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             sortableReference = generateSortableReference(reference)
         }
         super.beforeUpdateHandler()
+    }
+
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
 

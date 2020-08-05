@@ -63,9 +63,9 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
     }
 
     static constraints = {
-        icon     (nullable:true)
-        group    (nullable:true,  blank:false)
-        order    (nullable:true,  blank: false)
+        icon     (nullable: true)
+        group    (nullable: true,  blank:false)
+        order    (nullable: true)
         value_de (nullable: true, blank: false)
         value_en (nullable: true, blank: false)
         expl_de  (nullable: true, blank: false)

@@ -61,18 +61,18 @@ class Doc {
   }
 
   static constraints = {
-    status    (nullable:true, blank:false)
-    type      (nullable:true, blank:false)
+    status    (nullable:true)
+    type      (nullable:true)
     content   (nullable:true, blank:false)
-    blobContent(nullable:true, blank:false, maxSize:MAX_SIZE)
+    blobContent(nullable:true, maxSize:MAX_SIZE)
     uuid      (nullable:true, blank:false)
-    contentType(nullable:true, blank:false)
+    contentType(nullable:true)
     title     (nullable:true, blank:false)
-    creator   (nullable:true, blank:true)
+    creator   (nullable:true)
     filename  (nullable:true, blank:false)
     mimeType  (nullable:true, blank:false)
-    user      (nullable:true, blank:false)
-    owner     (nullable:true, blank:false)
+    user      (nullable:true)
+    owner     (nullable:true)
     migrated  (nullable:true, blank:false, maxSize:1)
   }
 

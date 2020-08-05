@@ -1131,7 +1131,7 @@ class OrganisationController extends AbstractDebugController {
       //def comboType = RefdataCategory.lookupOrCreate(RDConstants.ORGANISATIONAL_ROLE, 'Package Consortia')
         RefdataValue comboType = RefdataValue.get(params.comboTypeTo)
       log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
-      def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = ? and c.toOrg = ?", [fromOrg, toOrg])
+      def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = :fromOrg and c.toOrg = :toOrg", [fromOrg: fromOrg, toOrg: toOrg])
       
       if (! dupe) {
           Combo consLink = new Combo(fromOrg:fromOrg,

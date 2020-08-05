@@ -133,12 +133,12 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         gokbId (blank:false, unique: true, maxSize:511)
         //originEditUrl(nullable:true, blank:false)
-        status(nullable:true, blank:false)
-        delayedOA(nullable:true, blank:false)
-        hybridOA(nullable:true, blank:false)
-        statusReason(nullable:true, blank:false)
-        payment(nullable:true, blank:false)
-        option(nullable:true, blank:false)
+        status      (nullable:true)
+        delayedOA   (nullable:true)
+        hybridOA    (nullable:true)
+        statusReason(nullable:true)
+        payment     (nullable:true)
+        option      (nullable:true)
         hostPlatformURL(nullable:true, blank:true, maxSize:2048)
         //derivedFrom(nullable:true, blank:true)
         accessStartDate (nullable:true)
@@ -171,6 +171,10 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     def beforeInsert() {
         touchPkgLastUpdated()
         super.beforeInsertHandler()
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
   @Transient
@@ -533,7 +537,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
       static_logger.debug("  -> TIPPs");
       def deleted_ie = RDStore.TIPP_STATUS_DELETED
       IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.tipp.id=:tipp_id and ie.status=:ie_del",[tipp_id:tipp_id,ie_del:deleted_ie])
-      TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp.id = ?',[tipp_id])
+      TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp.id = :tipp_id', [tipp_id: tipp_id])
     }
     catch ( Exception e ) {
       static_logger.error("Problem expunging title",e);

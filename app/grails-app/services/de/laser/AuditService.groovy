@@ -5,7 +5,7 @@ import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionProperty
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.interfaces.AuditableSupport
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -150,6 +150,7 @@ class AuditService {
                                             OID     : "${obj.class.name}:${obj.id}",
                                             event   : "${obj.class.simpleName}.updated",
                                             prop    : cp,
+                                            type    : RefdataValue.toString(),
                                             old     : old_oid,
                                             oldLabel: oldMap[cp]?.toString(),
                                             new     : new_oid,

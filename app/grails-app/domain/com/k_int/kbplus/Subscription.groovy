@@ -177,12 +177,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(blank:false)
-        type(nullable:true, blank:false)
-        kind(nullable:true, blank:false)
+        type        (nullable:true)
+        kind        (nullable:true)
         //owner(nullable:true, blank:false)
-        form        (nullable:true, blank:false)
-        resource    (nullable:true, blank:false)
+        form        (nullable:true)
+        resource    (nullable:true)
         startDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
@@ -193,11 +192,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
             }
         })
-        manualRenewalDate (nullable:true)
-        manualCancellationDate (nullable:true)
-        instanceOf(nullable:true, blank:false)
+        manualRenewalDate       (nullable:true)
+        manualCancellationDate  (nullable:true)
+        instanceOf              (nullable:true)
         comment(nullable: true, blank: true)
-        previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
+        previousSubscription    (nullable:true) //-> see Links, deleted as ERMS-800
         noticePeriod(nullable:true, blank:true)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)
@@ -235,6 +234,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @Override
     def beforeUpdate() {
         super.beforeUpdateHandler()
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
     @Transient

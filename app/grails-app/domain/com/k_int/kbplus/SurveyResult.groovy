@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
@@ -77,77 +77,74 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         isRequired column: 'surre_is_required'
     }
 
-    boolean isResultProcessed()
-    {
-        if(type?.type == Integer.toString())
-        {
+    boolean isResultProcessed() {
+        if (type.type == Integer.toString()) {
             return intValue ? true : false
         }
-        else if (type?.type == String.toString())
-        {
+        else if (type.type == String.toString()) {
             return stringValue ? true : false
         }
-        else if (type?.type ==  BigDecimal.toString())
-        {
+        else if (type.type ==  BigDecimal.toString()) {
             return decValue ? true : false
         }
-        else if (type?.type == Date.toString())
-        {
+        else if (type.type == Date.toString()) {
             return dateValue ? true : false
         }
-        else if (type?.type == URL.toString())
-        {
+        else if (type.type == URL.toString()) {
             return urlValue ? true : false
         }
-        else if (type?.type == RefdataValue.toString())
-        {
+        else if (type.type == RefdataValue.toString()) {
             return refValue ? true : false
         }
-
     }
 
     CostItem getCostItem(){
         return CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
     }
 
-    def getResult()
-    {
-        if(type?.type == Integer.toString())
-        {
+    def getResult() {
+        if (type.type == Integer.toString()) {
             return intValue.toString()
         }
-        else if (type?.type == String.toString())
-        {
+        else if (type.type == String.toString()) {
             return stringValue
         }
-        else if (type?.type ==  BigDecimal.toString())
-        {
+        else if (type.type ==  BigDecimal.toString()) {
             return decValue.toString()
         }
-        else if (type?.type == Date.toString())
-        {
+        else if (type.type == Date.toString()) {
             return dateValue.getDateString()
         }
-        else if (type?.type == URL.toString())
-        {
+        else if (type.type == URL.toString()) {
             return urlValue.toString()
         }
-        else if (type?.type == RefdataValue.toString())
-        {
+        else if (type.type == RefdataValue.toString()) {
             return refValue ? refValue?.getI10n('value') : ""
         }
     }
 
     @Override
-    def afterDelete() {
-        super.afterDeleteHandler()
+    def beforeInsert() {
+        super.beforeInsertHandler()
     }
     @Override
     def afterInsert() {
         super.afterInsertHandler()
     }
     @Override
+    def beforeUpdate(){
+        super.beforeUpdateHandler()
+    }
+    @Override
     def afterUpdate() {
         super.afterUpdateHandler()
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
     }
 }

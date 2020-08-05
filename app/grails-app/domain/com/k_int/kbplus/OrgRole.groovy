@@ -60,15 +60,15 @@ class OrgRole implements ShareableTrait {
   }
 
   static constraints = {
-    roleType    (nullable:true, blank:false)
-    pkg         (nullable:true, blank:false)
-    sub         (nullable:true, blank:false)
-    lic         (nullable:true, blank:false)
-    cluster     (nullable:true, blank:false)
-    title       (nullable:true, blank:false)
+    roleType    (nullable:true)
+    pkg         (nullable:true)
+    sub         (nullable:true)
+    lic         (nullable:true)
+    cluster     (nullable:true)
+    title       (nullable:true)
     startDate   (nullable:true)
     endDate     (nullable:true)
-    sharedFrom  (nullable:true, blank:true)
+    sharedFrom  (nullable:true)
 
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true)

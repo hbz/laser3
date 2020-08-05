@@ -35,17 +35,15 @@ class Task {
     Date lastUpdated
 
     static constraints = {
-        license         (nullable:true, blank:false)
-        org             (nullable:true, blank:false)
-        pkg             (nullable:true, blank:false)
-        subscription    (nullable:true, blank:false)
-        surveyConfig      (nullable:true, blank:false)
+        license         (nullable:true)
+        org             (nullable:true)
+        pkg             (nullable:true)
+        subscription    (nullable:true)
+        surveyConfig    (nullable:true)
         title           (blank:false)
         description     (nullable:true, blank:true)
-        status          (blank:false)
-        creator         (blank:false)
-        responsibleUser (nullable:true,  blank:true)
-        responsibleOrg  (nullable:true,  blank:true)
+        responsibleUser (nullable:true)
+        responsibleOrg  (nullable:true)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)

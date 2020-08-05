@@ -20,8 +20,8 @@ class OrgAccessPointLink extends AbstractBase {
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         platform(nullable:true)
-        oap(nullable:true, blank:false) //intentional, null used in program logic
-        subPkg(nullable:true, blank:false) //intentional, null used in program logic
+        oap     (nullable:true) //intentional, null used in program logic
+        subPkg  (nullable:true) //intentional, null used in program logic
     }
 
     @Override
@@ -31,5 +31,9 @@ class OrgAccessPointLink extends AbstractBase {
     @Override
     def beforeUpdate() {
         super.beforeUpdateHandler()
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 }

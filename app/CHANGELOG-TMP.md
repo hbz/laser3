@@ -4,6 +4,16 @@
 
 --      04.08.2020  hbz-dev     Moe     Feature     Umbau von copyElementsIntoSubscription wegen Umfrage
 
+2749    04.08.2020  rc1.5       Andreas Bug         Konsorten haben Zugriff auf Tab "Lizenzen" unter Vertrag
+
+2748    04.08.2020  rc1.5       Andreas Bug         Entknüpfen des Teilnehmers wirkte sich nicht auf Org-Vertrag-Verknüpfung aus
+
+2746    04.08.2020  rc1.5       Andreas Bug         Merkmalsvererbung funktionierte nicht, wenn Vollnutzer Merkmal in Teilnehmerlizenz gesetzt hat
+
+2745    04.08.2020  rc1.5       Andreas Bug         Durchreichen der Vererbungsinformation funktionierte nicht
+
+2743    04.08.2020  rc1.5       Andreas Feature     verschiedene kleinere Ausbesserungen für Merkmale in Objekte verwalten
+
 2032    03.08.2020  hbz-dev     Moe     Feature     Anbieter-Kontakt bei Jahresübertrag fehlerhaft
 
 2742    03.08.2020  rc1.5       Andreas Bug         Einrichtungseinstellungen und Plattform erreichbar, Merkmale können, den Regeln entsprechend, bearbeitet und gelöscht werden

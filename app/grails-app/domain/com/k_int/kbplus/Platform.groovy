@@ -82,12 +82,12 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     primaryUrl(nullable:true, blank:false)
   //originEditUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
-    type(nullable:true, blank:false)
-    status(nullable:true, blank:false)
-    serviceProvider(nullable:true, blank:false)
-    softwareProvider(nullable:true, blank:false)
+    type            (nullable:true)
+    status          (nullable:true)
+    serviceProvider (nullable:true)
+    softwareProvider(nullable:true)
     gokbId (blank:false, unique: true, maxSize:511)
-    org (nullable:true, blank:false)
+    org             (nullable:true)
     lastUpdatedCascading (nullable: true)
   }
 
@@ -113,6 +113,10 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   def beforeUpdate() {
     super.beforeUpdateHandler()
   }
+  @Override
+  def beforeDelete() {
+    super.beforeDeleteHandler()
+  }
 
   @Deprecated
   static Platform lookupOrCreatePlatform(Map params=[:]) {
@@ -135,7 +139,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
         //TODO: Dieser Zweig passieert nicht bei GOKB Sync
       if( params.primaryUrl && (params.primaryUrl.length() > 0) ){
 
-        platform_candidates = Platform.executeQuery("from Platform where normname = ? or primaryUrl = ?",[norm_name, params.primaryUrl])
+        platform_candidates = Platform.executeQuery("from Platform where normname = :nname or primaryUrl = :url", [nname: norm_name, url: params.primaryUrl])
 
         if(platform_candidates && platform_candidates.size() == 1){
           platform = platform_candidates[0]

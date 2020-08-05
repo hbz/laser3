@@ -134,17 +134,17 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   static constraints = {
                  globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-               contentType(nullable:true, blank:false)
-             packageStatus(nullable:true, blank:false)
-           nominalPlatform(nullable:true, blank:false)
-         packageListStatus(nullable:true, blank:false)
-                 breakable(nullable:true, blank:false)
-                consistent(nullable:true, blank:false)
-                     fixed(nullable:true, blank:false)
+               contentType (nullable:true)
+             packageStatus (nullable:true)
+           nominalPlatform (nullable:true)
+         packageListStatus (nullable:true)
+                 breakable (nullable:true)
+                consistent (nullable:true)
+                     fixed (nullable:true)
                  startDate (nullable:true)
                    endDate (nullable:true)
-                   license(nullable:true, blank:false)
-              packageScope(nullable:true, blank:false)
+                   license (nullable:true)
+              packageScope (nullable:true)
                    forumId(nullable:true, blank:false)
                     gokbId(blank:false, unique: true, maxSize: 511)
            //originEditUrl(nullable:true, blank:false)
@@ -309,7 +309,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     // Step 1 - Make sure this package is not already attached to the sub
     // Step 2 - Connect
     List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
-            "from SubscriptionPackage where subscription = ? and pkg = ?", [subscription, this])
+            "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: subscription, pkg: this])
 
     if (!dupe){
         SubscriptionPackage new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save()
@@ -354,7 +354,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         // copy from: addToSubscription(subscription, createEntitlements) { .. }
 
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
-                "from SubscriptionPackage where subscription = ? and pkg = ?", [target, this])
+                "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: this])
 
         if (! dupe){
 
@@ -714,6 +714,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             sortName = generateSortName(name)
         }
         super.beforeUpdateHandler()
+    }
+
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
   def checkAndAddMissingIdentifier(ns,value) {

@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 
 /**Org custom properties are used to store Org related settings and options**/
@@ -44,15 +44,27 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
     ]
 
     @Override
-    def afterDelete() {
-        super.afterDeleteHandler()
+    def beforeInsert() {
+        super.beforeInsertHandler()
     }
     @Override
     def afterInsert() {
         super.afterInsertHandler()
     }
     @Override
+    def beforeUpdate(){
+        super.beforeUpdateHandler()
+    }
+    @Override
     def afterUpdate() {
         super.afterUpdateHandler()
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
     }
 }

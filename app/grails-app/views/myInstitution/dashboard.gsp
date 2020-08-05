@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated; com.k_int.kbplus.UserSettings; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 <g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
@@ -209,7 +209,7 @@
             </div>
         </g:if>
 
-        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges'}" data-tab="acceptedchanges">
+        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges">
             <div class="la-float-right">
                 <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
             </div>

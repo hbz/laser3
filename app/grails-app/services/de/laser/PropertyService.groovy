@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
@@ -120,10 +120,6 @@ class PropertyService {
         grailsApplication.getArtefacts("Domain").toList().each { dc ->
 
             if (dc.shortName.endsWith('Property') && !SurveyProperty.class.name.contains(dc.name)) {
-
-                if (dc.shortName.endsWith('CustomProperty') || dc.shortName.endsWith('PrivateProperty')) {
-                    return // tmp. workaround
-                }
 
                 //log.debug( dc.shortName )
                 String query = "SELECT DISTINCT type FROM " + dc.name

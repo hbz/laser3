@@ -44,7 +44,7 @@ class BookInstance extends TitleInstance {
         firstAuthor (nullable:true, blank:false);
         firstEditor (nullable:true, blank:false);
         editionDifferentiator (nullable:true, blank:false);
-        editionNumber (nullable:true, blank:false);
+        editionNumber       (nullable:true)
         editionStatement (nullable:true, blank:false);
 
     }
