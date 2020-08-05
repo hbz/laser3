@@ -9,7 +9,7 @@
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
     <g:form action="copyElementsIntoSubscription" controller="subscription"
             id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
 
         <g:if test="${com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(sourceSubscription, true)}">

@@ -31,7 +31,7 @@
     </g:else>
         <br>
     <g:if test="${isRenewSub}">
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.renewals.renew_sub.label')} <g:if test="${sourceSubscription}">${sourceSubscription.name}</g:if></h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceSubscription}">${sourceSubscription.name}</g:if></h1>
     </g:if>
     <g:else>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.copyElementsIntoSubscription.label')} </h1>
@@ -101,7 +101,7 @@
                 </div>
             </div>
 
-            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
+            <g:if test="${!fromSurvey && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")}">
                 <div class="${workFlowPart == SubscriptionController.WORKFLOW_SUBSCRIBER ? 'active' : ''} step">
                     <div class="content">
                         <div class="title">

@@ -2885,7 +2885,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def processRenewalwithSurvey() {
+    def processRenewalWithSurvey() {
 
         def result = setResultGenericsAndCheckAccess()
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
@@ -2973,118 +2973,6 @@ class SurveyController {
 
             }
         }
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def copyElementsIntoRenewalSubscription() {
-        def result = setResultGenericsAndCheckAccessforSub(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-        flash.error = ""
-        flash.message = ""
-        if (params.sourceSubscriptionId == "null") params.remove("sourceSubscriptionId")
-        result.sourceSubscriptionId = params.sourceSubscriptionId ?: params.id
-        result.sourceSubscription = Subscription.get(Long.parseLong(params.sourceSubscriptionId ?: params.id))
-
-        if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
-        if (params.targetSubscriptionId) {
-            result.targetSubscriptionId = params.targetSubscriptionId
-            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
-        }
-
-        if (params.isRenewSub) {
-            result.isRenewSub = params.isRenewSub
-        }
-
-        result.isConsortialSubs = (result.sourceSubscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
-
-        result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
-        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights(null)
-
-        switch (params.workFlowPart) {
-            case WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copySubElements_DatesOwnerRelations();
-                if (params.isRenewSub) {
-                    params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-                    result << loadDataFor_PackagesEntitlements()
-                } else {
-                    result << loadDataFor_DatesOwnerRelations()
-                }
-                break;
-            case WORKFLOW_PACKAGES_ENTITLEMENTS:
-                result << copySubElements_PackagesEntitlements();
-                if (params.isRenewSub) {
-                    params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-                    result << loadDataFor_DocsAnnouncementsTasks()
-                } else {
-                    result << loadDataFor_PackagesEntitlements()
-                }
-                break;
-            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copySubElements_DocsAnnouncementsTasks();
-                if (params.isRenewSub) {
-                        params.workFlowPart = WORKFLOW_PROPERTIES
-                        result << loadDataFor_Properties()
-                } else {
-                    result << loadDataFor_DocsAnnouncementsTasks()
-                }
-                break;
-            case WORKFLOW_SUBSCRIBER:
-                result << copySubElements_Subscriber();
-                if (params.isRenewSub) {
-                    params.workFlowPart = WORKFLOW_PROPERTIES
-                    result << loadDataFor_Properties()
-                } else {
-                    result << loadDataFor_Subscriber()
-                }
-                break;
-            case WORKFLOW_PROPERTIES:
-                result << copySubElements_Properties();
-                if (params.isRenewSub && params.targetSubscriptionId) {
-                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceSubscription, true)
-                    /*flash.error = ""
-                    flash.message = ""*/
-                    if(surveyConfig) {
-                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
-                    }else {
-                        redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
-                    }
-                } else {
-                    result << loadDataFor_Properties()
-                }
-                break;
-            case WORKFLOW_END:
-                result << copySubElements_Properties();
-                if (params.targetSubscriptionId) {
-                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceSubscription, true)
-                    /*flash.error = ""
-                    flash.message = ""*/
-                    if(surveyConfig) {
-                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
-                    }else {
-                        redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
-                    }
-                }
-                break;
-            default:
-                result << loadDataFor_DatesOwnerRelations()
-                break;
-        }
-
-        if (params.targetSubscriptionId) {
-            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
-        }
-        result.workFlowPart = params.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
-        result.workFlowPartNext = params.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-
-        if (params.isRenewSub) {
-            result.isRenewSub = params.isRenewSub
-        }
-        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
