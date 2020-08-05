@@ -235,6 +235,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     def beforeUpdate() {
         super.beforeUpdateHandler()
     }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
 
     @Transient
     def onChange = { oldMap, newMap ->

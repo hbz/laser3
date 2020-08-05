@@ -113,6 +113,10 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   def beforeUpdate() {
     super.beforeUpdateHandler()
   }
+  @Override
+  def beforeDelete() {
+    super.beforeDeleteHandler()
+  }
 
   @Deprecated
   static Platform lookupOrCreatePlatform(Map params=[:]) {
