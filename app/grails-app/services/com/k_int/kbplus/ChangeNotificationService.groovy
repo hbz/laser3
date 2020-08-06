@@ -48,9 +48,9 @@ class ChangeNotificationService extends AbstractLockableService {
   boolean aggregateAndNotifyChanges() {
       if(!running) {
           running = true
-          def future = executorService.submit({
+          executorService.execute({
               internalAggregateAndNotifyChanges();
-          } as java.util.concurrent.Callable)
+          })
 
           return true
       }
@@ -220,7 +220,7 @@ class ChangeNotificationService extends AbstractLockableService {
         //cache.put(changeDocument.OID,changeDocument)
 
         // TODO [ticket=1807] should not be done in extra thread but collected and saved afterwards
-        def submit = executorService.submit({
+        executorService.execute({
             Thread.currentThread().setName("PendingChangeSubmission")
             try {
                 log.debug("inside executor task submission .. ${changeDocument.OID}")
@@ -232,8 +232,7 @@ class ChangeNotificationService extends AbstractLockableService {
             catch (Exception e) {
                 log.error("Problem with event transmission for ${changeDocument.OID}" ,e)
             }
-        } as java.util.concurrent.Callable)
-
+        })
     }
 
     def cleanUpGorm() {

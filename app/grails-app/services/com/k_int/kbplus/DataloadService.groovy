@@ -1081,13 +1081,13 @@ class DataloadService {
         Identifier.construct([value:value, reference:null, namespace:ns])
   }
 
-  def dataCleanse() {
-    log.debug("dataCleanse");
-    def future = executorService.submit({
-      doDataCleanse()
-    } as java.util.concurrent.Callable)
-    log.debug("dataCleanse returning");
-  }
+    def dataCleanse() {
+        log.debug("dataCleanse")
+        executorService.execute({
+            doDataCleanse()
+        })
+        log.debug("dataCleanse returning")
+    }
 
   def doDataCleanse() {
     log.debug("dataCleansing");
