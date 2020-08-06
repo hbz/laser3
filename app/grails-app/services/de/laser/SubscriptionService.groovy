@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
@@ -52,7 +52,7 @@ class SubscriptionService {
         DebugUtil du = new DebugUtil()
         du.setBenchmark('init data fetch')
         du.setBenchmark('consortia')
-        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [contextOrg])
+        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = :fromOrg", [fromOrg: contextOrg])
 
         def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
         du.setBenchmark('all consortia')
@@ -155,9 +155,7 @@ class SubscriptionService {
         if(params.filterSet)
             result.filterSet = params.filterSet
 
-        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(
-                RDStore.SUBSCRIPTION_TYPE_LOCAL
-        )
+        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(RDStore.SUBSCRIPTION_TYPE_LOCAL)
         result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 
         /*
@@ -1335,7 +1333,7 @@ class SubscriptionService {
 
 
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
-            targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && sourceProp.tenant.id == sourceProp.tenant }
+            targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
                 targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub, tenant: sourceProp.tenant)
@@ -1632,12 +1630,18 @@ class SubscriptionService {
             try {
                 if(Links.construct([source: GenericOIDService.getOID(newLicense), destination: GenericOIDService.getOID(sub), linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
                     RefdataValue licRole
-                    if(sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
-                        licRole = RDStore.OR_LICENSEE_CONS
-                    else if(sub._getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_LOCAL])
-                        licRole = RDStore.OR_LICENSEE
-                    else if(sub._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-                        licRole = RDStore.OR_LICENSING_CONSORTIUM
+                    switch(sub._getCalculatedType()) {
+                        case CalculatedType.TYPE_PARTICIPATION: licRole = RDStore.OR_LICENSEE_CONS
+                            break
+                        case CalculatedType.TYPE_LOCAL: licRole = RDStore.OR_LICENSEE
+                            break
+                        case CalculatedType.TYPE_CONSORTIAL:
+                        case CalculatedType.TYPE_ADMINISTRATIVE: licRole = RDStore.OR_LICENSING_CONSORTIUM
+                            break
+                        default: log.error("no role type determinable!")
+                            break
+                    }
+
                     if(licRole) {
                         OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
                         if(!orgLicRole){
@@ -1651,8 +1655,9 @@ class SubscriptionService {
                             if(!orgLicRole.save())
                                 log.error(orgLicRole.errors.toString())
                         }
+                        success = true
                     }
-                    success = true
+                    else log.error("role type missing for org-license linking!")
                 }
             }
             catch (CreationException e) {

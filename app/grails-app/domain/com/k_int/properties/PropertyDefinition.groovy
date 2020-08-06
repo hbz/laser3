@@ -3,7 +3,7 @@ package com.k_int.properties
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ContextService
 import de.laser.I10nTranslation
 import de.laser.base.AbstractI10n
@@ -162,7 +162,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         descr               (nullable: true,  blank: false)
         type                (blank: false)
         refdataCategory     (nullable: true)
-        tenant              (nullable: true,  blank: true)
+        tenant              (nullable: true)
         multipleOccurrence  (nullable: true)
         lastUpdated         (nullable: true)
         dateCreated         (nullable: true)

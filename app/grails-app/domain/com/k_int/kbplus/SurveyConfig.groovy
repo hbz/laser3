@@ -72,24 +72,24 @@ class SurveyConfig {
     ]
 
     static constraints = {
-        subscription(nullable: true, blank: false)
-        surveyProperty(nullable: true, blank: false)
+        subscription        (nullable: true)
+        surveyProperty      (nullable: true)
 
         header(nullable: true, blank: false)
         comment(nullable: true, blank: false)
-        pickAndChoose(nullable: true, blank: false)
+        pickAndChoose       (nullable: true)
         documents(nullable: true, blank: false)
         orgs(nullable: true, blank: false)
-        configFinish(nullable: true, blank: false)
-        costItemsFinish (nullable: true, blank: false)
-        scheduledStartDate (nullable: true)
-        scheduledEndDate (nullable: true)
+        configFinish        (nullable: true)
+        costItemsFinish     (nullable: true)
+        scheduledStartDate  (nullable: true)
+        scheduledEndDate    (nullable: true)
         internalComment(nullable: true, blank: false)
         url(nullable: true, blank: false, maxSize:512)
         url2(nullable: true, blank: false, maxSize:512)
         url3(nullable: true, blank: false, maxSize:512)
-        evaluationFinish (nullable: true, blank: false)
-        subSurveyUseForTransfer (nullable: true, blank: false)
+        evaluationFinish        (nullable: true)
+        subSurveyUseForTransfer (nullable: true)
         propertySet(nullable: true, blank: false)
         transferWorkflow (nullable: true, blank: false)
         createTitleGroups (nullable: true, blank: false)
@@ -240,7 +240,7 @@ class SurveyConfig {
 
         SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(this, org)
 
-        if (this.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()) {
+        if (this.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()) {
             return true
         } else {
 

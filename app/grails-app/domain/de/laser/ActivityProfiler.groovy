@@ -15,9 +15,7 @@ class ActivityProfiler {
         dateCreated column:'ap_date_created'
     }
 
-    static constraints = {
-        userCount   (blank:false)
-    }
+    static constraints = { }
 
     static void update() {
         YodaService yodaService = (YodaService) Holders.grailsApplication.mainContext.getBean('yodaService')

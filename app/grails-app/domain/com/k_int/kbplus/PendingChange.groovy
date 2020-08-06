@@ -105,16 +105,16 @@ class PendingChange {
     }
 
     static constraints = {
-        systemObject(nullable:true, blank:false)
-        subscription(nullable:true, blank:false)
-        license(nullable:true, blank:false)
+        systemObject    (nullable:true)
+        subscription    (nullable:true)
+        license         (nullable:true)
         payload(nullable:true, blank:false)
         msgToken(nullable:true, blank:false)
         msgParams(nullable:true, blank:false)
-        pkg(nullable:true, blank:false)
-        costItem(nullable:true, blank: false)
-        ts (nullable:true)
-        owner(nullable:true, blank:false)
+        pkg             (nullable:true)
+        costItem        (nullable:true)
+        ts              (nullable:true)
+        owner           (nullable:true)
         oid(nullable:true, blank:false)
         payloadChangeType       (nullable:true, blank:true)
         payloadChangeTargetOid  (nullable:true, blank:false)
@@ -123,7 +123,7 @@ class PendingChange {
         oldValue(nullable:true, blank:true)
         newValue(nullable:true, blank:true)
         desc(nullable:true, blank:false)
-        status(nullable:true, blank:false)
+        status          (nullable:true)
         actionDate (nullable:true)
 
         // Nullable is true, because values are already in the database

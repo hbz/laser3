@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import com.k_int.properties.PropertyDefinition
@@ -401,6 +401,9 @@ class SubscriptionController
             result.parentId = result.subscription.id
 
         if (params.process  && result.editable) {
+            result.licenses.each { License l ->
+                subscriptionService.setOrgLicRole(result.subscription,l,true)
+            }
             result.delResult = deletionService.deleteSubscription(result.subscription, false)
         }
         else {
@@ -2493,7 +2496,7 @@ class SubscriptionController
         result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.members_disabled = []
         result.members.each { it ->
-            if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?", [result.subscriptionInstance, it.id])) {
+            if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = :io and sor.org.id = :orgId", [io: result.subscriptionInstance, orgId: it.id])) {
                 result.members_disabled << it.id
             }
         }
@@ -2648,6 +2651,8 @@ class SubscriptionController
                                     }
                                 }
                             }
+
+                            memberSub.refresh()
 
                             packagesToProcess.each { Package pkg ->
                                 if(params.linkWithEntitlements)
@@ -4700,6 +4705,7 @@ class SubscriptionController
         }
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
+        if (params.fromSurvey && accessService.checkPerm("ORG_CONSORTIUM")) {result.fromSurvey = params.fromSurvey}
 
         result.isConsortialSubs = (result.sourceSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
@@ -4740,7 +4746,7 @@ class SubscriptionController
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks()
                 if (params.isRenewSub){
-                    if (result.isSubscriberVisible){
+                    if (!params.fromSurvey && result.isSubscriberVisible){
                         params.workFlowPart = WORKFLOW_SUBSCRIBER
                         result << loadDataFor_Subscriber()
                     } else {
@@ -4765,7 +4771,13 @@ class SubscriptionController
                 if (params.isRenewSub && params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceSubscription, true)
+
+                    if(surveyConfig && result.fromSurvey) {
+                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    }else {
+                        redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    }
                 } else {
                     result << loadDataFor_Properties()
                 }
@@ -4775,7 +4787,14 @@ class SubscriptionController
                 if (params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceSubscription, true)
+
+                    if(surveyConfig && result.fromSurvey) {
+                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    }else {
+                        redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    }
                 }
                 break
             default:

@@ -31,10 +31,7 @@ class Combo {
     }
 
     static constraints = {
-        status  (nullable:true, blank:false)
-        type    (blank:false)
-        fromOrg (blank:false)
-        toOrg   (blank:false)
+        status      (nullable:true)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)

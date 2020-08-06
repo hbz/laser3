@@ -1,4 +1,4 @@
-package com.k_int.kbplus.abstract_domain
+package de.laser.base
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
@@ -6,7 +6,6 @@ import de.laser.helper.DateUtil
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.springframework.beans.factory.annotation.Autowired
 
 import javax.persistence.Transient
 
@@ -47,29 +46,58 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
-    def afterInsertHandler() {
-        static_logger.debug("afterInsertHandler")
-        //println("afterInsertHandler")
+    protected void beforeInsertHandler() {
+        static_logger.debug("beforeInsertHandler()")
+    }
+
+    protected void afterInsertHandler() {
+        static_logger.debug("afterInsertHandler()")
+
         cascadingUpdateService.update(this, dateCreated)
     }
 
-    def afterUpdateHandler() {
-        static_logger.debug("afterUpdateHandler")
-        //println("afterUpdateHandler")
+    protected Map<String, Object> beforeUpdateHandler() {
+
+        Map<String, Object> changes = [
+                oldMap: [:],
+                newMap: [:]
+        ]
+        this.getDirtyPropertyNames().each { prop ->
+            changes.oldMap.put( prop, this.getPersistentValue(prop) )
+            changes.newMap.put( prop, this.getProperty(prop) )
+        }
+
+        static_logger.debug("beforeUpdateHandler() " + changes.toMapString())
+        return changes
+    }
+
+    protected void afterUpdateHandler() {
+        static_logger.debug("afterUpdateHandler()")
+
         cascadingUpdateService.update(this, lastUpdated)
     }
 
-    def afterDeleteHandler() {
-        static_logger.debug("afterDeleteHandler")
-        //println("afterDeleteHandler")
+    protected void beforeDeleteHandler() {
+        static_logger.debug("beforeDeleteHandler()")
+    }
+
+    protected void afterDeleteHandler() {
+        static_logger.debug("afterDeleteHandler()")
+
         cascadingUpdateService.update(this, new Date())
     }
 
-    abstract def afterInsert() /* { afterInsertHandler() } */
+    abstract def beforeInsert()     /* { beforeInsertHandler() } */
 
-    abstract def afterUpdate() /* { afterUpdateHandler() } */
+    abstract def afterInsert()      /* { afterInsertHandler() } */
 
-    abstract def afterDelete() /* { afterDeleteHandler() } */
+    abstract def beforeUpdate()     /* { beforeUpdateHandler() } */
+
+    abstract def afterUpdate()      /* { afterUpdateHandler() } */
+
+    abstract def beforeDelete()     /* { beforeDeleteHandler() } */
+
+    abstract def afterDelete()      /* { afterDeleteHandler() } */
 
     Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated

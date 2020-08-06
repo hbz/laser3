@@ -417,13 +417,17 @@ class LicenseController
         }
         result.subscriptions = []
         result.putAll(setSubscriptionFilterData())
-        if(params.status != "FETCH_ALL") {
+        if(params.status != 'FETCH_ALL') {
             String query = "select s from Subscription s where s.status.id = :status and concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
             result.subscriptionsForFilter = Subscription.executeQuery( query, [status:params.status as Long, lic:GenericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
         }
+        else if(params.status == 'FETCH_ALL') {
+            String query = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
+            result.subscriptionsForFilter = Subscription.executeQuery( query, [lic:GenericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
+        }
         if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
-            Map<String,Object> queryParams = [lic:GenericOIDService.getOID(result.license),status:result.status,subscriberRoleTypes:subscriberRoleTypes,linkType:RDStore.LINKTYPE_LICENSE]
+            Map<String,Object> queryParams = [lic:GenericOIDService.getOID(result.license),subscriberRoleTypes:subscriberRoleTypes,linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
             if(params.status != 'FETCH_ALL') {
                 whereClause += " and s.status.id = :status"
@@ -706,11 +710,11 @@ class LicenseController
                 base_query, query_params, [max:result.max, offset:result.offset]
         )
 
-    def propertyNameHql = "select pd.name from LicenseProperty as licP, PropertyDefinition as pd where licP.id= ? and licP.type = pd"
+    String propertyNameHql = "select pd.name from LicenseProperty as licP, PropertyDefinition as pd where licP.id = :lpid and licP.type = pd"
     
     result.historyLines?.each{
       if(it.className == query_params.prop ){
-        def propertyName = LicenseProperty.executeQuery(propertyNameHql,[it.persistedObjectId.toLong()])[0]
+        def propertyName = LicenseProperty.executeQuery(propertyNameHql, [lpid: it.persistedObjectId.toLong()])[0]
         it.propertyName = propertyName
       }
     }

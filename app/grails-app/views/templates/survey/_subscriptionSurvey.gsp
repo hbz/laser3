@@ -483,6 +483,8 @@
            value="${surveyOrg ? CostItem.findBySurveyOrg(surveyOrg) : null}"/>
 
     <g:if test="${surveyInfo.owner.id != institution.id && ((costItemSums && costItemSums.subscrCosts) || costItemSurvey)}">
+        <g:set var="showCostItemSurvey" value="${true}"/>
+
         <div class="ui card la-time-card">
 
             <div class="content">
@@ -588,6 +590,7 @@
                                 </td>
 
                                 <g:if test="${costItemSurvey && costItemSurvey.costItemElement == costItem.costItemElement}">
+                                    <g:set var="showCostItemSurvey" value="${false}"/>
                                     <td>
                                         <%
                                             elementSign = 'notSet'
@@ -689,7 +692,7 @@
                         </g:each>
                     </g:if>
 
-                    <g:if test="${!costItemSums && !costItemSums.subscrCosts && costItemSurvey}">
+                    <g:if test="${showCostItemSurvey && costItemSurvey}">
                         <tr>
 
                             <td></td>

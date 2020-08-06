@@ -361,10 +361,10 @@ class Identifier implements CalculatedLastUpdated {
             def idstrParts = identifierString.split(':');
             switch (idstrParts.size()) {
                 case 1:
-                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = ?', [idstrParts[0]])
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = :val', [val: idstrParts[0]])
                     break
                 case 2:
-                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = ? and ident.ns.ns = ?', [idstrParts[1], idstrParts[0]])
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = :val and ident.ns.ns = :ns', [val: idstrParts[1], ns: idstrParts[0]])
                     break
                 default:
                     break

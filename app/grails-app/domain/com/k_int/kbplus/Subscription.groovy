@@ -4,8 +4,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.IssueEntitlementGroup
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -177,12 +177,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(blank:false)
-        type(nullable:true, blank:false)
-        kind(nullable:true, blank:false)
+        type        (nullable:true)
+        kind        (nullable:true)
         //owner(nullable:true, blank:false)
-        form        (nullable:true, blank:false)
-        resource    (nullable:true, blank:false)
+        form        (nullable:true)
+        resource    (nullable:true)
         startDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
@@ -193,11 +192,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
             }
         })
-        manualRenewalDate (nullable:true)
-        manualCancellationDate (nullable:true)
-        instanceOf(nullable:true, blank:false)
+        manualRenewalDate       (nullable:true)
+        manualCancellationDate  (nullable:true)
+        instanceOf              (nullable:true)
         comment(nullable: true, blank: true)
-        previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
+        previousSubscription    (nullable:true) //-> see Links, deleted as ERMS-800
         noticePeriod(nullable:true, blank:true)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)
@@ -234,13 +233,14 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
     @Override
     def beforeUpdate() {
-        super.beforeUpdateHandler()
-    }
+        Map<String, Object> changes = super.beforeUpdateHandler()
+        log.debug ("beforeUpdate() " + changes.toMapString())
 
-    @Transient
-    def onChange = { oldMap, newMap ->
-        log.debug("onChange ${this}")
-        auditService.onChangeHandler(this, oldMap, newMap)
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
     @Override
@@ -490,7 +490,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
     }
 
-    Subscription getCalculatedPrevious() {
+    Subscription _getCalculatedPrevious() {
         Links match = Links.findWhere(
                 source: GenericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
@@ -498,7 +498,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         return match ? genericOIDService.resolveOID(match.destination) : null
     }
 
-    Subscription getCalculatedSuccessor() {
+    Subscription _getCalculatedSuccessor() {
         Links match = Links.findWhere(
                 destination: GenericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS

@@ -37,7 +37,7 @@ class SurveyProperty implements I10nTrait {
     ]
 
     static constraints = {
-        owner(nullable: true, blank: false)
+        owner(nullable: true)
         introduction(nullable: true, blank: false)
         comment(nullable: true, blank: false)
         expl(nullable: true, blank: false)
@@ -126,8 +126,8 @@ class SurveyProperty implements I10nTrait {
 
     def countUsages() {
 
-            def scp = SurveyProperty.executeQuery("select count(scp) from SurveyConfigProperties as scp where scp.surveyProperty = ?", [this])
-            def srp = SurveyProperty.executeQuery("select count(srp) from SurveyResult as srp where srp.type = ?", [this])
+            def scp = SurveyProperty.executeQuery("select count(scp) from SurveyConfigProperties as scp where scp.surveyProperty = :sp", [sp: this])
+            def srp = SurveyProperty.executeQuery("select count(srp) from SurveyResult as srp where srp.type = :sp", [sp: this])
             return scp[0]+srp[0] ?: 0
 
     }

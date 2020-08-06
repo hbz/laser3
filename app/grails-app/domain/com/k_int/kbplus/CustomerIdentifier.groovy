@@ -28,12 +28,8 @@ class CustomerIdentifier {
     }
 
     static constraints = {
-        type     (blank:false)
         value    (blank:true)
         note     (nullable:true, blank:true)
-        customer (blank:false)
-        platform (blank:false)
-        owner    (blank:false)
     }
 
     Org getProvider() {

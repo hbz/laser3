@@ -19,8 +19,8 @@ class CostItemGroup {
     }
 
     static constraints = {
-      budgetCode  nullable: true, blank: false
-      costItem    nullable: true, blank: false
+      budgetCode  nullable: true
+      costItem    nullable: true
     }
 
     @Transient

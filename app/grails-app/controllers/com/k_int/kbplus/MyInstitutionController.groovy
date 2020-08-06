@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
@@ -480,8 +480,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
         result.orgRoles = [:]
-
-        orgRoles.each { oo ->
+        orgRoles.each { OrgRole oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
         du.setBenchmark('get consortia')
@@ -1100,8 +1099,8 @@ join sub.orgRelations or_sub where
                     params.list('selectedOrgs').each{ it ->
                         Org fo =  Org.findById(Long.valueOf(it))
                         cons_members << Combo.executeQuery(
-                                "select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?",
-                                [result.institution, fo] )
+                                "select c.fromOrg from Combo as c where c.toOrg = :toOrg and c.fromOrg = :fromOrg",
+                                [toOrg: result.institution, fromOrg:fo] )
                     }
 
                     //def cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])
@@ -3537,7 +3536,7 @@ AND EXISTS (
 
         PropertyDefinition propDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-        params.remove('filterPropDef')
+        //params.remove('filterPropDef')
 
         //Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
         /*Sortieren
@@ -3565,13 +3564,17 @@ AND EXISTS (
 
         if(propDef) {
             Set filteredObjs = [], objectsWithoutProp = []
-            Map<String,Object> parameterMap = [type:propDef,ctx:result.institution]
-            String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = ''
+            Map<String,Object> parameterMap = [type:propDef,ctx:result.institution], orgFilterParams = [:]
+            String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = '', orgFilterClause = ''
             if(accessService.checkPerm('ORG_CONSORTIUM')) {
                 subFilterClause += 'and oo.sub.instanceOf = null'
                 spOwnerFilterClause += 'and sp.owner.instanceOf = null'
                 licFilterClause += 'and oo.lic.instanceOf = null'
                 lpOwnerFilterClause += 'and lp.owner.instanceOf = null'
+            }
+            else if(accessService.checkPerm('ORG_BASIC_MEMBER')) {
+                orgFilterClause += 'and ot in (:providerAgency)'
+                orgFilterParams.providerAgency = [RDStore.OT_AGENCY,RDStore.OT_PROVIDER,RefdataValue.getByValueAndCategory('Broker',RDConstants.ORG_TYPE),RefdataValue.getByValueAndCategory('Content Provider',RDConstants.ORG_TYPE),RefdataValue.getByValueAndCategory('Vendor',RDConstants.ORG_TYPE)]
             }
             switch(propDef.descr) {
                 case PropertyDefinition.SUB_PROP: objectsWithoutProp.addAll(Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :ctx '+subFilterClause+' and oo.roleType in (:roleTypes) and not exists (select sp from SubscriptionProperty sp where sp.owner = oo.sub and sp.tenant = :ctx and sp.type = :type) order by oo.sub.name asc, oo.sub.startDate asc, oo.sub.endDate asc',parameterMap+[roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]))
@@ -3586,7 +3589,7 @@ AND EXISTS (
                 case PropertyDefinition.PRS_PROP: objectsWithoutProp.addAll(Person.executeQuery('select p from Person p where (p.tenant = :ctx or p.tenant = null) and not exists (select pp from PersonProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) order by p.last_name asc, p.first_name asc',parameterMap))
                     filteredObjs.addAll(PersonProperty.executeQuery('select pp.owner from PersonProperty pp where pp.type = :type and pp.tenant = :ctx order by pp.owner.last_name asc, pp.owner.first_name asc',parameterMap))
                     break
-                case PropertyDefinition.ORG_PROP: objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) order by o.sortname asc, o.name asc',parameterMap+[deleted:RDStore.ORG_STATUS_DELETED]))
+                case PropertyDefinition.ORG_PROP: objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) '+orgFilterClause+' order by o.sortname asc, o.name asc',parameterMap+orgFilterParams+[deleted:RDStore.ORG_STATUS_DELETED]))
                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx order by op.owner.sortname asc, op.owner.name asc',parameterMap))
                     result.sortname = true
                     break

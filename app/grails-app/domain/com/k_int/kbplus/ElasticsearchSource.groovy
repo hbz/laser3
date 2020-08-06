@@ -37,7 +37,7 @@ class ElasticsearchSource {
         identifier(nullable:true, blank:false)
         name(nullable:true, blank:false, maxSize:2048)
         host(nullable:true, blank:false)
-        port (nullable:true, blank:false)
+        port (nullable:true)
         index (nullable:true, blank:false)
         cluster (nullable:true, blank:false)
         url (nullable:true, blank:false)

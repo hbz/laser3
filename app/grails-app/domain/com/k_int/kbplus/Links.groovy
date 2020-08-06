@@ -38,8 +38,6 @@ class Links {
         source        (blank: false)
         destination   (blank: false)
         //objectType    (blank: false)
-        linkType      (blank: false)
-        owner         (blank: false)
 
         // Nullable is true, because values are already in the database
         dateCreated (nullable: true)

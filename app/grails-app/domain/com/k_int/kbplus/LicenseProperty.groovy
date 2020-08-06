@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 import de.laser.interfaces.AuditableSupport
 
@@ -78,18 +78,34 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     }
 
     @Override
-    def afterDelete() {
-        super.afterDeleteHandler()
-
-        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+    def beforeInsert() {
+        super.beforeInsertHandler()
     }
     @Override
     def afterInsert() {
         super.afterInsertHandler()
     }
     @Override
+    def beforeUpdate(){
+        Map<String, Object> changes = super.beforeUpdateHandler()
+
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+    }
+    @Override
     def afterUpdate() {
         super.afterUpdateHandler()
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+
+        auditService.beforeDeleteHandler(this)
+    }
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
+
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 
     @Override
@@ -100,22 +116,10 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         newProp
     }
 
-    @Transient
-    def onChange = { oldMap, newMap ->
-        log.debug("onChange ${this}")
-        auditService.onChangeHandler(this, oldMap, newMap)
-    }
-
-    @Transient
-    def onDelete = { oldMap ->
-        log.debug("onDelete ${this}")
-        auditService.onDeleteHandler(this, oldMap)
-    }
-
     def notifyDependencies_trait(changeDocument) {
         log.debug("notifyDependencies_trait(${changeDocument})")
 
-        if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.updated')) {
+        if (changeDocument.event.equalsIgnoreCase('LicenseProperty.updated')) {
             // legacy ++
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
@@ -195,7 +199,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                 pendingChangeService.performAccept(spc)
             }
         }
-        else if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.deleted')) {
+        else if (changeDocument.event.equalsIgnoreCase('LicenseProperty.deleted')) {
 
             List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.oid = :objectID",
                     [objectID: "${this.class.name}:${this.id}"] )
