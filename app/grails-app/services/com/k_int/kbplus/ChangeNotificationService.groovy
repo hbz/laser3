@@ -227,7 +227,7 @@ class ChangeNotificationService extends AbstractLockableService {
                 def contextObject = genericOIDService.resolveOID(changeDocument.OID)
 
                 log.debug("Context object: ${contextObject}")
-                contextObject?.notifyDependencies_trait(changeDocument)
+                contextObject?.notifyDependencies(changeDocument)
             }
             catch (Exception e) {
                 log.error("Problem with event transmission for ${changeDocument.OID}" ,e)

@@ -107,8 +107,8 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 
-    def notifyDependencies_trait(changeDocument) {
-        log.debug("notifyDependencies_trait(${changeDocument})")
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
 
         if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.updated')) {
 

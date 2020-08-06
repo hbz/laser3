@@ -305,8 +305,8 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 
     /*
   @Transient
-  def notifyDependencies_trait(changeDocument) {
-    log.debug("notifyDependencies_trait(${changeDocument})")
+  def notifyDependencies(changeDocument) {
+    log.debug("notifyDependencies(${changeDocument})")
     changeNotificationService.broadcastEvent("com.k_int.kbplus.Package:${pkg.id}", changeDocument)
     changeNotificationService.broadcastEvent("${this.class.name}:${this.id}", changeDocument)
     Locale locale = LocaleContextHolder.getLocale()

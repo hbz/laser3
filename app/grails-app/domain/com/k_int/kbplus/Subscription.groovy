@@ -594,8 +594,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     @Transient
-    def notifyDependencies_trait(changeDocument) {
-        log.debug("notifyDependencies_trait(${changeDocument})")
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
 
         List<PendingChange> slavedPendingChanges = []
         List<Subscription> derived_subscriptions = getNonDeletedDerivedSubscriptions()
