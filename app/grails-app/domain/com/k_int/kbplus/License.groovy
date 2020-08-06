@@ -211,17 +211,14 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
         }
-        super.beforeUpdateHandler()
+        Map<String, Object> changes = super.beforeUpdateHandler()
+        log.debug ("beforeUpdate() " + changes.toMapString())
+
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def beforeDelete() {
         super.beforeDeleteHandler()
-    }
-
-    @Transient
-    def onChange = { oldMap, newMap ->
-        log.debug("onChange ${this}")
-        auditService.beforeUpdateHandler(this, oldMap, newMap)
     }
 
     @Override

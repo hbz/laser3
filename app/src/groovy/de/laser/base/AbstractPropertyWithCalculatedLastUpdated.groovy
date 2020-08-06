@@ -46,28 +46,18 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
-    protected Map<String, Object> beforeInsertHandler() {
-        static_logger.debug("beforeInsertHandler")
-        //println("beforeInsertHandler")
-        Map<String, Object> changes = [
-                newMap: [:]
-        ]
-        this.getDirtyPropertyNames().each { prop ->
-            changes.newMap.put( prop, this.getProperty(prop) )
-        }
-
-        return changes
+    protected def beforeInsertHandler() {
+        static_logger.debug("beforeInsertHandler()")
     }
 
     protected def afterInsertHandler() {
-        static_logger.debug("afterInsertHandler")
-        //println("afterInsertHandler")
+        static_logger.debug("afterInsertHandler()")
+
         cascadingUpdateService.update(this, dateCreated)
     }
 
     protected Map<String, Object> beforeUpdateHandler() {
-        static_logger.debug("beforeUpdateHandler")
-        //println("beforeUpdateHandler")
+
         Map<String, Object> changes = [
                 oldMap: [:],
                 newMap: [:]
@@ -77,31 +67,23 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
             changes.newMap.put( prop, this.getProperty(prop) )
         }
 
+        static_logger.debug("beforeUpdateHandler() " + changes.toMapString())
         return changes
     }
 
     protected def afterUpdateHandler() {
-        static_logger.debug("afterUpdateHandler")
-        //println("afterUpdateHandler")
+        static_logger.debug("afterUpdateHandler()")
+
         cascadingUpdateService.update(this, lastUpdated)
     }
 
-    protected Map<String, Object> beforeDeleteHandler() {
-        static_logger.debug("beforeDeleteHandler")
-        //println("beforeDeleteHandler")
-        Map<String, Object> changes = [
-                oldMap: [:]
-        ]
-        this.getDirtyPropertyNames().each { prop ->
-            changes.oldMap.put( prop, this.getPersistentValue(prop) )
-        }
-
-        return changes
+    protected def beforeDeleteHandler() {
+        static_logger.debug("beforeDeleteHandler()")
     }
 
     protected def afterDeleteHandler() {
-        static_logger.debug("afterDeleteHandler")
-        //println("afterDeleteHandler")
+        static_logger.debug("afterDeleteHandler()")
+
         cascadingUpdateService.update(this, new Date())
     }
 

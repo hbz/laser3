@@ -21,20 +21,20 @@ abstract class AbstractBaseWithCalculatedLastUpdated extends AbstractBase
     static Log static_logger = LogFactory.getLog(AbstractBaseWithCalculatedLastUpdated)
 
     protected def afterInsertHandler() {
-        static_logger.debug("afterInsertHandler")
-        //println("afterInsertHandler")
+        static_logger.debug("afterInsertHandler()")
+
         cascadingUpdateService.update(this, dateCreated)
     }
 
     protected def afterUpdateHandler() {
-        static_logger.debug("afterUpdateHandler")
-        //println("afterUpdateHandler")
+        static_logger.debug("afterUpdateHandler()")
+
         cascadingUpdateService.update(this, lastUpdated)
     }
 
     protected def afterDeleteHandler() {
-        static_logger.debug("afterDeleteHandler")
-        //println("afterDeleteHandler")
+        static_logger.debug("afterDeleteHandler()")
+
         cascadingUpdateService.update(this, new Date())
     }
 

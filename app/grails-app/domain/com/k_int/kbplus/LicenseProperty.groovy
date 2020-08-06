@@ -79,8 +79,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
     @Override
     def beforeInsert() {
-        Map<String, Object> changes = super.beforeInsertHandler()
-        log.debug ("beforeInsert() " + changes.toMapString())
+        super.beforeInsertHandler()
     }
     @Override
     def afterInsert() {
@@ -89,7 +88,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     @Override
     def beforeUpdate(){
         Map<String, Object> changes = super.beforeUpdateHandler()
-        log.debug ("beforeUpdate() " + changes.toMapString())
 
         auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
@@ -99,10 +97,9 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     }
     @Override
     def beforeDelete() {
-        Map<String, Object> changes = super.beforeDeleteHandler()
-        log.debug ("beforeDelete() " + changes.toMapString())
+        super.beforeDeleteHandler()
 
-        auditService.beforeDeleteHandler(this, changes.oldMap)
+        auditService.beforeDeleteHandler(this)
     }
     @Override
     def afterDelete() {

@@ -530,11 +530,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     "${grailsApplication.config.grails.serverURL}/package/show/${id}".toString();
   }*/
 
-    /*
-    def onChange = { oldMap, newMap ->
-        log.debug("OVERWRITE onChange")
-    }*/
-
   // @Transient
   // def onChange = { oldMap,newMap ->
 
