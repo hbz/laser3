@@ -56,7 +56,7 @@ class PendingChangeController extends AbstractDebugController {
         List<String> concernedPackage = params.list("acceptChangesForPackages")
         boolean acceptAll = params.acceptAll != null
         boolean rejectAll = params.rejectAll != null
-        //executorService.submit({
+        //executorService.execute({
             concernedPackage.each { String spID ->
                 SubscriptionPackage sp = SubscriptionPackage.get(spID)
                 Set<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange pc where pc.subscription = :sub and pc.owner = :context and pc.status = :pending",[context:contextService.org,sub:sp.subscription,pending:RDStore.PENDING_CHANGE_PENDING])
@@ -88,7 +88,7 @@ class PendingChangeController extends AbstractDebugController {
                     }
                 }
             }
-        //} as Callable)
+        //})
         redirect(url: request.getHeader('referer'))
     }
 

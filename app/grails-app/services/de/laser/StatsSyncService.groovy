@@ -102,7 +102,7 @@ class StatsSyncService {
 
     void doSync() {
         initSync()
-        executorService.submit({ internalDoSync() } as java.util.concurrent.Callable)
+        executorService.execute({ internalDoSync() })
     }
 
     void internalDoSync() {

@@ -172,7 +172,7 @@ class AuditService {
                             }
                         }
 
-                        log.debug( event.toMapString() )
+                        log.debug( "event: " + event.toMapString() )
 
                         if (event) {
                             if (!changeNotificationService) {
