@@ -56,8 +56,22 @@
     <g:set var="editableOld" value="${editable}"/>
 
     <div class="ui segment">
-        <h3><g:message code="property.manageProperties.add"/></h3>
         <g:form action="processManageProperties" method="post" class="ui form">
+            <div class="field">
+                <h2><g:if test="${filterPropDef.tenant != null}"><i class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/></h2>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
+                <g:hiddenField name="filterPropDef" value="${GenericOIDService.getOID(filterPropDef)}"/>
+                <g:if test="${filterPropDef.type == RefdataValue.toString()}">
+                    <g:set var="refdataValues" value="${[]}"/>
+                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+                            var="refdataValue">
+                        <g:if test="${refdataValue.getI10n('value')}">
+                            <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                        </g:if>
+                    </g:each>
+
+                    (${refdataValues.join('/')})
+                </g:if>
+            </div>
             <div class="field required">
                 <label for="filterPropValue">${message(code: 'subscription.property.value')}</label>
                 <g:if test="${filterPropDef.type == RefdataValue.toString()}">
@@ -81,8 +95,6 @@
                     <input id="filterPropValue" type="text" name="filterPropValue" placeholder="${message(code: 'license.search.property.ph')}"/>
                 </g:else>
             </div>
-            <g:hiddenField name="filterPropDef" value="${GenericOIDService.getOID(filterPropDef)}"/>
-            <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
             <table class="ui celled la-table table" id="withoutPropTable">
                 <thead>
                     <tr>
@@ -106,7 +118,7 @@
                         </g:if>
                         <th><g:message code="default.name.label"/></th>
                         <th><g:message code="property.manageProperties.propertySelected"/>: ${filterPropDef.getI10n('name')}</th>
-                        <th></th>
+                        <th class="x"><button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -268,21 +280,13 @@
             <g:hiddenField name="id" value="${params.id}"/>
 
             <div class="field">
-                <h4>${message(code: 'property.manageProperties.info')}</h4>
-
-                <div class="inline field">
-                    <label>${message(code: 'property.manageProperties.propertySelected')}:</label>
-
-                    <b>${filterPropDef.getI10n('name')}
-                        <g:if test="${filterPropDef.tenant != null}">
-                            <i class="shield alternate icon"></i>
-                        </g:if>
-                    </b>
-
-                </div>
+                <h2>
+                    <g:if test="${filterPropDef.tenant != null}">
+                        <i class="shield alternate icon"></i>
+                    </g:if>
+                    <g:message code="property.manageProperties.edit" args="[filterPropDef.getI10n('name')]"/>
+                </h2>
                 <g:hiddenField name="filterPropDef" value="${GenericOIDService.getOID(filterPropDef)}"/>
-
-
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
                 <g:if test="${filterPropDef.type == RefdataValue.toString()}">
                     <g:set var="refdataValues" value="${[]}"/>
@@ -321,17 +325,6 @@
                 </g:else>
             </div>
 
-            <button class="ui button" type="submit" name="saveChanges" value="true">${message(code: 'default.button.save_changes')}</button>
-            <button class="ui button negative" type="submit" name="deleteProperties" value="true">
-                <%-- TODO ask Ingrid
-                    js-open-confirm-modal
-                    data-confirm-tokenMsg="${message(code: 'property.manageProperties.deleteProperty.button.confirm')}"
-                    data-confirm-term-how="ok"
-                --%>
-                ${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}
-            </button>
-
-            <h3>${message(code: 'property.manageProperties.object')} <semui:totalNumber total="${filteredObjs?.size()}"/></h3>
             <table class="ui celled la-table table" id="existingObjTable">
                 <thead>
                     <tr>
@@ -349,7 +342,15 @@
                         </g:if>
                         <th>${message(code: 'default.name.label')}</th>
                         <th>${message(code: 'property.manageProperties.propertySelected')}: ${filterPropDef.getI10n('name')}</th>
-                        <th></th>
+                        <th class="x">
+                            <button class="ui button" type="submit" name="saveChanges" value="true">${message(code: 'default.button.save_changes')}</button>
+                            <button class="ui button negative" type="submit" name="deleteProperties" value="true">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</button>
+                                <%-- TODO ask Ingrid
+                                    js-open-confirm-modal
+                                    data-confirm-tokenMsg="${message(code: 'property.manageProperties.deleteProperty.button.confirm')}"
+                                    data-confirm-term-how="ok"
+                                --%>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -551,15 +552,18 @@
         }
     });
     $('#filterTableWithoutProp').keyup(function() {
-        $("#withoutPropTable tbody tr:contains('"+$(this).val()+"')").show();
-        $("#withoutPropTable tbody tr:not(:contains('"+$(this).val()+"'))").hide();
+        $("#withoutPropTable tbody tr:icontains('"+$(this).val()+"')").show();
+        $("#withoutPropTable tbody tr:not(:icontains('"+$(this).val()+"'))").hide();
     });
     $('#filterTableExistingObj').keyup(function() {
-        $("#existingObjTable tbody tr:contains('"+$(this).val()+"')").show();
-        $("#existingObjTable tbody tr:not(:contains('"+$(this).val()+"'))").hide();
+        $("#existingObjTable tbody tr:icontains('"+$(this).val()+"')").show();
+        $("#existingObjTable tbody tr:not(:icontains('"+$(this).val()+"'))").hide();
         //$("#existingObjTable tr:contains('"+$(this).val()+"')").addClass("positive");
         //$("#existingObjTable tr:not(:contains('"+$(this).val()+"'))").removeClass("positive");
     });
+    $.expr[':'].icontains = function(a,i,m) {
+        return $(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+    }
 </r:script>
 
 </body>

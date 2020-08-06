@@ -240,7 +240,7 @@ class SurveyConfig {
 
         SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(this, org)
 
-        if (this.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()) {
+        if (this.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()) {
             return true
         } else {
 

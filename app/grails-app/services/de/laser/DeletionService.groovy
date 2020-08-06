@@ -192,7 +192,7 @@ class DeletionService {
                 }
                 catch (Exception e) {
                     println 'error while deleting license ' + lic.id + ' .. rollback'
-                    println e.message
+                    println 'error while deleting license ' + e.message
                     e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
@@ -455,7 +455,7 @@ class DeletionService {
                 }
                 catch (Exception e) {
                     println 'error while deleting subscription ' + sub.id + ' .. rollback'
-                    println e.message
+                    println 'error while deleting subscription ' + e.message
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
                 }
@@ -665,7 +665,7 @@ class DeletionService {
                 }
                 catch (Exception e) {
                     println 'error while deleting org ' + org.id + ' .. rollback'
-                    println e.message
+                    println 'error while deleting org ' + e.message
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
                 }
@@ -782,7 +782,7 @@ class DeletionService {
                 }
                 catch (Exception e) {
                     println 'error while deleting user ' + user.id + ' .. rollback'
-                    println e.message
+                    println 'error while deleting user ' + e.message
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
                 }
@@ -835,7 +835,7 @@ class DeletionService {
             }
             catch(Exception e) {
                 println 'error while deleting package ' + pkg.id + ' .. rollback'
-                e.printStackTrace()
+                println 'error while deleting package ' + e.printStackTrace()
                 status.setRollbackOnly()
                 return false
             }
@@ -855,7 +855,7 @@ class DeletionService {
                 }
                 catch(Exception e) {
                     println 'error while deleting tipp ' + tipp.id + ' .. rollback'
-                    println e.printStackTrace()
+                    println 'error while deleting tipp ' + e.printStackTrace()
                     status.setRollbackOnly()
                     return false
                 }
@@ -885,7 +885,7 @@ class DeletionService {
             }
             catch (Exception e) {
                 println 'error while deleting tipp collection ' + tippsToDelete + ' .. rollback'
-                println e.message
+                println 'error while deleting tipp collection ' + e.message
                 status.setRollbackOnly()
                 return false
             }
@@ -903,7 +903,7 @@ class DeletionService {
             }
             catch (Exception e) {
                 println 'error while deleting issue entitlement ' + ie + ' .. rollback'
-                println e.message
+                println 'error while deleting issue entitlement ' + e.message
                 status.setRollbackOnly()
                 return false
             }
