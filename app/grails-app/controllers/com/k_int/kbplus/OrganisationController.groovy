@@ -636,9 +636,10 @@ class OrganisationController extends AbstractDebugController {
                 usedRDV.add(pr.responsibilityType)
             }
         }
+        usedRDV.removeAll([RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN])
+
         usedRDV.unique().sort{it.getI10n('value')}
 
-        usedRDV.removeAll([RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN])
         usedRDV.add(0, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN)
         usedRDV.add(0, RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
         usedRDV.add(0, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS)
