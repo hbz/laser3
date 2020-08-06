@@ -243,7 +243,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @Transient
     def onChange = { oldMap, newMap ->
         log.debug("onChange ${this}")
-        auditService.onChangeHandler(this, oldMap, newMap)
+        auditService.beforeUpdateHandler(this, oldMap, newMap)
     }
 
     @Override

@@ -48,10 +48,10 @@ class AuditService {
     }
 
     @Transient
-    def onDeleteHandler(AuditableSupport obj, def oldMap) {
+    def beforeDeleteHandler(AuditableSupport obj, def oldMap) {
 
         obj.withNewSession {
-            log.debug("onDelete() ${obj}")
+            log.debug("beforeDeleteHandler() ${obj} : ${oldMap}")
 
             String oid = "${obj.class.name}:${obj.id}"
 
@@ -82,7 +82,7 @@ class AuditService {
     }
 
     @Transient
-    def onSaveHandler(AuditableSupport obj) {
+    def beforeSaveHandler(AuditableSupport obj) {
 
         obj.withNewSession {
             log.debug("onSave() ${obj}")
@@ -90,10 +90,10 @@ class AuditService {
     }
 
     @Transient
-    def onChangeHandler(AuditableSupport obj, def oldMap, def newMap) {
+    def beforeUpdateHandler(AuditableSupport obj, def oldMap, def newMap) {
 
         obj.withNewSession {
-            log.debug("onChange() ${obj} : ${oldMap} => ${newMap}")
+            log.debug("beforeUpdateHandler() ${obj} : ${oldMap} => ${newMap}")
 
             if (obj.instanceOf == null) {
                 List<String> gwp = getWatchedProperties(obj)

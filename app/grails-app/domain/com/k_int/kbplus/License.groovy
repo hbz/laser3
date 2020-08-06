@@ -199,10 +199,29 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         super.afterUpdateHandler()
     }
 
+    @Override
+    def beforeInsert() {
+        if ( reference != null && !sortableReference) {
+            sortableReference = generateSortableReference(reference)
+        }
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        if ( reference != null && !sortableReference) {
+            sortableReference = generateSortableReference(reference)
+        }
+        super.beforeUpdateHandler()
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
+    }
+
     @Transient
     def onChange = { oldMap, newMap ->
         log.debug("onChange ${this}")
-        auditService.onChangeHandler(this, oldMap, newMap)
+        auditService.beforeUpdateHandler(this, oldMap, newMap)
     }
 
     @Override
@@ -577,27 +596,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
 
         result
-    }
-
-    @Override
-    def beforeInsert() {
-         if ( reference != null && !sortableReference) {
-            sortableReference = generateSortableReference(reference)
-        }
-        super.beforeInsertHandler()
-    }
-
-    @Override
-    def beforeUpdate() {
-        if ( reference != null && !sortableReference) {
-            sortableReference = generateSortableReference(reference)
-        }
-        super.beforeUpdateHandler()
-    }
-
-    @Override
-    def beforeDelete() {
-        super.beforeDeleteHandler()
     }
 
 

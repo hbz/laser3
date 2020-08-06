@@ -91,7 +91,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         Map<String, Object> changes = super.beforeUpdateHandler()
         log.debug ("beforeUpdate() " + changes.toMapString())
 
-        auditService.onChangeHandler(this, changes.oldMap, changes.newMap)
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def afterUpdate() {
@@ -102,7 +102,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         Map<String, Object> changes = super.beforeDeleteHandler()
         log.debug ("beforeDelete() " + changes.toMapString())
 
-        auditService.onDeleteHandler(this, changes.oldMap)
+        auditService.beforeDeleteHandler(this, changes.oldMap)
     }
     @Override
     def afterDelete() {
@@ -117,18 +117,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
         newProp.paragraph = paragraph
         newProp
-    }
-
-    @Transient
-    def onChange = { oldMap, newMap ->
-        //log.debug("onChange ${this}")
-        //auditService.onChangeHandler(this, oldMap, newMap)
-    }
-
-    @Transient
-    def onDelete = { oldMap ->
-        //log.debug("onDelete ${this}")
-        //auditService.onDeleteHandler(this, oldMap)
     }
 
     def notifyDependencies_trait(changeDocument) {
