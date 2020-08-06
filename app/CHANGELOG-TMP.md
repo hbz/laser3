@@ -2,6 +2,14 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2755    05.08.2020  rc1.5       Andreas Bug         Zugriff auf Nutzerzahlen und Zugangskonfigurationen für Konsorten abgestuft
+
+2753    05.08.2020  rc1.5       Andreas Bug         falsches Laden verknüpfbarer Objekte, falsche Darstellung verknüpfter Objekte
+
+2752    05.08.2020  rc1.5       Andreas Bug         Statusfilter arbeitet jetzt korrekt
+
+2751    05.08.2020  rc1.5       Moe     Bug         Umfragefilter arbeitete nicht richtig
+
 --      04.08.2020  hbz-dev     Moe     Feature     Umbau von copyElementsIntoSubscription wegen Umfrage
 
 2749    04.08.2020  rc1.5       Andreas Bug         Konsorten haben Zugriff auf Tab "Lizenzen" unter Vertrag

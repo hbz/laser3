@@ -1175,8 +1175,8 @@ class OrganisationController extends AbstractDebugController {
 
         result
     }
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def readerNumber() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
@@ -1245,8 +1245,8 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def accessPoints() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
