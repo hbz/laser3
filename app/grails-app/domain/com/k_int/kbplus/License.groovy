@@ -467,8 +467,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
 
     @Transient
-    def notifyDependencies_trait(changeDocument) {
-        log.debug("notifyDependencies_trait(${changeDocument})")
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
 
         List<PendingChange> slavedPendingChanges = []
         // Find any licenses derived from this license
