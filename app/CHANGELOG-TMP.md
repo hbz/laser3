@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2757    06.08.2020  rc1.5       Andreas Bug         Teil zwei: Sicherung der Merkmalsbearbeitung gegen mehrfaches Abschicken des Formulars überarbeitet
+
+2756    06.08.2020  rc1.5       Andreas Bug         Bearbeitung von Verknüpfungen funktionierte nicht
+
 2755    05.08.2020  rc1.5       Andreas Bug         Zugriff auf Nutzerzahlen und Zugangskonfigurationen für Konsorten abgestuft
 
 2753    05.08.2020  rc1.5       Andreas Bug         falsches Laden verknüpfbarer Objekte, falsche Darstellung verknüpfter Objekte
