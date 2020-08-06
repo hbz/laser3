@@ -20,17 +20,17 @@ class AuditService {
 
     def changeNotificationService
 
-    def getWatchedProperties(AuditableSupport auditable) {
+    def getWatchedProperties(AuditableSupport obj) {
         def result = []
 
-        if (getAuditConfig(auditable, AuditConfig.COMPLETE_OBJECT)) {
-            auditable.controlledProperties.each { cp ->
+        if (getAuditConfig(obj, AuditConfig.COMPLETE_OBJECT)) {
+            obj.controlledProperties.each { cp ->
                 result << cp
             }
         }
         else {
-            auditable.controlledProperties.each { cp ->
-                if (getAuditConfig(auditable, cp)) {
+            obj.controlledProperties.each { cp ->
+                if (getAuditConfig(obj, cp.toString())) {
                     result << cp
                 }
             }
@@ -39,19 +39,19 @@ class AuditService {
         result
     }
 
-    AuditConfig getAuditConfig(AuditableSupport auditable) {
-        AuditConfig.getConfig(auditable)
+    AuditConfig getAuditConfig(AuditableSupport obj) {
+        AuditConfig.getConfig(obj)
     }
 
-    AuditConfig getAuditConfig(AuditableSupport auditable, String field) {
-        AuditConfig.getConfig(auditable, field)
+    AuditConfig getAuditConfig(AuditableSupport obj, String field) {
+        AuditConfig.getConfig(obj, field)
     }
 
     @Transient
-    def onDeleteHandler(AuditableSupport obj, def oldMap) {
+    def beforeDeleteHandler(AuditableSupport obj) {
 
         obj.withNewSession {
-            log.debug("onDelete() ${obj}")
+            log.debug("beforeDeleteHandler() ${obj}")
 
             String oid = "${obj.class.name}:${obj.id}"
 
@@ -82,18 +82,18 @@ class AuditService {
     }
 
     @Transient
-    def onSaveHandler(AuditableSupport obj) {
+    def beforeSaveHandler(AuditableSupport obj) {
 
         obj.withNewSession {
-            log.debug("onSave() ${obj}")
+            log.debug("beforeSaveHandler() ${obj}")
         }
     }
 
     @Transient
-    def onChangeHandler(AuditableSupport obj, def oldMap, def newMap) {
+    def beforeUpdateHandler(AuditableSupport obj, def oldMap, def newMap) {
 
         obj.withNewSession {
-            log.debug("onChange() ${obj} : ${oldMap} => ${newMap}")
+            log.debug("beforeUpdateHandler() ${obj} : ${oldMap} => ${newMap}")
 
             if (obj.instanceOf == null) {
                 List<String> gwp = getWatchedProperties(obj)

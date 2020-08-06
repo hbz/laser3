@@ -86,7 +86,9 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     }
     @Override
     def beforeUpdate(){
-        super.beforeUpdateHandler()
+        Map<String, Object> changes = super.beforeUpdateHandler()
+
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def afterUpdate() {
@@ -95,24 +97,14 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     @Override
     def beforeDelete() {
         super.beforeDeleteHandler()
+
+        auditService.beforeDeleteHandler(this)
     }
     @Override
     def afterDelete() {
         super.afterDeleteHandler()
 
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
-    }
-
-    @Transient
-    def onChange = { oldMap, newMap ->
-        log.debug("onChange ${this}")
-        auditService.onChangeHandler(this, oldMap, newMap)
-    }
-
-    @Transient
-    def onDelete = { oldMap ->
-        log.debug("onDelete ${this}")
-        auditService.onDeleteHandler(this, oldMap)
     }
 
     def notifyDependencies_trait(changeDocument) {
