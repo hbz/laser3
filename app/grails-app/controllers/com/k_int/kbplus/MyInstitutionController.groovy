@@ -93,7 +93,7 @@ class MyInstitutionController extends AbstractDebugController {
         //log.debug(params.toMapString())
         Map<String, Object> result = setResultGenerics()
         result.formSubmit = params.formSubmit == 'true'
-        Map<RefdataValue,Set<CostItem>> costItemElementGroups = [:]
+        Map<RefdataValue,Collection<CostItem>> costItemElementGroups = [:]
         String instanceFilter = ''
         if(result.institution.getCustomerType() == 'ORG_CONSORTIUM') {
             instanceFilter += ' and sub.instanceOf is null '
@@ -105,14 +105,23 @@ class MyInstitutionController extends AbstractDebugController {
             String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc'
             Map<String,Object> ciParams = [owner:result.institution]
             //we define some entry points
+            Set<Subscription> linkedSubscriptionSet = []
             if(params.subscription) {
+                Subscription starting = Subscription.get(params.subscription)
+                Map<String,Object> subQueryParams = [starting:GenericOIDService.getOID(starting),linkType: RDStore.LINKTYPE_FOLLOWS]
+                //get precedents
+                linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('"+Subscription.class.name+":',s.id) in (select li.destination from Links li where li.source = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc",subQueryParams))
+                linkedSubscriptionSet << starting
+                //get successors
+                linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('"+Subscription.class.name+":',s.id) in (select li.source from Links li where li.destination = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc",subQueryParams))
                 if(result.institution.getCustomerType() == 'ORG_CONSORTIUM') {
-                    ciQuery += 'and ci.sub.instanceOf = :sub'
+                    ciQuery += 'and ci.sub.instanceOf in (:subs)'
                 }
                 else {
-                    ciQuery += 'and ci.sub = :sub'
+                    ciQuery += 'and ci.sub in (:subs)'
                 }
-                costItems.addAll(CostItem.executeQuery(ciQuery+ciOrder,ciParams+[sub:Subscription.get(params.subscription)]))
+                costItems.addAll(CostItem.executeQuery(ciQuery+ciOrder,ciParams+[subs:linkedSubscriptionSet]))
+                result.linkedSubscriptionSet = linkedSubscriptionSet
             }
             else if(params.package) {
                 ciQuery += 'and ci.subPkg = :subPkg'
@@ -120,10 +129,38 @@ class MyInstitutionController extends AbstractDebugController {
             }
             if(costItems) {
                 //test for ERMS-1125: group by elements
-                Set<RefdataValue> elementsOfContextOrg = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :owner',[owner:result.institution])
-                elementsOfContextOrg.each { RefdataValue element ->
-                    costItemElementGroups.put(element,costItems.findAll { CostItem ci -> ci.costItemElement == element })
+                List<Map<String,Object>> costSubscriptionData = []
+                if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                    Set<RefdataValue> elementsOfContextOrg = RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :owner',[owner:result.institution])
+                    Set<Map<String,Object>> series = []
+                    Set<String> labels = []
+                    elementsOfContextOrg.each { RefdataValue element ->
+                        Collection<CostItem> costItemsWithElement = costItems.findAll { CostItem ci -> ci.costItemElement == element }
+                        costItemElementGroups.put(element,costItemsWithElement)
+                        linkedSubscriptionSet.each { Subscription linkedSub ->
+                            labels << linkedSub.dropdownNamingConvention(result.institution)
+                            Collection<CostItem> costItemsWithElementAndSubscription = costItemsWithElement.findAll { CostItem ci -> linkedSub in [ci.sub.instanceOf] }
+                            Map<Subscription,Set<CostItem>> costItemsByOrg = [:]
+                            costItemsWithElementAndSubscription.each { CostItem ci ->
+                                Subscription childSub = ci.sub
+                                Set<CostItem> costItemsOfOrg = costItemsByOrg.get(childSub)
+                                if(!costItemsOfOrg) {
+                                    costItemsOfOrg = []
+                                }
+                                costItemsOfOrg << ci
+                                costItemsByOrg.put(childSub,costItemsOfOrg)
+                            }
+                            costItemsByOrg.each { Map.Entry<Subscription,Set<CostItem>> orgRow ->
+                                series.add([name:orgRow.key.dropdownNamingConvention(result.institution),data:orgRow.value])
+                            }
+                        }
+                    }
+                    costSubscriptionData.add([labels:labels,series:series])
                 }
+                else if(accessService.checkPerm("ORG_BASIC_MEMBER")) {
+                    //TODO
+                }
+                result.costSubscriptionData = costSubscriptionData
             }
         }
         Set<SubscriptionPackage> currentSubscriptionPackages = SubscriptionPackage.executeQuery(spQuery,spParams)

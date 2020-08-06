@@ -1,4 +1,5 @@
 <!doctype html>
+<r:require module="chartist"/>
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
@@ -68,26 +69,45 @@
                 <table class="ui celled la-table table">
                     <thead>
                         <tr>
-                            <th colspan="3"><g:message code="myinst.reporting.costItems"/></th>
+                            <th colspan="4"><g:message code="myinst.reporting.costItems"/></th>
+                        </tr>
+                        <tr>
+                            <th><g:message code="financials.costItemElement"/></th>
+                            <g:each in="${linkedSubscriptionSet}" var="subscription">
+                                <th>${subscription.dropdownNamingConvention(institution)}</th>
+                            </g:each>
                         </tr>
                     </thead>
                     <tbody>
                         <g:each in="${costItems}" var="row">
                             <tr>
                                 <td>${row.getKey().getI10n("value")}</td>
-                                <td>
-                                    <ul>
-                                        <g:each in="${row.getValue()}" var="ci">
-                                            <li><g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencySymbol=""/> ${ci.billingCurrency ?: 'EUR'}</li>
+                                <g:each in="${linkedSubscriptionSet}" var="subscription">
+                                    <td>
+                                        <g:each in="${row.getValue().findAll { subscription.id in [it.sub.id,it.sub.instanceOf?.id] }}" var="ci">
+                                            <ul>
+                                                <li><g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencySymbol=""/> ${ci.billingCurrency ?: 'EUR'}</li>
+                                            </ul>
                                         </g:each>
-                                    </ul>
-                                </td>
+                                    </td>
+                                </g:each>
                             </tr>
                         </g:each>
                     </tbody>
                 </table>
             </g:if>
 
+            <div id="chartA">
+
+            </div>
+
         </g:if>
     </body>
+    <r:script>
+        <g:each in="${costSubscriptionData}" var="row">
+            new Chartist.Line('#chartA',${row},{
+                plugins: [Chartist.plugins.legend()]
+            });
+        </g:each>
+    </r:script>
 </html>
