@@ -27,7 +27,7 @@ abstract class AbstractBase {
         }
     }
 
-    protected def beforeInsertHandler() {
+    protected void beforeInsertHandler() {
 
         static_logger.debug("beforeInsertHandler()")
 
@@ -54,7 +54,7 @@ abstract class AbstractBase {
         return changes
     }
 
-    protected def beforeDeleteHandler() {
+    protected void beforeDeleteHandler() {
 
         static_logger.debug("beforeDeleteHandler()")
     }

@@ -46,11 +46,11 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
-    protected def beforeInsertHandler() {
+    protected void beforeInsertHandler() {
         static_logger.debug("beforeInsertHandler()")
     }
 
-    protected def afterInsertHandler() {
+    protected void afterInsertHandler() {
         static_logger.debug("afterInsertHandler()")
 
         cascadingUpdateService.update(this, dateCreated)
@@ -71,17 +71,17 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         return changes
     }
 
-    protected def afterUpdateHandler() {
+    protected void afterUpdateHandler() {
         static_logger.debug("afterUpdateHandler()")
 
         cascadingUpdateService.update(this, lastUpdated)
     }
 
-    protected def beforeDeleteHandler() {
+    protected void beforeDeleteHandler() {
         static_logger.debug("beforeDeleteHandler()")
     }
 
-    protected def afterDeleteHandler() {
+    protected void afterDeleteHandler() {
         static_logger.debug("afterDeleteHandler()")
 
         cascadingUpdateService.update(this, new Date())
