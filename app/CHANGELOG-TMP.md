@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2760    06.08.2020  rc1.5       Andreas Bug         Export der Merkmale für Einrichtungen funktionierte nicht
+
 2757    06.08.2020  rc1.5       Andreas Bug         Teil zwei: Sicherung der Merkmalsbearbeitung gegen mehrfaches Abschicken des Formulars überarbeitet
 
 2756    06.08.2020  rc1.5       Andreas Bug         Bearbeitung von Verknüpfungen funktionierte nicht
