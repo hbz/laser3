@@ -10,6 +10,9 @@ class RefdataReorderService {
 
     /*
         This bootstrapped method should capsulate every reordering queries so that no manual database migration scripts needs to be executed
+
+        !!! Be careful when using rdv.order.
+        This overwrites the sorting, so it may be sorted according to German values. Then the display is wrongly sorted in English!!!
      */
     void reorderRefdata() {
         //semesters: take the order of insertion and make then the ID ascending
@@ -34,6 +37,58 @@ class RefdataReorderService {
             c.order = order
             c.save()
             order += 10
+        }
+
+        //ToDo Order of cost.item.elements
+
+
+        List list = []
+        list.add([owner: 'concurrent.access',       sortToEnd: ['Other', 'Not Specified']])
+        list.add([owner: 'confidentiality',         sortToEnd: ['Unknown']])
+        list.add([owner: 'cost.item.category',      sortToEnd: ['Other']])
+        list.add([owner: 'cost.item.status',        sortToEnd: ['Other']])
+        list.add([owner: 'funder.type',             sortToEnd: ['Other Territorial Authorit', 'Other Public Sector Funder', 'Other Religious Communities']])
+        list.add([owner: 'indemnification',         sortToEnd: ['Other', 'Unknown']])
+        list.add([owner: 'invoicing',               sortToEnd: ['Other']])
+        list.add([owner: 'library.network',         sortToEnd: ['No Network']])
+        list.add([owner: 'library.type',            sortToEnd: ['Sonstige', 'keine Angabe']])
+        list.add([owner: 'license.arc.payment.note',sortToEnd: ['No Hosting fee']])
+        list.add([owner: 'license.arc.title.transfer.regulation',   sortToEnd: ['No Regulation']])
+        list.add([owner: 'license.oa.corresponding.author.identification', sortToEnd: ['Other']])
+        list.add([owner: 'license.statistics.format', sortToEnd: ['Other']])
+        list.add([owner: 'license.statistics.user.creds', sortToEnd: ['Other', 'None']])
+        list.add([owner: 'license.oa.type',         sortToEnd: ['No Open Access']])
+        list.add([owner: 'license.remote.access',   sortToEnd: ['No']])
+        list.add([owner: 'license.status',          sortToEnd: ['Unknown']])
+        list.add([owner: 'license.type',            sortToEnd: ['Unknown']])
+        list.add([owner: 'org.type',                sortToEnd: ['Other']])
+        list.add([owner: 'package.breakable',       sortToEnd: ['Yes', 'No', 'Unknown']])
+        list.add([owner: 'package.consistent',      sortToEnd: ['Yes', 'No', 'Unknown']])
+        list.add([owner: 'package.fixed',           sortToEnd: ['Unknown']])
+        list.add([owner: 'package.list.status',     sortToEnd: ['Unknown']])
+        list.add([owner: 'package.scope',           sortToEnd: ['Unknown']])
+        list.add([owner: 'permissions',             sortToEnd: ['Unknown']])
+        list.add([owner: 'subscription.resource',   sortToEnd: ['other']])
+        list.add([owner: 'package.fixed',           sortToEnd: ['Yes', 'No', 'Unknown']])
+        list.add([owner: 'termination.condition',   sortToEnd: ['Other', 'Unknown']])
+        list.add([owner: 'tipp.delayed.oa',         sortToEnd: ['Yes', 'No', 'Unknown']])
+        list.add([owner: 'tipp.hybrid.oa',          sortToEnd: ['Yes', 'No', 'Unknown']])
+        list.add([owner: 'tipp.payment.type',       sortToEnd: ['Unknown']])
+        list.add([owner: 'tipp.status',             sortToEnd: ['Unknown']])
+        list.add([owner: 'title.status',            sortToEnd: ['Unknown']])
+        list.add([owner: 'y.n.o',                   sortToEnd: ['Yes', 'No', 'Other', 'Unknown']])
+        list.add([owner: 'y.n.u',                   sortToEnd: ['Yes', 'No', 'Unknown']])
+
+        list.each{
+            RefdataCategory owner = RefdataCategory.getByDesc(it.owner)
+            if (owner) {
+                RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = :order where rdv.owner = :owner',[order: 0.longValue(), owner: owner])
+                Long orderNr = 90
+                it.sortToEnd.reverse().each{ sortToEnd ->
+                    RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = :order where rdv.owner = :owner and rdv.value = :value',[order: orderNr, owner: owner, value: sortToEnd])
+                    orderNr = orderNr -10
+                }
+            }
         }
     }
 }
