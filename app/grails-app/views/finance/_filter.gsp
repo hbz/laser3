@@ -1,6 +1,8 @@
 <!-- _filter.gsp -->
-<%@ page import="de.laser.helper.DateUtil; java.text.SimpleDateFormat;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.DateUtil; java.text.SimpleDateFormat;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
+<g:set var="locale" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}" />
+<g:set var="getAllRefDataValuesForCategoryQuery" value="select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_${locale}" />
 
 
     <%--normal semui:filter comes along with more functionality which conflicts with ajax dropdown initialisation, see ERMS-1420--%>
@@ -54,9 +56,10 @@
                 </div>
                 <g:if test="${!fixedSubscription}">
                     <div class="field">
+                        <g:set var="subStatus" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.SUBSCRIPTION_STATUS])}" scope="request"/>
                         <label for="filterSubStatus">${message(code:'subscription.status.label')}</label>
                         <laser:select id="filterSubStatus" class="ui fluid dropdown search" name="filterSubStatus"
-                                      from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
+                                      from="${subStatus}"
                                       optionKey="id"
                                       optionValue="value"
                                       value="${filterPresets?.filterSubStatus?.id}"
@@ -169,7 +172,8 @@
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
                     <select name="filterCIElement" id="filterCIElement" multiple="" class="ui dropdown search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)}" var="rdv">
+                        <g:set var="costItemElements" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COST_ITEM_ELEMENT])}" scope="request"/>
+                        <g:each in="${costItemElements}" var="rdv">
                             <option value="${"${rdv.class.getName()}:${rdv.id}"}" <%=(filterPresets?.filterCIElement?.contains(rdv)) ? 'selected="selected"' : '' %>>
                                 ${rdv.getI10n("value")}
                             </option>
@@ -181,7 +185,8 @@
                     <label for="filterCIStatus">${message(code:'default.status.label')}</label>
                     <select name="filterCIStatus" id="filterCIStatus" multiple="" class="ui dropdown search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
-                        <g:each in="${[RDStore.GENERIC_NULL_VALUE]+RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)-RDStore.COST_ITEM_DELETED}" var="rdv">
+                        <g:set var="costItemStatus" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COST_ITEM_STATUS])}" scope="request"/>
+                        <g:each in="${costItemStatus-RDStore.COST_ITEM_DELETED+RDStore.GENERIC_NULL_VALUE}" var="rdv">
                             <option value="${"${rdv.class.getName()}:${rdv.id}"}" <%=(filterPresets?.filterCIStatus?.contains(rdv)) ? 'selected="selected"' : '' %>>
                                 ${rdv.getI10n("value")}
                             </option>
@@ -238,13 +243,14 @@
                 --%>
                     <label for="filterCITaxType">${message(code:'financials.newCosts.taxTypeAndRate')}</label>
                     <%
-                        List taxTypesList = [[key:'null',value:"${RDStore.GENERIC_NULL_VALUE.getI10n('value')}"]]
+                        List taxTypesList = []
                         CostItem.TAX_TYPES.every { taxType ->
                             if(taxType == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
                                 taxTypesList.add([key:taxType,value:taxType.taxType.getI10n("value")])
                             else
                                 taxTypesList.add([key:taxType,value:taxType.taxType.getI10n("value")+" ("+taxType.taxRate+"%)"])
                         }
+                        taxTypesList.add([key:'null',value:"${RDStore.GENERIC_NULL_VALUE.getI10n('value')}"])
                     %>
                     <g:select id="filterCITaxType" class="ui dropdown selection search"
                               name="filterCITaxType"

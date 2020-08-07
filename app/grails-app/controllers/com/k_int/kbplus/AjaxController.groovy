@@ -36,6 +36,7 @@ class AjaxController {
     def dataConsistencyService
     def accessService
     def escapeService
+    def formService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -441,11 +442,12 @@ class AjaxController {
     def config = refdata_config.get(params.id?.toString())
 
     if ( config == null ) {
-      // If we werent able to locate a specific config override, assume the ID is just a refdata key
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+        // If we werent able to locate a specific config override, assume the ID is just a refdata key
       config = [
         domain:'RefdataValue',
         countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
-        rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
+        rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}' order by rdv.order, rdv.value_" + locale,
         qryParams:[],
         cols:['value'],
         format:'simple'
@@ -566,12 +568,13 @@ class AjaxController {
      */
     def refdataSearchByOID() {
         def result = []
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
         def rdc = genericOIDService.resolveOID(params.oid)
 
         def config = [
                 domain:'RefdataValue',
                 countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
-                rowQry:"select rdv from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
+                rowQry:"select rdv from RefdataValue as rdv where rdv.owner.id='${rdc?.id}' order by rdv.order, rdv.value_" + locale,
                 qryParams:[],
                 cols:['value'],
                 format:'simple'
@@ -617,7 +620,7 @@ class AjaxController {
         if(result) {
             RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
             result.add([value:"${notSet.class.name}:${notSet.id}",text:notSet.getI10n("value")])
-            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
+//            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
         }
 
         withFormat {
@@ -706,7 +709,7 @@ class AjaxController {
             config = [
                 domain      :'RefdataValue',
                 countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
-                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.value_" + locale,
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order, rdv.value_" + locale,
                 qryParams   :[],
                 cols        :['value'],
                 format      :'simple'
@@ -1598,64 +1601,63 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def toggleAudit() {
-        String referer = request.getHeader('referer')
+        //String referer = request.getHeader('referer')
+        if(formService.validateToken(params)) {
+            def owner = genericOIDService.resolveOID(params.owner)
+            if (owner) {
+                def members = owner.getClass().findAllByInstanceOf(owner)
+                def objProps = owner.getClass().controlledProperties
+                def prop = params.property
 
-        def owner = genericOIDService.resolveOID(params.owner)
-        if (owner) {
-            def members = owner.getClass().findAllByInstanceOf(owner)
-            def objProps = owner.getClass().controlledProperties
-            def prop = params.property
+                if (prop in objProps) {
+                    if (! AuditConfig.getConfig(owner, prop)) {
+                        AuditConfig.addConfig(owner, prop)
 
-            if (prop in objProps) {
-                if (! AuditConfig.getConfig(owner, prop)) {
-                    AuditConfig.addConfig(owner, prop)
-
-                    members.each { m ->
-                        m.setProperty(prop, owner.getProperty(prop))
-                        m.save(flush:true)
-                    }
-                }
-                else {
-                    AuditConfig.removeConfig(owner, prop)
-
-                    if (! params.keep) {
                         members.each { m ->
-                            if(m[prop] instanceof Boolean)
-                                m.setProperty(prop, false)
-                            else m.setProperty(prop, null)
-                            m.save(flush: true)
+                            m.setProperty(prop, owner.getProperty(prop))
+                            m.save(flush:true)
                         }
                     }
+                    else {
+                        AuditConfig.removeConfig(owner, prop)
 
-                    // delete pending changes
-                    // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
-                    members.each { m ->
-                        List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
-                                [objectID: "${m.class.name}:${m.id}"])
+                        if (! params.keep) {
+                            members.each { m ->
+                                if(m[prop] instanceof Boolean)
+                                    m.setProperty(prop, false)
+                                else m.setProperty(prop, null)
+                                m.save(flush: true)
+                            }
+                        }
 
-                        openPD?.each { pc ->
-                            def payload = JSON.parse(pc?.payload)
-                            if (payload && payload?.changeDoc) {
-                                def eventObj = genericOIDService.resolveOID(payload.changeDoc?.OID)
-                                def eventProp = payload.changeDoc?.prop
-                                if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
-                                    pc.delete(flush: true)
+                        // delete pending changes
+                        // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
+                        members.each { m ->
+                            List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
+                                    [objectID: "${m.class.name}:${m.id}"])
+
+                            openPD?.each { pc ->
+                                def payload = JSON.parse(pc?.payload)
+                                if (payload && payload?.changeDoc) {
+                                    def eventObj = genericOIDService.resolveOID(payload.changeDoc?.OID)
+                                    def eventProp = payload.changeDoc?.prop
+                                    if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
+                                        pc.delete(flush: true)
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
+            }
         }
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_USER'])
     def togglePropertyIsPublic() {
-        EhcacheWrapper cache = contextService.getCache("/subscription/togglePropertyIsPublic/", contextService.USER_SCOPE)
-        if(!cache.get("${params.oid}")) {
-            cache.put(params.oid,'locked')
+        if(formService.validateToken(params)) {
             AbstractPropertyWithCalculatedLastUpdated property = genericOIDService.resolveOID(params.oid)
             property.isPublic = !property.isPublic
             property.save(flush: true)
@@ -1686,11 +1688,6 @@ class AjaxController {
                 ]
                 render(template: "/templates/properties/custom", model: modelMap)
             }
-            cache.remove(params.oid)
-            log.debug("lock released")
-        }
-        else {
-            log.debug("request already handled!")
         }
     }
 

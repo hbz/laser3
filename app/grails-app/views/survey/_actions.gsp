@@ -14,6 +14,10 @@
                 <div class="ui divider"></div>
             </g:if>
 
+            <semui:actionsDropdownItem controller="survey" action="copyElementsIntoSurvey" params="[id: params.id]"
+                                       message="copySurvey.label"/>
+            <div class="ui divider"></div>
+
             <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && surveyInfo.checkOpenSurvey()}">
                 <semui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
                                            message="openSurvey.button"

@@ -344,8 +344,8 @@ class ApiCollectionReader {
     }
 
     static Collection<Object> getPropertyCollection(Object generic, Org context, def ignoreFlag) {
-        Collection<Object> cp = getCustomPropertyCollection(generic.customProperties, generic, context)
-        Collection<Object> pp = getPrivatePropertyCollection(generic.customProperties, context)
+        Collection<Object> cp = getCustomPropertyCollection(generic.propertySet, generic, context)
+        Collection<Object> pp = getPrivatePropertyCollection(generic.propertySet, context)
 
         if (ignoreFlag == ApiReader.IGNORE_CUSTOM_PROPERTIES) {
             return pp

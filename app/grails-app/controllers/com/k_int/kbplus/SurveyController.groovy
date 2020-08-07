@@ -42,6 +42,7 @@ class SurveyController {
     EscapeService escapeService
     InstitutionsService institutionsService
     PropertyService propertyService
+    LinksGenerationService linksGenerationService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -694,6 +695,7 @@ class SurveyController {
                 if (costItems?.cons) {
                     result.costItemSums.consCosts = costItems.cons.sums
                 }
+                result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
             }
 
             Org contextOrg = contextService.getOrg()
@@ -1404,6 +1406,7 @@ class SurveyController {
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
+            result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
         }
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig).sort { it.surveyConfig.configOrder }
@@ -1673,6 +1676,7 @@ class SurveyController {
             if (costItems?.subscr) {
                 result.costItemSums.subscrCosts = costItems.subscr.costItems
             }
+            result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)    
         }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {

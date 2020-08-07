@@ -2353,13 +2353,13 @@ AND EXISTS (
 
         if(result.surveyConfig?.type == 'Subscription') {
             result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
-            result.subscription = result.subscriptionInstance
+            result.subscription = result.subscriptionInstance	
             result.authorizedOrgs = result.user?.authorizedOrgs
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
             result.visibleOrgRelations = []
             if(result.subscriptionInstance) {
-                result.subscriptionInstance.orgRelations?.each { or ->
+                result.subscriptionInstance.orgRelations.each { or ->
                     if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                         result.visibleOrgRelations << or
                     }
@@ -2378,6 +2378,7 @@ AND EXISTS (
                 if (costItems?.subscr) {
                     result.costItemSums.subscrCosts = costItems.subscr.costItems
                 }
+		result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)    
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
@@ -2447,12 +2448,13 @@ AND EXISTS (
             result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
-            result.subscriptionInstance?.orgRelations?.each { or ->
+            result.subscriptionInstance.orgRelations.each { or ->
                 if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
+	    result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user) 	
         }
         result
     }

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.Person; com.k_int.kbplus.OrgSubjectGroup; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.Person; com.k_int.kbplus.OrgSubjectGroup; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
 <%@ page import="com.k_int.kbplus.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
@@ -166,7 +166,8 @@
                             <dd>
                                 <%
                                     // hotfix:
-                                    def orgType_types = RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)
+                                    String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+                                    def orgType_types = RefdataValue.executeQuery("select rdv from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.ORG_TYPE + "' order by rdv.order, rdv.value_" + locale)
                                     def orgType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
                                     if (!orgType_editable) {

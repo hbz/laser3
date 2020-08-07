@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.116
+
+- internal refactoring
+
 #### 0.115
 
 - added new endpoint: __/orgAccessPoint__
