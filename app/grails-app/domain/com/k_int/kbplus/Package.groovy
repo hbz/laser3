@@ -530,11 +530,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     "${grailsApplication.config.grails.serverURL}/package/show/${id}".toString();
   }*/
 
-    /*
-    def onChange = { oldMap, newMap ->
-        log.debug("OVERWRITE onChange")
-    }*/
-
   // @Transient
   // def onChange = { oldMap,newMap ->
 
@@ -571,7 +566,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   */
     /*
   @Transient
-  def notifyDependencies_trait(changeDocument) {
+  def notifyDependencies(changeDocument) {
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
     if ( changeDocument.event=='Package.created' ) {
       changeNotificationService.broadcastEvent("com.k_int.kbplus.SystemObject:1", changeDocument);

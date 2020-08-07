@@ -233,17 +233,14 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
     @Override
     def beforeUpdate() {
-        super.beforeUpdateHandler()
+        Map<String, Object> changes = super.beforeUpdateHandler()
+        log.debug ("beforeUpdate() " + changes.toMapString())
+
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def beforeDelete() {
         super.beforeDeleteHandler()
-    }
-
-    @Transient
-    def onChange = { oldMap, newMap ->
-        log.debug("onChange ${this}")
-        auditService.onChangeHandler(this, oldMap, newMap)
     }
 
     @Override
@@ -597,8 +594,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     @Transient
-    def notifyDependencies_trait(changeDocument) {
-        log.debug("notifyDependencies_trait(${changeDocument})")
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
 
         List<PendingChange> slavedPendingChanges = []
         List<Subscription> derived_subscriptions = getNonDeletedDerivedSubscriptions()

@@ -441,11 +441,12 @@ class AjaxController {
     def config = refdata_config.get(params.id?.toString())
 
     if ( config == null ) {
-      // If we werent able to locate a specific config override, assume the ID is just a refdata key
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+        // If we werent able to locate a specific config override, assume the ID is just a refdata key
       config = [
         domain:'RefdataValue',
         countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
-        rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
+        rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}' order by rdv.order, rdv.value_" + locale,
         qryParams:[],
         cols:['value'],
         format:'simple'
@@ -566,12 +567,13 @@ class AjaxController {
      */
     def refdataSearchByOID() {
         def result = []
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
         def rdc = genericOIDService.resolveOID(params.oid)
 
         def config = [
                 domain:'RefdataValue',
                 countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
-                rowQry:"select rdv from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
+                rowQry:"select rdv from RefdataValue as rdv where rdv.owner.id='${rdc?.id}' order by rdv.order, rdv.value_" + locale,
                 qryParams:[],
                 cols:['value'],
                 format:'simple'
@@ -617,7 +619,7 @@ class AjaxController {
         if(result) {
             RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
             result.add([value:"${notSet.class.name}:${notSet.id}",text:notSet.getI10n("value")])
-            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
+//            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
         }
 
         withFormat {
@@ -706,7 +708,7 @@ class AjaxController {
             config = [
                 domain      :'RefdataValue',
                 countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
-                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.value_" + locale,
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order, rdv.value_" + locale,
                 qryParams   :[],
                 cols        :['value'],
                 format      :'simple'

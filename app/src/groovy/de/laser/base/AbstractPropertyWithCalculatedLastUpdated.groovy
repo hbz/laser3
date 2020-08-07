@@ -46,36 +46,44 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
-    protected def beforeInsertHandler() {
-        static_logger.debug("beforeInsertHandler")
-        //println("beforeInsertHandler")
+    protected void beforeInsertHandler() {
+        static_logger.debug("beforeInsertHandler()")
     }
 
-    protected def afterInsertHandler() {
-        static_logger.debug("afterInsertHandler")
-        //println("afterInsertHandler")
+    protected void afterInsertHandler() {
+        static_logger.debug("afterInsertHandler()")
+
         cascadingUpdateService.update(this, dateCreated)
     }
 
-    protected def beforeUpdateHandler() {
-        static_logger.debug("beforeUpdateHandler")
-        //println("beforeUpdateHandler")
+    protected Map<String, Object> beforeUpdateHandler() {
+
+        Map<String, Object> changes = [
+                oldMap: [:],
+                newMap: [:]
+        ]
+        this.getDirtyPropertyNames().each { prop ->
+            changes.oldMap.put( prop, this.getPersistentValue(prop) )
+            changes.newMap.put( prop, this.getProperty(prop) )
+        }
+
+        static_logger.debug("beforeUpdateHandler() " + changes.toMapString())
+        return changes
     }
 
-    protected def afterUpdateHandler() {
-        static_logger.debug("afterUpdateHandler")
-        //println("afterUpdateHandler")
+    protected void afterUpdateHandler() {
+        static_logger.debug("afterUpdateHandler()")
+
         cascadingUpdateService.update(this, lastUpdated)
     }
 
-    protected def beforeDeleteHandler() {
-        static_logger.debug("beforeDeleteHandler")
-        //println("beforeDeleteHandler")
+    protected void beforeDeleteHandler() {
+        static_logger.debug("beforeDeleteHandler()")
     }
 
-    protected def afterDeleteHandler() {
-        static_logger.debug("afterDeleteHandler")
-        //println("afterDeleteHandler")
+    protected void afterDeleteHandler() {
+        static_logger.debug("afterDeleteHandler()")
+
         cascadingUpdateService.update(this, new Date())
     }
 

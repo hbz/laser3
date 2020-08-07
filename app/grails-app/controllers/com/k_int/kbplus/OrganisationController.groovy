@@ -636,9 +636,10 @@ class OrganisationController extends AbstractDebugController {
                 usedRDV.add(pr.responsibilityType)
             }
         }
+        usedRDV.removeAll([RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN])
+
         usedRDV.unique().sort{it.getI10n('value')}
 
-        usedRDV.removeAll([RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN])
         usedRDV.add(0, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN)
         usedRDV.add(0, RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
         usedRDV.add(0, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS)
@@ -1175,8 +1176,8 @@ class OrganisationController extends AbstractDebugController {
 
         result
     }
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def readerNumber() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
@@ -1245,8 +1246,8 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def accessPoints() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {

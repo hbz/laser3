@@ -51,8 +51,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @return a flag whether a process is already running
      */
     boolean startSync() {
-        if(!running) {
-            def future = executorService.submit({ doSync() } as Callable)
+        if (!running) {
+            executorService.execute({ doSync() })
             //doSync()
             return true
         }

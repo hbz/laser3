@@ -158,9 +158,7 @@ class SubscriptionService {
         if(params.filterSet)
             result.filterSet = params.filterSet
 
-        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(
-                RDStore.SUBSCRIPTION_TYPE_LOCAL
-        )
+        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(RDStore.SUBSCRIPTION_TYPE_LOCAL)
         result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 
         /*

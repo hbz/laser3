@@ -1,5 +1,6 @@
-<%@ page import="com.k_int.kbplus.*; com.k_int.kbplus.auth.Role; de.laser.helper.RDConstants" %>
-
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; com.k_int.kbplus.*; com.k_int.kbplus.auth.Role; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
+<g:set var="locale" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}" />
+<g:set var="getAllRefDataValuesForCategoryQuery" value="select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_${locale}" />
 
 <g:each in="${tmplConfigShow}" var="row">
 
@@ -40,7 +41,7 @@
                 <div class="field">
                     <label for="orgType">${message(code: 'org.orgType.label')}</label>
                     <g:if test="${orgTypes == null || orgTypes.isEmpty()}">
-                        <g:set var="orgTypes" value="${RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)}"/>
+                        <g:set var="orgTypes" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_TYPE])}" scope="request"/>
                     </g:if>
                     <laser:select class="ui dropdown" id="orgType" name="orgType"
                                   from="${orgTypes}"
@@ -55,7 +56,8 @@
                 <div class="field">
                     <label for="orgRole">${message(code: 'org.orgRole.label')}</label>
                     <g:if test="${orgRoles == null || orgRoles.isEmpty()}">
-                        <g:set var="orgRoles" value="${RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)}"/>
+                        %{--<g:set var="orgRoles" value="${RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)}"/>--}%
+                        <g:set var="orgRoles" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORGANISATIONAL_ROLE])}" scope="request"/>
                     </g:if>
                     <laser:select class="ui dropdown" id="orgRole" name="orgRole"
                                   from="${orgRoles}"
@@ -69,8 +71,9 @@
             <g:if test="${field.equalsIgnoreCase('sector')}">
                 <div class="field">
                     <label for="orgSector">${message(code: 'org.sector.label')}</label>
+                    <g:set var="orgSectors" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_SECTOR])}" scope="request"/>
                     <laser:select class="ui dropdown" id="orgSector" name="orgSector"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.ORG_SECTOR)}"
+                                  from="${orgSectors}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.orgSector}"
@@ -87,7 +90,8 @@
                     <label for="libraryNetwork">${message(code: 'org.libraryNetwork.label')}</label>
                     <select id="libraryNetwork" name="libraryNetwork" multiple="" class="ui selection fluid dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_NETWORK)}" var="rdv">
+                        <g:set var="libraryNetworks" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.LIBRARY_NETWORK])}" scope="request"/>
+                        <g:each in="${libraryNetworks}" var="rdv">
                             <option <%=(params.list('libraryNetwork').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
                         </g:each>
                     </select>
@@ -99,7 +103,8 @@
                     <label for="libraryType">${message(code: 'org.libraryType.label')}</label>
                     <select id="libraryType" name="libraryType" multiple="" class="ui selection fluid dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}" var="rdv">
+                        <g:set var="libraryTypes" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.LIBRARY_TYPE])}" scope="request"/>
+                        <g:each in="${libraryTypes}" var="rdv">
                             <option <%=(params.list('libraryType').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
                         </g:each>
                     </select>
@@ -109,8 +114,9 @@
             <g:if test="${field.equalsIgnoreCase('country')}">
                 <div class="field">
                     <label for="country">${message(code: 'org.country.label')}</label>
+                    <g:set var="countries" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COUNTRY])}" scope="request"/>
                     <laser:select class="ui dropdown" id="country" name="country"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
+                                  from="${countries}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.country}"

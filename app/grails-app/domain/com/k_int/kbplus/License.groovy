@@ -199,10 +199,26 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         super.afterUpdateHandler()
     }
 
-    @Transient
-    def onChange = { oldMap, newMap ->
-        log.debug("onChange ${this}")
-        auditService.onChangeHandler(this, oldMap, newMap)
+    @Override
+    def beforeInsert() {
+        if ( reference != null && !sortableReference) {
+            sortableReference = generateSortableReference(reference)
+        }
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        if ( reference != null && !sortableReference) {
+            sortableReference = generateSortableReference(reference)
+        }
+        Map<String, Object> changes = super.beforeUpdateHandler()
+        log.debug ("beforeUpdate() " + changes.toMapString())
+
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
     @Override
@@ -451,8 +467,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
 
     @Transient
-    def notifyDependencies_trait(changeDocument) {
-        log.debug("notifyDependencies_trait(${changeDocument})")
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
 
         List<PendingChange> slavedPendingChanges = []
         // Find any licenses derived from this license
@@ -577,27 +593,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
 
         result
-    }
-
-    @Override
-    def beforeInsert() {
-         if ( reference != null && !sortableReference) {
-            sortableReference = generateSortableReference(reference)
-        }
-        super.beforeInsertHandler()
-    }
-
-    @Override
-    def beforeUpdate() {
-        if ( reference != null && !sortableReference) {
-            sortableReference = generateSortableReference(reference)
-        }
-        super.beforeUpdateHandler()
-    }
-
-    @Override
-    def beforeDelete() {
-        super.beforeDeleteHandler()
     }
 
 

@@ -87,7 +87,9 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     }
     @Override
     def beforeUpdate(){
-        super.beforeUpdateHandler()
+        Map<String, Object> changes = super.beforeUpdateHandler()
+
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def afterUpdate() {
@@ -96,6 +98,8 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     @Override
     def beforeDelete() {
         super.beforeDeleteHandler()
+
+        auditService.beforeDeleteHandler(this)
     }
     @Override
     def afterDelete() {
@@ -112,20 +116,8 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         newProp
     }
 
-    @Transient
-    def onChange = { oldMap, newMap ->
-        log.debug("onChange ${this}")
-        auditService.onChangeHandler(this, oldMap, newMap)
-    }
-
-    @Transient
-    def onDelete = { oldMap ->
-        log.debug("onDelete ${this}")
-        auditService.onDeleteHandler(this, oldMap)
-    }
-
-    def notifyDependencies_trait(changeDocument) {
-        log.debug("notifyDependencies_trait(${changeDocument})")
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
 
         if (changeDocument.event.equalsIgnoreCase('LicenseProperty.updated')) {
             // legacy ++
