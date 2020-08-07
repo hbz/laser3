@@ -72,6 +72,7 @@ class LinksGenerationService {
         links
     }
 
+
     List<Subscription> getAllLinkedSubscriptions(List<Subscription> ownerSubscriptions, User user) {
         Set<Links> sources
         Set<Links> destinations
@@ -80,19 +81,19 @@ class LinksGenerationService {
         // links
         List oIDs = ownerSubscriptions.collect {GenericOIDService.getOID(it)}
         if (oIDs) {
-            sources = Links.findAllBySourceInList(oIDs)
-            destinations = Links.findAllByDestinationInList(oIDs)
+            sources = Links.executeQuery("from Links where source in (:oIDs) and destination like 'com.k_int.kbplus.Subscription%'", [oIDs: oIDs])
+            destinations = Links.executeQuery("from Links where destination in (:oIDs) and source like 'com.k_int.kbplus.Subscription%'", [oIDs: oIDs])
             //IN is from the point of view of the context object (= obj)
 
             sources.each { Links link ->
-                def destination = genericOIDService.resolveOID(link.destination)
-                if (destination.respondsTo("isVisibleBy") && destination.isVisibleBy(user) && destination instanceof Subscription) {
+                Subscription destination = genericOIDService.resolveOID(link.destination)
+                if (destination.isVisibleBy(user)) {
                     result.add(destination)
                 }
             }
             destinations.each { Links link ->
-                def source = genericOIDService.resolveOID(link.source)
-                if (source.respondsTo("isVisibleBy") && source.isVisibleBy(user) && source instanceof Subscription) {
+                Subscription source = genericOIDService.resolveOID(link.source)
+                if (source.isVisibleBy(user)) {
                     result.add(source)
                 }
             }
@@ -149,6 +150,9 @@ class LinksGenerationService {
         }
 
         if(link) {
+            link.linkType = configMap.linkType
+            link.source = configMap.source
+            link.destination = configMap.destination
             if(linkComment) {
                 if(configMap.commentContent.length() > 0) {
                     linkComment.content = configMap.commentContent
