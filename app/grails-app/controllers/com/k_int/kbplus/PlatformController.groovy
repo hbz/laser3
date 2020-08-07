@@ -90,8 +90,7 @@ class PlatformController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def show() {
       Map result = setResultGenerics()
-      def editable
-      def platformInstance = Platform.get(params.id)
+      Platform platformInstance = Platform.get(params.id)
       if (!platformInstance) {
         flash.message = message(code: 'default.not.found.message', 
                                 args: [message(code: 'platform.label'), params.id])
@@ -99,67 +98,12 @@ class PlatformController extends AbstractDebugController {
         return
       }
 
-      editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+        result.platformInstance = platformInstance
+        result.editable = accessService.checkPermAffiliationX('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
 
-        result = [platformInstance: platformInstance, editable: editable, user: springSecurityService.getCurrentUser()]
-     /*// Build up a crosstab array of title-platforms under this package
-      def packages = [:]
-      def package_list = []
-      def titles = [:]
-      def title_list = []
-      int pkg_count = 0;
-      int title_count = 0;
+        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(result.contextOrg)
 
-      log.debug("Adding packages");
-      // Find all platforms
-      platformInstance.tipps.each{ tipp ->
-        // log.debug("Consider ${tipp.title.title}")
-        if ( !packages.keySet().contains(tipp.pkg.id) ) {
-          package_list.add(tipp.pkg)
-          packages[tipp.pkg.id] = [position:pkg_count++, pkg:tipp.pkg]
-        }
-      }
-
-      // Find all titles
-      platformInstance.tipps.each{ tipp ->
-        if ( !titles.keySet().contains(tipp.title.id) ) {
-          title_list.add([title:tipp.title])
-          titles[tipp.title.id] = [:]
-        }
-      }
-
-      title_list.sort{it.title.title}
-      title_list.each { t ->
-        // log.debug("Add title ${t.title.title}")
-        t.position = title_count
-        titles[t.title.id].position = title_count++
-      }
-
-      def crosstab = new Object[title_list.size()][package_list.size()]
-
-      // Now iterate through all tipps, puttint them in the right cell
-      platformInstance.tipps.each{ tipp ->
-        int pkg_col = packages[tipp.pkg.id].position
-        int title_row = titles[tipp.title.id].position
-        if ( crosstab[title_row][pkg_col] != null ) {
-          log.error("Warning - already a value in this cell.. it needs to be a list!!!!!");
-        }
-        else {
-          crosstab[title_row][pkg_col] = tipp;
-        }
-      }
-
-      [platformInstance: platformInstance, packages:package_list, crosstab:crosstab, titles:title_list, editable: editable, tipps: plattformTipps]
-      */
-
-
-
-        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
-
-        //"    SubscriptionPackage subPkg join subPkg.subscriptionPackageOrgAccessPoint  spoap join spoap.orgAccessPoint ap" +
-
-        String qry = ""
-        qry = "select distinct(ap) , spoap.id" +
+        String qry = "select distinct(ap) , spoap.id" +
                 " from " +
                 "    TitleInstancePackagePlatform tipp join tipp.platform platf join tipp.pkg pkg, " +
                 "    SubscriptionPackage subPkg join subPkg.subscriptionPackageOrgAccessPoint spoap join spoap.orgAccessPoint ap " +
@@ -168,30 +112,26 @@ class PlatformController extends AbstractDebugController {
                 "    platf.id =  (:platformId) and " +
                 "    subPkg.subscription.id in (:currentSubIds)"
 
-        def qryParams = [
+        Map<String,Object> qryParams = [
                 platformId : platformInstance.id,
                 currentSubIds : currentSubIds
         ]
         //List orgAccessPointList = OrgAccessPoint.executeQuery(qry, qryParams)
 
         //Map<String, Object> result = [:]
-        Org selectedInstitution = contextService.getOrg()
 
-        List<Org> authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
         hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} and oapl.subPkg is null order by LOWER(ap.name)"
-        List orgAccessPointList = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
+        result.orgAccessPointList = OrgAccessPointLink.executeQuery(hql,[institution : result.contextOrg])
 
         String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
         notActiveAPLinkQuery += "and not exists ("
         notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
         notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id} and oapl.subPkg is null) order by lower(oap.name)"
 
-        def accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
-
-        [platformInstance: platformInstance, editable: editable, orgAccessPointList: orgAccessPointList, accessPointList: accessPointList,
-         institution: authorizedOrgs, selectedInstitution: selectedInstitution.id
-        ]
+        result.accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : result.contextOrg])
+        result.selectedInstitution = result.contextOrg.id
+        result
 
     }
 
@@ -517,7 +457,8 @@ class PlatformController extends AbstractDebugController {
     private Map setResultGenerics() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.orgInstance = contextService.org
+        result.institution = contextService.org
+        result.contextOrg = result.institution //temp fix
         result
     }
 

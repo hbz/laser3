@@ -14,12 +14,12 @@
     </semui:breadcrumbs>
 
     <semui:controlButtons>
-        <g:render template="actions"/>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="${actionName}" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
+        <g:render template="actions"/>
     </semui:controlButtons>
 
     <br>
@@ -106,14 +106,14 @@
                                         <td>
                                             <span class="ui circular label">
                                                 <g:if test="${pd.descr == PropertyDefinition.LIC_PROP}">
-                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:GenericOIDService.getOID(pd)]}">${pd.countUsages()}</g:link>
+                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:GenericOIDService.getOID(pd)]}">${pd.countOwnUsages()}</g:link>
                                                 </g:if>
                                                 <g:elseif test="${pd.descr == PropertyDefinition.SUB_PROP}">
-                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:GenericOIDService.getOID(pd)]}">${pd.countUsages()}</g:link>
+                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:GenericOIDService.getOID(pd)]}">${pd.countOwnUsages()}</g:link>
                                                 </g:elseif>
                                                 <%-- TODO platforms and orgs do not have property filters yet, they must be built! --%>
                                                 <g:else>
-                                                    ${pd.countUsages()}
+                                                    ${pd.countOwnUsages()}
                                                 </g:else>
                                             </span>
                                         </td>

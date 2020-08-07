@@ -377,17 +377,17 @@ class PendingChangeService extends AbstractLockableService {
                         targetProperty.save(flush: true)
                     }
 
-                    if (changeDoc.event.endsWith('CustomProperty.deleted')) {
+                    if (changeDoc.event.endsWith('Property.deleted')) {
 
                         log.debug("Deleting property ${targetProperty.type.name} from ${pendingChange.payloadChangeTargetOid}")
                         changeTarget.customProperties.remove(targetProperty)
                         targetProperty.delete()
                     }
-                    else if (changeDoc.event.endsWith('CustomProperty.updated')) {
+                    else if (changeDoc.event.endsWith('Property.updated')) {
 
                         log.debug("Update custom property ${targetProperty.type.name}")
 
-                        if (changeDoc.type == RefdataValue.toString()){
+                        if (RefdataValue.toString() in [targetProperty.type.type,changeDoc.type]){
                             def newProp = genericOIDService.resolveOID(changeDoc.new instanceof String ?: (changeDoc.new.class + ':' + changeDoc.new.id))
 
                             // Backward compatible
@@ -417,7 +417,7 @@ class PendingChangeService extends AbstractLockableService {
                         targetProperty.save(flush:true)
                     }
                     else {
-                        log.error("ChangeDoc event '${changeDoc.event}'' not recognized.")
+                        log.error("ChangeDoc event '${changeDoc.event}' not recognized.")
                     }
                 }
                 else {
@@ -461,7 +461,8 @@ class PendingChangeService extends AbstractLockableService {
             accepted.addAll(memberACs)
         }
         result.addAll(pending.drop(configMap.pendingOffset).take(configMap.max))
-        result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
+        if(configMap.notifications)
+            result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
         result.each { PendingChange change ->
                 //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
                 if(change.subscription) {

@@ -126,10 +126,10 @@
                     </div>
                     <g:set var="linkedLicenses" value="${Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE)}"/>
                     <g:each in="${linkedLicenses}" var="link">
-                        <g:set var="license" value="${genericOIDService.resolveOID(link.source)}"/>
+                        <g:set var="linkedLicense" value="${genericOIDService.resolveOID(link.source)}"/>
                         <div class="la-flexbox">
                             <i class="icon balance scale la-list-icon"></i>
-                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
+                            <g:link controller="license" action="show" id="${linkedLicense.id}">${linkedLicense.reference}</g:link><br>
                         </div>
                     </g:each>
                 </td>

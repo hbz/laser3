@@ -135,14 +135,16 @@
         <g:if test="${editable}">
             <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
                 <div class="la-float-right">
-                    <g:form controller="pendingChange" action="processAll">
-                        <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
-                        <div class="ui buttons">
-                            <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
-                            <div class="or" data-text="${message(code:'default.or')}"></div>
-                            <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
-                        </div>
-                    </g:form>
+                    <g:if test="${packages}">
+                        <g:form controller="pendingChange" action="processAll">
+                            <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
+                            <div class="ui buttons">
+                                <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
+                                <div class="or" data-text="${message(code:'default.or')}"></div>
+                                <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
+                            </div>
+                        </g:form>
+                    </g:if>
                 </div>
                 <div class="ui internally celled grid">
                     <div class="row">
@@ -208,7 +210,7 @@
             </div>
         </g:if>
 
-        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges'}" data-tab="acceptedchanges">
+        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges">
             <div class="la-float-right">
                 <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
             </div>

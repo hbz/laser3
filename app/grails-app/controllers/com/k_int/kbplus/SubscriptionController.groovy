@@ -401,6 +401,9 @@ class SubscriptionController
             result.parentId = result.subscription.id
 
         if (params.process  && result.editable) {
+            result.licenses.each { License l ->
+                subscriptionService.setOrgLicRole(result.subscription,l,true)
+            }
             result.delResult = deletionService.deleteSubscription(result.subscription, false)
         }
         else {
@@ -2022,9 +2025,9 @@ class SubscriptionController
         params.remove('filterPropDef')
 
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf
 
-        Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
+        Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc",[parent:result.parentSub,roleType:RDStore.OR_SUBSCRIBER_CONS])
         /*Sortieren
         result.validSubChilds = validSubChilds.sort { Subscription a, Subscription b ->
             def sa = a.getSubscriber()
@@ -2048,20 +2051,7 @@ class SubscriptionController
         def oldID = params.id
         params.id = result.parentSub.id
 
-        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
-        result.filteredSubChilds = new ArrayList<Subscription>()
-        result.validSubChilds.each { Subscription sub ->
-            List<Org> subscr = sub.getAllSubscribers()
-            def filteredSubscr = []
-            subscr.each { Org subOrg ->
-                if (filteredOrgIds.contains(subOrg.id)) {
-                    filteredSubscr << subOrg
-                }
-            }
-            if (filteredSubscr) {
-                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-            }
-        }
+        result.filteredSubChilds = validSubChildren
 
         params.id = oldID
 
@@ -2370,9 +2360,9 @@ class SubscriptionController
         redirect(action: 'subscriptionPropertiesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processDeletePropertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -2405,7 +2395,7 @@ class SubscriptionController
                         //private Property
 
                         List<SubscriptionProperty> existingProps = subChild.propertySet.findAll {
-                            it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id && !it.isPublic
+                            it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id
                         }
                         existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
@@ -2427,7 +2417,7 @@ class SubscriptionController
                         //custom Property
 
                         def existingProp = subChild.propertySet.find {
-                            it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id && it.isPublic
+                            it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id
                         }
 
 
@@ -2612,19 +2602,13 @@ class SubscriptionController
 
 
                         if (memberSub) {
-                            if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                                if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
-                                }
-                                else {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
-                                }
-                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
+                            if(result.subscriptionInstance.getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
                             }
                             else {
-                                new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
-                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_coll).save()
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
                             }
+                            new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
 
                             synShareTargetList.add(memberSub)
 
@@ -2648,6 +2632,8 @@ class SubscriptionController
                                     }
                                 }
                             }
+
+                            memberSub.refresh()
 
                             packagesToProcess.each { Package pkg ->
                                 if(params.linkWithEntitlements)

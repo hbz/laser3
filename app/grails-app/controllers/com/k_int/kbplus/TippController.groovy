@@ -22,7 +22,7 @@ class TippController extends AbstractDebugController {
     result.user = User.get(springSecurityService.principal.id)
     result.editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
-    result.tipp = TitleInstancePackagePlatform.get(params.id)
+    result.tipp = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where :id = cast(tipp.id as string) or :id = tipp.gokbId',[id:params.id]).get(0) //we use unique identifiers
     result.titleInstanceInstance = result.tipp.title
 
     if (!result.titleInstanceInstance) {
@@ -36,8 +36,8 @@ class TippController extends AbstractDebugController {
     result.max = params.max
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-    String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status != ? "
-    def qry_params = [result.titleInstanceInstance, RDStore.TIPP_STATUS_DELETED]
+    String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = :title and tipp.status != :status "
+    def qry_params = [title:result.titleInstanceInstance,status:RDStore.TIPP_STATUS_DELETED]
 
     if ( params.filter ) {
       base_qry += " and lower(tipp.pkg.name) like ? "

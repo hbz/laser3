@@ -1,6 +1,9 @@
 package com.k_int.kbplus
 
+import de.laser.IssueEntitlementCoverage
+import de.laser.PendingChangeConfiguration
 import de.laser.SystemEvent
+import de.laser.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
@@ -8,13 +11,17 @@ import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.codehaus.groovy.grails.web.json.JSONElement
+import org.hibernate.Session
 
 @Transactional
 class StatusUpdateService extends AbstractLockableService {
 
+    def globalSourceSyncService
     def changeNotificationService
     def contextService
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     /**
      * Cronjob-triggered.
@@ -159,7 +166,7 @@ class StatusUpdateService extends AbstractLockableService {
                 status == RDStore.SUBSCRIPTION_CURRENT && instanceOf.startDate > currentDate && (endDate != null && (instanceOf.endDate > currentDate)) && isMultiYear == true
             }.collect{ it.id }
 
-            log.info("Current subscriptions reached end date and are now intended pernennial (${currentDate}): " + currentSubsIds3)
+            log.info("Current subscriptions reached end date and are now intended perennial (${currentDate}): " + currentSubsIds3)
 
             if (currentSubsIds3) {
                 updatedObjs << ['currentPerennialToIntendedPerennial' : currentSubsIds3]
@@ -274,16 +281,15 @@ class StatusUpdateService extends AbstractLockableService {
      */
     int updateLinks() {
         int affected = 0
-        def subsWithPrevious = Subscription.findAllByPreviousSubscriptionIsNotNull().collect { it -> [source:it.id,destination:it.previousSubscription.id] }
-        subsWithPrevious.each { sub ->
-            List<Links> linkList = Links.executeQuery('select l from Links as l where l.objectType = :subType and l.source = :source and l.destination = :destination and l.linkType = :linkType',[subType:Subscription.class.name,source:sub.source,destination:sub.destination,linkType:RDStore.LINKTYPE_FOLLOWS])
+        List<Map<String,Subscription>> subsWithPrevious = Subscription.findAllByPreviousSubscriptionIsNotNull().collect { Subscription it -> [source:it,destination:it.previousSubscription] }
+        subsWithPrevious.each { Map<String,Subscription> sub ->
+            List<Links> linkList = Links.executeQuery('select l from Links as l where l.source = :source and l.destination = :destination and l.linkType = :linkType',[source:GenericOIDService.getOID(sub.source),destination:GenericOIDService.getOID(sub.destination),linkType:RDStore.LINKTYPE_FOLLOWS])
             if(linkList.size() == 0) {
                 log.debug(sub.source+" follows "+sub.destination+", is being refactored")
                 Links link = new Links()
-                link.source = sub.source
-                link.destination = sub.destination
-                link.owner = Org.executeQuery('select o.org from OrgRole as o where o.roleType in :ownerRoles and o.sub in :context',[ownerRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER],context: [Subscription.get(sub.source),Subscription.get(sub.destination)]]).get(0)
-                link.objectType = Subscription.class.name
+                link.source = GenericOIDService.getOID(sub.source)
+                link.destination = GenericOIDService.getOID(sub.destination)
+                link.owner = Org.executeQuery('select o.org from OrgRole as o where o.roleType in :ownerRoles and o.sub in :context',[ownerRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER],context: [sub.source,sub.destination]]).get(0)
                 link.linkType = RDStore.LINKTYPE_FOLLOWS
                 if(!link.save(flush:true))
                     log.error("error with refactoring subscription link: ${link.errors}")
@@ -317,65 +323,92 @@ class StatusUpdateService extends AbstractLockableService {
      * Triggered from the Yoda menu
      * Loops through all IssueEntitlements and checks if there are inconcordances with their respective TIPPs. If so, and, if there is no pending change registered,
      * a new pending change is registered
-     * !!!! BEWARE !!!! The modifications for ERMS-1581 are NOT implemented! This method does thus not work!
      */
-    void retriggerPendingChanges() {
-        Org contextOrg = contextService.org
-        Map<Subscription,Set<JSONElement>> currentPendingChanges = [:]
-        List<PendingChange> list = PendingChange.findAllBySubscriptionIsNotNullAndStatus(RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS))
-        list.each { pc ->
-            //Subscription subscription = ClassUtils.deproxy(pc.subscription)
-            Subscription subscription = GrailsHibernateUtil.unwrapIfProxy(pc.subscription)
-            if(subscription.status != RDStore.SUBSCRIPTION_EXPIRED) {
-                Set currSubChanges = currentPendingChanges.get(subscription) ?: []
-                currSubChanges.add(JSON.parse(pc.payload).changeDoc)
-                currentPendingChanges.put(subscription,currSubChanges)
-            }
-        }
-        //globalSourceSyncService.cleanUpGorm()
-        log.debug("pending changes retrieved, go on with comparison ...")
-        IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub where sub.instanceOf = null and ie.status != :deleted',[deleted:RDStore.TIPP_STATUS_DELETED]).eachWithIndex{ IssueEntitlement entry, int ctr ->
-            if(entry.subscription.status != RDStore.SUBSCRIPTION_EXPIRED) {
-                //log.debug("now processing ${entry.id} - ${entry.subscription.dropdownNamingConvention(contextOrg)}")
-                boolean equivalent = false
-                TitleInstancePackagePlatform underlyingTIPP = entry.tipp
-                TitleInstancePackagePlatform.controlledProperties.each { cp ->
-                    if(entry.hasProperty(cp) && entry."$cp") {
-                        //log.debug("checking property ${cp} of ${underlyingTIPP.title.title} in subscription ${entry.subscription.name} ...")
-                        if(cp == 'status') {
-                            //temporary, I propose the merge of Entitlement Issue Status refdata category into TIPP Status
-                            if(entry.status.value == 'Live' && underlyingTIPP.status.value == 'Current') {
-                                equivalent = true
-                            }
-                        }
-                        if(underlyingTIPP[cp] != entry[cp] && (entry[cp] != null && underlyingTIPP[cp] != '') && !equivalent) {
-                            log.debug("difference registered at issue entitlement #${entry.id} - ${entry.subscription.dropdownNamingConvention(contextOrg)}, check if pending change exists ...")
-                            //log.debug("setup change document")
-                            Map changeDocument = [
-                                    OID:"${underlyingTIPP.class.name}:${underlyingTIPP.id}",
-                                    event:'TitleInstancePackagePlatform.updated',
-                                    prop:cp,
-                                    old:entry[cp],
-                                    oldLabel:entry[cp].toString(),
-                                    new:underlyingTIPP[cp],
-                                    newLabel:underlyingTIPP[cp].toString()
-                            ]
-                            if(currentPendingChanges.get(entry.subscription)) {
-                                Set registeredPC = currentPendingChanges.get(entry.subscription)
-                                if(registeredPC.contains(changeDocument as JSONElement))
-                                    log.debug("pending change found for ${entry.subscription.name}/${entry.tipp.title.title}'s ${cp} found , skipping ...")
-                                else {
-                                    log.debug("pending change not found - old ${cp}: ${entry[cp]} (${cp == 'status' ? entry[cp].owner.desc : ''}) vs. new ${cp}: ${underlyingTIPP[cp]} (${cp == 'status' ? underlyingTIPP[cp].owner.desc : ''})")
-                                    underlyingTIPP.notifyDependencies_trait(changeDocument)
+    void retriggerPendingChanges(String packageUUID) {
+        Package pkg = Package.findByGokbId(packageUUID)
+        Set<SubscriptionPackage> allSPs = SubscriptionPackage.findAllByPkg(pkg)
+        //Set<SubscriptionPackage> allSPs = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.subscription.status = :status and sp.pkg = :pkg and sp.subscription.instanceOf is null',[status:RDStore.SUBSCRIPTION_CURRENT,pkg:pkg]) //activate for debugging
+        allSPs.each { SubscriptionPackage sp ->
+            SubscriptionPackage.withNewSession { Session sess ->
+                //for session refresh
+                Set<IssueEntitlement> currentIEs = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.status != :deleted and ie.subscription = :sub and ie.tipp.pkg = :pkg',[sub:sp.subscription,pkg:pkg,deleted:RDStore.TIPP_STATUS_DELETED])
+                //A and B are naming convention for A (old entity which is out of sync) and B (new entity with data up to date)
+                currentIEs.eachWithIndex { IssueEntitlement ieA, int index ->
+                    Map<String,Object> changeMap = [target:ieA.subscription]
+                    String changeDesc
+                    if(ieA.tipp.status != RDStore.TIPP_STATUS_DELETED) {
+                        TitleInstancePackagePlatform tippB = TitleInstancePackagePlatform.get(ieA.tipp.id) //for session refresh
+                        Set<Map<String,Object>> diffs = globalSourceSyncService.getTippDiff(ieA,tippB)
+                        diffs.each { Map<String,Object> diff ->
+                            log.debug("now processing entry #${index}, payload: ${diff}")
+                            if(diff.prop == 'coverage') {
+                                //the city Coventry is beautiful, isn't it ... but here is the COVerageENTRY meant.
+                                diff.covDiffs.each { covEntry ->
+                                    def tippCov = covEntry.target
+                                    switch(covEntry.event) {
+                                        case 'update': IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ieA.coverages)
+                                            if(ieCov) {
+                                                covEntry.diffs.each { covDiff ->
+                                                    changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
+                                                    changeMap.oid = GenericOIDService.getOID(ieA)
+                                                    changeMap.prop = covDiff.prop
+                                                    changeMap.oldValue = ieCov[covDiff.prop]
+                                                    changeMap.newValue = covDiff.newValue
+                                                    changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
+                                                }
+                                            }
+                                            else {
+                                                changeDesc = PendingChangeConfiguration.NEW_COVERAGE
+                                                changeMap.oid = GenericOIDService.getOID(tippCov)
+                                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
+                                            }
+                                            break
+                                        case 'add':
+                                            changeDesc = PendingChangeConfiguration.NEW_COVERAGE
+                                            changeMap.oid = GenericOIDService.getOID(tippCov)
+                                            changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
+                                            break
+                                        case 'delete':
+                                            IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ieA.coverages)
+                                            if(ieCov) {
+                                                changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
+                                                changeMap.oid = GenericOIDService.getOID(ieCov)
+                                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
+                                            }
+                                            break
+                                    }
                                 }
                             }
                             else {
-                                log.debug("pending change not found, subscription has no pending changes - old ${cp}: ${entry[cp]} (${cp == 'status' ? entry[cp].owner.desc : ''}) vs. new ${cp}: ${underlyingTIPP[cp]} (${cp == 'status' ? underlyingTIPP[cp].owner.desc : ''})")
-                                underlyingTIPP.notifyDependencies_trait(changeDocument)
+                                changeDesc = PendingChangeConfiguration.TITLE_UPDATED
+                                changeMap.oid = GenericOIDService.getOID(ieA)
+                                changeMap.prop = diff.prop
+                                if(diff.prop in PendingChange.REFDATA_FIELDS)
+                                    changeMap.oldValue = ieA[diff.prop].id
+                                else if(diff.prop in ['hostPlatformURL'])
+                                    changeMap.oldValue = diff.oldValue
+                                else
+                                    changeMap.oldValue = ieA[diff.prop]
+                                changeMap.newValue = diff.newValue
+                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                             }
                         }
                     }
+                    else {
+                        changeDesc = PendingChangeConfiguration.TITLE_DELETED
+                        changeMap.oid = GenericOIDService.getOID(ieA)
+                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
+                    }
                 }
+                Set<TitleInstancePackagePlatform> currentTIPPs = sp.subscription.issueEntitlements.collect { IssueEntitlement ie -> ie.tipp }
+                Set<TitleInstancePackagePlatform> inexistentTIPPs = pkg.tipps.findAll { TitleInstancePackagePlatform tipp -> !currentTIPPs.contains(tipp) && tipp.status != RDStore.TIPP_STATUS_DELETED }
+                inexistentTIPPs.each { TitleInstancePackagePlatform tippB ->
+                    log.debug("adding new TIPP ${tippB} to subscription ${sp.subscription.id}")
+                    changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:GenericOIDService.getOID(tippB)],PendingChangeConfiguration.NEW_TITLE,sp)
+                }
+                sess.flush()
+                //sess.clear()
+                //propertyInstanceMap.get().clear()
             }
         }
     }

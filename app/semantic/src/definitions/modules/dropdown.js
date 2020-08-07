@@ -280,14 +280,6 @@ $.fn.dropdown = function(parameters) {
                 .eq(0)
                 .addClass(className.selected)
             ;
-            if ( $item.length > 0 ) {
-              if (module.is.searchSelection()) {
-                $search.attr('aria-activedescendant', $item[0].id);
-              }
-              else {
-                $module.attr('aria-activedescendant', $item[0].id);
-              }
-            }
           },
           nextAvailable: function($selected) {
             $selected = $selected.eq(0);
@@ -300,12 +292,7 @@ $.fn.dropdown = function(parameters) {
               module.verbose('Moving selection to', $nextAvailable);
               $nextAvailable.addClass(className.selected);
               if (hasNext) {
-                if (module.is.searchSelection()) {
-                  $search.attr('aria-activedescendant', $nextAvailable[0].id);
-                }
-                else {
-                  $module.attr('aria-activedescendant', $nextAvailable[0].id);
-                }
+                $module.attr('aria-activedescendant', $nextAvailable[0].id);
               }
             }
             else {
@@ -645,7 +632,7 @@ $.fn.dropdown = function(parameters) {
                 .on('mouseup'   + eventNamespace, selector.menu,   module.event.menu.mouseup)
                 .on('click'     + eventNamespace, selector.icon,   module.event.icon.click)
                 .on('focus'     + eventNamespace, selector.search, module.event.search.focus)
-                .on('click'     + eventNamespace, selector.search, module.event.search.click)
+                .on('click'     + eventNamespace, selector.search, module.event.search.focus)
                 .on('blur'      + eventNamespace, selector.search, module.event.search.blur)
                 .on('click'     + eventNamespace, selector.text,   module.event.text.focus)
               ;
@@ -1048,19 +1035,13 @@ $.fn.dropdown = function(parameters) {
             }
           },
           search: {
-            click: function() {
+            focus: function() {
               activated = true;
               if(module.is.multiple()) {
                 module.remove.activeLabel();
               }
               if(settings.showOnFocus) {
                 module.search();
-              }
-            },
-            focus: function() {
-              activated = true;
-              if(module.is.multiple()) {
-                module.remove.activeLabel();
               }
             },
             blur: function(event) {
@@ -1441,7 +1422,7 @@ $.fn.dropdown = function(parameters) {
                 module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                 module.event.item.click.call($selectedItem, event);
                 if(module.is.searchSelection()) {
-                   //module.remove.searchTerm();
+                   module.remove.searchTerm();
                 }
               }
 
@@ -1458,7 +1439,7 @@ $.fn.dropdown = function(parameters) {
                     module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
-                       //module.remove.searchTerm();
+                       module.remove.searchTerm();
                     }
                   }
                   event.preventDefault();
@@ -1522,12 +1503,7 @@ $.fn.dropdown = function(parameters) {
                       .addClass(className.selected)
                     ;
                     if($nextItem.length !== 0) {
-                      if (module.is.searchSelection()) {
-                        $search.attr('aria-activedescendant', $nextItem[0].id);
-                      }
-                      else {
-                        $search.attr('aria-activedescendant', $nextItem[0].id);
-                      }
+                        //$module.attr('aria-activedescendant', $nextItem[0].id);
                     }
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
@@ -1556,12 +1532,7 @@ $.fn.dropdown = function(parameters) {
                     $nextItem
                       .addClass(className.selected)
                     ;
-                    if (module.is.searchSelection()) {
-                      $search.attr('aria-activedescendant', $nextItem[0].id);
-                    }
-                    else {
-                      $module.attr('aria-activedescendant', $nextItem[0].id);
-                    }
+                    $module.attr('aria-activedescendant', $nextItem[0].id);
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
                       module.set.selectedItem($nextItem);
@@ -1887,22 +1858,12 @@ $.fn.dropdown = function(parameters) {
                 $choice.find(selector.menu).remove();
                 $choice.find(selector.menuIcon).remove();
               }
-              if($choice.children().hasClass('description')) {
-                // remove all the inner text from this span tag with the class description
-                $choice.children().remove('.description')
-              }
-/*              return ($choice.data(metadata.text) !== undefined)
+              return ($choice.data(metadata.text) !== undefined)
                 ? $choice.data(metadata.text)
                 : (preserveHTML)
                   ? $.trim($choice.html())
                   : $.trim($choice.text())
-              ;*/
-
-              //always return only the text part of of a choice
-              return ($choice.data(metadata.text) !== undefined)
-                  ? $choice.data(metadata.text)
-                  :  $choice.text().trim()
-                  ;
+              ;
             }
           },
           choiceValue: function($choice, choiceText) {
@@ -2456,17 +2417,13 @@ $.fn.dropdown = function(parameters) {
                 }
                 module.debug('Changing text', text, $text);
                 $text
-                  .removeClass(className.filtered)
+                    .removeClass(className.filtered)
                 ;
-                // text should never include the html
-                $text.text(text);
-                // if text is not "Bitte auswählen" put the text in input value
-                if (text !== module.get.placeholderText()) {
-                  $search.val(text); // a11y
+                if(settings.preserveHTML) {
+                  $text.html(text);
                 }
-                //else - text = "Bitte auswählen" remove the value of search input
                 else {
-                  //$search.val(''); // a11y
+                  $text.text(text);
                 }
               }
             }
@@ -2571,7 +2528,9 @@ $.fn.dropdown = function(parameters) {
               }
               module.debug('Updating input value', escapedValue, currentValue);
               internalChange = true;
-              $input.val(escapedValue);
+              $input
+                .val(escapedValue)
+              ;
               if(settings.fireOnInit === false && module.is.initialLoad()) {
                 module.debug('Input native change event ignored on initial load');
               }
@@ -2755,7 +2714,6 @@ $.fn.dropdown = function(parameters) {
               $message = $('<div/>')
                 .html(html)
                 .addClass(className.message)
-
                 .appendTo($menu)
               ;
             }
@@ -2901,7 +2859,7 @@ $.fn.dropdown = function(parameters) {
 
         remove: {
           activedescendant: function(selectedItemID){
-          $search.removeAttr('aria-activedescendant', selectedItemID);
+          $module.removeAttr('aria-activedescendant', selectedItemID);
 
           },
           active: function() {
@@ -3571,7 +3529,7 @@ $.fn.dropdown = function(parameters) {
         },
 
         hideAndClear: function() {
-          //module.remove.searchTerm(); // a11y
+          module.remove.searchTerm(); // a11y
           if( module.has.maxSelections() ) {
             return;
           }
