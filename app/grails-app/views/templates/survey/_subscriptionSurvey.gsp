@@ -1077,8 +1077,7 @@
 </g:if>
 
 <r:script>
-                                    $('body #
-                                    ').editable({
+                                   $('body #participation').editable({
                                         validate: function (value) {
                                             if (value == "com.k_int.kbplus.RefdataValue:${RDStore.YN_NO.id}") {
                                                 var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );
