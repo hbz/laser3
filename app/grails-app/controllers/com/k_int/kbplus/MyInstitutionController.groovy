@@ -93,7 +93,7 @@ class MyInstitutionController extends AbstractDebugController {
         //log.debug(params.toMapString())
         Map<String, Object> result = setResultGenerics()
         result.formSubmit = params.formSubmit == 'true'
-        Map<RefdataValue,Set<CostItem>> costItemElementGroups = [:]
+        Map<Object,Collection<CostItem>> costItemElementGroups = [:]
         String instanceFilter = ''
         if(result.institution.getCustomerType() == 'ORG_CONSORTIUM') {
             instanceFilter += ' and sub.instanceOf is null '
@@ -101,29 +101,17 @@ class MyInstitutionController extends AbstractDebugController {
         String spQuery = 'select sp from SubscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where sub.status = :active and oo.org = :org and oo.roleType in (:roleTypes)'+instanceFilter+' order by sub.name asc'
         Map<String,Object> spParams = [active:RDStore.SUBSCRIPTION_CURRENT,org:result.institution,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]
         if(params.formSubmit) {
-            Set<CostItem> costItems = []
-            String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc'
-            Map<String,Object> ciParams = [owner:result.institution]
-            //we define some entry points
-            if(params.subscription) {
-                if(result.institution.getCustomerType() == 'ORG_CONSORTIUM') {
-                    ciQuery += 'and ci.sub.instanceOf = :sub'
-                }
-                else {
-                    ciQuery += 'and ci.sub = :sub'
-                }
-                costItems.addAll(CostItem.executeQuery(ciQuery+ciOrder,ciParams+[sub:Subscription.get(params.subscription)]))
-            }
+            Map<String,Object> configMap = [institution:result.institution]
+            if(params.subscription)
+                configMap.subscription = params.subscription
             else if(params.package) {
-                ciQuery += 'and ci.subPkg = :subPkg'
-                costItems.addAll(CostItem.executeQuery(ciQuery+ciOrder,ciParams+[subPkg:SubscriptionPackage.executeQuery(spQuery,spParams)]))
+                configMap.package = params.package
+                configMap.subscriptionPackages = SubscriptionPackage.executeQuery(spQuery,spParams)
             }
-            if(costItems) {
+            result.putAll(financeService.getCostItemsFromEntryPoint(configMap))
+            if(result.costItems) {
                 //test for ERMS-1125: group by elements
-                Set<RefdataValue> elementsOfContextOrg = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :owner',[owner:result.institution])
-                elementsOfContextOrg.each { RefdataValue element ->
-                    costItemElementGroups.put(element,costItems.findAll { CostItem ci -> ci.costItemElement == element })
-                }
+                costItemElementGroups.putAll(financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_ELEMENT, costItems:result.costItems, contextOrg:result.institution]))
             }
         }
         Set<SubscriptionPackage> currentSubscriptionPackages = SubscriptionPackage.executeQuery(spQuery,spParams)
@@ -138,6 +126,19 @@ class MyInstitutionController extends AbstractDebugController {
         result.costItems = costItemElementGroups
         result
     }
+
+    //BEGIN AJAX reload section
+
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def loadCostItemChartData() {
+        Org contextOrg = contextService.org
+        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,institution:contextOrg])
+        Map<String,Object> result = financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_SUBSCRIPTION_GRAPH, costItems:baseMap.costItems, linkedSubscriptions:baseMap.linkedSubscriptionSet, contextOrg:contextOrg])
+        render result as JSON
+    }
+
+    //END AJAX reload section
 
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
