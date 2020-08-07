@@ -11,7 +11,7 @@
 </g:if>
 
 <%
-    String header, thisString, lookupName, instanceType
+    String header, thisString, lookupName, instanceType, linkType
     switch(context.class.name) {
         case Subscription.class.name:
             if(subscriptionLicenseLink) {
@@ -49,10 +49,10 @@
                     }
                     if(link && link.linkType == rv) {
                         int perspIndex
-                        if(context == link.source) {
+                        if(GenericOIDService.getOID(context) == link.source) {
                             perspIndex = 0
                         }
-                        else if(context == link.destination) {
+                        else if(GenericOIDService.getOID(context) == link.destination) {
                             perspIndex = 1
                         }
                         else {
@@ -112,6 +112,7 @@
                     </div>
                     <div class="twelve wide column">
                         <g:if test="${link}">
+                            <input type="hidden" name="${selectPair}" value="${GenericOIDService.getOID(pair)}"/>
                             ${pair}
                         </g:if>
                         <g:else>
