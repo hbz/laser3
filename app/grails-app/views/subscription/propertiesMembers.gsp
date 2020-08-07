@@ -371,21 +371,18 @@
                 </tr>
                 </thead>
                 <tbody>
-                <g:each in="${filteredSubChilds}" status="i" var="zeile">
-                    <g:set var="sub" value="${zeile.sub}"/>
+                <g:each in="${filteredSubChilds}" status="i" var="sub">
+                    <g:set var="subscr" value="${sub.getSubscriber()}"/>
                     <tr>
                         <td>
                             <g:checkBox name="selectedMembers" value="${sub.id}" checked="false"/>
                         </td>
                         <td>${i + 1}</td>
-                        <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
-                        <g:each in="${filteredSubscribers}" var="subscr">
-                            <td>
-                                ${subscr.sortname}
-                            </td>
-                            <td>
-                                <g:link controller="organisation" action="show"
-                                        id="${subscr.id}">${subscr}</g:link>
+                        <td>
+                            ${subscr.sortname ?: subscr.name}
+                        </td>
+                        <td>
+                            <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                                 <g:if test="${sub.isSlaved}">
                                     <span data-position="top right"
@@ -395,19 +392,13 @@
                                     </span>
                                 </g:if>
 
-                                <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                           data-content="${subscr.getCustomerTypeI10n()}">
                                         <i class="chess rook grey icon"></i>
                                     </span>
                                 </g:if>
-
                             </td>
-                        </g:each>
-                        <g:if test="${!sub.getAllSubscribers()}">
-                            <td></td>
-                            <td></td>
-                        </g:if>
 
                         <td>
                             <semui:xEditable owner="${sub}" field="startDate" type="date"

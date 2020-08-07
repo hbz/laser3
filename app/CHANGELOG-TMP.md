@@ -2,6 +2,26 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2767    07.08.2020  rc1.5       Moe     Bug         Hotfix: Keine Lizenzmerkmale und keine Vertragsmerkmale werden in der Umfrage angezeigt
+
+2763    07.08.2020  rc1.5       Andreas Bug         Sortierung der Teilnehmer in Teilnehmermerkmale verwalten behoben
+
+--      07.08.2020  rc1.5       Andreas Bug         Legacy-Aufrufe XCustomProperties entfernt
+
+2760    06.08.2020  rc1.5       Andreas Bug         Export der Merkmale für Einrichtungen funktionierte nicht
+
+2757    06.08.2020  rc1.5       Andreas Bug         Teil zwei: Sicherung der Merkmalsbearbeitung gegen mehrfaches Abschicken des Formulars überarbeitet
+
+2756    06.08.2020  rc1.5       Andreas Bug         Bearbeitung von Verknüpfungen funktionierte nicht
+
+2755    05.08.2020  rc1.5       Andreas Bug         Zugriff auf Nutzerzahlen und Zugangskonfigurationen für Konsorten abgestuft
+
+2753    05.08.2020  rc1.5       Andreas Bug         falsches Laden verknüpfbarer Objekte, falsche Darstellung verknüpfter Objekte
+
+2752    05.08.2020  rc1.5       Andreas Bug         Statusfilter arbeitet jetzt korrekt
+
+2751    05.08.2020  rc1.5       Moe     Bug         Umfragefilter arbeitete nicht richtig
+
 2749    04.08.2020  rc1.5       Andreas Bug         Konsorten haben Zugriff auf Tab "Lizenzen" unter Vertrag
 
 2748    04.08.2020  rc1.5       Andreas Bug         Entknüpfen des Teilnehmers wirkte sich nicht auf Org-Vertrag-Verknüpfung aus

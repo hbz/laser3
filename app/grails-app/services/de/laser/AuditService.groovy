@@ -59,7 +59,7 @@ class AuditService {
 
                 Map<String, Object> changeDoc = [
                         OID  : oid,
-                        event: 'SubscriptionCustomProperty.deleted',
+                        event: 'SubscriptionProperty.deleted',
                         prop : obj.type.name,
                         old  : "",
                         new  : "property removed",
@@ -70,7 +70,7 @@ class AuditService {
             else if (obj instanceof LicenseProperty) {
 
                 Map<String, Object> changeDoc = [ OID: oid,
-                        event:'LicenseCustomProperty.deleted',
+                        event:'LicenseProperty.deleted',
                         prop: obj.type.name,
                         old: "",
                         new: "property removed",
