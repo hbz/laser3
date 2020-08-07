@@ -2360,7 +2360,7 @@ AND EXISTS (
             result.costItemSums = [:]
             result.visibleOrgRelations = []
             if(result.subscriptionInstance) {
-                result.subscriptionInstance.orgRelations?.each { or ->
+                result.subscriptionInstance.orgRelations.each { or ->
                     if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                         result.visibleOrgRelations << or
                     }
@@ -2449,7 +2449,7 @@ AND EXISTS (
             result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
-            result.subscriptionInstance.orgRelations?.each { or ->
+            result.subscriptionInstance.orgRelations.each { or ->
                 if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                     result.visibleOrgRelations << or
                 }
