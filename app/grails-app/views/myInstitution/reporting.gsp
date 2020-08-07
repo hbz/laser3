@@ -104,10 +104,14 @@
         </g:if>
     </body>
     <r:script>
-        <g:each in="${costSubscriptionData}" var="row">
-            new Chartist.Line('#chartA',${row},{
-                plugins: [Chartist.plugins.legend()]
-            });
-        </g:each>
+        $.ajax({
+            url: "<g:createLink action="loadCostItemChartData" />",
+            data: {
+                subscription: ${params.subscription}
+            }
+        }).done(function(data){
+            console.log(data.graph);
+            new Chartist.Bar('#chartA',data.graph); //continue here: deploy to AJAX because of request response type which will be JSON
+        });
     </r:script>
 </html>
