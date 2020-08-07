@@ -2024,9 +2024,9 @@ class SubscriptionController
         params.remove('filterPropDef')
 
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf
 
-        Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent order by oo.org.sortname asc",[parent:result.parentSub])
+        Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc",[parent:result.parentSub,roleType:RDStore.OR_SUBSCRIBER_CONS])
         /*Sortieren
         result.validSubChilds = validSubChilds.sort { Subscription a, Subscription b ->
             def sa = a.getSubscriber()
@@ -2050,20 +2050,7 @@ class SubscriptionController
         def oldID = params.id
         params.id = result.parentSub.id
 
-        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
-        result.filteredSubChilds = new ArrayList<Subscription>()
-        result.validSubChilds.each { Subscription sub ->
-            List<Org> subscr = sub.getAllSubscribers()
-            def filteredSubscr = []
-            subscr.each { Org subOrg ->
-                if (filteredOrgIds.contains(subOrg.id)) {
-                    filteredSubscr << subOrg
-                }
-            }
-            if (filteredSubscr) {
-                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-            }
-        }
+        result.filteredSubChilds = validSubChildren
 
         params.id = oldID
 
