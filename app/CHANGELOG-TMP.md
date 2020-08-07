@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2767    07.08.2020  rc1.5       Moe     Bug         Hotfix: Keine Lizenzmerkmale und keine Vertragsmerkmale werden in der Umfrage angezeigt
+
 2711    29.07.2020  rc1.5       Moe     Bug         Hinzufügen neuer Teilnehmer zu Umfrage scheitert
 
 2721    28.07.2020  rc1.5       Andreas Bug         fehlende Berechtigung bei Anbieter bearbeiten nachgereicht
