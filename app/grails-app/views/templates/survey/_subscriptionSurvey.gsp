@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.CostItem; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.CostItem; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory;  com.k_int.kbplus.GenericOIDService;" %>
 
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -368,14 +368,12 @@
                             </div>
                         </div>
 
-                        <%--
+                        
                         <br>
-                        <g:set var="derivedPropDefGroups"
-                               value="${subscriptionInstance.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
-
-                        <div class="ui form">
+                           
+                           <div class="ui form">
                             <div class="two fields">
-                                <div class="eight wide field" style="text-align: left;">
+                                <div class="sixteen wide field" style="text-align: left;">
                                     <button id="subscription-properties-toggle"
                                             class="ui button">Lizenzmerkmale anzeigen</button>
                                     <script>
@@ -389,26 +387,6 @@
                                         })
                                     </script>
                                 </div>
-
-                                <div class="eight wide field" style="text-align: right;">
-                                    <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
-
-                                        <button id="derived-license-properties-toggle"
-                                                class="ui button">Vertragsmerkmale anzeigen</button>
-                                        <script>
-                                            $('#derived-license-properties-toggle').on('click', function () {
-                                                $('#derived-license-properties').toggleClass('hidden')
-                                                if ($('#derived-license-properties').hasClass('hidden')) {
-                                                    $(this).text('Vertragsmerkmale anzeigen')
-                                                } else {
-                                                    $(this).text('Vertragsmerkmale ausblenden')
-                                                }
-                                            })
-                                        </script>
-
-                                    </g:if>
-                                </div>
-
                             </div>
 
 
@@ -418,26 +396,67 @@
                                 <g:set var="editable" value="${false}" scope="request"/>
                                 <g:set var="editable" value="${false}" scope="page"/>
                                 <g:render template="/subscription/properties" model="${[
-                                        subscriptionInstance: subscriptionInstance,
-                                        authorizedOrgs      : authorizedOrgs
+                                        subscriptionInstance: subscriptionInstance
                                 ]}"/>
 
                             </div>
 
-                            <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
-                                <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
-
-                                    <g:render template="/subscription/licProp" model="${[
-                                            license             : subscriptionInstance.owner,
-                                            derivedPropDefGroups: derivedPropDefGroups
-                                    ]}"/>
-                                </div>
-                            </g:if>
                             <g:set var="editable" value="${oldEditable ?: false}" scope="page"/>
                             <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
                         </div>
-                    --%>
 
+
+                        <div class="ui card">
+                            <div class="content">
+                                <h5 class="ui header">
+                                    <g:message code="license.plural"/>
+                                </h5>
+                                <g:if test="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
+                                    <table class="ui fixed table">
+                                        <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
+                                            <tr><g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
+                                                <th scope="row" class="control-label la-js-dont-hide-this-card">${pair.licenseCategory?.getI10n("value")}</th>
+                                                <td>
+                                                    <g:link controller="license" action="show" id="${pair.id}">
+                                                        ${pair.reference} (${pair.status.getI10n("value")})
+                                                    </g:link>
+                                                    <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                                                    <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
+                                                    <g:if test="${comment}">
+                                                        <em>${comment.owner.content}</em>
+                                                    </g:if>
+                                                </td>
+                                                <td class="right aligned">
+                                                    <g:if test="${pair.propertySet}">
+                                                        <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
+                                                            <i class="ui angle double down icon"></i></button>
+                                                        <r:script>
+                                                    $("#derived-license-properties-toggle${link.id}").on('click', function() {
+                                                        $("#derived-license-properties${link.id}").transition('slide down');
+                                                        //$("#derived-license-properties${link.id}").toggleClass('hidden');
+
+                                                        if ($("#derived-license-properties${link.id}").hasClass('visible')) {
+                                                            $(this).html('<i class="ui angle double down icon"></i>')
+                                                        } else {
+                                                            $(this).html('<i class="ui angle double up icon"></i>')
+                                                        }
+                                                    })
+                                                        </r:script>
+                                                    </g:if>
+                                                </td>
+                                            </tr>
+                                            <g:if test="${pair.propertySet}">
+                                                <tr>
+                                                    <td colspan="3"><div id="${link.id}Properties"></div></td>
+                                                </tr>
+                                            </g:if>
+                                        </g:each>
+                                    </table>
+                                </g:if>
+
+                            </div><!-- .content -->
+                        </div>          
+             
                     </div>
                 </g:if>
             </div>
@@ -1077,4 +1096,17 @@
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
                                     });
+       <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
+        $.ajax({
+            url: "<g:createLink controller="ajax" action="getLicensePropertiesForSubscription" />",
+                  data: {
+                       loadFor: "${link.source}",
+                       linkId: ${link.id}
+        }
+       }).done(function(response) {
+        $("#${link.id}Properties").html(response);
+              }).fail();
+
+       </g:each>
+       
 </r:script>
