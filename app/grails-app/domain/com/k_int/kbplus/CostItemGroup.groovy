@@ -25,28 +25,18 @@ class CostItemGroup {
 
     @Transient
     static def refdataFind(params) {
-        def result     = [];
-        def qryResults = null
+        def result     = []
+        def qryResults = []
         def searchTerm = (params.q ? params.q.toLowerCase() : '' ) + "%"
         Org orgOwner   = Org.findByShortcode(params.shortcode)
-        /*
-        def owner      = BudgetCode.findByOwner(orgOwner)
 
-        if (! owner) { //First run ever...
-            //new RefdataCategory(desc: "budgetcode_${params.shortcode}").save()
-        }
-        if (owner) {
-            //qryResults = RefdataValue.findAllByOwnerAndValueIlike(owner,searchTerm)
-            qryResults = BudgetCode.findAllByOwnerAndValueIlike(orgOwner, searchTerm)
-        }
-        */
         if (! searchTerm) {
             qryResults = BudgetCode.findAllByOwner(orgOwner)
         } else {
             qryResults = BudgetCode.findAllByOwnerAndValueIlike(orgOwner, searchTerm)
         }
 
-        qryResults?.each { bc ->
+        qryResults.each { bc ->
             result.add([id:bc.id, text:bc.value])
         }
         result

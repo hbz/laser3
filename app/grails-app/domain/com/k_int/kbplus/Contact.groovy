@@ -60,7 +60,7 @@ class Contact implements Comparable<Contact>{
         contentType?.value + ', ' + content + ' (' + id + '); ' + type?.value
     }
 
-    static Contact lookup(content, contentType, type, person, organisation) {
+    static Contact lookup(String content, RefdataValue contentType, RefdataValue type, Person person, Org organisation) {
 
         Contact contact
         List<Contact>  check = Contact.findAllWhere(
@@ -77,44 +77,46 @@ class Contact implements Comparable<Contact>{
         contact
     }
 
-    static Contact lookupOrCreate(content, contentType, type, person, organisation) {
+    static Contact lookupOrCreate(String content, RefdataValue contentType, RefdataValue type, Person person, Org organisation) {
 
-        Contact result
-        String info = "saving new contact: ${content} ${contentType} ${type}"
+        withTransaction {
+            Contact result
+            String info = "saving new contact: ${content} ${contentType} ${type}"
 
-        if (! content) {
-            LogFactory.getLog(this).debug( info + " > ignored; empty content")
-            return
-        }
+            if (!content) {
+                LogFactory.getLog(this).debug(info + " > ignored; empty content")
+                return
+            }
 
-        if(person && organisation){
-            type = RefdataValue.getByValue("Job-related")
-        }
-        
-        Contact check = Contact.lookup(content, contentType, type, person, organisation)
-        if (check) {
-            result = check
-            info += " > ignored/duplicate"
-        }
-        else{
-            result = new Contact(
-                content:     content,
-                contentType: contentType,
-                type:        type,
-                prs:         person,
-                org:         organisation
-                )
-                
-            if(!result.save()){
-                result.errors.each{ println it }
+            if (person && organisation) {
+                type = RefdataValue.getByValue("Job-related")
+            }
+
+            Contact check = Contact.lookup(content, contentType, type, person, organisation)
+            if (check) {
+                result = check
+                info += " > ignored/duplicate"
             }
             else {
-                info += " > OK"
+                result = new Contact(
+                        content: content,
+                        contentType: contentType,
+                        type: type,
+                        prs: person,
+                        org: organisation
+                )
+
+                if (! result.save()) {
+                    result.errors.each { println it }
+                }
+                else {
+                    info += " > OK"
+                }
             }
+
+            LogFactory.getLog(this).debug(info)
+            result
         }
-        
-        LogFactory.getLog(this).debug(info)
-        result  
     }
     
     /**

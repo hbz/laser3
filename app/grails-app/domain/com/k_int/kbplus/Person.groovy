@@ -118,7 +118,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     }
     */
 
-    static Person lookup(firstName, lastName, tenant, isPublic, contactType, org, functionType) {
+    static Person lookup(String firstName, String lastName, Org tenant, isPublic, RefdataValue contactType, Org org, RefdataValue functionType) {
 
         Person person
         List<Person> prsList = []
@@ -129,7 +129,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
                 contactType: contactType,
                 isPublic: isPublic,
                 tenant: tenant
-        ).each{ p ->
+        ).each{ Person p ->
             if (PersonRole.findWhere(prs: p, functionType: functionType, org: org)) {
                 prsList << p
             }

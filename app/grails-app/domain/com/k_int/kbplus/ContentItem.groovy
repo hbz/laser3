@@ -30,12 +30,14 @@ class ContentItem {
   }
 
   static ContentItem lookupOrCreate(String key, String locale, String content) {
-    ContentItem result = ContentItem.findByKeyAndLocale(key, locale)
-    if ( result == null ) {
-      result = new ContentItem(key:key, locale:locale, content:content)
-      result.locale = locale
-      result.save()
+    withTransaction {
+      ContentItem result = ContentItem.findByKeyAndLocale(key, locale)
+      if (result == null) {
+        result = new ContentItem(key: key, locale: locale, content: content)
+        result.locale = locale
+        result.save()
+      }
+      result
     }
-    result
   }
 }
