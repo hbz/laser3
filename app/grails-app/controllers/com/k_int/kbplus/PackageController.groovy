@@ -878,7 +878,7 @@ class PackageController extends AbstractDebugController {
         result.myTaskInstanceCount = result.myTaskInstanceList?.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        log.debug(result.taskInstanceList)
+        log.debug(result.taskInstanceList.toListString())
 
         result
     }

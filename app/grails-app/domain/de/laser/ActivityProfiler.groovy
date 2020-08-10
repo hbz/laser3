@@ -20,9 +20,11 @@ class ActivityProfiler {
     static void update() {
         YodaService yodaService = (YodaService) Holders.grailsApplication.mainContext.getBean('yodaService')
 
-        int userCount = yodaService.getNumberOfActiveUsers()
-        if (userCount > 0) {
-            new ActivityProfiler(userCount: yodaService.getNumberOfActiveUsers()).save()
+        withTransaction {
+            int userCount = yodaService.getNumberOfActiveUsers()
+            if (userCount > 0) {
+                new ActivityProfiler(userCount: yodaService.getNumberOfActiveUsers()).save()
+            }
         }
     }
 }

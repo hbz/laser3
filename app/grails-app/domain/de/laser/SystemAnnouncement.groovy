@@ -85,42 +85,45 @@ class SystemAnnouncement {
             return false
         }
 
-        List<User> reps = SystemAnnouncement.getRecipients()
-        List validUserIds = []
-        List failedUserIds = []
+        withTransaction {
 
-        lastPublishingDate = new Date()
-        isPublished = true
-        save()
+            List<User> reps = SystemAnnouncement.getRecipients()
+            List validUserIds = []
+            List failedUserIds = []
 
-        reps.each { u ->
-            try {
-                sendMail(u)
-                validUserIds << u.id
+            lastPublishingDate = new Date()
+            isPublished = true
+            save()
+
+            reps.each { u ->
+                try {
+                    sendMail(u)
+                    validUserIds << u.id
+                }
+                catch (Exception e) {
+                    log.error(e.getMessage())
+                    log.error(e.getStackTrace())
+                    failedUserIds << u.id
+                }
             }
-            catch (Exception e) {
-                log.error(e.getMessage())
-                log.error(e.getStackTrace())
-                failedUserIds << u.id
+
+            status = ([
+                    validUserIds : validUserIds,
+                    failedUserIds: failedUserIds
+            ] as JSON).toString()
+
+            save()
+
+            if (validUserIds.size() > 0) {
+                SystemEvent.createEvent('SYSANN_SENDING_OK', ['count': validUserIds.size()])
             }
+
+            if (failedUserIds.size() > 0) {
+                SystemEvent.createEvent('SYSANN_SENDING_ERROR', ['users': failedUserIds, 'count': failedUserIds.size()])
+            }
+
+            return failedUserIds.isEmpty()
         }
-
-        status = ([
-            validUserIds : validUserIds,
-            failedUserIds: failedUserIds
-        ] as JSON).toString()
-
-        save()
-
-        if (validUserIds.size() > 0) {
-            SystemEvent.createEvent('SYSANN_SENDING_OK', ['count': validUserIds.size()])
-        }
-
-        if (failedUserIds.size() > 0) {
-            SystemEvent.createEvent('SYSANN_SENDING_ERROR', ['users': failedUserIds, 'count': failedUserIds.size()])
-        }
-
-        return failedUserIds.isEmpty()
     }
 
     private void sendMail(User user) throws Exception {
