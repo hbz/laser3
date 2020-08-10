@@ -2,10 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
-import de.laser.helper.DateUtil
-import de.laser.helper.RDConstants
-import de.laser.helper.SessionCacheWrapper
-import de.laser.helper.SwissKnife
+import de.laser.helper.*
 import org.codehaus.groovy.grails.support.encoding.CodecLookup
 import org.codehaus.groovy.grails.support.encoding.Encoder
 import org.codehaus.groovy.grails.web.pages.GroovyPage
@@ -218,32 +215,6 @@ class SemanticUiTagLib {
         }
     }
 
-    def headerIcon = { attrs, body ->
-
-        out << '<i aria-hidden="true" class="circular icon la-object"></i> '
-    }
-
-    def headerTitleIcon = { attrs, body ->
-
-        switch (attrs.type) {
-            case 'Journal':
-                out << '<i aria-hidden="true" class="circular icon la-object-journal"></i> '
-                break
-            case 'Database':
-                out << '<i aria-hidden="true" class="circular icon la-object-database"></i> '
-                break
-            case 'EBook':
-                out << '<i aria-hidden="true" class="circular icon la-object-ebook"></i> '
-                break
-            case 'Survey':
-                out << '<i aria-hidden="true" class="circular icon inverted blue chart pie"></i> '
-                break
-            default:
-                out << '<i aria-hidden="true" class="circular icon la-object"></i> '
-                break
-        }
-    }
-
     def auditButton = { attrs, body ->
 
         if (attrs.auditable) {
@@ -367,114 +338,6 @@ class SemanticUiTagLib {
 
             } catch (Exception e) {
             }
-        }
-    }
-
-    def listIcon = { attrs, body ->
-        def hideTooltip = attrs.hideTooltip ? false : true
-
-        switch (attrs.type) {
-            case 'Journal':
-            case JournalInstance.class.name:
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon newspaper outline la-list-icon"></i>'
-                out << '</div>'
-                break
-            case 'Database':
-            case DatabaseInstance.class.name:
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon database la-list-icon"></i>'
-                out << '</div>'
-                break
-            case 'EBook':
-            case BookInstance.class.name:
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon tablet alternate la-list-icon"></i>'
-                out << '</div>'
-                break
-            default:
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out <<  ' data-content="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon book la-list-icon"></i>'
-                out << '</div>'
-                break
-        }
-    }
-
-    def ieAcceptStatusIcon = { attrs, body ->
-        def hideTooltip = attrs.hideTooltip ? false : true
-
-        switch (attrs.status) {
-            case 'Fixed':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.fixed') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon certificate green"></i>'
-                out << '</div>'
-                break
-            case 'Under Negotiation':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underNegotiation') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon hourglass end yellow"></i>'
-                out << '</div>'
-                break
-            case 'Under Consideration':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underConsideration') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon hourglass start red"></i>'
-                out << '</div>'
-                break
-            default:
-                out << ''
-                break
-        }
-    }
-
-    def contactIcon = { attrs, body ->
-
-        switch (attrs.type) {
-            case 'E-Mail':
-            case 'Mail': // Deprecated
-                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i aria-hidden="true" class="ui icon envelope outline la-list-icon js-copyTrigger"></i>'
-                out << '</span>'
-                break
-            case 'Fax':
-                out << '<span  class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.fax') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i aria-hidden="true" class="ui icon tty la-list-icon"></i>'
-                out << '</span>'
-                break
-            case 'Phone':
-                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.phone') + '" data-position="left center" data-variation="tiny">'
-                out << '<i aria-hidden="true" class="icon phone la-list-icon"></i>'
-                out << '</span>'
-                break
-            case 'Url':
-                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.url') + '" data-position="left center" data-variation="tiny">'
-                out << '<i aria-hidden="true" class="icon globe la-list-icon"></i>'
-                out << '</span>'
-                break
-            default:
-                out << '<span  class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.contactinfo') + '" data-position="left center" data-variation="tiny">'
-                out << '<i aria-hidden="true" class="icon address book la-list-icon"></i>'
-                out << '</span>'
-                break
         }
     }
 
@@ -1028,13 +891,7 @@ class SemanticUiTagLib {
         out << "        ${message(code:'default.to')}"
         out << "</span>"
     }
-    def linkIcon = { attrs, body ->
-        out << ' <span class="la-popup-tooltip la-delay" style="bottom: -3px" data-position="top right" data-content="Diese URL aufrufen ..">'
-        out << '&nbsp;<a href="' + attrs.href + '" target="_blank" class="ui icon blue la-js-dont-hide-button">'
-        out << '<i aria-hidden="true" class="share square icon"></i>'
-        out << '</a>'
-        out << '</span>'
-    }
+
     public SemanticUiTagLib() {}
 
     def tabs = { attrs, body ->
@@ -1292,6 +1149,26 @@ class SemanticUiTagLib {
 
     private callLink(Map attrs, Object body) {
         GroovyPage.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, webRequest)
+    }
+
+    def showPropertyValue = { attrs, body ->
+        def property = attrs.property
+
+        switch (property) {
+            case Date:
+                out << g.formatDate(date: property, format: message(code: 'default.date.format.notime'))
+                break
+            case RefdataValue:
+                out << property?.getI10n('value')
+                break
+            case boolean:
+                out << property ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
+                break
+            default:
+                out << property ?: ''
+                break
+        }
+
     }
 
 }

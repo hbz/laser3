@@ -220,7 +220,7 @@
     </g:elseif>
     %{--<g:elseif test="${workFlowPart == SubscriptionController.WORKFLOW_DATES_OWNER_RELATIONS}">--}%
     <g:else>
-        <g:render template="/templates/subscription/copyElements" />
+        <g:render template="/templates/subscription/copyElementsNew" />
     </g:else>
     <g:javascript src="copyPropertiesCompare.js"/>
 </body>
