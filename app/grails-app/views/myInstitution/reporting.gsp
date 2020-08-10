@@ -97,11 +97,7 @@
                     </tbody>
                 </table>
             </g:if>
-
-            <div id="chartA" style="height:2000px"> <%-- TODO do it in JavaScript or CSS, ask Ingrid --%>
-
-            </div>
-
+            <div id="chartA"/>
         </g:if>
     </body>
     <r:script>
@@ -116,7 +112,8 @@
                 axisY: {
                     scaleMinSpace: 50,
                     seriesBarDistance: 100
-                }
+                },
+                height: '600px'
             }
             new Chartist.Bar('#chartA',data.graph,options);
         });
