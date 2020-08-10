@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2734    10.08.2020  rc1.5       Andreas Bug         Export unter "Meine Lizenzen pro Einrichtung" funktionierte nicht
+
 --      10.08.2020  rc1.5       Moe     Bug         Hotfix: API Subscription Endpunkt
 
 2767    07.08.2020  rc1.5       Moe     Bug         Hotfix: Keine Lizenzmerkmale und keine Vertragsmerkmale werden in der Umfrage angezeigt
