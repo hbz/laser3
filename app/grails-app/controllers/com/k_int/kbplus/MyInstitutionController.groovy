@@ -14,10 +14,10 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
+import org.apache.commons.collections.bidimap.DualHashBidiMap
 
 //import de.laser.TaskService //unused for quite a long time
 
-import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -2383,7 +2383,7 @@ AND EXISTS (
                 if (costItems?.subscr) {
                     result.costItemSums.subscrCosts = costItems.subscr.costItems
                 }
-		result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)    
+		        result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {

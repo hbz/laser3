@@ -411,6 +411,7 @@
                                 <h5 class="ui header">
                                     <g:message code="license.plural"/>
                                 </h5>
+
                                 <g:if test="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
                                     <table class="ui fixed table">
                                         <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
@@ -1097,6 +1098,7 @@
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
                                     });
+    <g:if test="${links}">
        <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
         $.ajax({
             url: "<g:createLink controller="ajax" action="getLicensePropertiesForSubscription" />",
@@ -1109,5 +1111,6 @@
               }).fail();
 
        </g:each>
-       
+    </g:if>
+
 </r:script>
