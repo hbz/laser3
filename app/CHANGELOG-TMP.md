@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      10.08.2020  rc1.5       Moe     Bug         Hotfix: API Subscription Endpunkt
+
 2767    07.08.2020  rc1.5       Moe     Bug         Hotfix: Keine Lizenzmerkmale und keine Vertragsmerkmale werden in der Umfrage angezeigt
 
 2763    07.08.2020  rc1.5       Andreas Bug         Sortierung der Teilnehmer in Teilnehmermerkmale verwalten behoben
