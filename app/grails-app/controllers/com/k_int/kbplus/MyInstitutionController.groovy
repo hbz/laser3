@@ -3894,47 +3894,33 @@ AND EXISTS (
 
         Org tenant = contextService.getOrg()
 
-        def privatePropDef = PropertyDefinition.findWhere(
-                name:   params.pd_name,
-                descr:  params.pd_descr,
-                //type:   params.pd_type,
-                tenant: tenant,
-        )
+        RefdataCategory rdc = null
 
-        if (privatePropDef) {
-            return ['error', message(code: 'propertyDefinition.name.unique')]
+        if (params.refdatacategory) {
+            rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
+        }
+
+        Map<String, Object> map = [
+                token       : UUID.randomUUID(),
+                category    : params.pd_descr,
+                type        : params.pd_type,
+                rdc         : rdc?.getDesc(),
+                multiple    : (params.pd_multiple_occurrence ? true : false),
+                mandatory   : (params.pd_mandatory ? true : false),
+                i10n        : [
+                        name_de: params.pd_name?.trim(),
+                        name_en: params.pd_name?.trim(),
+                        expl_de: params.pd_expl?.trim(),
+                        expl_en: params.pd_expl?.trim()
+                ],
+                tenant      : tenant.globalUID]
+
+        PropertyDefinition privatePropDef = PropertyDefinition.construct(map)
+        if (privatePropDef.save(flush: true)) {
+            return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
         }
         else {
-            RefdataCategory rdc = null
-
-            if (params.refdatacategory) {
-                rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
-            }
-
-            Map<String, Object> map = [
-                    token       : UUID.randomUUID(),
-                    category    : params.pd_descr,
-                    type        : params.pd_type,
-                    rdc         : rdc?.getDesc(),
-                    multiple    : (params.pd_multiple_occurrence ? true : false),
-                    mandatory   : (params.pd_mandatory ? true : false),
-                    i10n        : [
-                            name_de: params.pd_name?.trim(),
-                            name_en: params.pd_name?.trim(),
-                            expl_de: params.pd_expl?.trim(),
-                            expl_en: params.pd_expl?.trim()
-                    ],
-                    tenant      : tenant.globalUID
-            ]
-
-            privatePropDef = PropertyDefinition.construct(map)
-
-            if (privatePropDef.save(flush: true)) {
-                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
-            }
-            else {
-                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
-            }
+            return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
         }
     }
 
