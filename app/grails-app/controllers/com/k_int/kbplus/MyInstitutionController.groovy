@@ -3089,7 +3089,7 @@ AND EXISTS (
             int rownum = 1
             int sumcell = 11
             int sumTitleCell = 10
-            result.costItems.eachWithIndex { entry, int sidewideNumber ->
+            result.entries.eachWithIndex { entry, int sidewideNumber ->
                 log.debug("processing entry ${sidewideNumber} ...")
                 CostItem ci = (CostItem) entry[0] ?: new CostItem()
                 Subscription subCons = (Subscription) entry[1]
@@ -3128,8 +3128,10 @@ AND EXISTS (
                 //license name
                 log.debug("insert license name")
                 cell = row.createCell(cellnum++)
-                if(subCons.owner)
-                    cell.setCellValue(subCons.owner.reference)
+                if(result.linkedLicenses.get(subCons)) {
+                    List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference }
+                    cell.setCellValue(references.join("\n"))
+                }
                 //packages
                 log.debug("insert package name")
                 cell = row.createCell(cellnum++)
@@ -3240,7 +3242,7 @@ AND EXISTS (
                                    message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
                     List columnData = []
                     List row
-                    result.costItems.eachWithIndex { entry, int sidewideNumber ->
+                    result.entries.eachWithIndex { entry, int sidewideNumber ->
                         row = []
                         log.debug("processing entry ${sidewideNumber} ...")
                         CostItem ci = (CostItem) entry[0] ?: new CostItem()
@@ -3279,8 +3281,10 @@ AND EXISTS (
                         //license name
                         log.debug("insert license name")
                         cellnum++
-                        if(subCons.owner)
-                            row.add(subCons.owner.reference.replaceAll(',',' '))
+                        if(result.linkedLicenses.get(subCons)) {
+                            List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference.replace(',',' ') }
+                            row.add(references.join(' '))
+                        }
                         else row.add(' ')
                         //packages
                         log.debug("insert package name")
