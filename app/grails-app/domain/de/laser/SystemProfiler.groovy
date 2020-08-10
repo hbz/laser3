@@ -51,14 +51,17 @@ class SystemProfiler {
 
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
-        // store current request
-        if (delta && delta > 0) {
-            (new SystemProfiler(
-                    uri: actionUri,
-                    context: contextService?.getOrg(),
-                    ms: delta,
-                    archive: SystemProfiler.getCurrentArchive()
-            )).save(flush: true)
+        withTransaction {
+
+            // store current request
+            if (delta && delta > 0) {
+                (new SystemProfiler(
+                        uri: actionUri,
+                        context: contextService?.getOrg(),
+                        ms: delta,
+                        archive: SystemProfiler.getCurrentArchive()
+                )).save()
+            }
         }
     }
 }

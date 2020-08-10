@@ -35,12 +35,12 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     static mapping = {
         id          column: 'lp_id'
         version     column: 'lp_version'
-        stringValue column: 'lp_string_value'
+        stringValue column: 'lp_string_value', type: 'text'
         intValue    column: 'lp_int_value'
         decValue    column: 'lp_dec_value'
         refValue    column: 'lp_ref_value_rv_fk'
         urlValue    column: 'lp_url_value'
-        note        column: 'lp_note'
+        note        column: 'lp_note', type: 'text'
         dateValue   column: 'lp_date_value'
         instanceOf  column: 'lp_instance_of_fk', index: 'lp_instance_of_idx'
         paragraph   column: 'lp_paragraph', type: 'text'
@@ -54,13 +54,19 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     }
 
     static constraints = {
-        importFrom AbstractPropertyWithCalculatedLastUpdated
-        instanceOf (nullable: true)
-        paragraph  (nullable: true)
+        stringValue (nullable: true)
+        intValue    (nullable: true)
+        decValue    (nullable: true)
+        refValue    (nullable: true)
+        urlValue    (nullable: true)
+        note        (nullable: true)
+        dateValue   (nullable: true)
+        instanceOf  (nullable: true)
+        paragraph   (nullable: true)
 
-        // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true)
         dateCreated (nullable: true)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
     }
 
     static belongsTo = [

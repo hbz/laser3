@@ -36,12 +36,12 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     static mapping = {
         id          column: 'sp_id'
         version     column: 'sp_version'
-        stringValue column: 'sp_string_value'
+        stringValue column: 'sp_string_value', type: 'text'
         intValue    column: 'sp_int_value'
         decValue    column: 'sp_dec_value'
         refValue    column: 'sp_ref_value_rv_fk'
         urlValue    column: 'sp_url_value'
-        note        column: 'sp_note'
+        note        column: 'sp_note', type: 'text'
         dateValue   column: 'sp_date_value'
         instanceOf  column: 'sp_instance_of_fk', index: 'sp_instance_of_idx'
         owner       column: 'sp_owner_fk', index: 'sp_owner_idx'
@@ -54,12 +54,18 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     }
 
     static constraints = {
-        importFrom  AbstractPropertyWithCalculatedLastUpdated
-        instanceOf (nullable: true)
+        stringValue (nullable: true)
+        intValue    (nullable: true)
+        decValue    (nullable: true)
+        refValue    (nullable: true)
+        urlValue    (nullable: true)
+        note        (nullable: true)
+        dateValue   (nullable: true)
+        instanceOf  (nullable: true)
 
-        // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true)
         dateCreated (nullable: true)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
     }
 
     static belongsTo = [
