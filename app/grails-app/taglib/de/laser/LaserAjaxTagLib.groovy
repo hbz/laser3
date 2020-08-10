@@ -67,4 +67,19 @@ class LaserAjaxTagLib {
             out << body()
         }
     }
+
+    def remoteJsOnChangeHandler = { attrs, body ->
+
+        String href   = g.createLink([controller: attrs.controller, action: attrs.action])
+        String data   = attrs.data ?: '{}'
+        String update = attrs.update
+        String updateOnFailure = attrs.updateOnFailure ?: update
+
+        out << "jQuery.ajax({type:'POST'"
+        out << ", data:" + data
+        out << ", url:'" + href + "'"
+        out << ", success:function(data,textStatus){jQuery('" + update + "').html(data);}"
+        out << ", error:function(XMLHttpRequest,textStatus,errorThrown){jQuery('" + updateOnFailure + "').html(XMLHttpRequest.responseText)}"
+        out <<"});"
+    }
 }

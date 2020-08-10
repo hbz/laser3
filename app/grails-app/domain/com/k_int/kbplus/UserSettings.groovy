@@ -116,7 +116,7 @@ class UserSettings {
         returns user depending setting for given key
         or SETTING_NOT_FOUND if not
      */
-    static get(User user, KEYS key) {
+    static def get(User user, KEYS key) {
 
         def uss = findWhere(user: user, key: key)
         uss ?: SETTING_NOT_FOUND
@@ -125,22 +125,26 @@ class UserSettings {
     /*
         adds new user depending setting (with value) for given key
      */
-    static add(User user, KEYS key, def value) {
+    static UserSettings add(User user, KEYS key, def value) {
 
-        def uss = new UserSettings(user: user, key: key)
-        uss.setValue(value)
-        uss.save(flush: true)
+        withTransaction {
+            def uss = new UserSettings(user: user, key: key)
+            uss.setValue(value)
+            uss.save()
 
-        uss
+            uss
+        }
     }
 
     /*
         deletes user depending setting for given key
      */
-    static delete(User user, KEYS key) {
+    static void delete(User user, KEYS key) {
 
-        def uss = findWhere(user: user, key: key)
-        uss.delete(flush: true)
+        withTransaction {
+            def uss = findWhere(user: user, key: key)
+            uss?.delete()
+        }
     }
 
     /*
@@ -175,17 +179,19 @@ class UserSettings {
      */
     def setValue(def value) {
 
-        switch (key.type) {
-            case Org:
-                orgValue = value
-                break
-            case RefdataValue:
-                rdValue = value
-                break
-            default:
-                strValue = (value ? value.toString() : null)
-                break
+        withTransaction {
+            switch (key.type) {
+                case Org:
+                    orgValue = value
+                    break
+                case RefdataValue:
+                    rdValue = value
+                    break
+                default:
+                    strValue = (value ? value.toString() : null)
+                    break
+            }
+            save()
         }
-        save(flush: true)
     }
 }

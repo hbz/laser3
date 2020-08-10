@@ -92,19 +92,19 @@ class Address {
     }
 
     static Address lookup(
-            name,
-            street1,
-            street2,
-            zipcode,
-            city,
-            region,
-            country,
-            postbox,
-            pobZipcode,
-            pobCity,
-            type,
-            person,
-            organisation) {
+            String name,
+            String street1,
+            String street2,
+            String zipcode,
+            String city,
+            RefdataValue region,
+            RefdataValue country,
+            String postbox,
+            String pobZipcode,
+            String pobCity,
+            RefdataValue type,
+            Person person,
+            Org organisation) {
 
         Address address
         List<Address> check = Address.findAllWhere(
@@ -130,59 +130,61 @@ class Address {
     }
 
     static Address lookupOrCreate(
-            name,
-            street1,
-            street2,
-            zipcode,
-            city,
-            region,
-            country,
-            postbox,
-            pobZipcode,
-            pobCity,
-            type,
-            person,
-            organisation) {
+            String name,
+            String street1,
+            String street2,
+            String zipcode,
+            String city,
+            RefdataValue region,
+            RefdataValue country,
+            String postbox,
+            String pobZipcode,
+            String pobCity,
+            RefdataValue type,
+            Person person,
+            Org organisation) {
 
-        Address result
-        String info = "saving new address: ${type}"
+        withTransaction {
+            Address result
+            String info = "saving new address: ${type}"
 
-        if (person && organisation) {
-            type = RefdataValue.getByValue("Job-related")
-        }
+            if (person && organisation) {
+                type = RefdataValue.getByValue("Job-related")
+            }
 
-        Address check = Address.lookup(name, street1, street2, zipcode, city, region, country, postbox, pobZipcode,
-                pobCity, type, person, organisation)
-        if (check) {
-            result = check
-            info += " > ignored; duplicate found"
-        }
-        else {
-            result = new Address(
-                name:     name,
-                street_1: street1,
-                street_2: street2,
-                zipcode:  zipcode,
-                city:     city,
-                region:   region,
-                country:  country,
-                pob:      postbox,
-                pobZipcode: pobZipcode,
-                pobCity:  pobCity,
-                type:     type,
-                prs:      person,
-                org:      organisation
-                )
-                
-            if(! result.save()){
-                result.errors.each{ println it }
+            Address check = Address.lookup(name, street1, street2, zipcode, city, region, country, postbox, pobZipcode,
+                    pobCity, type, person, organisation)
+            if (check) {
+                result = check
+                info += " > ignored; duplicate found"
             }
             else {
-                info += " > OK"
+                result = new Address(
+                        name: name,
+                        street_1: street1,
+                        street_2: street2,
+                        zipcode: zipcode,
+                        city: city,
+                        region: region,
+                        country: country,
+                        pob: postbox,
+                        pobZipcode: pobZipcode,
+                        pobCity: pobCity,
+                        type: type,
+                        prs: person,
+                        org: organisation
+                )
+
+                if (! result.save()) {
+                    result.errors.each { println it }
+                }
+                else {
+                    info += " > OK"
+                }
             }
+
+            LogFactory.getLog(this).debug(info)
+            result
         }
-             
-        LogFactory.getLog(this).debug(info)
-        result   
     }
 }
