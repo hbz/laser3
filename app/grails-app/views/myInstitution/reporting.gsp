@@ -1,3 +1,4 @@
+<%@page import="de.laser.helper.RDStore" %>
 <!doctype html>
 <r:require module="chartist"/>
 <html>
@@ -86,7 +87,7 @@
                                     <td>
                                         <g:each in="${row.getValue().findAll { subscription.id in [it.sub.id,it.sub.instanceOf?.id] }}" var="ci">
                                             <ul>
-                                                <li><g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencySymbol=""/> ${ci.billingCurrency ?: 'EUR'}</li>
+                                                <li>${ci.sub.dropdownNamingConvention(institution)}: <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencySymbol=""/> ${ci.billingCurrency ?: 'EUR'}</li>
                                             </ul>
                                         </g:each>
                                     </td>
@@ -97,7 +98,7 @@
                 </table>
             </g:if>
 
-            <div id="chartA">
+            <div id="chartA" style="height:2000px"> <%-- TODO do it in JavaScript or CSS, ask Ingrid --%>
 
             </div>
 
@@ -111,7 +112,13 @@
             }
         }).done(function(data){
             console.log(data.graph);
-            new Chartist.Bar('#chartA',data.graph); //continue here: deploy to AJAX because of request response type which will be JSON
+            let options = {
+                axisY: {
+                    scaleMinSpace: 50,
+                    seriesBarDistance: 100
+                }
+            }
+            new Chartist.Bar('#chartA',data.graph,options);
         });
     </r:script>
 </html>

@@ -1109,18 +1109,20 @@ class FinanceService {
                         labels << parentSub.dropdownNamingConvention(configMap.contextOrg)
                         Collection<CostItem> childrenCostItems = configMap.costItems.findAll { CostItem ci -> ci.sub.instanceOf == parentSub }
                         Collection<Subscription> childSubs = configMap.costItems.collect { CostItem ci -> ci.sub }
+                        List costs = []
                         childSubs.each { Subscription child ->
-                            List costs = []
-                            childrenCostItems.findAll{ it.sub == child }.each { CostItem ci ->
+                            BigDecimal billingSum = 0.0
+                            childrenCostItems.findAll{ CostItem ci -> ci.sub == child && ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE }.each { CostItem ci ->
                                 //TODO [ticket=2761] to implement when Chartist is included
                                 /*
 
                                  */
                                 /* this is the temporary structure until ERMS-2761 is done */
-                                costs << ci.costInBillingCurrency
+                                billingSum += ci.costInBillingCurrency
                             }
-                            series << costs
+                            costs << billingSum
                         }
+                        series << costs
                     }
                     Map<String,Set> graph = [labels:labels,series:series]
                     result.graph = graph
