@@ -1,6 +1,6 @@
 <%@ page import="de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.Address;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
-<semui:modal id="addressFormModal" text="${modalText}" msgSave="${modalMsgSave}">
+<semui:modal id="addressFormModal" text="${modalText}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${message(code: 'default.button.save.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <g:if test="${addressInstance}">
@@ -15,6 +15,17 @@
         <input type="hidden" name="redirect" value="true"/>
         <input id="type" name="type.id" type="hidden" value="${typeId}"/>
 
+        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
+            <label for="type">
+                ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
+            </label>
+            %{--<laser:select class="ui dropdown multiple" id="type" name="type.id"--}%
+            <laser:select class="ui dropdown" id="type" name="type.id"
+                          from="${Address.getAllRefdataValues()}"
+                          optionKey="id"
+                          optionValue="value"
+                          value="${addressInstance?.type?.id ?: typeId}"/>
+        </div>
         <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
             <label for="name">
                 <g:message code="address.name.label" />
@@ -34,36 +45,6 @@
                 <g:message code="address.additionSecond.label" />
             </label>
             <g:textField id="additionSecond" name="additionSecond" value="${addressInstance?.additionSecond}"/>
-        </div>
-        <div class="field">
-            <div class="two fields">
-                <div class="field nine wide fieldcontain ${hasErrors(bean: addressInstance, field: 'region',
-                        'error')}">
-                    <label for="region">
-                        <g:message code="address.region.label" />
-                    </label>
-                    <laser:select class="ui dropdown" id="region" name="region.id"
-                                  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,
-                                                                               RDConstants.REGIONS_AT,
-                                                                               RDConstants.REGIONS_CH])}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-                </div>
-
-                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'country',
-                        'error')}">
-                    <label for="country">
-                        <g:message code="address.country.label" />
-                    </label>
-                    <laser:select class="ui dropdown" id="country" name="country.id"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${addressInstance?.country?.id}"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-                </div>
-            </div>
         </div>
 
         <h4 class="ui dividing header"><g:message code="address.streetaddress.label" /></h4>
@@ -132,18 +113,35 @@
                 </div>
             </div>
         </div>
-        <g:if test="${ ! typeId }">
-            <h4 class="ui dividing header"><g:message code="address.additionals.label"/></h4>
-            <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
-                <label for="type">
-                    ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
-                </label>
-                <laser:select class="ui dropdown" id="type" name="type.id"
-                              from="${Address.getAllRefdataValues()}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${addressInstance?.type?.id}"/>
+        <div class="field">
+            <div class="two fields">
+                <div class="field nine wide fieldcontain ${hasErrors(bean: addressInstance, field: 'region',
+                        'error')}">
+                    <label for="region">
+                        <g:message code="address.region.label" />
+                    </label>
+                    <laser:select class="ui dropdown" id="region" name="region.id"
+                                  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,
+                                                                               RDConstants.REGIONS_AT,
+                                                                               RDConstants.REGIONS_CH])}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                </div>
+
+                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'country',
+                        'error')}">
+                    <label for="country">
+                        <g:message code="address.country.label" />
+                    </label>
+                    <laser:select class="ui dropdown" id="country" name="country.id"
+                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${addressInstance?.country?.id}"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                </div>
             </div>
-        </g:if>
+        </div>
     </g:form>
 </semui:modal>
