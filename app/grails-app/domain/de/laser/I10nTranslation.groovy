@@ -80,33 +80,36 @@ class I10nTranslation {
         if (!reference || !referenceField)
             return
 
-        reference = GrailsHibernateUtil.unwrapIfProxy(reference)
+        withTransaction {
 
-        I10nTranslation i10n = get(reference, referenceField)
-        if (!i10n) {
-            i10n = new I10nTranslation(
-                    referenceClass: reference.getClass().getCanonicalName(),
-                    referenceId:    reference.getId(),
-                    referenceField: referenceField
-            )
-        }
-
-        values.each { k, v ->
-            switch(k.toString().toLowerCase()){
-                case 'de':
-                    i10n.valueDe = v ? v.toString() : null
-                    break
-                case 'en':
-                    i10n.valueEn = v ? v.toString() : null
-                    break
-                case 'fr':
-                    i10n.valueFr = v ? v.toString() : null
-                    break
+            reference = GrailsHibernateUtil.unwrapIfProxy(reference)
+            I10nTranslation i10n = get(reference, referenceField)
+            
+            if (!i10n) {
+                i10n = new I10nTranslation(
+                        referenceClass: reference.getClass().getCanonicalName(),
+                        referenceId: reference.getId(),
+                        referenceField: referenceField
+                )
             }
-        }
 
-        i10n.save()
-        i10n
+            values.each { k, v ->
+                switch (k.toString().toLowerCase()) {
+                    case 'de':
+                        i10n.valueDe = v ? v.toString() : null
+                        break
+                    case 'en':
+                        i10n.valueEn = v ? v.toString() : null
+                        break
+                    case 'fr':
+                        i10n.valueFr = v ? v.toString() : null
+                        break
+                }
+            }
+
+            i10n.save()
+            i10n
+        }
     }
 
     // -- initializations --

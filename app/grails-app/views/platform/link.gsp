@@ -29,7 +29,7 @@
 </h1>
 
 <semui:messages data="${flash}" />
-<g:render template="nav" />
+<%--<g:render template="nav" />--%>
 <div id="dynamicUpdate">
   <g:render template="apLinkContent" model="result" />
 </div>

@@ -86,7 +86,7 @@ class OrgSettings {
         returns user depending setting for given key
         or SETTING_NOT_FOUND if not
      */
-    static get(Org org, KEYS key) {
+    static def get(Org org, KEYS key) {
 
         def oss = findWhere(org: org, key: key)
         oss ?: SETTING_NOT_FOUND
@@ -95,22 +95,26 @@ class OrgSettings {
     /*
         adds new org depending setting (with value) for given key
      */
-    static add(Org org, KEYS key, def value) {
+    static OrgSettings add(Org org, KEYS key, def value) {
 
-        def oss = new OrgSettings(org: org, key: key)
-        oss.setValue(value)
-        oss.save()
+        withTransaction {
+            def oss = new OrgSettings(org: org, key: key)
+            oss.setValue(value)
+            oss.save()
 
-        oss
+            oss
+        }
     }
 
     /*
         deletes org depending setting for given key
      */
-    static delete(Org org, KEYS key) {
+    static void delete(Org org, KEYS key) {
 
-        def oss = findWhere(org: org, key: key)
-        oss?.delete(flush: true)
+        withTransaction {
+            def oss = findWhere(org: org, key: key)
+            oss?.delete()
+        }
     }
 
     /*
@@ -145,17 +149,19 @@ class OrgSettings {
      */
     def setValue(def value) {
 
-        switch (key.type) {
-            case RefdataValue:
-                rdValue = value
-                break
-            case Role:
-                roleValue = value
-                break
-            default:
-                strValue = (value ? value.toString() : null)
-                break
+        withTransaction {
+            switch (key.type) {
+                case RefdataValue:
+                    rdValue = value
+                    break
+                case Role:
+                    roleValue = value
+                    break
+                default:
+                    strValue = (value ? value.toString() : null)
+                    break
+            }
+            save()
         }
-        save()
     }
 }

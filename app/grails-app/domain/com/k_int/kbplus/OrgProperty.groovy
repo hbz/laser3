@@ -14,12 +14,12 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
     static mapping = {
         id                   column: 'op_id'
         version              column: 'op_version'
-        stringValue          column: 'op_string_value'
+        stringValue          column: 'op_string_value', type: 'text'
         intValue             column: 'op_int_value'
         decValue             column: 'op_dec_value'
         refValue             column: 'op_ref_value_rv_fk'
         urlValue             column: 'op_url_value'
-        note                 column: 'op_note'
+        note                 column: 'op_note', type: 'text'
         dateValue            column: 'op_date_value'
         type                 column: 'op_type_fk', index:'op_type_idx'
         tenant               column: 'op_tenant_fk', index:'op_tenant_idx'
@@ -31,11 +31,18 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
     }
 
     static constraints = {
-        importFrom AbstractPropertyWithCalculatedLastUpdated
-        tenant (nullable: true, blank: false) //subject of discussion, for the moment, it cannot be determined exactly
-        // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true)
+        stringValue (nullable: true)
+        intValue    (nullable: true)
+        decValue    (nullable: true)
+        refValue    (nullable: true)
+        urlValue    (nullable: true)
+        note        (nullable: true)
+        dateValue   (nullable: true)
+        tenant      (nullable: true) //subject of discussion, for the moment, it cannot be determined exactly
+
         dateCreated (nullable: true)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
     }
 
     static belongsTo = [

@@ -121,25 +121,25 @@ class SystemEvent {
 
     static SystemEvent createEvent(String token, def payload) {
 
-        SystemEvent result
+        withTransaction {
+            SystemEvent result
 
-        if (SystemEvent.DEFINED_EVENTS.containsKey(token)) {
-            result = new SystemEvent(
-                    category: SystemEvent.DEFINED_EVENTS.get(token).category,
-                    relevance: SystemEvent.DEFINED_EVENTS.get(token).relevance )
+            if (SystemEvent.DEFINED_EVENTS.containsKey(token)) {
+                result = new SystemEvent(
+                        category: SystemEvent.DEFINED_EVENTS.get(token).category,
+                        relevance: SystemEvent.DEFINED_EVENTS.get(token).relevance)
+            } else {
+                result = new SystemEvent(category: CATEGORY.UNKNOWN, relevance: RELEVANCE.UNKNOWN)
+            }
+
+            if (result) {
+                result.token = token
+                result.payload = payload ? (new JSON(payload)).toString(false) : null
+
+                result.save()
+            }
+            result
         }
-        else {
-            result = new SystemEvent( category: CATEGORY.UNKNOWN, relevance: RELEVANCE.UNKNOWN )
-        }
-
-        if (result) {
-            result.token = token
-            result.payload = payload ? (new JSON(payload)).toString(false) : null
-
-            result.save()
-        }
-
-        result
     }
 
     static List<String> getAllSources() {

@@ -16,7 +16,6 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
@@ -41,6 +40,9 @@ class FinanceService {
     LinksGenerationService linksGenerationService
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
     Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
+
+    static final String GROUP_OPTION_ELEMENT = 'element'
+    static final String GROUP_OPTION_SUBSCRIPTION_GRAPH = 'subscription_graph'
 
     /**
      * Will replace the methods index and financialData methods in FinanceController class for a single subscription.
@@ -567,7 +569,11 @@ class FinanceService {
         return ret
     }
 
-
+    /**
+     * Processes the given TSV file with financial data and puts together a {@link Map} with the information read off the file
+     * @param tsvFile - the input file
+     * @return a {@link Map} with the data red off
+     */
     Map<String,Map> financeImport(CommonsMultipartFile tsvFile) {
 
         Org contextOrg = contextService.org
@@ -1051,6 +1057,10 @@ class FinanceService {
         result
     }
 
+    /**
+     * Orders the currencies available in the database
+     * @return the ordered list of currencies
+     */
     List<Map<String,Object>> orderedCurrency() {
         //def all_currencies = RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', 'Currency')
         // restrict only to new refdata values
@@ -1070,6 +1080,87 @@ class FinanceService {
             [id: rdv.id, text: rdv.getI10n('value')]
         })
 
+        result
+    }
+
+    /**
+     * Groups {@link CostItem}s according to the given configuratom {@link Map}.
+     * @param configMap - a {@link Map} containing parameters for cost item retrieval - imperatively needed are contextOrg and groupOption
+     * @return a {@link Map} retrieved for the given org
+     */
+    Map groupCostItems(Map<String,Object> configMap) {
+        Map<Object,Collection<CostItem>> result = [:]
+        Set<CostItem> costItems = (Set<CostItem>) configMap.costItems
+        switch(configMap.groupOption) {
+            case GROUP_OPTION_ELEMENT:
+                Set<RefdataValue> elementsOfContextOrg = RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :owner',[owner:configMap.contextOrg])
+                elementsOfContextOrg.each { RefdataValue element ->
+                    Collection<CostItem> costItemsWithElement = costItems.findAll { CostItem ci -> ci.costItemElement == element }
+                    result.put(element,costItemsWithElement)
+                }
+                Collection<CostItem> costItemsWithoutElement = costItems.findAll { CostItem ci -> ci.costItemElement == null }
+                result.put(RDStore.GENERIC_NULL_VALUE,costItemsWithoutElement)
+                break
+            case GROUP_OPTION_SUBSCRIPTION_GRAPH:
+                if(configMap.contextOrg.getCustomerType() == 'ORG_CONSORTIUM') {
+                    Set<String> labels = []
+                    Set<List> series = []
+                    configMap.linkedSubscriptions.each { Subscription parentSub ->
+                        labels << parentSub.dropdownNamingConvention(configMap.contextOrg)
+                        Collection<CostItem> childrenCostItems = configMap.costItems.findAll { CostItem ci -> ci.sub.instanceOf == parentSub }
+                        Collection<Subscription> childSubs = configMap.costItems.collect { CostItem ci -> ci.sub }
+                        childSubs.each { Subscription child ->
+                            List costs = []
+                            childrenCostItems.findAll{ it.sub == child }.each { CostItem ci ->
+                                //TODO [ticket=2761] to implement when Chartist is included
+                                /*
+
+                                 */
+                                /* this is the temporary structure until ERMS-2761 is done */
+                                costs << ci.costInBillingCurrency
+                            }
+                            series << costs
+                        }
+                    }
+                    Map<String,Set> graph = [labels:labels,series:series]
+                    result.graph = graph
+                }
+                break
+        }
+        result
+    }
+
+
+    Map<String,Object> getCostItemsFromEntryPoint(Map<String,Object> configMap) {
+        Map<String,Object> result = [:]
+        Set<CostItem> costItems = []
+        String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc'
+        Map<String,Object> ciParams = [owner:configMap.institution]
+        //we define some entry points
+        Set<Subscription> linkedSubscriptionSet = []
+        if(configMap.subscription) {
+            Subscription starting = Subscription.get(configMap.subscription)
+            Map<String,Object> subQueryParams = [starting:GenericOIDService.getOID(starting),linkType: RDStore.LINKTYPE_FOLLOWS]
+            //get precedents
+            linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('"+Subscription.class.name+":',s.id) in (select li.destination from Links li where li.source = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc",subQueryParams))
+            linkedSubscriptionSet << starting
+            //get successors
+            linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('"+Subscription.class.name+":',s.id) in (select li.source from Links li where li.destination = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc",subQueryParams))
+            if(configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
+                ciQuery += 'and ci.sub.instanceOf in (:subs)'
+            }
+            else {
+                ciQuery += 'and ci.sub in (:subs)'
+            }
+            costItems.addAll(CostItem.executeQuery(ciQuery+ciOrder,ciParams+[subs:linkedSubscriptionSet]))
+            result.linkedSubscriptionSet = linkedSubscriptionSet
+        }
+        else if(configMap.package) {
+            ciQuery += 'and ci.subPkg = :subPkg'
+            costItems.addAll(CostItem.executeQuery(ciQuery+ciOrder,ciParams+[subPkg:result.subscriptionPackages]))
+        }
+        result.linkedSubscriptionSet = linkedSubscriptionSet
+        result.costItems = costItems
         result
     }
 
