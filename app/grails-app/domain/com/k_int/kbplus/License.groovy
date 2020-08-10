@@ -365,16 +365,11 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         result
   }
 
-  @Transient
-  def getLicenseType() {
-    return type?.value
-  }
-
-    DocContext getNote(domain) {
+    DocContext getNote(String domain) {
         DocContext.findByLicenseAndDomain(this, domain)
     }
 
-  void setNote(domain, note_content) {
+  void setNote(String domain, String note_content) {
       withTransaction {
           DocContext note = DocContext.findByLicenseAndDomain(this, domain)
           if (note) {
