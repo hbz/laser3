@@ -83,7 +83,7 @@
 
     <r:require module="swaggerApi" />
 
-    <r:layoutResources/>
+    <r:layoutResources/> <%-- grails-3-fix : remove --%>
 </head>
 
 <body>

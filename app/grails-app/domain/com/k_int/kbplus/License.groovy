@@ -153,7 +153,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         type        (nullable:true)
         reference(blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
-        isPublicForApi (nullable:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
         instanceOf  (nullable:true)

@@ -114,25 +114,6 @@ class I10nTranslation {
 
     // -- initializations --
 
-    // used in gsp to create translations for on-the-fly-created refdatas and property definitions
-    @Deprecated
-    static I10nTranslation createI10nOnTheFly(Object reference, String referenceField) {
-
-        Map<String, Object> values = [:] // no effect in set()
-        I10nTranslation existing = get(reference, referenceField)
-
-        if (! existing) { // set default values
-            values = [
-                    'en': reference."${referenceField}",
-                    'de': reference."${referenceField}",
-                    'fr': reference."${referenceField}"
-            ]
-            return set(reference, referenceField, values)
-        }
-
-        existing
-    }
-
     // used in bootstap
     static I10nTranslation createOrUpdateI10n(Object reference, String referenceField, Map translations) {
 
@@ -164,42 +145,4 @@ class I10nTranslation {
         decodeLocale(locale.toString())
     }
 
-    @Deprecated
-    static def refdataFindHelper(String referenceClass, String referenceField, String query, def locale) {
-        List<I10nTranslation> matches = []
-        def result = []
-
-        if(! query) {
-            matches = I10nTranslation.findAllByReferenceClassAndReferenceField(
-                    referenceClass, referenceField
-            )
-        }
-        else {
-            switch (I10nTranslation.decodeLocale(locale)) {
-                case 'en':
-                    matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueEnIlike(
-                            referenceClass, referenceField, "%${query}%"
-                    )
-                    break
-                case 'de':
-                    matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueDeIlike(
-                            referenceClass, referenceField, "%${query}%"
-                    )
-                    break
-                case 'fr':
-                    matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueFrIlike(
-                            referenceClass, referenceField, "%${query}%"
-                    )
-                    break
-            }
-        }
-        matches.each { it ->
-            def obj = (new I10nTranslation().getDomainClass().grailsApplication.classLoader.loadClass(it.referenceClass)).findById(it.referenceId)
-            if (obj) {
-                result << obj
-            }
-        }
-
-        return result
-    }
 }

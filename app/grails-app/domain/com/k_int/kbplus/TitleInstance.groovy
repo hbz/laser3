@@ -156,58 +156,6 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     result
   }
 
-  @Deprecated
-  static TitleInstance lookupByIdentifierString(idstr) {
-
-      static_logger.debug("lookupByIdentifierString(${idstr})")
-
-      TitleInstance result
-    def qr = null;
-    def idstr_components = idstr.split(':');
-
-    switch ( idstr_components.size() ) {
-      case 1:
-        qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = :val', [val: idstr_components[0]])
-        break;
-      case 2:
-        qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = :val and lower(ident.ns.ns) = :ns', [val: idstr_components[1], ns: idstr_components[0]?.toLowerCase()])
-        break;
-      default:
-        // static_logger.debug("Unable to split");
-        break;
-    }
-
-    // static_logger.debug("components: ${idstr_components} : ${qr}");
-
-    if ( qr ) {
-      switch ( qr.size() ) {
-        case 0:
-            static_logger.debug("No matches - trying to locate via identifier group");
-          switch ( idstr_components.size() ) {
-            case 1:
-              qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = :val', [val: idstr_components[0]])
-              break;
-            case 2:
-              qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = :val and ident.ns.ns = :ns', [val: idstr_components[1], ns: idstr_components[0]?.toLowerCase()])
-              break;
-            default:
-              // static_logger.debug("Unable to split");
-              break;
-          }
-
-          break;
-        case 1:
-          result = qr.get(0);
-          break;
-        default:
-            static_logger.error("WARNING:: Identifier '${idstr}' matched multiple rows");
-          break;
-      }
-    }
-
-    result
-  }
-
   /**
    * Attempt to look up a title instance which has any of the listed identifiers
    * @param candidate_identifiers A list of maps containing identifiers and namespaces [ { namespace:'ISSN', value:'Xnnnn-nnnn' }, {namespace:'ISSN', value:'Xnnnn-nnnn'} ]
