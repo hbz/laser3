@@ -320,16 +320,12 @@ class CopyElementsService {
             }
         }
 
-        //boolean isTargetSubChanged = false
-        if (params.subscription?.deleteDates && isBothSubscriptionsSet(baseSub, newSub)) {
-            deleteObjectProperty(newSub, flash, 'startDate')
-            deleteObjectProperty(newSub, flash, 'endDate')
-            //isTargetSubChanged = true
-        }else if (params.subscription?.takeDates && isBothSubscriptionsSet(baseSub, newSub)) {
-            copyObjectProperty(baseSub, newSub, flash, 'startDate')
-            copyObjectProperty(baseSub, newSub, flash, 'endDate')
-            //isTargetSubChanged = true
-        }
+//        params.list('object.toggleShare').each{ toggleShareProperty ->
+//            if(toggleShareProperty in allowedProperties(baseSub)) {
+//                toggleShareObjectProperty(baseSub, newSub, flash, toggleShareProperty)
+//            }
+//        }
+
         if(params.toggleShareStartDate)
             AuditConfig.addConfig(newSub,'startDate')
         else if(params.toggleShareStartDate == false && AuditConfig.getConfig(newSub, 'startDate'))
@@ -927,15 +923,32 @@ class CopyElementsService {
 
     boolean deleteObjectProperty(Object targetObject, def flash, String propertyName) {
 
-            if (targetObject.hasProperty(propertyName)) {
-                if(targetObject[propertyName] instanceof Boolean){
-                    targetObject[propertyName] = false
-                }else {
-                    targetObject[propertyName] = null
-                }
-                return save(targetObject, flash)
+        if (targetObject.hasProperty(propertyName)) {
+            if(targetObject[propertyName] instanceof Boolean){
+                targetObject[propertyName] = false
+            }else {
+                targetObject[propertyName] = null
             }
+            return save(targetObject, flash)
+        }
 
+    }
+
+    boolean toggleShareObjectProperty(Object sourceObject, Object targetObject, def flash, String propertyName) {
+
+        if(sourceObject.getClass() == targetObject.getClass())
+        {
+            if (sourceObject.hasProperty(propertyName) && !AuditConfig.getConfig(targetObject,propertyName)) {
+                AuditConfig.addConfig(targetObject,propertyName)
+            }
+        }
+
+    }
+
+    boolean removeToggleShareObjectProperty(Object targetObject, def flash, String propertyName) {
+            if (targetObject.hasProperty(propertyName) && AuditConfig.getConfig(targetObject, propertyName)) {
+                    AuditConfig.removeConfig(targetObject, propertyName)
+            }
     }
 
     boolean deleteLicenses(List<License> toDeleteLicenses, Subscription targetSub, def flash) {

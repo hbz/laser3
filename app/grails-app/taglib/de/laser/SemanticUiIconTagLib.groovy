@@ -63,6 +63,16 @@ class SemanticUiIconTagLib {
             case 'hasPerpetualAccess':
                 out << '<i aria-hidden="true" class="'+aClass+ ' icon flag outline"></i> '
                 break
+            case 'startDate':
+                out << '<i aria-hidden="true" class="'+aClass+ ' icon calendar alternate outline"></i> '
+                break
+            case 'endDate':
+                out << '<i aria-hidden="true" class="'+aClass+ ' icon calendar alternate outline"></i> '
+                break
+            case 'manualCancellationDate':
+                out << '<i aria-hidden="true" class="'+aClass+ ' icon calendar alternate outline"></i> '
+                break
+
             default:
                 out << '<i aria-hidden="true" class="'+aClass+ ' icon "></i> '
                 break

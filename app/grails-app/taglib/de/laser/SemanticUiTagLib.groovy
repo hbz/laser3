@@ -1154,21 +1154,17 @@ class SemanticUiTagLib {
     def showPropertyValue = { attrs, body ->
         def property = attrs.property
 
-        switch (property) {
-            case Date:
-                out << g.formatDate(date: property, format: message(code: 'default.date.format.notime'))
-                break
-            case RefdataValue:
-                out << property?.getI10n('value')
-                break
-            case boolean:
-                out << property ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
-                break
-            default:
-                out << property ?: ''
-                break
+        if(property instanceof Date) {
+            out << g.formatDate(date: property, format: message(code: 'default.date.format.notime'))
         }
-
+        else if(property instanceof RefdataValue) {
+            out << property?.getI10n('value')
+        }
+        else if(property instanceof Boolean) {
+            out << (property ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+        }else {
+            out << (property ?: '')
+        }
     }
 
 }
