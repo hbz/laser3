@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2768    10.08.2020  rc1.5       Moe     Bug         Fehlermeldungen bei Nutzer
+
 2734    10.08.2020  rc1.5       Andreas Bug         Export unter "Meine Lizenzen pro Einrichtung" funktionierte nicht
 
 2732    10.08.2020  rc1.5       Andreas Bug         Löschen von Verträgen funktionierte nicht
