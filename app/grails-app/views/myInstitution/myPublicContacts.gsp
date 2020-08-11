@@ -44,7 +44,7 @@
 
             <semui:filter>
                 <g:form action="${actionName}" controller="myInstitution" method="get" class="ui small form">
-                    <div class="four fields">
+                    <div class="three fields">
                         <div class="field">
                             <label for="prs">${message(code: 'person.filter.name')}</label>
                             <div class="ui input">
@@ -52,7 +52,24 @@
                                        placeholder="${message(code: 'person.filter.name')}" />
                             </div>
                         </div>
-                        <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
+                        <div class="field">
+                            <label><g:message code="person.function.label" /></label>
+                                          %{--multiple=""--}%
+                            <laser:select class="ui dropdown search"
+                                          name="prsFunctionMultiSelect"
+                                          from="${rdvAllPersonFunctions}"
+                                          optionKey="id"
+                                          optionValue="value"/>
+                        </div>
+                        <div class="field">
+                            <label><g:message code="person.position.label" /></label>
+                                          %{--multiple=""--}%
+                            <laser:select class="ui dropdown search"
+                                          name="prsPositionMultiSelect"
+                                          from="${rdvAllPersonPositions}"
+                                          optionKey="id"
+                                          optionValue="value"/>
+                        </div>
                     </div>
 
                     <div class="field la-field-right-aligned">
