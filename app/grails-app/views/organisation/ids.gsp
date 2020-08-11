@@ -71,7 +71,6 @@
         <div class="la-inline-lists">
 
 <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
-<g:if test="${departmentalView == false}">
     <div class="ui card">
         <div class="content">
             <div class="header"><g:message code="default.identifiers.label"/></div>
@@ -99,7 +98,6 @@
             </table>
         </div>
     </div>
-</g:if>
 
 %{--------------CUSTOMER IDENTIFIERS------------------------}%
         <g:if test="${hasAccessToCustomeridentifier}">
