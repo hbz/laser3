@@ -962,8 +962,8 @@ select distinct oap from OrgAccessPoint oap
         result
     }
 
-    List<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
-        List<OrgAccessPoint> result = []
+    Collection<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
+        Collection<OrgAccessPoint> result = []
 
         result = this.getSubscriber().accessPoints
 

@@ -7,7 +7,6 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import grails.transaction.Transactional
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.client.RequestOptions
@@ -17,7 +16,6 @@ import org.elasticsearch.client.RestHighLevelClient
 //@Transactional
 class DeletionService {
 
-    SubscriptionService subscriptionService
     def ESWrapperService
 
     static boolean DRY_RUN                  = true
@@ -45,7 +43,6 @@ class DeletionService {
 
         List tasks                  = Task.findAllByLicense(lic)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllByLic(lic)
-        List subs                   = Subscription.findAllByOwner(lic)
         AuditConfig ac              = AuditConfig.getConfig(lic)
 
         List ids            = new ArrayList(lic.ids)
@@ -54,8 +51,8 @@ class DeletionService {
         List pRoles         = new ArrayList(lic.prsLinks)
         List packages       = new ArrayList(lic.pkgs)  // Package
         List pendingChanges = new ArrayList(lic.pendingChanges)
-        List privateProps   = new ArrayList(lic.privateProperties)
-        List customProps    = new ArrayList(lic.propertySet)
+        List privateProps   = new ArrayList(lic.propertySet.findAll { LicenseProperty lp -> lp.type.tenant != null })
+        List customProps    = new ArrayList(lic.propertySet.findAll { LicenseProperty lp -> lp.type.tenant == null })
 
         // collecting informations
 
@@ -65,7 +62,7 @@ class DeletionService {
         result.info << ['Links: Verträge bzw. Lizenzen', links]
         result.info << ['Aufgaben', tasks]
         result.info << ['Merkmalsgruppen', propDefGroupBindings]
-        result.info << ['Lizenzen', subs]
+        //result.info << ['Lizenzen', links.findAll { row -> row.linkType == RDStore.LINKTYPE_LICENSE }]
         result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
 
         // lic.onixplLicense

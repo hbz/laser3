@@ -536,7 +536,7 @@ class LicenseController
             //}
         }
         String subQuery = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source in (:licenses) and l.linkType = :linkType)"
-        if(params.status == "FETCH_ALL")
+        if(params.status == "FETCH_ALL" && validMemberLicenses)
             result.subscriptionsForFilter = Subscription.executeQuery(subQuery,[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect { License lic -> GenericOIDService.getOID(lic)}])
         else if(validMemberLicenses) {
             result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect{License lic -> GenericOIDService.getOID(lic)},status:RefdataValue.get(params.status as Long)])
