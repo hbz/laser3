@@ -14,12 +14,12 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
     static mapping = {
         id          column: 'plp_id'
         version     column: 'plp_version'
-        stringValue column: 'plp_string_value'
+        stringValue column: 'plp_string_value', type: 'text'
         intValue    column: 'plp_int_value'
         decValue    column: 'plp_dec_value'
         refValue    column: 'plp_ref_value_rv_fk'
         urlValue    column: 'plp_url_value'
-        note        column: 'plp_note'
+        note        column: 'plp_note', type: 'text'
         dateValue   column: 'plp_date_value'
         owner       column: 'plp_owner_fk', index: 'plp_owner_idx'
         type        column: 'plp_type_fk', index: 'plp_type_idx'
@@ -31,10 +31,18 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
     }
 
     static constraints = {
-        importFrom  AbstractPropertyWithCalculatedLastUpdated
-        tenant      (nullable: true, blank: false) //as no tenant can be determined for the moment, subject of discussion
-        lastUpdated (nullable: true)
+        stringValue (nullable: true)
+        intValue    (nullable: true)
+        decValue    (nullable: true)
+        refValue    (nullable: true)
+        urlValue    (nullable: true)
+        note        (nullable: true)
+        dateValue   (nullable: true)
+        tenant      (nullable: true) //as no tenant can be determined for the moment, subject of discussion
+
         dateCreated (nullable: true)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
     }
 
     static belongsTo = [

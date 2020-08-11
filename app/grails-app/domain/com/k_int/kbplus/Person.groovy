@@ -100,25 +100,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         ((title ?: '') + ' ' + (last_name ?: ' ') + (first_name ? ', ' + first_name : '') + ' ' + (middle_name ?: '')).trim()
     }
 
-    /*
-    static def lookup(firstName, lastName, tenant, isPublic, contactType) {
-
-        def person
-        def prsList = Person.findAllWhere(
-                first_name: firstName,
-                last_name: lastName,
-                contactType: contactType,
-                isPublic: isPublic,
-                tenant: tenant,
-        )
-        if ( prsList.size() > 0 ) {
-            person = prsList.get(0)
-        }
-        person
-    }
-    */
-
-    static Person lookup(firstName, lastName, tenant, isPublic, contactType, org, functionType) {
+    static Person lookup(String firstName, String lastName, Org tenant, boolean isPublic, RefdataValue contactType, Org org, RefdataValue functionType) {
 
         Person person
         List<Person> prsList = []
@@ -129,7 +111,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
                 contactType: contactType,
                 isPublic: isPublic,
                 tenant: tenant
-        ).each{ p ->
+        ).each{ Person p ->
             if (PersonRole.findWhere(prs: p, functionType: functionType, org: org)) {
                 prsList << p
             }
@@ -150,11 +132,11 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     static Map getPublicAndPrivateEmailByFunc(String func,Org contextOrg) {
         List allPersons = executeQuery('select p,pr from Person as p join p.roleLinks pr join p.contacts c where pr.functionType.value = :functionType',[functionType: func])
         Map publicContactMap = [:], privateContactMap = [:]
-        allPersons.each { row ->
+        allPersons.each { Person row ->
             Person p = (Person) row[0]
             PersonRole pr = (PersonRole) row[1]
             if(p.isPublic) {
-                p.contacts.each { c ->
+                p.contacts.each { Contact c ->
                     if(c.contentType == RDStore.CCT_EMAIL) {
                         if(publicContactMap[pr.org])
                             publicContactMap[pr.org].add(c.content)
@@ -166,7 +148,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
                 }
             }
             else {
-                p.contacts.each { c ->
+                p.contacts.each { Contact c ->
                     if(c.contentType == RDStore.CCT_EMAIL && p.tenant == contextOrg) {
                         if(privateContactMap[pr.org])
                             privateContactMap[pr.org].add(c.content)

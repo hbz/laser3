@@ -25,26 +25,9 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     String           note = ""
     Date             dateValue
     Org              tenant
-    boolean          isPublic = false
 
-    Date lastUpdatedCascading
-
-    static mapping = {
-        stringValue  type: 'text'
-        note         type: 'text'
-        lastUpdatedCascading column: 'last_updated_cascading'
-    }
-
-    static constraints = {
-        stringValue (nullable: true)
-        intValue    (nullable: true)
-        decValue    (nullable: true)
-        refValue    (nullable: true)
-        urlValue    (nullable: true)
-        note        (nullable: true)
-        dateValue   (nullable: true)
-        lastUpdatedCascading (nullable: true)
-    }
+    boolean isPublic = false
+    Date    lastUpdatedCascading
 
     protected void beforeInsertHandler() {
         static_logger.debug("beforeInsertHandler()")
@@ -145,7 +128,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
 
     def static parseValue(value, type){
         def result
-        
+        println value + " << " + type
         switch (type){
             case Integer.toString():
                 result = Integer.parseInt(value)
