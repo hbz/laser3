@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      11.08.2020  rc1.5       Andreas Bug         fehlerhafte Abfrage der nicht vererbten Merkmale bei Teilnehmerverträgen korrigiert
+
 2769    11.08.2020  rc1.5       Anja    Bug         Identifikatoren immer anzeigen; GlobaleUID auch anzeigen
 
 2768    10.08.2020  rc1.5       Moe     Bug         Fehlermeldungen bei Nutzer
