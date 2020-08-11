@@ -4,8 +4,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.IssueEntitlementGroup
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -905,9 +905,6 @@ select distinct oap from OrgAccessPoint oap
                else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)?.sortname
            }
-           else if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)?.id == contextOrg.id) {
-               additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_COLLECTIVE.id)?.sortname
-           }
            else{
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
@@ -970,8 +967,8 @@ select distinct oap from OrgAccessPoint oap
         result
     }
 
-    List<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
-        List<OrgAccessPoint> result = []
+    Collection<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
+        Collection<OrgAccessPoint> result = []
 
         result = this.getSubscriber().accessPoints
 

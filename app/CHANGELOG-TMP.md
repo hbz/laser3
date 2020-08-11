@@ -2,6 +2,88 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2768    10.08.2020  rc1.5       Moe     Bug         Fehlermeldungen bei Nutzer
+
+2734    10.08.2020  rc1.5       Andreas Bug         Export unter "Meine Lizenzen pro Einrichtung" funktionierte nicht
+
+2732    10.08.2020  rc1.5       Andreas Bug         Löschen von Verträgen funktionierte nicht
+
+2697    10.08.2020  rc1.5       Andreas Bug         Falsche Zahl beim Export der Merkmalsnutzung
+
+2611    10.08.2020  rc1.5       Andreas Bug         Anlegen von Merkmalsdefinitionen gleichen Namens funktionierte nach wie vor nicht
+
+2575    10.08.2020  rc1.5       Andreas Bug         Überflüssiges Währungssymbol entfernt bei der Ausgabe von Listenpreisen in CSV/KBART    
+
+--      10.08.2020  rc1.5       Moe     Bug         Hotfix: API Subscription Endpunkt
+
+2767    07.08.2020  rc1.5       Moe     Bug         Hotfix: Keine Lizenzmerkmale und keine Vertragsmerkmale werden in der Umfrage angezeigt
+
+2763    07.08.2020  rc1.5       Andreas Bug         Sortierung der Teilnehmer in Teilnehmermerkmale verwalten behoben
+
+--      07.08.2020  rc1.5       Andreas Bug         Legacy-Aufrufe XCustomProperties entfernt
+
+2760    06.08.2020  rc1.5       Andreas Bug         Export der Merkmale für Einrichtungen funktionierte nicht
+
+2757    06.08.2020  rc1.5       Andreas Bug         Teil zwei: Sicherung der Merkmalsbearbeitung gegen mehrfaches Abschicken des Formulars überarbeitet
+
+2756    06.08.2020  rc1.5       Andreas Bug         Bearbeitung von Verknüpfungen funktionierte nicht
+
+2755    05.08.2020  rc1.5       Andreas Bug         Zugriff auf Nutzerzahlen und Zugangskonfigurationen für Konsorten abgestuft
+
+2753    05.08.2020  rc1.5       Andreas Bug         falsches Laden verknüpfbarer Objekte, falsche Darstellung verknüpfter Objekte
+
+2752    05.08.2020  rc1.5       Andreas Bug         Statusfilter arbeitet jetzt korrekt
+
+2751    05.08.2020  rc1.5       Moe     Bug         Umfragefilter arbeitete nicht richtig
+
+2749    04.08.2020  rc1.5       Andreas Bug         Konsorten haben Zugriff auf Tab "Lizenzen" unter Vertrag
+
+2748    04.08.2020  rc1.5       Andreas Bug         Entknüpfen des Teilnehmers wirkte sich nicht auf Org-Vertrag-Verknüpfung aus
+
+2746    04.08.2020  rc1.5       Andreas Bug         Merkmalsvererbung funktionierte nicht, wenn Vollnutzer Merkmal in Teilnehmerlizenz gesetzt hat
+
+2745    04.08.2020  rc1.5       Andreas Bug         Durchreichen der Vererbungsinformation funktionierte nicht
+
+2743    04.08.2020  rc1.5       Andreas Feature     verschiedene kleinere Ausbesserungen für Merkmale in Objekte verwalten
+
+2742    03.08.2020  rc1.5       Andreas Bug         Einrichtungseinstellungen und Plattform erreichbar, Merkmale können, den Regeln entsprechend, bearbeitet und gelöscht werden
+
+2741    03.08.2020  rc1.5       Andreas Bug         Buttons bei der Zugangskonfiguration getauscht
+
+2726    03.08.2020  rc1.5       Andreas Bug         Einrichtungsmerkmale inkorrekt verarbeitet (fehlender Tenant)
+
+2740    31.07.2020  rc1.5       Andreas Bug         Punkte 3 und 4: Vertragsfilter korrigiert, Abfrage angepasst
+
+2738    31.07.2020  rc1.5       Andreas Bug         Punkt 1: Kostenausschüttung verlangt keine Währungsangabe mehr 
+
+2737    31.07.2020  rc1.5       Andreas Bug         Berechtigungseinstellungen und Navigationsleiste der Einrichtungsseite angepasst
+
+2736    31.07.2020  rc1.5       Andreas Bug         Alle Änderungen akzeptieren unterbinden, wenn keine Pakete vorhanden 
+
+2735    31.07.2020  rc1.5       Andreas Bug         Merkmale in Objekten löschen implementiert
+
+2724    31.07.2020  rc1.5       Andreas Bug         nicht existenter Vertrag führt bei der Suche nach Lizenzen nicht mehr zum Absturz
+
+2723    31.07.2020  rc1.5       Andreas Bug         Platzhalter in Auswahl der Ziellizenz korrigiert
+
+2631    31.07.2020  rc1.5       Andreas Bug         Doppelte Darstellung des Vollnutzer-Turms behoben
+
+2734    30.07.2020  rc1.5       Andreas Bug         PropertyService fehlte im SubscriptionService, was zu Absturz des Merkmalfilters auf "Meine Lizenzen pro Einrichtung" führte
+
+2732    30.07.2020  rc1.5       Andreas Bug         Absturz bei Aufruf von Teilnehmerverträgen, wenn keine solche vorhanden
+
+2731    30.07.2020  rc1.5       Andreas Bug         Abfrage nach den Nutzungszahlen der allgemeinen Merkmale um Kontextorg erweitert
+
+2729    30.07.2020  rc1.5       Andreas Bug         Abfrage ließ zentral verwaltete Lizenzen bei Kindlizenzen aus
+
+2728    30.07.2020  rc1.5       Andreas Bug         Referenzwert wird bei Merkmale in Objekten verwalten gesetzt
+
+2727    30.07.2020  rc1.5       Andreas Bug         Entküpfen von Paketen sowie Löschen von Lizenzen repariert
+
+2725    30.07.2020  rc1.5       Andreas Bug         Zauberstab- und Exportmenü in Merkmale verwalten getauscht
+
+2719    30.07.2020  rc1.5       Andreas Bug         verschiedene Ausbesserungen im Zuge der Reaktivierung von retriggerPendingChanges
+
 2711    29.07.2020  rc1.5       Moe     Bug         Hinzufügen neuer Teilnehmer zu Umfrage scheitert
 
 2721    28.07.2020  rc1.5       Andreas Bug         fehlende Berechtigung bei Anbieter bearbeiten nachgereicht

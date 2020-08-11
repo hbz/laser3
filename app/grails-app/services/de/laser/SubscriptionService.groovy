@@ -31,9 +31,9 @@ class SubscriptionService {
     def messageSource
     def escapeService
     def refdataService
+    def propertyService
     FilterService filterService
     Locale locale
-    def grailsApplication
     GenericOIDService genericOIDService
 
     @javax.annotation.PostConstruct
@@ -154,9 +154,7 @@ class SubscriptionService {
         if(params.filterSet)
             result.filterSet = params.filterSet
 
-        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(
-                RDStore.SUBSCRIPTION_TYPE_LOCAL
-        )
+        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(RDStore.SUBSCRIPTION_TYPE_LOCAL)
         result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 
         /*
@@ -173,6 +171,7 @@ class SubscriptionService {
 
         String query
         Map qarams
+        Map<Subscription,Set<License>> linkedLicenses = [:]
 
         if('withCostItems' in tableConf) {
             query = "select ci, subT, roleT.org " +
@@ -343,16 +342,28 @@ class SubscriptionService {
                             entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
                         }
                     }
+                    if (obj[1]) {
+                        Subscription subCons = obj[1]
+                        linkedLicenses.put(subCons,Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE).collect {Links row -> genericOIDService.resolveOID(row.source)})
+                    }
                 }
                 entries
             }()
         }
         else if('onlyMemberSubs') {
-            Set<Subscription> memberSubscriptions = Subscription.executeQuery(query,qarams)
+            Set memberSubscriptions = Subscription.executeQuery(query,qarams)
             result.memberSubscriptions = memberSubscriptions
+            if(memberSubscriptions) {
+                memberSubscriptions.each { row ->
+                    Subscription subCons = row[0]
+                    Set<Links> links = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE)
+                    linkedLicenses.put(subCons,links.collect {Links li -> genericOIDService.resolveOID(li.source)})
+                }
+            }
             result.totalCount = memberSubscriptions.size()
             result.entries = memberSubscriptions.drop((int) result.offset).take((int) result.max)
         }
+        result.linkedLicenses = linkedLicenses
 
         List bm = du.stopBenchmark()
         result.benchMark = bm
@@ -1291,7 +1302,7 @@ class SubscriptionService {
 
 
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
-            targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && sourceProp.tenant.id == sourceProp.tenant }
+            targetProp = targetSub.propertySet.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
                 targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetSub, tenant: sourceProp.tenant)
@@ -1588,12 +1599,18 @@ class SubscriptionService {
             try {
                 if(Links.construct([source: GenericOIDService.getOID(newLicense), destination: GenericOIDService.getOID(sub), linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
                     RefdataValue licRole
-                    if(sub.getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE])
-                        licRole = RDStore.OR_LICENSEE_CONS
-                    else if(sub.getCalculatedType() in [CalculatedType.TYPE_COLLECTIVE,CalculatedType.TYPE_LOCAL])
-                        licRole = RDStore.OR_LICENSEE
-                    else if(sub.getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-                        licRole = RDStore.OR_LICENSING_CONSORTIUM
+                    switch(sub.getCalculatedType()) {
+                        case CalculatedType.TYPE_PARTICIPATION: licRole = RDStore.OR_LICENSEE_CONS
+                            break
+                        case CalculatedType.TYPE_LOCAL: licRole = RDStore.OR_LICENSEE
+                            break
+                        case CalculatedType.TYPE_CONSORTIAL:
+                        case CalculatedType.TYPE_ADMINISTRATIVE: licRole = RDStore.OR_LICENSING_CONSORTIUM
+                            break
+                        default: log.error("no role type determinable!")
+                            break
+                    }
+
                     if(licRole) {
                         OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
                         if(!orgLicRole){
@@ -1607,8 +1624,9 @@ class SubscriptionService {
                             if(!orgLicRole.save())
                                 log.error(orgLicRole.errors)
                         }
+                        success = true
                     }
-                    success = true
+                    else log.error("role type missing for org-license linking!")
                 }
             }
             catch (CreationException e) {

@@ -47,20 +47,20 @@ class OrganisationController extends AbstractDebugController {
     })
     def settings() {
 
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.user
         Org org   = Org.get(params.id)
-
+        Org contextOrg = contextService.org
         if (! org) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
 
-        Boolean inContextOrg = contextService.getOrg().id == org.id
-        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
+        Boolean inContextOrg = contextOrg.id == org.id
+        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextOrg)
 
         Boolean hasAccess = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_ADM')) ||
+                (isComboRelated && accessService.checkMinUserOrgRole(user, contextOrg, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         // forbidden access
@@ -71,11 +71,11 @@ class OrganisationController extends AbstractDebugController {
         Map result = [
                 user:           user,
                 orgInstance:    org,
-                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
-                inContextOrg:   inContextOrg,
+                contextOrg:     contextOrg, //object type Org
+                editable:   	true, //as method is secured agains INST_ADMins of all kinds; this implicites editability
+                inContextOrg:   inContextOrg, //boolean to ensure if in contextOrg
                 isComboRelated: isComboRelated
         ]
-        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
 
         // adding default settings
         organisationService.initMandatorySettings(org)
@@ -1175,16 +1175,8 @@ class OrganisationController extends AbstractDebugController {
 
         result
     }
-    @DebugAnnotation(test = 'checkForeignOrgComboPermAffiliation()')
-    @Secured(closure = {
-        ctx.accessService.checkForeignOrgComboPermAffiliationX([
-                org: Org.get(request.getRequestURI().split('/').last()),
-                affiliation: "INST_USER",
-                comboPerm: "ORG_CONSORTIUM",
-                comboAffiliation: "INST_USER",
-                specRoles: "ROLE_ADMIN,ROLE_ORG_EDITOR"
-                ])
-    })
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def readerNumber() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
@@ -1200,16 +1192,8 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'checkForeignOrgComboPermAffiliation()')
-    @Secured(closure = {
-        ctx.accessService.checkForeignOrgComboPermAffiliationX([
-                org: Org.get(request.getRequestURI().split('/').last()),
-                affiliation: "INST_USER",
-                comboPerm: "ORG_CONSORTIUM",
-                comboAffiliation: "INST_USER",
-                specRoles: "ROLE_ADMIN"
-        ])
-    })
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def accessPoints() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
@@ -1388,7 +1372,7 @@ class OrganisationController extends AbstractDebugController {
     private Map<String, Object> setResultGenericsAndCheckAccess() {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
-        Map<String, Object> result = [user:user,institution:org,inContextOrg:true,institutionalView:false,departmentalView:false]
+        Map<String, Object> result = [user:user,institution:org,inContextOrg:true,institutionalView:false]
 
         if (params.id) {
             result.orgInstance = Org.get(params.id)
@@ -1425,15 +1409,11 @@ class OrganisationController extends AbstractDebugController {
                 isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'properties':
-            case 'accessPoints':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
                 break
             case 'addSubjectGroup':
             case 'deleteSubjectGroup':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
-                break
-            case 'readerNumber':
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
                 break
             case 'users':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
@@ -1443,6 +1423,8 @@ class OrganisationController extends AbstractDebugController {
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
                 break
             case 'show':
+            case 'readerNumber':
+            case 'accessPoints':
                 Org contextOrg = contextService.org
                 Org orgInstance = org
                 boolean inContextOrg =  orgInstance?.id == contextOrg.id

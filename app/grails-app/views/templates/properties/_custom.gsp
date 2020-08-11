@@ -2,8 +2,8 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.AuditConfig" %>
-
+<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.FormService" %>
+<laser:serviceInjection/>
 <g:if test="${newProp}">
     <semui:errors bean="${newProp}" />
 </g:if>
@@ -100,7 +100,8 @@
                                                                    ownerClass: "${ownobj.class}",
                                                                    custom_props_div: "${custom_props_div}",
                                                                    editable: "${overwriteEditable}",
-                                                                   showConsortiaFunctions: true
+                                                                   showConsortiaFunctions: true,
+                                                                   (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
                                                           ]'
                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [prop.type.getI10n('name')])}"
                                                           data-confirm-term-how="inherit"
@@ -123,7 +124,8 @@
                                                                    ownerClass: "${ownobj.class}",
                                                                    custom_props_div: "${custom_props_div}",
                                                                    editable: "${overwriteEditable}",
-                                                                   showConsortiaFunctions: true
+                                                                   showConsortiaFunctions: true,
+                                                                   (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
                                                           ]'
                                                           id="${prop.id}"
                                                           data-content="${message(code:'property.audit.on.tooltip')}"
@@ -142,7 +144,7 @@
                                     <g:if test="${(ownobj.instanceOf && !prop.instanceOf) || !ownobj.hasProperty("instanceOf")}">
                                         <g:if test="${prop.isPublic}">
                                             <laser:remoteLink class="ui orange icon button la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
-                                                              params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
+                                                              params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}", (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                               data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                               data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                               data-update="${custom_props_div}">
@@ -151,7 +153,7 @@
                                         </g:if>
                                         <g:else>
                                             <laser:remoteLink class="ui icon button la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
-                                                              params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
+                                                              params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}", (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                               data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                               data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                               data-update="${custom_props_div}">
@@ -189,6 +191,46 @@
                                     </div>
                                 </g:else>
                             </g:if>
+                            <g:elseif test="${overwriteEditable && !prop.hasProperty("instanceOf")}">
+                                <g:if test="${prop.isPublic}">
+                                    <laser:remoteLink class="ui orange icon button la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                                      params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
+                                                      data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
+                                                      data-update="${custom_props_div}">
+                                        <i class="icon eye la-js-editmode-icon"></i>
+                                    </laser:remoteLink>
+                                </g:if>
+                                <g:else>
+                                    <laser:remoteLink class="ui icon button la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                                      params='[oid: GenericOIDService.getOID(prop),editable:"${overwriteEditable}",custom_props_div: "${custom_props_div}",showConsortiaFunctions: "${showConsortiaFunctions}"]'
+                                                      data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
+                                                      data-update="${custom_props_div}">
+                                        <i class="icon eye slash la-js-editmode-icon"></i>
+                                    </laser:remoteLink>
+                                </g:else>
+                                <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
+                                <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
+                                                  controller="ajax"
+                                                  action="deleteCustomProperty"
+                                                  params='[propClass: prop.getClass(),
+                                                           ownerId: "${ownobj.id}",
+                                                           ownerClass: "${ownobj.class}",
+                                                           custom_props_div: "${custom_props_div}",
+                                                           editable: "${overwriteEditable}",
+                                                           showConsortiaFunctions: "${showConsortiaFunctions}"
+                                                  ]'
+                                                  id="${prop.id}"
+                                                  data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
+                                                  data-confirm-term-how="delete"
+                                                  data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                  data-always="c3po.loadJsAfterAjax()"
+                                                  data-update="${custom_props_div}"
+                                                  role="button">
+                                    <i class="trash alternate icon"></i>
+                                </laser:remoteLink>
+                            </g:elseif>
                             <g:else>
                                 <g:if test="${ownobj instanceof License}">
                                     <g:set var="consortium" value="${ownobj.getLicensingConsortium()}"/>

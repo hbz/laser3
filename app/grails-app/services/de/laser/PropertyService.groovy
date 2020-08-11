@@ -121,10 +121,6 @@ class PropertyService {
 
             if (dc.shortName.endsWith('Property') && !SurveyProperty.class.name.contains(dc.name)) {
 
-                if (dc.shortName.endsWith('CustomProperty') || dc.shortName.endsWith('PrivateProperty')) {
-                    return // tmp. workaround
-                }
-
                 //log.debug( dc.shortName )
                 String query = "SELECT DISTINCT type FROM " + dc.name
                 //log.debug(query)
@@ -171,11 +167,16 @@ class PropertyService {
         if(obj instanceof Subscription) {
             Subscription s = (Subscription) obj
             objMap.name = s.dropdownNamingConvention(contextOrg)
-            if(s.getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
-                objMap.subscriber = s.getSubscriber()
+            switch(s.getCalculatedType()) {
+                case CalculatedType.TYPE_PARTICIPATION: objMap.subscriber = s.getSubscriber()
+                    break
+                case CalculatedType.TYPE_CONSORTIAL:
+                case CalculatedType.TYPE_ADMINISTRATIVE:
+                    objMap.manageChildren = "propertiesMembers"
+                    objMap.manageChildrenParams = [id:s.id,filterPropDef:GenericOIDService.getOID(propDef)]
+                    break
+            }
             objMap.displayController = "subscription"
-            objMap.manageChildren = "propertiesMembers"
-            objMap.manageChildrenParams = [id:s.id,filterPropDef:GenericOIDService.getOID(propDef)]
         }
         else if(obj instanceof License) {
             License l = (License) obj

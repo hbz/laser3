@@ -421,10 +421,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
                     removePackagePendingChanges(subList,true)
                     if (deleteIdList) {
-                        deleteIdList.collate(32767).each { List chunk ->
-                            IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)", [delList: chunk])
-                            PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)", [delList: chunk])
-                            IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: chunk])
+                        deleteIdList.collate(32766).each { List chunk ->
+                            IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.status = :delStatus where ie.id in (:delList)", [delList: chunk,delStatus:RDStore.TIPP_STATUS_DELETED])
                         }
                     }
 
@@ -440,7 +438,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:delPkg])
                     }
 
-                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=:pkg and sp.subscription.id in (:subList)", [pkg:this, sub:subList])
+                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=:pkg and sp.subscription.id in (:subList)", [pkg:this, subList:subList])
                     log.debug("before flush")
                     session.flush()
                     return true
@@ -499,8 +497,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
         if (confirmed && pc_to_delete) {
             String del_pc_query = "delete from PendingChange where id in (:del_list) "
-            if(pc_to_delete.size() > 32767) { //cf. https://stackoverflow.com/questions/49274390/postgresql-and-hibernate-java-io-ioexception-tried-to-send-an-out-of-range-inte
-                pc_to_delete.collate(32767).each { subList ->
+            if(pc_to_delete.size() > 32766) { //cf. https://stackoverflow.com/questions/49274390/postgresql-and-hibernate-java-io-ioexception-tried-to-send-an-out-of-range-inte
+                pc_to_delete.collate(32766).each { subList ->
                     log.debug("Deleting Pending Change Slice: ${subList}")
                     executeUpdate(del_pc_query,[del_list:subList])
                 }

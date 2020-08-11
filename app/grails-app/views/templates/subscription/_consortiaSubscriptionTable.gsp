@@ -104,7 +104,7 @@
                             <i class="low vision grey icon"></i>
                         </span>
                     </g:if>
-                    <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                    <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${subscr.getCustomerTypeI10n()}">
                             <i class="chess rook grey icon"></i>
@@ -124,12 +124,10 @@
                             </span>
                         </g:if>
                     </div>
-                    <g:set var="linkedLicenses" value="${Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE)}"/>
-                    <g:each in="${linkedLicenses}" var="link">
-                        <g:set var="license" value="${genericOIDService.resolveOID(link.source)}"/>
+                    <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
                         <div class="la-flexbox">
                             <i class="icon balance scale la-list-icon"></i>
-                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
+                            <g:link controller="license" action="show" id="${linkedLicense.id}">${linkedLicense.reference}</g:link><br>
                         </div>
                     </g:each>
                 </td>

@@ -1,6 +1,6 @@
 <!-- _groups.gsp -->
-<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.AuditConfig" %>
-
+<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.FormService" %>
+<laser:serviceInjection/>
 <g:if test="${newProp}">
     <semui:errors bean="${newProp}" />
 </g:if>
@@ -98,7 +98,8 @@
                                                                ownerClass:"${ownobj.class}",
                                                                custom_props_div:"${custom_props_div}",
                                                                editable:"${editable}",
-                                                               showConsortiaFunctions:true
+                                                               showConsortiaFunctions:true,
+                                                               (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
                                                       ]'
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [prop.type.getI10n('name')])}"
                                                       data-confirm-term-how="inherit"
@@ -122,7 +123,8 @@
                                                                ownerClass:"${ownobj.class}",
                                                                custom_props_div:"${custom_props_div}",
                                                                editable:"${editable}",
-                                                               showConsortiaFunctions:true
+                                                               showConsortiaFunctions:true,
+                                                               (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
                                                       ]'
                                                       id="${prop.id}"
                                                       data-content="${message(code:'property.audit.on.tooltip')}"
@@ -145,7 +147,8 @@
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",
                                                                    propDefGroup: "${GenericOIDService.getOID(propDefGroup)}",
-                                                                   showConsortiaFunctions: "${showConsortiaFunctions}"]'
+                                                                   showConsortiaFunctions: "${showConsortiaFunctions}",
+                                                                   (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                           data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                           data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">
@@ -158,7 +161,8 @@
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",
                                                                    propDefGroup: "${GenericOIDService.getOID(propDefGroup)}",
-                                                                   showConsortiaFunctions: "${showConsortiaFunctions}"]'
+                                                                   showConsortiaFunctions: "${showConsortiaFunctions}",
+                                                                   (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                           data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                           data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">
