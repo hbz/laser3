@@ -1,6 +1,10 @@
 <%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; com.k_int.kbplus.*; com.k_int.kbplus.auth.Role; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
-<g:set var="locale" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}" />
-<g:set var="getAllRefDataValuesForCategoryQuery" value="select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_${locale}" />
+
+<%
+    // grails-3-fix
+    String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+    String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + locale
+%>
 
 <g:each in="${tmplConfigShow}" var="row">
 
