@@ -399,40 +399,6 @@ class DocstoreService {
     }
   }
 
-  @Deprecated
-  def migrateToDb() {
-    def docstore_docs = Doc.executeQuery("select id from Doc where contentType=1");
-
-    docstore_docs.each { dsd_id ->
-      Doc dsd = Doc.get(dsd_id);
-  
-      try {
-        log.debug("Migrate document ${dsd.id}, ${dsd.uuid}");
-        def ds_resp = getDocstoreResponseDoc(dsd.uuid);
-        if ( ds_resp != null ) {
-          OutputStream os = new ByteArrayOutputStream()
-          streamResponseDoc(ds_resp, os)
-          byte[] blob = os.toByteArray()
-          dsd.setBlobData(new ByteArrayInputStream(blob), blob.length);
-          dsd.contentType = Doc.CONTENT_TYPE_BLOB;
-          dsd.migrated = 'y';
-          dsd.save(flush:true)
-          log.debug("${dsd.id} completed");
-        }
-        else {
-          log.error("*** DOCSTORE Migrate Failed - getDocstoreResponseDoc is NULL ****");
-        }
-      }
-      catch ( Exception e ) {
-        log.error("Failed to migrate",e);
-        dsd.migrated = 'e';
-        dsd.save(flush:true)
-      }
-      cleanUpGorm()
-    }
-
-  }
-
   def cleanUpGorm() {
     def session = sessionFactory.currentSession
     session.flush()

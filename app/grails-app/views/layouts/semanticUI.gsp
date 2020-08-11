@@ -39,7 +39,7 @@
 
     <tmpl:/layouts/favicon />
 
-    <r:layoutResources/>
+    <r:layoutResources/> <%-- grails-3-fix : remove --%>
 </head>
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">

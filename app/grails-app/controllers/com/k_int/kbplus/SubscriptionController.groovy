@@ -2670,56 +2670,6 @@ class SubscriptionController
         }
     }
 
-    /*
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    @Deprecated
-    def deleteMember() {
-        log.debug( params.toMapString() )
-
-        return
-
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        def delSubscription = genericOIDService.resolveOID(params.target)
-        def delInstitution = delSubscription?.getSubscriber()
-
-        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS)
-
-        if (delSubscription?.hasPerm("edit", result.user)) {
-            def derived_subs = Subscription.findByInstanceOfAndStatusNot(delSubscription, deletedStatus)
-
-            if (!derived_subs) {
-
-                if (!CostItem.findAllBySub(delSubscription)) {
-                    // sync shares
-                    delSubscription.instanceOf.syncAllShares([delSubscription])
-
-                    if (delSubscription.getConsortia() && delSubscription.getConsortia() != delInstitution) {
-                        OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?", [delSubscription, delInstitution])
-                    }
-                    delSubscription.status = deletedStatus
-                    delSubscription.save(flush: true)
-                } else {
-                    flash.error = message(code: 'subscription.delete.existingCostItems')
-                }
-
-            } else {
-                flash.error = message(code: 'myinst.actionCurrentSubscriptions.error')
-            }
-        } else {
-            log.warn("${result.user} attempted to delete subscription ${delSubscription} without perms")
-            flash.message = message(code: 'subscription.delete.norights')
-        }
-
-        redirect action: 'members', params: [id: params.id], model: result
-
-    }
-    */
-
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def pendingChanges() {
@@ -3252,16 +3202,6 @@ class SubscriptionController
 
         redirect controller: 'myInstitution', action: 'renewalsSearch'
     }
-
-    /*
-    @Deprecated
-    private def userAccessCheck(sub, user, role_str) {
-        if ((sub == null || user == null) || (!sub.hasPerm(role_str, user))) {
-            response.sendError(401);
-            return
-        }
-    }
-    */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
