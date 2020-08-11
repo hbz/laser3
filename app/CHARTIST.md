@@ -23,7 +23,7 @@ Result: app/nodes_moules/chartist
     npm i gulp-sass
     npm i gulp-postcss
     npm i node-sass
-    npm i nanocss
+    npm i cssnano
     
 ## build CSS out of SCSS and minify CSS (need only for changes in CSS)
 
