@@ -56,3 +56,8 @@ Results:
                 [5, 2, 4, 2, 0]
             ]
         };
+        
+## chartist plugin legend
+
+- is included as minified version (JS)
+- the css is for convenience reasons in the main chartist SCSS included
