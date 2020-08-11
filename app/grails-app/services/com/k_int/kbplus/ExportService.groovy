@@ -270,7 +270,7 @@ class ExportService {
 					typeString += "(${refdataValues.join('/')})"
 				}
 				row.add([field:typeString,style:null])
-				row.add([field:pd.countUsages(),style:null])
+				row.add([field:pd.countOwnUsages(),style:null])
 				row.add([field:pd.isHardData ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
 				row.add([field:pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
 				row.add([field:pd.isUsedForLogic ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])

@@ -2,6 +2,20 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2768    10.08.2020  rc1.5       Moe     Bug         Fehlermeldungen bei Nutzer
+
+2734    10.08.2020  rc1.5       Andreas Bug         Export unter "Meine Lizenzen pro Einrichtung" funktionierte nicht
+
+2732    10.08.2020  rc1.5       Andreas Bug         Löschen von Verträgen funktionierte nicht
+
+2697    10.08.2020  rc1.5       Andreas Bug         Falsche Zahl beim Export der Merkmalsnutzung
+
+2611    10.08.2020  rc1.5       Andreas Bug         Anlegen von Merkmalsdefinitionen gleichen Namens funktionierte nach wie vor nicht
+
+2575    10.08.2020  rc1.5       Andreas Bug         Überflüssiges Währungssymbol entfernt bei der Ausgabe von Listenpreisen in CSV/KBART    
+
+--      10.08.2020  rc1.5       Moe     Bug         Hotfix: API Subscription Endpunkt
+
 2767    07.08.2020  rc1.5       Moe     Bug         Hotfix: Keine Lizenzmerkmale und keine Vertragsmerkmale werden in der Umfrage angezeigt
 
 2763    07.08.2020  rc1.5       Andreas Bug         Sortierung der Teilnehmer in Teilnehmermerkmale verwalten behoben

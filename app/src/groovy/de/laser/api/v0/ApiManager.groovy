@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.116'
+    static final VERSION = '0.117'
 
     /**
      * @return Object
