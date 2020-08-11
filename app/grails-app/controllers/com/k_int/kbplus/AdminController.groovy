@@ -1357,29 +1357,6 @@ class AdminController extends AbstractDebugController {
         redirect controller: 'myInstitution', action: 'dashboard'
     }
 
-    @Secured(['ROLE_ADMIN'])
-    @Deprecated
-    def docstoreMigrate() {
-        docstoreService.migrateToDb()
-        redirect(controller:'home')
-    }
-
-    /*
-    @Secured(['ROLE_YODA'])
-    def triggerHousekeeping() {
-        log.debug("trigggerHousekeeping()")
-        enrichmentService.initiateHousekeeping()
-        redirect(controller:'home')
-    }
-
-    @Secured(['ROLE_YODA'])
-    def initiateCoreMigration() {
-        log.debug("initiateCoreMigration...");
-        enrichmentService.initiateCoreMigration()
-        redirect(controller:'home')
-    }
-     */
-
     @Deprecated
     @Secured(['ROLE_ADMIN'])
     def titlesImport() {

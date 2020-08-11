@@ -603,45 +603,6 @@ class LicenseController
         Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
     }
 
-    /*
-    @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def deleteMember() {
-        log.debug( params.toMapString() )
-
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        // adopted from SubscriptionDetailsController.deleteMember()
-
-        def delLicense      = genericOIDService.resolveOID(params.target)
-        def delInstitutions = delLicense?.getAllLicensee()
-
-        if (delLicense?.hasPerm("edit", result.user)) {
-            def derived_lics = License.findByInstanceOf(delLicense)
-
-            if (! derived_lics) {
-                if (delLicense.getLicensingConsortium() && ! ( delInstitutions.contains(delLicense.getLicensingConsortium() ) ) ) {
-                    OrgRole.executeUpdate("delete from OrgRole where lic = :l and org IN (:orgs)", [l: delLicense, orgs: delInstitutions])
-                }
-
-                delLicense.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS)
-                delLicense.save(flush: true)
-            } else {
-                flash.error = message(code: 'myinst.actionCurrentLicense.error')
-            }
-        } else {
-            log.warn("${result.user} attempted to delete license ${delLicense} without perms")
-            flash.message = message(code: 'license.delete.norights')
-        }
-
-        redirect action: 'members', params: [id: params.id], model: result
-    }
-    */
-
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def pendingChanges() {
@@ -671,8 +632,6 @@ class LicenseController
                 result.pendingChanges << ["${member.id}": pendingChanges]
             }
         }
-
-
         result
     }
 

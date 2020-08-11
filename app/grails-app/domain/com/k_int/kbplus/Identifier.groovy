@@ -350,15 +350,15 @@ class Identifier implements CalculatedLastUpdated {
         return null;
     }
 
-    static def lookupObjectsByIdentifierString(def object, String identifierString) {
-        def result = null
+    static List lookupObjectsByIdentifierString(def object, String identifierString) {
+        List result = []
 
-        def objType = object.getClass().getSimpleName()
-        LogFactory.getLog(this).debug("lookupByIdentifierString(${objType}, ${identifierString})")
+        String objType = object.getClass().getSimpleName()
+        LogFactory.getLog(this).debug("lookupObjectsByIdentifierString(${objType}, ${identifierString})")
 
         if (objType) {
 
-            def idstrParts = identifierString.split(':');
+            String[] idstrParts = identifierString.split(':');
             switch (idstrParts.size()) {
                 case 1:
                     result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = :val', [val: idstrParts[0]])
@@ -369,7 +369,7 @@ class Identifier implements CalculatedLastUpdated {
                 default:
                     break
             }
-            LogFactory.getLog(this).debug("components: ${idstrParts} : ${result}");
+            LogFactory.getLog(this).debug("components: ${idstrParts} : ${result}")
         }
 
         result
