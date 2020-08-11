@@ -1,22 +1,32 @@
 <tr>
     <td>${tableRowNr}</td>
     <td>
-        ${id.ns.getI10n('name') ?: id.ns.ns}
-
-        <g:if test="${id.ns.getI10n('description')}">
-            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${id.ns.getI10n('description')}">
-                <i class="question circle icon"></i>
-            </span>
+        <g:if test="${showGlobalUid}">
+            <g:message code="org.globalUID.label" />
         </g:if>
+        <g:else>
+            ${id.ns.getI10n('name') ?: id.ns.ns}
+
+            <g:if test="${id.ns.getI10n('description')}">
+                <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${id.ns.getI10n('description')}">
+                    <i class="question circle icon"></i>
+                </span>
+            </g:if>
+        </g:else>
     </td>
     <td>
-        ${id.value}
-        <g:if test="${id.getURL()}">
-            <semui:linkIcon href="${id.getURL()}" />
+        <g:if test="${showGlobalUid}">
+            ${orgInstance.globalUID}
         </g:if>
-
+        <g:else>
+            ${id.value}
+                <g:if test="${id.getURL()}">
+                    <semui:linkIcon href="${id.getURL()}" />
+                </g:if>
+        </g:else>
     </td>
-    <td>${id.note}</td>
+    <g:if test="${ ! showGlobalUid}">
+    <td>${id?.note}</td>
     <td>
         <g:if test="${editable}">
             <button class="ui icon button" onclick="IdContoller.editIdentifier(${id.id});"><i class="write icon"></i></button>
@@ -31,4 +41,5 @@
             </g:link>
         </g:if>
     </td>
+    </g:if>
 </tr>
