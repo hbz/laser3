@@ -519,7 +519,7 @@ class AccessPointController extends AbstractDebugController {
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
                     ip                                : params.ip,
-                    editable                          : true,
+                    editable                          : ((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && orgId == contextService.org.id) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : orgId == contextService.org.id,
@@ -573,8 +573,6 @@ class AccessPointController extends AbstractDebugController {
             return
         }else {
 
-            String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4ranges'
-            String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6ranges'
             Boolean autofocus = (params.autofocus) ? true : false
             Boolean activeChecksOnly = (params.checked == 'false') ? false : true
 
@@ -582,9 +580,6 @@ class AccessPointController extends AbstractDebugController {
 
 
             orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
-
-            String[] ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format.substring(2))
-            String[] ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format.substring(2))
 
             List currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
 
@@ -626,13 +621,14 @@ class AccessPointController extends AbstractDebugController {
             ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry3, [currentSubIds: currentSubIds])
 
             return [
-                    accessPoint                       : orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId,
+                    accessPoint                       : orgAccessPoint,
+                    accessPointDataList               : accessPointDataList,
+                    rgId                              : orgId,
                     platformList                      : orgAccessPoint.getNotLinkedPlatforms(),
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
-                    ip                                : params.ip, editable: true,
-                    ipv4Ranges                        : ipv4Ranges, ipv4Format: ipv4Format,
-                    ipv6Ranges                        : ipv6Ranges, ipv6Format: ipv6Format,
+                    ip                                : params.ip,
+                    editable                          : ((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && orgId == contextService.org.id) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : orgId == contextService.org.id,

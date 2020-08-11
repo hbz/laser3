@@ -11,13 +11,15 @@
     </head>
     <body>
     <semui:controlButtons>
+        <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg)
+                || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="accessPoints" params="${params + [exportXLSX: true]}">${message(code: 'accessPoint.exportAccessPoints')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
-        <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg)
-                || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
+        </g:if>
+        <g:if test="${editable}">
             <g:render template="actions" />
         </g:if>
     </semui:controlButtons>
@@ -75,10 +77,15 @@
                                 <th class="five wide">IPv4</th>
                                 <th class="five wide">IPv6</th>
                             </g:if>
+                            <g:elseif test="${accessPointListItem.key == 'ezproxy'}">
+                                <th class="three wide">IPv4</th>
+                                <th class="three wide">IPv6</th>
+                                <th class="four wide"><g:message code="accessPoint.url"/></th>
+                            </g:elseif>
                             <g:else>
                                 <th class="ten wide">${message(code: 'accessRule.plural')}</th>
                             </g:else>
-                            <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
+                            <g:if test="${editable}">
                                 <th class="la-action-info two wide">${message(code: 'default.actions.label')}</th>
                             </g:if>
                         </tr>
@@ -88,7 +95,7 @@
                         <g:set var="accessPoint" value="${accessPointItem.oap}"/>
                         <tr>
                             <td class="la-main-object" >
-                                <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
+                                <g:if test="${editable}">
                                     <g:link controller="accessPoint" action="edit_${accessPoint.accessMethod.value.toLowerCase()}" id="${accessPoint.id}">
                                         ${accessPoint.name}
                                     </g:link>
@@ -109,17 +116,34 @@
                                     </g:each>
                                 </td>
                             </g:if>
+                            <g:elseif test="${accessPointListItem.key == 'ezproxy'}">
+                                <td>
+                                    <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
+                                        <div >${ipv4Range}</div>
+                                    </g:each>
+                                </td>
+                                <td>
+                                    <g:each in="${accessPoint.getIpRangeStrings('ipv6', 'ranges')}" var="ipv6Range">
+                                        <div >${ipv6Range}</div>
+                                    </g:each>
+                                </td>
+                                <td>
+                                    <g:if test="${accessPoint.hasProperty('url')}">
+                                        Proxy URL: ${accessPoint.url}
+                                    </g:if>
+                                </td>
+                            </g:elseif>
                             <g:else>
                                 <td>
                                     <g:if test="${accessPoint.hasProperty('url')}">
-                                        URL: ${accessPoint.url}
+                                       Proxy URL: ${accessPoint.url}
                                     </g:if>
                                     <g:if test="${accessPoint.hasProperty('entityId')}">
                                         EntityId: ${accessPoint.entityId}
                                     </g:if>
                                 </td>
                             </g:else>
-                            <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
+                            <g:if test="${editable}">
                                 <td class="center aligned">
                                     <g:if test="${accessPointItem['platformLinkCount'] == 0 && accessPointItem['subscriptionLinkCount'] == 0}">
                                         <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}"

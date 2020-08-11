@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2773    11.08.2020  rc1.5       Moe     Bug         Für EZproxy kann keine IP-Adresse angegeben werden
+
 2771    11.08.2020  rc1.5       Andreas Bug         Unterbinden der Anzeige der Paketauswahl bei leerer Menge unterbunden, Überprüfung bei Abschicken leerer Menge eingebaut
 
 --      11.08.2020  rc1.5       Andreas Bug         fehlerhafte Abfrage der nicht vererbten Merkmale bei Teilnehmerverträgen korrigiert
