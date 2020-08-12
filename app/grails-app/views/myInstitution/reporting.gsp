@@ -65,7 +65,7 @@
         </semui:filter>
 
         <g:if test="${formSubmit}">
-            <%-- this is just for that we see something. Micha surely has concrete ideas which cause refactoring. --%>
+        <%-- this is just for that we see something. Micha surely has concrete ideas which cause refactoring. --%>
             <g:if test="${costItems}">
                 <table class="ui celled la-table table">
                     <thead>
@@ -97,25 +97,49 @@
                     </tbody>
                 </table>
             </g:if>
+            <p>
+                <h2>Meine Subskriptionen</h2><%-- a placeholder title and a gag for that finally, there is really a page like on the landing page screenshot --%>
+            </p>
+
             <div id="chartA"/>
+
+            <div id="chartB"/>
         </g:if>
     </body>
     <r:script>
         $.ajax({
             url: "<g:createLink action="loadCostItemChartData" />",
             data: {
-                subscription: ${params.subscription}
+                <g:if test="${params.subscription}">
+                    subscription: ${params.subscription}
+                </g:if>
+                <g:elseif test="${params.package}">
+                    package: ${params.package}
+                </g:elseif>
             }
         }).done(function(data){
-            console.log(data.graph);
-            let options = {
+            console.log(data.graphA);
+            new Chartist.Bar('#chartA',data.graphA,{
                 axisY: {
-                    scaleMinSpace: 50,
-                    seriesBarDistance: 100
+                    scaleMinSpace: 40
                 },
                 height: '600px'
-            }
-            new Chartist.Bar('#chartA',data.graph,options);
+            });
+            new Chartist.Pie('#chartB',data.graphB,{
+                donut:true,
+                donutWidth: 60,
+                donutSolid:true,
+                startAngle: 270,
+                showLabel: true,
+                labelInterpolationFnc: function(value) {
+                    return Math.round(value / data.graphB.series.reduce(sum) * 100) + '%';
+                },
+                height: '300px'
+            });
         });
+
+        let sum = function(a,b) {
+            return a + b;
+        };
     </r:script>
 </html>
